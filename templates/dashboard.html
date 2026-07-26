@@ -353,10 +353,83 @@ https://rivale2.com", class_="analyze-input") }}
               {% include "partials/schedule_form.html" %}
             {% endwith %}
           </section>
+
+          <section class="apply-panel" aria-labelledby="apply-title">
+            <div class="apply-panel__head">
+              <div>
+                <p class="eyebrow">Plus · Safe Apply</p>
+                <h3 class="apply-panel__title" id="apply-title">Ottimizza il sito (solo azioni sicure)</h3>
+                <p class="apply-panel__lede">
+                  Pubblica automaticamente <code>llms.txt</code>, <code>robots.txt</code>, <code>ai.txt</code>,
+                  JSON-LD, meta/OG/canonical e viewport. Niente rewrite contenuti, redirect o cambi URL.
+                </p>
+              </div>
+              <div class="apply-panel__status">
+                {% if latest.apply_ready %}
+                <span class="apply-pill" data-on="1">Attivo</span>
+                {% else %}
+                <span class="apply-pill">Disattivo</span>
+                {% endif %}
+                {% if latest.last_apply_status %}
+                <span class="apply-pill">Ultimo: {{ latest.last_apply_status }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if apply_token_once %}
+            <div class="apply-token">
+              <p class="apply-token__label">Token (mostrato una sola volta)</p>
+              <code class="apply-token__value">{{ apply_token_once }}</code>
+            </div>
+            {% elif latest.apply_token_hint %}
+            <p class="apply-panel__hint">Token: <code>{{ latest.apply_token_hint }}</code></p>
+            {% endif %}
+
+            {% if safe_apply and safe_apply.summary %}
+            <ul class="apply-actions">
+              {% for a in safe_apply.summary %}
+              <li>
+                <strong>{{ a.type }}</strong>
+                <span>{{ a.reason }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+            <p class="apply-panel__hint">{{ safe_apply.action_count }} azioni pronte · API <code>/api/v1/apply/{{ latest.id }}/pending</code></p>
+            {% endif %}
+
+            <div class="apply-panel__actions">
+              {% if not latest.apply_ready %}
+              <form method="post" action="{{ url_for('apply_enable', analysis_id=latest.id) }}" class="inline-action">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-signal">Abilita Safe Apply</button>
+              </form>
+              {% else %}
+              <form method="post" action="{{ url_for('apply_rotate', analysis_id=latest.id) }}" class="inline-action">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-primary">Ruota token</button>
+              </form>
+              <form method="post" action="{{ url_for('apply_disable', analysis_id=latest.id) }}" class="inline-action">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-ghost">Disabilita</button>
+              </form>
+              {% endif %}
+              {% if apply_token_once %}
+              <a class="btn btn-ghost" href="{{ url_for('download_apply_agent', analysis_id=latest.id, agent_kind='php') }}">Scarica agent PHP</a>
+              <a class="btn btn-ghost" href="{{ url_for('download_apply_agent', analysis_id=latest.id, agent_kind='wordpress') }}">Scarica plugin WP</a>
+              {% endif %}
+            </div>
+            <ol class="apply-steps">
+              <li>Abilita e copia il token / scarica agent</li>
+              <li>Installa sul sito (PHP root oppure MU-plugin WordPress)</li>
+              <li>Esegui l’agent → GeoPulse riceve l’ack</li>
+              <li>Re-scan per verificare lo score</li>
+            </ol>
+          </section>
           {% else %}
           <p class="pro-upsell">
             Piano Free: storico limitato.
-            <a href="{{ url_for('pricing') }}">Plus</a> sblocca crawl intero sito, re-scan, export e storico run.
+            <a href="{{ url_for('pricing') }}">Plus</a> sblocca crawl intero sito, re-scan, export, storico run e
+            <strong>Safe Apply</strong> (ottimizzazione automatica sicura sul sito).
           </p>
           {% endif %}
 

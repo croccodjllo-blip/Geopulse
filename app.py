@@ -79,6 +79,14 @@ from services.mailer import (
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.deep_checks import analyze_monitoring_alerts
+from services.safe_apply import (
+    build_safe_actions,
+    filter_ack_results,
+    generate_apply_token,
+    hash_apply_token,
+    render_agent_template,
+    verify_apply_token,
+)
 from services.signals import compare_with_previous
 
 load_dotenv()
@@ -259,6 +267,12 @@ class SiteAnalysis(db.Model):
     next_rescan_at = db.Column(db.DateTime)
     last_rescan_at = db.Column(db.DateTime)
     last_rescan_error = db.Column(db.String(500))
+    apply_enabled = db.Column(db.Boolean, nullable=False, default=False)
+    apply_token_hash = db.Column(db.String(64))
+    apply_token_hint = db.Column(db.String(24))
+    last_apply_at = db.Column(db.DateTime)
+    last_apply_status = db.Column(db.String(40))
+    last_apply_log_json = db.Column(db.Text, nullable=False, default="[]")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -329,6 +343,18 @@ class SiteAnalysis(db.Model):
     def advanced(self) -> dict[str, Any]:
         adv = (self.signals or {}).get("advanced") or {}
         return adv if isinstance(adv, dict) else {}
+
+    @property
+    def last_apply_log(self) -> list[dict[str, Any]]:
+        try:
+            data = json.loads(self.last_apply_log_json or "[]")
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
+
+    @property
+    def apply_ready(self) -> bool:
+        return bool(self.apply_enabled and self.apply_token_hash)
 
     @property
     def rating(self) -> dict[str, Any]:
@@ -751,6 +777,12 @@ def ensure_schema() -> None:
             "next_rescan_at": "DATETIME",
             "last_rescan_at": "DATETIME",
             "last_rescan_error": "TEXT",
+            "apply_enabled": "BOOLEAN DEFAULT 0",
+            "apply_token_hash": "TEXT",
+            "apply_token_hint": "TEXT",
+            "last_apply_at": "DATETIME",
+            "last_apply_status": "TEXT",
+            "last_apply_log_json": "TEXT DEFAULT '[]'",
         }
         with db.engine.begin() as conn:
             for name, col_type in alters.items():
@@ -1321,6 +1353,14 @@ def dashboard():
         latest.competitors if latest is not None else []
     )
 
+    safe_apply = None
+    apply_token_once = None
+    if latest is not None and user.is_pro:
+        safe_apply = build_safe_actions(analysis=latest)
+        once = session.get("apply_token_once") or {}
+        if once.get("site_id") == latest.id:
+            apply_token_once = once.get("token")
+
     return render_template(
         "dashboard.html",
         form=form,
@@ -1347,6 +1387,8 @@ def dashboard():
         advanced=advanced,
         pack_artifacts=pack_artifacts,
         competitor_rows=competitor_rows,
+        safe_apply=safe_apply,
+        apply_token_once=apply_token_once,
     )
 
 
@@ -1488,6 +1530,192 @@ def download_executive_html(analysis_id: int):
         mimetype="text/html",
         as_attachment=True,
         download_name=f"geopulse-{analysis.domain.replace(':', '_')}-executive.html",
+    )
+
+
+def _public_api_base() -> str:
+    return (PUBLIC_SITE_URL or request.url_root.rstrip("/")).rstrip("/")
+
+
+def _bearer_token() -> str:
+    auth = request.headers.get("Authorization") or ""
+    if auth.lower().startswith("bearer "):
+        return auth[7:].strip()
+    return (request.headers.get("X-GeoPulse-Token") or "").strip()
+
+
+def _site_from_apply_token(site_id: int) -> tuple[SiteAnalysis | None, str | None]:
+    token = _bearer_token()
+    site = SiteAnalysis.query.filter_by(id=site_id).first()
+    if site is None:
+        return None, "Sito non trovato"
+    owner = User.query.get(site.user_id)
+    if owner is None or not owner.is_pro:
+        return None, "Safe Apply disponibile solo con piano Plus"
+    if not site.apply_enabled or not site.apply_token_hash:
+        return None, "Safe Apply non abilitato per questo sito"
+    if not verify_apply_token(token, site.apply_token_hash):
+        return None, "Token non valido"
+    return site, None
+
+
+@app.route("/api/v1/apply/<int:site_id>/pending", methods=["GET"])
+@csrf.exempt
+def api_apply_pending(site_id: int):
+    if not limiter.allow(
+        f"apply-pending:{client_ip()}", limit=60, window_seconds=3600
+    ):
+        return jsonify({"error": "Rate limit"}), 429
+    site, err = _site_from_apply_token(site_id)
+    if err:
+        return jsonify({"error": err}), 401 if "Token" in err else 403
+    manifest = build_safe_actions(analysis=site)
+    manifest["site_id"] = site.id
+    return jsonify(manifest)
+
+
+@app.route("/api/v1/apply/<int:site_id>/ack", methods=["POST"])
+@csrf.exempt
+def api_apply_ack(site_id: int):
+    if not limiter.allow(f"apply-ack:{client_ip()}", limit=60, window_seconds=3600):
+        return jsonify({"error": "Rate limit"}), 429
+    site, err = _site_from_apply_token(site_id)
+    if err:
+        return jsonify({"error": err}), 401 if "Token" in err else 403
+    payload = request.get_json(silent=True) or {}
+    results = filter_ack_results(payload.get("results") or [])
+    agent = str(payload.get("agent") or "")[:80]
+    ok_n = sum(1 for r in results if r.get("status") == "ok")
+    err_n = sum(1 for r in results if r.get("status") == "error")
+    status = "ok" if err_n == 0 and ok_n > 0 else (
+        "partial" if ok_n else ("error" if err_n else "empty")
+    )
+    site.last_apply_at = datetime.now(timezone.utc)
+    site.last_apply_status = status
+    site.last_apply_log_json = json.dumps(
+        {
+            "agent": agent,
+            "results": results,
+            "at": site.last_apply_at.isoformat(),
+        },
+        ensure_ascii=False,
+    )
+    db.session.commit()
+    return jsonify(
+        {
+            "ok": True,
+            "status": status,
+            "applied_ok": ok_n,
+            "applied_error": err_n,
+            "next": "Esegui un re-scan GeoPulse per verificare i gain AIO/GEO.",
+        }
+    )
+
+
+@app.route("/dashboard/apply/<int:analysis_id>/enable", methods=["POST"])
+@login_required
+def apply_enable(analysis_id: int):
+    user = current_user()
+    if not user.is_pro:
+        flash("Safe Apply è incluso nel piano Plus.", "error")
+        return redirect(url_for("pricing"))
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    token = generate_apply_token()
+    analysis.apply_enabled = True
+    analysis.apply_token_hash = hash_apply_token(token)
+    analysis.apply_token_hint = token[:12] + "…" + token[-4:]
+    db.session.commit()
+    session["apply_token_once"] = {"site_id": analysis.id, "token": token}
+    flash(
+        "Safe Apply abilitato. Copia il token ora: non sarà più mostrato per intero.",
+        "success",
+    )
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard/apply/<int:analysis_id>/rotate", methods=["POST"])
+@login_required
+def apply_rotate(analysis_id: int):
+    user = current_user()
+    if not user.is_pro:
+        flash("Safe Apply è incluso nel piano Plus.", "error")
+        return redirect(url_for("pricing"))
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    token = generate_apply_token()
+    analysis.apply_enabled = True
+    analysis.apply_token_hash = hash_apply_token(token)
+    analysis.apply_token_hint = token[:12] + "…" + token[-4:]
+    db.session.commit()
+    session["apply_token_once"] = {"site_id": analysis.id, "token": token}
+    flash("Nuovo token generato. Aggiorna l’agent sul sito cliente.", "success")
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard/apply/<int:analysis_id>/disable", methods=["POST"])
+@login_required
+def apply_disable(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    analysis.apply_enabled = False
+    analysis.apply_token_hash = None
+    analysis.apply_token_hint = None
+    db.session.commit()
+    flash("Safe Apply disabilitato per questo sito.", "success")
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard/apply/<int:analysis_id>/agent/<agent_kind>")
+@login_required
+def download_apply_agent(analysis_id: int, agent_kind: str):
+    user = current_user()
+    if not user.is_pro:
+        flash("Safe Apply è incluso nel piano Plus.", "error")
+        return redirect(url_for("pricing"))
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    once = session.get("apply_token_once") or {}
+    token = ""
+    if once.get("site_id") == analysis.id:
+        token = str(once.get("token") or "")
+    if not token:
+        flash(
+            "Per scaricare l’agent genera (o ruota) il token: verrà incluso nel file.",
+            "error",
+        )
+        return redirect(url_for("dashboard"))
+    if agent_kind == "wordpress":
+        tpl = os.path.join(
+            BASE_DIR, "agents", "wordpress", "geopulse-safe-apply.php.tpl"
+        )
+        filename = "geopulse-safe-apply.php"
+    else:
+        tpl = os.path.join(BASE_DIR, "agents", "php", "geopulse-apply.php.tpl")
+        filename = "geopulse-apply.php"
+    if not os.path.isfile(tpl):
+        flash("Template agent non trovato.", "error")
+        return redirect(url_for("dashboard"))
+    source = render_agent_template(
+        tpl,
+        api_base=_public_api_base(),
+        site_id=analysis.id,
+        token=token,
+    )
+    return send_file(
+        io.BytesIO(source.encode("utf-8")),
+        mimetype="application/x-httpd-php",
+        as_attachment=True,
+        download_name=filename,
     )
 
 
