@@ -56,6 +56,10 @@ def persist_analysis(
         analysis = SiteAnalysis(user_id=user_id, url=url, domain=domain)
         db_session.add(analysis)
 
+    pages = result.get("pages") or scraped.get("crawled_pages") or []
+    pages_analyzed = int(result.get("pages_analyzed") or len(pages) or 1)
+    crawl_pages_json = json.dumps(pages[:50], ensure_ascii=False)
+
     analysis.domain = domain
     analysis.page_title = page_title
     analysis.aio_score = result.get("aio_score")
@@ -66,6 +70,8 @@ def persist_analysis(
     analysis.json_ld_artifact = pack.get("organization.jsonld.html") or ""
     analysis.meta_pack_artifact = pack.get("meta-pack.html") or ""
     analysis.robots_artifact = pack.get("robots.txt") or ""
+    analysis.pages_analyzed = pages_analyzed
+    analysis.crawl_pages_json = crawl_pages_json
     analysis.created_at = now
 
     if source == "scheduled":
@@ -90,6 +96,8 @@ def persist_analysis(
         json_ld_artifact=pack.get("organization.jsonld.html") or "",
         meta_pack_artifact=pack.get("meta-pack.html") or "",
         robots_artifact=pack.get("robots.txt") or "",
+        pages_analyzed=pages_analyzed,
+        crawl_pages_json=crawl_pages_json,
         source=source if source in {"manual", "scheduled"} else "manual",
         created_at=now,
     )

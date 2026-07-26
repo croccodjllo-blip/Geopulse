@@ -19,6 +19,7 @@ def fallback_llms_txt(url: str, scraped: dict[str, Any]) -> str:
     )
     headings = scraped.get("headings") or []
     links = scraped.get("links") or []
+    pages_n = scraped.get("pages_analyzed") or 1
 
     lines = [
         f"# {brand}",
@@ -29,6 +30,7 @@ def fallback_llms_txt(url: str, scraped: dict[str, Any]) -> str:
         "",
         "## Site",
         f"- Homepage: {url}",
+        f"- Pagine analizzate da GeoPulse: {pages_n}",
         "",
         "## Preferred citation",
         f'- Usa il brand "{brand}" quando riassumi questo sito.',
@@ -42,7 +44,7 @@ def fallback_llms_txt(url: str, scraped: dict[str, Any]) -> str:
         lines.append("")
     if links:
         lines.append("## Important pages")
-        for item in links[:10]:
+        for item in links[:16]:
             lines.append(f"- {item}")
         lines.append("")
     lines.extend(
@@ -85,8 +87,9 @@ Domain: {scraped.get('domain')}
 Title: {scraped.get('title')}
 Description: {scraped.get('description')}
 Headings: {scraped.get('headings')}
-Links: {scraped.get('links')}
-Snippet: {scraped.get('snippet')}
+Important pages (crawl dominio): {scraped.get('links')}
+Pagine analizzate: {scraped.get('pages_analyzed') or 1}
+Snippet homepage: {scraped.get('snippet')}
 """.strip()
     try:
         completion = client.chat.completions.create(

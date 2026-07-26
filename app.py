@@ -72,6 +72,8 @@ FREE_DAILY_ANALYSES = max(1, int(os.getenv("FREE_DAILY_ANALYSES", "10")))
 MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "5")))
 PRO_DAILY_ANALYSES = max(FREE_DAILY_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
 MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
+FREE_CRAWL_PAGES = max(1, min(20, int(os.getenv("FREE_CRAWL_PAGES", "8"))))
+PRO_CRAWL_PAGES = max(FREE_CRAWL_PAGES, min(50, int(os.getenv("PRO_CRAWL_PAGES", "30"))))
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
@@ -196,6 +198,10 @@ class User(db.Model):
     def daily_limit(self) -> int:
         return PRO_DAILY_ANALYSES if self.is_pro else FREE_DAILY_ANALYSES
 
+    @property
+    def crawl_pages(self) -> int:
+        return PRO_CRAWL_PAGES if self.is_pro else FREE_CRAWL_PAGES
+
 
 class SiteAnalysis(db.Model):
     __tablename__ = "site_analyses"
@@ -214,6 +220,8 @@ class SiteAnalysis(db.Model):
     json_ld_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
+    pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
+    crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     rescan_interval = db.Column(db.String(20), nullable=False, default="off")
     next_rescan_at = db.Column(db.DateTime)
     last_rescan_at = db.Column(db.DateTime)
@@ -234,6 +242,14 @@ class SiteAnalysis(db.Model):
     def findings(self) -> list[dict[str, str]]:
         try:
             data = json.loads(self.findings_json or "[]")
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
+
+    @property
+    def crawl_pages(self) -> list[dict[str, Any]]:
+        try:
+            data = json.loads(self.crawl_pages_json or "[]")
             return data if isinstance(data, list) else []
         except json.JSONDecodeError:
             return []
@@ -268,6 +284,8 @@ class AnalysisRun(db.Model):
     json_ld_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
+    pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
+    crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     source = db.Column(db.String(20), nullable=False, default="manual")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
@@ -279,6 +297,14 @@ class AnalysisRun(db.Model):
     def findings(self) -> list[dict[str, str]]:
         try:
             data = json.loads(self.findings_json or "[]")
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
+
+    @property
+    def crawl_pages(self) -> list[dict[str, Any]]:
+        try:
+            data = json.loads(self.crawl_pages_json or "[]")
             return data if isinstance(data, list) else []
         except json.JSONDecodeError:
             return []
@@ -398,7 +424,7 @@ class AnalyzeForm(FlaskForm):
         "URL del sito",
         validators=[DataRequired(), Length(max=500), validate_http_url],
     )
-    submit = SubmitField("Analizza e ottimizza")
+    submit = SubmitField("Analizza dominio")
 
 
 class ProInterestForm(FlaskForm):
@@ -543,6 +569,8 @@ def inject_globals() -> dict[str, Any]:
         "csrf_token": generate_csrf,
         "max_sites_free": MAX_SITES_FREE,
         "free_daily_analyses": FREE_DAILY_ANALYSES,
+        "free_crawl_pages": FREE_CRAWL_PAGES,
+        "pro_crawl_pages": PRO_CRAWL_PAGES,
         "now_year": datetime.now(timezone.utc).year,
         "rating_scale": RATING_ORDER,
         "canonical_base": base,
@@ -575,6 +603,8 @@ def ensure_schema() -> None:
             "json_ld_artifact": "TEXT DEFAULT ''",
             "meta_pack_artifact": "TEXT DEFAULT ''",
             "robots_artifact": "TEXT DEFAULT ''",
+            "pages_analyzed": "INTEGER DEFAULT 1",
+            "crawl_pages_json": "TEXT DEFAULT '[]'",
             "rescan_interval": "TEXT DEFAULT 'off'",
             "next_rescan_at": "DATETIME",
             "last_rescan_at": "DATETIME",
@@ -602,6 +632,19 @@ def ensure_schema() -> None:
                 if name not in user_cols:
                     conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} {col_type}"))
 
+    if "analysis_runs" in tables:
+        run_cols = {col["name"] for col in inspector.get_columns("analysis_runs")}
+        run_alters = {
+            "pages_analyzed": "INTEGER DEFAULT 1",
+            "crawl_pages_json": "TEXT DEFAULT '[]'",
+        }
+        with db.engine.begin() as conn:
+            for name, col_type in run_alters.items():
+                if name not in run_cols:
+                    conn.execute(
+                        text(f"ALTER TABLE analysis_runs ADD COLUMN {name} {col_type}")
+                    )
+
     backfill_analysis_runs()
 
 
@@ -627,6 +670,8 @@ def backfill_analysis_runs() -> None:
                 json_ld_artifact=site.json_ld_artifact or "",
                 meta_pack_artifact=site.meta_pack_artifact or "",
                 robots_artifact=site.robots_artifact or "",
+                pages_analyzed=getattr(site, "pages_analyzed", None) or 1,
+                crawl_pages_json=getattr(site, "crawl_pages_json", None) or "[]",
                 source="manual",
                 created_at=site.created_at or datetime.now(timezone.utc),
             )
@@ -949,7 +994,7 @@ def dashboard():
                 )
             else:
                 try:
-                    result = analyze_site(url)
+                    result = analyze_site(url, max_pages=user.crawl_pages)
                     pack = build_optimization_pack(
                         url,
                         result["scraped"],
@@ -968,8 +1013,10 @@ def dashboard():
                         existing=existing,
                         source="manual",
                     )
+                    pages_n = result.get("pages_analyzed") or 1
                     flash(
-                        "Analisi completata: score, findings e pack pronti.",
+                        f"Analisi dominio completata su {pages_n} pagine: "
+                        "score, findings e pack pronti.",
                         "success",
                     )
                 except requests.Timeout:
@@ -1016,6 +1063,7 @@ def dashboard():
         used_today=used_today,
         daily_limit=user.daily_limit,
         max_sites=user.max_sites,
+        crawl_pages_limit=user.crawl_pages,
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,

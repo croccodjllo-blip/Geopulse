@@ -71,6 +71,8 @@ def pack_zip_bytes(entity: Any) -> bytes:
             "domain": entity.domain,
             "aio_score": entity.aio_score,
             "geo_score": entity.geo_score,
+            "pages_analyzed": getattr(entity, "pages_analyzed", 1),
+            "pages": entity.crawl_pages if hasattr(entity, "crawl_pages") else [],
             "rating": rating.get("code"),
             "rating_score": rating.get("score"),
             "rating_label": rating.get("label"),

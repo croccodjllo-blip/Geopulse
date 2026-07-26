@@ -24,6 +24,7 @@
       <div class="workspace-banner__meta">
         <span>Piano {{ user_plan }}</span>
         <span>Siti {{ site_count }}/{{ max_sites }}</span>
+        <span>Crawl fino a {{ crawl_pages_limit }} pagine</span>
         <span>Analisi {{ used_today }}/{{ daily_limit }} · 24h</span>
         <span>{% if openai_ready %}OpenAI{% else %}Fallback locale{% endif %}</span>
       </div>
@@ -35,11 +36,15 @@
       {{ form.hidden_tag() }}
       <div class="analyze-composer">
         <div class="field analyze-composer__field">
-          <label for="url">URL da analizzare</label>
+          <label for="url">URL del dominio da analizzare</label>
           <div class="analyze-row">
             {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input") }}
             {{ form.submit(class_="btn btn-signal analyze-submit") }}
           </div>
+          <p class="analyze-hint">
+            Crawl dello stesso dominio: homepage + sitemap/link interni
+            (max {{ crawl_pages_limit }} pagine sul piano {{ user_plan }}).
+          </p>
           {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
       </div>
@@ -157,6 +162,29 @@
 
           {% if latest.analysis_notes %}
             <p class="report-notes">{{ latest.analysis_notes }}</p>
+          {% endif %}
+
+          {% if latest.crawl_pages %}
+          <section class="report-section">
+            <h3 class="report-section__title">
+              Pagine del dominio
+              <span>{{ latest.pages_analyzed or latest.crawl_pages|length }} analizzate</span>
+            </h3>
+            <ul class="crawl-list">
+              {% for page in latest.crawl_pages[:20] %}
+              <li>
+                <div class="crawl-list__main">
+                  <strong>{{ page.title or page.url }}</strong>
+                  <a class="site-link" href="{{ page.url }}" target="_blank" rel="noopener noreferrer">{{ page.url }}</a>
+                </div>
+                <div class="crawl-list__scores">
+                  <span>AIO {{ page.aio_score if page.aio_score is not none else '—' }}</span>
+                  <span>GEO {{ page.geo_score if page.geo_score is not none else '—' }}</span>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </section>
           {% endif %}
 
           <section class="report-section">

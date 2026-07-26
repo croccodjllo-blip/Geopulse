@@ -63,7 +63,8 @@ def process_due_rescans(
                 continue
 
         try:
-            result = analyze_site(site.url)
+            max_pages = getattr(user, "crawl_pages", 8)
+            result = analyze_site(site.url, max_pages=max_pages)
             pack = build_optimization_pack(
                 site.url,
                 result["scraped"],
