@@ -196,22 +196,32 @@
           </p>
           {% endif %}
 
-          <section class="report-section">
-            <h3 class="report-section__title">Findings</h3>
+          {% set findings = latest.findings or [] %}
+          {% set crit_n = findings|selectattr('severity', 'equalto', 'critical')|list|length %}
+          {% set warn_n = findings|selectattr('severity', 'equalto', 'warn')|list|length %}
+          {% set ok_n = findings|selectattr('severity', 'equalto', 'ok')|list|length %}
+          <details class="findings-details"{% if crit_n %} open{% endif %}>
+            <summary>
+              <span class="findings-details__label">Findings</span>
+              <span class="findings-details__count">{{ findings|length }}</span>
+              {% if crit_n %}<span class="findings-details__chip" data-severity="critical">{{ crit_n }} critical</span>{% endif %}
+              {% if warn_n %}<span class="findings-details__chip" data-severity="warn">{{ warn_n }} warn</span>{% endif %}
+              {% if ok_n %}<span class="findings-details__chip" data-severity="ok">{{ ok_n }} ok</span>{% endif %}
+            </summary>
             <ul class="finding-list">
-              {% for f in latest.findings %}
+              {% for f in findings %}
               <li data-severity="{{ f.severity }}">
-                <div class="finding-list__top">
-                  <em>{{ f.severity }}</em>
-                  <strong>{{ f.category|upper }} · {{ f.title }}</strong>
+                <em>{{ f.severity }}</em>
+                <div class="finding-list__body">
+                  <strong>{{ f.title }}</strong>
+                  <span>{{ f.detail }}</span>
                 </div>
-                <span>{{ f.detail }}</span>
               </li>
               {% else %}
-              <li><span>Nessun finding disponibile.</span></li>
+              <li class="finding-list__empty"><span>Nessun finding disponibile.</span></li>
               {% endfor %}
             </ul>
-          </section>
+          </details>
 
           <section class="report-section">
             <h3 class="report-section__title">llms.txt <span>→ root</span></h3>
