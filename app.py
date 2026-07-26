@@ -1225,6 +1225,18 @@ def dashboard():
     if latest is not None and not pages_analyzed_n:
         pages_analyzed_n = len(latest.crawl_pages or [])
 
+    findings_all = list(latest.findings or []) if latest is not None else []
+    findings_critical = [
+        f
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() in {"critical", "warn"}
+    ]
+    findings_ok_n = sum(
+        1
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() == "ok"
+    )
+
     return render_template(
         "dashboard.html",
         form=form,
@@ -1241,6 +1253,9 @@ def dashboard():
         crawl_crit_n=crawl_crit_n,
         crawl_warn_n=crawl_warn_n,
         pages_analyzed_n=pages_analyzed_n,
+        findings_critical=findings_critical,
+        findings_all_n=len(findings_all),
+        findings_ok_n=findings_ok_n,
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
