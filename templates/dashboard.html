@@ -14,16 +14,17 @@
         di ottimizzazione (<code class="text-sea">llms.txt</code>, JSON-LD, meta, robots).
       </p>
     </div>
-    <div class="rounded-md border border-slate-200 bg-white/70 px-3 py-2 text-xs font-semibold text-slate-600">
-      {% if openai_ready %}
-        OpenAI: attivo
-      {% else %}
-        OpenAI: fallback locale
-      {% endif %}
+    <div class="space-y-2 text-right">
+      <div class="rounded-md border border-slate-200 bg-white/70 px-3 py-2 text-xs font-semibold text-slate-600">
+        {% if openai_ready %}OpenAI: attivo{% else %}OpenAI: fallback locale{% endif %}
+      </div>
+      <div class="rounded-md border border-slate-200 bg-white/70 px-3 py-2 text-xs font-semibold text-slate-600">
+        Siti {{ site_count }}/{{ max_sites }} · Analisi oggi {{ used_today }}/{{ daily_limit }}
+      </div>
     </div>
   </div>
 
-  <form method="post" class="mt-8 rounded-xl border border-slate-200 bg-white/75 p-5 shadow-sm sm:p-6" novalidate>
+  <form method="post" class="js-analyze-form mt-8 rounded-xl border border-slate-200 bg-white/75 p-5 shadow-sm sm:p-6" novalidate>
     {{ form.hidden_tag() }}
     <label for="url" class="mb-2 block text-sm font-semibold text-ink">URL del sito</label>
     <div class="flex flex-col gap-3 sm:flex-row">
@@ -96,13 +97,16 @@
     <div>
       <div class="mb-2 flex items-center justify-between gap-2">
         <h3 class="font-display text-lg font-bold text-ink">llms.txt</h3>
-        <span class="text-xs text-slate-500">
-          {{ latest.created_at.strftime('%Y-%m-%d %H:%M UTC') if latest.created_at else '' }}
-        </span>
+        <div class="flex items-center gap-3">
+          <button type="button" class="text-xs font-semibold text-sea hover:underline" onclick="copyFrom('llms-box', this)">Copia</button>
+          <span class="text-xs text-slate-500">
+            {{ latest.created_at.strftime('%Y-%m-%d %H:%M UTC') if latest.created_at else '' }}
+          </span>
+        </div>
       </div>
       <div class="overflow-hidden rounded-xl border border-slate-800 bg-ink shadow-sm">
         <div class="border-b border-white/10 px-4 py-2 text-xs text-mist">/llms.txt</div>
-        <pre class="max-h-[22rem] overflow-auto p-4 text-sm leading-relaxed text-mist whitespace-pre-wrap">{{ latest.llms_txt }}</pre>
+        <pre id="llms-box" class="max-h-[22rem] overflow-auto p-4 text-sm leading-relaxed text-mist whitespace-pre-wrap">{{ latest.llms_txt }}</pre>
       </div>
     </div>
 
@@ -110,16 +114,25 @@
       <summary class="cursor-pointer font-semibold text-ink">Altri artifact (JSON-LD, meta, robots)</summary>
       <div class="mt-4 space-y-4">
         <div>
-          <p class="mb-1 text-sm font-semibold text-slate-600">organization.jsonld.html</p>
-          <pre class="max-h-48 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-mist whitespace-pre-wrap">{{ latest.json_ld_artifact }}</pre>
+          <div class="mb-1 flex items-center justify-between gap-2">
+            <p class="text-sm font-semibold text-slate-600">organization.jsonld.html</p>
+            <button type="button" class="text-xs font-semibold text-sea hover:underline" onclick="copyFrom('jsonld-box', this)">Copia</button>
+          </div>
+          <pre id="jsonld-box" class="max-h-48 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-mist whitespace-pre-wrap">{{ latest.json_ld_artifact }}</pre>
         </div>
         <div>
-          <p class="mb-1 text-sm font-semibold text-slate-600">meta-pack.html</p>
-          <pre class="max-h-48 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-mist whitespace-pre-wrap">{{ latest.meta_pack_artifact }}</pre>
+          <div class="mb-1 flex items-center justify-between gap-2">
+            <p class="text-sm font-semibold text-slate-600">meta-pack.html</p>
+            <button type="button" class="text-xs font-semibold text-sea hover:underline" onclick="copyFrom('meta-box', this)">Copia</button>
+          </div>
+          <pre id="meta-box" class="max-h-48 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-mist whitespace-pre-wrap">{{ latest.meta_pack_artifact }}</pre>
         </div>
         <div>
-          <p class="mb-1 text-sm font-semibold text-slate-600">robots.txt</p>
-          <pre class="max-h-48 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-mist whitespace-pre-wrap">{{ latest.robots_artifact }}</pre>
+          <div class="mb-1 flex items-center justify-between gap-2">
+            <p class="text-sm font-semibold text-slate-600">robots.txt</p>
+            <button type="button" class="text-xs font-semibold text-sea hover:underline" onclick="copyFrom('robots-box', this)">Copia</button>
+          </div>
+          <pre id="robots-box" class="max-h-48 overflow-auto rounded-md bg-slate-900 p-3 text-xs text-mist whitespace-pre-wrap">{{ latest.robots_artifact }}</pre>
         </div>
       </div>
     </details>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}AIO-Bot{% endblock %}
+
+{% block content %}
+<section class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-sea">AIO-Bot</p>
+    <h1 class="mt-3 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
+      Ottimizza il tuo sito per le IA.
+    </h1>
+    <p class="mt-4 max-w-xl text-lg text-slate-600">
+      Analisi AIO &amp; GEO in un click: score, findings e pack pronto
+      (<code class="text-sea">llms.txt</code>, JSON-LD, meta, robots).
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="{{ url_for('register') }}" class="rounded-md bg-ink px-5 py-2.5 font-semibold text-white hover:bg-slate-800">
+        Inizia gratis
+      </a>
+      <a href="{{ url_for('login') }}" class="rounded-md border border-ink px-5 py-2.5 font-semibold text-ink hover:border-sea hover:text-sea">
+        Accedi
+      </a>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm">
+    <h2 class="font-display text-xl font-bold text-ink">Come funziona</h2>
+    <ol class="mt-4 space-y-3 text-sm text-slate-600">
+      <li><strong class="text-ink">1.</strong> Ti registri</li>
+      <li><strong class="text-ink">2.</strong> Inserisci l’URL del sito</li>
+      <li><strong class="text-ink">3.</strong> Ricevi score AIO/GEO, findings e ZIP da pubblicare</li>
+    </ol>
+    <p class="mt-5 text-xs text-slate-500">
+      Piano Free: fino a {{ max_sites_free }} siti e {{ free_daily_analyses }} analisi / 24h.
+    </p>
+  </div>
+</section>
+{% endblock %}

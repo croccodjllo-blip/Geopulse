@@ -7,9 +7,10 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import os
 import zipfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any
 from urllib.parse import urlparse
@@ -19,6 +20,7 @@ from dotenv import load_dotenv
 from flask import (
     Flask,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -30,16 +32,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
 from sqlalchemy import UniqueConstraint, inspect, text
+from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import PasswordField, StringField, SubmitField, URLField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 
 from services.analyzer import analyze_site, normalize_url
 from services.artifacts import build_optimization_pack
+from services.rate_limit import limiter
 
 load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+FREE_DAILY_ANALYSES = max(1, int(os.getenv("FREE_DAILY_ANALYSES", "10")))
+MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "5")))
 
 
 def resolve_database_uri(raw: str | None) -> str:
@@ -60,19 +66,48 @@ app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "0") == "1"
 app.config["PREFERRED_URL_SCHEME"] = os.getenv("PREFERRED_URL_SCHEME", "http")
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 app.config["INSTANCE_RELATIVE_CONFIG"] = False
+app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
 
-# Dietro Nginx/Caddy: rispetta X-Forwarded-* 
-from werkzeug.middleware.proxy_fix import ProxyFix
-
+# Dietro Nginx: rispetta X-Forwarded-*
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+if os.getenv("FLASK_DEBUG", "0") != "1":
+    logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
 db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
+
+
+@app.after_request
+def set_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["X-XSS-Protection"] = "0"
+    # CSP permissiva per Tailwind CDN; stringente su object/base
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; "
+        "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; "
+        "img-src 'self' data:; "
+        "font-src 'self' data:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    if request.is_secure or app.config["SESSION_COOKIE_SECURE"]:
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=15552000; includeSubDomains"
+        )
+    return response
 
 
 # ---------------------------------------------------------------------------
@@ -217,6 +252,8 @@ def inject_globals() -> dict[str, Any]:
     return {
         "current_user": current_user(),
         "csrf_token": generate_csrf,
+        "max_sites_free": MAX_SITES_FREE,
+        "free_daily_analyses": FREE_DAILY_ANALYSES,
     }
 
 
@@ -228,6 +265,10 @@ def inject_globals() -> dict[str, Any]:
 def ensure_schema() -> None:
     """create_all + colonne nuove su SQLite già esistente."""
     db.create_all()
+    with db.engine.begin() as conn:
+        conn.execute(text("PRAGMA journal_mode=WAL"))
+        conn.execute(text("PRAGMA synchronous=NORMAL"))
+        conn.execute(text("PRAGMA busy_timeout=5000"))
     inspector = inspect(db.engine)
     if "site_analyses" not in inspector.get_table_names():
         return
@@ -247,16 +288,52 @@ def ensure_schema() -> None:
                 conn.execute(text(f"ALTER TABLE site_analyses ADD COLUMN {name} {col_type}"))
 
 
+def client_ip() -> str:
+    return (request.headers.get("X-Real-IP") or request.remote_addr or "unknown").strip()
+
+
+def analyses_today(user_id: int) -> int:
+    start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    return (
+        SiteAnalysis.query.filter(
+            SiteAnalysis.user_id == user_id,
+            SiteAnalysis.created_at >= start,
+        ).count()
+    )
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
+
+@app.get("/health")
+@csrf.exempt
+def health():
+    db_ok = True
+    try:
+        db.session.execute(text("SELECT 1"))
+    except Exception:
+        db_ok = False
+    status = 200 if db_ok else 503
+    return (
+        jsonify(
+            {
+                "ok": db_ok,
+                "service": "aio-bot",
+                "openai": bool(OPENAI_API_KEY),
+                "time": datetime.now(timezone.utc).isoformat(),
+            }
+        ),
+        status,
+    )
 
 
 @app.route("/")
 def index():
     if session.get("user_id"):
         return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
+    return render_template("landing.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -266,6 +343,11 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
+        if not limiter.allow(
+            f"register:{client_ip()}", limit=5, window_seconds=3600
+        ):
+            flash("Troppe registrazioni da questo IP. Riprova più tardi.", "error")
+            return render_template("register.html", form=form)
         email = form.email.data.strip().lower()
         if User.query.filter_by(email=email).first():
             flash("Questa email è già registrata.", "error")
@@ -290,6 +372,9 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
+        if not limiter.allow(f"login:{client_ip()}", limit=20, window_seconds=900):
+            flash("Troppi tentativi di accesso. Attendi qualche minuto.", "error")
+            return render_template("login.html", form=form)
         email = form.email.data.strip().lower()
         user = User.query.filter_by(email=email).first()
         if user is None or not user.check_password(form.password.data):
@@ -329,46 +414,74 @@ def dashboard():
     if form.validate_on_submit():
         try:
             url = normalize_url(form.url.data)
-            result = analyze_site(url)
-            scraped = result["scraped"]
-            pack = build_optimization_pack(
-                url,
-                scraped,
-                api_key=OPENAI_API_KEY,
-                model=OPENAI_MODEL,
-                logger=app.logger,
-            )
-            domain = scraped.get("domain") or urlparse(url).netloc
+            existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+            site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
+            if existing is None and site_count >= MAX_SITES_FREE:
+                flash(
+                    f"Piano Free: massimo {MAX_SITES_FREE} siti. "
+                    "Riusa un URL già analizzato.",
+                    "warning",
+                )
+            elif not limiter.allow(
+                f"analyze:{user.id}",
+                limit=FREE_DAILY_ANALYSES,
+                window_seconds=86400,
+            ):
+                flash(
+                    f"Limite raggiunto: max {FREE_DAILY_ANALYSES} analisi ogni 24 ore.",
+                    "warning",
+                )
+            else:
+                try:
+                    result = analyze_site(url)
+                    scraped = result["scraped"]
+                    pack = build_optimization_pack(
+                        url,
+                        scraped,
+                        api_key=OPENAI_API_KEY,
+                        model=OPENAI_MODEL,
+                        logger=app.logger,
+                    )
+                    domain = scraped.get("domain") or urlparse(url).netloc
 
-            analysis = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
-            if analysis is None:
-                analysis = SiteAnalysis(user_id=user.id, url=url, domain=domain)
-                db.session.add(analysis)
+                    analysis = existing
+                    if analysis is None:
+                        analysis = SiteAnalysis(
+                            user_id=user.id, url=url, domain=domain
+                        )
+                        db.session.add(analysis)
 
-            analysis.domain = domain
-            analysis.page_title = (scraped.get("title") or "")[:500] or None
-            analysis.aio_score = result["aio_score"]
-            analysis.geo_score = result["geo_score"]
-            analysis.findings_json = json.dumps(result["findings"], ensure_ascii=False)
-            analysis.analysis_notes = result["notes"]
-            analysis.llms_txt = pack["llms.txt"]
-            analysis.json_ld_artifact = pack["organization.jsonld.html"]
-            analysis.meta_pack_artifact = pack["meta-pack.html"]
-            analysis.robots_artifact = pack["robots.txt"]
-            analysis.created_at = datetime.now(timezone.utc)
-            db.session.commit()
-            latest = analysis
-            flash("Analisi completata: score, findings e pack pronti.", "success")
-        except requests.RequestException:
-            flash(
-                "Impossibile raggiungere il sito. Verifica l’URL e riprova.",
-                "error",
-            )
+                    analysis.domain = domain
+                    analysis.page_title = (scraped.get("title") or "")[:500] or None
+                    analysis.aio_score = result["aio_score"]
+                    analysis.geo_score = result["geo_score"]
+                    analysis.findings_json = json.dumps(
+                        result["findings"], ensure_ascii=False
+                    )
+                    analysis.analysis_notes = result["notes"]
+                    analysis.llms_txt = pack["llms.txt"]
+                    analysis.json_ld_artifact = pack["organization.jsonld.html"]
+                    analysis.meta_pack_artifact = pack["meta-pack.html"]
+                    analysis.robots_artifact = pack["robots.txt"]
+                    analysis.created_at = datetime.now(timezone.utc)
+                    db.session.commit()
+                    latest = analysis
+                    flash(
+                        "Analisi completata: score, findings e pack pronti.",
+                        "success",
+                    )
+                except requests.Timeout:
+                    flash("Timeout nel raggiungimento del sito. Riprova.", "error")
+                except requests.RequestException:
+                    flash(
+                        "Impossibile raggiungere il sito. Verifica l’URL e riprova.",
+                        "error",
+                    )
+                except Exception:
+                    app.logger.exception("Dashboard analyze failed")
+                    flash("Errore durante l’analisi. Riprova tra poco.", "error")
         except ValueError as exc:
             flash(str(exc), "error")
-        except Exception:
-            app.logger.exception("Dashboard analyze failed")
-            flash("Errore durante l’analisi. Riprova tra poco.", "error")
 
     history = (
         SiteAnalysis.query.filter_by(user_id=user.id)
@@ -376,12 +489,17 @@ def dashboard():
         .limit(10)
         .all()
     )
+    used_today = analyses_today(user.id)
     return render_template(
         "dashboard.html",
         form=form,
         latest=latest,
         history=history,
         openai_ready=bool(OPENAI_API_KEY),
+        used_today=used_today,
+        daily_limit=FREE_DAILY_ANALYSES,
+        max_sites=MAX_SITES_FREE,
+        site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
     )
 
 

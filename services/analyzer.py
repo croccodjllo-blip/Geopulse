@@ -3,14 +3,23 @@
 from __future__ import annotations
 
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
 
-HTTP_TIMEOUT = 15
+HTTP_TIMEOUT = 12
+PROBE_TIMEOUT = 6
 USER_AGENT = "AIO-Bot/1.0 (+https://aio-bot.local; GEO/AIO optimizer)"
+_SESSION = requests.Session()
+_SESSION.headers.update(
+    {
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
+)
 
 
 def normalize_url(raw: str) -> str:
@@ -37,17 +46,16 @@ def _extract_meta(soup: BeautifulSoup, *, name: str | None = None, prop: str | N
 
 
 def scrape_homepage(url: str) -> dict[str, Any]:
-    response = requests.get(
+    response = _SESSION.get(
         url,
         timeout=HTTP_TIMEOUT,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml",
-        },
         allow_redirects=True,
     )
     response.raise_for_status()
     html = response.text
+    # Evita pagine enormi in memoria
+    if len(html) > 1_500_000:
+        html = html[:1_500_000]
     soup = BeautifulSoup(html, "lxml")
 
     # Segnali strutturali prima di rimuovere script
@@ -114,18 +122,18 @@ def scrape_homepage(url: str) -> dict[str, Any]:
 def probe_path(base_url: str, path: str) -> dict[str, Any]:
     target = urljoin(base_url if base_url.endswith("/") else base_url + "/", path.lstrip("/"))
     try:
-        res = requests.get(
+        res = _SESSION.get(
             target,
-            timeout=8,
-            headers={"User-Agent": USER_AGENT},
+            timeout=PROBE_TIMEOUT,
             allow_redirects=True,
         )
-        ok = res.status_code == 200 and bool(res.text.strip())
+        body = res.text[:400] if res.text else ""
+        ok = res.status_code == 200 and bool(body.strip())
         return {
             "url": target,
             "ok": ok,
             "status": res.status_code,
-            "snippet": res.text[:300] if ok else "",
+            "snippet": body if ok else "",
         }
     except requests.RequestException:
         return {"url": target, "ok": False, "status": None, "snippet": ""}
@@ -294,10 +302,15 @@ def score_site(url: str, scraped: dict[str, Any], probes: dict[str, dict[str, An
 def analyze_site(url: str) -> dict[str, Any]:
     scraped = scrape_homepage(url)
     base = scraped.get("final_url") or url
-    probes = {
-        "llms": probe_path(base, "/llms.txt"),
-        "robots": probe_path(base, "/robots.txt"),
-        "sitemap": probe_path(base, "/sitemap.xml"),
+    paths = {
+        "llms": "/llms.txt",
+        "robots": "/robots.txt",
+        "sitemap": "/sitemap.xml",
     }
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = {
+            key: pool.submit(probe_path, base, path) for key, path in paths.items()
+        }
+        probes = {key: fut.result() for key, fut in futures.items()}
     scored = score_site(url, scraped, probes)
     return {"scraped": scraped, "probes": probes, **scored}
