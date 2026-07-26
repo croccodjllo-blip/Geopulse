@@ -1659,20 +1659,32 @@ button, input, select, textarea { font: inherit; }
 }
 
 .empty-state {
-  margin: 0.4rem 0 0.2rem;
-  padding: 2.4rem 1rem;
-  border-top: 1px dashed var(--line);
-  border-bottom: 1px dashed var(--line);
+  margin: 0.2rem 0 0.2rem;
+  padding: 2.6rem 1.25rem;
+  border: 1px dashed color-mix(in srgb, var(--sea) 28%, var(--line));
+  border-radius: calc(var(--radius) + 0.15rem);
   text-align: center;
   color: var(--muted);
+  background:
+    radial-gradient(80% 70% at 50% 0%, rgba(31, 111, 120, 0.08), transparent 60%),
+    rgba(255, 255, 255, 0.65);
+}
+
+.empty-state__eyebrow {
+  margin: 0 0 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sea);
 }
 
 .empty-state strong {
   display: block;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 1.25rem;
-  margin-bottom: 0.35rem;
+  font-size: 1.35rem;
+  margin-bottom: 0.4rem;
 }
 
 .empty-state p {
@@ -2087,7 +2099,7 @@ button, input, select, textarea { font: inherit; }
 
 .pack-grid {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 @media (min-width: 820px) {
@@ -2098,18 +2110,21 @@ button, input, select, textarea { font: inherit; }
 
 .code-shell--compact {
   margin-top: 0;
+  border-color: color-mix(in srgb, var(--sea) 12%, var(--line));
+  background: rgba(247, 250, 251, 0.72);
 }
 
 .code-shell--compact .code-shell__bar {
-  padding: 0.45rem 0.75rem;
+  padding: 0.5rem 0.8rem;
   font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .code-shell--compact pre {
   margin: 0;
   max-height: 7.5rem;
   overflow: auto;
-  padding: 0.65rem 0.75rem;
+  padding: 0.7rem 0.8rem;
   font-size: 0.78rem;
   line-height: 1.4;
 }
@@ -2117,7 +2132,7 @@ button, input, select, textarea { font: inherit; }
 .report-top__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.55rem;
   align-items: center;
 }
 
