@@ -194,7 +194,12 @@ button, input, select, textarea { font: inherit; }
 .site-footer__grid {
   display: grid;
   gap: 1.75rem;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+}
+
+.site-footer__bottom a {
+  color: var(--sea);
+  font-weight: 700;
 }
 
 .site-footer__brand p {
@@ -236,6 +241,10 @@ button, input, select, textarea { font: inherit; }
   gap: 0.5rem 1.25rem;
   justify-content: space-between;
   font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .site-footer__grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 720px) {

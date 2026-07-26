@@ -81,10 +81,14 @@
             <a href="{{ url_for('login') }}">Accedi</a>
           {% endif %}
         </div>
+        <div class="site-footer__col">
+          <p class="site-footer__label">Contatti</p>
+          <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+        </div>
       </div>
       <div class="site-footer__bottom">
         <span>© {{ now_year }} GeoPulse</span>
-        <span>geopulse.it</span>
+        <a href="mailto:info@geopulse.it">info@geopulse.it</a>
       </div>
     </footer>
     {% endblock %}
