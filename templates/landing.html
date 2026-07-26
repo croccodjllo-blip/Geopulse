@@ -1,37 +1,65 @@
 {% extends "base.html" %}
 {% block title %}AIO-Bot{% endblock %}
+{% block main_class %}site-main--flush{% endblock %}
+{% block flash_class %}site-main{% endblock %}
 
 {% block content %}
-<section class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-  <div>
-    <p class="text-xs font-bold uppercase tracking-[0.16em] text-sea">AIO-Bot</p>
-    <h1 class="mt-3 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
-      Ottimizza il tuo sito per le IA.
-    </h1>
-    <p class="mt-4 max-w-xl text-lg text-slate-600">
-      Analisi AIO &amp; GEO in un click: score, findings e pack pronto
-      (<code class="text-sea">llms.txt</code>, JSON-LD, meta, robots).
-    </p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a href="{{ url_for('register') }}" class="rounded-md bg-ink px-5 py-2.5 font-semibold text-white hover:bg-slate-800">
-        Inizia gratis
-      </a>
-      <a href="{{ url_for('login') }}" class="rounded-md border border-ink px-5 py-2.5 font-semibold text-ink hover:border-sea hover:text-sea">
-        Accedi
-      </a>
-    </div>
+<section class="hero" aria-labelledby="hero-brand">
+  <div class="hero-visual" aria-hidden="true">
+    <svg viewBox="0 0 1200 700" role="presentation">
+      <defs>
+        <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2a8f86" />
+          <stop offset="100%" stop-color="#1a5f63" />
+        </linearGradient>
+        <radialGradient id="glow" cx="50%" cy="42%" r="55%">
+          <stop offset="0%" stop-color="rgba(47,191,138,0.35)" />
+          <stop offset="70%" stop-color="rgba(15,107,102,0.12)" />
+          <stop offset="100%" stop-color="rgba(11,36,44,0)" />
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="700" fill="url(#glow)" />
+      <g stroke="rgba(247,251,250,0.16)" stroke-width="1">
+        <path d="M40 140 H1160" />
+        <path d="M40 240 H1160" />
+        <path d="M40 340 H1160" />
+        <path d="M40 440 H1160" />
+        <path d="M40 540 H1160" />
+      </g>
+      <g fill="url(#land)" opacity="0.9">
+        <path d="M210 210c40-50 110-70 180-55 55 12 95 48 140 58 60 14 120-10 175 18 40 20 55 70 40 110-18 48-70 70-118 78-70 12-145-8-210-35-55-22-95-55-130-95-30-35-50-55-77-79z" />
+        <path d="M620 180c55-35 130-40 190-10 48 24 85 70 95 122 8 42-10 88-45 112-48 34-115 38-172 22-58-16-105-55-130-108-20-42-8-100 62-138z" />
+        <path d="M780 420c48-18 110-8 150 28 28 26 42 68 28 104-16 42-62 66-110 70-55 4-112-18-145-55-28-32-28-78 8-108 22-18 42-28 69-39z" />
+        <path d="M180 430c35-22 90-18 125 10 28 22 38 60 22 92-18 36-62 55-105 52-42-2-78-28-92-65-12-32 8-68 50-89z" />
+      </g>
+      <g>
+        <circle class="pulse-dot p1" cx="320" cy="260" r="6" />
+        <circle class="pulse-dot p2" cx="720" cy="250" r="6" />
+        <circle class="pulse-dot p3" cx="860" cy="470" r="6" />
+      </g>
+    </svg>
   </div>
 
-  <div class="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm">
-    <h2 class="font-display text-xl font-bold text-ink">Come funziona</h2>
-    <ol class="mt-4 space-y-3 text-sm text-slate-600">
-      <li><strong class="text-ink">1.</strong> Ti registri</li>
-      <li><strong class="text-ink">2.</strong> Inserisci l’URL del sito</li>
-      <li><strong class="text-ink">3.</strong> Ricevi score AIO/GEO, findings e ZIP da pubblicare</li>
-    </ol>
-    <p class="mt-5 text-xs text-slate-500">
-      Piano Free: fino a {{ max_sites_free }} siti e {{ free_daily_analyses }} analisi / 24h.
+  <div class="hero-copy">
+    <p class="hero-brand" id="hero-brand">AIO-BOT</p>
+    <h1>Ottimizza il sito per le IA.</h1>
+    <p class="lede">
+      Analisi AIO &amp; GEO automatica: score, findings e pack pronto da pubblicare.
     </p>
+    <div class="cta-row">
+      <a class="btn btn-signal" href="{{ url_for('register') }}">Inizia gratis</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('login') }}">Accedi</a>
+    </div>
   </div>
+</section>
+
+<section class="section-band" id="metodo">
+  <p class="eyebrow">Metodo</p>
+  <h2>Tre passi. Poi il pack è pronto.</h2>
+  <p class="lede">
+    Ti registri, inserisci l’URL, ricevi score AIO/GEO e artifact
+    (<code>llms.txt</code>, JSON-LD, meta, robots) da mettere online.
+    Free: {{ max_sites_free }} siti · {{ free_daily_analyses }} analisi / 24h.
+  </p>
 </section>
 {% endblock %}

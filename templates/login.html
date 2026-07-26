@@ -2,36 +2,29 @@
 {% block title %}Accedi{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-md">
-  <p class="text-xs font-bold uppercase tracking-[0.16em] text-sea">AIO-Bot</p>
-  <h1 class="mt-2 font-display text-3xl font-bold text-ink">Accedi</h1>
-  <p class="mt-2 text-slate-600">Entra nella dashboard per generare il tuo <code class="text-sea">llms.txt</code>.</p>
+<section class="auth-wrap">
+  <p class="eyebrow">AIO-Bot</p>
+  <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.6rem);margin-top:0.55rem">Accedi</h1>
+  <p class="lede" style="margin-top:0.7rem">Entra in dashboard e lancia l’analisi del tuo sito.</p>
 
-  <form method="post" class="mt-8 space-y-4 rounded-xl border border-slate-200 bg-white/70 p-6 shadow-sm" novalidate>
+  <form method="post" class="form-grid panel" novalidate>
     {{ form.hidden_tag() }}
-
-    <div>
-      <label for="email" class="mb-1 block text-sm font-semibold text-ink">Email</label>
-      {{ form.email(id="email", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="email") }}
-      {% for error in form.email.errors %}
-        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
+    <div class="field">
+      <label for="email">Email</label>
+      {{ form.email(id="email", autocomplete="email") }}
+      {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
     </div>
-
-    <div>
-      <label for="password" class="mb-1 block text-sm font-semibold text-ink">Password</label>
-      {{ form.password(id="password", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="current-password") }}
-      {% for error in form.password.errors %}
-        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
+    <div class="field">
+      <label for="password">Password</label>
+      {{ form.password(id="password", autocomplete="current-password") }}
+      {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
     </div>
-
-    {{ form.submit(class_="w-full rounded-md bg-ink px-4 py-2.5 font-semibold text-white hover:bg-slate-800") }}
+    {{ form.submit(class_="btn btn-primary btn-block") }}
   </form>
 
-  <p class="mt-5 text-sm text-slate-600">
+  <p class="switch-line">
     Nuovo su AIO-Bot?
-    <a href="{{ url_for('register') }}" class="font-semibold text-sea hover:underline">Crea account</a>
+    <a href="{{ url_for('register') }}">Crea account</a>
   </p>
 </section>
 {% endblock %}
