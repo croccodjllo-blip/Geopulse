@@ -22,6 +22,7 @@
         Analizza, leggi i findings, pubblica il pack.
       </p>
       <div class="workspace-banner__meta">
+        <span>Piano {{ user_plan }}</span>
         <span>Siti {{ site_count }}/{{ max_sites }}</span>
         <span>Analisi {{ used_today }}/{{ daily_limit }} · 24h</span>
         <span>{% if openai_ready %}OpenAI{% else %}Fallback locale{% endif %}</span>

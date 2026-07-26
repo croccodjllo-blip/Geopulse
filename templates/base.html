@@ -45,6 +45,9 @@
           <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            {% if current_user.is_admin %}
+              <a href="{{ url_for('admin_home') }}">Admin</a>
+            {% endif %}
             <form method="post" action="{{ url_for('logout') }}" style="display:inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit">Esci</button>

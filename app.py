@@ -64,6 +64,11 @@ load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FREE_DAILY_ANALYSES = max(1, int(os.getenv("FREE_DAILY_ANALYSES", "10")))
 MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "5")))
+PRO_DAILY_ANALYSES = max(FREE_DAILY_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
+MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
+ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD") or "GeoPulse!Admin26"
+ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin GeoPulse"
 
 
 def resolve_database_uri(raw: str | None) -> str:
@@ -145,6 +150,7 @@ class User(db.Model):
     phone = db.Column(db.String(40))
     role = db.Column(db.String(80))
     country = db.Column(db.String(80))
+    plan = db.Column(db.String(40), nullable=False, default="free")  # free|pro|admin
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
@@ -157,6 +163,30 @@ class User(db.Model):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def is_admin(self) -> bool:
+        return (self.plan or "").lower() == "admin" or (self.role or "") == "admin"
+
+    @property
+    def is_pro(self) -> bool:
+        return self.is_admin or (self.plan or "").lower() == "pro"
+
+    @property
+    def plan_label(self) -> str:
+        if self.is_admin:
+            return "Admin"
+        if self.is_pro:
+            return "Pro"
+        return "Free"
+
+    @property
+    def max_sites(self) -> int:
+        return MAX_SITES_PRO if self.is_pro else MAX_SITES_FREE
+
+    @property
+    def daily_limit(self) -> int:
+        return PRO_DAILY_ANALYSES if self.is_pro else FREE_DAILY_ANALYSES
 
 
 class SiteAnalysis(db.Model):
@@ -352,11 +382,52 @@ def login_required(view):
     return wrapped
 
 
+def admin_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        user = current_user()
+        if user is None:
+            flash("Accedi per continuare.", "warning")
+            return redirect(url_for("login", next=request.path))
+        if not user.is_admin:
+            flash("Area riservata agli amministratori.", "error")
+            return redirect(url_for("dashboard"))
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
 def current_user() -> User | None:
     user_id = session.get("user_id")
     if not user_id:
         return None
     return db.session.get(User, user_id)
+
+
+def ensure_admin_user() -> User:
+    """Crea o aggiorna l’utente admin di prova (piano Pro)."""
+    user = User.query.filter_by(email=ADMIN_EMAIL).first()
+    if user is None:
+        user = User(
+            email=ADMIN_EMAIL,
+            name=ADMIN_NAME,
+            company="GeoPulse",
+            website_url="https://geopulse.it/",
+            role="admin",
+            country="Italia",
+            plan="admin",
+        )
+        user.set_password(ADMIN_PASSWORD)
+        db.session.add(user)
+    else:
+        user.name = ADMIN_NAME
+        user.company = user.company or "GeoPulse"
+        user.website_url = user.website_url or "https://geopulse.it/"
+        user.role = "admin"
+        user.plan = "admin"
+        user.set_password(ADMIN_PASSWORD)
+    db.session.commit()
+    return user
 
 
 def public_base_url() -> str:
@@ -381,6 +452,7 @@ def inject_globals() -> dict[str, Any]:
         "rating_scale": RATING_ORDER,
         "canonical_base": base,
         "canonical_url": canonical,
+        "admin_email": ADMIN_EMAIL,
     }
 
 
@@ -422,6 +494,7 @@ def ensure_schema() -> None:
             "phone": "TEXT",
             "role": "TEXT",
             "country": "TEXT",
+            "plan": "TEXT DEFAULT 'free'",
         }
         with db.engine.begin() as conn:
             for name, col_type in user_alters.items():
@@ -650,6 +723,7 @@ def register():
                 phone=(form.phone.data or "").strip() or None,
                 role=form.role.data,
                 country=form.country.data.strip(),
+                plan="free",
             )
             user.set_password(form.password.data)
             db.session.add(user)
@@ -716,19 +790,22 @@ def dashboard():
             url = normalize_url(form.url.data)
             existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
             site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
-            if existing is None and site_count >= MAX_SITES_FREE:
+            max_sites = user.max_sites
+            daily_limit = user.daily_limit
+            if existing is None and site_count >= max_sites:
                 flash(
-                    f"Piano Free: massimo {MAX_SITES_FREE} siti. "
-                    "Riusa un URL già analizzato.",
+                    f"Piano {user.plan_label}: massimo {max_sites} siti. "
+                    "Riusa un URL già analizzato o passa a Pro.",
                     "warning",
                 )
             elif not limiter.allow(
                 f"analyze:{user.id}",
-                limit=FREE_DAILY_ANALYSES,
+                limit=daily_limit,
                 window_seconds=86400,
             ):
                 flash(
-                    f"Limite raggiunto: max {FREE_DAILY_ANALYSES} analisi ogni 24 ore.",
+                    f"Limite raggiunto: max {daily_limit} analisi ogni 24 ore "
+                    f"(piano {user.plan_label}).",
                     "warning",
                 )
             else:
@@ -797,10 +874,50 @@ def dashboard():
         history=history,
         openai_ready=bool(OPENAI_API_KEY),
         used_today=used_today,
-        daily_limit=FREE_DAILY_ANALYSES,
-        max_sites=MAX_SITES_FREE,
+        daily_limit=user.daily_limit,
+        max_sites=user.max_sites,
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
+        user_plan=user.plan_label,
     )
+
+
+@app.route("/admin")
+@admin_required
+def admin_home():
+    leads = (
+        ProInterest.query.order_by(ProInterest.created_at.desc()).limit(100).all()
+    )
+    users = User.query.order_by(User.created_at.desc()).limit(50).all()
+    return render_template(
+        "admin.html",
+        leads=leads,
+        users=users,
+        lead_count=ProInterest.query.count(),
+        user_count=User.query.count(),
+    )
+
+
+@app.route("/admin/set-plan/<int:user_id>/<plan>", methods=["POST"])
+@admin_required
+def admin_set_plan(user_id: int, plan: str):
+    plan = (plan or "").strip().lower()
+    if plan not in {"free", "pro", "admin"}:
+        flash("Piano non valido.", "error")
+        return redirect(url_for("admin_home"))
+    target = db.session.get(User, user_id)
+    if target is None:
+        flash("Utente non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    # Non degradare l’admin principale per errore
+    if target.email == ADMIN_EMAIL and plan != "admin":
+        flash("L’admin principale deve restare piano admin.", "warning")
+        return redirect(url_for("admin_home"))
+    target.plan = plan
+    if plan == "admin":
+        target.role = "admin"
+    db.session.commit()
+    flash(f"Piano di {target.email} aggiornato a {plan}.", "success")
+    return redirect(url_for("admin_home"))
 
 
 @app.route("/dashboard/download/<int:analysis_id>.zip")
@@ -854,6 +971,11 @@ def download_pack(analysis_id: int):
 
 with app.app_context():
     ensure_schema()
+    try:
+        ensure_admin_user()
+    except Exception:
+        # Evita crash al boot se il DB non è ancora montato
+        app.logger.exception("ensure_admin_user failed")
 
 
 if __name__ == "__main__":

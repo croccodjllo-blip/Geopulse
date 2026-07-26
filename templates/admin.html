@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+<article class="page" style="width:min(960px,100%)">
+  <header class="page-intro">
+    <p class="eyebrow">Area admin</p>
+    <h1 class="h-display page-intro__title">Pannello GeoPulse</h1>
+    <p class="lede page-intro__lede">
+      Utenti {{ user_count }} · Interesse Pro {{ lead_count }}.
+      Qui gestisci waitlist Pro e piani account.
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Waitlist Pro</h2>
+    {% if leads %}
+    <ul class="history-list">
+      {% for lead in leads %}
+      <li>
+        <div class="history-main">
+          <strong>{{ lead.name }} · {{ lead.email }}</strong>
+          <div class="history-scores">
+            <span>{{ lead.company or '—' }}</span>
+            {% if lead.website_url %}<span>{{ lead.website_url }}</span>{% endif %}
+          </div>
+          {% if lead.note %}<div class="muted" style="margin-top:0.35rem">{{ lead.note }}</div>{% endif %}
+        </div>
+        <div class="history-actions">
+          <span class="muted">{{ lead.created_at.strftime('%Y-%m-%d %H:%M') if lead.created_at else '' }}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="lede">Nessun interesse Pro ancora.</p>
+    {% endif %}
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Utenti e piani</h2>
+    <ul class="history-list">
+      {% for u in users %}
+      <li>
+        <div class="history-main">
+          <strong>{{ u.name }} · {{ u.email }}</strong>
+          <div class="history-scores">
+            <span>Piano {{ u.plan_label }}</span>
+            <span>{{ u.company or '—' }}</span>
+          </div>
+        </div>
+        <div class="history-actions">
+          {% if u.email != admin_email %}
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='free') }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Free</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='pro') }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Pro</button>
+          </form>
+          {% else %}
+          <span class="muted">admin</span>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</article>
+{% endblock %}
