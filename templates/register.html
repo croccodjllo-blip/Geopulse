@@ -4,24 +4,13 @@
 {% block content %}
 <section class="auth-shell">
   <aside class="auth-aside" aria-hidden="true">
-    <svg class="auth-aside__art" viewBox="0 0 640 720" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="regLand" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#36a89a" stop-opacity="0.6" />
-          <stop offset="100%" stop-color="#0a524e" stop-opacity="0.9" />
-        </linearGradient>
-      </defs>
-      <g stroke="rgba(244,251,248,0.1)" stroke-width="1">
-        <path d="M30 100 H610" /><path d="M30 220 H610" /><path d="M30 340 H610" />
-        <path d="M30 460 H610" /><path d="M30 580 H610" />
-        <path d="M140 40 V680" /><path d="M320 40 V680" /><path d="M500 40 V680" />
-      </g>
-      <path fill="url(#regLand)" d="M70 260c70-90 190-110 290-60 70 35 120 100 125 175 5 80-45 155-120 180-90 30-200 5-270-55-55-48-80-120-55-185 12-30 18-40 30-55z" />
-      <circle class="pulse-dot p1" cx="250" cy="300" r="5" />
-      <circle class="pulse-dot p2" cx="400" cy="360" r="5" />
-      <circle class="pulse-dot p3" cx="310" cy="450" r="5" />
-      <circle class="orbit-ring" cx="320" cy="360" r="120" />
-    </svg>
+    <img
+      class="auth-aside__img"
+      src="{{ url_for('static', filename='img/auth-orbit.jpg') }}"
+      alt=""
+      width="1024"
+      height="1536"
+    />
     <div class="auth-aside__copy">
       <p class="brand">GEOPULSE</p>
       <p>Crea l’account e ricevi score AIO/GEO con pack pronto da pubblicare.</p>

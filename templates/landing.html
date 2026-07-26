@@ -8,63 +8,15 @@
 {% block content %}
 <section class="hero" aria-labelledby="hero-brand">
   <div class="hero-visual" aria-hidden="true">
-    <svg viewBox="0 0 1200 700" role="presentation" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#1ec8a8" />
-          <stop offset="45%" stop-color="#0f7f7a" />
-          <stop offset="100%" stop-color="#0a3d48" />
-        </linearGradient>
-        <radialGradient id="core" cx="52%" cy="46%" r="42%">
-          <stop offset="0%" stop-color="rgba(61,255,214,0.28)" />
-          <stop offset="45%" stop-color="rgba(14,140,130,0.16)" />
-          <stop offset="100%" stop-color="rgba(4,16,22,0)" />
-        </radialGradient>
-        <linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(61,255,214,0)" />
-          <stop offset="50%" stop-color="rgba(61,255,214,0.22)" />
-          <stop offset="100%" stop-color="rgba(61,255,214,0)" />
-        </linearGradient>
-      </defs>
-      <rect width="1200" height="700" fill="url(#core)" />
-      <g class="hero-grid" stroke="rgba(180,245,230,0.1)" stroke-width="1">
-        <path d="M0 100 H1200" /><path d="M0 200 H1200" /><path d="M0 300 H1200" />
-        <path d="M0 400 H1200" /><path d="M0 500 H1200" /><path d="M0 600 H1200" />
-        <path d="M100 0 V700" /><path d="M250 0 V700" /><path d="M400 0 V700" />
-        <path d="M550 0 V700" /><path d="M700 0 V700" /><path d="M850 0 V700" />
-        <path d="M1000 0 V700" /><path d="M1150 0 V700" />
-      </g>
-      <g fill="url(#land)" opacity="0.88">
-        <path d="M170 210c55-62 140-84 220-60 62 18 105 55 158 66 68 15 138-14 198 18 45 24 62 78 42 122-22 52-82 78-138 86-78 12-162-12-234-42-60-26-106-62-144-106-34-40-58-60-102-84z" />
-        <path d="M600 150c66-42 156-48 226-8 56 28 100 80 110 140 10 50-14 102-54 130-56 38-134 42-198 22-66-20-120-62-148-122-24-50-4-118 64-162z" />
-        <path d="M780 400c56-22 128-10 172 30 32 30 50 76 32 116-20 46-74 74-128 78-62 4-130-22-166-62-32-36-30-88 12-122 26-22 48-32 78-40z" />
-        <path d="M150 430c42-26 106-22 146 12 32 26 46 68 26 104-22 40-74 62-122 58-46-2-90-32-104-72-14-36 12-76 54-102z" />
-      </g>
-      <g class="radar-rings" fill="none" stroke="rgba(61,255,214,0.28)" stroke-width="1.2">
-        <circle cx="620" cy="330" r="90" />
-        <circle class="orbit-ring" cx="620" cy="330" r="160" />
-        <circle class="orbit-ring" cx="620" cy="330" r="240" style="animation-duration:36s" />
-        <path class="radar-sweep" d="M620 330 L620 90 A240 240 0 0 1 850 200 Z" fill="rgba(61,255,214,0.08)" stroke="none" />
-      </g>
-      <rect class="scan-beam" x="0" y="0" width="1200" height="90" fill="url(#scan)" />
-      <g>
-        <circle class="pulse-dot p1" cx="300" cy="250" r="5" />
-        <circle class="pulse-dot p2" cx="720" cy="230" r="5" />
-        <circle class="pulse-dot p3" cx="880" cy="455" r="5" />
-        <circle class="pulse-dot p4" cx="210" cy="460" r="4" />
-        <circle class="pulse-dot p1" cx="980" cy="280" r="4" />
-      </g>
-      <g stroke="rgba(61,255,214,0.45)" stroke-width="1.2" fill="none">
-        <path d="M300 250 L460 280 L720 230" />
-        <path d="M720 230 L820 340 L880 455" />
-        <path d="M300 250 L240 360 L210 460" />
-        <path d="M720 230 L980 280" />
-      </g>
-      <g fill="none" stroke="rgba(180,245,230,0.35)" stroke-width="1.4">
-        <path d="M40 40 H120 V48" /><path d="M1160 40 H1080 V48" />
-        <path d="M40 660 H120 V652" /><path d="M1160 660 H1080 V652" />
-      </g>
-    </svg>
+    <img
+      class="hero-visual__img"
+      src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
+      alt=""
+      width="1536"
+      height="1024"
+      fetchpriority="high"
+    />
+    <div class="hero-visual__veil"></div>
   </div>
 
   <div class="hero-copy">
@@ -80,7 +32,7 @@
   </div>
 </section>
 
-<section class="section-band hud-panel" id="problema">
+<section class="section-band" id="problema">
   <p class="eyebrow">Il problema</p>
   <h2>Le IA leggono il web in un modo diverso.</h2>
   <p class="lede">
@@ -90,7 +42,7 @@
   </p>
 </section>
 
-<section class="section-band section-band--wide hud-panel" id="metodo">
+<section class="section-band section-band--wide" id="metodo">
   <p class="eyebrow">Metodo</p>
   <h2>Tre passi. Poi il pack è pronto.</h2>
   <p class="lede">
@@ -113,7 +65,7 @@
   </ol>
 </section>
 
-<section class="section-band hud-panel" id="output">
+<section class="section-band" id="output">
   <p class="eyebrow">Output</p>
   <h2>Un pack concreto, non solo consigli.</h2>
   <p class="lede">
@@ -129,7 +81,7 @@
 </section>
 
 <section class="section-cta" id="inizia">
-  <div class="section-cta__inner hud-panel">
+  <div class="section-cta__inner">
     <p class="eyebrow">Pronto</p>
     <h2>Porta il tuo sito nelle risposte delle IA.</h2>
     <p class="lede">Crea l’account gratis e lancia la prima analisi in pochi minuti.</p>
