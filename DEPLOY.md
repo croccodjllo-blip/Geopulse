@@ -99,3 +99,15 @@ docker compose restart aio-bot
 docker compose down
 docker volume ls | grep aio
 ```
+
+## Produzione attuale
+
+Deploy attivo sul VPS VentureOTC (isolato):
+
+- Host SSH: `217.160.71.149`
+- Path: `/opt/aio-bot`
+- Service: `systemctl status aio-bot`
+- URL: http://217.160.71.149/login
+
+`82.165.79.212` risponde ancora VentureOTC e non ha SSH con la chiave deploy; non usarlo finché non è autorizzata.
+
