@@ -1355,74 +1355,12 @@ button, input, select, textarea { font: inherit; }
   letter-spacing: 0;
 }
 
-.findings-details {
-  margin: 1.35rem 0 0.2rem;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.findings-details > summary {
-  cursor: pointer;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem 0.55rem;
-  padding: 0.7rem 0;
-  user-select: none;
-}
-
-.findings-details > summary::-webkit-details-marker { display: none; }
-
-.findings-details__label {
-  font-family: var(--font-display);
-  font-size: 0.98rem;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.findings-details__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.55rem;
-  height: 1.35rem;
-  padding: 0 0.4rem;
-  border-radius: 0.35rem;
-  background: color-mix(in srgb, var(--sea) 14%, transparent);
-  color: var(--sea);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.findings-details__chip {
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.02em;
-  color: var(--muted);
-}
-
-.findings-details__chip[data-severity="critical"] { color: var(--danger); }
-.findings-details__chip[data-severity="warn"] { color: var(--warn); }
-.findings-details__chip[data-severity="ok"] { color: var(--ok); }
-
-.findings-details > summary::after {
-  content: "mostra";
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 650;
-}
-
-.findings-details[open] > summary::after { content: "nascondi"; }
-
 .finding-list {
   list-style: none;
-  margin: 0 0 0.65rem;
+  margin: 0;
   padding: 0;
-  max-height: 16rem;
+  max-height: 12rem;
   overflow: auto;
-  border-top: 1px dashed var(--line);
 }
 
 .finding-list li {
@@ -1655,63 +1593,65 @@ button, input, select, textarea { font: inherit; }
 .diff-strip__list li[data-severity="critical"] strong { color: var(--danger); }
 .diff-strip__list li[data-severity="ok"] strong { color: var(--ok); }
 
-.crawl-details {
-  margin: 1rem 0 0.2rem;
+.dash-block {
+  margin: 1.15rem 0 0.15rem;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 
-.crawl-details > summary {
-  cursor: pointer;
-  list-style: none;
+.dash-block__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.7rem 0;
-  user-select: none;
+  gap: 0.4rem 0.55rem;
+  margin-bottom: 0.45rem;
 }
 
-.crawl-details > summary::-webkit-details-marker { display: none; }
-
-.crawl-details__label {
+.dash-block__title {
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 0.98rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 750;
   color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
-.crawl-details__count {
+.dash-block__count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.55rem;
-  height: 1.35rem;
-  padding: 0 0.4rem;
-  border-radius: 0.35rem;
+  min-width: 1.45rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 0.3rem;
   background: color-mix(in srgb, var(--sea) 14%, transparent);
   color: var(--sea);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
 }
 
-.crawl-details > summary::after {
-  content: "mostra";
-  margin-left: auto;
+.dash-block__chip {
+  font-size: 0.7rem;
+  font-weight: 750;
   color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 650;
 }
 
-.crawl-details[open] > summary::after { content: "nascondi"; }
+.dash-block__chip[data-severity="critical"] { color: var(--danger); }
+.dash-block__chip[data-severity="warn"] { color: var(--warn); }
+.dash-block__chip[data-severity="ok"] { color: var(--ok); }
+
+.dash-block__more {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
 
 .crawl-list {
   list-style: none;
-  margin: 0 0 0.65rem;
+  margin: 0;
   padding: 0;
-  max-height: 14rem;
+  max-height: 9.5rem;
   overflow: auto;
-  border-top: 1px dashed var(--line);
 }
 
 .crawl-list li {
@@ -1783,10 +1723,33 @@ button, input, select, textarea { font: inherit; }
   font-weight: 700;
 }
 
-.crawl-details__more {
-  margin: 0 0 0.7rem;
-  color: var(--muted);
+.pack-grid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+@media (min-width: 820px) {
+  .pack-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.code-shell--compact {
+  margin-top: 0;
+}
+
+.code-shell--compact .code-shell__bar {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.7rem;
+}
+
+.code-shell--compact pre {
+  margin: 0;
+  max-height: 7.5rem;
+  overflow: auto;
+  padding: 0.65rem 0.75rem;
   font-size: 0.78rem;
+  line-height: 1.4;
 }
 
 .report-top__actions {
@@ -1913,22 +1876,26 @@ button, input, select, textarea { font: inherit; }
 .schedule-form__status strong { font-weight: 750; }
 
 .history-block {
-  margin-top: 2.4rem;
-  padding-top: 0.2rem;
+  margin-top: 1.4rem;
 }
 
 .history-list {
   list-style: none;
-  margin: 0.85rem 0 0;
+  margin: 0;
   padding: 0;
+}
+
+.history-list--compact {
+  max-height: 11rem;
+  overflow: auto;
 }
 
 .history-list li {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 0.7rem 1rem;
-  padding: 0.95rem 0;
+  gap: 0.4rem 0.85rem;
+  padding: 0.55rem 0;
   border-bottom: 1px solid var(--line);
 }
 

@@ -146,13 +146,13 @@
 
           {% if latest.crawl_pages %}
           {% set pages_n = latest.pages_analyzed or latest.crawl_pages|length %}
-          <details class="crawl-details">
-            <summary>
-              <span class="crawl-details__label">Pagine analizzate</span>
-              <span class="crawl-details__count">{{ pages_n }}</span>
-            </summary>
+          <section class="dash-block" aria-labelledby="crawl-title">
+            <header class="dash-block__head">
+              <h3 class="dash-block__title" id="crawl-title">Pagine analizzate</h3>
+              <span class="dash-block__count">{{ pages_n }}</span>
+            </header>
             <ul class="crawl-list">
-              {% for page in latest.crawl_pages[:20] %}
+              {% for page in latest.crawl_pages[:16] %}
               {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
               <li>
                 <a class="crawl-list__path" href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
@@ -166,10 +166,10 @@
               </li>
               {% endfor %}
             </ul>
-            {% if pages_n > 20 %}
-            <p class="crawl-details__more">Mostrate 20 di {{ pages_n }}.</p>
+            {% if pages_n > 16 %}
+            <p class="dash-block__more">Prime 16 di {{ pages_n }} · resto nello ZIP/report</p>
             {% endif %}
-          </details>
+          </section>
           {% endif %}
 
           {% if is_pro %}
@@ -200,14 +200,14 @@
           {% set crit_n = findings|selectattr('severity', 'equalto', 'critical')|list|length %}
           {% set warn_n = findings|selectattr('severity', 'equalto', 'warn')|list|length %}
           {% set ok_n = findings|selectattr('severity', 'equalto', 'ok')|list|length %}
-          <details class="findings-details"{% if crit_n %} open{% endif %}>
-            <summary>
-              <span class="findings-details__label">Findings</span>
-              <span class="findings-details__count">{{ findings|length }}</span>
-              {% if crit_n %}<span class="findings-details__chip" data-severity="critical">{{ crit_n }} critical</span>{% endif %}
-              {% if warn_n %}<span class="findings-details__chip" data-severity="warn">{{ warn_n }} warn</span>{% endif %}
-              {% if ok_n %}<span class="findings-details__chip" data-severity="ok">{{ ok_n }} ok</span>{% endif %}
-            </summary>
+          <section class="dash-block" aria-labelledby="findings-title">
+            <header class="dash-block__head">
+              <h3 class="dash-block__title" id="findings-title">Findings</h3>
+              <span class="dash-block__count">{{ findings|length }}</span>
+              {% if crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crit_n }} critical</span>{% endif %}
+              {% if warn_n %}<span class="dash-block__chip" data-severity="warn">{{ warn_n }} warn</span>{% endif %}
+              {% if ok_n %}<span class="dash-block__chip" data-severity="ok">{{ ok_n }} ok</span>{% endif %}
+            </header>
             <ul class="finding-list">
               {% for f in findings %}
               <li data-severity="{{ f.severity }}">
@@ -221,56 +221,52 @@
               <li class="finding-list__empty"><span>Nessun finding disponibile.</span></li>
               {% endfor %}
             </ul>
-          </details>
-
-          <section class="report-section">
-            <h3 class="report-section__title">llms.txt <span>→ root</span></h3>
-            <div class="code-shell">
-              <div class="code-shell__bar">
-                <span>/llms.txt</span>
-                <div class="code-shell__actions">
-                  <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">Copia</button>
-                </div>
-              </div>
-              <pre id="llms-box">{{ latest.llms_txt }}</pre>
-            </div>
           </section>
 
-          <details class="artifact-details">
-            <summary>JSON-LD, FAQ schema, meta, robots</summary>
-            <div class="artifact-grid">
-              <div class="code-shell">
+          <section class="dash-block" aria-labelledby="pack-title">
+            <header class="dash-block__head">
+              <h3 class="dash-block__title" id="pack-title">Pack ottimizzazione</h3>
+            </header>
+            <div class="pack-grid">
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>/llms.txt</span>
+                  <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">Copia</button>
+                </div>
+                <pre id="llms-box">{{ latest.llms_txt }}</pre>
+              </div>
+              <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>organization.jsonld.html</span>
                   <button type="button" class="linkish" onclick="copyFrom('jsonld-box', this)">Copia</button>
                 </div>
-                <pre id="jsonld-box" style="max-height:12rem">{{ latest.json_ld_artifact }}</pre>
+                <pre id="jsonld-box">{{ latest.json_ld_artifact }}</pre>
               </div>
               {% if latest.faq_artifact %}
-              <div class="code-shell">
+              <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>faq.jsonld.html</span>
                   <button type="button" class="linkish" onclick="copyFrom('faq-box', this)">Copia</button>
                 </div>
-                <pre id="faq-box" style="max-height:12rem">{{ latest.faq_artifact }}</pre>
+                <pre id="faq-box">{{ latest.faq_artifact }}</pre>
               </div>
               {% endif %}
-              <div class="code-shell">
+              <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>meta-pack.html</span>
                   <button type="button" class="linkish" onclick="copyFrom('meta-box', this)">Copia</button>
                 </div>
-                <pre id="meta-box" style="max-height:12rem">{{ latest.meta_pack_artifact }}</pre>
+                <pre id="meta-box">{{ latest.meta_pack_artifact }}</pre>
               </div>
-              <div class="code-shell">
+              <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>robots.txt</span>
                   <button type="button" class="linkish" onclick="copyFrom('robots-box', this)">Copia</button>
                 </div>
-                <pre id="robots-box" style="max-height:12rem">{{ latest.robots_artifact }}</pre>
+                <pre id="robots-box">{{ latest.robots_artifact }}</pre>
               </div>
             </div>
-          </details>
+          </section>
         </section>
         {% else %}
         <div class="empty-state">
@@ -280,13 +276,15 @@
         {% endif %}
 
         {% if history %}
-        <section class="history-block">
-          <h2 class="report-section__title">
-            {% if history_is_runs %}Storico run{% else %}Ultime analisi{% endif %}
-            <span>max {{ history_limit }}</span>
-          </h2>
-          <ul class="history-list">
-            {% for item in history %}
+        <section class="dash-block history-block">
+          <header class="dash-block__head">
+            <h2 class="dash-block__title">
+              {% if history_is_runs %}Storico run{% else %}Ultime analisi{% endif %}
+            </h2>
+            <span class="dash-block__count">{{ history|length }}</span>
+          </header>
+          <ul class="history-list history-list--compact">
+            {% for item in history[:12] %}
             <li>
               <div class="history-main">
                 <strong>{{ item.domain }} <em class="history-grade" data-grade="{{ item.rating.code }}">{{ item.rating.code }}</em></strong>
