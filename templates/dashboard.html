@@ -7,11 +7,12 @@
   <header class="dash-hero">
     <div class="dash-hero__copy">
       <p class="eyebrow">GeoPulse · Dashboard</p>
-      <h1 class="h-display dash-title">Analisi AIO &amp; GEO</h1>
+      <h1 class="h-display dash-title">Il tuo centro analisi</h1>
       <p class="lede dash-lede">
         Ciao {{ current_user.name }}{% if current_user.company %} · {{ current_user.company }}{% endif %}.
-        Inserisci l’URL e genera score, findings e pack di ottimizzazione.
+        Analizza un URL, leggi score e findings, poi pubblica il pack sul sito.
       </p>
+      <a class="dash-jump" href="#guida">Guida all’uso dei risultati ↓</a>
     </div>
     <aside class="dash-quota" aria-label="Limiti piano">
       <div class="quota-item">
@@ -108,7 +109,10 @@
     {% endif %}
 
     <div class="dash-section">
-      <h3 class="block-title">Findings</h3>
+      <div class="section-head">
+        <h3 class="block-title">Findings</h3>
+        <p class="section-head__hint">Priorità: critical → warn → ok</p>
+      </div>
       <ul class="finding-list">
         {% for f in latest.findings %}
         <li data-severity="{{ f.severity }}">
@@ -125,7 +129,10 @@
     </div>
 
     <div class="dash-section">
-      <h3 class="block-title">llms.txt</h3>
+      <div class="section-head">
+        <h3 class="block-title">llms.txt</h3>
+        <p class="section-head__hint">Pubblica in root: /llms.txt</p>
+      </div>
       <div class="code-shell">
         <div class="code-shell__bar">
           <span>/llms.txt</span>
@@ -138,7 +145,7 @@
     </div>
 
     <details class="artifact-details">
-      <summary>Altri artifact</summary>
+      <summary>Altri artifact del pack</summary>
       <div class="artifact-grid">
         <div class="code-shell">
           <div class="code-shell__bar">
@@ -168,9 +175,89 @@
   <div class="empty-state">
     <div class="empty-state__pulse" aria-hidden="true"></div>
     <strong>Nessuna analisi ancora</strong>
-    <p>Inserisci un URL sopra per generare il primo report AIO/GEO su GeoPulse.</p>
+    <p>Inserisci un URL sopra per generare il primo report. Sotto trovi la guida su come usare i risultati.</p>
   </div>
   {% endif %}
+
+  <section class="guide-block" id="guida" aria-labelledby="guide-title">
+    <header class="guide-block__head">
+      <p class="eyebrow">Guida</p>
+      <h2 class="h-display guide-block__title" id="guide-title">Come usare i risultati</h2>
+      <p class="lede">
+        Dopo l’analisi non serve interpretare tutto da zero: segui questo ordine
+        per trasformare score e pack in modifiche concrete sul sito.
+      </p>
+    </header>
+
+    <ol class="guide-steps">
+      <li>
+        <strong>Leggi gli score</strong>
+        <span>
+          <em>AIO</em> misura quanto il sito è chiaro per i crawler IA.
+          <em>GEO</em> stima quanto sei citabile nelle risposte generative.
+          Punti sotto 60 = priorità alta di intervento.
+        </span>
+      </li>
+      <li>
+        <strong>Sistemi i findings critical e warn</strong>
+        <span>
+          Parti dalle voci critical (es. manca <code>llms.txt</code>, meta assenti),
+          poi le warn. Le ok restano come conferma di ciò che già funziona.
+        </span>
+      </li>
+      <li>
+        <strong>Pubblica <code>llms.txt</code></strong>
+        <span>
+          Copia il file e caricalo nella root del dominio come
+          <code>https://tuodominio.it/llms.txt</code>.
+          È il segnale principale per i modelli e i crawler AI.
+        </span>
+      </li>
+      <li>
+        <strong>Integra JSON-LD e meta pack</strong>
+        <span>
+          Incolla lo snippet Organization nel <code>&lt;head&gt;</code> (o via CMS/GTM).
+          Usa il meta pack per title, description e Open Graph se mancano o sono deboli.
+        </span>
+      </li>
+      <li>
+        <strong>Allinea <code>robots.txt</code></strong>
+        <span>
+          Confronta la bozza con il tuo robots attuale: tieni Allow sulle pagine utili,
+          punta alla sitemap e non bloccare risorse necessarie agli AI crawler.
+        </span>
+      </li>
+      <li>
+        <strong>Scarica lo ZIP e ri-analizza</strong>
+        <span>
+          Lo ZIP contiene tutto il pack in un colpo solo.
+          Dopo aver pubblicato, lancia di nuovo l’analisi sullo stesso URL e confronta gli score.
+        </span>
+      </li>
+    </ol>
+
+    <div class="guide-map">
+      <h3 class="block-title">Dove mettere ogni file</h3>
+      <dl class="guide-map__list">
+        <div>
+          <dt><code>llms.txt</code></dt>
+          <dd>Root del sito → <code>/llms.txt</code></dd>
+        </div>
+        <div>
+          <dt><code>organization.jsonld.html</code></dt>
+          <dd>Nel <code>&lt;head&gt;</code> di tutte le pagine chiave (home, about, servizi)</dd>
+        </div>
+        <div>
+          <dt><code>meta-pack.html</code></dt>
+          <dd>Nel <code>&lt;head&gt;</code> della homepage (e template SEO del CMS)</dd>
+        </div>
+        <div>
+          <dt><code>robots.txt</code></dt>
+          <dd>Root del sito → <code>/robots.txt</code> (sostituisci o unisci con attenzione)</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
 
   {% if history %}
   <section class="history-block">
