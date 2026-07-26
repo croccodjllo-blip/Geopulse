@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 
 HTTP_TIMEOUT = 12
 PROBE_TIMEOUT = 6
-USER_AGENT = "AIO-Bot/1.0 (+https://aio-bot.local; GEO/AIO optimizer)"
+USER_AGENT = "GeoPulse/1.0 (+https://geopulse.it; GEO/AIO optimizer)"
 _SESSION = requests.Session()
 _SESSION.headers.update(
     {

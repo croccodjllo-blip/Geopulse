@@ -1,4 +1,4 @@
-# AIO-Bot — Roadmap di progetto
+# GeoPulse (geopulse.it) — Roadmap di progetto
 
 Piattaforma SaaS per **GEO/AIO Optimization**: l’utente si registra, inserisce il sito, riceve analisi e ottimizzazioni automatiche (a partire da `llms.txt`), con piano a pagamento.
 

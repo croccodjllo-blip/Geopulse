@@ -1,6 +1,8 @@
-# AIO-Bot
+# GeoPulse (geopulse.it)
 
-SaaS iniziale per **GEO/AIO Optimization**: registrazione utenti, analisi homepage e generazione automatica di `llms.txt` (OpenAI + fallback locale).
+Sito e SaaS per **GEO/AIO Optimization**: registrazione utenti, analisi homepage e generazione automatica di `llms.txt` (OpenAI + fallback locale).
+
+Dominio pubblico: **https://geopulse.it**
 
 ## Struttura
 

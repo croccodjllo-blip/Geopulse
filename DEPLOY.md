@@ -1,6 +1,6 @@
-# Deploy AIO-Bot su server
+# Deploy GeoPulse (geopulse.it) su server
 
-Sì: il passo naturale ora è mettere **AIO-Bot** su un VPS (consigliato: server dedicato o path separato da VentureOTC).
+Sì: il passo naturale ora è mettere **GeoPulse** su un VPS (consigliato: server dedicato o path separato da VentureOTC), con dominio `geopulse.it`.
 
 ## Cosa va in produzione
 

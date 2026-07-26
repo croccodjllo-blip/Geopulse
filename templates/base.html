@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}AIO-Bot{% endblock %} · GEO/AIO Optimization</title>
+    <title>{% block title %}GeoPulse{% endblock %} · geopulse.it</title>
     <meta
       name="description"
-      content="{% block meta_description %}AIO-Bot — ottimizza i siti web per IA, answer engine e ricerca generativa (GEO/AIO).{% endblock %}"
+      content="{% block meta_description %}GeoPulse (geopulse.it) — ottimizza i siti web per IA, answer engine e ricerca generativa (GEO/AIO).{% endblock %}"
     />
     <meta name="theme-color" content="#0e6f69" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
@@ -24,7 +24,7 @@
       <div class="site-header__inner">
         <a class="brand-mark" href="{{ url_for('index') }}">
           <span class="brand-mark__dot" aria-hidden="true"></span>
-          AIO-BOT
+          GEOPULSE
         </a>
         <nav class="nav-links" aria-label="Principale">
           <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
@@ -62,9 +62,9 @@
         <div class="site-footer__brand">
           <a class="brand-mark" href="{{ url_for('index') }}">
             <span class="brand-mark__dot" aria-hidden="true"></span>
-            AIO-BOT
+            GEOPULSE
           </a>
-          <p>Ottimizzazione GEO &amp; AIO per siti che vogliono essere citati dalle IA.</p>
+          <p>geopulse.it — ottimizzazione GEO &amp; AIO per siti che vogliono essere citati dalle IA.</p>
         </div>
         <div class="site-footer__col">
           <p class="site-footer__label">Prodotto</p>
@@ -83,8 +83,8 @@
         </div>
       </div>
       <div class="site-footer__bottom">
-        <span>© {{ now_year }} AIO-Bot</span>
-        <span>GEO &amp; AIO Optimization</span>
+        <span>© {{ now_year }} GeoPulse</span>
+        <span>geopulse.it</span>
       </div>
     </footer>
     {% endblock %}

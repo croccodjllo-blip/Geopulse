@@ -1,5 +1,5 @@
 """
-AIO-Bot — SaaS iniziale per ottimizzazione GEO/AIO dei siti web.
+GeoPulse (geopulse.it) — SaaS per ottimizzazione GEO/AIO dei siti web.
 Analisi score + findings + generazione pack artifact (llms.txt, JSON-LD, meta, robots).
 """
 
@@ -394,7 +394,7 @@ def health():
         jsonify(
             {
                 "ok": db_ok,
-                "service": "aio-bot",
+                "service": "geopulse",
                 "openai": bool(OPENAI_API_KEY),
                 "time": datetime.now(timezone.utc).isoformat(),
             }
@@ -455,7 +455,7 @@ def register():
             session.clear()
             session["user_id"] = user.id
             session.permanent = True
-            flash("Account creato. Benvenuto su AIO-Bot.", "success")
+            flash("Account creato. Benvenuto su GeoPulse.", "success")
             return redirect(url_for("dashboard"))
 
     return render_template("register.html", form=form)
@@ -632,7 +632,7 @@ def download_pack(analysis_id: int):
             json.dumps(report, ensure_ascii=False, indent=2) + "\n",
         )
     buffer.seek(0)
-    filename = f"aio-bot-{analysis.domain.replace(':', '_')}.zip"
+    filename = f"geopulse-{analysis.domain.replace(':', '_')}.zip"
     return send_file(
         buffer,
         mimetype="application/zip",
