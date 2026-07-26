@@ -1114,12 +1114,6 @@ def analyze_site(
             base, scraped, probes, max_pages=max_pages
         )
 
-    def sort_key(p: dict[str, Any]) -> tuple[int, float]:
-        is_seed = 0 if (p.get("url") == seed_canon or p.get("url") == base) else 1
-        return (is_seed, -((p.get("aio_score") or 0) + (p.get("geo_score") or 0)) / 2)
-
-    page_reports.sort(key=sort_key)
-
     scored = score_site(url, scraped, probes, page_reports=page_reports)
 
     crawl_pages = [
@@ -1135,6 +1129,8 @@ def analyze_site(
         }
         for p in page_reports
     ]
+    # Criticità prima: così storage/export non perdono le pagine con problemi.
+    crawl_pages = pages_for_storage(crawl_pages, limit=len(crawl_pages) or 1)
 
     important = []
     for p in crawl_pages[:20]:

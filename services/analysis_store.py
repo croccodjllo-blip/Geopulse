@@ -9,8 +9,11 @@ from urllib.parse import urlparse
 
 from sqlalchemy.orm import Session
 
+from services.analyzer import pages_for_storage
+
 RESCAN_INTERVALS = ("off", "daily", "weekly")
 DEFAULT_RESCAN_HOUR = 6
+CRAWL_PAGES_STORE_LIMIT = 150
 
 
 def clamp_hour(hour: Any, default: int = DEFAULT_RESCAN_HOUR) -> int:
