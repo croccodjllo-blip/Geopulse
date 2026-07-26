@@ -1,0 +1,40 @@
+services:
+  aio-bot:
+    build: .
+    image: aio-bot:latest
+    container_name: aio-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PORT: "8000"
+      DATABASE_URL: sqlite:////data/database.db
+      FLASK_DEBUG: "0"
+    volumes:
+      - aio_bot_data:/data
+    ports:
+      - "${HOST_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # Proxy opzionale: usa profile "proxy"
+  # docker compose --profile proxy up -d
+  nginx:
+    profiles: ["proxy"]
+    image: nginx:1.27-alpine
+    container_name: aio-bot-nginx
+    restart: unless-stopped
+    depends_on:
+      aio-bot:
+        condition: service_healthy
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  aio_bot_data:

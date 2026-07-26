@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Deploy AIO-Bot su un server Linux con Docker.
+# Uso:
+#   ./scripts/deploy.sh                 # build + up locali
+#   REMOTE=user@host ./scripts/deploy.sh
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+if [[ ! -f .env ]]; then
+  echo "[deploy] Manca .env — copio da .env.example"
+  cp .env.example .env
+  echo "[deploy] Imposta almeno FLASK_SECRET_KEY in .env prima della produzione."
+fi
+
+# Genera secret se ancora placeholder
+if grep -q 'replace-with-a-long-random-string' .env 2>/dev/null || ! grep -q '^FLASK_SECRET_KEY=.\+' .env; then
+  SECRET="$(python3 - <<'PY'
+import secrets
+print(secrets.token_urlsafe(48))
+PY
+)"
+  if grep -q '^FLASK_SECRET_KEY=' .env; then
+    sed -i "s|^FLASK_SECRET_KEY=.*|FLASK_SECRET_KEY=${SECRET}|" .env
+  else
+    printf '\nFLASK_SECRET_KEY=%s\n' "$SECRET" >> .env
+  fi
+  echo "[deploy] FLASK_SECRET_KEY generata automaticamente"
+fi
+
+REMOTE="${REMOTE:-}"
+
+if [[ -z "$REMOTE" ]]; then
+  echo "[deploy] Deploy locale con Docker Compose"
+  docker compose build
+  docker compose up -d
+  docker compose ps
+  echo "[deploy] App su http://127.0.0.1:${HOST_PORT:-8000}"
+  exit 0
+fi
+
+REMOTE_DIR="${REMOTE_DIR:-/opt/aio-bot}"
+echo "[deploy] Sync verso ${REMOTE}:${REMOTE_DIR}"
+
+ssh "$REMOTE" "mkdir -p '${REMOTE_DIR}'"
+rsync -az --delete \
+  --exclude '.venv' \
+  --exclude '__pycache__' \
+  --exclude '.git' \
+  --exclude 'database.db' \
+  --exclude 'instance' \
+  --exclude '.env' \
+  "$ROOT/" "${REMOTE}:${REMOTE_DIR}/"
+
+# Copia .env se remoto non ce l'ha; altrimenti lascia quello del server
+ssh "$REMOTE" "test -f '${REMOTE_DIR}/.env' || cp '${REMOTE_DIR}/.env.example' '${REMOTE_DIR}/.env'"
+scp "$ROOT/.env" "${REMOTE}:${REMOTE_DIR}/.env" 2>/dev/null || true
+
+ssh "$REMOTE" "cd '${REMOTE_DIR}' && docker compose build && docker compose up -d && docker compose ps"
+echo "[deploy] Completato su ${REMOTE}"
+echo "[deploy] Espone HOST_PORT (default 8000). Metti Nginx/Caddy davanti per HTTPS."

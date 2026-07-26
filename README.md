@@ -35,9 +35,20 @@ python app.py
 
 Apri http://127.0.0.1:5000
 
+## Deploy su server
+
+Vedi **[DEPLOY.md](./DEPLOY.md)**.
+
+```bash
+./scripts/deploy.sh
+# oppure remoto:
+REMOTE=root@TUO_IP ./scripts/deploy.sh
+```
+
 ## Note
 
 - Password hash con Werkzeug
 - Sessioni Flask + CSRF (Flask-WTF)
-- Database SQLite `database.db` via SQLAlchemy
+- Database SQLite `database.db` via SQLAlchemy (in Docker: volume `/data`)
 - Senza `OPENAI_API_KEY` viene usato un generatore fallback basato sullo scraping
+- Produzione: Gunicorn + Docker (+ Nginx opzionale)

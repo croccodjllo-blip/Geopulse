@@ -125,9 +125,10 @@ Obiettivo: differenziazione competitiva.
 ## Fase 5 — Produzione e crescita
 
 ### 5.1 Deploy
-- [ ] Docker + docker-compose (app + db Postgres + redis)
+- [x] Docker + docker-compose (app Gunicorn + volume SQLite)
 - [ ] Migrazione SQLite → PostgreSQL
-- [ ] Reverse proxy (Nginx/Caddy) + HTTPS
+- [x] Reverse proxy Nginx (compose profile / host config)
+- [ ] HTTPS Certbot in produzione
 - [ ] Backup DB automatici
 
 ### 5.2 Osservabilità e sicurezza
