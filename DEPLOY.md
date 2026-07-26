@@ -108,6 +108,20 @@ docker volume ls | grep aio
 - Service: `systemctl status aio-bot`
 - URL: http://82.165.79.212/login
 - Stack: Gunicorn + Nginx (porta 80)
+- DB: `sqlite:////opt/aio-bot/data/database.db` (mai cancellare `data/` o `.venv` con `rsync --delete`)
+
+### Sync codice (host, senza Docker)
+
+```bash
+rsync -az --delete \
+  -e 'ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes' \
+  --exclude '.git' --exclude 'instance' --exclude '__pycache__' \
+  --exclude '*.pyc' --exclude '.env' --exclude 'venv' --exclude '.venv' \
+  --exclude 'data' --exclude 'database.db' \
+  ./ root@82.165.79.212:/opt/aio-bot/
+ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes root@82.165.79.212 \
+  'systemctl restart aio-bot'
+```
 
 ### Re-scan Pro (timer)
 

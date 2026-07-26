@@ -44,9 +44,13 @@ REMOTE_DIR="${REMOTE_DIR:-/opt/aio-bot}"
 echo "[deploy] Sync verso ${REMOTE}:${REMOTE_DIR}"
 
 ssh "$REMOTE" "mkdir -p '${REMOTE_DIR}'"
+# Mai usare --delete senza escludere data/ e .venv: cancella DB e runtime.
 rsync -az --delete \
   --exclude '.venv' \
+  --exclude 'venv' \
+  --exclude 'data' \
   --exclude '__pycache__' \
+  --exclude '*.pyc' \
   --exclude '.git' \
   --exclude 'database.db' \
   --exclude 'instance' \
