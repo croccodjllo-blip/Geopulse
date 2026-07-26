@@ -64,6 +64,9 @@ def pack_zip_bytes(entity: Any) -> bytes:
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("llms.txt", entity.llms_txt or "")
         zf.writestr("organization.jsonld.html", entity.json_ld_artifact or "")
+        faq = getattr(entity, "faq_artifact", None) or ""
+        if faq:
+            zf.writestr("faq.jsonld.html", faq)
         zf.writestr("meta-pack.html", entity.meta_pack_artifact or "")
         zf.writestr("robots.txt", entity.robots_artifact or "")
         report = {

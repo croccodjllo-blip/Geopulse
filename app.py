@@ -66,6 +66,7 @@ from services.artifacts import build_optimization_pack
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
+from services.signals import compare_with_previous
 
 load_dotenv()
 
@@ -220,6 +221,7 @@ class SiteAnalysis(db.Model):
     analysis_notes = db.Column(db.Text)
     llms_txt = db.Column(db.Text, nullable=False, default="")
     json_ld_artifact = db.Column(db.Text, nullable=False, default="")
+    faq_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
@@ -285,6 +287,7 @@ class AnalysisRun(db.Model):
     analysis_notes = db.Column(db.Text)
     llms_txt = db.Column(db.Text, nullable=False, default="")
     json_ld_artifact = db.Column(db.Text, nullable=False, default="")
+    faq_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
@@ -613,6 +616,7 @@ def ensure_schema() -> None:
             "findings_json": "TEXT DEFAULT '[]'",
             "analysis_notes": "TEXT",
             "json_ld_artifact": "TEXT DEFAULT ''",
+            "faq_artifact": "TEXT DEFAULT ''",
             "meta_pack_artifact": "TEXT DEFAULT ''",
             "robots_artifact": "TEXT DEFAULT ''",
             "pages_analyzed": "INTEGER DEFAULT 1",
@@ -650,6 +654,7 @@ def ensure_schema() -> None:
         run_alters = {
             "pages_analyzed": "INTEGER DEFAULT 1",
             "crawl_pages_json": "TEXT DEFAULT '[]'",
+            "faq_artifact": "TEXT DEFAULT ''",
         }
         with db.engine.begin() as conn:
             for name, col_type in run_alters.items():
@@ -681,6 +686,7 @@ def backfill_analysis_runs() -> None:
                 analysis_notes=site.analysis_notes,
                 llms_txt=site.llms_txt or "",
                 json_ld_artifact=site.json_ld_artifact or "",
+                faq_artifact=getattr(site, "faq_artifact", None) or "",
                 meta_pack_artifact=site.meta_pack_artifact or "",
                 robots_artifact=site.robots_artifact or "",
                 pages_analyzed=getattr(site, "pages_analyzed", None) or 1,
@@ -1007,7 +1013,27 @@ def dashboard():
                 )
             else:
                 try:
+                    previous_run = None
+                    if existing is not None:
+                        previous_run = (
+                            AnalysisRun.query.filter_by(
+                                site_id=existing.id, user_id=user.id
+                            )
+                            .order_by(AnalysisRun.created_at.desc())
+                            .first()
+                        )
                     result = analyze_site(url, max_pages=user.crawl_pages)
+                    run_diff = compare_with_previous(
+                        aio_score=result.get("aio_score"),
+                        geo_score=result.get("geo_score"),
+                        findings=result.get("findings"),
+                        previous=previous_run,
+                    )
+                    if run_diff.get("findings"):
+                        result["findings"] = list(result.get("findings") or []) + list(
+                            run_diff["findings"]
+                        )
+                    result["diff"] = run_diff
                     pack = build_optimization_pack(
                         url,
                         result["scraped"],
@@ -1069,12 +1095,43 @@ def dashboard():
         )
 
     used_today = analyses_today(user.id)
+    run_diff = None
+    if latest is not None:
+        recent_runs = (
+            AnalysisRun.query.filter_by(site_id=latest.id, user_id=user.id)
+            .order_by(AnalysisRun.created_at.desc())
+            .limit(2)
+            .all()
+        )
+        if len(recent_runs) >= 2:
+            run_diff = compare_with_previous(
+                aio_score=recent_runs[0].aio_score,
+                geo_score=recent_runs[0].geo_score,
+                findings=recent_runs[0].findings,
+                previous=recent_runs[1],
+            )
+        elif recent_runs:
+            # Diff già incorporato nei findings dell’ultima run se presente
+            diff_findings = [
+                f
+                for f in recent_runs[0].findings
+                if str(f.get("category") or "").lower() == "diff"
+            ]
+            if diff_findings:
+                run_diff = {
+                    "has_previous": True,
+                    "findings": diff_findings,
+                    "delta_aio": None,
+                    "delta_geo": None,
+                }
+
     return render_template(
         "dashboard.html",
         form=form,
         schedule_form=schedule_form,
         latest=latest,
         history=history,
+        run_diff=run_diff,
         openai_ready=bool(OPENAI_API_KEY),
         used_today=used_today,
         daily_limit=user.daily_limit,

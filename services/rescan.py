@@ -11,6 +11,7 @@ import requests
 from services.analysis_store import mark_rescan_error, persist_analysis
 from services.analyzer import analyze_site
 from services.artifacts import build_optimization_pack
+from services.signals import compare_with_previous
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,23 @@ def process_due_rescans(
 
         try:
             max_pages = getattr(user, "crawl_pages", 8)
+            previous_run = (
+                AnalysisRun.query.filter_by(site_id=site.id, user_id=user.id)
+                .order_by(AnalysisRun.created_at.desc())
+                .first()
+            )
             result = analyze_site(site.url, max_pages=max_pages)
+            run_diff = compare_with_previous(
+                aio_score=result.get("aio_score"),
+                geo_score=result.get("geo_score"),
+                findings=result.get("findings"),
+                previous=previous_run,
+            )
+            if run_diff.get("findings"):
+                result["findings"] = list(result.get("findings") or []) + list(
+                    run_diff["findings"]
+                )
+            result["diff"] = run_diff
             pack = build_optimization_pack(
                 site.url,
                 result["scraped"],

@@ -119,6 +119,27 @@
             </div>
           </div>
 
+          {% if run_diff and run_diff.has_previous %}
+          <section class="diff-strip" aria-label="Confronto con run precedente">
+            <div class="diff-strip__head">
+              <span class="diff-strip__label">Vs run precedente</span>
+              {% if run_diff.delta_aio is not none or run_diff.delta_geo is not none %}
+              <span class="diff-strip__deltas">
+                <em data-delta="{{ run_diff.delta_aio }}">AIO {{ '%+d'|format(run_diff.delta_aio or 0) }}</em>
+                <em data-delta="{{ run_diff.delta_geo }}">GEO {{ '%+d'|format(run_diff.delta_geo or 0) }}</em>
+              </span>
+              {% endif %}
+            </div>
+            {% if run_diff.findings %}
+            <ul class="diff-strip__list">
+              {% for f in run_diff.findings[:3] %}
+              <li data-severity="{{ f.severity }}"><strong>{{ f.title }}</strong> — {{ f.detail }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </section>
+          {% endif %}
+
           {% if latest.analysis_notes %}
             <p class="report-notes">{{ latest.analysis_notes }}</p>
           {% endif %}
@@ -206,7 +227,7 @@
           </section>
 
           <details class="artifact-details">
-            <summary>JSON-LD, meta pack, robots</summary>
+            <summary>JSON-LD, FAQ schema, meta, robots</summary>
             <div class="artifact-grid">
               <div class="code-shell">
                 <div class="code-shell__bar">
@@ -215,6 +236,15 @@
                 </div>
                 <pre id="jsonld-box" style="max-height:12rem">{{ latest.json_ld_artifact }}</pre>
               </div>
+              {% if latest.faq_artifact %}
+              <div class="code-shell">
+                <div class="code-shell__bar">
+                  <span>faq.jsonld.html</span>
+                  <button type="button" class="linkish" onclick="copyFrom('faq-box', this)">Copia</button>
+                </div>
+                <pre id="faq-box" style="max-height:12rem">{{ latest.faq_artifact }}</pre>
+              </div>
+              {% endif %}
               <div class="code-shell">
                 <div class="code-shell__bar">
                   <span>meta-pack.html</span>

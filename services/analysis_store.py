@@ -96,6 +96,7 @@ def persist_analysis(
     analysis.analysis_notes = notes
     analysis.llms_txt = pack.get("llms.txt") or ""
     analysis.json_ld_artifact = pack.get("organization.jsonld.html") or ""
+    analysis.faq_artifact = pack.get("faq.jsonld.html") or ""
     analysis.meta_pack_artifact = pack.get("meta-pack.html") or ""
     analysis.robots_artifact = pack.get("robots.txt") or ""
     analysis.pages_analyzed = pages_analyzed
@@ -127,6 +128,7 @@ def persist_analysis(
         analysis_notes=notes,
         llms_txt=pack.get("llms.txt") or "",
         json_ld_artifact=pack.get("organization.jsonld.html") or "",
+        faq_artifact=pack.get("faq.jsonld.html") or "",
         meta_pack_artifact=pack.get("meta-pack.html") or "",
         robots_artifact=pack.get("robots.txt") or "",
         pages_analyzed=pages_analyzed,

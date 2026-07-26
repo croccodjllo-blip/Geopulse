@@ -178,12 +178,71 @@ def build_robots_txt(url: str) -> str:
             "User-agent: PerplexityBot",
             "Allow: /",
             "",
+            "User-agent: Google-Extended",
+            "Allow: /",
+            "",
+            "User-agent: Applebot-Extended",
+            "Allow: /",
+            "",
             "# Disallow: /admin",
             "# Disallow: /app",
             "",
             f"Sitemap: {sitemap}",
             "",
         ]
+    )
+
+
+def build_faq_json_ld(url: str, scraped: dict[str, Any]) -> str:
+    brand = (scraped.get("domain") or urlparse(url).netloc).replace("www.", "")
+    headings = [h for h in (scraped.get("headings") or []) if h][:4]
+    questions = []
+    if headings:
+        for heading in headings:
+            questions.append(
+                {
+                    "@type": "Question",
+                    "name": heading if heading.endswith("?") else f"Cos’è {heading}?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": (
+                            f"{heading}: informazioni ufficiali su {brand}. "
+                            f"Dettagli su {url}."
+                        ),
+                    },
+                }
+            )
+    else:
+        questions = [
+            {
+                "@type": "Question",
+                "name": f"Cos’è {brand}?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": (
+                        scraped.get("description")
+                        or f"{brand} è il sito ufficiale. Visita {url}."
+                    ),
+                },
+            },
+            {
+                "@type": "Question",
+                "name": f"Dove trovo maggiori informazioni su {brand}?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": f"Consulta il sito ufficiale: {url}",
+                },
+            },
+        ]
+    payload = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": questions[:6],
+    }
+    return (
+        '<script type="application/ld+json">\n'
+        + json.dumps(payload, ensure_ascii=False, indent=2)
+        + "\n</script>\n"
     )
 
 
@@ -200,6 +259,7 @@ def build_optimization_pack(
             url, scraped, api_key=api_key, model=model, logger=logger
         ),
         "organization.jsonld.html": build_json_ld(url, scraped),
+        "faq.jsonld.html": build_faq_json_ld(url, scraped),
         "meta-pack.html": build_meta_pack(url, scraped),
         "robots.txt": build_robots_txt(url),
     }

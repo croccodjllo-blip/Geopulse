@@ -11,6 +11,15 @@ from urllib.parse import urldefrag, urljoin, urlparse, urlunparse
 import requests
 from bs4 import BeautifulSoup
 
+from services.signals import (
+    analyze_faq_signals,
+    analyze_json_ld_types,
+    analyze_llms_txt,
+    analyze_robots_bots,
+    detect_html_faq,
+    extract_json_ld_from_soup,
+)
+
 HTTP_TIMEOUT = 12
 PROBE_TIMEOUT = 6
 PAGE_TIMEOUT = 10
@@ -127,9 +136,8 @@ def scrape_page(url: str) -> dict[str, Any]:
         html = html[:1_500_000]
     soup = BeautifulSoup(html, "lxml")
 
-    has_json_ld = bool(
-        soup.find("script", attrs={"type": re.compile(r"application/ld\+json", re.I)})
-    )
+    jsonld_meta = extract_json_ld_from_soup(soup)
+    has_json_ld = bool(jsonld_meta.get("block_count") or jsonld_meta.get("types"))
     canonical = ""
     canon = soup.find("link", attrs={"rel": re.compile(r"canonical", re.I)})
     if canon and canon.get("href"):
@@ -171,6 +179,7 @@ def scrape_page(url: str) -> dict[str, Any]:
             break
 
     body_text = " ".join(clean.get_text(" ", strip=True).split())
+    html_faq = detect_html_faq(soup, body_text)
     final_url = str(response.url)
     return {
         "final_url": final_url,
@@ -183,6 +192,8 @@ def scrape_page(url: str) -> dict[str, Any]:
         "snippet": body_text[:2500],
         "domain": urlparse(final_url).netloc,
         "has_json_ld": has_json_ld,
+        "jsonld": jsonld_meta,
+        "html_faq": html_faq,
         "canonical": canonical,
         "lang": lang,
         "robots": robots,
@@ -444,17 +455,16 @@ def score_site(
             "Aggiungi una description chiara (120–160 caratteri).",
         )
 
-    if scraped.get("has_json_ld"):
-        aio += 14
-        geo += 10
-        push("aio", "ok", "JSON-LD rilevato", "Schema strutturato aiuta AIO e GEO.")
-    else:
-        push(
-            "aio",
-            "critical",
-            "Manca JSON-LD",
-            "Senza Schema.org i motori generativi faticano a classificare il brand.",
-        )
+    jsonld_meta = scraped.get("jsonld") or {}
+    jsonld_score = analyze_json_ld_types(jsonld_meta)
+    aio += jsonld_score["aio"]
+    geo += jsonld_score["geo"]
+    findings.extend(jsonld_score["findings"])
+
+    faq_score = analyze_faq_signals(jsonld_meta, scraped.get("html_faq") or {})
+    aio += faq_score["aio"]
+    geo += faq_score["geo"]
+    findings.extend(faq_score["findings"])
 
     if scraped.get("canonical"):
         geo += 8
@@ -512,29 +522,19 @@ def score_site(
         )
 
     llms = probes.get("llms") or {}
-    if llms.get("ok"):
-        aio += 14
-        geo += 8
-        push("aio", "ok", "llms.txt disponibile", llms.get("url") or "/llms.txt")
-    else:
-        push(
-            "aio",
-            "critical",
-            "llms.txt assente",
-            "Crea /llms.txt per guidare crawler e agenti AI sul tuo contenuto.",
-        )
+    llms_score = analyze_llms_txt(llms.get("snippet") or "", present=bool(llms.get("ok")))
+    aio += llms_score["aio"]
+    geo += llms_score["geo"]
+    findings.extend(llms_score["findings"])
 
     robots_probe = probes.get("robots") or {}
-    if robots_probe.get("ok"):
-        geo += 6
-        push("technical", "ok", "robots.txt raggiungibile", robots_probe.get("url") or "/robots.txt")
-    else:
-        push(
-            "technical",
-            "warn",
-            "robots.txt assente o non raggiungibile",
-            "Pubblica una policy chiara per crawler AI e sitemap.",
-        )
+    bots_score = analyze_robots_bots(
+        robots_probe.get("snippet") or "",
+        robots_ok=bool(robots_probe.get("ok")),
+    )
+    aio += bots_score["aio"]
+    geo += bots_score["geo"]
+    findings.extend(bots_score["findings"])
 
     sitemap = probes.get("sitemap") or {}
     if sitemap.get("ok"):
@@ -609,13 +609,12 @@ def score_site(
             )
         notes = (
             f"Analisi dominio {_host_key(urlparse(url).netloc)}: "
-            f"{crawled} pagine (seed + sitemap/link) e probe "
-            "/llms.txt, /robots.txt, /sitemap.xml."
+            f"{crawled} pagine + JSON-LD tipizzato, FAQ, policy bot, qualità llms.txt."
         )
     else:
         notes = (
-            f"Analisi homepage di {urlparse(url).netloc} + probe "
-            "/llms.txt, /robots.txt, /sitemap.xml."
+            f"Analisi di {urlparse(url).netloc}: "
+            "JSON-LD tipizzato, FAQ schema, policy bot AI, qualità llms.txt e probe root."
         )
 
     return {
@@ -623,6 +622,17 @@ def score_site(
         "geo_score": _clamp(geo),
         "findings": findings,
         "notes": notes,
+        "signals": {
+            "jsonld": jsonld_meta,
+            "llms_quality": llms_score.get("quality"),
+            "llms_sections": llms_score.get("sections") or [],
+            "bot_policies": bots_score.get("policies") or {},
+            "faq": {
+                "has_faq_page": bool(jsonld_meta.get("has_faq_page")),
+                "faq_questions": jsonld_meta.get("faq_questions") or 0,
+                "html_faq_likely": bool((scraped.get("html_faq") or {}).get("html_faq_likely")),
+            },
+        },
     }
 
 
