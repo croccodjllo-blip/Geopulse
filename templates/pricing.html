@@ -37,13 +37,16 @@
         <li>Export e storico avanzato</li>
         <li>Billing Stripe (in arrivo)</li>
       </ul>
-      <a class="btn btn-ghost btn-block" href="{{ url_for('register') }}">Prenota l’interesse</a>
+      <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">Prenota l’interesse</a>
     </section>
   </div>
 
   <p class="plan-note">
-    Domande sui limiti? Leggi le <a href="{{ url_for('faq') }}">FAQ</a>
-    o <a href="{{ url_for('register') }}">crea un account</a> e prova subito.
+    “Prenota l’interesse” salva i tuoi dati nella waitlist Pro (database GeoPulse)
+    e ti ricontatteremo via email. Domande? Scrivi a
+    <a href="mailto:info@geopulse.it">info@geopulse.it</a>,
+    leggi le <a href="{{ url_for('faq') }}">FAQ</a>
+    o <a href="{{ url_for('register') }}">crea un account Free</a>.
   </p>
 </article>
 {% endblock %}

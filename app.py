@@ -192,6 +192,23 @@ class SiteAnalysis(db.Model):
         return compute_rating(self.aio_score, self.geo_score, self.findings)
 
 
+class ProInterest(db.Model):
+    """Waitlist interesse piano Pro (da Prenota l'interesse)."""
+
+    __tablename__ = "pro_interests"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(255), nullable=False, index=True)
+    company = db.Column(db.String(160))
+    website_url = db.Column(db.String(500))
+    note = db.Column(db.String(500))
+    source = db.Column(db.String(80), nullable=False, default="pricing")
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+
 # ---------------------------------------------------------------------------
 # Forms
 # ---------------------------------------------------------------------------
@@ -286,6 +303,34 @@ class AnalyzeForm(FlaskForm):
         validators=[DataRequired(), Length(max=500), validate_http_url],
     )
     submit = SubmitField("Analizza e ottimizza")
+
+
+class ProInterestForm(FlaskForm):
+    name = StringField(
+        "Nome e cognome",
+        validators=[DataRequired(), Length(min=2, max=120)],
+    )
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(),
+            Email(message="Email non valida.", check_deliverability=False),
+            Length(max=255),
+        ],
+    )
+    company = StringField(
+        "Azienda / Brand",
+        validators=[Optional(), Length(max=160)],
+    )
+    website_url = StringField(
+        "Sito web",
+        validators=[Optional(), Length(max=500), validate_http_url],
+    )
+    note = StringField(
+        "Cosa ti serve da Pro",
+        validators=[Optional(), Length(max=500)],
+    )
+    submit = SubmitField("Prenota l’interesse")
 
 
 # ---------------------------------------------------------------------------
@@ -422,6 +467,78 @@ def product():
 @app.route("/prezzi")
 def pricing():
     return render_template("pricing.html")
+
+
+@app.route("/interesse-pro", methods=["GET", "POST"])
+def pro_interest():
+    """Raccoglie interesse piano Pro nella tabella pro_interests."""
+    form = ProInterestForm()
+    if current_user():
+        user = current_user()
+        if request.method == "GET":
+            form.name.data = user.name
+            form.email.data = user.email
+            form.company.data = user.company or ""
+            form.website_url.data = user.website_url or ""
+
+    if form.validate_on_submit():
+        if not limiter.allow(
+            f"pro-interest:{client_ip()}", limit=8, window_seconds=3600
+        ):
+            flash("Troppe richieste da questo IP. Riprova più tardi.", "error")
+            return render_template("pro_interest.html", form=form)
+
+        email = form.email.data.strip().lower()
+        website = ""
+        if form.website_url.data:
+            try:
+                website = normalize_url(form.website_url.data)
+            except ValueError:
+                website = form.website_url.data.strip()
+
+        # Evita duplicati ravvicinati sulla stessa email
+        recent = (
+            ProInterest.query.filter_by(email=email)
+            .order_by(ProInterest.created_at.desc())
+            .first()
+        )
+        if recent and recent.created_at:
+            created = recent.created_at
+            if created.tzinfo is None:
+                created = created.replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) - created < timedelta(hours=24):
+                flash(
+                    "Abbiamo già ricevuto il tuo interesse Pro nelle ultime 24 ore. "
+                    "Ti contatteremo a breve.",
+                    "success",
+                )
+                return redirect(url_for("pricing"))
+
+        lead = ProInterest(
+            name=form.name.data.strip(),
+            email=email,
+            company=(form.company.data or "").strip() or None,
+            website_url=website or None,
+            note=(form.note.data or "").strip() or None,
+            source="pricing",
+        )
+        db.session.add(lead)
+        db.session.commit()
+        app.logger.info(
+            "Pro interest saved id=%s email=%s company=%s",
+            lead.id,
+            lead.email,
+            lead.company,
+        )
+        flash(
+            "Interesse Pro registrato. Ti contatteremo a "
+            f"{email} appena il piano sarà disponibile "
+            "(o scrivici a info@geopulse.it).",
+            "success",
+        )
+        return redirect(url_for("pricing"))
+
+    return render_template("pro_interest.html", form=form)
 
 
 @app.route("/faq")
