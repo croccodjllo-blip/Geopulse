@@ -1069,6 +1069,7 @@ button, input, select, textarea { font: inherit; }
 .analyze-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: stretch;
   gap: 0.65rem;
 }
 

@@ -52,7 +52,8 @@
           {% if is_pro %}
           <div class="field analyze-competitors">
             <label for="competitors">Competitor snapshot (Plus, max 3)</label>
-            {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com&#10;https://rivale2.com", class_="analyze-input") }}
+            {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
+https://rivale2.com", class_="analyze-input") }}
           </div>
           {% endif %}
           {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
@@ -177,8 +178,14 @@
                 </div>
                 <div class="dash-block__meta">
                   <span class="dash-block__count">{{ crawl_pages_view|length }}</span>
-                  {% if crawl_crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} critic{{ 'he' if crawl_crit_n != 1 else 'a' }}</span>{% endif %}
-                  {% if crawl_warn_n %}<span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} attenzione</span>{% endif %}
+                  {% if crawl_crit_n and crawl_warn_n %}
+                  <span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} critic{{ 'he' if crawl_crit_n != 1 else 'a' }}</span>
+                  <span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} attenzione</span>
+                  {% elif crawl_crit_n %}
+                  <span class="dash-block__chip" data-severity="critical">critiche</span>
+                  {% elif crawl_warn_n %}
+                  <span class="dash-block__chip" data-severity="warn">attenzione</span>
+                  {% endif %}
                 </div>
               </header>
               {% if crawl_pages_view %}
@@ -221,8 +228,14 @@
                 </div>
                 <div class="dash-block__meta">
                   <span class="dash-block__count">{{ findings|length }}</span>
-                  {% if crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crit_n }} critical</span>{% endif %}
-                  {% if warn_n %}<span class="dash-block__chip" data-severity="warn">{{ warn_n }} warn</span>{% endif %}
+                  {% if crit_n and warn_n %}
+                  <span class="dash-block__chip" data-severity="critical">{{ crit_n }} critical</span>
+                  <span class="dash-block__chip" data-severity="warn">{{ warn_n }} warn</span>
+                  {% elif crit_n %}
+                  <span class="dash-block__chip" data-severity="critical">critical</span>
+                  {% elif warn_n %}
+                  <span class="dash-block__chip" data-severity="warn">warn</span>
+                  {% endif %}
                 </div>
               </header>
               <ul class="finding-list">
