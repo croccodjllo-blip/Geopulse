@@ -75,6 +75,38 @@ def pack_zip_bytes(entity: Any) -> bytes:
         before_after = getattr(entity, "before_after_artifact", None) or ""
         if before_after:
             zf.writestr("before-after.md", before_after)
+        extras = {}
+        if hasattr(entity, "pack_artifacts"):
+            extras = entity.pack_artifacts or {}
+        elif hasattr(entity, "_crawl_blob"):
+            blob = entity._crawl_blob
+            if isinstance(blob, dict):
+                extras = blob.get("artifacts") or {}
+        for name, content in (extras or {}).items():
+            if isinstance(content, str) and content.strip() and name not in {
+                "llms.txt",
+                "organization.jsonld.html",
+                "faq.jsonld.html",
+                "meta-pack.html",
+                "robots.txt",
+                "fix-this-week.md",
+                "before-after.md",
+            }:
+                zf.writestr(name, content)
+        pdf_b64 = ""
+        if hasattr(entity, "executive_pdf_b64"):
+            pdf_b64 = entity.executive_pdf_b64 or ""
+        elif hasattr(entity, "_crawl_blob"):
+            blob = entity._crawl_blob
+            if isinstance(blob, dict):
+                pdf_b64 = blob.get("executive_pdf_b64") or ""
+        if pdf_b64:
+            import base64
+
+            try:
+                zf.writestr("executive-report.pdf", base64.b64decode(pdf_b64))
+            except Exception:
+                pass
         report = {
             "url": entity.url,
             "domain": entity.domain,

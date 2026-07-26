@@ -11,6 +11,7 @@ from urllib.parse import urldefrag, urljoin, urlparse, urlunparse
 import requests
 from bs4 import BeautifulSoup
 
+from services.advanced_checks import run_advanced_suite
 from services.deep_checks import (
     ADDRESS_RE,
     AUTHOR_RE,
@@ -175,10 +176,14 @@ def scrape_page(url: str) -> dict[str, Any]:
         canonical = str(canon["href"]).strip()
 
     hreflang = []
+    hreflang_pairs: list[dict[str, str]] = []
     for link in soup.find_all("link", attrs={"rel": re.compile(r"alternate", re.I)}):
         hl = link.get("hreflang")
         if hl:
-            hreflang.append(str(hl).strip())
+            code = str(hl).strip()
+            hreflang.append(code)
+            href = str(link.get("href") or "").strip()
+            hreflang_pairs.append({"lang": code, "href": href})
 
     html_tag = soup.find("html")
     lang = ""
@@ -193,6 +198,33 @@ def scrape_page(url: str) -> dict[str, Any]:
     twitter_card = _extract_meta(soup, name="twitter:card")
     twitter_title = _extract_meta(soup, name="twitter:title")
     author_meta = _extract_meta(soup, name="author")
+    viewport = ""
+    vp = soup.find("meta", attrs={"name": re.compile(r"^viewport$", re.I)})
+    if vp and vp.get("content"):
+        viewport = str(vp["content"]).strip()
+
+    date_meta: list[str] = []
+    for prop in (
+        "article:published_time",
+        "article:modified_time",
+        "og:updated_time",
+    ):
+        val = _extract_meta(soup, prop=prop)
+        if val:
+            date_meta.append(val)
+    for name in ("date", "publishdate", "last-modified", "DC.date"):
+        val = _extract_meta(soup, name=name)
+        if val:
+            date_meta.append(val)
+
+    resp_headers = {
+        "strict-transport-security": response.headers.get("Strict-Transport-Security")
+        or "",
+        "content-security-policy": response.headers.get("Content-Security-Policy") or "",
+        "x-frame-options": response.headers.get("X-Frame-Options") or "",
+        "x-robots-tag": response.headers.get("X-Robots-Tag") or "",
+        "content-type": response.headers.get("Content-Type") or "",
+    }
 
     h1_tags = soup.find_all("h1")
     h2_tags = soup.find_all("h2")
@@ -306,6 +338,10 @@ def scrape_page(url: str) -> dict[str, Any]:
         "canonical": canonical,
         "lang": lang,
         "hreflang": hreflang[:12],
+        "hreflang_pairs": hreflang_pairs[:24],
+        "viewport": viewport,
+        "date_meta": date_meta[:8],
+        "headers": resp_headers,
         "robots": robots,
         "og_title": og_title,
         "og_description": og_description,
@@ -1066,6 +1102,8 @@ def analyze_site(
     *,
     max_pages: int = 1,
     competitor_urls: list[str] | None = None,
+    previous: Any | None = None,
+    run_advanced: bool = True,
 ) -> dict[str, Any]:
     """
     Analizza il dominio a partire da `url`.
@@ -1125,10 +1163,13 @@ def analyze_site(
             "word_count": (p.get("scraped") or {}).get("word_count"),
             "response_ms": (p.get("scraped") or {}).get("response_ms"),
             "status_code": (p.get("scraped") or {}).get("status_code"),
+            "severity": p.get("severity"),
+            "problems": p.get("problems") or [],
         }
         for p in page_reports
     ]
-    # Criticità prima: così storage/export non perdono le pagine con problemi.
+    # Annota severity/problems prima dello storage.
+    crawl_pages = prioritize_crawl_pages(crawl_pages)
     crawl_pages = pages_for_storage(crawl_pages, limit=len(crawl_pages) or 1)
 
     important = []
@@ -1144,16 +1185,57 @@ def analyze_site(
         "pages_analyzed": len(crawl_pages),
     }
 
+    # Competitor: senza suite avanzata ricorsiva (evita fan-out).
     competitors: list[dict[str, Any]] = []
     for raw in (competitor_urls or [])[:3]:
         try:
             comp_url = normalize_url(raw)
             if same_host(comp_url, base):
                 continue
-            comp = analyze_site(comp_url, max_pages=min(5, max_pages))
+            comp = analyze_site(
+                comp_url,
+                max_pages=min(5, max_pages),
+                run_advanced=False,
+            )
             competitors.append(summarize_competitor(comp))
         except Exception:
             competitors.append({"url": raw, "error": "analisi non riuscita"})
+
+    advanced_artifacts: dict[str, str] = {}
+    executive_pdf: bytes | None = None
+    if run_advanced:
+        adv = run_advanced_suite(
+            url=url,
+            scraped=scraped,
+            probes=probes,
+            page_reports=page_reports,
+            competitors=competitors,
+            previous=previous,
+            base_signals=scored.get("signals") or {},
+            aio_score=scored.get("aio_score"),
+            geo_score=scored.get("geo_score"),
+            findings_so_far=scored.get("findings") or [],
+        )
+        scored["aio_score"] = _clamp(
+            float(scored.get("aio_score") or 0) + float(adv.get("aio") or 0)
+        )
+        scored["geo_score"] = _clamp(
+            float(scored.get("geo_score") or 0) + float(adv.get("geo") or 0)
+        )
+        scored["findings"] = list(scored.get("findings") or []) + list(
+            adv.get("findings") or []
+        )
+        signals = dict(scored.get("signals") or {})
+        signals["advanced"] = adv.get("signals") or {}
+        scored["signals"] = signals
+        advanced_artifacts = dict(adv.get("artifacts") or {})
+        executive_pdf = adv.get("executive_pdf")
+        scored["notes"] = (
+            (scored.get("notes") or "")
+            + " Suite avanzata: schema rich, CWV proxy, indexabilità, "
+            "link, hreflang, header, mobile/SPA, E-E-A-T/YMYL, NAP, "
+            "answer readiness, KG, competitor, regressioni pack."
+        ).strip()
 
     return {
         "scraped": scraped,
@@ -1161,5 +1243,7 @@ def analyze_site(
         "pages": crawl_pages,
         "pages_analyzed": len(crawl_pages),
         "competitors": competitors,
+        "advanced_artifacts": advanced_artifacts,
+        "executive_pdf": executive_pdf,
         **scored,
     }

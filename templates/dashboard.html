@@ -115,6 +115,7 @@ https://rivale2.com", class_="analyze-input") }}
             </div>
             <div class="report-top__actions">
               <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
+              <a class="btn btn-ghost" href="{{ url_for('download_executive_pdf', analysis_id=latest.id) }}">PDF</a>
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="Email non configurata sul server"{% endif %}>
@@ -126,6 +127,52 @@ https://rivale2.com", class_="analyze-input") }}
               {% endif %}
             </div>
           </div>
+
+          {% if advanced %}
+          <div class="adv-strip" aria-label="Suite avanzata">
+            {% if advanced.answer_readiness %}
+            <span class="adv-strip__item" data-tone="{{ advanced.answer_readiness }}">
+              Answer engine · {{ advanced.answer_readiness }}
+            </span>
+            {% endif %}
+            {% if advanced.cwv_proxy %}
+            <span class="adv-strip__item">
+              CWV proxy · LCP {{ advanced.cwv_proxy.lcp }} · INP {{ advanced.cwv_proxy.inp }} · CLS {{ advanced.cwv_proxy.cls }}
+            </span>
+            {% endif %}
+            {% if advanced.kg_completeness is not none %}
+            <span class="adv-strip__item">KG brand · {{ advanced.kg_completeness }}/7</span>
+            {% endif %}
+            {% if advanced.ymyl %}
+            <span class="adv-strip__item" data-tone="warn">YMYL</span>
+            {% endif %}
+            {% if advanced.broken_links %}
+            <span class="adv-strip__item" data-tone="critical">Link rotti · {{ advanced.broken_links|length }}</span>
+            {% endif %}
+            {% if advanced.near_duplicate_clusters %}
+            <span class="adv-strip__item" data-tone="warn">Near-dupe · {{ advanced.near_duplicate_clusters }}</span>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          {% if score_history and score_history|length > 1 %}
+          <section class="trend-panel" aria-label="Trend score">
+            <header class="trend-panel__head">
+              <h3 class="trend-panel__title">Trend score</h3>
+              <span class="trend-panel__meta">{{ score_history|length }} run</span>
+            </header>
+            {% set max_s = 100 %}
+            <svg class="trend-panel__svg" viewBox="0 0 320 72" role="img" aria-label="Andamento AIO e GEO">
+              {% set n = score_history|length %}
+              {% set step = 300 / ([n - 1, 1]|max) %}
+              <polyline class="trend-panel__aio" fill="none" stroke-width="2"
+                points="{% for p in score_history %}{{ 10 + loop.index0 * step }},{{ 64 - (p.aio / max_s * 52) }}{% if not loop.last %} {% endif %}{% endfor %}" />
+              <polyline class="trend-panel__geo" fill="none" stroke-width="2"
+                points="{% for p in score_history %}{{ 10 + loop.index0 * step }},{{ 64 - (p.geo / max_s * 52) }}{% if not loop.last %} {% endif %}{% endfor %}" />
+            </svg>
+            <p class="trend-panel__legend"><span data-series="aio">AIO</span> <span data-series="geo">GEO</span></p>
+          </section>
+          {% endif %}
 
           <div class="signal-board" aria-label="Panoramica score">
             <section class="signal-board__grade" aria-labelledby="grade-code">
@@ -313,27 +360,47 @@ https://rivale2.com", class_="analyze-input") }}
           </p>
           {% endif %}
 
-          {% if latest.competitors %}
+          {% if competitor_rows %}
           <section class="dash-block dash-block--panel" aria-labelledby="comp-title">
             <header class="dash-block__head">
               <div>
                 <p class="dash-block__eyebrow">Confronto</p>
-                <h3 class="dash-block__title" id="comp-title">Competitor snapshot</h3>
+                <h3 class="dash-block__title" id="comp-title">Competitor benchmark</h3>
               </div>
-              <span class="dash-block__count">{{ latest.competitors|length }}</span>
+              <span class="dash-block__count">{{ competitor_rows|length }}</span>
             </header>
-            <ul class="comp-list">
-              {% for c in latest.competitors %}
-              <li>
-                <strong>{{ c.domain or c.url }}</strong>
-                {% if c.error %}
-                <span class="muted">{{ c.error }}</span>
-                {% else %}
-                <span>AIO {{ c.aio_score }} · GEO {{ c.geo_score }} · {{ c.rating }} · {{ c.critical }} critical</span>
-                {% endif %}
-              </li>
-              {% endfor %}
-            </ul>
+            <div class="comp-table-wrap">
+              <table class="comp-table">
+                <thead>
+                  <tr>
+                    <th>Dominio</th>
+                    <th>AIO</th>
+                    <th>GEO</th>
+                    <th>Rating</th>
+                    <th>Crit</th>
+                    <th>Δ AIO</th>
+                    <th>Δ GEO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for c in competitor_rows %}
+                  <tr>
+                    <td>{{ c.domain or c.url }}</td>
+                    {% if c.error %}
+                    <td colspan="6" class="muted">{{ c.error }}</td>
+                    {% else %}
+                    <td>{{ c.aio_score }}</td>
+                    <td>{{ c.geo_score }}</td>
+                    <td>{{ c.rating }}</td>
+                    <td>{{ c.critical }}</td>
+                    <td data-delta="{{ c.gap_aio }}">{% if c.gap_aio is not none %}{{ '%+d'|format(c.gap_aio) }}{% else %}—{% endif %}</td>
+                    <td data-delta="{{ c.gap_geo }}">{% if c.gap_geo is not none %}{{ '%+d'|format(c.gap_geo) }}{% else %}—{% endif %}</td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </section>
           {% endif %}
 
@@ -358,6 +425,42 @@ https://rivale2.com", class_="analyze-input") }}
                   <button type="button" class="linkish" onclick="copyFrom('checklist-box', this)">Copia</button>
                 </div>
                 <pre id="checklist-box">{{ latest.checklist_artifact }}</pre>
+              </div>
+              {% endif %}
+              {% if pack_artifacts.get('page-checklist.md') %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>page-checklist.md</span>
+                  <button type="button" class="linkish" onclick="copyFrom('page-checklist-box', this)">Copia</button>
+                </div>
+                <pre id="page-checklist-box">{{ pack_artifacts.get('page-checklist.md') }}</pre>
+              </div>
+              {% endif %}
+              {% if pack_artifacts.get('html-patches.html') %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>html-patches.html</span>
+                  <button type="button" class="linkish" onclick="copyFrom('patches-box', this)">Copia</button>
+                </div>
+                <pre id="patches-box">{{ pack_artifacts.get('html-patches.html') }}</pre>
+              </div>
+              {% endif %}
+              {% if pack_artifacts.get('brand-knowledge-graph.json') %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>brand-knowledge-graph.json</span>
+                  <button type="button" class="linkish" onclick="copyFrom('kg-box', this)">Copia</button>
+                </div>
+                <pre id="kg-box">{{ pack_artifacts.get('brand-knowledge-graph.json') }}</pre>
+              </div>
+              {% endif %}
+              {% if pack_artifacts.get('competitor-benchmark.md') %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>competitor-benchmark.md</span>
+                  <button type="button" class="linkish" onclick="copyFrom('bench-box', this)">Copia</button>
+                </div>
+                <pre id="bench-box">{{ pack_artifacts.get('competitor-benchmark.md') }}</pre>
               </div>
               {% endif %}
               {% if latest.before_after_artifact %}
@@ -406,6 +509,15 @@ https://rivale2.com", class_="analyze-input") }}
                 </div>
                 <pre id="robots-box">{{ latest.robots_artifact }}</pre>
               </div>
+              {% if pack_artifacts.get('executive-report.html') %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>executive-report.html</span>
+                  <a class="linkish" href="{{ url_for('download_executive_html', analysis_id=latest.id) }}">Scarica</a>
+                </div>
+                <pre>Report executive stampabile · usa anche il pulsante PDF sopra</pre>
+              </div>
+              {% endif %}
             </div>
           </section>
         </section>

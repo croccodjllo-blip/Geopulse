@@ -265,7 +265,7 @@ def build_optimization_pack(
         "geo_score": None,
         "findings": findings or [],
     }
-    return {
+    pack = {
         "llms.txt": generate_llms_txt(
             url, scraped, api_key=api_key, model=model, logger=logger
         ),
@@ -278,3 +278,9 @@ def build_optimization_pack(
             current=current, previous=previous, diff=diff
         ),
     }
+    advanced = (result or {}).get("advanced_artifacts") or {}
+    if isinstance(advanced, dict):
+        for key, value in advanced.items():
+            if isinstance(value, str) and value.strip():
+                pack[key] = value
+    return pack

@@ -104,11 +104,36 @@ def persist_analysis(
     analysis.checklist_artifact = pack.get("fix-this-week.md") or ""
     analysis.before_after_artifact = pack.get("before-after.md") or ""
     analysis.pages_analyzed = pages_analyzed
+    advanced_artifacts = result.get("advanced_artifacts") or {}
+    if not advanced_artifacts and isinstance(pack, dict):
+        advanced_artifacts = {
+            k: v
+            for k, v in pack.items()
+            if k
+            in {
+                "page-checklist.md",
+                "html-patches.html",
+                "brand-knowledge-graph.json",
+                "competitor-benchmark.md",
+                "executive-report.html",
+            }
+            and isinstance(v, str)
+        }
+    # PDF bytes → base64 per persistenza leggera nel blob JSON
+    executive_pdf_b64 = ""
+    pdf_bytes = result.get("executive_pdf")
+    if isinstance(pdf_bytes, (bytes, bytearray)) and pdf_bytes:
+        import base64
+
+        executive_pdf_b64 = base64.b64encode(bytes(pdf_bytes)).decode("ascii")
+
     analysis.crawl_pages_json = json.dumps(
         {
             "pages": pages_for_storage(pages, limit=CRAWL_PAGES_STORE_LIMIT),
             "competitors": result.get("competitors") or [],
             "signals": result.get("signals") or {},
+            "artifacts": advanced_artifacts,
+            "executive_pdf_b64": executive_pdf_b64,
         },
         ensure_ascii=False,
     )

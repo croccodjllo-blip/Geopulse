@@ -303,6 +303,34 @@ class SiteAnalysis(db.Model):
         return []
 
     @property
+    def signals(self) -> dict[str, Any]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            signals = data.get("signals") or {}
+            return signals if isinstance(signals, dict) else {}
+        return {}
+
+    @property
+    def pack_artifacts(self) -> dict[str, str]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            arts = data.get("artifacts") or {}
+            return arts if isinstance(arts, dict) else {}
+        return {}
+
+    @property
+    def executive_pdf_b64(self) -> str:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            return str(data.get("executive_pdf_b64") or "")
+        return ""
+
+    @property
+    def advanced(self) -> dict[str, Any]:
+        adv = (self.signals or {}).get("advanced") or {}
+        return adv if isinstance(adv, dict) else {}
+
+    @property
     def rating(self) -> dict[str, Any]:
         return compute_rating(self.aio_score, self.geo_score, self.findings)
 
@@ -374,6 +402,34 @@ class AnalysisRun(db.Model):
             comps = data.get("competitors") or []
             return comps if isinstance(comps, list) else []
         return []
+
+    @property
+    def signals(self) -> dict[str, Any]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            signals = data.get("signals") or {}
+            return signals if isinstance(signals, dict) else {}
+        return {}
+
+    @property
+    def pack_artifacts(self) -> dict[str, str]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            arts = data.get("artifacts") or {}
+            return arts if isinstance(arts, dict) else {}
+        return {}
+
+    @property
+    def executive_pdf_b64(self) -> str:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            return str(data.get("executive_pdf_b64") or "")
+        return ""
+
+    @property
+    def advanced(self) -> dict[str, Any]:
+        adv = (self.signals or {}).get("advanced") or {}
+        return adv if isinstance(adv, dict) else {}
 
     @property
     def rating(self) -> dict[str, Any]:
@@ -1105,6 +1161,7 @@ def dashboard():
                         url,
                         max_pages=user.crawl_pages,
                         competitor_urls=competitor_urls[:3] if user.is_pro else [],
+                        previous=previous_run,
                     )
                     run_diff = compare_with_previous(
                         aio_score=result.get("aio_score"),
@@ -1143,6 +1200,7 @@ def dashboard():
                         diff=run_diff,
                         result=result,
                     )
+                    pack.update(result.get("advanced_artifacts") or {})
                     latest = persist_analysis(
                         db.session,
                         SiteAnalysis=SiteAnalysis,
@@ -1237,6 +1295,32 @@ def dashboard():
         if str((f or {}).get("severity") or "").lower() == "ok"
     )
 
+    score_history: list[dict[str, Any]] = []
+    if latest is not None:
+        hist_runs = (
+            AnalysisRun.query.filter_by(site_id=latest.id, user_id=user.id)
+            .order_by(AnalysisRun.created_at.asc())
+            .limit(24)
+            .all()
+        )
+        for run in hist_runs:
+            score_history.append(
+                {
+                    "aio": run.aio_score if run.aio_score is not None else 0,
+                    "geo": run.geo_score if run.geo_score is not None else 0,
+                    "label": run.created_at.strftime("%d/%m")
+                    if run.created_at
+                    else "",
+                    "rating": (run.rating or {}).get("code"),
+                }
+            )
+
+    advanced = latest.advanced if latest is not None else {}
+    pack_artifacts = latest.pack_artifacts if latest is not None else {}
+    competitor_rows = advanced.get("competitor_benchmark") or (
+        latest.competitors if latest is not None else []
+    )
+
     return render_template(
         "dashboard.html",
         form=form,
@@ -1259,6 +1343,10 @@ def dashboard():
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
+        score_history=score_history,
+        advanced=advanced,
+        pack_artifacts=pack_artifacts,
+        competitor_rows=competitor_rows,
     )
 
 
@@ -1353,6 +1441,53 @@ def download_pack(analysis_id: int):
         mimetype="application/zip",
         as_attachment=True,
         download_name=filename,
+    )
+
+
+@app.route("/dashboard/download/<int:analysis_id>/executive.pdf")
+@login_required
+def download_executive_pdf(analysis_id: int):
+    import base64
+
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    b64 = analysis.executive_pdf_b64 or ""
+    if not b64:
+        flash("PDF executive non disponibile: riesegui l’analisi.", "error")
+        return redirect(url_for("dashboard"))
+    try:
+        raw = base64.b64decode(b64)
+    except Exception:
+        flash("PDF executive non valido.", "error")
+        return redirect(url_for("dashboard"))
+    return send_file(
+        io.BytesIO(raw),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"geopulse-{analysis.domain.replace(':', '_')}-executive.pdf",
+    )
+
+
+@app.route("/dashboard/download/<int:analysis_id>/executive.html")
+@login_required
+def download_executive_html(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    html = (analysis.pack_artifacts or {}).get("executive-report.html") or ""
+    if not html:
+        flash("Report HTML non disponibile: riesegui l’analisi.", "error")
+        return redirect(url_for("dashboard"))
+    return send_file(
+        io.BytesIO(html.encode("utf-8")),
+        mimetype="text/html",
+        as_attachment=True,
+        download_name=f"geopulse-{analysis.domain.replace(':', '_')}-executive.html",
     )
 
 

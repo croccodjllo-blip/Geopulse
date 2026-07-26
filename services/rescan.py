@@ -70,7 +70,9 @@ def process_due_rescans(
                 .order_by(AnalysisRun.created_at.desc())
                 .first()
             )
-            result = analyze_site(site.url, max_pages=max_pages)
+            result = analyze_site(
+                site.url, max_pages=max_pages, previous=previous_run
+            )
             run_diff = compare_with_previous(
                 aio_score=result.get("aio_score"),
                 geo_score=result.get("geo_score"),
@@ -93,6 +95,7 @@ def process_due_rescans(
                 diff=run_diff,
                 result=result,
             )
+            pack.update(result.get("advanced_artifacts") or {})
             persist_analysis(
                 db_session,
                 SiteAnalysis=SiteAnalysis,
