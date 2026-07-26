@@ -1104,7 +1104,6 @@ def analyze_site(
             ][:sm_limit]
         probes["sitemap"]["urls"] = urls
 
-    seed_canon = canonicalize_page_url(base, seed=base)
     if max_pages <= 1:
         seed_report = score_page_signals(scraped)
         seed_report["scraped"] = scraped
