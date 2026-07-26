@@ -1,291 +1,219 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block body_class %}body-dash{% endblock %}
+{% block main_class %}site-main--dash{% endblock %}
 
 {% block content %}
-<section class="dash">
-  <header class="dash-hero">
-    <div class="dash-hero__copy">
-      <p class="eyebrow">GeoPulse · Dashboard</p>
-      <h1 class="h-display dash-title">Il tuo centro analisi</h1>
-      <p class="lede dash-lede">
-        Ciao {{ current_user.name }}{% if current_user.company %} · {{ current_user.company }}{% endif %}.
-        Analizza un URL, leggi score e findings, poi pubblica il pack sul sito.
+<section class="workspace">
+  <header class="workspace-banner">
+    <img
+      class="workspace-banner__img"
+      src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
+      alt=""
+      width="1536"
+      height="1024"
+    />
+    <div class="workspace-banner__veil"></div>
+    <div class="workspace-banner__inner">
+      <p class="workspace-banner__brand">GEOPULSE</p>
+      <h1 class="workspace-banner__title">Ciao {{ current_user.name.split(' ')[0] }}</h1>
+      <p class="workspace-banner__lede">
+        {% if current_user.company %}{{ current_user.company }} · {% endif %}
+        Analizza, leggi i findings, pubblica il pack.
       </p>
-      <a class="dash-jump" href="#guida">Guida all’uso dei risultati ↓</a>
+      <div class="workspace-banner__meta">
+        <span>Siti {{ site_count }}/{{ max_sites }}</span>
+        <span>Analisi {{ used_today }}/{{ daily_limit }} · 24h</span>
+        <span>{% if openai_ready %}OpenAI{% else %}Fallback locale{% endif %}</span>
+      </div>
     </div>
-    <aside class="dash-quota" aria-label="Limiti piano">
-      <div class="quota-item">
-        <div class="quota-item__top">
-          <span>Siti</span>
-          <strong>{{ site_count }}/{{ max_sites }}</strong>
-        </div>
-        <div class="quota-bar" aria-hidden="true">
-          <span style="--q: {{ [(site_count / max_sites * 100)|round(0, 'floor'), 100]|min }}%"></span>
-        </div>
-      </div>
-      <div class="quota-item">
-        <div class="quota-item__top">
-          <span>Analisi 24h</span>
-          <strong>{{ used_today }}/{{ daily_limit }}</strong>
-        </div>
-        <div class="quota-bar" aria-hidden="true">
-          <span style="--q: {{ [(used_today / daily_limit * 100)|round(0, 'floor'), 100]|min }}%"></span>
-        </div>
-      </div>
-      <p class="quota-engine">{% if openai_ready %}Motore: OpenAI{% else %}Motore: fallback locale{% endif %}</p>
-    </aside>
   </header>
 
-  <form method="post" class="js-analyze-form analyze-form" novalidate>
-    {{ form.hidden_tag() }}
-    <div class="analyze-composer">
-      <div class="field analyze-composer__field">
-        <label for="url">URL del sito da analizzare</label>
-        <div class="analyze-row">
-          {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input") }}
-          {{ form.submit(class_="btn btn-primary analyze-submit") }}
+  <div class="workspace-body">
+    <form method="post" class="js-analyze-form analyze-form" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="analyze-composer">
+        <div class="field analyze-composer__field">
+          <label for="url">URL da analizzare</label>
+          <div class="analyze-row">
+            {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input") }}
+            {{ form.submit(class_="btn btn-signal analyze-submit") }}
+          </div>
+          {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
-        {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
-    </div>
-  </form>
+    </form>
 
-  {% if latest %}
-  <section class="result-block" aria-labelledby="result-domain">
-    <div class="result-head">
-      <div>
-        <p class="eyebrow">Ultima analisi</p>
-        <h2 class="h-display result-domain" id="result-domain">{{ latest.domain }}</h2>
-        <p class="lede result-meta">
-          {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
-          <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
-          {% if latest.created_at %}
-            <span class="result-time">{{ latest.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+    <div class="workspace-grid">
+      <div class="workspace-main">
+        {% if latest %}
+        <section class="report" aria-labelledby="result-domain">
+          <div class="report-top">
+            <div>
+              <p class="eyebrow">Report</p>
+              <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
+              <p class="report-meta">
+                {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
+                <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
+                {% if latest.created_at %}
+                  <span>{{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
+                {% endif %}
+              </p>
+            </div>
+            <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
+          </div>
+
+          {% set aio = latest.aio_score if latest.aio_score is not none else 0 %}
+          {% set geo = latest.geo_score if latest.geo_score is not none else 0 %}
+          {% set findings_n = latest.findings|length %}
+          <div class="meter-list" aria-label="Score">
+            <div class="meter">
+              <div class="meter__label"><span>AIO score</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
+              <div class="meter__track"><i style="--m: {{ aio }}%"></i></div>
+            </div>
+            <div class="meter">
+              <div class="meter__label"><span>GEO score</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
+              <div class="meter__track"><i style="--m: {{ geo }}%"></i></div>
+            </div>
+            <div class="meter">
+              <div class="meter__label"><span>Findings</span><strong>{{ findings_n }}</strong></div>
+              <div class="meter__track"><i style="--m: {{ [findings_n * 12, 100]|min }}%"></i></div>
+            </div>
+          </div>
+
+          {% if latest.analysis_notes %}
+            <p class="report-notes">{{ latest.analysis_notes }}</p>
           {% endif %}
-        </p>
-      </div>
-      <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica pack ZIP</a>
-    </div>
 
-    {% set aio = latest.aio_score if latest.aio_score is not none else 0 %}
-    {% set geo = latest.geo_score if latest.geo_score is not none else 0 %}
-    {% set findings_n = latest.findings|length %}
-    <div class="score-board">
-      <div class="score-gauge" style="--score: {{ aio }}">
-        <svg viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="score-gauge__track" cx="60" cy="60" r="48" />
-          <circle class="score-gauge__value" cx="60" cy="60" r="48" />
-        </svg>
-        <div class="score-gauge__label">
-          <span>AIO</span>
-          <strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong>
-        </div>
-      </div>
-      <div class="score-gauge" style="--score: {{ geo }}">
-        <svg viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="score-gauge__track" cx="60" cy="60" r="48" />
-          <circle class="score-gauge__value" cx="60" cy="60" r="48" />
-        </svg>
-        <div class="score-gauge__label">
-          <span>GEO</span>
-          <strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong>
-        </div>
-      </div>
-      <div class="score-gauge score-gauge--count" style="--score: {{ [findings_n * 12, 100]|min }}">
-        <svg viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="score-gauge__track" cx="60" cy="60" r="48" />
-          <circle class="score-gauge__value" cx="60" cy="60" r="48" />
-        </svg>
-        <div class="score-gauge__label">
-          <span>Findings</span>
-          <strong>{{ findings_n }}</strong>
-        </div>
-      </div>
-    </div>
+          <section class="report-section">
+            <h3 class="report-section__title">Findings</h3>
+            <ul class="finding-list">
+              {% for f in latest.findings %}
+              <li data-severity="{{ f.severity }}">
+                <div class="finding-list__top">
+                  <em>{{ f.severity }}</em>
+                  <strong>{{ f.category|upper }} · {{ f.title }}</strong>
+                </div>
+                <span>{{ f.detail }}</span>
+              </li>
+              {% else %}
+              <li><span>Nessun finding disponibile.</span></li>
+              {% endfor %}
+            </ul>
+          </section>
 
-    {% if latest.analysis_notes %}
-      <p class="result-notes">{{ latest.analysis_notes }}</p>
-    {% endif %}
+          <section class="report-section">
+            <h3 class="report-section__title">llms.txt <span>→ root del sito</span></h3>
+            <div class="code-shell">
+              <div class="code-shell__bar">
+                <span>/llms.txt</span>
+                <div class="code-shell__actions">
+                  <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">Copia</button>
+                </div>
+              </div>
+              <pre id="llms-box">{{ latest.llms_txt }}</pre>
+            </div>
+          </section>
 
-    <div class="dash-section">
-      <div class="section-head">
-        <h3 class="block-title">Findings</h3>
-        <p class="section-head__hint">Priorità: critical → warn → ok</p>
-      </div>
-      <ul class="finding-list">
-        {% for f in latest.findings %}
-        <li data-severity="{{ f.severity }}">
-          <div class="finding-list__top">
-            <em>{{ f.severity }}</em>
-            <strong>{{ f.category|upper }} · {{ f.title }}</strong>
-          </div>
-          <span>{{ f.detail }}</span>
-        </li>
+          <details class="artifact-details">
+            <summary>JSON-LD, meta pack, robots</summary>
+            <div class="artifact-grid">
+              <div class="code-shell">
+                <div class="code-shell__bar">
+                  <span>organization.jsonld.html</span>
+                  <button type="button" class="linkish" onclick="copyFrom('jsonld-box', this)">Copia</button>
+                </div>
+                <pre id="jsonld-box" style="max-height:12rem">{{ latest.json_ld_artifact }}</pre>
+              </div>
+              <div class="code-shell">
+                <div class="code-shell__bar">
+                  <span>meta-pack.html</span>
+                  <button type="button" class="linkish" onclick="copyFrom('meta-box', this)">Copia</button>
+                </div>
+                <pre id="meta-box" style="max-height:12rem">{{ latest.meta_pack_artifact }}</pre>
+              </div>
+              <div class="code-shell">
+                <div class="code-shell__bar">
+                  <span>robots.txt</span>
+                  <button type="button" class="linkish" onclick="copyFrom('robots-box', this)">Copia</button>
+                </div>
+                <pre id="robots-box" style="max-height:12rem">{{ latest.robots_artifact }}</pre>
+              </div>
+            </div>
+          </details>
+        </section>
         {% else %}
-        <li><span>Nessun finding disponibile.</span></li>
-        {% endfor %}
-      </ul>
-    </div>
+        <div class="empty-state">
+          <strong>Inizia dalla barra URL</strong>
+          <p>Inserisci il sito e in pochi secondi ottieni score, findings e pack da pubblicare.</p>
+        </div>
+        {% endif %}
 
-    <div class="dash-section">
-      <div class="section-head">
-        <h3 class="block-title">llms.txt</h3>
-        <p class="section-head__hint">Pubblica in root: /llms.txt</p>
+        {% if history %}
+        <section class="history-block">
+          <h2 class="report-section__title">Ultime analisi</h2>
+          <ul class="history-list">
+            {% for item in history %}
+            <li>
+              <div class="history-main">
+                <strong>{{ item.domain }}</strong>
+                <div class="history-scores">
+                  <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
+                  <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
+                </div>
+              </div>
+              <div class="history-actions">
+                <span class="muted">{{ item.created_at.strftime('%d/%m %H:%M') if item.created_at else '' }}</span>
+                <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
       </div>
-      <div class="code-shell">
-        <div class="code-shell__bar">
-          <span>/llms.txt</span>
-          <div class="code-shell__actions">
-            <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">Copia</button>
-          </div>
-        </div>
-        <pre id="llms-box">{{ latest.llms_txt }}</pre>
-      </div>
-    </div>
 
-    <details class="artifact-details">
-      <summary>Altri artifact del pack</summary>
-      <div class="artifact-grid">
-        <div class="code-shell">
-          <div class="code-shell__bar">
-            <span>organization.jsonld.html</span>
-            <button type="button" class="linkish" onclick="copyFrom('jsonld-box', this)">Copia</button>
-          </div>
-          <pre id="jsonld-box" style="max-height:12rem">{{ latest.json_ld_artifact }}</pre>
+      <aside class="guide-rail" id="guida" aria-labelledby="guide-title">
+        <p class="eyebrow">Guida</p>
+        <h2 class="guide-rail__title" id="guide-title">Come usare i risultati</h2>
+        <p class="guide-rail__lede">Ordine consigliato dopo ogni analisi.</p>
+        <ol class="guide-rail__steps">
+          <li>
+            <strong>Score</strong>
+            <span>Sotto 60 su AIO o GEO = intervento prioritario.</span>
+          </li>
+          <li>
+            <strong>Findings</strong>
+            <span>Chiudi prima critical e warn, lascia ok come conferma.</span>
+          </li>
+          <li>
+            <strong>llms.txt</strong>
+            <span>Pubblica in root: <code>/llms.txt</code>.</span>
+          </li>
+          <li>
+            <strong>JSON-LD + meta</strong>
+            <span>Incolla nel <code>&lt;head&gt;</code> delle pagine chiave.</span>
+          </li>
+          <li>
+            <strong>robots.txt</strong>
+            <span>Unisci la bozza al file esistente, non bloccare i crawler utili.</span>
+          </li>
+          <li>
+            <strong>ZIP e re-scan</strong>
+            <span>Scarica il pack, pubblica, poi ri-analizza lo stesso URL.</span>
+          </li>
+        </ol>
+        <div class="guide-rail__files">
+          <p>Dove vanno i file</p>
+          <ul>
+            <li><code>llms.txt</code> → root</li>
+            <li><code>jsonld</code> → head</li>
+            <li><code>meta-pack</code> → head</li>
+            <li><code>robots.txt</code> → root</li>
+          </ul>
         </div>
-        <div class="code-shell">
-          <div class="code-shell__bar">
-            <span>meta-pack.html</span>
-            <button type="button" class="linkish" onclick="copyFrom('meta-box', this)">Copia</button>
-          </div>
-          <pre id="meta-box" style="max-height:12rem">{{ latest.meta_pack_artifact }}</pre>
-        </div>
-        <div class="code-shell">
-          <div class="code-shell__bar">
-            <span>robots.txt</span>
-            <button type="button" class="linkish" onclick="copyFrom('robots-box', this)">Copia</button>
-          </div>
-          <pre id="robots-box" style="max-height:12rem">{{ latest.robots_artifact }}</pre>
-        </div>
-      </div>
-    </details>
-  </section>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-state__pulse" aria-hidden="true"></div>
-    <strong>Nessuna analisi ancora</strong>
-    <p>Inserisci un URL sopra per generare il primo report. Sotto trovi la guida su come usare i risultati.</p>
+      </aside>
+    </div>
   </div>
-  {% endif %}
-
-  <section class="guide-block" id="guida" aria-labelledby="guide-title">
-    <header class="guide-block__head">
-      <p class="eyebrow">Guida</p>
-      <h2 class="h-display guide-block__title" id="guide-title">Come usare i risultati</h2>
-      <p class="lede">
-        Dopo l’analisi non serve interpretare tutto da zero: segui questo ordine
-        per trasformare score e pack in modifiche concrete sul sito.
-      </p>
-    </header>
-
-    <ol class="guide-steps">
-      <li>
-        <strong>Leggi gli score</strong>
-        <span>
-          <em>AIO</em> misura quanto il sito è chiaro per i crawler IA.
-          <em>GEO</em> stima quanto sei citabile nelle risposte generative.
-          Punti sotto 60 = priorità alta di intervento.
-        </span>
-      </li>
-      <li>
-        <strong>Sistemi i findings critical e warn</strong>
-        <span>
-          Parti dalle voci critical (es. manca <code>llms.txt</code>, meta assenti),
-          poi le warn. Le ok restano come conferma di ciò che già funziona.
-        </span>
-      </li>
-      <li>
-        <strong>Pubblica <code>llms.txt</code></strong>
-        <span>
-          Copia il file e caricalo nella root del dominio come
-          <code>https://tuodominio.it/llms.txt</code>.
-          È il segnale principale per i modelli e i crawler AI.
-        </span>
-      </li>
-      <li>
-        <strong>Integra JSON-LD e meta pack</strong>
-        <span>
-          Incolla lo snippet Organization nel <code>&lt;head&gt;</code> (o via CMS/GTM).
-          Usa il meta pack per title, description e Open Graph se mancano o sono deboli.
-        </span>
-      </li>
-      <li>
-        <strong>Allinea <code>robots.txt</code></strong>
-        <span>
-          Confronta la bozza con il tuo robots attuale: tieni Allow sulle pagine utili,
-          punta alla sitemap e non bloccare risorse necessarie agli AI crawler.
-        </span>
-      </li>
-      <li>
-        <strong>Scarica lo ZIP e ri-analizza</strong>
-        <span>
-          Lo ZIP contiene tutto il pack in un colpo solo.
-          Dopo aver pubblicato, lancia di nuovo l’analisi sullo stesso URL e confronta gli score.
-        </span>
-      </li>
-    </ol>
-
-    <div class="guide-map">
-      <h3 class="block-title">Dove mettere ogni file</h3>
-      <dl class="guide-map__list">
-        <div>
-          <dt><code>llms.txt</code></dt>
-          <dd>Root del sito → <code>/llms.txt</code></dd>
-        </div>
-        <div>
-          <dt><code>organization.jsonld.html</code></dt>
-          <dd>Nel <code>&lt;head&gt;</code> di tutte le pagine chiave (home, about, servizi)</dd>
-        </div>
-        <div>
-          <dt><code>meta-pack.html</code></dt>
-          <dd>Nel <code>&lt;head&gt;</code> della homepage (e template SEO del CMS)</dd>
-        </div>
-        <div>
-          <dt><code>robots.txt</code></dt>
-          <dd>Root del sito → <code>/robots.txt</code> (sostituisci o unisci con attenzione)</dd>
-        </div>
-      </dl>
-    </div>
-  </section>
-
-  {% if history %}
-  <section class="history-block">
-    <h2 class="block-title">Ultime analisi</h2>
-    <ul class="history-list">
-      {% for item in history %}
-      <li>
-        <div class="history-main">
-          <strong>{{ item.domain }}</strong>
-          <div class="history-scores" aria-label="Score">
-            <span>
-              AIO {{ item.aio_score if item.aio_score is not none else '—' }}
-              <i style="--h: {{ item.aio_score if item.aio_score is not none else 0 }}%"></i>
-            </span>
-            <span>
-              GEO {{ item.geo_score if item.geo_score is not none else '—' }}
-              <i style="--h: {{ item.geo_score if item.geo_score is not none else 0 }}%"></i>
-            </span>
-          </div>
-        </div>
-        <div class="history-actions">
-          <span class="muted">{{ item.created_at.strftime('%Y-%m-%d %H:%M') if item.created_at else '' }}</span>
-          <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
-  </section>
-  {% endif %}
 </section>
 {% endblock %}
