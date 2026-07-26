@@ -109,6 +109,7 @@ docker volume ls | grep aio
 - URL: http://82.165.79.212/login
 - Stack: Gunicorn + Nginx (porta 80)
 - DB: `sqlite:////opt/aio-bot/data/database.db` (mai cancellare `data/` o `.venv` con `rsync --delete`)
+- Email pack: imposta `RESEND_API_KEY` + `MAIL_FROM`, oppure `SMTP_HOST` / `SMTP_USER` / `SMTP_PASSWORD` in `.env`, poi `systemctl restart aio-bot`
 
 ### Sync codice (host, senza Docker)
 
