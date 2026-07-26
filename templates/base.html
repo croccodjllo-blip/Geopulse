@@ -8,17 +8,18 @@
       name="description"
       content="{% block meta_description %}GeoPulse (geopulse.it) — ottimizza i siti web per IA, answer engine e ricerca generativa (GEO/AIO).{% endblock %}"
     />
-    <meta name="theme-color" content="#0e6f69" />
+    <meta name="theme-color" content="#06151c" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
   </head>
   <body class="app-body {% block body_class %}{% endblock %}">
+    <div class="fx-grid" aria-hidden="true"></div>
     {% block shell %}
     <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
