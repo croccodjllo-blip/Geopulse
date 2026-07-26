@@ -10,8 +10,9 @@
         Analisi AIO &amp; GEO
       </h1>
       <p class="mt-2 max-w-2xl text-slate-600">
-        Inserisci l’URL: AIO-Bot calcola gli score, elenca i findings e genera il pack
-        di ottimizzazione (<code class="text-sea">llms.txt</code>, JSON-LD, meta, robots).
+        Ciao {{ current_user.name }}{% if current_user.company %} · {{ current_user.company }}{% endif %}.
+        Inserisci l’URL: AIO-Bot calcola score, findings e pack
+        (<code class="text-sea">llms.txt</code>, JSON-LD, meta, robots).
       </p>
     </div>
     <div class="space-y-2 text-right">

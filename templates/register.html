@@ -2,47 +2,77 @@
 {% block title %}Registrati{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-md">
+<section class="mx-auto max-w-xl">
   <p class="text-xs font-bold uppercase tracking-[0.16em] text-sea">AIO-Bot</p>
   <h1 class="mt-2 font-display text-3xl font-bold text-ink">Crea account</h1>
   <p class="mt-2 text-slate-600">
-    Registrati per analizzare il tuo sito e generare un <code class="text-sea">llms.txt</code> ottimizzato per le IA.
+    Raccontaci chi sei e il sito da ottimizzare: prepariamo l’analisi AIO/GEO su misura.
   </p>
 
   <form method="post" class="mt-8 space-y-4 rounded-xl border border-slate-200 bg-white/70 p-6 shadow-sm" novalidate>
     {{ form.hidden_tag() }}
 
-    <div>
-      <label for="name" class="mb-1 block text-sm font-semibold text-ink">Nome</label>
-      {{ form.name(id="name", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="name") }}
-      {% for error in form.name.errors %}
-        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="sm:col-span-2">
+        <label for="name" class="mb-1 block text-sm font-semibold text-ink">Nome e cognome</label>
+        {{ form.name(id="name", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="name") }}
+        {% for error in form.name.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="company" class="mb-1 block text-sm font-semibold text-ink">Azienda / Brand</label>
+        {{ form.company(id="company", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="organization") }}
+        {% for error in form.company.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="role" class="mb-1 block text-sm font-semibold text-ink">Ruolo</label>
+        {{ form.role(id="role", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring") }}
+        {% for error in form.role.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="sm:col-span-2">
+        <label for="website_url" class="mb-1 block text-sm font-semibold text-ink">Sito web principale</label>
+        {{ form.website_url(id="website_url", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", placeholder="https://tuosito.com", autocomplete="url") }}
+        {% for error in form.website_url.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="email" class="mb-1 block text-sm font-semibold text-ink">Email lavorativa</label>
+        {{ form.email(id="email", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="email") }}
+        {% for error in form.email.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="phone" class="mb-1 block text-sm font-semibold text-ink">Telefono <span class="font-normal text-slate-500">(opzionale)</span></label>
+        {{ form.phone(id="phone", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="tel") }}
+        {% for error in form.phone.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="sm:col-span-2">
+        <label for="country" class="mb-1 block text-sm font-semibold text-ink">Paese</label>
+        {{ form.country(id="country", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", placeholder="Italia", autocomplete="country-name") }}
+        {% for error in form.country.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="password" class="mb-1 block text-sm font-semibold text-ink">Password</label>
+        {{ form.password(id="password", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="new-password") }}
+        {% for error in form.password.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="confirm" class="mb-1 block text-sm font-semibold text-ink">Conferma password</label>
+        {{ form.confirm(id="confirm", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="new-password") }}
+        {% for error in form.confirm.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+      </div>
     </div>
 
-    <div>
-      <label for="email" class="mb-1 block text-sm font-semibold text-ink">Email</label>
-      {{ form.email(id="email", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="email") }}
-      {% for error in form.email.errors %}
-        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
-    </div>
-
-    <div>
-      <label for="password" class="mb-1 block text-sm font-semibold text-ink">Password</label>
-      {{ form.password(id="password", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="new-password") }}
-      {% for error in form.password.errors %}
-        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
-    </div>
-
-    <div>
-      <label for="confirm" class="mb-1 block text-sm font-semibold text-ink">Conferma password</label>
-      {{ form.confirm(id="confirm", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="new-password") }}
-      {% for error in form.confirm.errors %}
-        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-      {% endfor %}
-    </div>
+    <label class="flex items-start gap-2 text-sm text-slate-700">
+      {{ form.accept_terms(id="accept_terms", class_="mt-1") }}
+      <span>Accetto il trattamento dei dati per l’erogazione del servizio AIO-Bot (GEO/AIO Optimization).</span>
+    </label>
+    {% for error in form.accept_terms.errors %}<p class="text-sm text-red-600">{{ error }}</p>{% endfor %}
 
     {{ form.submit(class_="w-full rounded-md bg-ink px-4 py-2.5 font-semibold text-white hover:bg-slate-800") }}
   </form>

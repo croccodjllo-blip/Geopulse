@@ -34,8 +34,23 @@ from flask_wtf.csrf import generate_csrf
 from sqlalchemy import UniqueConstraint, inspect, text
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
-from wtforms import PasswordField, StringField, SubmitField, URLField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+from wtforms import (
+    BooleanField,
+    PasswordField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TelField,
+    URLField,
+)
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    EqualTo,
+    Length,
+    Optional,
+    ValidationError,
+)
 
 from services.analyzer import analyze_site, normalize_url
 from services.artifacts import build_optimization_pack
@@ -121,6 +136,11 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     name = db.Column(db.String(120), nullable=False)
+    company = db.Column(db.String(160))
+    website_url = db.Column(db.String(500))
+    phone = db.Column(db.String(40))
+    role = db.Column(db.String(80))
+    country = db.Column(db.String(80))
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
@@ -172,15 +192,57 @@ class SiteAnalysis(db.Model):
 # ---------------------------------------------------------------------------
 
 
+def validate_http_url(_form: FlaskForm, field: URLField) -> None:
+    value = (field.data or "").strip()
+    parsed = urlparse(value if "://" in value else f"https://{value}")
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValidationError("Inserisci un URL http(s) valido.")
+
+
+ROLE_CHOICES = [
+    ("", "Seleziona il tuo ruolo"),
+    ("founder", "Founder / Titolare"),
+    ("marketing", "Marketing"),
+    ("seo", "SEO / Content"),
+    ("agency", "Agenzia / Consulente"),
+    ("developer", "Developer"),
+    ("other", "Altro"),
+]
+
+
 class RegisterForm(FlaskForm):
-    name = StringField("Nome", validators=[DataRequired(), Length(min=2, max=120)])
+    name = StringField(
+        "Nome e cognome",
+        validators=[DataRequired(), Length(min=2, max=120)],
+    )
+    company = StringField(
+        "Azienda / Brand",
+        validators=[DataRequired(), Length(min=2, max=160)],
+    )
+    website_url = StringField(
+        "Sito web principale",
+        validators=[DataRequired(), Length(max=500), validate_http_url],
+    )
     email = StringField(
-        "Email",
+        "Email lavorativa",
         validators=[
             DataRequired(),
             Email(message="Email non valida.", check_deliverability=False),
             Length(max=255),
         ],
+    )
+    phone = TelField(
+        "Telefono",
+        validators=[Optional(), Length(max=40)],
+    )
+    role = SelectField(
+        "Ruolo",
+        choices=ROLE_CHOICES,
+        validators=[DataRequired(message="Seleziona un ruolo.")],
+    )
+    country = StringField(
+        "Paese",
+        validators=[DataRequired(), Length(min=2, max=80)],
     )
     password = PasswordField(
         "Password",
@@ -192,6 +254,10 @@ class RegisterForm(FlaskForm):
             DataRequired(),
             EqualTo("password", message="Le password non coincidono."),
         ],
+    )
+    accept_terms = BooleanField(
+        "Accetto termini e privacy",
+        validators=[DataRequired(message="Devi accettare termini e privacy.")],
     )
     submit = SubmitField("Crea account")
 
@@ -209,15 +275,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Accedi")
 
 
-def validate_http_url(_form: FlaskForm, field: URLField) -> None:
-    value = (field.data or "").strip()
-    parsed = urlparse(value if "://" in value else f"https://{value}")
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise ValidationError("Inserisci un URL http(s) valido.")
-
-
 class AnalyzeForm(FlaskForm):
-    url = URLField(
+    url = StringField(
         "URL del sito",
         validators=[DataRequired(), Length(max=500), validate_http_url],
     )
@@ -287,6 +346,20 @@ def ensure_schema() -> None:
             if name not in existing:
                 conn.execute(text(f"ALTER TABLE site_analyses ADD COLUMN {name} {col_type}"))
 
+    if "users" in inspector.get_table_names():
+        user_cols = {col["name"] for col in inspector.get_columns("users")}
+        user_alters = {
+            "company": "TEXT",
+            "website_url": "TEXT",
+            "phone": "TEXT",
+            "role": "TEXT",
+            "country": "TEXT",
+        }
+        with db.engine.begin() as conn:
+            for name, col_type in user_alters.items():
+                if name not in user_cols:
+                    conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} {col_type}"))
+
 
 def client_ip() -> str:
     return (request.headers.get("X-Real-IP") or request.remote_addr or "unknown").strip()
@@ -352,7 +425,16 @@ def register():
         if User.query.filter_by(email=email).first():
             flash("Questa email è già registrata.", "error")
         else:
-            user = User(email=email, name=form.name.data.strip())
+            website = normalize_url(form.website_url.data)
+            user = User(
+                email=email,
+                name=form.name.data.strip(),
+                company=form.company.data.strip(),
+                website_url=website,
+                phone=(form.phone.data or "").strip() or None,
+                role=form.role.data,
+                country=form.country.data.strip(),
+            )
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
@@ -405,6 +487,8 @@ def logout():
 def dashboard():
     user = current_user()
     form = AnalyzeForm()
+    if request.method == "GET" and not form.url.data and user and user.website_url:
+        form.url.data = user.website_url
     latest: SiteAnalysis | None = (
         SiteAnalysis.query.filter_by(user_id=user.id)
         .order_by(SiteAnalysis.created_at.desc())
