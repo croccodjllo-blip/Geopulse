@@ -805,6 +805,7 @@ def robots_txt():
         "User-agent: *\n"
         "Allow: /\n"
         "Disallow: /dashboard\n"
+        "Disallow: /dashboard/\n"
         "Disallow: /logout\n"
         "\n"
         "User-agent: GPTBot\n"

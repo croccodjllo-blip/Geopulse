@@ -44,9 +44,10 @@
           <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Prezzi</a>
           <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
           {% if current_user %}
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">Dashboard</a>
+            <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">Guida</a>
             {% if current_user.is_admin %}
-              <a href="{{ url_for('admin_home') }}">Admin</a>
+              <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
             <form method="post" action="{{ url_for('logout') }}" style="display:inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -92,6 +93,7 @@
           <p class="site-footer__label">Account</p>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('dashboard_guide') }}">Guida</a>
           {% else %}
             <a href="{{ url_for('register') }}">Registrati</a>
             <a href="{{ url_for('login') }}">Accedi</a>

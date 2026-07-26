@@ -1072,8 +1072,12 @@ button, input, select, textarea { font: inherit; }
   gap: 1.75rem;
 }
 
+.workspace-grid--solo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 @media (min-width: 980px) {
-  .workspace-grid {
+  .workspace-grid:not(.workspace-grid--solo) {
     grid-template-columns: minmax(0, 1fr) 17.5rem;
     gap: 2.2rem;
     align-items: start;
@@ -1083,6 +1087,92 @@ button, input, select, textarea { font: inherit; }
     position: sticky;
     top: calc(var(--header-h) + 0.85rem);
   }
+}
+
+.workspace-banner__guide {
+  color: #fff !important;
+  font-weight: 750;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.workspace-banner__guide:hover {
+  border-bottom-color: #fff;
+}
+
+.guide-page {
+  width: min(720px, calc(100% - 2rem));
+  margin: 1.5rem auto 3rem;
+}
+
+.guide-page__steps {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  counter-reset: guide-step;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.guide-page__steps li {
+  counter-increment: guide-step;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 0 0.85rem 2.4rem;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.guide-page__steps li::before {
+  content: counter(guide-step);
+  position: absolute;
+  left: 0;
+  top: 0.9rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.4rem;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--sea) 14%, transparent);
+  color: var(--sea);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.guide-page__steps strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.guide-page__steps span {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.guide-page__files {
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.guide-page__files ul {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.guide-page__files li {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.guide-page__files code {
+  color: var(--ink);
+  font-weight: 650;
 }
 
 .report {

@@ -26,6 +26,7 @@
         <span>Siti {{ site_count }}/{{ max_sites }}</span>
         <span>Crawl {{ crawl_pages_limit }} pag.</span>
         <span>{{ used_today }}/{{ daily_limit }} · 24h</span>
+        <a class="workspace-banner__guide" href="{{ url_for('dashboard_guide') }}">Guida</a>
       </div>
     </div>
   </header>
@@ -54,7 +55,7 @@
       </div>
     </form>
 
-    <div class="workspace-grid">
+    <div class="workspace-grid workspace-grid--solo">
       <div class="workspace-main">
         {% if latest %}
         <section class="report" aria-labelledby="result-domain">
@@ -358,47 +359,6 @@
         </section>
         {% endif %}
       </div>
-
-      <aside class="guide-rail" id="guida" aria-labelledby="guide-title">
-        <p class="eyebrow">Guida</p>
-        <h2 class="guide-rail__title" id="guide-title">Dopo l’analisi</h2>
-        <p class="guide-rail__lede">Ordine consigliato.</p>
-        <ol class="guide-rail__steps">
-          <li>
-            <strong>Indice DDD→AAA</strong>
-            <span>Mira a salire di almeno un grado.</span>
-          </li>
-          <li>
-            <strong>Score</strong>
-            <span>Sotto 60 su AIO o GEO = priorità.</span>
-          </li>
-          <li>
-            <strong>Findings</strong>
-            <span>Chiudi critical e warn prima.</span>
-          </li>
-          <li>
-            <strong>llms.txt</strong>
-            <span>Pubblica in root: <code>/llms.txt</code>.</span>
-          </li>
-          <li>
-            <strong>JSON-LD + meta</strong>
-            <span>Incolla nel <code>&lt;head&gt;</code>.</span>
-          </li>
-          <li>
-            <strong>Re-scan</strong>
-            <span>Su Pro imposta frequenza e orario UTC.</span>
-          </li>
-        </ol>
-        <div class="guide-rail__files">
-          <p>Dove vanno i file</p>
-          <ul>
-            <li><code>llms.txt</code> → root</li>
-            <li><code>jsonld</code> → head</li>
-            <li><code>meta-pack</code> → head</li>
-            <li><code>robots.txt</code> → root</li>
-          </ul>
-        </div>
-      </aside>
     </div>
   </div>
 </section>
