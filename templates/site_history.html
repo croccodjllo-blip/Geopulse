@@ -5,7 +5,7 @@
 
 {% block content %}
 <section class="workspace">
-  <div class="workspace-body">
+  <div class="workspace-body workspace-body--flat">
     <p class="eyebrow">Pro · Storico avanzato</p>
     <h1 class="h-display report-domain">{{ analysis.domain }}</h1>
     <p class="report-meta">
@@ -14,34 +14,20 @@
       <a class="site-link" href="{{ url_for('download_pack', analysis_id=analysis.id) }}">ZIP corrente</a>
     </p>
 
-    <section class="pro-panel" aria-labelledby="schedule-title">
-      <h2 class="report-section__title" id="schedule-title">Re-scan periodico</h2>
-      <p class="pro-panel__lede">
-        Il worker Pro ri-analizza automaticamente questo URL.
-        {% if analysis.next_rescan_at %}
-          Prossimo: {{ analysis.next_rescan_at.strftime('%d/%m/%Y %H:%M') }} UTC.
-        {% elif analysis.rescan_active %}
-          Schedule attivo, in coda.
-        {% else %}
-          Attualmente disattivato.
-        {% endif %}
-      </p>
-      {% if analysis.last_rescan_error %}
-        <p class="field-error">Ultimo errore: {{ analysis.last_rescan_error }}</p>
-      {% endif %}
-      <form method="post" action="{{ url_for('set_rescan_schedule') }}" class="schedule-form">
-        {{ schedule_form.hidden_tag() }}
-        {{ schedule_form.analysis_id() }}
-        <div class="field schedule-form__row">
-          <label for="interval">Frequenza</label>
-          {{ schedule_form.interval(id="interval") }}
-          {{ schedule_form.submit(class_="btn btn-signal") }}
+    <section class="monitor-panel" aria-labelledby="schedule-title">
+      <div class="monitor-panel__head">
+        <div>
+          <p class="eyebrow">Pro</p>
+          <h2 class="monitor-panel__title" id="schedule-title">Monitoraggio</h2>
         </div>
-      </form>
+      </div>
+      {% with site=analysis %}
+        {% include "partials/schedule_form.html" %}
+      {% endwith %}
     </section>
 
     <section class="history-block">
-      <h2 class="report-section__title">Run (max {{ history_limit }})</h2>
+      <h2 class="report-section__title">Run <span>max {{ history_limit }}</span></h2>
       <ul class="history-list">
         {% for item in runs %}
         <li>

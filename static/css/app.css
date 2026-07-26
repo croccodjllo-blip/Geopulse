@@ -1646,23 +1646,56 @@ button, input, select, textarea { font: inherit; }
   align-items: center;
 }
 
-.pro-panel {
-  margin: 1.6rem 0 0.4rem;
-  padding: 1.15rem 0 0.2rem;
-  border-top: 1px solid var(--line);
+.workspace-body--flat {
+  margin-top: 1.5rem;
 }
 
-.pro-panel__lede,
-.pro-panel__meta {
-  margin: 0.35rem 0 0.85rem;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.5;
-  max-width: 52ch;
+.monitor-panel {
+  margin: 1.45rem 0 0.35rem;
+  padding: 1.15rem 1.15rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 0.1rem);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.96), rgba(241, 247, 248, 0.92)),
+    radial-gradient(120% 80% at 100% 0%, rgba(20, 120, 130, 0.08), transparent 55%);
 }
+
+.monitor-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 1.2rem;
+  align-items: end;
+  margin-bottom: 0.95rem;
+}
+
+.monitor-panel__title {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 750;
+  color: var(--ink);
+}
+
+.monitor-panel__exports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.95rem;
+}
+
+.monitor-panel__exports a {
+  color: var(--sea);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.monitor-panel__exports a:hover { text-decoration: underline; }
 
 .pro-upsell {
   margin: 1.25rem 0 0;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.92rem;
 }
@@ -1672,28 +1705,62 @@ button, input, select, textarea { font: inherit; }
   font-weight: 700;
 }
 
-.schedule-form__row {
+.schedule-form__grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 720px) {
+  .schedule-form__grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+    align-items: end;
+  }
+}
+
+.schedule-form .field { margin: 0; }
+
+.schedule-form .field label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.schedule-select,
+.schedule-form select {
+  width: 100%;
+  min-height: 2.7rem;
+  border: 1px solid rgba(20, 36, 46, 0.14);
+  border-radius: 0.55rem;
+  background: #fff;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+  color: var(--ink);
+}
+
+.schedule-form__action {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem 0.85rem;
   align-items: end;
 }
 
-.schedule-form__row label {
-  flex: 1 1 100%;
+.schedule-form__submit {
+  width: 100%;
+  min-height: 2.7rem;
+  min-width: 7.5rem;
 }
 
-.schedule-form__row select {
-  min-width: 12rem;
-  flex: 1 1 12rem;
+.schedule-form__status {
+  margin: 0.85rem 0 0;
+  color: var(--ink);
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
-.pro-export-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem 1.2rem;
-  margin-top: 0.85rem;
-}
+.schedule-form__status--muted { color: var(--muted); }
+
+.schedule-form__status strong { font-weight: 750; }
 
 .history-block {
   margin-top: 2.4rem;

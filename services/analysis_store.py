@@ -10,6 +10,15 @@ from urllib.parse import urlparse
 from sqlalchemy.orm import Session
 
 RESCAN_INTERVALS = ("off", "daily", "weekly")
+DEFAULT_RESCAN_HOUR = 6
+
+
+def clamp_hour(hour: Any, default: int = DEFAULT_RESCAN_HOUR) -> int:
+    try:
+        value = int(hour)
+    except (TypeError, ValueError):
+        return default
+    return max(0, min(23, value))
 
 
 def interval_delta(interval: str) -> timedelta | None:
@@ -20,14 +29,33 @@ def interval_delta(interval: str) -> timedelta | None:
     return None
 
 
-def next_rescan_after(interval: str, *, from_dt: datetime | None = None) -> datetime | None:
-    delta = interval_delta(interval)
-    if delta is None:
+def next_rescan_after(
+    interval: str,
+    *,
+    hour: int = DEFAULT_RESCAN_HOUR,
+    from_dt: datetime | None = None,
+    after_completion: bool = False,
+) -> datetime | None:
+    """Prossimo slot UTC all’ora scelta (daily / weekly)."""
+    if interval not in {"daily", "weekly"}:
         return None
-    base = from_dt or datetime.now(timezone.utc)
-    if base.tzinfo is None:
-        base = base.replace(tzinfo=timezone.utc)
-    return base + delta
+    now = from_dt or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    hour = clamp_hour(hour)
+
+    if interval == "weekly" and after_completion:
+        slot = now.replace(hour=hour, minute=0, second=0, microsecond=0) + timedelta(
+            days=7
+        )
+        if slot <= now:
+            slot += timedelta(days=1)
+        return slot
+
+    slot = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+    if slot <= now:
+        slot += timedelta(days=1)
+    return slot
 
 
 def persist_analysis(
@@ -78,7 +106,12 @@ def persist_analysis(
         analysis.last_rescan_at = now
         analysis.last_rescan_error = None
         interval = (analysis.rescan_interval or "off").lower()
-        analysis.next_rescan_at = next_rescan_after(interval, from_dt=now)
+        analysis.next_rescan_at = next_rescan_after(
+            interval,
+            hour=getattr(analysis, "rescan_hour", DEFAULT_RESCAN_HOUR),
+            from_dt=now,
+            after_completion=True,
+        )
 
     db_session.flush()
 

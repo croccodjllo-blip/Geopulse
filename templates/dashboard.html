@@ -19,14 +19,13 @@
       <h1 class="workspace-banner__title">Ciao {{ current_user.name.split(' ')[0] }}</h1>
       <p class="workspace-banner__lede">
         {% if current_user.company %}{{ current_user.company }} · {% endif %}
-        Analizza, leggi i findings, pubblica il pack.
+        Analizza il dominio, chiudi i gap, pubblica il pack.
       </p>
       <div class="workspace-banner__meta">
         <span>Piano {{ user_plan }}</span>
         <span>Siti {{ site_count }}/{{ max_sites }}</span>
-        <span>Crawl fino a {{ crawl_pages_limit }} pagine</span>
-        <span>Analisi {{ used_today }}/{{ daily_limit }} · 24h</span>
-        <span>{% if openai_ready %}OpenAI{% else %}Fallback locale{% endif %}</span>
+        <span>Crawl {{ crawl_pages_limit }} pag.</span>
+        <span>{{ used_today }}/{{ daily_limit }} · 24h</span>
       </div>
     </div>
   </header>
@@ -36,14 +35,13 @@
       {{ form.hidden_tag() }}
       <div class="analyze-composer">
         <div class="field analyze-composer__field">
-          <label for="url">URL del dominio da analizzare</label>
+          <label for="url">URL del dominio</label>
           <div class="analyze-row">
             {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input") }}
             {{ form.submit(class_="btn btn-signal analyze-submit") }}
           </div>
           <p class="analyze-hint">
-            Crawl dello stesso dominio: homepage + sitemap/link interni
-            (max {{ crawl_pages_limit }} pagine sul piano {{ user_plan }}).
+            Crawl stesso dominio via sitemap e link interni · max {{ crawl_pages_limit }} pagine ({{ user_plan }}).
           </p>
           {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
@@ -61,11 +59,12 @@
 
           <div class="report-top">
             <div>
-              <p class="eyebrow">Report</p>
+              <p class="eyebrow">Report dominio</p>
               <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
               <p class="report-meta">
                 {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
                 <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
+                {% if latest.pages_analyzed %}<span>{{ latest.pages_analyzed }} pagine</span>{% endif %}
                 {% if latest.created_at %}
                   <span>{{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
                 {% endif %}
@@ -78,45 +77,6 @@
               {% endif %}
             </div>
           </div>
-
-          {% if is_pro %}
-          <section class="pro-panel" aria-labelledby="pro-tools-title">
-            <h3 class="report-section__title" id="pro-tools-title">Servizi Pro</h3>
-            <p class="pro-panel__lede">
-              Re-scan automatico, export CSV e pack di tutti i siti.
-            </p>
-            <form method="post" action="{{ url_for('set_rescan_schedule') }}" class="schedule-form">
-              {{ schedule_form.hidden_tag() }}
-              {{ schedule_form.analysis_id() }}
-              <div class="field schedule-form__row">
-                <label for="interval">Re-scan {{ latest.domain }}</label>
-                {{ schedule_form.interval(id="interval") }}
-                {{ schedule_form.submit(class_="btn btn-signal") }}
-              </div>
-              {% if latest.next_rescan_at %}
-              <p class="pro-panel__meta">
-                Prossimo re-scan: {{ latest.next_rescan_at.strftime('%d/%m/%Y %H:%M') }} UTC
-                {% if latest.last_rescan_at %}
-                  · Ultimo: {{ latest.last_rescan_at.strftime('%d/%m %H:%M') }} UTC
-                {% endif %}
-              </p>
-              {% endif %}
-              {% if latest.last_rescan_error %}
-              <p class="field-error">Ultimo errore re-scan: {{ latest.last_rescan_error }}</p>
-              {% endif %}
-            </form>
-            <div class="pro-export-links">
-              <a class="site-link" href="{{ url_for('export_history_csv') }}">Export CSV storico</a>
-              <a class="site-link" href="{{ url_for('export_all_sites_zip') }}">Export ZIP tutti i siti</a>
-              <a class="site-link" href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico avanzato sito</a>
-            </div>
-          </section>
-          {% else %}
-          <p class="pro-upsell">
-            Piano Free: storico limitato.
-            <a href="{{ url_for('pricing') }}">Pro</a> sblocca re-scan periodico, export CSV e storico run.
-          </p>
-          {% endif %}
 
           <section class="grade-panel" aria-labelledby="grade-code">
             <div class="grade-panel__mark" data-grade="{{ rating.code }}">
@@ -139,19 +99,18 @@
                 {% endfor %}
               </ol>
               <p class="grade-panel__hint">
-                L’indice combina score AIO/GEO e penalizza i findings critical/warn.
-                Obiettivo: salire verso AAA pubblicando il pack e chiudendo i gap.
+                Combina AIO/GEO e penalizza critical/warn. Obiettivo: salire verso AAA.
               </p>
             </div>
           </section>
 
           <div class="meter-list" aria-label="Score">
             <div class="meter">
-              <div class="meter__label"><span>AIO score</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
+              <div class="meter__label"><span>AIO</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
               <div class="meter__track"><i style="--m: {{ aio }}%"></i></div>
             </div>
             <div class="meter">
-              <div class="meter__label"><span>GEO score</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
+              <div class="meter__label"><span>GEO</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
               <div class="meter__track"><i style="--m: {{ geo }}%"></i></div>
             </div>
             <div class="meter">
@@ -192,6 +151,30 @@
           </details>
           {% endif %}
 
+          {% if is_pro %}
+          <section class="monitor-panel" aria-labelledby="monitor-title">
+            <div class="monitor-panel__head">
+              <div>
+                <p class="eyebrow">Pro</p>
+                <h3 class="monitor-panel__title" id="monitor-title">Monitoraggio</h3>
+              </div>
+              <div class="monitor-panel__exports">
+                <a href="{{ url_for('export_history_csv') }}">CSV</a>
+                <a href="{{ url_for('export_all_sites_zip') }}">ZIP siti</a>
+                <a href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico</a>
+              </div>
+            </div>
+            {% with site=latest %}
+              {% include "partials/schedule_form.html" %}
+            {% endwith %}
+          </section>
+          {% else %}
+          <p class="pro-upsell">
+            Piano Free: storico limitato.
+            <a href="{{ url_for('pricing') }}">Pro</a> sblocca re-scan con orario, export e storico run.
+          </p>
+          {% endif %}
+
           <section class="report-section">
             <h3 class="report-section__title">Findings</h3>
             <ul class="finding-list">
@@ -210,7 +193,7 @@
           </section>
 
           <section class="report-section">
-            <h3 class="report-section__title">llms.txt <span>→ root del sito</span></h3>
+            <h3 class="report-section__title">llms.txt <span>→ root</span></h3>
             <div class="code-shell">
               <div class="code-shell__bar">
                 <span>/llms.txt</span>
@@ -252,7 +235,7 @@
         {% else %}
         <div class="empty-state">
           <strong>Inizia dalla barra URL</strong>
-          <p>Inserisci il sito e in pochi secondi ottieni score, findings e pack da pubblicare.</p>
+          <p>Inserisci il dominio: crawl, score, findings e pack in pochi secondi.</p>
         </div>
         {% endif %}
 
@@ -295,20 +278,20 @@
 
       <aside class="guide-rail" id="guida" aria-labelledby="guide-title">
         <p class="eyebrow">Guida</p>
-        <h2 class="guide-rail__title" id="guide-title">Come usare i risultati</h2>
-        <p class="guide-rail__lede">Ordine consigliato dopo ogni analisi.</p>
+        <h2 class="guide-rail__title" id="guide-title">Dopo l’analisi</h2>
+        <p class="guide-rail__lede">Ordine consigliato.</p>
         <ol class="guide-rail__steps">
           <li>
             <strong>Indice DDD→AAA</strong>
-            <span>Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado.</span>
+            <span>Mira a salire di almeno un grado.</span>
           </li>
           <li>
             <strong>Score</strong>
-            <span>Sotto 60 su AIO o GEO = intervento prioritario.</span>
+            <span>Sotto 60 su AIO o GEO = priorità.</span>
           </li>
           <li>
             <strong>Findings</strong>
-            <span>Chiudi prima critical e warn, lascia ok come conferma.</span>
+            <span>Chiudi critical e warn prima.</span>
           </li>
           <li>
             <strong>llms.txt</strong>
@@ -316,15 +299,11 @@
           </li>
           <li>
             <strong>JSON-LD + meta</strong>
-            <span>Incolla nel <code>&lt;head&gt;</code> delle pagine chiave.</span>
+            <span>Incolla nel <code>&lt;head&gt;</code>.</span>
           </li>
           <li>
-            <strong>robots.txt</strong>
-            <span>Unisci la bozza al file esistente, non bloccare i crawler utili.</span>
-          </li>
-          <li>
-            <strong>ZIP e re-scan</strong>
-            <span>Scarica il pack, pubblica, poi ri-analizza lo stesso URL.</span>
+            <strong>Re-scan</strong>
+            <span>Su Pro imposta frequenza e orario UTC.</span>
           </li>
         </ol>
         <div class="guide-rail__files">

@@ -55,7 +55,9 @@ from wtforms.validators import (
 )
 
 from services.analysis_store import (
+    DEFAULT_RESCAN_HOUR,
     RESCAN_INTERVALS,
+    clamp_hour,
     next_rescan_after,
     persist_analysis,
 )
@@ -223,6 +225,7 @@ class SiteAnalysis(db.Model):
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
     crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     rescan_interval = db.Column(db.String(20), nullable=False, default="off")
+    rescan_hour = db.Column(db.Integer, nullable=False, default=DEFAULT_RESCAN_HOUR)
     next_rescan_at = db.Column(db.DateTime)
     last_rescan_at = db.Column(db.DateTime)
     last_rescan_error = db.Column(db.String(500))
@@ -455,6 +458,9 @@ class ProInterestForm(FlaskForm):
     submit = SubmitField("Prenota l’interesse")
 
 
+RESCAN_HOUR_CHOICES = [(str(h), f"{h:02d}:00 UTC") for h in range(24)]
+
+
 class RescanScheduleForm(FlaskForm):
     analysis_id = HiddenField(validators=[DataRequired()])
     interval = SelectField(
@@ -466,7 +472,13 @@ class RescanScheduleForm(FlaskForm):
         ],
         validators=[DataRequired()],
     )
-    submit = SubmitField("Salva schedule")
+    hour = SelectField(
+        "Orario (UTC)",
+        choices=RESCAN_HOUR_CHOICES,
+        default=str(DEFAULT_RESCAN_HOUR),
+        validators=[DataRequired()],
+    )
+    submit = SubmitField("Salva")
 
 
 # ---------------------------------------------------------------------------
@@ -606,6 +618,7 @@ def ensure_schema() -> None:
             "pages_analyzed": "INTEGER DEFAULT 1",
             "crawl_pages_json": "TEXT DEFAULT '[]'",
             "rescan_interval": "TEXT DEFAULT 'off'",
+            "rescan_hour": f"INTEGER DEFAULT {DEFAULT_RESCAN_HOUR}",
             "next_rescan_at": "DATETIME",
             "last_rescan_at": "DATETIME",
             "last_rescan_error": "TEXT",
@@ -1051,6 +1064,9 @@ def dashboard():
     if latest and not schedule_form.is_submitted():
         schedule_form.analysis_id.data = str(latest.id)
         schedule_form.interval.data = latest.rescan_interval or "off"
+        schedule_form.hour.data = str(
+            clamp_hour(getattr(latest, "rescan_hour", DEFAULT_RESCAN_HOUR))
+        )
 
     used_today = analyses_today(user.id)
     return render_template(
@@ -1156,21 +1172,26 @@ def set_rescan_schedule():
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
 
+    hour = clamp_hour(form.hour.data)
     analysis.rescan_interval = interval
+    analysis.rescan_hour = hour
     if interval == "off":
         analysis.next_rescan_at = None
         analysis.last_rescan_error = None
         flash(f"Re-scan disattivato per {analysis.domain}.", "success")
     else:
-        analysis.next_rescan_at = next_rescan_after(interval)
+        analysis.next_rescan_at = next_rescan_after(interval, hour=hour)
         analysis.last_rescan_error = None
         label = "giornaliero" if interval == "daily" else "settimanale"
         flash(
-            f"Re-scan {label} attivo per {analysis.domain}. "
-            "Il worker Pro eseguirà i controlli in automatico.",
+            f"Re-scan {label} alle {hour:02d}:00 UTC per {analysis.domain}. "
+            f"Prossimo: {analysis.next_rescan_at.strftime('%d/%m/%Y %H:%M')} UTC.",
             "success",
         )
     db.session.commit()
+    next_url = request.form.get("next") or request.args.get("next") or ""
+    if next_url.startswith("/dashboard"):
+        return redirect(next_url)
     return redirect(url_for("dashboard"))
 
 
@@ -1193,6 +1214,7 @@ def site_history(analysis_id: int):
     schedule_form = RescanScheduleForm(
         analysis_id=str(analysis.id),
         interval=analysis.rescan_interval or "off",
+        hour=str(clamp_hour(getattr(analysis, "rescan_hour", DEFAULT_RESCAN_HOUR))),
     )
     return render_template(
         "site_history.html",
