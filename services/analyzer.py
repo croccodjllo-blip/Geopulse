@@ -469,6 +469,70 @@ def _clamp(n: float) -> int:
     return max(0, min(100, int(round(n))))
 
 
+PAGE_ISSUE_LABELS: dict[str, str] = {
+    "title": "Title",
+    "description": "Meta",
+    "json_ld": "JSON-LD",
+    "canonical": "Canonical",
+    "og": "OG",
+    "h1": "H1",
+    "lang": "Lang",
+    "noindex": "noindex",
+}
+
+# Issues that always mark a page as critical.
+_CRITICAL_PAGE_ISSUES = frozenset({"noindex"})
+
+
+def page_severity(page: dict[str, Any]) -> str:
+    """Severity UI per pagina crawl: critical | warn | ok."""
+    issues = {str(i).lower() for i in (page.get("issues") or [])}
+    try:
+        aio = float(page.get("aio_score") if page.get("aio_score") is not None else 100)
+    except (TypeError, ValueError):
+        aio = 100.0
+    try:
+        geo = float(page.get("geo_score") if page.get("geo_score") is not None else 100)
+    except (TypeError, ValueError):
+        geo = 100.0
+
+    if issues & _CRITICAL_PAGE_ISSUES or min(aio, geo) < 40 or (aio < 45 and geo < 45):
+        return "critical"
+    if issues or aio < 55 or geo < 55:
+        return "warn"
+    return "ok"
+
+
+def prioritize_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    """Annota severity/issue labels e mette le criticità in cima."""
+    rank = {"critical": 0, "warn": 1, "ok": 2}
+    out: list[dict[str, Any]] = []
+    for raw in pages or []:
+        if not isinstance(raw, dict):
+            continue
+        page = dict(raw)
+        severity = page_severity(page)
+        issues = [str(i) for i in (page.get("issues") or [])]
+        page["severity"] = severity
+        page["issue_labels"] = [
+            PAGE_ISSUE_LABELS.get(i, i) for i in issues[:4]
+        ]
+        page["issue_count"] = len(issues)
+        out.append(page)
+
+    def sort_key(p: dict[str, Any]) -> tuple[int, float, str]:
+        aio = p.get("aio_score")
+        geo = p.get("geo_score")
+        try:
+            avg = -((float(aio or 0) + float(geo or 0)) / 2)
+        except (TypeError, ValueError):
+            avg = 0.0
+        return (rank.get(str(p.get("severity") or "ok"), 9), avg, str(p.get("url") or ""))
+
+    out.sort(key=sort_key)
+    return out
+
+
 def score_page_signals(scraped: dict[str, Any]) -> dict[str, Any]:
     """Score locale di una pagina (senza probe di root)."""
     aio = 20.0

@@ -63,7 +63,7 @@ from services.analysis_store import (
     next_rescan_after,
     persist_analysis,
 )
-from services.analyzer import analyze_site, normalize_url
+from services.analyzer import analyze_site, normalize_url, prioritize_crawl_pages
 from services.artifacts import build_optimization_pack
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.rate_limit import limiter
@@ -1186,6 +1186,12 @@ def dashboard():
                     "delta_geo": None,
                 }
 
+    crawl_pages_view = (
+        prioritize_crawl_pages(latest.crawl_pages) if latest is not None else []
+    )
+    crawl_crit_n = sum(1 for p in crawl_pages_view if p.get("severity") == "critical")
+    crawl_warn_n = sum(1 for p in crawl_pages_view if p.get("severity") == "warn")
+
     return render_template(
         "dashboard.html",
         form=form,
@@ -1197,6 +1203,9 @@ def dashboard():
         daily_limit=user.daily_limit,
         max_sites=user.max_sites,
         crawl_pages_limit=user.crawl_pages,
+        crawl_pages_view=crawl_pages_view,
+        crawl_crit_n=crawl_crit_n,
+        crawl_warn_n=crawl_warn_n,
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
