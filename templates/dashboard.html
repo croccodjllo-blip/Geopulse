@@ -5,7 +5,7 @@
 
 {% block content %}
 <section class="workspace">
-  <header class="workspace-banner">
+  <header class="workspace-banner workspace-banner--compact">
     <img
       class="workspace-banner__img"
       src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
@@ -15,40 +15,64 @@
     />
     <div class="workspace-banner__veil"></div>
     <div class="workspace-banner__inner">
-      <p class="workspace-banner__brand">GEOPULSE</p>
-      <h1 class="workspace-banner__title">Ciao {{ current_user.name.split(' ')[0] }}</h1>
-      <p class="workspace-banner__lede">
-        {% if current_user.company %}{{ current_user.company }} · {% endif %}
-        Analizza il dominio, chiudi i gap, pubblica il pack.
-      </p>
-      <div class="workspace-banner__meta" aria-label="Stato account">
-        <span class="workspace-banner__pill">Piano {{ user_plan }}</span>
-        <span class="workspace-banner__pill">Siti {{ site_count }}/{{ max_sites }}</span>
-        <span class="workspace-banner__pill">{% if crawl_unlimited %}Crawl intero sito{% else %}Crawl {{ crawl_pages_limit }} pag.{% endif %}</span>
-        <span class="workspace-banner__pill">{{ used_today }}/{{ daily_limit }} · 24h</span>
-        <a class="workspace-banner__guide" href="{{ url_for('dashboard_history') }}">Storico</a>
-        <a class="workspace-banner__guide" href="{{ url_for('dashboard_guide') }}">Guida</a>
+      <div class="workspace-banner__row">
+        <div class="workspace-banner__copy">
+          <p class="workspace-banner__brand">GEOPULSE</p>
+          <h1 class="workspace-banner__title">Ciao {{ current_user.name.split(' ')[0] }}</h1>
+          <p class="workspace-banner__lede">
+            {% if current_user.company %}{{ current_user.company }} · {% endif %}
+            Analizza, chiudi i gap, pubblica il pack.
+          </p>
+        </div>
+        <nav class="workspace-banner__nav" aria-label="Workspace">
+          <a href="{{ url_for('dashboard_history') }}">Storico</a>
+          <a href="{{ url_for('dashboard_guide') }}">Guida</a>
+        </nav>
       </div>
+      <dl class="workspace-status" aria-label="Stato account">
+        <div>
+          <dt>Piano</dt>
+          <dd>{{ user_plan }}</dd>
+        </div>
+        <div>
+          <dt>Siti</dt>
+          <dd>{{ site_count }}/{{ max_sites }}</dd>
+        </div>
+        <div>
+          <dt>Crawl</dt>
+          <dd>{% if crawl_unlimited %}Intero sito{% else %}{{ crawl_pages_limit }} pag.{% endif %}</dd>
+        </div>
+        <div>
+          <dt>Quote 24h</dt>
+          <dd>{{ used_today }}/{{ daily_limit }}</dd>
+        </div>
+      </dl>
     </div>
   </header>
 
   <div class="workspace-body">
     <form method="post" class="js-analyze-form analyze-form" novalidate>
       {{ form.hidden_tag() }}
-      <div class="analyze-composer">
+      <div class="analyze-composer analyze-composer--cmd">
+        <div class="analyze-composer__head">
+          <span class="analyze-composer__prompt" aria-hidden="true">$</span>
+          <div>
+            <p class="analyze-composer__label">Nuova analisi</p>
+            <p class="analyze-composer__sub">
+              {% if crawl_unlimited %}
+              Crawl BFS · intero sito ({{ user_plan }})
+              {% else %}
+              Crawl stesso dominio · max {{ crawl_pages_limit }} pagine ({{ user_plan }})
+              {% endif %}
+            </p>
+          </div>
+        </div>
         <div class="field analyze-composer__field">
-          <label for="url">URL del dominio</label>
+          <label class="visually-hidden" for="url">URL del dominio</label>
           <div class="analyze-row">
             {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input") }}
             {{ form.submit(class_="btn btn-signal analyze-submit") }}
           </div>
-          <p class="analyze-hint">
-            {% if crawl_unlimited %}
-            Crawl BFS dello stesso dominio via sitemap e link interni · intero sito, senza limite pagine ({{ user_plan }}).
-            {% else %}
-            Crawl stesso dominio via sitemap e link interni · max {{ crawl_pages_limit }} pagine ({{ user_plan }}).
-            {% endif %}
-          </p>
           {% if is_pro %}
           <div class="field analyze-competitors">
             <label for="competitors">Competitor snapshot (Plus, max 3)</label>
@@ -73,10 +97,13 @@ https://rivale2.com", class_="analyze-input") }}
         {% set findings_n = findings|length %}
 
         <section class="report" aria-labelledby="result-domain">
-          <div class="report-top">
+          <div class="report-top report-top--board">
             <div class="report-top__copy">
-              <p class="eyebrow">Report dominio</p>
-              <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
+              <p class="eyebrow">Ultimo report</p>
+              <div class="report-top__title-row">
+                <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
+                <span class="grade-badge" data-grade="{{ rating.code }}">{{ rating.code }}</span>
+              </div>
               <p class="report-meta">
                 {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
                 <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
@@ -91,7 +118,7 @@ https://rivale2.com", class_="analyze-input") }}
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="Email non configurata sul server"{% endif %}>
-                  Invia via email
+                  Invia email
                 </button>
               </form>
               {% if is_pro %}
@@ -100,8 +127,8 @@ https://rivale2.com", class_="analyze-input") }}
             </div>
           </div>
 
-          <div class="report-overview">
-            <section class="grade-panel" aria-labelledby="grade-code">
+          <div class="signal-board" aria-label="Panoramica score">
+            <section class="signal-board__grade" aria-labelledby="grade-code">
               <div class="grade-panel__mark" data-grade="{{ rating.code }}">
                 <span class="grade-panel__eyebrow">Indice</span>
                 <p class="grade-panel__code" id="grade-code">{{ rating.code }}</p>
@@ -121,13 +148,10 @@ https://rivale2.com", class_="analyze-input") }}
                   <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
                   {% endfor %}
                 </ol>
-                <p class="grade-panel__hint">
-                  Combina AIO/GEO e penalizza critical/warn. Obiettivo: salire verso AAA.
-                </p>
               </div>
             </section>
 
-            <div class="meter-list" aria-label="Score">
+            <div class="signal-board__meters" aria-label="Score">
               <div class="meter">
                 <div class="meter__label"><span>AIO</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
                 <div class="meter__track"><i style="--m: {{ aio }}%"></i></div>
@@ -136,9 +160,15 @@ https://rivale2.com", class_="analyze-input") }}
                 <div class="meter__label"><span>GEO</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
                 <div class="meter__track"><i style="--m: {{ geo }}%"></i></div>
               </div>
-              <div class="meter">
+              <div class="meter meter--alert">
                 <div class="meter__label"><span>Criticità</span><strong>{{ findings_n }}</strong></div>
                 <div class="meter__track"><i style="--m: {{ [findings_n * 12, 100]|min }}%"></i></div>
+                {% if crit_n or warn_n %}
+                <p class="meter__hint">
+                  {% if crit_n %}<span data-sev="critical">{{ crit_n }} critical</span>{% endif %}
+                  {% if warn_n %}<span data-sev="warn">{{ warn_n }} warn</span>{% endif %}
+                </p>
+                {% endif %}
               </div>
             </div>
           </div>
