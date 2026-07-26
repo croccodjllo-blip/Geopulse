@@ -109,3 +109,15 @@ docker volume ls | grep aio
 - URL: http://82.165.79.212/login
 - Stack: Gunicorn + Nginx (porta 80)
 
+### Re-scan Pro (timer)
+
+```bash
+sudo cp /opt/aio-bot/deploy/aio-bot-rescan.service /etc/systemd/system/
+sudo cp /opt/aio-bot/deploy/aio-bot-rescan.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now aio-bot-rescan.timer
+systemctl list-timers | grep aio-bot-rescan
+```
+
+Esecuzione manuale: `sudo -u aio-bot /opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/rescan_worker.py -v`
+

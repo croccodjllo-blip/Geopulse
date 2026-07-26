@@ -9,7 +9,6 @@ import io
 import json
 import logging
 import os
-import zipfile
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any
@@ -38,6 +37,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import (
     BooleanField,
+    HiddenField,
     PasswordField,
     SelectField,
     StringField,
@@ -54,8 +54,14 @@ from wtforms.validators import (
     ValidationError,
 )
 
+from services.analysis_store import (
+    RESCAN_INTERVALS,
+    next_rescan_after,
+    persist_analysis,
+)
 from services.analyzer import analyze_site, normalize_url
 from services.artifacts import build_optimization_pack
+from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 
@@ -66,6 +72,8 @@ FREE_DAILY_ANALYSES = max(1, int(os.getenv("FREE_DAILY_ANALYSES", "10")))
 MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "5")))
 PRO_DAILY_ANALYSES = max(FREE_DAILY_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
 MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
+FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
+PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD") or "GeoPulse!Admin26"
 ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin GeoPulse"
@@ -206,11 +214,66 @@ class SiteAnalysis(db.Model):
     json_ld_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
+    rescan_interval = db.Column(db.String(20), nullable=False, default="off")
+    next_rescan_at = db.Column(db.DateTime)
+    last_rescan_at = db.Column(db.DateTime)
+    last_rescan_error = db.Column(db.String(500))
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     user = db.relationship("User", back_populates="sites")
+    runs = db.relationship(
+        "AnalysisRun",
+        back_populates="site",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+
+    @property
+    def findings(self) -> list[dict[str, str]]:
+        try:
+            data = json.loads(self.findings_json or "[]")
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
+
+    @property
+    def rating(self) -> dict[str, Any]:
+        return compute_rating(self.aio_score, self.geo_score, self.findings)
+
+    @property
+    def rescan_active(self) -> bool:
+        return (self.rescan_interval or "off").lower() in {"daily", "weekly"}
+
+
+class AnalysisRun(db.Model):
+    """Storico append-only di ogni analisi (manuale o schedulata)."""
+
+    __tablename__ = "analysis_runs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    site_id = db.Column(
+        db.Integer, db.ForeignKey("site_analyses.id"), nullable=False, index=True
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    url = db.Column(db.String(500), nullable=False)
+    domain = db.Column(db.String(255), nullable=False)
+    page_title = db.Column(db.String(500))
+    aio_score = db.Column(db.Integer)
+    geo_score = db.Column(db.Integer)
+    findings_json = db.Column(db.Text, nullable=False, default="[]")
+    analysis_notes = db.Column(db.Text)
+    llms_txt = db.Column(db.Text, nullable=False, default="")
+    json_ld_artifact = db.Column(db.Text, nullable=False, default="")
+    meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
+    robots_artifact = db.Column(db.Text, nullable=False, default="")
+    source = db.Column(db.String(20), nullable=False, default="manual")
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
+    )
+
+    site = db.relationship("SiteAnalysis", back_populates="runs")
 
     @property
     def findings(self) -> list[dict[str, str]]:
@@ -366,6 +429,20 @@ class ProInterestForm(FlaskForm):
     submit = SubmitField("Prenota l’interesse")
 
 
+class RescanScheduleForm(FlaskForm):
+    analysis_id = HiddenField(validators=[DataRequired()])
+    interval = SelectField(
+        "Frequenza re-scan",
+        choices=[
+            ("off", "Disattivato"),
+            ("daily", "Ogni giorno"),
+            ("weekly", "Ogni settimana"),
+        ],
+        validators=[DataRequired()],
+    )
+    submit = SubmitField("Salva schedule")
+
+
 # ---------------------------------------------------------------------------
 # Auth helpers
 # ---------------------------------------------------------------------------
@@ -392,6 +469,24 @@ def admin_required(view):
         if not user.is_admin:
             flash("Area riservata agli amministratori.", "error")
             return redirect(url_for("dashboard"))
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
+def pro_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        user = current_user()
+        if user is None:
+            flash("Accedi per continuare.", "warning")
+            return redirect(url_for("login", next=request.path))
+        if not user.is_pro:
+            flash(
+                "Funzione Pro: attiva il piano Pro per re-scan, export e storico avanzato.",
+                "warning",
+            )
+            return redirect(url_for("pricing"))
         return view(*args, **kwargs)
 
     return wrapped
@@ -469,24 +564,30 @@ def ensure_schema() -> None:
         conn.execute(text("PRAGMA synchronous=NORMAL"))
         conn.execute(text("PRAGMA busy_timeout=5000"))
     inspector = inspect(db.engine)
-    if "site_analyses" not in inspector.get_table_names():
-        return
-    existing = {col["name"] for col in inspector.get_columns("site_analyses")}
-    alters = {
-        "aio_score": "INTEGER",
-        "geo_score": "INTEGER",
-        "findings_json": "TEXT DEFAULT '[]'",
-        "analysis_notes": "TEXT",
-        "json_ld_artifact": "TEXT DEFAULT ''",
-        "meta_pack_artifact": "TEXT DEFAULT ''",
-        "robots_artifact": "TEXT DEFAULT ''",
-    }
-    with db.engine.begin() as conn:
-        for name, col_type in alters.items():
-            if name not in existing:
-                conn.execute(text(f"ALTER TABLE site_analyses ADD COLUMN {name} {col_type}"))
+    tables = set(inspector.get_table_names())
+    if "site_analyses" in tables:
+        existing = {col["name"] for col in inspector.get_columns("site_analyses")}
+        alters = {
+            "aio_score": "INTEGER",
+            "geo_score": "INTEGER",
+            "findings_json": "TEXT DEFAULT '[]'",
+            "analysis_notes": "TEXT",
+            "json_ld_artifact": "TEXT DEFAULT ''",
+            "meta_pack_artifact": "TEXT DEFAULT ''",
+            "robots_artifact": "TEXT DEFAULT ''",
+            "rescan_interval": "TEXT DEFAULT 'off'",
+            "next_rescan_at": "DATETIME",
+            "last_rescan_at": "DATETIME",
+            "last_rescan_error": "TEXT",
+        }
+        with db.engine.begin() as conn:
+            for name, col_type in alters.items():
+                if name not in existing:
+                    conn.execute(
+                        text(f"ALTER TABLE site_analyses ADD COLUMN {name} {col_type}")
+                    )
 
-    if "users" in inspector.get_table_names():
+    if "users" in tables:
         user_cols = {col["name"] for col in inspector.get_columns("users")}
         user_alters = {
             "company": "TEXT",
@@ -501,6 +602,40 @@ def ensure_schema() -> None:
                 if name not in user_cols:
                     conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} {col_type}"))
 
+    backfill_analysis_runs()
+
+
+def backfill_analysis_runs() -> None:
+    """Crea un AnalysisRun iniziale per ogni SiteAnalysis senza storico."""
+    sites = SiteAnalysis.query.all()
+    created = 0
+    for site in sites:
+        if AnalysisRun.query.filter_by(site_id=site.id).count() > 0:
+            continue
+        db.session.add(
+            AnalysisRun(
+                site_id=site.id,
+                user_id=site.user_id,
+                url=site.url,
+                domain=site.domain,
+                page_title=site.page_title,
+                aio_score=site.aio_score,
+                geo_score=site.geo_score,
+                findings_json=site.findings_json or "[]",
+                analysis_notes=site.analysis_notes,
+                llms_txt=site.llms_txt or "",
+                json_ld_artifact=site.json_ld_artifact or "",
+                meta_pack_artifact=site.meta_pack_artifact or "",
+                robots_artifact=site.robots_artifact or "",
+                source="manual",
+                created_at=site.created_at or datetime.now(timezone.utc),
+            )
+        )
+        created += 1
+    if created:
+        db.session.commit()
+        app.logger.info("Backfilled %s analysis_runs", created)
+
 
 def client_ip() -> str:
     return (request.headers.get("X-Real-IP") or request.remote_addr or "unknown").strip()
@@ -509,11 +644,15 @@ def client_ip() -> str:
 def analyses_today(user_id: int) -> int:
     start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     return (
-        SiteAnalysis.query.filter(
-            SiteAnalysis.user_id == user_id,
-            SiteAnalysis.created_at >= start,
+        AnalysisRun.query.filter(
+            AnalysisRun.user_id == user_id,
+            AnalysisRun.created_at >= start,
         ).count()
     )
+
+
+def history_limit_for(user: User) -> int:
+    return PRO_HISTORY_LIMIT if user.is_pro else FREE_HISTORY_LIMIT
 
 
 # ---------------------------------------------------------------------------
@@ -811,38 +950,24 @@ def dashboard():
             else:
                 try:
                     result = analyze_site(url)
-                    scraped = result["scraped"]
                     pack = build_optimization_pack(
                         url,
-                        scraped,
+                        result["scraped"],
                         api_key=OPENAI_API_KEY,
                         model=OPENAI_MODEL,
                         logger=app.logger,
                     )
-                    domain = scraped.get("domain") or urlparse(url).netloc
-
-                    analysis = existing
-                    if analysis is None:
-                        analysis = SiteAnalysis(
-                            user_id=user.id, url=url, domain=domain
-                        )
-                        db.session.add(analysis)
-
-                    analysis.domain = domain
-                    analysis.page_title = (scraped.get("title") or "")[:500] or None
-                    analysis.aio_score = result["aio_score"]
-                    analysis.geo_score = result["geo_score"]
-                    analysis.findings_json = json.dumps(
-                        result["findings"], ensure_ascii=False
+                    latest = persist_analysis(
+                        db.session,
+                        SiteAnalysis=SiteAnalysis,
+                        AnalysisRun=AnalysisRun,
+                        user_id=user.id,
+                        url=url,
+                        result=result,
+                        pack=pack,
+                        existing=existing,
+                        source="manual",
                     )
-                    analysis.analysis_notes = result["notes"]
-                    analysis.llms_txt = pack["llms.txt"]
-                    analysis.json_ld_artifact = pack["organization.jsonld.html"]
-                    analysis.meta_pack_artifact = pack["meta-pack.html"]
-                    analysis.robots_artifact = pack["robots.txt"]
-                    analysis.created_at = datetime.now(timezone.utc)
-                    db.session.commit()
-                    latest = analysis
                     flash(
                         "Analisi completata: score, findings e pack pronti.",
                         "success",
@@ -860,16 +985,31 @@ def dashboard():
         except ValueError as exc:
             flash(str(exc), "error")
 
-    history = (
-        SiteAnalysis.query.filter_by(user_id=user.id)
-        .order_by(SiteAnalysis.created_at.desc())
-        .limit(10)
-        .all()
-    )
+    hist_limit = history_limit_for(user)
+    if user.is_pro:
+        history = (
+            AnalysisRun.query.filter_by(user_id=user.id)
+            .order_by(AnalysisRun.created_at.desc())
+            .limit(hist_limit)
+            .all()
+        )
+    else:
+        history = (
+            SiteAnalysis.query.filter_by(user_id=user.id)
+            .order_by(SiteAnalysis.created_at.desc())
+            .limit(hist_limit)
+            .all()
+        )
+    schedule_form = RescanScheduleForm()
+    if latest and not schedule_form.is_submitted():
+        schedule_form.analysis_id.data = str(latest.id)
+        schedule_form.interval.data = latest.rescan_interval or "off"
+
     used_today = analyses_today(user.id)
     return render_template(
         "dashboard.html",
         form=form,
+        schedule_form=schedule_form,
         latest=latest,
         history=history,
         openai_ready=bool(OPENAI_API_KEY),
@@ -878,6 +1018,9 @@ def dashboard():
         max_sites=user.max_sites,
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
+        is_pro=user.is_pro,
+        history_limit=hist_limit,
+        history_is_runs=user.is_pro,
     )
 
 
@@ -929,38 +1072,149 @@ def download_pack(analysis_id: int):
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
 
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("llms.txt", analysis.llms_txt or "")
-        zf.writestr("organization.jsonld.html", analysis.json_ld_artifact or "")
-        zf.writestr("meta-pack.html", analysis.meta_pack_artifact or "")
-        zf.writestr("robots.txt", analysis.robots_artifact or "")
-        rating = analysis.rating
-        report = {
-            "url": analysis.url,
-            "domain": analysis.domain,
-            "aio_score": analysis.aio_score,
-            "geo_score": analysis.geo_score,
-            "rating": rating["code"],
-            "rating_score": rating["score"],
-            "rating_label": rating["label"],
-            "findings": analysis.findings,
-            "notes": analysis.analysis_notes,
-            "generated_at": (
-                analysis.created_at.isoformat() if analysis.created_at else None
-            ),
-        }
-        zf.writestr(
-            "report.json",
-            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-        )
-    buffer.seek(0)
+    buffer = io.BytesIO(pack_zip_bytes(analysis))
     filename = f"geopulse-{analysis.domain.replace(':', '_')}.zip"
     return send_file(
         buffer,
         mimetype="application/zip",
         as_attachment=True,
         download_name=filename,
+    )
+
+
+@app.route("/dashboard/schedule", methods=["POST"])
+@login_required
+@pro_required
+def set_rescan_schedule():
+    user = current_user()
+    form = RescanScheduleForm()
+    if not form.validate_on_submit():
+        flash("Schedule non valido.", "error")
+        return redirect(url_for("dashboard"))
+
+    try:
+        analysis_id = int(form.analysis_id.data)
+    except (TypeError, ValueError):
+        flash("Sito non valido.", "error")
+        return redirect(url_for("dashboard"))
+
+    interval = (form.interval.data or "off").strip().lower()
+    if interval not in RESCAN_INTERVALS:
+        flash("Frequenza non valida.", "error")
+        return redirect(url_for("dashboard"))
+
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+
+    analysis.rescan_interval = interval
+    if interval == "off":
+        analysis.next_rescan_at = None
+        analysis.last_rescan_error = None
+        flash(f"Re-scan disattivato per {analysis.domain}.", "success")
+    else:
+        analysis.next_rescan_at = next_rescan_after(interval)
+        analysis.last_rescan_error = None
+        label = "giornaliero" if interval == "daily" else "settimanale"
+        flash(
+            f"Re-scan {label} attivo per {analysis.domain}. "
+            "Il worker Pro eseguirà i controlli in automatico.",
+            "success",
+        )
+    db.session.commit()
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard/history/<int:analysis_id>")
+@login_required
+@pro_required
+def site_history(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+
+    runs = (
+        AnalysisRun.query.filter_by(site_id=analysis.id, user_id=user.id)
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(PRO_HISTORY_LIMIT)
+        .all()
+    )
+    schedule_form = RescanScheduleForm(
+        analysis_id=str(analysis.id),
+        interval=analysis.rescan_interval or "off",
+    )
+    return render_template(
+        "site_history.html",
+        analysis=analysis,
+        runs=runs,
+        schedule_form=schedule_form,
+        history_limit=PRO_HISTORY_LIMIT,
+    )
+
+
+@app.route("/dashboard/download/run/<int:run_id>.zip")
+@login_required
+@pro_required
+def download_run_pack(run_id: int):
+    user = current_user()
+    run = AnalysisRun.query.filter_by(id=run_id, user_id=user.id).first()
+    if run is None:
+        flash("Run non trovata.", "error")
+        return redirect(url_for("dashboard"))
+
+    buffer = io.BytesIO(pack_zip_bytes(run))
+    stamp = run.created_at.strftime("%Y%m%d-%H%M") if run.created_at else "run"
+    filename = f"geopulse-{run.domain.replace(':', '_')}-{stamp}.zip"
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
+@app.route("/dashboard/export/history.csv")
+@login_required
+@pro_required
+def export_history_csv():
+    user = current_user()
+    runs = (
+        AnalysisRun.query.filter_by(user_id=user.id)
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(PRO_HISTORY_LIMIT)
+        .all()
+    )
+    data = runs_to_csv(runs)
+    return send_file(
+        io.BytesIO(data),
+        mimetype="text/csv; charset=utf-8",
+        as_attachment=True,
+        download_name=f"geopulse-storico-{datetime.now(timezone.utc).strftime('%Y%m%d')}.csv",
+    )
+
+
+@app.route("/dashboard/export/sites.zip")
+@login_required
+@pro_required
+def export_all_sites_zip():
+    user = current_user()
+    sites = (
+        SiteAnalysis.query.filter_by(user_id=user.id)
+        .order_by(SiteAnalysis.domain.asc())
+        .all()
+    )
+    if not sites:
+        flash("Nessun sito da esportare.", "warning")
+        return redirect(url_for("dashboard"))
+    buffer = io.BytesIO(multi_site_zip(sites))
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name=f"geopulse-siti-{datetime.now(timezone.utc).strftime('%Y%m%d')}.zip",
     )
 
 

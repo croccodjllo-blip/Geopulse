@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Storico {{ analysis.domain }}{% endblock %}
+{% block body_class %}body-dash{% endblock %}
+{% block main_class %}site-main--dash{% endblock %}
+
+{% block content %}
+<section class="workspace">
+  <div class="workspace-body">
+    <p class="eyebrow">Pro · Storico avanzato</p>
+    <h1 class="h-display report-domain">{{ analysis.domain }}</h1>
+    <p class="report-meta">
+      <a class="site-link" href="{{ analysis.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
+      <a class="site-link" href="{{ url_for('dashboard') }}">← Dashboard</a>
+      <a class="site-link" href="{{ url_for('download_pack', analysis_id=analysis.id) }}">ZIP corrente</a>
+    </p>
+
+    <section class="pro-panel" aria-labelledby="schedule-title">
+      <h2 class="report-section__title" id="schedule-title">Re-scan periodico</h2>
+      <p class="pro-panel__lede">
+        Il worker Pro ri-analizza automaticamente questo URL.
+        {% if analysis.next_rescan_at %}
+          Prossimo: {{ analysis.next_rescan_at.strftime('%d/%m/%Y %H:%M') }} UTC.
+        {% elif analysis.rescan_active %}
+          Schedule attivo, in coda.
+        {% else %}
+          Attualmente disattivato.
+        {% endif %}
+      </p>
+      {% if analysis.last_rescan_error %}
+        <p class="field-error">Ultimo errore: {{ analysis.last_rescan_error }}</p>
+      {% endif %}
+      <form method="post" action="{{ url_for('set_rescan_schedule') }}" class="schedule-form">
+        {{ schedule_form.hidden_tag() }}
+        {{ schedule_form.analysis_id() }}
+        <div class="field schedule-form__row">
+          <label for="interval">Frequenza</label>
+          {{ schedule_form.interval(id="interval") }}
+          {{ schedule_form.submit(class_="btn btn-signal") }}
+        </div>
+      </form>
+    </section>
+
+    <section class="history-block">
+      <h2 class="report-section__title">Run (max {{ history_limit }})</h2>
+      <ul class="history-list">
+        {% for item in runs %}
+        <li>
+          <div class="history-main">
+            <strong>
+              {{ item.created_at.strftime('%d/%m/%Y %H:%M') if item.created_at else '—' }} UTC
+              <em class="history-grade" data-grade="{{ item.rating.code }}">{{ item.rating.code }}</em>
+            </strong>
+            <div class="history-scores">
+              <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
+              <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
+              <span>{{ 'Schedulato' if item.source == 'scheduled' else 'Manuale' }}</span>
+            </div>
+          </div>
+          <div class="history-actions">
+            <a href="{{ url_for('download_run_pack', run_id=item.id) }}">ZIP run</a>
+          </div>
+        </li>
+        {% else %}
+        <li><span class="muted">Nessuna run ancora.</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+  </div>
+</section>
+{% endblock %}

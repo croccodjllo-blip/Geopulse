@@ -66,8 +66,52 @@
                 {% endif %}
               </p>
             </div>
-            <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
+            <div class="report-top__actions">
+              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
+              {% if is_pro %}
+              <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico</a>
+              {% endif %}
+            </div>
           </div>
+
+          {% if is_pro %}
+          <section class="pro-panel" aria-labelledby="pro-tools-title">
+            <h3 class="report-section__title" id="pro-tools-title">Servizi Pro</h3>
+            <p class="pro-panel__lede">
+              Re-scan automatico, export CSV e pack di tutti i siti.
+            </p>
+            <form method="post" action="{{ url_for('set_rescan_schedule') }}" class="schedule-form">
+              {{ schedule_form.hidden_tag() }}
+              {{ schedule_form.analysis_id() }}
+              <div class="field schedule-form__row">
+                <label for="interval">Re-scan {{ latest.domain }}</label>
+                {{ schedule_form.interval(id="interval") }}
+                {{ schedule_form.submit(class_="btn btn-signal") }}
+              </div>
+              {% if latest.next_rescan_at %}
+              <p class="pro-panel__meta">
+                Prossimo re-scan: {{ latest.next_rescan_at.strftime('%d/%m/%Y %H:%M') }} UTC
+                {% if latest.last_rescan_at %}
+                  · Ultimo: {{ latest.last_rescan_at.strftime('%d/%m %H:%M') }} UTC
+                {% endif %}
+              </p>
+              {% endif %}
+              {% if latest.last_rescan_error %}
+              <p class="field-error">Ultimo errore re-scan: {{ latest.last_rescan_error }}</p>
+              {% endif %}
+            </form>
+            <div class="pro-export-links">
+              <a class="site-link" href="{{ url_for('export_history_csv') }}">Export CSV storico</a>
+              <a class="site-link" href="{{ url_for('export_all_sites_zip') }}">Export ZIP tutti i siti</a>
+              <a class="site-link" href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico avanzato sito</a>
+            </div>
+          </section>
+          {% else %}
+          <p class="pro-upsell">
+            Piano Free: storico limitato.
+            <a href="{{ url_for('pricing') }}">Pro</a> sblocca re-scan periodico, export CSV e storico run.
+          </p>
+          {% endif %}
 
           <section class="grade-panel" aria-labelledby="grade-code">
             <div class="grade-panel__mark" data-grade="{{ rating.code }}">
@@ -181,7 +225,10 @@
 
         {% if history %}
         <section class="history-block">
-          <h2 class="report-section__title">Ultime analisi</h2>
+          <h2 class="report-section__title">
+            {% if history_is_runs %}Storico run{% else %}Ultime analisi{% endif %}
+            <span>max {{ history_limit }}</span>
+          </h2>
           <ul class="history-list">
             {% for item in history %}
             <li>
@@ -190,11 +237,21 @@
                 <div class="history-scores">
                   <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
                   <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
+                  {% if history_is_runs %}
+                  <span>{{ 'Schedulato' if item.source == 'scheduled' else 'Manuale' }}</span>
+                  {% endif %}
                 </div>
               </div>
               <div class="history-actions">
                 <span class="muted">{{ item.created_at.strftime('%d/%m %H:%M') if item.created_at else '' }}</span>
+                {% if history_is_runs %}
+                <a href="{{ url_for('download_run_pack', run_id=item.id) }}">ZIP</a>
+                {% if item.site_id %}
+                <a href="{{ url_for('site_history', analysis_id=item.site_id) }}">Dettaglio</a>
+                {% endif %}
+                {% else %}
                 <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
+                {% endif %}
               </div>
             </li>
             {% endfor %}

@@ -1,0 +1,12 @@
+[Unit]
+Description=GeoPulse Pro periodic re-scan worker
+After=network.target aio-bot.service
+
+[Service]
+Type=oneshot
+User=aio-bot
+Group=aio-bot
+WorkingDirectory=/opt/aio-bot
+EnvironmentFile=/opt/aio-bot/.env
+ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/rescan_worker.py --limit 20
+Nice=10
