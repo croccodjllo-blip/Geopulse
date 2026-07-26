@@ -69,7 +69,7 @@ docker compose --profile proxy up -d
 ## 4) HTTPS (host Nginx + Certbot)
 
 1. Copia `deploy/nginx.host.conf` in `/etc/nginx/sites-available/aio-bot`
-2. Sostituisci `aio-bot.example.com` con il tuo dominio
+2. Usa `geopulse.it` / `www.geopulse.it` (vedi `deploy/nginx.host.conf`)
 3. `ln -s .../aio-bot /etc/nginx/sites-enabled/`
 4. `certbot --nginx -d tuo-dominio.com`
 
