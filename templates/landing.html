@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}GeoPulse{% endblock %}
-{% block meta_description %}GeoPulse (geopulse.it) analizza il tuo sito per AIO e GEO, genera score, findings e un pack pronto da pubblicare (llms.txt, JSON-LD, meta, robots).{% endblock %}
+{% block meta_description %}GeoPulse analizza i siti per AIO e GEO: score, findings critici e pack di ottimizzazione per essere citati dalle IA.{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -17,77 +17,76 @@
       fetchpriority="high"
     />
     <div class="hero-visual__veil"></div>
+    <div class="hero-visual__grid"></div>
   </div>
 
   <div class="hero-copy">
     <p class="hero-brand" id="hero-brand">GEOPULSE</p>
-    <h1>Ottimizza il sito per le IA.</h1>
+    <h1>Visibilità nelle risposte delle IA.</h1>
     <p class="lede">
-      Analisi AIO &amp; GEO automatica: score, findings e pack pronto da pubblicare.
+      Analisi AIO &amp; GEO del dominio. Findings critici. Pack pronto da pubblicare.
     </p>
     <div class="cta-row">
       <a class="btn btn-signal" href="{{ url_for('register') }}">Inizia gratis</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Scopri il prodotto</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Come funziona</a>
     </div>
   </div>
 </section>
 
-<section class="section-band" id="problema">
-  <p class="eyebrow">Il problema</p>
-  <h2>Le IA leggono il web in un modo diverso.</h2>
+<section class="section-band" id="segnale">
+  <p class="eyebrow">Il segnale</p>
+  <h2>Le IA non cercano ranking. Cercano chiarezza.</h2>
   <p class="lede">
-    ChatGPT, Perplexity e gli answer engine non usano solo la SEO classica.
-    Cercano segnali chiari: chi sei, cosa offri, cosa possono citare.
-    Se il sito non parla il loro linguaggio, resti fuori dalle risposte.
+    Answer engine e modelli generativi citano brand con entity, struttura e file leggibili.
+    GeoPulse misura quei segnali e ti dà gli artifact da mettere online.
   </p>
 </section>
 
 <section class="section-band section-band--wide" id="metodo">
-  <p class="eyebrow">Metodo</p>
-  <h2>Tre passi. Poi il pack è pronto.</h2>
+  <p class="eyebrow">Flusso</p>
+  <h2>Tre passi. Output operativo.</h2>
   <p class="lede">
-    Ti registri, inserisci l’URL, ricevi score AIO/GEO e artifact
-    da mettere online. Free: {{ max_sites_free }} siti · {{ free_daily_analyses }} analisi / 24h.
+    Registrati, analizza il dominio, pubblica il pack.
+    Free: {{ max_sites_free }} siti · {{ free_daily_analyses }} analisi / 24h.
   </p>
   <ol class="step-flow">
     <li>
-      <strong>Registra il brand</strong>
-      <span>Raccontaci azienda, ruolo e sito principale: partiamo da lì.</span>
+      <strong>01 · Dominio</strong>
+      <span>Inserisci l’URL. Crawl stesso dominio via sitemap e link interni.</span>
     </li>
     <li>
-      <strong>Lancia l’analisi</strong>
-      <span>Scansione homepage, robots, sitemap e segnali AIO/GEO in pochi secondi.</span>
+      <strong>02 · Score</strong>
+      <span>Indice AIO/GEO, pagine critiche e findings con priorità.</span>
     </li>
     <li>
-      <strong>Pubblica il pack</strong>
-      <span>Scarica ZIP o copia gli artifact e mettili online.</span>
+      <strong>03 · Pack</strong>
+      <span>llms.txt, JSON-LD, meta, robots e checklist — ZIP o email.</span>
     </li>
   </ol>
 </section>
 
 <section class="section-band" id="output">
-  <p class="eyebrow">Output</p>
-  <h2>Un pack concreto, non solo consigli.</h2>
+  <p class="eyebrow">Deliverable</p>
+  <h2>Non un report: un pack da pubblicare.</h2>
   <p class="lede">
-    Ogni analisi genera file pronti: <code>llms.txt</code>, JSON-LD Organization,
-    meta pack e suggerimenti <code>robots.txt</code>. Copiali o scarica lo ZIP.
+    Ogni analisi genera file concreti per crawler IA e answer engine.
   </p>
   <ul class="artifact-list" aria-label="Artifact generati">
-    <li><code>llms.txt</code> — guida per i crawler IA</li>
-    <li><code>organization.jsonld</code> — schema strutturato</li>
+    <li><code>llms.txt</code> — guida per i modelli</li>
+    <li><code>organization.jsonld</code> — entity strutturata</li>
     <li><code>meta-pack.html</code> — title, description, OG</li>
-    <li><code>robots.txt</code> — regole consigliate</li>
+    <li><code>robots.txt</code> — regole di crawl</li>
   </ul>
 </section>
 
 <section class="section-cta" id="inizia">
   <div class="section-cta__inner">
-    <p class="eyebrow">Pronto</p>
-    <h2>Porta il tuo sito nelle risposte delle IA.</h2>
-    <p class="lede">Crea l’account gratis e lancia la prima analisi in pochi minuti.</p>
+    <p class="eyebrow">Next</p>
+    <h2>Porta il brand nelle risposte generative.</h2>
+    <p class="lede">Account free. Prima analisi in pochi minuti.</p>
     <div class="cta-row">
       <a class="btn btn-signal" href="{{ url_for('register') }}">Crea account</a>
-      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Vedi i prezzi</a>
+      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Piani</a>
     </div>
   </div>
 </section>

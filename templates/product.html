@@ -1,39 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Prodotto{% endblock %}
-{% block meta_description %}Come funziona GeoPulse su geopulse.it: analisi AIO/GEO, score, findings e pack di ottimizzazione per answer engine e crawler IA.{% endblock %}
+{% block meta_description %}Come funziona GeoPulse: analisi AIO/GEO, findings critici e pack di ottimizzazione per answer engine e crawler IA.{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
     <p class="eyebrow">Prodotto</p>
-    <h1 class="h-display page-intro__title">Cosa fa GeoPulse</h1>
+    <h1 class="h-display page-intro__title">Il segnale che le IA leggono</h1>
     <p class="lede page-intro__lede">
-      Un flusso semplice: inserisci l’URL, leggi lo score, pubblica gli artifact.
-      Pensato per marketer, founder e agenzie che vogliono visibilità nelle risposte IA.
+      GeoPulse misura i segnali AIO/GEO del dominio e genera artifact pronti da pubblicare.
+      Per team che vogliono essere citati, non solo indicizzati.
     </p>
   </header>
 
   <section class="page-section">
     <h2 class="page-section__title">Analisi AIO &amp; GEO</h2>
     <p class="lede">
-      Scansioniamo homepage e endpoint chiave (<code>/llms.txt</code>, <code>/robots.txt</code>,
-      <code>/sitemap.xml</code>) e valutiamo i segnali che gli answer engine usano per citarti.
+      Crawl del dominio, probe di <code>/llms.txt</code>, <code>/robots.txt</code>,
+      <code>/sitemap.xml</code> e valutazione dei segnali usati dagli answer engine.
     </p>
     <ul class="plain-list">
-      <li>Score AIO e GEO da 0 a 100</li>
-      <li>Findings per categoria: meta, schema, crawler, contenuto</li>
-      <li>Note operative su cosa sistemare subito</li>
+      <li>Indice risultato + score AIO/GEO</li>
+      <li>Findings critici prioritizzati</li>
+      <li>Pagine deboli con problema esplicito</li>
     </ul>
   </section>
 
   <section class="page-section">
     <h2 class="page-section__title">Pack di ottimizzazione</h2>
     <p class="lede">
-      Non ti lasciamo con una checklist vuota. Generiamo file pronti da copiare o scaricare in ZIP.
+      Output operativo: file da copiare o scaricare in ZIP / inviare via email.
     </p>
     <ul class="artifact-list">
-      <li><code>llms.txt</code> — descrizione del brand per i modelli linguistici</li>
-      <li><code>organization.jsonld.html</code> — dati strutturati Organization</li>
+      <li><code>llms.txt</code> — descrizione brand per i modelli</li>
+      <li><code>organization.jsonld.html</code> — entity strutturata</li>
       <li><code>meta-pack.html</code> — title, description, Open Graph</li>
       <li><code>robots.txt</code> — bozza allineata a crawl e sitemap</li>
     </ul>
@@ -42,14 +42,14 @@
   <section class="page-section">
     <h2 class="page-section__title">Per chi è</h2>
     <p class="lede">
-      Brand e team che vogliono essere trovati e citati da ChatGPT, Perplexity e ricerca generativa —
-      senza riscrivere a mano ogni file a ogni aggiornamento del sito.
+      Brand, founder e agenzie che vogliono visibilità in ChatGPT, Perplexity
+      e ricerca generativa — con un flusso ripetibile, non fix one-off.
     </p>
   </section>
 
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('register') }}">Prova gratis</a>
-    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Confronta i piani</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Piani</a>
   </div>
 </article>
 {% endblock %}

@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Prezzi{% endblock %}
-{% block meta_description %}Piani GeoPulse su geopulse.it: Free per iniziare, Plus con crawl dell’intero sito e monitoraggio.{% endblock %}
+{% block meta_description %}Piani GeoPulse: Free per iniziare, Plus con crawl dell’intero sito e monitoraggio.{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
     <p class="eyebrow">Prezzi</p>
-    <h1 class="h-display page-intro__title">Inizia gratis. Scala quando serve.</h1>
+    <h1 class="h-display page-intro__title">Semplici. Scalabili.</h1>
     <p class="lede page-intro__lede">
-      Il piano Free è già attivo. Plus arriva con Stripe per chi vuole più siti,
-      crawl dell’intero sito e monitoraggio continuo.
+      Free per validare. Plus per crawl completo, monitoraggio e export.
     </p>
   </header>
 
@@ -17,13 +16,13 @@
     <section class="plan" role="listitem">
       <p class="plan__name">Free</p>
       <p class="plan__price">0&nbsp;€<span>/mese</span></p>
-      <p class="plan__desc">Per provare GeoPulse sul tuo sito principale.</p>
+      <p class="plan__desc">Per il primo dominio e le prime ottimizzazioni.</p>
       <ul class="plan__features">
         <li>Fino a {{ max_sites_free }} siti</li>
-        <li>Crawl dominio fino a {{ free_crawl_pages }} pagine</li>
+        <li>Crawl fino a {{ free_crawl_pages }} pagine</li>
         <li>{{ free_daily_analyses }} analisi / 24h</li>
-        <li>Score AIO &amp; GEO + findings</li>
-        <li>Pack ZIP e copia artifact</li>
+        <li>Score + findings critici</li>
+        <li>Pack ZIP</li>
       </ul>
       <a class="btn btn-primary btn-block" href="{{ url_for('register') }}">Inizia gratis</a>
     </section>
@@ -31,25 +30,22 @@
     <section class="plan plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
       <p class="plan__price">In arrivo</p>
-      <p class="plan__desc">Per team e agenzie che ottimizzano più brand.</p>
+      <p class="plan__desc">Per team che ottimizzano più brand in continuo.</p>
       <ul class="plan__features">
         <li>Più siti e analisi</li>
-        <li>Crawl dell’intero sito, senza limite pagine</li>
-        <li>Re-scan periodico (giornaliero/settimanale)</li>
+        <li>Crawl dell’intero sito</li>
+        <li>Re-scan giornaliero/settimanale</li>
         <li>Export CSV e ZIP multi-sito</li>
         <li>Storico run avanzato</li>
-        <li>Billing Stripe (in arrivo)</li>
       </ul>
-      <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">Prenota l’interesse</a>
+      <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">Prenota interesse</a>
     </section>
   </div>
 
   <p class="plan-note">
-    “Prenota l’interesse” salva i tuoi dati nella waitlist Plus (database GeoPulse)
-    e ti ricontatteremo via email. Domande? Scrivi a
-    <a href="mailto:info@geopulse.it">info@geopulse.it</a>,
-    leggi le <a href="{{ url_for('faq') }}">FAQ</a>
-    o <a href="{{ url_for('register') }}">crea un account Free</a>.
+    Domande? <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+    · <a href="{{ url_for('faq') }}">FAQ</a>
+    · <a href="{{ url_for('register') }}">Account Free</a>
   </p>
 </article>
 {% endblock %}
