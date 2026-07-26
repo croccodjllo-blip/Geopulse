@@ -165,26 +165,31 @@
           {% endif %}
 
           {% if latest.crawl_pages %}
-          <section class="report-section">
-            <h3 class="report-section__title">
-              Pagine del dominio
-              <span>{{ latest.pages_analyzed or latest.crawl_pages|length }} analizzate</span>
-            </h3>
+          {% set pages_n = latest.pages_analyzed or latest.crawl_pages|length %}
+          <details class="crawl-details">
+            <summary>
+              <span class="crawl-details__label">Pagine analizzate</span>
+              <span class="crawl-details__count">{{ pages_n }}</span>
+            </summary>
             <ul class="crawl-list">
               {% for page in latest.crawl_pages[:20] %}
+              {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
               <li>
-                <div class="crawl-list__main">
-                  <strong>{{ page.title or page.url }}</strong>
-                  <a class="site-link" href="{{ page.url }}" target="_blank" rel="noopener noreferrer">{{ page.url }}</a>
-                </div>
-                <div class="crawl-list__scores">
-                  <span>AIO {{ page.aio_score if page.aio_score is not none else '—' }}</span>
-                  <span>GEO {{ page.geo_score if page.geo_score is not none else '—' }}</span>
-                </div>
+                <a class="crawl-list__path" href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
+                  <span class="crawl-list__title">{% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}</span>
+                  <span class="crawl-list__url">/{% if path %}{{ path }}{% endif %}</span>
+                </a>
+                <span class="crawl-list__scores" aria-label="Score pagina">
+                  <em>{{ page.aio_score if page.aio_score is not none else '—' }}</em>
+                  <em>{{ page.geo_score if page.geo_score is not none else '—' }}</em>
+                </span>
               </li>
               {% endfor %}
             </ul>
-          </section>
+            {% if pages_n > 20 %}
+            <p class="crawl-details__more">Mostrate 20 di {{ pages_n }}.</p>
+            {% endif %}
+          </details>
           {% endif %}
 
           <section class="report-section">
