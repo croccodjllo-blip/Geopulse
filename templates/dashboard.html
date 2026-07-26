@@ -48,6 +48,11 @@
       <div class="workspace-main">
         {% if latest %}
         <section class="report" aria-labelledby="result-domain">
+          {% set rating = latest.rating %}
+          {% set aio = latest.aio_score if latest.aio_score is not none else 0 %}
+          {% set geo = latest.geo_score if latest.geo_score is not none else 0 %}
+          {% set findings_n = latest.findings|length %}
+
           <div class="report-top">
             <div>
               <p class="eyebrow">Report</p>
@@ -63,9 +68,33 @@
             <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
           </div>
 
-          {% set aio = latest.aio_score if latest.aio_score is not none else 0 %}
-          {% set geo = latest.geo_score if latest.geo_score is not none else 0 %}
-          {% set findings_n = latest.findings|length %}
+          <section class="grade-panel" aria-labelledby="grade-code">
+            <div class="grade-panel__mark" data-grade="{{ rating.code }}">
+              <span class="grade-panel__eyebrow">Indice risultato</span>
+              <p class="grade-panel__code" id="grade-code">{{ rating.code }}</p>
+              <p class="grade-panel__label">{{ rating.label }}</p>
+              <p class="grade-panel__score">Punteggio indice {{ rating.score }}/100</p>
+            </div>
+            <div class="grade-panel__scale" aria-label="Scala da DDD a AAA">
+              <div class="grade-panel__scale-head">
+                <span>DDD</span>
+                <span>AAA</span>
+              </div>
+              <div class="grade-rail" aria-hidden="true">
+                <i style="--p: {{ rating.progress }}%"></i>
+              </div>
+              <ol class="grade-steps">
+                {% for code in rating.scale %}
+                <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
+                {% endfor %}
+              </ol>
+              <p class="grade-panel__hint">
+                L’indice combina score AIO/GEO e penalizza i findings critical/warn.
+                Obiettivo: salire verso AAA pubblicando il pack e chiudendo i gap.
+              </p>
+            </div>
+          </section>
+
           <div class="meter-list" aria-label="Score">
             <div class="meter">
               <div class="meter__label"><span>AIO score</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
@@ -156,7 +185,7 @@
             {% for item in history %}
             <li>
               <div class="history-main">
-                <strong>{{ item.domain }}</strong>
+                <strong>{{ item.domain }} <em class="history-grade" data-grade="{{ item.rating.code }}">{{ item.rating.code }}</em></strong>
                 <div class="history-scores">
                   <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
                   <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
@@ -178,6 +207,10 @@
         <h2 class="guide-rail__title" id="guide-title">Come usare i risultati</h2>
         <p class="guide-rail__lede">Ordine consigliato dopo ogni analisi.</p>
         <ol class="guide-rail__steps">
+          <li>
+            <strong>Indice DDD→AAA</strong>
+            <span>Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado.</span>
+          </li>
           <li>
             <strong>Score</strong>
             <span>Sotto 60 su AIO o GEO = intervento prioritario.</span>

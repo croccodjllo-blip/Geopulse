@@ -55,6 +55,7 @@ from wtforms.validators import (
 from services.analyzer import analyze_site, normalize_url
 from services.artifacts import build_optimization_pack
 from services.rate_limit import limiter
+from services.rating import RATING_ORDER, compute_rating
 
 load_dotenv()
 
@@ -186,6 +187,10 @@ class SiteAnalysis(db.Model):
         except json.JSONDecodeError:
             return []
 
+    @property
+    def rating(self) -> dict[str, Any]:
+        return compute_rating(self.aio_score, self.geo_score, self.findings)
+
 
 # ---------------------------------------------------------------------------
 # Forms
@@ -314,6 +319,7 @@ def inject_globals() -> dict[str, Any]:
         "max_sites_free": MAX_SITES_FREE,
         "free_daily_analyses": FREE_DAILY_ANALYSES,
         "now_year": datetime.now(timezone.utc).year,
+        "rating_scale": RATING_ORDER,
     }
 
 
@@ -616,11 +622,15 @@ def download_pack(analysis_id: int):
         zf.writestr("organization.jsonld.html", analysis.json_ld_artifact or "")
         zf.writestr("meta-pack.html", analysis.meta_pack_artifact or "")
         zf.writestr("robots.txt", analysis.robots_artifact or "")
+        rating = analysis.rating
         report = {
             "url": analysis.url,
             "domain": analysis.domain,
             "aio_score": analysis.aio_score,
             "geo_score": analysis.geo_score,
+            "rating": rating["code"],
+            "rating_score": rating["score"],
+            "rating_label": rating["label"],
             "findings": analysis.findings,
             "notes": analysis.analysis_notes,
             "generated_at": (
