@@ -672,6 +672,35 @@ def critical_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str, A
     ]
 
 
+_STORAGE_PAGE_KEYS = (
+    "url",
+    "title",
+    "aio_score",
+    "geo_score",
+    "issues",
+    "word_count",
+    "response_ms",
+    "status_code",
+)
+
+
+def pages_for_storage(
+    pages: list[dict[str, Any]] | None,
+    *,
+    limit: int = 150,
+) -> list[dict[str, Any]]:
+    """
+    Persiste le pagine in ordine di criticità (critical/warn prima),
+    così il truncamento non perde i problemi.
+    """
+    limit = max(1, min(int(limit), ABS_MAX_CRAWL_PAGES))
+    ranked = prioritize_crawl_pages(pages)
+    out: list[dict[str, Any]] = []
+    for page in ranked[:limit]:
+        out.append({key: page.get(key) for key in _STORAGE_PAGE_KEYS})
+    return out
+
+
 def score_page_signals(scraped: dict[str, Any]) -> dict[str, Any]:
     """Score locale di una pagina (senza probe di root)."""
     aio = 20.0

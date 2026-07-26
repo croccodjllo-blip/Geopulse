@@ -103,7 +103,7 @@ def persist_analysis(
     analysis.pages_analyzed = pages_analyzed
     analysis.crawl_pages_json = json.dumps(
         {
-            "pages": pages[:50],
+            "pages": pages_for_storage(pages, limit=CRAWL_PAGES_STORE_LIMIT),
             "competitors": result.get("competitors") or [],
             "signals": result.get("signals") or {},
         },
