@@ -25,7 +25,7 @@ def due_sites_query(SiteAnalysis: Any, User: Any, *, now: datetime | None = None
             SiteAnalysis.rescan_interval.in_(("daily", "weekly")),
             SiteAnalysis.next_rescan_at.isnot(None),
             SiteAnalysis.next_rescan_at <= now,
-            User.plan.in_(("pro", "admin")),
+            User.plan.in_(("plus", "pro", "admin")),
         )
         .order_by(SiteAnalysis.next_rescan_at.asc())
     )

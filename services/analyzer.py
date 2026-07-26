@@ -44,6 +44,8 @@ from services.signals import (
 HTTP_TIMEOUT = 12
 PROBE_TIMEOUT = 6
 PAGE_TIMEOUT = 10
+# Tetto di sicurezza operativo (anche per crawl “illimitato” Plus).
+ABS_MAX_CRAWL_PAGES = 2000
 USER_AGENT = "GeoPulse/1.0 (+https://geopulse.it; GEO/AIO optimizer)"
 _SESSION = requests.Session()
 _SESSION.headers.update(
@@ -290,7 +292,7 @@ def scrape_page(url: str) -> dict[str, Any]:
         "h2_count": h2_count,
         "links": links,
         "hrefs": hrefs,
-        "internal_hrefs": internal_hrefs[:80],
+        "internal_hrefs": internal_hrefs[:200],
         "internal_link_count": internal_link_count,
         "external_link_count": external_link_count,
         "citation_link_count": min(citation_link_count, external_link_count),
@@ -429,7 +431,7 @@ def discover_domain_urls(
     max_pages: int,
 ) -> list[str]:
     """Scopre URL dello stesso dominio: seed + sitemap + link homepage."""
-    max_pages = max(1, min(int(max_pages), 50))
+    max_pages = max(1, min(int(max_pages), ABS_MAX_CRAWL_PAGES))
     ordered: list[str] = []
     seen: set[str] = set()
 
@@ -443,14 +445,15 @@ def discover_domain_urls(
     add(scraped.get("final_url") or seed_url)
     add(seed_url)
 
+    sitemap_limit = min(max_pages * 4, ABS_MAX_CRAWL_PAGES)
     for u in collect_sitemap_urls(
-        seed_url, probes.get("sitemap") or {}, limit=max_pages * 3
+        seed_url, probes.get("sitemap") or {}, limit=sitemap_limit
     ):
         add(u)
         if len(ordered) >= max_pages:
             return ordered[:max_pages]
 
-    for href in scraped.get("hrefs") or []:
+    for href in scraped.get("internal_hrefs") or scraped.get("hrefs") or []:
         add(href)
         if len(ordered) >= max_pages:
             break
@@ -463,6 +466,91 @@ def discover_domain_urls(
             break
 
     return ordered[:max_pages]
+
+
+def _enqueue_links(
+    queue: list[str],
+    seen: set[str],
+    *,
+    seed_url: str,
+    scraped: dict[str, Any] | None,
+    max_pages: int,
+) -> None:
+    if not scraped or len(seen) >= max_pages:
+        return
+    candidates: list[str] = []
+    candidates.extend(scraped.get("internal_hrefs") or [])
+    candidates.extend(scraped.get("hrefs") or [])
+    for item in scraped.get("links") or []:
+        if isinstance(item, str) and "->" in item:
+            candidates.append(item.split("->", 1)[1].strip())
+    for raw in candidates:
+        if len(seen) + len(queue) >= max_pages * 2:
+            break
+        canon = canonicalize_page_url(raw, seed=seed_url)
+        if not canon or canon in seen or canon in queue:
+            continue
+        queue.append(canon)
+
+
+def crawl_domain_bfs(
+    seed_url: str,
+    seed_scraped: dict[str, Any],
+    probes: dict[str, dict[str, Any]],
+    *,
+    max_pages: int,
+    max_workers: int = 6,
+) -> list[dict[str, Any]]:
+    """
+    Crawl BFS stesso dominio: sitemap + link interni fino a max_pages
+    o finché non restano URL da visitare.
+    """
+    max_pages = max(1, min(int(max_pages), ABS_MAX_CRAWL_PAGES))
+    seed_report = score_page_signals(seed_scraped)
+    seed_report["scraped"] = seed_scraped
+    reports: list[dict[str, Any]] = [seed_report]
+
+    seed_canon = canonicalize_page_url(
+        seed_scraped.get("final_url") or seed_url, seed=seed_url
+    ) or canonicalize_page_url(seed_url, seed=seed_url)
+    seen: set[str] = set()
+    if seed_canon:
+        seen.add(seed_canon)
+
+    queue: list[str] = []
+    for u in discover_domain_urls(
+        seed_url, seed_scraped, probes, max_pages=max_pages
+    ):
+        if u in seen:
+            continue
+        queue.append(u)
+
+    _enqueue_links(
+        queue, seen, seed_url=seed_url, scraped=seed_scraped, max_pages=max_pages
+    )
+
+    while queue and len(reports) < max_pages:
+        batch_n = min(max_workers, max_pages - len(reports), len(queue))
+        batch = queue[:batch_n]
+        del queue[:batch_n]
+        # Evita di riaccodare URL già in batch
+        for u in batch:
+            seen.add(u)
+
+        batch_reports = _crawl_extra_pages(batch, seed_url=seed_url, max_workers=batch_n)
+        for report in batch_reports:
+            if len(reports) >= max_pages:
+                break
+            reports.append(report)
+            _enqueue_links(
+                queue,
+                seen,
+                seed_url=seed_url,
+                scraped=report.get("scraped"),
+                max_pages=max_pages,
+            )
+
+    return reports
 
 
 def _clamp(n: float) -> int:
@@ -902,9 +990,9 @@ def analyze_site(
     """
     Analizza il dominio a partire da `url`.
     max_pages=1 → solo seed (+ probe root).
-    max_pages>1 → seed + altre pagine da sitemap/link stesso dominio.
+    max_pages>1 → crawl BFS stesso dominio (sitemap + link interni).
     """
-    max_pages = max(1, min(int(max_pages), 50))
+    max_pages = max(1, min(int(max_pages), ABS_MAX_CRAWL_PAGES))
     scraped = scrape_page(url)
     if int(scraped.get("status_code") or 200) >= 400:
         raise requests.RequestException(
@@ -927,24 +1015,24 @@ def analyze_site(
     # Estrai URL sitemap per coverage (anche se host canonico ≠ seed IP)
     sm = probes.get("sitemap") or {}
     if sm.get("ok"):
-        urls = collect_sitemap_urls(base, sm, limit=max(max_pages * 5, 40))
+        sm_limit = min(max(max_pages * 5, 40), ABS_MAX_CRAWL_PAGES)
+        urls = collect_sitemap_urls(base, sm, limit=sm_limit)
         if not urls and sm.get("snippet"):
             urls = [
                 u.strip()
                 for u in re.findall(r"<loc>\s*([^<]+)\s*</loc>", sm["snippet"], flags=re.I)
-            ][: max(max_pages * 5, 40)]
+            ][:sm_limit]
         probes["sitemap"]["urls"] = urls
 
-    seed_report = score_page_signals(scraped)
-    seed_report["scraped"] = scraped
-    page_reports = [seed_report]
-
-    discovered = discover_domain_urls(base, scraped, probes, max_pages=max_pages)
     seed_canon = canonicalize_page_url(base, seed=base)
-    extra_urls = [u for u in discovered if u != seed_canon][: max(0, max_pages - 1)]
-
-    if extra_urls:
-        page_reports.extend(_crawl_extra_pages(extra_urls, seed_url=base))
+    if max_pages <= 1:
+        seed_report = score_page_signals(scraped)
+        seed_report["scraped"] = scraped
+        page_reports = [seed_report]
+    else:
+        page_reports = crawl_domain_bfs(
+            base, scraped, probes, max_pages=max_pages
+        )
 
     def sort_key(p: dict[str, Any]) -> tuple[int, float]:
         is_seed = 0 if (p.get("url") == seed_canon or p.get("url") == base) else 1

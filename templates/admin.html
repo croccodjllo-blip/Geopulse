@@ -7,13 +7,13 @@
     <p class="eyebrow">Area admin</p>
     <h1 class="h-display page-intro__title">Pannello GeoPulse</h1>
     <p class="lede page-intro__lede">
-      Utenti {{ user_count }} · Interesse Pro {{ lead_count }}.
-      Qui gestisci waitlist Pro e piani account.
+      Utenti {{ user_count }} · Interesse Plus {{ lead_count }}.
+      Qui gestisci waitlist Plus e piani account.
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">Waitlist Pro</h2>
+    <h2 class="page-section__title">Waitlist Plus</h2>
     {% if leads %}
     <ul class="history-list">
       {% for lead in leads %}
@@ -33,7 +33,7 @@
       {% endfor %}
     </ul>
     {% else %}
-    <p class="lede">Nessun interesse Pro ancora.</p>
+    <p class="lede">Nessun interesse Plus ancora.</p>
     {% endif %}
   </section>
 
@@ -55,9 +55,9 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Free</button>
           </form>
-          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='pro') }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='plus') }}" style="display:inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Pro</button>
+            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Plus</button>
           </form>
           {% else %}
           <span class="muted">admin</span>

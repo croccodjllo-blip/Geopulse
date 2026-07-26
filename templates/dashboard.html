@@ -24,7 +24,7 @@
       <div class="workspace-banner__meta">
         <span>Piano {{ user_plan }}</span>
         <span>Siti {{ site_count }}/{{ max_sites }}</span>
-        <span>Crawl {{ crawl_pages_limit }} pag.</span>
+        <span>{% if crawl_unlimited %}Crawl intero sito{% else %}Crawl {{ crawl_pages_limit }} pag.{% endif %}</span>
         <span>{{ used_today }}/{{ daily_limit }} · 24h</span>
         <a class="workspace-banner__guide" href="{{ url_for('dashboard_history') }}">Storico</a>
         <a class="workspace-banner__guide" href="{{ url_for('dashboard_guide') }}">Guida</a>
@@ -43,11 +43,15 @@
             {{ form.submit(class_="btn btn-signal analyze-submit") }}
           </div>
           <p class="analyze-hint">
+            {% if crawl_unlimited %}
+            Crawl BFS dello stesso dominio via sitemap e link interni · intero sito, senza limite pagine ({{ user_plan }}).
+            {% else %}
             Crawl stesso dominio via sitemap e link interni · max {{ crawl_pages_limit }} pagine ({{ user_plan }}).
+            {% endif %}
           </p>
           {% if is_pro %}
           <div class="field analyze-competitors">
-            <label for="competitors">Competitor snapshot (Pro, max 3)</label>
+            <label for="competitors">Competitor snapshot (Plus, max 3)</label>
             {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com&#10;https://rivale2.com", class_="analyze-input") }}
           </div>
           {% endif %}
@@ -199,7 +203,7 @@
           <section class="monitor-panel" aria-labelledby="monitor-title">
             <div class="monitor-panel__head">
               <div>
-                <p class="eyebrow">Pro</p>
+                <p class="eyebrow">Plus</p>
                 <h3 class="monitor-panel__title" id="monitor-title">Monitoraggio</h3>
               </div>
               <div class="monitor-panel__exports">
@@ -215,7 +219,7 @@
           {% else %}
           <p class="pro-upsell">
             Piano Free: storico limitato.
-            <a href="{{ url_for('pricing') }}">Pro</a> sblocca re-scan con orario, export e storico run.
+            <a href="{{ url_for('pricing') }}">Plus</a> sblocca crawl intero sito, re-scan, export e storico run.
           </p>
           {% endif %}
 

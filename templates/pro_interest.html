@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Interesse Pro{% endblock %}
-{% block meta_description %}Prenota l’interesse per GeoPulse Pro su geopulse.it. Ti contatteremo quando il piano sarà disponibile.{% endblock %}
+{% block title %}Interesse Plus{% endblock %}
+{% block meta_description %}Prenota l’interesse per GeoPulse Plus su geopulse.it. Ti contatteremo quando il piano sarà disponibile.{% endblock %}
 
 {% block content %}
 <section class="auth-wrap">
-  <p class="eyebrow">Piano Pro</p>
+  <p class="eyebrow">Piano Plus</p>
   <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.6rem);margin-top:0.55rem">Prenota l’interesse</h1>
   <p class="lede" style="margin-top:0.7rem">
-    Lascia i tuoi dati: li salviamo nella waitlist Pro di GeoPulse e ti aggiorniamo
+    Lascia i tuoi dati: li salviamo nella waitlist Plus di GeoPulse e ti aggiorniamo
     appena il piano sarà disponibile. Per urgenze: <a class="site-link" href="mailto:info@geopulse.it">info@geopulse.it</a>.
   </p>
 
@@ -34,8 +34,8 @@
       {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
     </div>
     <div class="field">
-      <label for="note">Cosa ti serve da Pro <span class="hint">(opzionale)</span></label>
-      {{ form.note(id="note", placeholder="Es. più siti, re-scan, team agency…") }}
+      <label for="note">Cosa ti serve da Plus <span class="hint">(opzionale)</span></label>
+      {{ form.note(id="note", placeholder="Es. crawl intero sito, più siti, re-scan, team agency…") }}
       {% for error in form.note.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
     </div>
     {{ form.submit(class_="btn btn-signal btn-block") }}
@@ -43,9 +43,8 @@
 
   <p class="switch-line">
     Vuoi iniziare subito?
-    <a href="{{ url_for('register') }}">Crea account Free</a>
-    ·
-    <a href="{{ url_for('pricing') }}">Torna ai prezzi</a>
+    <a href="{{ url_for('register') }}">Crea un account Free</a>
+    oppure <a href="{{ url_for('pricing') }}">torna ai prezzi</a>.
   </p>
 </section>
 {% endblock %}

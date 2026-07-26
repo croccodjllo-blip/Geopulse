@@ -63,7 +63,12 @@ from services.analysis_store import (
     next_rescan_after,
     persist_analysis,
 )
-from services.analyzer import analyze_site, normalize_url, prioritize_crawl_pages
+from services.analyzer import (
+    ABS_MAX_CRAWL_PAGES,
+    analyze_site,
+    normalize_url,
+    prioritize_crawl_pages,
+)
 from services.artifacts import build_optimization_pack
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.rate_limit import limiter
@@ -79,7 +84,14 @@ MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "5")))
 PRO_DAILY_ANALYSES = max(FREE_DAILY_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
 MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
 FREE_CRAWL_PAGES = max(1, min(20, int(os.getenv("FREE_CRAWL_PAGES", "8"))))
-PRO_CRAWL_PAGES = max(FREE_CRAWL_PAGES, min(50, int(os.getenv("PRO_CRAWL_PAGES", "30"))))
+# Piano Plus: 0 = crawl intero sito (tetto operativo ABS_MAX_CRAWL_PAGES).
+_PRO_CRAWL_RAW = int(os.getenv("PRO_CRAWL_PAGES", "0"))
+PRO_CRAWL_UNLIMITED = _PRO_CRAWL_RAW <= 0
+PRO_CRAWL_PAGES = (
+    ABS_MAX_CRAWL_PAGES
+    if PRO_CRAWL_UNLIMITED
+    else max(FREE_CRAWL_PAGES, min(ABS_MAX_CRAWL_PAGES, _PRO_CRAWL_RAW))
+)
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
@@ -166,7 +178,7 @@ class User(db.Model):
     phone = db.Column(db.String(40))
     role = db.Column(db.String(80))
     country = db.Column(db.String(80))
-    plan = db.Column(db.String(40), nullable=False, default="free")  # free|pro|admin
+    plan = db.Column(db.String(40), nullable=False, default="free")  # free|plus|pro|admin
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
@@ -186,14 +198,15 @@ class User(db.Model):
 
     @property
     def is_pro(self) -> bool:
-        return self.is_admin or (self.plan or "").lower() == "pro"
+        """Piano Plus (alias storici: pro) o Admin."""
+        return self.is_admin or (self.plan or "").lower() in {"plus", "pro"}
 
     @property
     def plan_label(self) -> str:
         if self.is_admin:
             return "Admin"
         if self.is_pro:
-            return "Pro"
+            return "Plus"
         return "Free"
 
     @property
@@ -207,6 +220,10 @@ class User(db.Model):
     @property
     def crawl_pages(self) -> int:
         return PRO_CRAWL_PAGES if self.is_pro else FREE_CRAWL_PAGES
+
+    @property
+    def crawl_unlimited(self) -> bool:
+        return bool(self.is_pro and PRO_CRAWL_UNLIMITED)
 
 
 class SiteAnalysis(db.Model):
@@ -496,7 +513,7 @@ class ProInterestForm(FlaskForm):
         validators=[Optional(), Length(max=500), validate_http_url],
     )
     note = StringField(
-        "Cosa ti serve da Pro",
+        "Cosa ti serve da Plus",
         validators=[Optional(), Length(max=500)],
     )
     submit = SubmitField("Prenota l’interesse")
@@ -565,7 +582,7 @@ def pro_required(view):
             return redirect(url_for("login", next=request.path))
         if not user.is_pro:
             flash(
-                "Funzione Pro: attiva il piano Pro per re-scan, export e storico avanzato.",
+                "Funzione Plus: attiva il piano Plus per re-scan, export e storico avanzato.",
                 "warning",
             )
             return redirect(url_for("pricing"))
@@ -627,6 +644,8 @@ def inject_globals() -> dict[str, Any]:
         "free_daily_analyses": FREE_DAILY_ANALYSES,
         "free_crawl_pages": FREE_CRAWL_PAGES,
         "pro_crawl_pages": PRO_CRAWL_PAGES,
+        "pro_crawl_unlimited": PRO_CRAWL_UNLIMITED,
+        "abs_max_crawl_pages": ABS_MAX_CRAWL_PAGES,
         "now_year": datetime.now(timezone.utc).year,
         "rating_scale": RATING_ORDER,
         "canonical_base": base,
@@ -932,7 +951,7 @@ def pro_interest():
             lead.company,
         )
         flash(
-            "Interesse Pro registrato. Ti contatteremo a "
+            "Interesse Plus registrato. Ti contatteremo a "
             f"{email} appena il piano sarà disponibile "
             "(o scrivici a info@geopulse.it).",
             "success",
@@ -1044,7 +1063,7 @@ def dashboard():
             if existing is None and site_count >= max_sites:
                 flash(
                     f"Piano {user.plan_label}: massimo {max_sites} siti. "
-                    "Riusa un URL già analizzato o passa a Pro.",
+                    "Riusa un URL già analizzato o passa a Plus.",
                     "warning",
                 )
             elif not limiter.allow(
@@ -1203,6 +1222,7 @@ def dashboard():
         daily_limit=user.daily_limit,
         max_sites=user.max_sites,
         crawl_pages_limit=user.crawl_pages,
+        crawl_unlimited=user.crawl_unlimited,
         crawl_pages_view=crawl_pages_view,
         crawl_crit_n=crawl_crit_n,
         crawl_warn_n=crawl_warn_n,
@@ -1266,7 +1286,9 @@ def admin_home():
 @admin_required
 def admin_set_plan(user_id: int, plan: str):
     plan = (plan or "").strip().lower()
-    if plan not in {"free", "pro", "admin"}:
+    if plan == "pro":
+        plan = "plus"
+    if plan not in {"free", "plus", "admin"}:
         flash("Piano non valido.", "error")
         return redirect(url_for("admin_home"))
     target = db.session.get(User, user_id)

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Prezzi{% endblock %}
-{% block meta_description %}Piani GeoPulse su geopulse.it: Free per iniziare, Pro in arrivo per analisi illimitate e monitoraggio.{% endblock %}
+{% block meta_description %}Piani GeoPulse su geopulse.it: Free per iniziare, Plus con crawl dell’intero sito e monitoraggio.{% endblock %}
 
 {% block content %}
 <article class="page">
@@ -8,8 +8,8 @@
     <p class="eyebrow">Prezzi</p>
     <h1 class="h-display page-intro__title">Inizia gratis. Scala quando serve.</h1>
     <p class="lede page-intro__lede">
-      Il piano Free è già attivo. Pro arriverà con Stripe per chi vuole più siti,
-      più analisi e monitoraggio continuo.
+      Il piano Free è già attivo. Plus arriva con Stripe per chi vuole più siti,
+      crawl dell’intero sito e monitoraggio continuo.
     </p>
   </header>
 
@@ -29,12 +29,12 @@
     </section>
 
     <section class="plan plan--featured" role="listitem">
-      <p class="plan__name">Pro</p>
+      <p class="plan__name">Plus</p>
       <p class="plan__price">In arrivo</p>
       <p class="plan__desc">Per team e agenzie che ottimizzano più brand.</p>
       <ul class="plan__features">
         <li>Più siti e analisi</li>
-        <li>Crawl dominio fino a {{ pro_crawl_pages }} pagine</li>
+        <li>Crawl dell’intero sito, senza limite pagine</li>
         <li>Re-scan periodico (giornaliero/settimanale)</li>
         <li>Export CSV e ZIP multi-sito</li>
         <li>Storico run avanzato</li>
@@ -45,7 +45,7 @@
   </div>
 
   <p class="plan-note">
-    “Prenota l’interesse” salva i tuoi dati nella waitlist Pro (database GeoPulse)
+    “Prenota l’interesse” salva i tuoi dati nella waitlist Plus (database GeoPulse)
     e ti ricontatteremo via email. Domande? Scrivi a
     <a href="mailto:info@geopulse.it">info@geopulse.it</a>,
     leggi le <a href="{{ url_for('faq') }}">FAQ</a>
