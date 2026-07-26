@@ -84,6 +84,12 @@
             </div>
             <div class="report-top__actions">
               <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
+              <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="Email non configurata sul server"{% endif %}>
+                  Invia via email
+                </button>
+              </form>
               {% if is_pro %}
               <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico</a>
               {% endif %}
@@ -271,6 +277,12 @@
           <section class="dash-block" aria-labelledby="pack-title">
             <header class="dash-block__head">
               <h3 class="dash-block__title" id="pack-title">Pack ottimizzazione</h3>
+              <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="dash-block__chip site-link" style="border:0;background:none;cursor:pointer;font:inherit">
+                  Invia a {{ current_user.email }}
+                </button>
+              </form>
             </header>
             <div class="pack-grid">
               {% if latest.checklist_artifact %}

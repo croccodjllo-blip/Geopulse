@@ -71,6 +71,11 @@ from services.analyzer import (
 )
 from services.artifacts import build_optimization_pack
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
+from services.mailer import (
+    build_pack_email,
+    mail_configured,
+    send_email_with_attachment,
+)
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.deep_checks import analyze_monitoring_alerts
@@ -94,6 +99,7 @@ PRO_CRAWL_PAGES = (
 )
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
+PACK_EMAIL_DAILY_LIMIT = max(1, int(os.getenv("PACK_EMAIL_DAILY_LIMIT", "10")))
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD") or "GeoPulse!Admin26"
 ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin GeoPulse"
@@ -646,6 +652,7 @@ def inject_globals() -> dict[str, Any]:
         "pro_crawl_pages": PRO_CRAWL_PAGES,
         "pro_crawl_unlimited": PRO_CRAWL_UNLIMITED,
         "abs_max_crawl_pages": ABS_MAX_CRAWL_PAGES,
+        "mail_ready": mail_configured(),
         "now_year": datetime.now(timezone.utc).year,
         "rating_scale": RATING_ORDER,
         "canonical_base": base,
@@ -1332,6 +1339,64 @@ def download_pack(analysis_id: int):
         as_attachment=True,
         download_name=filename,
     )
+
+
+@app.route("/dashboard/email-pack/<int:analysis_id>", methods=["POST"])
+@login_required
+def email_pack(analysis_id: int):
+    """Invia il pack ZIP all’email dell’account registrato."""
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+
+    if not mail_configured():
+        flash(
+            "Invio email non ancora attivo su questo server. "
+            "Puoi scaricare lo ZIP intanto.",
+            "error",
+        )
+        return redirect(url_for("dashboard"))
+
+    if not limiter.allow(
+        f"pack-email:{user.id}",
+        limit=PACK_EMAIL_DAILY_LIMIT,
+        window_seconds=24 * 3600,
+    ):
+        flash(
+            f"Limite raggiunto: massimo {PACK_EMAIL_DAILY_LIMIT} invii pack / 24h.",
+            "error",
+        )
+        return redirect(url_for("dashboard"))
+
+    zip_bytes = pack_zip_bytes(analysis)
+    filename = f"geopulse-{analysis.domain.replace(':', '_')}.zip"
+    subject, text_body, html_body = build_pack_email(
+        user_name=user.name,
+        domain=analysis.domain,
+        aio_score=analysis.aio_score,
+        geo_score=analysis.geo_score,
+    )
+    try:
+        send_email_with_attachment(
+            to_email=user.email,
+            subject=subject,
+            text_body=text_body,
+            html_body=html_body,
+            attachment_filename=filename,
+            attachment_bytes=zip_bytes,
+        )
+    except Exception:
+        app.logger.exception("Pack email failed user_id=%s analysis_id=%s", user.id, analysis_id)
+        flash(
+            "Invio email non riuscito. Riprova tra poco o scarica lo ZIP.",
+            "error",
+        )
+        return redirect(url_for("dashboard"))
+
+    flash(f"Pack inviato a {user.email}.", "success")
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/dashboard/schedule", methods=["POST"])
