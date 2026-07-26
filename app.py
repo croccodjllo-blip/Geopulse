@@ -1147,21 +1147,6 @@ def dashboard():
         except ValueError as exc:
             flash(str(exc), "error")
 
-    hist_limit = history_limit_for(user)
-    if user.is_pro:
-        history = (
-            AnalysisRun.query.filter_by(user_id=user.id)
-            .order_by(AnalysisRun.created_at.desc())
-            .limit(hist_limit)
-            .all()
-        )
-    else:
-        history = (
-            SiteAnalysis.query.filter_by(user_id=user.id)
-            .order_by(SiteAnalysis.created_at.desc())
-            .limit(hist_limit)
-            .all()
-        )
     schedule_form = RescanScheduleForm()
     if latest and not schedule_form.is_submitted():
         schedule_form.analysis_id.data = str(latest.id)
@@ -1206,7 +1191,6 @@ def dashboard():
         form=form,
         schedule_form=schedule_form,
         latest=latest,
-        history=history,
         run_diff=run_diff,
         openai_ready=bool(OPENAI_API_KEY),
         used_today=used_today,
@@ -1216,8 +1200,40 @@ def dashboard():
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
+    )
+
+
+@app.route("/dashboard/guida")
+@login_required
+def dashboard_guide():
+    return render_template("guide.html")
+
+
+@app.route("/dashboard/storico")
+@login_required
+def dashboard_history():
+    user = current_user()
+    hist_limit = history_limit_for(user)
+    if user.is_pro:
+        history = (
+            AnalysisRun.query.filter_by(user_id=user.id)
+            .order_by(AnalysisRun.created_at.desc())
+            .limit(hist_limit)
+            .all()
+        )
+    else:
+        history = (
+            SiteAnalysis.query.filter_by(user_id=user.id)
+            .order_by(SiteAnalysis.created_at.desc())
+            .limit(hist_limit)
+            .all()
+        )
+    return render_template(
+        "history.html",
+        history=history,
         history_limit=hist_limit,
         history_is_runs=user.is_pro,
+        is_pro=user.is_pro,
     )
 
 

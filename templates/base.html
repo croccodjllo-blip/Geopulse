@@ -45,6 +45,7 @@
           <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">Dashboard</a>
+            <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint in ('dashboard_history', 'site_history') %}is-active{% endif %}">Storico</a>
             <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">Guida</a>
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
@@ -93,6 +94,7 @@
           <p class="site-footer__label">Account</p>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('dashboard_history') }}">Storico</a>
             <a href="{{ url_for('dashboard_guide') }}">Guida</a>
           {% else %}
             <a href="{{ url_for('register') }}">Registrati</a>

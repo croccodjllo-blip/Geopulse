@@ -26,6 +26,7 @@
         <span>Siti {{ site_count }}/{{ max_sites }}</span>
         <span>Crawl {{ crawl_pages_limit }} pag.</span>
         <span>{{ used_today }}/{{ daily_limit }} · 24h</span>
+        <a class="workspace-banner__guide" href="{{ url_for('dashboard_history') }}">Storico</a>
         <a class="workspace-banner__guide" href="{{ url_for('dashboard_guide') }}">Guida</a>
       </div>
     </div>
@@ -319,44 +320,6 @@
           <strong>Inizia dalla barra URL</strong>
           <p>Inserisci il dominio: crawl, score, findings e pack in pochi secondi.</p>
         </div>
-        {% endif %}
-
-        {% if history %}
-        <section class="dash-block history-block">
-          <header class="dash-block__head">
-            <h2 class="dash-block__title">
-              {% if history_is_runs %}Storico run{% else %}Ultime analisi{% endif %}
-            </h2>
-            <span class="dash-block__count">{{ history|length }}</span>
-          </header>
-          <ul class="history-list history-list--compact">
-            {% for item in history[:12] %}
-            <li>
-              <div class="history-main">
-                <strong>{{ item.domain }} <em class="history-grade" data-grade="{{ item.rating.code }}">{{ item.rating.code }}</em></strong>
-                <div class="history-scores">
-                  <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
-                  <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
-                  {% if history_is_runs %}
-                  <span>{{ 'Schedulato' if item.source == 'scheduled' else 'Manuale' }}</span>
-                  {% endif %}
-                </div>
-              </div>
-              <div class="history-actions">
-                <span class="muted">{{ item.created_at.strftime('%d/%m %H:%M') if item.created_at else '' }}</span>
-                {% if history_is_runs %}
-                <a href="{{ url_for('download_run_pack', run_id=item.id) }}">ZIP</a>
-                {% if item.site_id %}
-                <a href="{{ url_for('site_history', analysis_id=item.site_id) }}">Dettaglio</a>
-                {% endif %}
-                {% else %}
-                <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
-                {% endif %}
-              </div>
-            </li>
-            {% endfor %}
-          </ul>
-        </section>
         {% endif %}
       </div>
     </div>
