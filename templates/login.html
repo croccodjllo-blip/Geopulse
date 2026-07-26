@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Accedi{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-md">
+  <p class="text-xs font-bold uppercase tracking-[0.16em] text-sea">AIO-Bot</p>
+  <h1 class="mt-2 font-display text-3xl font-bold text-ink">Accedi</h1>
+  <p class="mt-2 text-slate-600">Entra nella dashboard per generare il tuo <code class="text-sea">llms.txt</code>.</p>
+
+  <form method="post" class="mt-8 space-y-4 rounded-xl border border-slate-200 bg-white/70 p-6 shadow-sm" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div>
+      <label for="email" class="mb-1 block text-sm font-semibold text-ink">Email</label>
+      {{ form.email(id="email", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="email") }}
+      {% for error in form.email.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div>
+      <label for="password" class="mb-1 block text-sm font-semibold text-ink">Password</label>
+      {{ form.password(id="password", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="current-password") }}
+      {% for error in form.password.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    {{ form.submit(class_="w-full rounded-md bg-ink px-4 py-2.5 font-semibold text-white hover:bg-slate-800") }}
+  </form>
+
+  <p class="mt-5 text-sm text-slate-600">
+    Nuovo su AIO-Bot?
+    <a href="{{ url_for('register') }}" class="font-semibold text-sea hover:underline">Crea account</a>
+  </p>
+</section>
+{% endblock %}

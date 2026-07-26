@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Registrati{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-md">
+  <p class="text-xs font-bold uppercase tracking-[0.16em] text-sea">AIO-Bot</p>
+  <h1 class="mt-2 font-display text-3xl font-bold text-ink">Crea account</h1>
+  <p class="mt-2 text-slate-600">
+    Registrati per analizzare il tuo sito e generare un <code class="text-sea">llms.txt</code> ottimizzato per le IA.
+  </p>
+
+  <form method="post" class="mt-8 space-y-4 rounded-xl border border-slate-200 bg-white/70 p-6 shadow-sm" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div>
+      <label for="name" class="mb-1 block text-sm font-semibold text-ink">Nome</label>
+      {{ form.name(id="name", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="name") }}
+      {% for error in form.name.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div>
+      <label for="email" class="mb-1 block text-sm font-semibold text-ink">Email</label>
+      {{ form.email(id="email", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="email") }}
+      {% for error in form.email.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div>
+      <label for="password" class="mb-1 block text-sm font-semibold text-ink">Password</label>
+      {{ form.password(id="password", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="new-password") }}
+      {% for error in form.password.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div>
+      <label for="confirm" class="mb-1 block text-sm font-semibold text-ink">Conferma password</label>
+      {{ form.confirm(id="confirm", class_="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 outline-none ring-sea/30 focus:ring", autocomplete="new-password") }}
+      {% for error in form.confirm.errors %}
+        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    {{ form.submit(class_="w-full rounded-md bg-ink px-4 py-2.5 font-semibold text-white hover:bg-slate-800") }}
+  </form>
+
+  <p class="mt-5 text-sm text-slate-600">
+    Hai già un account?
+    <a href="{{ url_for('login') }}" class="font-semibold text-sea hover:underline">Accedi</a>
+  </p>
+</section>
+{% endblock %}

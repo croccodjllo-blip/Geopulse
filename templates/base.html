@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}AIO-Bot{% endblock %} · GEO/AIO Optimization</title>
+    <meta
+      name="description"
+      content="AIO-Bot — ottimizza i siti web per IA, answer engine e ricerca generativa (GEO/AIO)."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0f2a32",
+              sea: "#1a6b6a",
+              signal: "#3ecf8e",
+              mist: "#e8f2f0",
+              fog: "#f4faf8",
+            },
+            fontFamily: {
+              display: ['"Segoe UI"', "ui-sans-serif", "system-ui", "sans-serif"],
+              body: ['"Segoe UI"', "ui-sans-serif", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background:
+          radial-gradient(900px 420px at 90% -10%, rgba(62, 207, 142, 0.16), transparent 55%),
+          radial-gradient(700px 380px at 0% 10%, rgba(26, 107, 106, 0.12), transparent 50%),
+          linear-gradient(180deg, #fbfefd 0%, #f4faf8 45%, #e8f2f0 100%);
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body class="font-body text-ink antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-white/75 backdrop-blur">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+        <a href="{{ url_for('dashboard') if current_user else url_for('login') }}" class="text-sm font-extrabold tracking-[0.14em] text-ink">
+          AIO-BOT
+        </a>
+        <nav class="flex items-center gap-3 text-sm font-semibold">
+          {% if current_user %}
+            <span class="hidden text-slate-500 sm:inline">{{ current_user.name }}</span>
+            <a href="{{ url_for('dashboard') }}" class="text-ink hover:text-sea">Dashboard</a>
+            <form method="post" action="{{ url_for('logout') }}" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="text-ink hover:text-sea">Esci</button>
+            </form>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="text-ink hover:text-sea">Accedi</a>
+            <a
+              href="{{ url_for('register') }}"
+              class="rounded-md border border-ink px-3 py-1.5 text-ink hover:border-sea hover:text-sea"
+            >
+              Registrati
+            </a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-5xl px-4 py-8 sm:py-10">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-6 space-y-2">
+            {% for category, message in messages %}
+              <div
+                class="rounded-md border px-4 py-3 text-sm
+                {% if category == 'success' %}border-emerald-200 bg-emerald-50 text-emerald-900
+                {% elif category == 'error' %}border-red-200 bg-red-50 text-red-900
+                {% else %}border-amber-200 bg-amber-50 text-amber-900{% endif %}"
+              >
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="mx-auto max-w-5xl px-4 pb-8 text-sm text-slate-500">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 pt-4">
+        <span class="font-bold tracking-[0.12em] text-ink">AIO-BOT</span>
+        <span>GEO &amp; AIO Optimization · SaaS</span>
+      </div>
+    </footer>
+  </body>
+</html>
