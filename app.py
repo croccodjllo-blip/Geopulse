@@ -1,19 +1,20 @@
 """
 AIO-Bot — SaaS iniziale per ottimizzazione GEO/AIO dei siti web.
-Genera llms.txt a partire dallo scraping della homepage + OpenAI.
+Analisi score + findings + generazione pack artifact (llms.txt, JSON-LD, meta, robots).
 """
 
 from __future__ import annotations
 
+import io
+import json
 import os
-import re
+import zipfile
 from datetime import datetime, timezone
 from functools import wraps
 from typing import Any
 from urllib.parse import urlparse
 
 import requests
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -21,17 +22,20 @@ from flask import (
     redirect,
     render_template,
     request,
+    send_file,
     session,
     url_for,
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
-from openai import OpenAI
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint, inspect, text
 from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import PasswordField, StringField, SubmitField, URLField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
+
+from services.analyzer import analyze_site, normalize_url
+from services.artifacts import build_optimization_pack
 
 load_dotenv()
 
@@ -62,8 +66,6 @@ csrf = CSRFProtect(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
-HTTP_TIMEOUT = 15
-USER_AGENT = "AIO-Bot/1.0 (+https://aio-bot.local; GEO/AIO optimizer)"
 
 
 # ---------------------------------------------------------------------------
@@ -100,12 +102,27 @@ class SiteAnalysis(db.Model):
     url = db.Column(db.String(500), nullable=False)
     domain = db.Column(db.String(255), nullable=False)
     page_title = db.Column(db.String(500))
-    llms_txt = db.Column(db.Text, nullable=False)
+    aio_score = db.Column(db.Integer)
+    geo_score = db.Column(db.Integer)
+    findings_json = db.Column(db.Text, nullable=False, default="[]")
+    analysis_notes = db.Column(db.Text)
+    llms_txt = db.Column(db.Text, nullable=False, default="")
+    json_ld_artifact = db.Column(db.Text, nullable=False, default="")
+    meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
+    robots_artifact = db.Column(db.Text, nullable=False, default="")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     user = db.relationship("User", back_populates="sites")
+
+    @property
+    def findings(self) -> list[dict[str, str]]:
+        try:
+            data = json.loads(self.findings_json or "[]")
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
 
 
 # ---------------------------------------------------------------------------
@@ -114,10 +131,7 @@ class SiteAnalysis(db.Model):
 
 
 class RegisterForm(FlaskForm):
-    name = StringField(
-        "Nome",
-        validators=[DataRequired(), Length(min=2, max=120)],
-    )
+    name = StringField("Nome", validators=[DataRequired(), Length(min=2, max=120)])
     email = StringField(
         "Email",
         validators=[
@@ -149,10 +163,7 @@ class LoginForm(FlaskForm):
             Length(max=255),
         ],
     )
-    password = PasswordField(
-        "Password",
-        validators=[DataRequired()],
-    )
+    password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Accedi")
 
 
@@ -168,7 +179,7 @@ class AnalyzeForm(FlaskForm):
         "URL del sito",
         validators=[DataRequired(), Length(max=500), validate_http_url],
     )
-    submit = SubmitField("Genera llms.txt")
+    submit = SubmitField("Analizza e ottimizza")
 
 
 # ---------------------------------------------------------------------------
@@ -203,180 +214,30 @@ def inject_globals() -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# Scraping + llms.txt generation
+# Schema helpers
 # ---------------------------------------------------------------------------
 
 
-def normalize_url(raw: str) -> str:
-    raw = raw.strip()
-    if not re.match(r"^https?://", raw, flags=re.I):
-        raw = "https://" + raw
-    parsed = urlparse(raw)
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise ValueError("URL non valido")
-    # Canonicalize: scheme + host + path (no fragment)
-    path = parsed.path or "/"
-    return f"{parsed.scheme}://{parsed.netloc}{path}"
-
-
-def scrape_homepage(url: str) -> dict[str, Any]:
-    """Scarica e estrae segnali utili dalla homepage."""
-    response = requests.get(
-        url,
-        timeout=HTTP_TIMEOUT,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml",
-        },
-        allow_redirects=True,
-    )
-    response.raise_for_status()
-
-    soup = BeautifulSoup(response.text, "lxml")
-    for tag in soup(["script", "style", "noscript"]):
-        tag.decompose()
-
-    title = (soup.title.string or "").strip() if soup.title else ""
-    description = ""
-    desc_tag = soup.find("meta", attrs={"name": re.compile("^description$", re.I)})
-    if desc_tag and desc_tag.get("content"):
-        description = str(desc_tag["content"]).strip()
-
-    headings = [
-        h.get_text(" ", strip=True)
-        for h in soup.find_all(["h1", "h2"])
-        if h.get_text(strip=True)
-    ][:12]
-
-    links: list[str] = []
-    for a in soup.find_all("a", href=True):
-        href = a["href"].strip()
-        text = a.get_text(" ", strip=True)
-        if href.startswith("#") or href.lower().startswith("javascript:"):
-            continue
-        if text:
-            links.append(f"{text} -> {href}")
-        if len(links) >= 20:
-            break
-
-    body_text = " ".join(soup.get_text(" ", strip=True).split())
-    snippet = body_text[:2500]
-
-    return {
-        "final_url": str(response.url),
-        "title": title,
-        "description": description,
-        "headings": headings,
-        "links": links,
-        "snippet": snippet,
-        "domain": urlparse(str(response.url)).netloc,
+def ensure_schema() -> None:
+    """create_all + colonne nuove su SQLite già esistente."""
+    db.create_all()
+    inspector = inspect(db.engine)
+    if "site_analyses" not in inspector.get_table_names():
+        return
+    existing = {col["name"] for col in inspector.get_columns("site_analyses")}
+    alters = {
+        "aio_score": "INTEGER",
+        "geo_score": "INTEGER",
+        "findings_json": "TEXT DEFAULT '[]'",
+        "analysis_notes": "TEXT",
+        "json_ld_artifact": "TEXT DEFAULT ''",
+        "meta_pack_artifact": "TEXT DEFAULT ''",
+        "robots_artifact": "TEXT DEFAULT ''",
     }
-
-
-def fallback_llms_txt(url: str, scraped: dict[str, Any]) -> str:
-    """Generatore deterministico se OpenAI non è configurata o fallisce."""
-    brand = scraped.get("domain") or urlparse(url).netloc
-    title = scraped.get("title") or brand
-    description = scraped.get("description") or (
-        f"Sito ufficiale di {brand}, ottimizzato per motori generativi e agenti AI."
-    )
-    headings = scraped.get("headings") or []
-    links = scraped.get("links") or []
-
-    lines = [
-        f"# {brand}",
-        "",
-        f"> {title}",
-        "",
-        description,
-        "",
-        "## Site",
-        f"- Homepage: {url}",
-        "",
-        "## Preferred citation",
-        f'- Usa il brand "{brand}" quando riassumi questo sito.',
-        "- Preferisci URL canonici e fonti datate quando disponibili.",
-        "",
-    ]
-
-    if headings:
-        lines.append("## Key topics")
-        for heading in headings[:8]:
-            lines.append(f"- {heading}")
-        lines.append("")
-
-    if links:
-        lines.append("## Important pages")
-        for item in links[:10]:
-            lines.append(f"- {item}")
-        lines.append("")
-
-    lines.extend(
-        [
-            "## Contact",
-            f"- Website: {url}",
-            "",
-            f"_Generated by AIO-Bot (fallback) on {datetime.now(timezone.utc).date().isoformat()}_",
-            "",
-        ]
-    )
-    return "\n".join(lines)
-
-
-def generate_llms_txt_with_openai(url: str, scraped: dict[str, Any]) -> str:
-    if not OPENAI_API_KEY:
-        return fallback_llms_txt(url, scraped)
-
-    client = OpenAI(api_key=OPENAI_API_KEY)
-    prompt = f"""
-Sei un esperto di GEO (Generative Engine Optimization) e AIO (AI Optimization).
-Genera un file llms.txt in markdown chiaro, pronto da pubblicare in /.
-
-Regole:
-- Solo contenuto del file, senza code fence.
-- Inizia con "# {{brand}}" e una riga "> {{tagline}}".
-- Sezioni utili: Site, Summary, Key topics, Important pages, Preferred citation, Optional.
-- Linguaggio: italiano se il sito è IT, altrimenti inglese.
-- Non inventare contatti o claim non supportati dai dati.
-
-URL: {url}
-Domain: {scraped.get('domain')}
-Title: {scraped.get('title')}
-Description: {scraped.get('description')}
-Headings: {scraped.get('headings')}
-Links: {scraped.get('links')}
-Snippet: {scraped.get('snippet')}
-""".strip()
-
-    completion = client.chat.completions.create(
-        model=OPENAI_MODEL,
-        temperature=0.3,
-        messages=[
-            {
-                "role": "system",
-                "content": "Generi file llms.txt accurati e utili per crawler/agenti AI.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-    )
-    content = (completion.choices[0].message.content or "").strip()
-    if not content:
-        return fallback_llms_txt(url, scraped)
-    # Rimuove eventuali fence accidentali
-    content = re.sub(r"^```(?:markdown|md)?\s*", "", content)
-    content = re.sub(r"\s*```$", "", content)
-    return content.strip() + "\n"
-
-
-def build_llms_txt(url: str) -> tuple[str, dict[str, Any]]:
-    scraped = scrape_homepage(url)
-    try:
-        llms = generate_llms_txt_with_openai(url, scraped)
-    except Exception:
-        # Non esporre dettagli interni all'utente; usa fallback sicuro.
-        app.logger.exception("OpenAI generation failed; using fallback")
-        llms = fallback_llms_txt(url, scraped)
-    return llms, scraped
+    with db.engine.begin() as conn:
+        for name, col_type in alters.items():
+            if name not in existing:
+                conn.execute(text(f"ALTER TABLE site_analyses ADD COLUMN {name} {col_type}"))
 
 
 # ---------------------------------------------------------------------------
@@ -461,23 +322,36 @@ def dashboard():
     if form.validate_on_submit():
         try:
             url = normalize_url(form.url.data)
-            llms_txt, scraped = build_llms_txt(url)
+            result = analyze_site(url)
+            scraped = result["scraped"]
+            pack = build_optimization_pack(
+                url,
+                scraped,
+                api_key=OPENAI_API_KEY,
+                model=OPENAI_MODEL,
+                logger=app.logger,
+            )
             domain = scraped.get("domain") or urlparse(url).netloc
 
-            analysis = (
-                SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
-            )
+            analysis = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
             if analysis is None:
                 analysis = SiteAnalysis(user_id=user.id, url=url, domain=domain)
                 db.session.add(analysis)
 
             analysis.domain = domain
             analysis.page_title = (scraped.get("title") or "")[:500] or None
-            analysis.llms_txt = llms_txt
+            analysis.aio_score = result["aio_score"]
+            analysis.geo_score = result["geo_score"]
+            analysis.findings_json = json.dumps(result["findings"], ensure_ascii=False)
+            analysis.analysis_notes = result["notes"]
+            analysis.llms_txt = pack["llms.txt"]
+            analysis.json_ld_artifact = pack["organization.jsonld.html"]
+            analysis.meta_pack_artifact = pack["meta-pack.html"]
+            analysis.robots_artifact = pack["robots.txt"]
             analysis.created_at = datetime.now(timezone.utc)
             db.session.commit()
             latest = analysis
-            flash("llms.txt generato con successo.", "success")
+            flash("Analisi completata: score, findings e pack pronti.", "success")
         except requests.RequestException:
             flash(
                 "Impossibile raggiungere il sito. Verifica l’URL e riprova.",
@@ -504,13 +378,53 @@ def dashboard():
     )
 
 
+@app.route("/dashboard/download/<int:analysis_id>.zip")
+@login_required
+def download_pack(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("llms.txt", analysis.llms_txt or "")
+        zf.writestr("organization.jsonld.html", analysis.json_ld_artifact or "")
+        zf.writestr("meta-pack.html", analysis.meta_pack_artifact or "")
+        zf.writestr("robots.txt", analysis.robots_artifact or "")
+        report = {
+            "url": analysis.url,
+            "domain": analysis.domain,
+            "aio_score": analysis.aio_score,
+            "geo_score": analysis.geo_score,
+            "findings": analysis.findings,
+            "notes": analysis.analysis_notes,
+            "generated_at": (
+                analysis.created_at.isoformat() if analysis.created_at else None
+            ),
+        }
+        zf.writestr(
+            "report.json",
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+        )
+    buffer.seek(0)
+    filename = f"aio-bot-{analysis.domain.replace(':', '_')}.zip"
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Bootstrap
 # ---------------------------------------------------------------------------
 
 
 with app.app_context():
-    db.create_all()
+    ensure_schema()
 
 
 if __name__ == "__main__":

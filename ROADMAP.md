@@ -34,15 +34,15 @@ Stato attuale: **MVP tecnico locale** (auth, scraping, generazione `llms.txt`, S
 Obiettivo: prima versione usabile da early adopter, ancora senza billing complesso.
 
 ### 1.1 Qualità analisi
-- [ ] Score AIO / GEO (0–100) con findings strutturati
-- [ ] Check dedicati: title, meta, JSON-LD, `llms.txt`, robots, canonical, Open Graph, `lang`
-- [ ] Probe di `/llms.txt`, `/robots.txt`, `/sitemap.xml`
+- [x] Score AIO / GEO (0–100) con findings strutturati
+- [x] Check dedicati: title, meta, JSON-LD, `llms.txt`, robots, canonical, Open Graph, `lang`
+- [x] Probe di `/llms.txt`, `/robots.txt`, `/sitemap.xml`
 - [ ] Storico analisi confrontabile (before/after)
 
 ### 1.2 Output ottimizzazione
-- [ ] Pack scaricabili: `llms.txt`, JSON-LD, meta pack, suggerimenti `robots.txt`
+- [x] Pack scaricabili: `llms.txt`, JSON-LD, meta pack, suggerimenti `robots.txt`
 - [ ] Preview side-by-side (prima / dopo)
-- [ ] Copia in un click + download ZIP
+- [x] Download ZIP (+ report.json)
 
 ### 1.3 UX account
 - [ ] Verifica email (magic link o token)
@@ -186,7 +186,6 @@ Obiettivo: differenziazione competitiva.
 
 ## Prossimo incremento consigliato
 
-**Sprint focus:** Fase 1.1 + 1.2  
-Deliverable: score AIO/GEO in dashboard, lista findings, ZIP con `llms.txt` + JSON-LD + meta pack.
+**Completato:** score AIO/GEO, findings, pack artifact + ZIP.
 
-Dopo quello: Stripe (Fase 2) per chiudere il loop a pagamento.
+**Sprint successivo:** Fase 1.3 (reset password / limiti Free) oppure direttamente **Stripe Pro (Fase 2)**.

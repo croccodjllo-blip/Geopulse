@@ -8,7 +8,11 @@ SaaS iniziale per **GEO/AIO Optimization**: registrazione utenti, analisi homepa
 aio-bot/
 ├── app.py
 ├── requirements.txt
+├── ROADMAP.md
 ├── database.db          # creato al primo avvio
+├── services/
+│   ├── analyzer.py      # scrape, probe, score AIO/GEO
+│   └── artifacts.py     # llms.txt, JSON-LD, meta, robots
 ├── templates/
 │   ├── base.html
 │   ├── login.html
