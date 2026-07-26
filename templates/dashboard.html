@@ -6,8 +6,8 @@
   <div class="dash-head">
     <div>
       <p class="eyebrow">Dashboard</p>
-      <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.8rem);margin-top:0.45rem">Analisi AIO &amp; GEO</h1>
-      <p class="lede" style="margin-top:0.7rem;max-width:42ch">
+      <h1 class="h-display dash-title">Analisi AIO &amp; GEO</h1>
+      <p class="lede dash-lede">
         Ciao {{ current_user.name }}{% if current_user.company %} · {{ current_user.company }}{% endif %}.
         Inserisci l’URL e genera score, findings e pack di ottimizzazione.
       </p>
@@ -31,28 +31,28 @@
   </form>
 
   {% if latest %}
-  <section>
-    <div class="dash-head" style="margin-bottom:0.4rem">
+  <section class="result-block">
+    <div class="dash-head" style="margin-bottom:0.35rem">
       <div>
-        <h2 class="h-display" style="font-size:1.6rem">{{ latest.domain }}</h2>
+        <h2 class="h-display" style="font-size:clamp(1.45rem,3vw,1.75rem)">{{ latest.domain }}</h2>
         <p class="lede" style="margin-top:0.35rem">
           {% if latest.page_title %}{{ latest.page_title }} · {% endif %}
-          <a href="{{ latest.url }}" target="_blank" rel="noopener noreferrer" style="color:var(--sea);font-weight:700">Apri sito</a>
+          <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
         </p>
       </div>
       <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica pack ZIP</a>
     </div>
 
     <div class="score-strip">
-      <div class="score-item">
+      <div class="score-item" style="--fill: {{ latest.aio_score if latest.aio_score is not none else 0 }}%">
         <span>AIO score</span>
         <strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong>
       </div>
-      <div class="score-item">
+      <div class="score-item" style="--fill: {{ latest.geo_score if latest.geo_score is not none else 0 }}%">
         <span>GEO score</span>
         <strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong>
       </div>
-      <div class="score-item">
+      <div class="score-item" style="--fill: {{ [latest.findings|length * 12, 100]|min }}%">
         <span>Findings</span>
         <strong>{{ latest.findings|length }}</strong>
       </div>
@@ -75,10 +75,10 @@
     </ul>
 
     <h3 class="block-title">llms.txt</h3>
-    <div class="code-shell" style="margin-top:0.7rem">
+    <div class="code-shell">
       <div class="code-shell__bar">
         <span>/llms.txt</span>
-        <div style="display:flex;gap:0.9rem;align-items:center">
+        <div class="code-shell__actions">
           <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">Copia</button>
           <span>{{ latest.created_at.strftime('%Y-%m-%d %H:%M UTC') if latest.created_at else '' }}</span>
         </div>
@@ -86,9 +86,9 @@
       <pre id="llms-box">{{ latest.llms_txt }}</pre>
     </div>
 
-    <details style="margin-top:1.4rem">
-      <summary class="block-title" style="cursor:pointer;list-style:none">Altri artifact</summary>
-      <div style="display:grid;gap:1rem;margin-top:0.8rem">
+    <details class="artifact-details">
+      <summary>Altri artifact</summary>
+      <div class="artifact-grid">
         <div class="code-shell">
           <div class="code-shell__bar">
             <span>organization.jsonld.html</span>
@@ -114,11 +114,14 @@
     </details>
   </section>
   {% else %}
-  <div class="empty-state">Nessuna analisi ancora. Inserisci un URL per iniziare.</div>
+  <div class="empty-state">
+    <strong>Nessuna analisi ancora</strong>
+    Inserisci un URL sopra per generare il primo report AIO/GEO.
+  </div>
   {% endif %}
 
   {% if history %}
-  <section style="margin-top:2.2rem">
+  <section style="margin-top:2.4rem">
     <h2 class="block-title" style="margin-top:0">Ultime analisi</h2>
     <ul class="history-list">
       {% for item in history %}
@@ -130,9 +133,9 @@
             · GEO {{ item.geo_score if item.geo_score is not none else '—' }}
           </div>
         </div>
-        <div class="muted" style="display:flex;gap:0.9rem;align-items:center">
+        <div class="muted history-actions">
           <span>{{ item.created_at.strftime('%Y-%m-%d %H:%M') if item.created_at else '' }}</span>
-          <a href="{{ url_for('download_pack', analysis_id=item.id) }}" style="color:var(--sea);font-weight:700">ZIP</a>
+          <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
         </div>
       </li>
       {% endfor %}

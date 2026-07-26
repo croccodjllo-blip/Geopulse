@@ -8,6 +8,8 @@
       name="description"
       content="AIO-Bot — ottimizza i siti web per IA, answer engine e ricerca generativa (GEO/AIO)."
     />
+    <meta name="theme-color" content="#0e6f69" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,14 +18,17 @@
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
   </head>
-  <body class="app-body">
+  <body class="app-body {% block body_class %}{% endblock %}">
     {% block shell %}
-    <header class="site-header">
+    <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        <a class="brand-mark" href="{{ url_for('dashboard') if current_user else url_for('index') }}">AIO-BOT</a>
-        <nav class="nav-links">
+        <a class="brand-mark" href="{{ url_for('dashboard') if current_user else url_for('index') }}">
+          <span class="brand-mark__dot" aria-hidden="true"></span>
+          AIO-BOT
+        </a>
+        <nav class="nav-links" aria-label="Principale">
           {% if current_user %}
-            <span class="muted" style="color:var(--muted);font-weight:500">{{ current_user.name }}</span>
+            <span class="nav-user">{{ current_user.name }}</span>
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <form method="post" action="{{ url_for('logout') }}" style="display:inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -52,7 +57,10 @@
 
     <footer class="site-footer">
       <div class="site-footer__inner">
-        <span class="brand-mark">AIO-BOT</span>
+        <span class="brand-mark">
+          <span class="brand-mark__dot" aria-hidden="true"></span>
+          AIO-BOT
+        </span>
         <span>GEO &amp; AIO Optimization</span>
       </div>
     </footer>

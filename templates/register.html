@@ -2,86 +2,113 @@
 {% block title %}Registrati{% endblock %}
 
 {% block content %}
-<section class="auth-wrap auth-wrap--wide">
-  <p class="eyebrow">AIO-Bot</p>
-  <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.6rem);margin-top:0.55rem">Crea account</h1>
-  <p class="lede" style="margin-top:0.7rem">
-    Raccontaci chi sei e il sito da ottimizzare: partiamo da lì con l’analisi AIO/GEO.
-  </p>
-
-  <form method="post" class="form-grid form-grid--2 panel" novalidate>
-    {{ form.hidden_tag() }}
-
-    <div class="field span-2">
-      <label for="name">Nome e cognome</label>
-      {{ form.name(id="name", autocomplete="name") }}
-      {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+<section class="auth-shell">
+  <aside class="auth-aside" aria-hidden="true">
+    <svg class="auth-aside__art" viewBox="0 0 640 720" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="regLand" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#36a89a" stop-opacity="0.6" />
+          <stop offset="100%" stop-color="#0a524e" stop-opacity="0.9" />
+        </linearGradient>
+      </defs>
+      <g stroke="rgba(244,251,248,0.1)" stroke-width="1">
+        <path d="M30 100 H610" /><path d="M30 220 H610" /><path d="M30 340 H610" />
+        <path d="M30 460 H610" /><path d="M30 580 H610" />
+        <path d="M140 40 V680" /><path d="M320 40 V680" /><path d="M500 40 V680" />
+      </g>
+      <path fill="url(#regLand)" d="M70 260c70-90 190-110 290-60 70 35 120 100 125 175 5 80-45 155-120 180-90 30-200 5-270-55-55-48-80-120-55-185 12-30 18-40 30-55z" />
+      <circle class="pulse-dot p1" cx="250" cy="300" r="5" />
+      <circle class="pulse-dot p2" cx="400" cy="360" r="5" />
+      <circle class="pulse-dot p3" cx="310" cy="450" r="5" />
+      <circle class="orbit-ring" cx="320" cy="360" r="120" />
+    </svg>
+    <div class="auth-aside__copy">
+      <p class="brand">AIO-BOT</p>
+      <p>Crea l’account e ricevi score AIO/GEO con pack pronto da pubblicare.</p>
     </div>
+  </aside>
 
-    <div class="field">
-      <label for="company">Azienda / Brand</label>
-      {{ form.company(id="company", autocomplete="organization") }}
-      {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+  <div class="auth-wrap auth-wrap--wide">
+    <p class="eyebrow">Registrazione</p>
+    <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.7rem);margin-top:0.55rem">Crea account</h1>
+    <p class="lede" style="margin-top:0.7rem">
+      Raccontaci chi sei e il sito da ottimizzare: partiamo da lì con l’analisi AIO/GEO.
+    </p>
 
-    <div class="field">
-      <label for="role">Ruolo</label>
-      {{ form.role(id="role") }}
-      {% for error in form.role.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+    <form method="post" class="form-grid form-grid--2 panel" novalidate>
+      {{ form.hidden_tag() }}
 
-    <div class="field span-2">
-      <label for="website_url">Sito web principale</label>
-      {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
-      {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field span-2">
+        <label for="name">Nome e cognome</label>
+        {{ form.name(id="name", autocomplete="name") }}
+        {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="field">
-      <label for="email">Email lavorativa</label>
-      {{ form.email(id="email", autocomplete="email") }}
-      {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field">
+        <label for="company">Azienda / Brand</label>
+        {{ form.company(id="company", autocomplete="organization") }}
+        {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="field">
-      <label for="phone">Telefono <span style="font-weight:500;color:var(--muted)">(opzionale)</span></label>
-      {{ form.phone(id="phone", autocomplete="tel") }}
-      {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field">
+        <label for="role">Ruolo</label>
+        {{ form.role(id="role") }}
+        {% for error in form.role.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="field span-2">
-      <label for="country">Paese</label>
-      {{ form.country(id="country", placeholder="Italia", autocomplete="country-name") }}
-      {% for error in form.country.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field span-2">
+        <label for="website_url">Sito web principale</label>
+        {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
+        {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="field">
-      <label for="password">Password</label>
-      {{ form.password(id="password", autocomplete="new-password") }}
-      {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field">
+        <label for="email">Email lavorativa</label>
+        {{ form.email(id="email", autocomplete="email") }}
+        {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="field">
-      <label for="confirm">Conferma password</label>
-      {{ form.confirm(id="confirm", autocomplete="new-password") }}
-      {% for error in form.confirm.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field">
+        <label for="phone">Telefono <span class="hint">(opzionale)</span></label>
+        {{ form.phone(id="phone", autocomplete="tel") }}
+        {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="span-2">
-      <label class="checkline">
-        {{ form.accept_terms(id="accept_terms") }}
-        <span>Accetto il trattamento dei dati per l’erogazione del servizio AIO-Bot.</span>
-      </label>
-      {% for error in form.accept_terms.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
+      <div class="field span-2">
+        <label for="country">Paese</label>
+        {{ form.country(id="country", placeholder="Italia", autocomplete="country-name") }}
+        {% for error in form.country.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-    <div class="span-2">
-      {{ form.submit(class_="btn btn-primary btn-block") }}
-    </div>
-  </form>
+      <div class="field">
+        <label for="password">Password</label>
+        {{ form.password(id="password", autocomplete="new-password") }}
+        {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
 
-  <p class="switch-line">
-    Hai già un account?
-    <a href="{{ url_for('login') }}">Accedi</a>
-  </p>
+      <div class="field">
+        <label for="confirm">Conferma password</label>
+        {{ form.confirm(id="confirm", autocomplete="new-password") }}
+        {% for error in form.confirm.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="span-2">
+        <label class="checkline">
+          {{ form.accept_terms(id="accept_terms") }}
+          <span>Accetto il trattamento dei dati per l’erogazione del servizio AIO-Bot.</span>
+        </label>
+        {% for error in form.accept_terms.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="span-2">
+        {{ form.submit(class_="btn btn-primary btn-block") }}
+      </div>
+    </form>
+
+    <p class="switch-line">
+      Hai già un account?
+      <a href="{{ url_for('login') }}">Accedi</a>
+    </p>
+  </div>
 </section>
 {% endblock %}

@@ -2,29 +2,54 @@
 {% block title %}Accedi{% endblock %}
 
 {% block content %}
-<section class="auth-wrap">
-  <p class="eyebrow">AIO-Bot</p>
-  <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.6rem);margin-top:0.55rem">Accedi</h1>
-  <p class="lede" style="margin-top:0.7rem">Entra in dashboard e lancia l’analisi del tuo sito.</p>
-
-  <form method="post" class="form-grid panel" novalidate>
-    {{ form.hidden_tag() }}
-    <div class="field">
-      <label for="email">Email</label>
-      {{ form.email(id="email", autocomplete="email") }}
-      {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+<section class="auth-shell">
+  <aside class="auth-aside" aria-hidden="true">
+    <svg class="auth-aside__art" viewBox="0 0 640 720" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="asideLand" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2fbf8a" stop-opacity="0.55" />
+          <stop offset="100%" stop-color="#0e6f69" stop-opacity="0.85" />
+        </linearGradient>
+      </defs>
+      <g stroke="rgba(244,251,248,0.12)" stroke-width="1">
+        <path d="M40 120 H600" /><path d="M40 240 H600" /><path d="M40 360 H600" />
+        <path d="M40 480 H600" /><path d="M40 600 H600" />
+      </g>
+      <path fill="url(#asideLand)" d="M90 220c60-70 170-90 260-50 70 30 120 90 130 160 10 70-30 140-95 170-80 36-180 20-250-30-60-42-90-110-70-175 10-32 15-50 25-75z" />
+      <circle class="pulse-dot p1" cx="220" cy="280" r="5" />
+      <circle class="pulse-dot p2" cx="390" cy="340" r="5" />
+      <circle class="pulse-dot p3" cx="300" cy="430" r="5" />
+    </svg>
+    <div class="auth-aside__copy">
+      <p class="brand">AIO-BOT</p>
+      <p>Entra e ottimizza il tuo sito per answer engine e ricerca generativa.</p>
     </div>
-    <div class="field">
-      <label for="password">Password</label>
-      {{ form.password(id="password", autocomplete="current-password") }}
-      {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
-    {{ form.submit(class_="btn btn-primary btn-block") }}
-  </form>
+  </aside>
 
-  <p class="switch-line">
-    Nuovo su AIO-Bot?
-    <a href="{{ url_for('register') }}">Crea account</a>
-  </p>
+  <div class="auth-wrap">
+    <p class="eyebrow">Accesso</p>
+    <h1 class="h-display" style="font-size:clamp(2rem,4vw,2.7rem);margin-top:0.55rem">Bentornato</h1>
+    <p class="lede" style="margin-top:0.7rem">Entra in dashboard e lancia l’analisi del tuo sito.</p>
+
+    <form method="post" class="form-grid panel" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        <label for="email">Email</label>
+        {{ form.email(id="email", autocomplete="email") }}
+        {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        {{ form.password(id="password", autocomplete="current-password") }}
+        {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      {{ form.submit(class_="btn btn-primary btn-block") }}
+    </form>
+
+    <p class="switch-line">
+      Nuovo su AIO-Bot?
+      <a href="{{ url_for('register') }}">Crea account</a>
+    </p>
+  </div>
 </section>
 {% endblock %}
