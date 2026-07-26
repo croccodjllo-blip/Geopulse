@@ -19,12 +19,14 @@ import requests
 from dotenv import load_dotenv
 from flask import (
     Flask,
+    Response,
     flash,
     jsonify,
     redirect,
     render_template,
     request,
     send_file,
+    send_from_directory,
     session,
     url_for,
 )
@@ -98,6 +100,7 @@ csrf = CSRFProtect(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
+PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://geopulse.it").rstrip("/")
 
 
 @app.after_request
@@ -356,8 +359,19 @@ def current_user() -> User | None:
     return db.session.get(User, user_id)
 
 
+def public_base_url() -> str:
+    """Base canonica del sito (preferisce PUBLIC_SITE_URL)."""
+    configured = PUBLIC_SITE_URL
+    if configured and "geopulse.it" in configured:
+        return configured
+    return (request.url_root or configured or "https://geopulse.it").rstrip("/")
+
+
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
+    base = public_base_url()
+    path = request.path or "/"
+    canonical = base if path == "/" else f"{base}{path}"
     return {
         "current_user": current_user(),
         "csrf_token": generate_csrf,
@@ -365,6 +379,8 @@ def inject_globals() -> dict[str, Any]:
         "free_daily_analyses": FREE_DAILY_ANALYSES,
         "now_year": datetime.now(timezone.utc).year,
         "rating_scale": RATING_ORDER,
+        "canonical_base": base,
+        "canonical_url": canonical,
     }
 
 
@@ -452,6 +468,69 @@ def health():
         ),
         status,
     )
+
+
+@app.route("/llms.txt")
+def llms_txt():
+    return send_from_directory(
+        app.static_folder, "llms.txt", mimetype="text/plain; charset=utf-8"
+    )
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    base = public_base_url()
+    body = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /logout\n"
+        "\n"
+        "User-agent: GPTBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: ClaudeBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: PerplexityBot\n"
+        "Allow: /\n"
+        "\n"
+        f"Sitemap: {base}/sitemap.xml\n"
+    )
+    return Response(body, mimetype="text/plain; charset=utf-8")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    base = public_base_url()
+    pages = [
+        ("/", "1.0", "weekly"),
+        ("/prodotto", "0.9", "weekly"),
+        ("/prezzi", "0.8", "weekly"),
+        ("/faq", "0.7", "monthly"),
+        ("/interesse-pro", "0.6", "monthly"),
+        ("/register", "0.6", "monthly"),
+        ("/login", "0.4", "monthly"),
+    ]
+    today = datetime.now(timezone.utc).date().isoformat()
+    urls = []
+    for path, priority, freq in pages:
+        loc = base if path == "/" else f"{base}{path}"
+        urls.append(
+            "  <url>\n"
+            f"    <loc>{loc}</loc>\n"
+            f"    <lastmod>{today}</lastmod>\n"
+            f"    <changefreq>{freq}</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            "  </url>"
+        )
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>\n"
+    )
+    return Response(body, mimetype="application/xml; charset=utf-8")
 
 
 @app.route("/")

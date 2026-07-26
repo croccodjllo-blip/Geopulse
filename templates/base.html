@@ -8,6 +8,18 @@
       name="description"
       content="{% block meta_description %}GeoPulse (geopulse.it) — ottimizza i siti web per IA, answer engine e ricerca generativa (GEO/AIO).{% endblock %}"
     />
+    <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GeoPulse" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }} · geopulse.it{% endblock %}" />
+    <meta
+      property="og:description"
+      content="{% block og_description %}{{ self.meta_description() }}{% endblock %}"
+    />
+    <meta property="og:url" content="{{ self.canonical() }}" />
+    <meta property="og:image" content="{{ url_for('static', filename='img/hero-earth.jpg', _external=True) }}" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#16323c" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,6 +29,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    {% include "partials/jsonld_organization.html" %}
   </head>
   <body class="app-body {% block body_class %}{% endblock %}">
     {% block shell %}
