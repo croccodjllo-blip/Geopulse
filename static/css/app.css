@@ -933,6 +933,11 @@ button, input, select, textarea { font: inherit; }
   padding: 0 0 3.5rem;
 }
 
+.body-dash .flash-stack {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 1rem auto 0;
+}
+
 .workspace { animation: rise 650ms var(--ease) both; }
 
 .workspace-banner {
@@ -1149,7 +1154,8 @@ button, input, select, textarea { font: inherit; }
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--sea), var(--signal-hot));
-  animation: bar-fill 900ms var(--ease) both;
+  transform-origin: left center;
+  animation: meter-grow 900ms var(--ease) both;
   font-style: normal;
 }
 
@@ -1486,6 +1492,11 @@ button, input, select, textarea { font: inherit; }
   gap: 0.4rem;
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+@keyframes meter-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 @keyframes rise {
