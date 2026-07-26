@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}AIO-Bot{% endblock %}
+{% block meta_description %}AIO-Bot analizza il tuo sito per AIO e GEO, genera score, findings e un pack pronto da pubblicare (llms.txt, JSON-LD, meta, robots).{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -69,18 +70,27 @@
     </p>
     <div class="cta-row">
       <a class="btn btn-signal" href="{{ url_for('register') }}">Inizia gratis</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('login') }}">Accedi</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Scopri il prodotto</a>
     </div>
   </div>
 </section>
 
-<section class="section-band" id="metodo">
+<section class="section-band" id="problema">
+  <p class="eyebrow">Il problema</p>
+  <h2>Le IA leggono il web in un modo diverso.</h2>
+  <p class="lede">
+    ChatGPT, Perplexity e gli answer engine non usano solo la SEO classica.
+    Cercano segnali chiari: chi sei, cosa offri, cosa possono citare.
+    Se il sito non parla il loro linguaggio, resti fuori dalle risposte.
+  </p>
+</section>
+
+<section class="section-band section-band--wide" id="metodo">
   <p class="eyebrow">Metodo</p>
   <h2>Tre passi. Poi il pack è pronto.</h2>
   <p class="lede">
     Ti registri, inserisci l’URL, ricevi score AIO/GEO e artifact
-    (<code>llms.txt</code>, JSON-LD, meta, robots) da mettere online.
-    Free: {{ max_sites_free }} siti · {{ free_daily_analyses }} analisi / 24h.
+    da mettere online. Free: {{ max_sites_free }} siti · {{ free_daily_analyses }} analisi / 24h.
   </p>
   <ol class="step-flow">
     <li>
@@ -96,5 +106,32 @@
       <span>Scarica ZIP o copia gli artifact e mettili online.</span>
     </li>
   </ol>
+</section>
+
+<section class="section-band" id="output">
+  <p class="eyebrow">Output</p>
+  <h2>Un pack concreto, non solo consigli.</h2>
+  <p class="lede">
+    Ogni analisi genera file pronti: <code>llms.txt</code>, JSON-LD Organization,
+    meta pack e suggerimenti <code>robots.txt</code>. Copiali o scarica lo ZIP.
+  </p>
+  <ul class="artifact-list" aria-label="Artifact generati">
+    <li><code>llms.txt</code> — guida per i crawler IA</li>
+    <li><code>organization.jsonld</code> — schema strutturato</li>
+    <li><code>meta-pack.html</code> — title, description, OG</li>
+    <li><code>robots.txt</code> — regole consigliate</li>
+  </ul>
+</section>
+
+<section class="section-cta" id="inizia">
+  <div class="section-cta__inner">
+    <p class="eyebrow">Pronto</p>
+    <h2>Porta il tuo sito nelle risposte delle IA.</h2>
+    <p class="lede">Crea l’account gratis e lancia la prima analisi in pochi minuti.</p>
+    <div class="cta-row">
+      <a class="btn btn-signal" href="{{ url_for('register') }}">Crea account</a>
+      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Vedi i prezzi</a>
+    </div>
+  </div>
 </section>
 {% endblock %}

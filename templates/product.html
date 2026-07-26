@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Prodotto{% endblock %}
+{% block meta_description %}Come funziona AIO-Bot: analisi AIO/GEO, score, findings e pack di ottimizzazione per answer engine e crawler IA.{% endblock %}
+
+{% block content %}
+<article class="page">
+  <header class="page-intro">
+    <p class="eyebrow">Prodotto</p>
+    <h1 class="h-display page-intro__title">Cosa fa AIO-Bot</h1>
+    <p class="lede page-intro__lede">
+      Un flusso semplice: inserisci l’URL, leggi lo score, pubblica gli artifact.
+      Pensato per marketer, founder e agenzie che vogliono visibilità nelle risposte IA.
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Analisi AIO &amp; GEO</h2>
+    <p class="lede">
+      Scansioniamo homepage e endpoint chiave (<code>/llms.txt</code>, <code>/robots.txt</code>,
+      <code>/sitemap.xml</code>) e valutiamo i segnali che gli answer engine usano per citarti.
+    </p>
+    <ul class="plain-list">
+      <li>Score AIO e GEO da 0 a 100</li>
+      <li>Findings per categoria: meta, schema, crawler, contenuto</li>
+      <li>Note operative su cosa sistemare subito</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Pack di ottimizzazione</h2>
+    <p class="lede">
+      Non ti lasciamo con una checklist vuota. Generiamo file pronti da copiare o scaricare in ZIP.
+    </p>
+    <ul class="artifact-list">
+      <li><code>llms.txt</code> — descrizione del brand per i modelli linguistici</li>
+      <li><code>organization.jsonld.html</code> — dati strutturati Organization</li>
+      <li><code>meta-pack.html</code> — title, description, Open Graph</li>
+      <li><code>robots.txt</code> — bozza allineata a crawl e sitemap</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Per chi è</h2>
+    <p class="lede">
+      Brand e team che vogliono essere trovati e citati da ChatGPT, Perplexity e ricerca generativa —
+      senza riscrivere a mano ogni file a ogni aggiornamento del sito.
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('register') }}">Prova gratis</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Confronta i piani</a>
+  </div>
+</article>
+{% endblock %}

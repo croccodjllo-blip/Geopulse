@@ -313,6 +313,7 @@ def inject_globals() -> dict[str, Any]:
         "csrf_token": generate_csrf,
         "max_sites_free": MAX_SITES_FREE,
         "free_daily_analyses": FREE_DAILY_ANALYSES,
+        "now_year": datetime.now(timezone.utc).year,
     }
 
 
@@ -404,9 +405,22 @@ def health():
 
 @app.route("/")
 def index():
-    if session.get("user_id"):
-        return redirect(url_for("dashboard"))
     return render_template("landing.html")
+
+
+@app.route("/prodotto")
+def product():
+    return render_template("product.html")
+
+
+@app.route("/prezzi")
+def pricing():
+    return render_template("pricing.html")
+
+
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
 
 
 @app.route("/register", methods=["GET", "POST"])

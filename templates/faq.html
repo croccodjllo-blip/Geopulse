@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}FAQ{% endblock %}
+{% block meta_description %}Domande frequenti su AIO-Bot: cos’è AIO/GEO, cosa include il pack, limiti Free e privacy.{% endblock %}
+
+{% block content %}
+<article class="page">
+  <header class="page-intro">
+    <p class="eyebrow">FAQ</p>
+    <h1 class="h-display page-intro__title">Domande frequenti</h1>
+    <p class="lede page-intro__lede">
+      Risposte rapide su cosa fa AIO-Bot, cosa ricevi dopo l’analisi e come funzionano i limiti.
+    </p>
+  </header>
+
+  <div class="faq-list">
+    <details class="faq-item" open>
+      <summary>Cos’è AIO e GEO?</summary>
+      <p>
+        <strong>AIO</strong> (AI Optimization) riguarda come i modelli e i crawler IA
+        comprendono il tuo brand. <strong>GEO</strong> (Generative Engine Optimization)
+        mira a farti citare nelle risposte generate da answer engine come ChatGPT o Perplexity.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Cosa ricevo dopo un’analisi?</summary>
+      <p>
+        Score AIO e GEO, findings prioritizzati e un pack con
+        <code>llms.txt</code>, JSON-LD, meta pack e bozza <code>robots.txt</code>.
+        Puoi copiare i file o scaricare lo ZIP.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Devo sapere programmare?</summary>
+      <p>
+        No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito
+        (o passali al tuo developer / CMS).
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Quali sono i limiti del piano Free?</summary>
+      <p>
+        Fino a {{ max_sites_free }} siti e {{ free_daily_analyses }} analisi nelle ultime 24 ore.
+        Il piano Pro, in arrivo, alzerà questi limiti.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Usate OpenAI sui miei contenuti?</summary>
+      <p>
+        Se è configurata una chiave OpenAI, può essere usata per raffinare
+        <code>llms.txt</code>. Altrimenti AIO-Bot genera un fallback locale.
+        Non pubblichiamo i tuoi dati su altri siti.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Come inizio?</summary>
+      <p>
+        <a href="{{ url_for('register') }}">Crea un account</a>,
+        apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il primo report.
+      </p>
+    </details>
+  </div>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('register') }}">Inizia gratis</a>
+    <a class="btn btn-ghost" href="{{ url_for('product') }}">Vedi il prodotto</a>
+  </div>
+</article>
+{% endblock %}
