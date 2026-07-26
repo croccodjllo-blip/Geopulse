@@ -21,11 +21,11 @@
         {% if current_user.company %}{{ current_user.company }} · {% endif %}
         Analizza il dominio, chiudi i gap, pubblica il pack.
       </p>
-      <div class="workspace-banner__meta">
-        <span>Piano {{ user_plan }}</span>
-        <span>Siti {{ site_count }}/{{ max_sites }}</span>
-        <span>{% if crawl_unlimited %}Crawl intero sito{% else %}Crawl {{ crawl_pages_limit }} pag.{% endif %}</span>
-        <span>{{ used_today }}/{{ daily_limit }} · 24h</span>
+      <div class="workspace-banner__meta" aria-label="Stato account">
+        <span class="workspace-banner__pill">Piano {{ user_plan }}</span>
+        <span class="workspace-banner__pill">Siti {{ site_count }}/{{ max_sites }}</span>
+        <span class="workspace-banner__pill">{% if crawl_unlimited %}Crawl intero sito{% else %}Crawl {{ crawl_pages_limit }} pag.{% endif %}</span>
+        <span class="workspace-banner__pill">{{ used_today }}/{{ daily_limit }} · 24h</span>
         <a class="workspace-banner__guide" href="{{ url_for('dashboard_history') }}">Storico</a>
         <a class="workspace-banner__guide" href="{{ url_for('dashboard_guide') }}">Guida</a>
       </div>
@@ -63,14 +63,17 @@
     <div class="workspace-grid workspace-grid--solo">
       <div class="workspace-main">
         {% if latest %}
-        <section class="report" aria-labelledby="result-domain">
-          {% set rating = latest.rating %}
-          {% set aio = latest.aio_score if latest.aio_score is not none else 0 %}
-          {% set geo = latest.geo_score if latest.geo_score is not none else 0 %}
-          {% set findings_n = latest.findings|length %}
+        {% set rating = latest.rating %}
+        {% set aio = latest.aio_score if latest.aio_score is not none else 0 %}
+        {% set geo = latest.geo_score if latest.geo_score is not none else 0 %}
+        {% set findings = findings_critical or [] %}
+        {% set crit_n = findings|selectattr('severity', 'equalto', 'critical')|list|length %}
+        {% set warn_n = findings|selectattr('severity', 'equalto', 'warn')|list|length %}
+        {% set findings_n = findings|length %}
 
+        <section class="report" aria-labelledby="result-domain">
           <div class="report-top">
-            <div>
+            <div class="report-top__copy">
               <p class="eyebrow">Report dominio</p>
               <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
               <p class="report-meta">
@@ -96,44 +99,46 @@
             </div>
           </div>
 
-          <section class="grade-panel" aria-labelledby="grade-code">
-            <div class="grade-panel__mark" data-grade="{{ rating.code }}">
-              <span class="grade-panel__eyebrow">Indice risultato</span>
-              <p class="grade-panel__code" id="grade-code">{{ rating.code }}</p>
-              <p class="grade-panel__label">{{ rating.label }}</p>
-              <p class="grade-panel__score">Punteggio indice {{ rating.score }}/100</p>
-            </div>
-            <div class="grade-panel__scale" aria-label="Scala da DDD a AAA">
-              <div class="grade-panel__scale-head">
-                <span>DDD</span>
-                <span>AAA</span>
+          <div class="report-overview">
+            <section class="grade-panel" aria-labelledby="grade-code">
+              <div class="grade-panel__mark" data-grade="{{ rating.code }}">
+                <span class="grade-panel__eyebrow">Indice</span>
+                <p class="grade-panel__code" id="grade-code">{{ rating.code }}</p>
+                <p class="grade-panel__label">{{ rating.label }}</p>
+                <p class="grade-panel__score">{{ rating.score }}/100</p>
               </div>
-              <div class="grade-rail" aria-hidden="true">
-                <i style="--p: {{ rating.progress }}%"></i>
+              <div class="grade-panel__scale" aria-label="Scala da DDD a AAA">
+                <div class="grade-panel__scale-head">
+                  <span>DDD</span>
+                  <span>AAA</span>
+                </div>
+                <div class="grade-rail" aria-hidden="true">
+                  <i style="--p: {{ rating.progress }}%"></i>
+                </div>
+                <ol class="grade-steps">
+                  {% for code in rating.scale %}
+                  <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
+                  {% endfor %}
+                </ol>
+                <p class="grade-panel__hint">
+                  Combina AIO/GEO e penalizza critical/warn. Obiettivo: salire verso AAA.
+                </p>
               </div>
-              <ol class="grade-steps">
-                {% for code in rating.scale %}
-                <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
-                {% endfor %}
-              </ol>
-              <p class="grade-panel__hint">
-                Combina AIO/GEO e penalizza critical/warn. Obiettivo: salire verso AAA.
-              </p>
-            </div>
-          </section>
+            </section>
 
-          <div class="meter-list" aria-label="Score">
-            <div class="meter">
-              <div class="meter__label"><span>AIO</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
-              <div class="meter__track"><i style="--m: {{ aio }}%"></i></div>
-            </div>
-            <div class="meter">
-              <div class="meter__label"><span>GEO</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
-              <div class="meter__track"><i style="--m: {{ geo }}%"></i></div>
-            </div>
-            <div class="meter">
-              <div class="meter__label"><span>Findings</span><strong>{{ findings_n }}</strong></div>
-              <div class="meter__track"><i style="--m: {{ [findings_n * 12, 100]|min }}%"></i></div>
+            <div class="meter-list" aria-label="Score">
+              <div class="meter">
+                <div class="meter__label"><span>AIO</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
+                <div class="meter__track"><i style="--m: {{ aio }}%"></i></div>
+              </div>
+              <div class="meter">
+                <div class="meter__label"><span>GEO</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
+                <div class="meter__track"><i style="--m: {{ geo }}%"></i></div>
+              </div>
+              <div class="meter">
+                <div class="meter__label"><span>Criticità</span><strong>{{ findings_n }}</strong></div>
+                <div class="meter__track"><i style="--m: {{ [findings_n * 12, 100]|min }}%"></i></div>
+              </div>
             </div>
           </div>
 
@@ -162,45 +167,84 @@
             <p class="report-notes">{{ latest.analysis_notes }}</p>
           {% endif %}
 
-          {% if latest and pages_analyzed_n %}
-          <section class="dash-block" aria-labelledby="crawl-title">
-            <header class="dash-block__head">
-              <h3 class="dash-block__title" id="crawl-title">Pagine critiche</h3>
-              <span class="dash-block__count">{{ crawl_pages_view|length }}</span>
-              {% if crawl_crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} critic{{ 'he' if crawl_crit_n != 1 else 'a' }}</span>{% endif %}
-              {% if crawl_warn_n %}<span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} attenzione</span>{% endif %}
-            </header>
-            {% if crawl_pages_view %}
-            <ul class="crawl-list crawl-list--critical">
-              {% for page in crawl_pages_view[:24] %}
-              {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
-              <li data-severity="{{ page.severity }}">
-                <a class="crawl-list__path" href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
-                  <span class="crawl-list__title">
-                    {% if page.severity == 'critical' %}<i class="crawl-list__flag" aria-hidden="true">!</i>{% endif %}
-                    {% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}
-                  </span>
-                  <span class="crawl-list__url">/{% if path %}{{ path }}{% endif %}</span>
-                </a>
-                {% if page.problems %}
-                <ul class="crawl-list__problems">
-                  {% for problem in page.problems %}
-                  <li>{{ problem }}</li>
-                  {% endfor %}
-                </ul>
-                {% endif %}
-              </li>
-              {% endfor %}
-            </ul>
-            {% if crawl_pages_view|length > 24 %}
-            <p class="dash-block__more">Prime 24 criticità · elenco completo nello ZIP/report</p>
+          <div class="report-split">
+            {% if pages_analyzed_n %}
+            <section class="dash-block dash-block--panel" aria-labelledby="crawl-title">
+              <header class="dash-block__head">
+                <div>
+                  <p class="dash-block__eyebrow">Priorità</p>
+                  <h3 class="dash-block__title" id="crawl-title">Pagine critiche</h3>
+                </div>
+                <div class="dash-block__meta">
+                  <span class="dash-block__count">{{ crawl_pages_view|length }}</span>
+                  {% if crawl_crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} critic{{ 'he' if crawl_crit_n != 1 else 'a' }}</span>{% endif %}
+                  {% if crawl_warn_n %}<span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} attenzione</span>{% endif %}
+                </div>
+              </header>
+              {% if crawl_pages_view %}
+              <ul class="crawl-list crawl-list--critical">
+                {% for page in crawl_pages_view[:24] %}
+                {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
+                <li data-severity="{{ page.severity }}">
+                  <a class="crawl-list__path" href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
+                    <span class="crawl-list__title">
+                      {% if page.severity == 'critical' %}<i class="crawl-list__flag" aria-hidden="true">!</i>{% endif %}
+                      {% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}
+                    </span>
+                    <span class="crawl-list__url">/{% if path %}{{ path }}{% endif %}</span>
+                  </a>
+                  {% if page.problems %}
+                  <ul class="crawl-list__problems">
+                    {% for problem in page.problems %}
+                    <li>{{ problem }}</li>
+                    {% endfor %}
+                  </ul>
+                  {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+              {% if crawl_pages_view|length > 24 %}
+              <p class="dash-block__more">Prime 24 criticità · elenco completo nello ZIP</p>
+              {% endif %}
+              {% else %}
+              <p class="dash-block__empty">Nessuna pagina critica su {{ pages_analyzed_n }} analizzate.</p>
+              {% endif %}
+              <p class="dash-block__more">Analizzate {{ pages_analyzed_n }} pagine</p>
+            </section>
             {% endif %}
-            {% else %}
-            <p class="dash-block__more">Nessuna pagina critica su {{ pages_analyzed_n }} analizzate.</p>
-            {% endif %}
-            <p class="dash-block__more">Analizzate {{ pages_analyzed_n }} pagine · in elenco solo le criticità</p>
-          </section>
-          {% endif %}
+
+            <section class="dash-block dash-block--panel" aria-labelledby="findings-title">
+              <header class="dash-block__head">
+                <div>
+                  <p class="dash-block__eyebrow">Priorità</p>
+                  <h3 class="dash-block__title" id="findings-title">Findings critici</h3>
+                </div>
+                <div class="dash-block__meta">
+                  <span class="dash-block__count">{{ findings|length }}</span>
+                  {% if crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crit_n }} critical</span>{% endif %}
+                  {% if warn_n %}<span class="dash-block__chip" data-severity="warn">{{ warn_n }} warn</span>{% endif %}
+                </div>
+              </header>
+              <ul class="finding-list">
+                {% for f in findings %}
+                <li data-severity="{{ f.severity }}">
+                  <em>{{ f.severity }}</em>
+                  <div class="finding-list__body">
+                    <strong>{{ f.title }}</strong>
+                    <span>{{ f.detail }}</span>
+                  </div>
+                </li>
+                {% else %}
+                <li class="finding-list__empty">
+                  <span>Nessuna criticità.{% if findings_ok_n %} {{ findings_ok_n }} check ok nascosti.{% endif %}</span>
+                </li>
+                {% endfor %}
+              </ul>
+              {% if findings_all_n and findings|length %}
+              <p class="dash-block__more">Solo critical/warn · {{ findings_all_n }} totali</p>
+              {% endif %}
+            </section>
+          </div>
 
           {% if is_pro %}
           <section class="monitor-panel" aria-labelledby="monitor-title">
@@ -226,40 +270,13 @@
           </p>
           {% endif %}
 
-          {% set findings = findings_critical or [] %}
-          {% set crit_n = findings|selectattr('severity', 'equalto', 'critical')|list|length %}
-          {% set warn_n = findings|selectattr('severity', 'equalto', 'warn')|list|length %}
-          <section class="dash-block" aria-labelledby="findings-title">
-            <header class="dash-block__head">
-              <h3 class="dash-block__title" id="findings-title">Findings critici</h3>
-              <span class="dash-block__count">{{ findings|length }}</span>
-              {% if crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crit_n }} critical</span>{% endif %}
-              {% if warn_n %}<span class="dash-block__chip" data-severity="warn">{{ warn_n }} warn</span>{% endif %}
-            </header>
-            <ul class="finding-list">
-              {% for f in findings %}
-              <li data-severity="{{ f.severity }}">
-                <em>{{ f.severity }}</em>
-                <div class="finding-list__body">
-                  <strong>{{ f.title }}</strong>
-                  <span>{{ f.detail }}</span>
-                </div>
-              </li>
-              {% else %}
-              <li class="finding-list__empty">
-                <span>Nessuna criticità.{% if findings_ok_n %} {{ findings_ok_n }} check ok nascosti.{% endif %}</span>
-              </li>
-              {% endfor %}
-            </ul>
-            {% if findings_all_n and findings|length %}
-            <p class="dash-block__more">In elenco solo critical/warn · {{ findings_all_n }} findings totali</p>
-            {% endif %}
-          </section>
-
           {% if latest.competitors %}
-          <section class="dash-block" aria-labelledby="comp-title">
+          <section class="dash-block dash-block--panel" aria-labelledby="comp-title">
             <header class="dash-block__head">
-              <h3 class="dash-block__title" id="comp-title">Competitor snapshot</h3>
+              <div>
+                <p class="dash-block__eyebrow">Confronto</p>
+                <h3 class="dash-block__title" id="comp-title">Competitor snapshot</h3>
+              </div>
               <span class="dash-block__count">{{ latest.competitors|length }}</span>
             </header>
             <ul class="comp-list">
@@ -277,12 +294,15 @@
           </section>
           {% endif %}
 
-          <section class="dash-block" aria-labelledby="pack-title">
+          <section class="dash-block dash-block--panel dash-block--pack" aria-labelledby="pack-title">
             <header class="dash-block__head">
-              <h3 class="dash-block__title" id="pack-title">Pack ottimizzazione</h3>
+              <div>
+                <p class="dash-block__eyebrow">Deliverable</p>
+                <h3 class="dash-block__title" id="pack-title">Pack ottimizzazione</h3>
+              </div>
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="dash-block__chip site-link" style="border:0;background:none;cursor:pointer;font:inherit">
+                <button type="submit" class="dash-block__mail">
                   Invia a {{ current_user.email }}
                 </button>
               </form>
@@ -348,6 +368,7 @@
         </section>
         {% else %}
         <div class="empty-state">
+          <p class="empty-state__eyebrow">Pronto</p>
           <strong>Inizia dalla barra URL</strong>
           <p>Inserisci il dominio: crawl, score, findings e pack in pochi secondi.</p>
         </div>
