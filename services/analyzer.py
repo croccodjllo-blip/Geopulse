@@ -11,6 +11,27 @@ from urllib.parse import urldefrag, urljoin, urlparse, urlunparse
 import requests
 from bs4 import BeautifulSoup
 
+from services.deep_checks import (
+    ADDRESS_RE,
+    AUTHOR_RE,
+    ABOUT_HREF_RE,
+    CONTACT_HREF_RE,
+    DATE_RE,
+    EMAIL_RE,
+    PHONE_RE,
+    analyze_aux_files,
+    analyze_brand_nap,
+    analyze_content_quality,
+    analyze_crawl_aggregate,
+    analyze_geo_discoverability,
+    analyze_heading_hierarchy,
+    analyze_monitoring_alerts,
+    analyze_technical_page,
+    enrich_jsonld_entities,
+    same_host,
+    summarize_competitor,
+)
+from services.rating import compute_rating
 from services.signals import (
     analyze_faq_signals,
     analyze_json_ld_types,
@@ -119,29 +140,43 @@ def _extract_meta(soup: BeautifulSoup, *, name: str | None = None, prop: str | N
 
 
 def scrape_page(url: str) -> dict[str, Any]:
+    import time
+
+    t0 = time.perf_counter()
     response = _SESSION.get(
         url,
         timeout=HTTP_TIMEOUT,
         allow_redirects=True,
     )
-    response.raise_for_status()
+    elapsed_ms = int((time.perf_counter() - t0) * 1000)
+    # Non raise subito su 4xx: servono metriche
     ctype = (response.headers.get("Content-Type") or "").lower()
-    if "html" not in ctype and "xml" not in ctype and ctype:
-        # Alcuni server non settano content-type; se body sembra HTML ok
-        if "<html" not in (response.text[:500] or "").lower():
-            raise requests.RequestException(f"Non-HTML content-type: {ctype}")
-
-    html = response.text
+    html = response.text or ""
     if len(html) > 1_500_000:
         html = html[:1_500_000]
-    soup = BeautifulSoup(html, "lxml")
+    if response.status_code >= 400:
+        # body minimo per soft signals
+        pass
+    elif "html" not in ctype and "xml" not in ctype and ctype:
+        if "<html" not in html[:500].lower():
+            response.raise_for_status()
+            raise requests.RequestException(f"Non-HTML content-type: {ctype}")
 
+    soup = BeautifulSoup(html, "lxml")
     jsonld_meta = extract_json_ld_from_soup(soup)
     has_json_ld = bool(jsonld_meta.get("block_count") or jsonld_meta.get("types"))
+    entity = enrich_jsonld_entities(jsonld_meta)
+
     canonical = ""
     canon = soup.find("link", attrs={"rel": re.compile(r"canonical", re.I)})
     if canon and canon.get("href"):
         canonical = str(canon["href"]).strip()
+
+    hreflang = []
+    for link in soup.find_all("link", attrs={"rel": re.compile(r"alternate", re.I)}):
+        hl = link.get("hreflang")
+        if hl:
+            hreflang.append(str(hl).strip())
 
     html_tag = soup.find("html")
     lang = ""
@@ -153,7 +188,31 @@ def scrape_page(url: str) -> dict[str, Any]:
     robots = _extract_meta(soup, name="robots")
     og_title = _extract_meta(soup, prop="og:title")
     og_description = _extract_meta(soup, prop="og:description")
-    has_h1 = bool(soup.find("h1"))
+    twitter_card = _extract_meta(soup, name="twitter:card")
+    twitter_title = _extract_meta(soup, name="twitter:title")
+    author_meta = _extract_meta(soup, name="author")
+
+    h1_tags = soup.find_all("h1")
+    h2_tags = soup.find_all("h2")
+    h1_count = len(h1_tags)
+    h2_count = len(h2_tags)
+    has_h1 = h1_count > 0
+
+    imgs = soup.find_all("img")
+    img_count = len(imgs)
+    img_with_alt = sum(1 for i in imgs if (i.get("alt") or "").strip())
+    img_with_dims = sum(1 for i in imgs if i.get("width") and i.get("height"))
+    img_lazy = sum(
+        1
+        for i in imgs
+        if str(i.get("loading") or "").lower() == "lazy"
+        or "lazy" in str(i.get("class") or "").lower()
+    )
+
+    blocking_scripts = 0
+    for script in soup.find_all("script"):
+        if script.get("src") and not script.get("async") and not script.get("defer"):
+            blocking_scripts += 1
 
     clean = BeautifulSoup(html, "lxml")
     for tag in clean(["script", "style", "noscript"]):
@@ -165,41 +224,104 @@ def scrape_page(url: str) -> dict[str, Any]:
         if h.get_text(strip=True)
     ][:12]
 
+    final_url = str(response.url)
     hrefs: list[str] = []
     links: list[str] = []
+    internal_hrefs: list[str] = []
+    internal_link_count = 0
+    external_link_count = 0
+    citation_link_count = 0
+    has_about_link = False
+    has_contact_link = False
     for a in clean.find_all("a", href=True):
         href = a["href"].strip()
         if href.startswith("#") or href.lower().startswith("javascript:"):
             continue
         hrefs.append(href)
         text = a.get_text(" ", strip=True)
-        if text:
+        if text and len(links) < 30:
             links.append(f"{text} -> {href}")
-        if len(links) >= 30:
-            break
+        abs_u = canonicalize_page_url(href, seed=final_url)
+        if abs_u and same_domain(abs_u, final_url):
+            internal_link_count += 1
+            internal_hrefs.append(abs_u)
+        else:
+            external_link_count += 1
+            if href.startswith("http"):
+                citation_link_count += 1
+        if ABOUT_HREF_RE.search(href) or ABOUT_HREF_RE.search(text or ""):
+            has_about_link = True
+        if CONTACT_HREF_RE.search(href) or CONTACT_HREF_RE.search(text or ""):
+            has_contact_link = True
 
     body_text = " ".join(clean.get_text(" ", strip=True).split())
+    words = len(body_text.split())
     html_faq = detect_html_faq(soup, body_text)
-    final_url = str(response.url)
+    phones = list({m.group(0) for m in PHONE_RE.finditer(body_text[:8000])})[:5]
+    emails = list({m.group(0) for m in EMAIL_RE.finditer(body_text[:8000])})[:5]
+    addresses = list({m.group(0) for m in ADDRESS_RE.finditer(body_text[:8000])})[:3]
+    date_hits = len(DATE_RE.findall(body_text[:8000]))
+    has_author_signal = bool(
+        author_meta
+        or soup.find("a", attrs={"rel": re.compile(r"author", re.I)})
+        or AUTHOR_RE.search(body_text[:2500] or "")
+    )
+    soft_404 = bool(
+        response.status_code == 200
+        and (
+            re.search(r"\b404\b|not found|pagina non trovata", title, re.I)
+            or (words < 40 and re.search(r"\b404\b|not found", body_text[:500], re.I))
+        )
+    )
+
+    redirect_count = max(0, len(response.history))
     return {
         "final_url": final_url,
         "requested_url": url,
+        "status_code": response.status_code,
+        "response_ms": elapsed_ms,
+        "redirect_count": redirect_count,
+        "html_kb": round(len(html.encode("utf-8", errors="ignore")) / 1024.0, 1),
+        "blocking_scripts": blocking_scripts,
         "title": title,
         "description": description,
         "headings": headings,
+        "h1_count": h1_count,
+        "h2_count": h2_count,
         "links": links,
         "hrefs": hrefs,
+        "internal_hrefs": internal_hrefs[:80],
+        "internal_link_count": internal_link_count,
+        "external_link_count": external_link_count,
+        "citation_link_count": min(citation_link_count, external_link_count),
         "snippet": body_text[:2500],
+        "word_count": words,
         "domain": urlparse(final_url).netloc,
         "has_json_ld": has_json_ld,
         "jsonld": jsonld_meta,
+        "entity": entity,
         "html_faq": html_faq,
         "canonical": canonical,
         "lang": lang,
+        "hreflang": hreflang[:12],
         "robots": robots,
         "og_title": og_title,
         "og_description": og_description,
+        "twitter_card": twitter_card,
+        "twitter_title": twitter_title,
         "has_h1": has_h1,
+        "img_count": img_count,
+        "img_with_alt": img_with_alt,
+        "img_with_dims": img_with_dims,
+        "img_lazy": img_lazy,
+        "phones": phones,
+        "emails": emails,
+        "addresses": addresses,
+        "date_hits": date_hits,
+        "has_about_link": has_about_link,
+        "has_contact_link": has_contact_link,
+        "has_author_signal": has_author_signal,
+        "soft_404": soft_404,
     }
 
 
@@ -466,6 +588,18 @@ def score_site(
     geo += faq_score["geo"]
     findings.extend(faq_score["findings"])
 
+    entity = scraped.get("entity") or enrich_jsonld_entities(jsonld_meta)
+    for block in (
+        analyze_heading_hierarchy(scraped),
+        analyze_content_quality(scraped),
+        analyze_brand_nap(scraped, entity),
+        analyze_geo_discoverability(scraped),
+        analyze_technical_page(scraped, url),
+    ):
+        aio += block["aio"]
+        geo += block["geo"]
+        findings.extend(block["findings"])
+
     if scraped.get("canonical"):
         geo += 8
         push("technical", "ok", "Canonical impostato", scraped["canonical"])
@@ -550,25 +684,53 @@ def score_site(
 
     pages = page_reports or []
     crawled = len(pages)
+    page_payloads = []
+    for p in pages:
+        sc = p.get("scraped") or {}
+        page_payloads.append(
+            {
+                "url": p.get("url") or sc.get("final_url"),
+                "title": p.get("title") or sc.get("title"),
+                "description": sc.get("description"),
+                "word_count": sc.get("word_count"),
+                "status_code": sc.get("status_code"),
+                "response_ms": sc.get("response_ms"),
+                "internal_hrefs": sc.get("internal_hrefs") or [],
+                "aio_score": p.get("aio_score"),
+                "geo_score": p.get("geo_score"),
+                "issues": p.get("issues") or [],
+            }
+        )
+
+    sitemap_urls = list((probes.get("sitemap") or {}).get("urls") or [])
+    crawl_agg = analyze_crawl_aggregate(
+        page_payloads, sitemap_urls=sitemap_urls, seed_url=url
+    )
+    aio += crawl_agg["aio"]
+    geo += crawl_agg["geo"]
+    findings.extend(crawl_agg["findings"])
+
+    aux = analyze_aux_files(probes)
+    aio += aux["aio"]
+    geo += aux["geo"]
+    findings.extend(aux["findings"])
+
     if crawled > 1:
         avg_aio = sum(p["aio_score"] for p in pages) / crawled
         avg_geo = sum(p["geo_score"] for p in pages) / crawled
-        # Blend seed signals with domain page average
         aio = aio * 0.55 + avg_aio * 0.45
         geo = geo * 0.55 + avg_geo * 0.45
 
         weak = [p for p in pages if p["aio_score"] < 55 or p["geo_score"] < 55]
         missing_title = sum(1 for p in pages if "title" in p.get("issues", []))
         missing_h1 = sum(1 for p in pages if "h1" in p.get("issues", []))
-        missing_desc = sum(1 for p in pages if "description" in p.get("issues", []))
         with_jsonld = sum(1 for p in pages if "json_ld" not in p.get("issues", []))
 
         push(
             "crawl",
             "ok",
             f"Crawl dominio: {crawled} pagine",
-            f"Media pagine AIO {avg_aio:.0f} / GEO {avg_geo:.0f} "
-            f"(seed + sitemap/link interni).",
+            f"Media pagine AIO {avg_aio:.0f} / GEO {avg_geo:.0f}.",
         )
         if missing_title:
             push(
@@ -584,15 +746,7 @@ def score_site(
                 "H1 assenti su più pagine",
                 f"{missing_h1}/{crawled} pagine senza H1.",
             )
-        if missing_desc:
-            push(
-                "crawl",
-                "warn",
-                "Meta description incomplete",
-                f"{missing_desc}/{crawled} pagine con description insufficiente.",
-            )
-        coverage = with_jsonld / crawled
-        if coverage < 0.35:
+        if with_jsonld / crawled < 0.35:
             push(
                 "crawl",
                 "warn",
@@ -609,12 +763,12 @@ def score_site(
             )
         notes = (
             f"Analisi dominio {_host_key(urlparse(url).netloc)}: "
-            f"{crawled} pagine + JSON-LD tipizzato, FAQ, policy bot, qualità llms.txt."
+            f"{crawled} pagine · suite AIO/GEO completa."
         )
     else:
         notes = (
-            f"Analisi di {urlparse(url).netloc}: "
-            "JSON-LD tipizzato, FAQ schema, policy bot AI, qualità llms.txt e probe root."
+            f"Analisi di {urlparse(url).netloc}: suite AIO/GEO completa "
+            "(content, brand, GEO, tecnico, llms/robots)."
         )
 
     return {
@@ -624,13 +778,24 @@ def score_site(
         "notes": notes,
         "signals": {
             "jsonld": jsonld_meta,
+            "entity": entity,
             "llms_quality": llms_score.get("quality"),
             "llms_sections": llms_score.get("sections") or [],
             "bot_policies": bots_score.get("policies") or {},
             "faq": {
                 "has_faq_page": bool(jsonld_meta.get("has_faq_page")),
                 "faq_questions": jsonld_meta.get("faq_questions") or 0,
-                "html_faq_likely": bool((scraped.get("html_faq") or {}).get("html_faq_likely")),
+                "html_faq_likely": bool(
+                    (scraped.get("html_faq") or {}).get("html_faq_likely")
+                ),
+            },
+            "crawl": {
+                "coverage": crawl_agg.get("coverage"),
+                "thin_count": crawl_agg.get("thin_count"),
+                "orphan_count": crawl_agg.get("orphan_count"),
+                "sitemap_count": crawl_agg.get("sitemap_count"),
+                "error_count": crawl_agg.get("error_count"),
+                "slow_count": crawl_agg.get("slow_count"),
             },
         },
     }
@@ -664,7 +829,12 @@ def _crawl_extra_pages(urls: list[str], *, seed_url: str, max_workers: int = 4) 
     return reports
 
 
-def analyze_site(url: str, *, max_pages: int = 1) -> dict[str, Any]:
+def analyze_site(
+    url: str,
+    *,
+    max_pages: int = 1,
+    competitor_urls: list[str] | None = None,
+) -> dict[str, Any]:
     """
     Analizza il dominio a partire da `url`.
     max_pages=1 → solo seed (+ probe root).
@@ -672,32 +842,46 @@ def analyze_site(url: str, *, max_pages: int = 1) -> dict[str, Any]:
     """
     max_pages = max(1, min(int(max_pages), 50))
     scraped = scrape_page(url)
+    if int(scraped.get("status_code") or 200) >= 400:
+        raise requests.RequestException(
+            f"HTTP {scraped.get('status_code')} su {url}"
+        )
     base = scraped.get("final_url") or url
     paths = {
         "llms": "/llms.txt",
         "robots": "/robots.txt",
         "sitemap": "/sitemap.xml",
+        "ai": "/ai.txt",
+        "humans": "/humans.txt",
     }
-    with ThreadPoolExecutor(max_workers=3) as pool:
+    with ThreadPoolExecutor(max_workers=5) as pool:
         futures = {
             key: pool.submit(probe_path, base, path) for key, path in paths.items()
         }
         probes = {key: fut.result() for key, fut in futures.items()}
+
+    # Estrai URL sitemap per coverage (anche se host canonico ≠ seed IP)
+    sm = probes.get("sitemap") or {}
+    if sm.get("ok"):
+        urls = collect_sitemap_urls(base, sm, limit=max(max_pages * 5, 40))
+        if not urls and sm.get("snippet"):
+            urls = [
+                u.strip()
+                for u in re.findall(r"<loc>\s*([^<]+)\s*</loc>", sm["snippet"], flags=re.I)
+            ][: max(max_pages * 5, 40)]
+        probes["sitemap"]["urls"] = urls
 
     seed_report = score_page_signals(scraped)
     seed_report["scraped"] = scraped
     page_reports = [seed_report]
 
     discovered = discover_domain_urls(base, scraped, probes, max_pages=max_pages)
-    extra_urls = [u for u in discovered if u != canonicalize_page_url(base, seed=base)]
-    # Evita di ri-scaricare il seed
     seed_canon = canonicalize_page_url(base, seed=base)
-    extra_urls = [u for u in extra_urls if u != seed_canon][: max(0, max_pages - 1)]
+    extra_urls = [u for u in discovered if u != seed_canon][: max(0, max_pages - 1)]
 
     if extra_urls:
         page_reports.extend(_crawl_extra_pages(extra_urls, seed_url=base))
 
-    # Ordina: seed prima, poi per score
     def sort_key(p: dict[str, Any]) -> tuple[int, float]:
         is_seed = 0 if (p.get("url") == seed_canon or p.get("url") == base) else 1
         return (is_seed, -((p.get("aio_score") or 0) + (p.get("geo_score") or 0)) / 2)
@@ -713,11 +897,13 @@ def analyze_site(url: str, *, max_pages: int = 1) -> dict[str, Any]:
             "aio_score": p.get("aio_score"),
             "geo_score": p.get("geo_score"),
             "issues": p.get("issues") or [],
+            "word_count": (p.get("scraped") or {}).get("word_count"),
+            "response_ms": (p.get("scraped") or {}).get("response_ms"),
+            "status_code": (p.get("scraped") or {}).get("status_code"),
         }
         for p in page_reports
     ]
 
-    # Arricchisci scraped con elenco pagine per llms.txt
     important = []
     for p in crawl_pages[:20]:
         label = p.get("title") or p.get("url") or ""
@@ -731,10 +917,22 @@ def analyze_site(url: str, *, max_pages: int = 1) -> dict[str, Any]:
         "pages_analyzed": len(crawl_pages),
     }
 
+    competitors: list[dict[str, Any]] = []
+    for raw in (competitor_urls or [])[:3]:
+        try:
+            comp_url = normalize_url(raw)
+            if same_host(comp_url, base):
+                continue
+            comp = analyze_site(comp_url, max_pages=min(5, max_pages))
+            competitors.append(summarize_competitor(comp))
+        except Exception:
+            competitors.append({"url": raw, "error": "analisi non riuscita"})
+
     return {
         "scraped": scraped,
         "probes": probes,
         "pages": crawl_pages,
         "pages_analyzed": len(crawl_pages),
+        "competitors": competitors,
         **scored,
     }

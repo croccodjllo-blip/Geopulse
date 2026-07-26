@@ -69,6 +69,12 @@ def pack_zip_bytes(entity: Any) -> bytes:
             zf.writestr("faq.jsonld.html", faq)
         zf.writestr("meta-pack.html", entity.meta_pack_artifact or "")
         zf.writestr("robots.txt", entity.robots_artifact or "")
+        checklist = getattr(entity, "checklist_artifact", None) or ""
+        if checklist:
+            zf.writestr("fix-this-week.md", checklist)
+        before_after = getattr(entity, "before_after_artifact", None) or ""
+        if before_after:
+            zf.writestr("before-after.md", before_after)
         report = {
             "url": entity.url,
             "domain": entity.domain,

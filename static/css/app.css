@@ -1534,6 +1534,39 @@ button, input, select, textarea { font: inherit; }
   max-width: 56ch;
 }
 
+.analyze-competitors {
+  margin-top: 0.75rem;
+}
+
+.analyze-competitors textarea {
+  min-height: 3.4rem;
+  resize: vertical;
+  font-size: 0.92rem;
+}
+
+.comp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 7rem;
+  overflow: auto;
+}
+
+.comp-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 0.85rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  font-size: 0.84rem;
+}
+
+.comp-list li strong {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+}
+
 .diff-strip {
   margin: 1.1rem 0 0.2rem;
   padding: 0.85rem 0.95rem;

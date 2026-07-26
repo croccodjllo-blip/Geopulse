@@ -86,7 +86,6 @@ def persist_analysis(
 
     pages = result.get("pages") or scraped.get("crawled_pages") or []
     pages_analyzed = int(result.get("pages_analyzed") or len(pages) or 1)
-    crawl_pages_json = json.dumps(pages[:50], ensure_ascii=False)
 
     analysis.domain = domain
     analysis.page_title = page_title
@@ -99,8 +98,17 @@ def persist_analysis(
     analysis.faq_artifact = pack.get("faq.jsonld.html") or ""
     analysis.meta_pack_artifact = pack.get("meta-pack.html") or ""
     analysis.robots_artifact = pack.get("robots.txt") or ""
+    analysis.checklist_artifact = pack.get("fix-this-week.md") or ""
+    analysis.before_after_artifact = pack.get("before-after.md") or ""
     analysis.pages_analyzed = pages_analyzed
-    analysis.crawl_pages_json = crawl_pages_json
+    analysis.crawl_pages_json = json.dumps(
+        {
+            "pages": pages[:50],
+            "competitors": result.get("competitors") or [],
+            "signals": result.get("signals") or {},
+        },
+        ensure_ascii=False,
+    )
     analysis.created_at = now
 
     if source == "scheduled":
@@ -131,8 +139,10 @@ def persist_analysis(
         faq_artifact=pack.get("faq.jsonld.html") or "",
         meta_pack_artifact=pack.get("meta-pack.html") or "",
         robots_artifact=pack.get("robots.txt") or "",
+        checklist_artifact=pack.get("fix-this-week.md") or "",
+        before_after_artifact=pack.get("before-after.md") or "",
         pages_analyzed=pages_analyzed,
-        crawl_pages_json=crawl_pages_json,
+        crawl_pages_json=analysis.crawl_pages_json,
         source=source if source in {"manual", "scheduled"} else "manual",
         created_at=now,
     )

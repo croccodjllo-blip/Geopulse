@@ -88,6 +88,10 @@ def process_due_rescans(
                 api_key=openai_api_key,
                 model=openai_model,
                 logger=logger,
+                findings=result.get("findings"),
+                previous=previous_run,
+                diff=run_diff,
+                result=result,
             )
             persist_analysis(
                 db_session,

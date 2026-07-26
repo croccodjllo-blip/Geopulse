@@ -253,7 +253,18 @@ def build_optimization_pack(
     api_key: str = "",
     model: str = "gpt-4o-mini",
     logger: Any | None = None,
+    findings: list[dict[str, Any]] | None = None,
+    previous: Any | None = None,
+    diff: dict[str, Any] | None = None,
+    result: dict[str, Any] | None = None,
 ) -> dict[str, str]:
+    from services.deep_checks import build_before_after_report, build_fix_checklist
+
+    current = result or {
+        "aio_score": None,
+        "geo_score": None,
+        "findings": findings or [],
+    }
     return {
         "llms.txt": generate_llms_txt(
             url, scraped, api_key=api_key, model=model, logger=logger
@@ -262,4 +273,8 @@ def build_optimization_pack(
         "faq.jsonld.html": build_faq_json_ld(url, scraped),
         "meta-pack.html": build_meta_pack(url, scraped),
         "robots.txt": build_robots_txt(url),
+        "fix-this-week.md": build_fix_checklist(findings or []),
+        "before-after.md": build_before_after_report(
+            current=current, previous=previous, diff=diff
+        ),
     }

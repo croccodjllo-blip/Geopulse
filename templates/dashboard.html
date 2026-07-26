@@ -43,6 +43,12 @@
           <p class="analyze-hint">
             Crawl stesso dominio via sitemap e link interni · max {{ crawl_pages_limit }} pagine ({{ user_plan }}).
           </p>
+          {% if is_pro %}
+          <div class="field analyze-competitors">
+            <label for="competitors">Competitor snapshot (Pro, max 3)</label>
+            {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com&#10;https://rivale2.com", class_="analyze-input") }}
+          </div>
+          {% endif %}
           {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
       </div>
@@ -223,11 +229,50 @@
             </ul>
           </section>
 
+          {% if latest.competitors %}
+          <section class="dash-block" aria-labelledby="comp-title">
+            <header class="dash-block__head">
+              <h3 class="dash-block__title" id="comp-title">Competitor snapshot</h3>
+              <span class="dash-block__count">{{ latest.competitors|length }}</span>
+            </header>
+            <ul class="comp-list">
+              {% for c in latest.competitors %}
+              <li>
+                <strong>{{ c.domain or c.url }}</strong>
+                {% if c.error %}
+                <span class="muted">{{ c.error }}</span>
+                {% else %}
+                <span>AIO {{ c.aio_score }} · GEO {{ c.geo_score }} · {{ c.rating }} · {{ c.critical }} critical</span>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </section>
+          {% endif %}
+
           <section class="dash-block" aria-labelledby="pack-title">
             <header class="dash-block__head">
               <h3 class="dash-block__title" id="pack-title">Pack ottimizzazione</h3>
             </header>
             <div class="pack-grid">
+              {% if latest.checklist_artifact %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>fix-this-week.md</span>
+                  <button type="button" class="linkish" onclick="copyFrom('checklist-box', this)">Copia</button>
+                </div>
+                <pre id="checklist-box">{{ latest.checklist_artifact }}</pre>
+              </div>
+              {% endif %}
+              {% if latest.before_after_artifact %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>before-after.md</span>
+                  <button type="button" class="linkish" onclick="copyFrom('ba-box', this)">Copia</button>
+                </div>
+                <pre id="ba-box">{{ latest.before_after_artifact }}</pre>
+              </div>
+              {% endif %}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>/llms.txt</span>

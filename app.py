@@ -9,6 +9,7 @@ import io
 import json
 import logging
 import os
+import re
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any
@@ -43,6 +44,7 @@ from wtforms import (
     StringField,
     SubmitField,
     TelField,
+    TextAreaField,
     URLField,
 )
 from wtforms.validators import (
@@ -66,6 +68,7 @@ from services.artifacts import build_optimization_pack
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
+from services.deep_checks import analyze_monitoring_alerts
 from services.signals import compare_with_previous
 
 load_dotenv()
@@ -224,6 +227,8 @@ class SiteAnalysis(db.Model):
     faq_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
+    checklist_artifact = db.Column(db.Text, nullable=False, default="")
+    before_after_artifact = db.Column(db.Text, nullable=False, default="")
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
     crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     rescan_interval = db.Column(db.String(20), nullable=False, default="off")
@@ -252,12 +257,27 @@ class SiteAnalysis(db.Model):
             return []
 
     @property
-    def crawl_pages(self) -> list[dict[str, Any]]:
+    def _crawl_blob(self) -> dict[str, Any] | list[Any]:
         try:
-            data = json.loads(self.crawl_pages_json or "[]")
-            return data if isinstance(data, list) else []
+            return json.loads(self.crawl_pages_json or "[]")
         except json.JSONDecodeError:
             return []
+
+    @property
+    def crawl_pages(self) -> list[dict[str, Any]]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            pages = data.get("pages") or []
+            return pages if isinstance(pages, list) else []
+        return data if isinstance(data, list) else []
+
+    @property
+    def competitors(self) -> list[dict[str, Any]]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            comps = data.get("competitors") or []
+            return comps if isinstance(comps, list) else []
+        return []
 
     @property
     def rating(self) -> dict[str, Any]:
@@ -290,6 +310,8 @@ class AnalysisRun(db.Model):
     faq_artifact = db.Column(db.Text, nullable=False, default="")
     meta_pack_artifact = db.Column(db.Text, nullable=False, default="")
     robots_artifact = db.Column(db.Text, nullable=False, default="")
+    checklist_artifact = db.Column(db.Text, nullable=False, default="")
+    before_after_artifact = db.Column(db.Text, nullable=False, default="")
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
     crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     source = db.Column(db.String(20), nullable=False, default="manual")
@@ -308,12 +330,27 @@ class AnalysisRun(db.Model):
             return []
 
     @property
-    def crawl_pages(self) -> list[dict[str, Any]]:
+    def _crawl_blob(self) -> dict[str, Any] | list[Any]:
         try:
-            data = json.loads(self.crawl_pages_json or "[]")
-            return data if isinstance(data, list) else []
+            return json.loads(self.crawl_pages_json or "[]")
         except json.JSONDecodeError:
             return []
+
+    @property
+    def crawl_pages(self) -> list[dict[str, Any]]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            pages = data.get("pages") or []
+            return pages if isinstance(pages, list) else []
+        return data if isinstance(data, list) else []
+
+    @property
+    def competitors(self) -> list[dict[str, Any]]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            comps = data.get("competitors") or []
+            return comps if isinstance(comps, list) else []
+        return []
 
     @property
     def rating(self) -> dict[str, Any]:
@@ -429,6 +466,10 @@ class AnalyzeForm(FlaskForm):
     url = StringField(
         "URL del sito",
         validators=[DataRequired(), Length(max=500), validate_http_url],
+    )
+    competitors = TextAreaField(
+        "Competitor (max 3 URL, uno per riga)",
+        validators=[Optional(), Length(max=1500)],
     )
     submit = SubmitField("Analizza dominio")
 
@@ -619,6 +660,8 @@ def ensure_schema() -> None:
             "faq_artifact": "TEXT DEFAULT ''",
             "meta_pack_artifact": "TEXT DEFAULT ''",
             "robots_artifact": "TEXT DEFAULT ''",
+            "checklist_artifact": "TEXT DEFAULT ''",
+            "before_after_artifact": "TEXT DEFAULT ''",
             "pages_analyzed": "INTEGER DEFAULT 1",
             "crawl_pages_json": "TEXT DEFAULT '[]'",
             "rescan_interval": "TEXT DEFAULT 'off'",
@@ -655,6 +698,8 @@ def ensure_schema() -> None:
             "pages_analyzed": "INTEGER DEFAULT 1",
             "crawl_pages_json": "TEXT DEFAULT '[]'",
             "faq_artifact": "TEXT DEFAULT ''",
+            "checklist_artifact": "TEXT DEFAULT ''",
+            "before_after_artifact": "TEXT DEFAULT ''",
         }
         with db.engine.begin() as conn:
             for name, col_type in run_alters.items():
@@ -1022,7 +1067,18 @@ def dashboard():
                             .order_by(AnalysisRun.created_at.desc())
                             .first()
                         )
-                    result = analyze_site(url, max_pages=user.crawl_pages)
+                    competitor_urls = []
+                    raw_comp = (form.competitors.data or "").strip()
+                    if raw_comp:
+                        for line in re.split(r"[\n,;]+", raw_comp):
+                            line = line.strip()
+                            if line:
+                                competitor_urls.append(line)
+                    result = analyze_site(
+                        url,
+                        max_pages=user.crawl_pages,
+                        competitor_urls=competitor_urls[:3] if user.is_pro else [],
+                    )
                     run_diff = compare_with_previous(
                         aio_score=result.get("aio_score"),
                         geo_score=result.get("geo_score"),
@@ -1034,12 +1090,31 @@ def dashboard():
                             run_diff["findings"]
                         )
                     result["diff"] = run_diff
+                    rating_now = compute_rating(
+                        result.get("aio_score"),
+                        result.get("geo_score"),
+                        result.get("findings"),
+                    )
+                    alerts = analyze_monitoring_alerts(
+                        probes=result.get("probes") or {},
+                        rating=rating_now,
+                        previous=previous_run,
+                        diff=run_diff,
+                    )
+                    if alerts.get("findings"):
+                        result["findings"] = list(result.get("findings") or []) + list(
+                            alerts["findings"]
+                        )
                     pack = build_optimization_pack(
                         url,
                         result["scraped"],
                         api_key=OPENAI_API_KEY,
                         model=OPENAI_MODEL,
                         logger=app.logger,
+                        findings=result.get("findings"),
+                        previous=previous_run,
+                        diff=run_diff,
+                        result=result,
                     )
                     latest = persist_analysis(
                         db.session,

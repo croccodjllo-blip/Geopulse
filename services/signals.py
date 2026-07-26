@@ -111,6 +111,12 @@ def parse_json_ld_scripts(scripts_text: list[str]) -> dict[str, Any]:
         ents = _as_list(block["node"].get("mainEntity"))
         faq_questions += len(ents)
 
+    org_nodes = [
+        b["node"]
+        for b in blocks
+        if any(t in {"Organization", "LocalBusiness"} for t in b["types"])
+    ][:5]
+
     return {
         "types": uniq,
         "block_count": len(blocks),
@@ -120,6 +126,10 @@ def parse_json_ld_scripts(scripts_text: list[str]) -> dict[str, Any]:
         "has_organization": any(t in {"Organization", "LocalBusiness"} for t in uniq),
         "has_website": "WebSite" in uniq,
         "valuable_types": [t for t in uniq if t in VALUABLE_TYPES],
+        "org_nodes": org_nodes,
+        "has_article": any(
+            t in {"Article", "NewsArticle", "BlogPosting"} for t in uniq
+        ),
     }
 
 
