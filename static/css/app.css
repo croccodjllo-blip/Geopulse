@@ -1789,13 +1789,17 @@ button, input, select, textarea { font: inherit; }
 
 .crawl-list li {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.35rem;
   align-items: start;
-  padding: 0.42rem 0.45rem 0.42rem 0.55rem;
+  padding: 0.5rem 0.55rem 0.55rem 0.65rem;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
   border-left: 3px solid transparent;
   border-radius: 0 0.35rem 0.35rem 0;
+}
+
+.crawl-list--critical {
+  max-height: 18rem;
 }
 
 .crawl-list li:last-child { border-bottom: 0; }

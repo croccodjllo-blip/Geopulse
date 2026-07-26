@@ -568,6 +568,18 @@ PAGE_ISSUE_LABELS: dict[str, str] = {
     "noindex": "noindex",
 }
 
+PAGE_ISSUE_DETAILS: dict[str, str] = {
+    "title": "Title assente o troppo corto",
+    "description": "Meta description assente o troppo corta",
+    "json_ld": "JSON-LD strutturato assente",
+    "canonical": "Canonical URL mancante",
+    "og": "Open Graph incompleto",
+    "h1": "H1 assente",
+    "lang": "Attributo lang mancante",
+    "noindex": "Pagina con noindex (non indicizzabile)",
+    "low_score": "Score AIO/GEO sotto soglia",
+}
+
 # Issues that always mark a page as critical.
 _CRITICAL_PAGE_ISSUES = frozenset({"noindex"})
 
@@ -591,6 +603,34 @@ def page_severity(page: dict[str, Any]) -> str:
     return "ok"
 
 
+def _page_problem_details(page: dict[str, Any]) -> list[str]:
+    """Elenco leggibile dei problemi per la UI dashboard."""
+    details: list[str] = []
+    seen: set[str] = set()
+    for raw in page.get("issues") or []:
+        key = str(raw).lower()
+        text = PAGE_ISSUE_DETAILS.get(key) or PAGE_ISSUE_LABELS.get(key) or key
+        if text in seen:
+            continue
+        seen.add(text)
+        details.append(text)
+    try:
+        aio = float(page.get("aio_score") if page.get("aio_score") is not None else 100)
+    except (TypeError, ValueError):
+        aio = 100.0
+    try:
+        geo = float(page.get("geo_score") if page.get("geo_score") is not None else 100)
+    except (TypeError, ValueError):
+        geo = 100.0
+    if (aio < 55 or geo < 55) and "low_score" not in {
+        str(i).lower() for i in (page.get("issues") or [])
+    }:
+        low = PAGE_ISSUE_DETAILS["low_score"]
+        if low not in seen:
+            details.append(low)
+    return details
+
+
 def prioritize_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
     """Annota severity/issue labels e mette le criticità in cima."""
     rank = {"critical": 0, "warn": 1, "ok": 2}
@@ -601,11 +641,13 @@ def prioritize_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str,
         page = dict(raw)
         severity = page_severity(page)
         issues = [str(i) for i in (page.get("issues") or [])]
+        problems = _page_problem_details(page)
         page["severity"] = severity
         page["issue_labels"] = [
             PAGE_ISSUE_LABELS.get(i, i) for i in issues[:4]
         ]
         page["issue_count"] = len(issues)
+        page["problems"] = problems
         out.append(page)
 
     def sort_key(p: dict[str, Any]) -> tuple[int, float, str]:
@@ -619,6 +661,15 @@ def prioritize_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str,
 
     out.sort(key=sort_key)
     return out
+
+
+def critical_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    """Solo pagine con criticità (critical/warn), già annotate e ordinate."""
+    return [
+        p
+        for p in prioritize_crawl_pages(pages)
+        if p.get("severity") in {"critical", "warn"}
+    ]
 
 
 def score_page_signals(scraped: dict[str, Any]) -> dict[str, Any]:

@@ -156,17 +156,17 @@
             <p class="report-notes">{{ latest.analysis_notes }}</p>
           {% endif %}
 
-          {% if crawl_pages_view %}
-          {% set pages_n = latest.pages_analyzed or crawl_pages_view|length %}
+          {% if latest and pages_analyzed_n %}
           <section class="dash-block" aria-labelledby="crawl-title">
             <header class="dash-block__head">
-              <h3 class="dash-block__title" id="crawl-title">Pagine analizzate</h3>
-              <span class="dash-block__count">{{ pages_n }}</span>
+              <h3 class="dash-block__title" id="crawl-title">Pagine critiche</h3>
+              <span class="dash-block__count">{{ crawl_pages_view|length }}</span>
               {% if crawl_crit_n %}<span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} critic{{ 'he' if crawl_crit_n != 1 else 'a' }}</span>{% endif %}
               {% if crawl_warn_n %}<span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} attenzione</span>{% endif %}
             </header>
-            <ul class="crawl-list">
-              {% for page in crawl_pages_view[:16] %}
+            {% if crawl_pages_view %}
+            <ul class="crawl-list crawl-list--critical">
+              {% for page in crawl_pages_view[:24] %}
               {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
               <li data-severity="{{ page.severity }}">
                 <a class="crawl-list__path" href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
@@ -175,27 +175,24 @@
                     {% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}
                   </span>
                   <span class="crawl-list__url">/{% if path %}{{ path }}{% endif %}</span>
-                  {% if page.issue_labels %}
-                  <span class="crawl-list__issues">
-                    {% for label in page.issue_labels %}
-                    <span>{{ label }}</span>
-                    {% endfor %}
-                    {% if page.issue_count > page.issue_labels|length %}
-                    <span>+{{ page.issue_count - page.issue_labels|length }}</span>
-                    {% endif %}
-                  </span>
-                  {% endif %}
                 </a>
-                <span class="crawl-list__scores" aria-label="Score pagina">
-                  <em{% if page.aio_score is not none and page.aio_score < 55 %} data-tone="low"{% endif %}>{{ page.aio_score if page.aio_score is not none else '—' }}</em>
-                  <em{% if page.geo_score is not none and page.geo_score < 55 %} data-tone="low"{% endif %}>{{ page.geo_score if page.geo_score is not none else '—' }}</em>
-                </span>
+                {% if page.problems %}
+                <ul class="crawl-list__problems">
+                  {% for problem in page.problems %}
+                  <li>{{ problem }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
               </li>
               {% endfor %}
             </ul>
-            {% if pages_n > 16 %}
-            <p class="dash-block__more">Prime 16 di {{ pages_n }} · criticità in cima · resto nello ZIP/report</p>
+            {% if crawl_pages_view|length > 24 %}
+            <p class="dash-block__more">Prime 24 criticità · elenco completo nello ZIP/report</p>
             {% endif %}
+            {% else %}
+            <p class="dash-block__more">Nessuna pagina critica su {{ pages_analyzed_n }} analizzate.</p>
+            {% endif %}
+            <p class="dash-block__more">Analizzate {{ pages_analyzed_n }} pagine · in elenco solo le criticità</p>
           </section>
           {% endif %}
 
