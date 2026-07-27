@@ -3488,8 +3488,13 @@ body.app-body:not(.body-dash) {
 
 .pulse-satellites {
   display: grid;
-  gap: 0.65rem;
-  margin-top: 0.5rem;
+  gap: 0;
+  margin-top: 0.65rem;
+  padding: 0.2rem 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  overflow: hidden;
 }
 
 .pulse-sat {
@@ -3497,16 +3502,18 @@ body.app-body:not(.body-dash) {
   grid-template-columns: 3.1rem minmax(0, 1fr);
   gap: 0.85rem;
   align-items: center;
-  padding: 0.75rem 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.82);
-  transition: border-color 160ms var(--ease), transform 160ms var(--ease);
+  padding: 0.85rem 1rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: background 160ms var(--ease);
 }
 
 .pulse-sat:hover {
-  border-color: color-mix(in srgb, var(--signal) 30%, var(--border));
-  transform: translateY(-1px);
+  border-color: transparent;
+  transform: none;
+  background: color-mix(in srgb, var(--signal) 6%, transparent);
 }
 
 .pulse-sat strong {
@@ -3523,8 +3530,8 @@ body.app-body:not(.body-dash) {
   margin-top: 0.12rem;
   font-style: normal;
   font-size: 0.78rem;
-  color: var(--slate);
-  line-height: 1.4;
+  color: var(--slate-light);
+  line-height: 1.45;
 }
 
 .pulse-sat__ring {
@@ -3541,7 +3548,7 @@ body.app-body:not(.body-dash) {
 
 .pulse-sat__track {
   fill: none;
-  stroke: rgba(15, 23, 42, 0.08);
+  stroke: color-mix(in srgb, var(--ink) 14%, transparent);
   stroke-width: 4;
 }
 
@@ -3571,7 +3578,7 @@ body.app-body:not(.body-dash) {
   width: 3.1rem;
   height: 3.1rem;
   border-radius: var(--radius);
-  border: 1px solid var(--border);
+  border: 0;
   background: var(--surface-3);
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -3584,15 +3591,13 @@ body.app-body:not(.body-dash) {
 .pulse-sat[data-grade="AA"] .pulse-sat__mark,
 .pulse-sat[data-grade="A"] .pulse-sat__mark {
   color: var(--ok);
-  border-color: var(--ok-brd);
   background: var(--ok-bg);
 }
 
 .pulse-sat[data-grade="BBB"] .pulse-sat__mark,
 .pulse-sat[data-grade="BB"] .pulse-sat__mark,
 .pulse-sat[data-grade="B"] .pulse-sat__mark {
-  color: var(--signal-deep);
-  border-color: color-mix(in srgb, var(--signal) 40%, transparent);
+  color: var(--signal-soft);
   background: var(--signal-pale);
 }
 
@@ -3600,7 +3605,6 @@ body.app-body:not(.body-dash) {
 .pulse-sat[data-grade="CC"] .pulse-sat__mark,
 .pulse-sat[data-grade="C"] .pulse-sat__mark {
   color: var(--warn);
-  border-color: var(--warn-brd);
   background: var(--warn-bg);
 }
 
@@ -3608,7 +3612,6 @@ body.app-body:not(.body-dash) {
 .pulse-sat[data-grade="DD"] .pulse-sat__mark,
 .pulse-sat[data-grade="DDD"] .pulse-sat__mark {
   color: var(--danger);
-  border-color: var(--danger-brd);
   background: var(--danger-bg);
 }
 
