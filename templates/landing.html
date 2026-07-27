@@ -6,21 +6,22 @@
 {% block flash_class %}flash-stack--inset{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
+  {% include "partials/jsonld_faq.html" %}
 {% endblock %}
 
 {% block content %}
 <section class="hero" aria-labelledby="hero-brand">
-  <div class="hero-visual" aria-hidden="true">
+  <div class="hero-visual">
     <img
       class="hero-visual__img"
       src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
-      alt=""
+      alt="Vista illuminata della Terra — metafora di visibilità globale del brand nelle risposte IA"
       width="1536"
       height="1024"
       fetchpriority="high"
     />
-    <div class="hero-visual__veil"></div>
-    <div class="hero-visual__grid"></div>
+    <div class="hero-visual__veil" aria-hidden="true"></div>
+    <div class="hero-visual__grid" aria-hidden="true"></div>
   </div>
 
   <div class="hero-copy">
@@ -113,6 +114,20 @@
   </div>
 </section>
 
+<section class="section-band" id="metodo-citabile">
+  <p class="eyebrow">Metodo</p>
+  <h2>Diagnostica verificabile, non promesse opache.</h2>
+  <p class="lede">
+    Ogni finding nasce da un segnale osservato sul sito (title, schema, robots, llms, crawl)
+    o è etichettato <em>Stimato</em> quando è una proiezione (es. Share of Voice).
+    Documentiamo limiti e basi in <a href="{{ url_for('faq') }}">FAQ</a>,
+    <a href="{{ url_for('about') }}">Chi siamo</a> e
+    <a href="{{ url_for('terms') }}">Termini</a>.
+    Contatto diretto: <a href="{{ url_for('contact') }}">Contatti</a> ·
+    <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
+  </p>
+</section>
+
 <section class="section-band" id="output">
   <p class="eyebrow">Deliverable</p>
   <h2>Non un report: un pack da pubblicare.</h2>
@@ -125,6 +140,32 @@
     <li><code>meta-pack.html</code> — title, description, OG ottimizzati</li>
     <li><code>robots.txt</code> — regole di crawl per AI bot</li>
   </ul>
+</section>
+
+<section class="section-band" id="faq-rapide">
+  <p class="eyebrow">FAQ</p>
+  <h2>Domande frequenti</h2>
+  <p class="lede">Risposte essenziali; l'elenco completo è in <a href="{{ url_for('faq') }}">FAQ</a>.</p>
+  <div class="faq-list">
+    <details class="faq-item" open>
+      <summary>Cos’è AIO e GEO in GeoPulse?</summary>
+      <p>
+        <strong>AIO</strong> = AI-Driven Visibility; <strong>GEO</strong> = Generative Engine Optimization.
+        Non sono GIS né All-in-One: sono metriche di citabilità nelle risposte generative.
+      </p>
+    </details>
+    <details class="faq-item">
+      <summary>Gli score sono misurazioni live sulle IA?</summary>
+      <p>
+        Di default no: sono diagnostici da probe ed euristiche. Il badge Stimato (proxy) segnala le stime;
+        Misurato è per segnali osservati o polling LLM quando disponibile.
+      </p>
+    </details>
+    <details class="faq-item">
+      <summary>Come vi contatto?</summary>
+      <p>Scrivi a <a href="mailto:info@geopulse.it">info@geopulse.it</a> o apri <a href="{{ url_for('contact') }}">Contatti</a>.</p>
+    </details>
+  </div>
 </section>
 
 <section class="section-cta" id="inizia">

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Chi siamo{% endblock %}
+{% block meta_description %}Chi è GeoPulse: team e missione su AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO) per brand che vogliono essere citati dalle IA.{% endblock %}
+{% block canonical %}{{ canonical_base }}/chi-siamo{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">About</p>
+    <h1 class="h-display page-intro__title">Chi siamo</h1>
+    <p class="lede page-intro__lede">
+      GeoPulse costruisce strumenti per misurare e rafforzare i segnali che i modelli
+      generativi usano per citare un brand — con onestà metodologica e output pubblicabile.
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Missione</h2>
+    <p class="lede">
+      Le risposte di ChatGPT, Perplexity e ricerca AI non seguono il ranking classico:
+      privilegiano entity chiare, struttura semantica e file machine-readable.
+      Aiutiamo founder, brand e agenzie a chiudere quel gap con score
+      <strong>AIO</strong> (AI-Driven Visibility) e <strong>GEO</strong>
+      (Generative Engine Optimization), findings e pack (<code>llms.txt</code>, JSON-LD, meta, robots).
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Cosa non siamo</h2>
+    <ul class="plain-list">
+      <li><strong>GEO ≠ GIS</strong> — non facciamo mappe geografiche.</li>
+      <li><strong>AIO ≠ All-in-One</strong> — non siamo una suite generica di marketing.</li>
+      <li>Gli score di default sono <strong>probe ed euristiche</strong>, non polling live garantito sulle IA (badge Stimato / Misurato in prodotto).</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Come lavoriamo</h2>
+    <p class="lede">
+      Crawl dello stesso dominio, probe di <code>/llms.txt</code>, <code>/robots.txt</code>,
+      <code>/sitemap.xml</code> e <code>/ai.txt</code>, poi un report con criticità e artifact
+      da pubblicare. Aggiorniamo il prodotto in pubblico su
+      <a href="{{ url_for('product') }}">Prodotto</a> e
+      <a href="{{ url_for('faq') }}">FAQ</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Contatti</h2>
+    <p class="lede">
+      Scrivi a <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+      oppure visita la pagina <a href="{{ url_for('contact') }}">Contatti</a>.
+      Sede operativa online: <a href="https://geopulse.it/">geopulse.it</a>.
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('register') }}">Prova GeoPulse</a>
+    <a class="btn btn-ghost" href="{{ url_for('contact') }}">Contatti</a>
+  </div>
+</article>
+{% endblock %}

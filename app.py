@@ -147,12 +147,12 @@ PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://geopulse.it").rstrip
 
 @app.after_request
 def set_security_headers(response):
+    # Header applicativi (nginx tiene HSTS; evitiamo duplicare X-* lì).
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["X-XSS-Protection"] = "0"
-    # CSP permissiva per Tailwind CDN; stringente su object/base
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline'; "
@@ -164,6 +164,7 @@ def set_security_headers(response):
         "base-uri 'self'; "
         "form-action 'self'"
     )
+    # HSTS solo se secure; nginx può già inviarlo — ok se allineati
     if request.is_secure or app.config["SESSION_COOKIE_SECURE"]:
         response.headers["Strict-Transport-Security"] = (
             "max-age=15552000; includeSubDomains"
@@ -876,6 +877,13 @@ def ai_txt():
     )
 
 
+@app.route("/humans.txt")
+def humans_txt():
+    return send_from_directory(
+        app.static_folder, "humans.txt", mimetype="text/plain; charset=utf-8"
+    )
+
+
 @app.route("/robots.txt")
 def robots_txt():
     base = public_base_url()
@@ -904,6 +912,7 @@ def robots_txt():
         "\n"
         f"# AI policy: {base}/ai.txt\n"
         f"# LLMs guide: {base}/llms.txt\n"
+        f"# Humans: {base}/humans.txt\n"
         f"Sitemap: {base}/sitemap.xml\n"
     )
     return Response(body, mimetype="text/plain; charset=utf-8")
@@ -917,6 +926,8 @@ def sitemap_xml():
         ("/prodotto", "0.9", "weekly"),
         ("/prezzi", "0.8", "weekly"),
         ("/faq", "0.7", "monthly"),
+        ("/chi-siamo", "0.6", "monthly"),
+        ("/contatti", "0.6", "monthly"),
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
         ("/interesse-pro", "0.5", "monthly"),
@@ -950,6 +961,16 @@ def privacy():
 @app.route("/termini")
 def terms():
     return render_template("termini.html")
+
+
+@app.route("/chi-siamo")
+def about():
+    return render_template("about.html")
+
+
+@app.route("/contatti")
+def contact():
+    return render_template("contact.html")
 
 
 @app.route("/")

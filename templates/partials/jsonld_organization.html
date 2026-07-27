@@ -2,15 +2,30 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": "{{ canonical_base }}/#organization",
   "name": "GeoPulse",
   "alternateName": "GEOPULSE",
   "url": "{{ canonical_base }}/",
   "email": "info@geopulse.it",
   "description": "GeoPulse analizza segnali di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): score euristici, findings e pack per answer engine. Non è un GIS né una suite All-in-One.",
   "slogan": "Ottimizza il sito per le IA.",
+  "foundingLocation": {
+    "@type": "Place",
+    "name": "Italia"
+  },
+  "knowsAbout": [
+    "AI-Driven Visibility",
+    "Generative Engine Optimization",
+    "llms.txt",
+    "Answer engine optimization",
+    "Schema.org"
+  ],
   "sameAs": [
     "{{ canonical_base }}/",
+    "{{ canonical_base }}/chi-siamo",
+    "{{ canonical_base }}/contatti",
     "{{ canonical_base }}/prodotto",
+    "{{ canonical_base }}/faq",
     "{{ canonical_base }}/llms.txt",
     "{{ canonical_base }}/ai.txt"
   ],
@@ -18,7 +33,9 @@
     "@type": "ContactPoint",
     "email": "info@geopulse.it",
     "contactType": "customer support",
-    "availableLanguage": ["Italian", "English"]
+    "availableLanguage": ["Italian", "English"],
+    "url": "{{ canonical_base }}/contatti"
   }
 }
 </script>
+{% include "partials/jsonld_website.html" %}

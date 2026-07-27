@@ -9,6 +9,8 @@
       content="{% block meta_description %}GeoPulse (geopulse.it) — AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): analisi e pack per essere citati dalle IA.{% endblock %}"
     />
     <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}" />
+    <link rel="alternate" hreflang="it" href="{{ self.canonical() }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ self.canonical() }}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="GeoPulse" />
     <meta property="og:locale" content="it_IT" />
@@ -44,6 +46,8 @@
           <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
           <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Prezzi</a>
           <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
+          <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">Chi siamo</a>
+          <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">Contatti</a>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">Dashboard</a>
             <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint in ('dashboard_history', 'site_history') %}is-active{% endif %}">Storico</a>
@@ -90,6 +94,7 @@
           <a href="{{ url_for('product') }}">Come funziona</a>
           <a href="{{ url_for('pricing') }}">Prezzi</a>
           <a href="{{ url_for('faq') }}">FAQ</a>
+          <a href="{{ url_for('about') }}">Chi siamo</a>
         </div>
         <div class="site-footer__col">
           <p class="site-footer__label">Account</p>
@@ -104,7 +109,9 @@
         </div>
         <div class="site-footer__col">
           <p class="site-footer__label">Contatti</p>
+          <a href="{{ url_for('contact') }}">Pagina contatti</a>
           <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+          <a href="{{ url_for('privacy') }}">Privacy</a>
         </div>
       </div>
       <div class="site-footer__bottom">
