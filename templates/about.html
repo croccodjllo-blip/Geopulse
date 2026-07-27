@@ -6,7 +6,7 @@
 {% block content %}
 <article class="page page--legal">
   <header class="page-intro">
-    <p class="eyebrow">About</p>
+    <p class="eyebrow">About · aggiornato <time datetime="2026-07-27">27 luglio 2026</time></p>
     <h1 class="h-display page-intro__title">Chi siamo</h1>
     <p class="lede page-intro__lede">
       GeoPulse costruisce strumenti per misurare e rafforzare i segnali che i modelli
@@ -25,9 +25,10 @@
     </p>
     <p class="lede">
       Aggiornamento editoriale: <time datetime="2026-07-27">27 luglio 2026</time>.
-      Fonti di metodo: documentazione Schema.org, policy crawler AI
-      (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) e pratiche
-      <code>llms.txt</code> / <code>ai.txt</code> pubblicate su questo sito.
+      Fonti di metodo: <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>,
+      policy crawler AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) e pratiche
+      <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llms.txt</a> /
+      <a href="{{ url_for('ai_txt') }}">ai.txt</a> pubblicate su questo sito.
     </p>
   </section>
 

@@ -6,7 +6,6 @@
 {% block flash_class %}flash-stack--inset{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
-  {% include "partials/jsonld_faq.html" %}
 {% endblock %}
 
 {% block content %}
@@ -26,6 +25,14 @@
 
   <div class="hero-copy">
     <p class="hero-brand" id="hero-brand">
+      <img
+        class="hero-brand__logo"
+        src="{{ url_for('static', filename='img/logo.png') }}"
+        alt="GeoPulse"
+        width="48"
+        height="48"
+        decoding="async"
+      />
       <span class="hero-brand__mark">GEOPULSE</span>
       <span class="hero-brand__ver">Signal Intelligence</span>
     </p>
@@ -115,16 +122,20 @@
 </section>
 
 <section class="section-band" id="metodo-citabile">
-  <p class="eyebrow">Metodo</p>
+  <p class="eyebrow">Metodo · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
   <h2>Diagnostica verificabile, non promesse opache.</h2>
   <p class="lede">
     Ogni finding nasce da un segnale osservato sul sito (title, schema, robots, llms, crawl)
     o è etichettato <em>Stimato</em> quando è una proiezione (es. Share of Voice).
-    Documentiamo limiti e basi in <a href="{{ url_for('faq') }}">FAQ</a>,
-    <a href="{{ url_for('about') }}">Chi siamo</a> e
-    <a href="{{ url_for('terms') }}">Termini</a>.
-    Contatto diretto: <a href="{{ url_for('contact') }}">Contatti</a> ·
-    <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
+    Basi pubbliche:
+    <a href="{{ url_for('methodology') }}">Metodologia GeoPulse</a>,
+    <a href="{{ url_for('guide_score_vs_sov') }}">Score vs Share of Voice</a>,
+    <a href="https://schema.org/Organization" rel="noopener noreferrer" target="_blank">Schema.org Organization</a>,
+    <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">specifica llms.txt</a>.
+    Contatto: <a href="{{ url_for('contact') }}">Contatti</a> ·
+    <a href="mailto:info@geopulse.it">info@geopulse.it</a> ·
+    proprietario
+    <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
   </p>
 </section>
 

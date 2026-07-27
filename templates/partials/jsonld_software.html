@@ -2,28 +2,46 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
+  "@id": "{{ canonical_base }}/#software",
   "name": "GeoPulse",
+  "alternateName": "GEOPULSE",
   "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Generative Engine Optimization",
   "operatingSystem": "Web",
-  "url": "{{ canonical_base }}/",
-  "image": "{{ canonical_base }}/static/img/hero-earth.jpg",
+  "url": "{{ canonical_base }}/prodotto",
+  "downloadUrl": "{{ canonical_base }}/register",
+  "screenshot": "{{ canonical_base }}/static/img/hero-earth.jpg",
+  "image": "{{ canonical_base }}/static/img/logo.png",
+  "inLanguage": "it-IT",
   "description": "SaaS per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): analisi euristica di segnali citabili, findings e pack artifact (llms.txt, JSON-LD, meta, robots). Non è un GIS né una suite All-in-One.",
+  "isAccessibleForFree": true,
   "offers": {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "EUR",
-    "description": "Piano Free con limiti di siti, crawl e analisi giornaliere"
+    "availability": "https://schema.org/InStock",
+    "url": "{{ canonical_base }}/prezzi",
+    "description": "Piano Free con limiti di siti, crawl e analisi giornaliere; Plus in waitlist"
   },
-  "provider": {
+  "provider": { "@id": "{{ canonical_base }}/#organization" },
+  "creator": {
     "@type": "Organization",
-    "name": "GeoPulse",
-    "url": "{{ canonical_base }}/"
+    "name": "{{ site_owner_name }}",
+    "url": "{{ site_owner_url }}"
   },
+  "publisher": { "@id": "{{ canonical_base }}/#organization" },
   "featureList": [
     "Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization) basati su probe ed euristiche",
     "Findings prioritizzati su entity, schema, robots e llms.txt",
     "Pack pubblicabile: llms.txt, JSON-LD, meta, robots.txt",
-    "Share of Voice stimato (proxy) per answer engine"
-  ]
+    "Share of Voice stimato (proxy) per answer engine",
+    "Metodologia pubblica e badge Stimato/Misurato"
+  ],
+  "softwareHelp": {
+    "@type": "WebPage",
+    "url": "{{ canonical_base }}/metodologia",
+    "name": "Metodologia GeoPulse"
+  },
+  "sameAs": ["{{ site_owner_url }}"]
 }
 </script>

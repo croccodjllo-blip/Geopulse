@@ -172,6 +172,14 @@ body.app-body:not(.body-dash) {
   text-transform: uppercase;
 }
 
+.brand-mark__logo {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.35rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .brand-mark__dot {
   width: 0.45rem;
   height: 0.45rem;
@@ -714,6 +722,16 @@ body.app-body:not(.body-dash) {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.hero-brand__logo {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.65rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
 }
 
 .hero-brand__mark {

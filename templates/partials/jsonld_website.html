@@ -10,20 +10,11 @@
   "inLanguage": "it-IT",
   "publisher": { "@id": "{{ canonical_base }}/#organization" },
   "about": { "@id": "{{ canonical_base }}/#organization" },
-  "potentialAction": {
-    "@type": "RegisterAction",
-    "target": "{{ canonical_base }}/register",
-    "name": "Crea account GeoPulse"
-  },
-  "mainEntity": {
-    "@type": "ItemList",
-    "itemListElement": [
-      { "@type": "SiteNavigationElement", "name": "Prodotto", "url": "{{ canonical_base }}/prodotto" },
-      { "@type": "SiteNavigationElement", "name": "Prezzi", "url": "{{ canonical_base }}/prezzi" },
-      { "@type": "SiteNavigationElement", "name": "FAQ", "url": "{{ canonical_base }}/faq" },
-      { "@type": "SiteNavigationElement", "name": "Chi siamo", "url": "{{ canonical_base }}/chi-siamo" },
-      { "@type": "SiteNavigationElement", "name": "Contatti", "url": "{{ canonical_base }}/contatti" }
-    ]
+  "copyrightHolder": { "@id": "{{ canonical_base }}/#organization" },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "{{ site_owner_name }}",
+    "url": "{{ site_owner_url }}"
   }
 }
 </script>

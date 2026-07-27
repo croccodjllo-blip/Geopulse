@@ -79,6 +79,15 @@ def enrich_jsonld_entities(jsonld_meta: dict[str, Any]) -> dict[str, Any]:
             if isinstance(item, str):
                 same_as.append(item)
 
+    # Conta sameAs solo se esterni al dominio brand (evita auto-citazioni).
+    brand_host = _host_key(urlparse(url).netloc) if url else ""
+    external_same: list[str] = []
+    for item in same_as:
+        host = _host_key(urlparse(item).netloc)
+        if host and host != brand_host:
+            external_same.append(item)
+    same_as = external_same
+
     if name:
         org_complete += 1
     if url:
@@ -92,6 +101,7 @@ def enrich_jsonld_entities(jsonld_meta: dict[str, Any]) -> dict[str, Any]:
 
     types = set(jsonld_meta.get("types") or [])
     has_article = bool(types & {"Article", "NewsArticle", "BlogPosting"})
+    has_local_business = "LocalBusiness" in types
 
     return {
         "brand_name": name,
@@ -102,6 +112,7 @@ def enrich_jsonld_entities(jsonld_meta: dict[str, Any]) -> dict[str, Any]:
         "same_as": same_as[:8],
         "org_completeness": org_complete,
         "has_article_schema": has_article,
+        "has_local_business": has_local_business,
     }
 
 
@@ -285,6 +296,7 @@ def analyze_brand_nap(page: dict[str, Any], entity: dict[str, Any]) -> dict[str,
         )
 
     nap_bits = sum(1 for x in (phones, emails, addresses) if x)
+    is_local = bool(entity.get("has_local_business"))
     if nap_bits >= 2:
         geo += 3
         findings.append(
@@ -293,6 +305,17 @@ def analyze_brand_nap(page: dict[str, Any], entity: dict[str, Any]) -> dict[str,
                 "severity": "ok",
                 "title": "NAP locale presente",
                 "detail": f"Telefono/email/indirizzo rilevati in pagina ({nap_bits} segnali).",
+            }
+        )
+    elif nap_bits == 1 and not is_local and (emails or entity.get("email")):
+        # SaaS / Organization digitale: email senza sede fisica non è un gap LocalBusiness.
+        geo += 2
+        findings.append(
+            {
+                "category": "geo",
+                "severity": "ok",
+                "title": "Contatto digitale presente",
+                "detail": "Email operativa rilevata; NAP fisico richiesto solo per LocalBusiness.",
             }
         )
     elif nap_bits == 1:

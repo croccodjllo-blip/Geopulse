@@ -4,24 +4,34 @@
   "@type": "Organization",
   "@id": "{{ canonical_base }}/#organization",
   "name": "GeoPulse",
-  "alternateName": "GEOPULSE",
+  "alternateName": ["GEOPULSE", "GeoPulse AIO/GEO"],
   "url": "{{ canonical_base }}/",
   "logo": {
     "@type": "ImageObject",
-    "url": "{{ canonical_base }}/static/img/logo.svg",
+    "@id": "{{ canonical_base }}/#logo",
+    "url": "{{ canonical_base }}/static/img/logo.png",
+    "contentUrl": "{{ canonical_base }}/static/img/logo.png",
+    "width": 512,
+    "height": 512,
+    "caption": "GeoPulse"
+  },
+  "image": {
+    "@type": "ImageObject",
+    "url": "{{ canonical_base }}/static/img/logo.png",
     "width": 512,
     "height": 512
   },
-  "image": "{{ canonical_base }}/static/img/logo.svg",
   "email": "info@geopulse.it",
-  "description": "GeoPulse analizza segnali di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): score euristici, findings e pack per answer engine. Non è un GIS né una suite All-in-One.",
+  "description": "GeoPulse è un SaaS di Engineering Factory per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): score euristici, findings e pack artifact per answer engine. Non è un GIS né una suite All-in-One.",
   "slogan": "Ottimizza il sito per le IA.",
   "foundingLocation": {
     "@type": "Place",
     "name": "Italia"
   },
+  "areaServed": "Worldwide",
   "parentOrganization": {
     "@type": "Organization",
+    "@id": "{{ site_owner_url }}#organization",
     "name": "{{ site_owner_name }}",
     "url": "{{ site_owner_url }}",
     "sameAs": ["{{ site_owner_url }}"]
@@ -30,28 +40,30 @@
     "AI-Driven Visibility",
     "Generative Engine Optimization",
     "llms.txt",
+    "ai.txt",
     "Answer engine optimization",
-    "Schema.org"
+    "Schema.org",
+    "JSON-LD"
   ],
   "sameAs": [
-    "{{ canonical_base }}/",
-    "{{ canonical_base }}/chi-siamo",
-    "{{ canonical_base }}/contatti",
-    "{{ canonical_base }}/prodotto",
-    "{{ canonical_base }}/metodologia",
-    "{{ canonical_base }}/faq",
-    "{{ canonical_base }}/llms.txt",
-    "{{ canonical_base }}/ai.txt",
-    "{{ canonical_base }}/humans.txt",
     "{{ site_owner_url }}"
   ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "email": "info@geopulse.it",
-    "contactType": "customer support",
-    "availableLanguage": ["Italian", "English"],
-    "url": "{{ canonical_base }}/contatti"
-  },
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "email": "info@geopulse.it",
+      "contactType": "customer support",
+      "availableLanguage": ["Italian", "English"],
+      "url": "{{ canonical_base }}/contatti"
+    },
+    {
+      "@type": "ContactPoint",
+      "email": "info@geopulse.it",
+      "contactType": "sales",
+      "availableLanguage": ["Italian", "English"],
+      "url": "{{ canonical_base }}/interesse-pro"
+    }
+  ],
   "founder": {
     "@type": "Organization",
     "name": "{{ site_owner_name }}",
@@ -59,6 +71,7 @@
     "sameAs": ["{{ site_owner_url }}"]
   },
   "publishingPrinciples": "{{ canonical_base }}/metodologia",
+  "isAccessibleForFree": true,
   "author": {
     "@type": "Organization",
     "name": "{{ site_author_name }}",

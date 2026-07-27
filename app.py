@@ -1159,7 +1159,16 @@ def robots_txt():
         "User-agent: GPTBot\n"
         "Allow: /\n"
         "\n"
+        "User-agent: ChatGPT-User\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: OAI-SearchBot\n"
+        "Allow: /\n"
+        "\n"
         "User-agent: ClaudeBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: anthropic-ai\n"
         "Allow: /\n"
         "\n"
         "User-agent: PerplexityBot\n"
@@ -1171,9 +1180,22 @@ def robots_txt():
         "User-agent: Applebot-Extended\n"
         "Allow: /\n"
         "\n"
+        "User-agent: Amazonbot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Bytespider\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: CCBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: cohere-ai\n"
+        "Allow: /\n"
+        "\n"
         f"# AI policy: {base}/ai.txt\n"
         f"# LLMs guide: {base}/llms.txt\n"
         f"# Humans: {base}/humans.txt\n"
+        f"# Methodology: {base}/metodologia\n"
         f"Sitemap: {base}/sitemap.xml\n"
     )
     return Response(body, mimetype="text/plain; charset=utf-8")
@@ -1186,13 +1208,16 @@ def sitemap_xml():
         ("/", "1.0", "weekly"),
         ("/prodotto", "0.9", "weekly"),
         ("/prezzi", "0.8", "weekly"),
-        ("/metodologia", "0.8", "monthly"),
-        ("/guide/llms-txt", "0.7", "monthly"),
-        ("/guide/schema-ai", "0.7", "monthly"),
-        ("/guide/score-vs-sov", "0.7", "monthly"),
-        ("/faq", "0.7", "monthly"),
-        ("/chi-siamo", "0.6", "monthly"),
-        ("/contatti", "0.6", "monthly"),
+        ("/metodologia", "0.9", "monthly"),
+        ("/guide/llms-txt", "0.8", "monthly"),
+        ("/guide/schema-ai", "0.8", "monthly"),
+        ("/guide/score-vs-sov", "0.8", "monthly"),
+        ("/faq", "0.8", "monthly"),
+        ("/chi-siamo", "0.7", "monthly"),
+        ("/contatti", "0.7", "monthly"),
+        ("/llms.txt", "0.7", "weekly"),
+        ("/ai.txt", "0.6", "weekly"),
+        ("/humans.txt", "0.4", "monthly"),
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
         ("/interesse-pro", "0.5", "monthly"),

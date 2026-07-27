@@ -1,50 +1,74 @@
 {% extends "base.html" %}
 {% block title %}Interesse Plus{% endblock %}
-{% block meta_description %}Prenota l’interesse per GeoPulse Plus su geopulse.it. Ti contatteremo quando il piano sarà disponibile.{% endblock %}
+{% block meta_description %}Prenota l’interesse per GeoPulse Plus: crawl intero sito, più siti, re-scan e limiti agenzia. Waitlist ufficiale su geopulse.it — info@geopulse.it.{% endblock %}
+{% block canonical %}{{ canonical_base }}/interesse-pro{% endblock %}
 
 {% block content %}
-<section class="auth-wrap">
-  <p class="eyebrow">Piano Plus</p>
-  <h1 class="h-display auth-title">Prenota l’interesse</h1>
-  <p class="lede auth-lede">
-    Entra in waitlist. Ti aggiorniamo quando Plus è live.
-    Urgenze: <a class="site-link" href="mailto:info@geopulse.it">info@geopulse.it</a>.
-  </p>
+<article class="page">
+  <header class="page-intro">
+    <p class="eyebrow">Piano Plus · aggiornato <time datetime="2026-07-27">27 luglio 2026</time></p>
+    <h1 class="h-display page-intro__title">Prenota l’interesse Plus</h1>
+    <p class="lede page-intro__lede">
+      GeoPulse Free analizza con budget pagine e limiti giornalieri.
+      Plus è pensato per team e agenzie che servono più domini e vogliono crawl completo,
+      re-scan e limiti più alti. Entra in waitlist: ti aggiorniamo quando il piano è live.
+      Prodotto di
+      <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
+    </p>
+  </header>
 
-  <form method="post" class="form-grid panel" novalidate>
-    {{ form.hidden_tag() }}
-    <div class="field">
-      <label for="name">Nome e cognome</label>
-      {{ form.name(id="name", autocomplete="name") }}
-      {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
-    <div class="field">
-      <label for="email">Email</label>
-      {{ form.email(id="email", autocomplete="email") }}
-      {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
-    <div class="field">
-      <label for="company">Azienda / Brand <span class="hint">(opzionale)</span></label>
-      {{ form.company(id="company", autocomplete="organization") }}
-      {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
-    <div class="field">
-      <label for="website_url">Sito web <span class="hint">(opzionale)</span></label>
-      {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
-      {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
-    <div class="field">
-      <label for="note">Cosa ti serve da Plus <span class="hint">(opzionale)</span></label>
-      {{ form.note(id="note", placeholder="Es. crawl intero sito, più siti, re-scan, team agency…") }}
-      {% for error in form.note.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-    </div>
-    {{ form.submit(class_="btn btn-signal btn-block") }}
-  </form>
+  <section class="page-section">
+    <h2 class="page-section__title">Cosa chiedono i team Plus</h2>
+    <ul class="plain-list">
+      <li>Crawl dell’intero sito (oltre il budget Free)</li>
+      <li>Più siti gestiti nello stesso account</li>
+      <li>Re-scan e storico analisi per confronto nel tempo</li>
+      <li>Pack AIO/GEO ripetibile per clienti agenzia</li>
+    </ul>
+    <p class="lede">
+      Gli score restano diagnostici (probe/euristiche) con badge Stimato/Misurato —
+      vedi <a href="{{ url_for('methodology') }}">metodologia</a> e
+      <a href="{{ url_for('guide_score_vs_sov') }}">Score vs SoV</a>.
+      Urgenze: <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
+    </p>
+  </section>
 
-  <p class="switch-line">
-    Vuoi iniziare subito?
-    <a href="{{ url_for('register') }}">Crea un account Free</a>
-    oppure <a href="{{ url_for('pricing') }}">torna ai prezzi</a>.
-  </p>
-</section>
+  <section class="page-section">
+    <h2 class="page-section__title">Modulo waitlist</h2>
+    <form method="post" class="form-grid panel" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">
+        <label for="name">Nome e cognome</label>
+        {{ form.name(id="name", autocomplete="name") }}
+        {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        {{ form.email(id="email", autocomplete="email") }}
+        {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="company">Azienda / Brand <span class="hint">(opzionale)</span></label>
+        {{ form.company(id="company", autocomplete="organization") }}
+        {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="website_url">Sito web <span class="hint">(opzionale)</span></label>
+        {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
+        {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="note">Cosa ti serve da Plus <span class="hint">(opzionale)</span></label>
+        {{ form.note(id="note", placeholder="Es. crawl intero sito, più siti, re-scan, team agency…") }}
+        {% for error in form.note.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      {{ form.submit(class_="btn btn-signal btn-block") }}
+    </form>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('register') }}">Inizia gratis ora</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Torna ai prezzi</a>
+  </div>
+</article>
 {% endblock %}

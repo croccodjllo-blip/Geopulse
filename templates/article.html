@@ -14,26 +14,49 @@
   "inLanguage": "it-IT",
   "author": {
     "@type": "Organization",
+    "@id": "{{ site_author_url }}#organization",
     "name": "{{ site_author_name }}",
     "url": "{{ site_author_url }}",
-    "description": "{{ site_author_title }}"
+    "description": "{{ site_author_title }}",
+    "sameAs": ["{{ site_owner_url }}"]
   },
   "publisher": {
     "@type": "Organization",
     "@id": "{{ canonical_base }}/#organization",
     "name": "GeoPulse",
+    "url": "{{ canonical_base }}/",
     "logo": {
       "@type": "ImageObject",
-      "url": "{{ canonical_base }}/static/img/logo.svg"
+      "url": "{{ canonical_base }}/static/img/logo.png",
+      "width": 512,
+      "height": 512
     },
     "parentOrganization": {
       "@type": "Organization",
       "name": "{{ site_owner_name }}",
-      "url": "{{ site_owner_url }}"
+      "url": "{{ site_owner_url }}",
+      "sameAs": ["{{ site_owner_url }}"]
     }
   },
-  "mainEntityOfPage": "{{ canonical_base }}{{ article_path }}",
-  "image": "{{ canonical_base }}/static/img/logo.svg"
+  "copyrightHolder": {
+    "@type": "Organization",
+    "name": "{{ site_owner_name }}",
+    "url": "{{ site_owner_url }}"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ canonical_base }}{{ article_path }}"
+  },
+  "image": {
+    "@type": "ImageObject",
+    "url": "{{ canonical_base }}/static/img/hero-earth.jpg"
+  },
+  "isPartOf": { "@id": "{{ canonical_base }}/#website" },
+  "about": [
+    "AI-Driven Visibility",
+    "Generative Engine Optimization",
+    "llms.txt"
+  ]
 }
 </script>
 {% endblock %}

@@ -1,16 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Prodotto{% endblock %}
 {% block meta_description %}Come funziona GeoPulse: crawl, score AIO/GEO euristici, findings e pack (llms.txt, JSON-LD, robots) per answer engine — non GIS, non All-in-One.{% endblock %}
+{% block structured_data %}
+  {% include "partials/jsonld_software.html" %}
+{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Prodotto</p>
+    <p class="eyebrow">Prodotto · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
     <h1 class="h-display page-intro__title">Il segnale che le IA leggono</h1>
     <p class="lede page-intro__lede">
       GeoPulse valuta i segnali di <strong>AI-Driven Visibility (AIO)</strong> e
       <strong>Generative Engine Optimization (GEO)</strong> del dominio e genera artifact pronti da pubblicare.
       Per team che vogliono essere citati, non solo indicizzati.
+      Prodotto di
+      <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
     </p>
   </header>
 
@@ -26,11 +31,15 @@
       <code>/sitemap.xml</code>, <code>/ai.txt</code> e valutazione euristica dei segnali
       usati dagli answer engine. Non è un polling live garantito su ChatGPT/Perplexity/Claude:
       il SoV in dashboard è etichettato <strong>Stimato (proxy)</strong>.
+      Riferimenti: <a href="{{ url_for('methodology') }}">metodologia</a>,
+      <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>,
+      <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llms.txt</a>.
     </p>
     <ul class="plain-list">
       <li>Indice risultato + score AIO/GEO da probe ed euristiche</li>
       <li>Findings critici prioritizzati</li>
       <li>Pagine deboli con problema esplicito</li>
+      <li>Badge <em>Stimato</em> / <em>Misurato</em> su ogni finding</li>
     </ul>
   </section>
 
@@ -38,6 +47,10 @@
     <h2 class="page-section__title">Pack di ottimizzazione</h2>
     <p class="lede">
       Output operativo: file da copiare o scaricare in ZIP / inviare via email.
+      Guide dedicate:
+      <a href="{{ url_for('guide_llms_txt') }}">llms.txt</a>,
+      <a href="{{ url_for('guide_schema_ai') }}">Schema AI</a>,
+      <a href="{{ url_for('guide_score_vs_sov') }}">Score vs SoV</a>.
     </p>
     <ul class="artifact-list">
       <li><code>llms.txt</code> — descrizione brand per i modelli</li>
@@ -52,6 +65,7 @@
     <p class="lede">
       Brand, founder e agenzie che vogliono migliorare i segnali di citabilità per
       ChatGPT, Perplexity e ricerca generativa — con un flusso ripetibile, non fix one-off.
+      Contatto operativo: <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
     </p>
   </section>
 
