@@ -552,6 +552,8 @@ class ProInterest(db.Model):
 
 def validate_http_url(_form: FlaskForm, field: URLField) -> None:
     value = (field.data or "").strip()
+    if not value:
+        return
     parsed = urlparse(value if "://" in value else f"https://{value}")
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise ValidationError("Inserisci un URL http(s) valido.")
@@ -575,11 +577,11 @@ class RegisterForm(FlaskForm):
     )
     company = StringField(
         "Azienda / Brand",
-        validators=[DataRequired(), Length(min=2, max=160)],
+        validators=[Optional(), Length(max=160)],
     )
     website_url = StringField(
         "Sito web principale",
-        validators=[DataRequired(), Length(max=500), validate_http_url],
+        validators=[Optional(), Length(max=500), validate_http_url],
     )
     email = StringField(
         "Email lavorativa",
@@ -596,11 +598,11 @@ class RegisterForm(FlaskForm):
     role = SelectField(
         "Ruolo",
         choices=ROLE_CHOICES,
-        validators=[DataRequired(message="Seleziona un ruolo.")],
+        validators=[Optional()],
     )
     country = StringField(
         "Paese",
-        validators=[DataRequired(), Length(min=2, max=80)],
+        validators=[Optional(), Length(max=80)],
     )
     password = PasswordField(
         "Password",
@@ -628,6 +630,15 @@ class RegisterForm(FlaskForm):
             raise ValidationError(
                 "Questa email è già registrata. Accedi o recupera la password."
             )
+
+    def validate_role(self, field: SelectField) -> None:
+        raw = (field.data or "").strip()
+        if not raw or raw == "":
+            field.data = ""
+            return
+        allowed = {c[0] for c in ROLE_CHOICES if c[0]}
+        if raw not in allowed:
+            raise ValidationError("Seleziona un ruolo valido.")
 
 
 class LoginForm(FlaskForm):
@@ -1065,7 +1076,7 @@ def process_pending_analyze_jobs(
                 openai_model=model,
                 competitor_urls=job.competitors,
                 run_measured=bool(
-                    MEASURED_SOV_ON_ANALYZE and user.is_pro and measured_sov_available()
+                    MEASURED_SOV_ON_ANALYZE and measured_sov_available()
                 ),
                 source="job",
                 public_base=PUBLIC_SITE_URL or "https://geopulse.it",
@@ -1170,7 +1181,22 @@ def analyses_used_for_quota(user: User) -> int:
     return analyses_total(user.id)
 
 
+def free_site_count(user_id: int) -> int:
+    return SiteAnalysis.query.filter_by(user_id=user_id).count()
+
+
 def free_analyses_exhausted(user: User) -> bool:
+    """True solo se Free non può avviare nulla di nuovo e non ha siti da ri-analizzare."""
+    if user.is_pro:
+        return False
+    if free_site_count(user.id) > 0:
+        # Può sempre ri-misurare il sito già registrato (loop attivazione).
+        return False
+    return analyses_total(user.id) >= FREE_TOTAL_ANALYSES
+
+
+def free_upsell_suggested(user: User) -> bool:
+    """Soft upsell dopo le analisi Free iniziali (senza bloccare il remesure)."""
     if user.is_pro:
         return False
     return analyses_total(user.id) >= FREE_TOTAL_ANALYSES
@@ -1190,8 +1216,8 @@ def wants_json_response() -> bool:
 
 
 FREE_QUOTA_BANNER = (
-    "Hai esaurito le tue analisi gratuite. Passa al piano Plus per analizzare "
-    "interi siti e monitorare i tuoi clienti"
+    "Hai usato le analisi Free iniziali. Puoi continuare a ri-analizzare il tuo sito; "
+    "passa a Plus per più brand, crawl completo e monitoraggio"
 )
 
 
@@ -1201,6 +1227,7 @@ def quota_block_response(
     code: str = "quota_exceeded",
 ) -> Any:
     """HTTP 423 (JSON) oppure redirect a /prezzi (HTML)."""
+    upgrade = url_for("pro_interest") if not stripe_enabled() else url_for("pricing")
     if wants_json_response():
         return (
             jsonify(
@@ -1208,13 +1235,13 @@ def quota_block_response(
                     "ok": False,
                     "error": code,
                     "message": message,
-                    "upgrade_url": url_for("pricing"),
+                    "upgrade_url": upgrade,
                 }
             ),
             423,
         )
     flash(message, "warning")
-    return redirect(url_for("pricing"))
+    return redirect(upgrade if code.startswith("free_") else url_for("pricing"))
 
 
 def enforce_analyze_limits(
@@ -1225,7 +1252,8 @@ def enforce_analyze_limits(
 ) -> Any | None:
     """
     Controlla siti + quota analisi.
-    Ritorna una Response di blocco, oppure None se l’analisi può procedere.
+    Free: ri-analisi dello stesso URL non consuma la quota lifetime.
+    Plus: tetto giornaliero su AnalysisRun (DB), non limiter in-memory.
     """
     site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
     max_sites = user.max_sites
@@ -1238,16 +1266,16 @@ def enforce_analyze_limits(
         return quota_block_response(message=msg, code="site_limit_exceeded")
 
     if user.is_pro:
-        if not limiter.allow(
-            f"analyze:{user.id}",
-            limit=user.daily_limit,
-            window_seconds=86400,
-        ):
+        if analyses_today(user.id) >= user.daily_limit:
             msg = (
                 f"Limite raggiunto: max {user.daily_limit} analisi ogni 24 ore "
                 f"(piano {user.plan_label})."
             )
             return quota_block_response(message=msg, code="daily_limit_exceeded")
+        return None
+
+    # Free remesure of an existing site: always allowed (activation loop).
+    if existing is not None:
         return None
 
     used = analyses_total(user.id)
@@ -1277,25 +1305,39 @@ def health():
     except Exception:
         db_ok = False
     status = 200 if db_ok else 503
-    return (
-        jsonify(
+    payload: dict[str, Any] = {
+        "ok": db_ok,
+        "service": "geopulse",
+        "time": datetime.now(timezone.utc).isoformat(),
+    }
+    # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
+    detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
+    want_detail = False
+    if detail_token and request.args.get("token") == detail_token:
+        want_detail = True
+    else:
+        user = current_user()
+        if user is not None and user.is_admin:
+            want_detail = True
+    if want_detail:
+        payload.update(
             {
-                "ok": db_ok,
-                "service": "geopulse",
                 "openai": bool(OPENAI_API_KEY),
                 "perplexity": bool((os.getenv("PERPLEXITY_API_KEY") or "").strip()),
                 "anthropic": bool(
-                    (os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or "").strip()
+                    (
+                        os.getenv("ANTHROPIC_API_KEY")
+                        or os.getenv("CLAUDE_API_KEY")
+                        or ""
+                    ).strip()
                 ),
                 "citation_monitor": citation_monitor_available(),
                 "stripe": stripe_enabled(),
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "async_analyze": ASYNC_ANALYZE,
-                "time": datetime.now(timezone.utc).isoformat(),
             }
-        ),
-        status,
-    )
+        )
+    return jsonify(payload), status
 
 
 @app.route("/llms.txt")
@@ -1693,15 +1735,18 @@ def register():
             )
             return render_template("register.html", form=form)
         try:
-            website = normalize_url(form.website_url.data)
+            website = None
+            if (form.website_url.data or "").strip():
+                website = normalize_url(form.website_url.data)
+            role_val = (form.role.data or "").strip() or None
             user = User(
                 email=email,
                 name=form.name.data.strip(),
-                company=form.company.data.strip(),
+                company=(form.company.data or "").strip() or None,
                 website_url=website,
                 phone=(form.phone.data or "").strip() or None,
-                role=form.role.data,
-                country=form.country.data.strip(),
+                role=role_val,
+                country=(form.country.data or "").strip() or None,
                 plan="free",
             )
             user.set_password(form.password.data)
@@ -1928,9 +1973,7 @@ def dashboard():
                     openai_model=OPENAI_MODEL,
                     competitor_urls=competitor_urls[:3],
                     run_measured=bool(
-                        MEASURED_SOV_ON_ANALYZE
-                        and user.is_pro
-                        and measured_sov_available()
+                        MEASURED_SOV_ON_ANALYZE and measured_sov_available()
                     ),
                     source="manual",
                 )
@@ -1982,6 +2025,7 @@ def dashboard():
     used_today = analyses_today(user.id)
     analyses_used = analyses_used_for_quota(user)
     free_exhausted = free_analyses_exhausted(user)
+    free_upsell = free_upsell_suggested(user)
     run_diff = None
     if latest is not None:
         recent_runs = (
@@ -2077,6 +2121,7 @@ def dashboard():
         daily_limit=user.daily_limit,
         analysis_limit_lifetime=user.analysis_limit_lifetime,
         free_exhausted=free_exhausted,
+        free_upsell=free_upsell,
         free_quota_banner=FREE_QUOTA_BANNER,
         max_sites=user.max_sites,
         crawl_pages_limit=user.crawl_pages,
@@ -2275,6 +2320,8 @@ def api_v1_analyze():
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not user.is_pro:
         return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not limiter.allow(f"api_analyze:{user.id}", limit=30, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
     payload = request.get_json(silent=True) or {}
     url_raw = (payload.get("url") or "").strip()
     if not url_raw:

@@ -52,7 +52,7 @@ def run_analysis_pipeline(
         user=user,
         locale="it",
         domain=str((result.get("scraped") or {}).get("domain") or ""),
-        max_prompts=8 if user.is_pro else 5,
+        max_prompts=8 if user.is_pro else 3,
     )
 
     # Suite GEO/AIO (entity, citability, schema, locale, publish verify, measured SoV)
@@ -60,7 +60,7 @@ def run_analysis_pipeline(
         result=result,
         user=user,
         previous_run=previous_run,
-        run_measured=bool(run_measured and user.is_pro and measured_sov_available()),
+        run_measured=bool(run_measured and measured_sov_available()),
         prompts=prompts,
     )
 

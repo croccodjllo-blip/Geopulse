@@ -51,10 +51,14 @@
   </header>
 
   <div class="workspace-body">
-    {% if free_exhausted %}
+    {% if free_exhausted or free_upsell %}
     <aside class="quota-banner" role="alert">
       <p class="quota-banner__text">{{ free_quota_banner }}</p>
+      {% if stripe_ready %}
       <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">Vedi piano Plus</a>
+      {% else %}
+      <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pro_interest') }}">Prenota Plus</a>
+      {% endif %}
     </aside>
     {% endif %}
 
@@ -68,6 +72,8 @@
             <p class="analyze-composer__sub">
               {% if free_exhausted %}
               Quote Free esaurite · passa a Plus per continuare
+              {% elif free_upsell and not is_pro %}
+              Puoi ri-analizzare il sito già registrato · Plus per più brand
               {% elif crawl_unlimited %}
               Crawl BFS · intero sito ({{ user_plan }})
               {% else %}
@@ -372,7 +378,11 @@ https://rivale2.com", class_="analyze-input") }}
                     {% endif %}
                   </h3>
                   <p class="engine-breakdown__lede">
-                    Propensione relativa per answer engine.
+                    {% if engine_breakdown.evidence in ('mixed', 'measured') %}
+                    Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine.
+                    {% else %}
+                    Stima euristica da score e robots — non è polling live sui modelli.
+                    {% endif %}
                     <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
                   </p>
                 </div>
@@ -657,8 +667,12 @@ https://rivale2.com", class_="analyze-input") }}
           </section>
           {% else %}
           <p class="pro-upsell">
-            Piano Free: storico limitato.
+            Piano Free: 1 sito, ri-analisi del dominio consentita.
+            {% if stripe_ready %}
             <a href="{{ url_for('pricing') }}">Plus</a> sblocca crawl intero sito, re-scan, export e storico run.
+            {% else %}
+            <a href="{{ url_for('pro_interest') }}">Prenota Plus</a> per crawl intero sito, re-scan, export e storico.
+            {% endif %}
           </p>
           {% endif %}
 
@@ -760,9 +774,17 @@ https://rivale2.com", class_="analyze-input") }}
         </section>
         {% else %}
         <div class="empty-state">
-          <p class="empty-state__eyebrow">Pronto</p>
-          <strong>Inizia dalla barra URL</strong>
-          <p>Inserisci il dominio: crawl, score, findings e pack in pochi secondi.</p>
+          <p class="empty-state__eyebrow">Prima analisi</p>
+          <strong>Tre passi per il primo report</strong>
+          <ol class="empty-state__steps">
+            <li>Incolla l’URL del sito nella barra sopra</li>
+            <li>Avvia l’analisi: score AIO/GEO, findings e SoV</li>
+            <li>Scarica il pack e pubblicalo (llms.txt, schema, robots)</li>
+          </ol>
+          <p class="empty-state__hint">
+            Piano Free: {{ max_sites }} sito · puoi ri-analizzare lo stesso dominio dopo le prime
+            {{ daily_limit }} analisi. Nessuna carta richiesta.
+          </p>
         </div>
         {% endif %}
       </div>

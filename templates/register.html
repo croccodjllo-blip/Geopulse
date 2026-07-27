@@ -23,9 +23,9 @@
     <p class="eyebrow">Registrazione · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
     <h1 class="h-display auth-title">Crea account</h1>
     <p class="lede auth-lede">
-      Raccontaci chi sei e il sito da ottimizzare: partiamo da lì con l’analisi
-      AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO).
-      Email univoca per account; supporto su <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
+      Crea l’account e analizza subito il tuo dominio.
+      Nome, email e password bastano per iniziare; azienda e sito sono opzionali.
+      Supporto: <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
     </p>
 
     <form method="post" class="form-grid form-grid--2 panel" novalidate>
@@ -38,25 +38,7 @@
       </div>
 
       <div class="field">
-        <label for="company">Azienda / Brand</label>
-        {{ form.company(id="company", autocomplete="organization") }}
-        {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-      </div>
-
-      <div class="field">
-        <label for="role">Ruolo</label>
-        {{ form.role(id="role") }}
-        {% for error in form.role.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-      </div>
-
-      <div class="field span-2">
-        <label for="website_url">Sito web principale</label>
-        {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
-        {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-      </div>
-
-      <div class="field">
-        <label for="email">Email lavorativa</label>
+        <label for="email">Email</label>
         {{ form.email(id="email", autocomplete="email") }}
         {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
@@ -65,12 +47,6 @@
         <label for="phone">Telefono <span class="hint">(opzionale)</span></label>
         {{ form.phone(id="phone", autocomplete="tel") }}
         {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-      </div>
-
-      <div class="field span-2">
-        <label for="country">Paese</label>
-        {{ form.country(id="country", placeholder="Italia", autocomplete="country-name") }}
-        {% for error in form.country.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
@@ -83,6 +59,30 @@
         <label for="confirm">Conferma password</label>
         {{ form.confirm(id="confirm", autocomplete="new-password") }}
         {% for error in form.confirm.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="company">Azienda / Brand <span class="hint">(opzionale)</span></label>
+        {{ form.company(id="company", autocomplete="organization") }}
+        {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label for="role">Ruolo <span class="hint">(opzionale)</span></label>
+        {{ form.role(id="role") }}
+        {% for error in form.role.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="field span-2">
+        <label for="website_url">Sito web principale <span class="hint">(opzionale)</span></label>
+        {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
+        {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="field span-2">
+        <label for="country">Paese <span class="hint">(opzionale)</span></label>
+        {{ form.country(id="country", placeholder="Italia", autocomplete="country-name") }}
+        {% for error in form.country.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="span-2">

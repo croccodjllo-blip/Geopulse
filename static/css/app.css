@@ -2527,6 +2527,26 @@ body.app-body:not(.body-dash) {
   font-size: 0.9rem;
 }
 
+.empty-state__steps {
+  margin: 1rem auto 0;
+  padding: 0;
+  max-width: 34ch;
+  text-align: left;
+  list-style: decimal;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.empty-state__hint {
+  margin: 1.1rem auto 0 !important;
+  color: var(--slate);
+  font-size: 0.82rem !important;
+}
+
 .analyze-hint {
   margin: 0.55rem 0 0;
   color: var(--slate);
@@ -4481,6 +4501,14 @@ body.app-body:not(.body-dash) {
   font-size: 0.68rem;
   color: var(--slate);
   margin-left: 0.1rem;
+}
+
+.engine-bar__hint {
+  grid-column: 1 / -1;
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-mid);
+  line-height: 1.35;
 }
 
 .sov-field {

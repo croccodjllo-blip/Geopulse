@@ -22,7 +22,7 @@
       <ul class="plan__features">
         <li>Massimo {{ max_sites_free }} sito</li>
         <li>Crawl fino a {{ free_crawl_pages }} pagine</li>
-        <li>{{ free_total_analyses }} analisi totali (senza reset)</li>
+        <li>{{ free_total_analyses }} analisi iniziali + ri-analisi del sito</li>
         <li>Score + findings (Misurato/Stimato)</li>
         <li>Pack ZIP</li>
       </ul>
@@ -33,10 +33,11 @@
       <p class="plan__name">Plus</p>
       {% if stripe_ready %}
       <p class="plan__price">Abbonamento<span>/mese</span></p>
+      <p class="plan__desc">Prezzo mostrato al checkout. Per team che ottimizzano più brand in continuo.</p>
       {% else %}
       <p class="plan__price">In arrivo</p>
+      <p class="plan__desc">Checkout self-serve in attivazione. Prenota interesse per accesso prioritario.</p>
       {% endif %}
-      <p class="plan__desc">Per team che ottimizzano più brand in continuo.</p>
       <ul class="plan__features">
         <li>Più siti e analisi</li>
         <li>Crawl dell’intero sito</li>
