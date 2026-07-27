@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero" aria-labelledby="hero-brand">
+<section class="hero" aria-labelledby="hero-title">
   <div class="hero-visual">
     <img
       class="hero-visual__img"
@@ -25,19 +25,21 @@
   </div>
 
   <div class="hero-copy">
-    <p class="hero-brand" id="hero-brand">
+    <p class="hero-kicker">Signal Intelligence</p>
+    <h1 class="hero-title" id="hero-title">
       <img
-        class="hero-brand__logo"
+        class="hero-title__logo"
         src="{{ url_for('static', filename='img/logo.png') }}"
-        alt="GeoPulse"
-        width="48"
-        height="48"
+        alt=""
+        width="72"
+        height="72"
         decoding="async"
       />
-      <span class="hero-brand__mark">GEOPULSE</span>
-      <span class="hero-brand__ver">Signal Intelligence</span>
-    </p>
-    <h1>Visibilità del brand nelle risposte dei modelli generativi.</h1>
+      <span class="hero-title__stack">
+        <span class="hero-title__brand">GEOPULSE</span>
+        <span class="hero-title__line">Visibilità del brand nelle risposte dei modelli generativi.</span>
+      </span>
+    </h1>
     <p class="lede">
       Misuriamo quanto ChatGPT, Claude e Perplexity possono comprendere e citare il tuo dominio —
       e consegniamo un pack operativo da pubblicare.
