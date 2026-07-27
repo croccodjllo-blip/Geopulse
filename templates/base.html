@@ -64,6 +64,7 @@
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">Dashboard</a>
             <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">Guida</a>
+            <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">GEO suite</a>
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}

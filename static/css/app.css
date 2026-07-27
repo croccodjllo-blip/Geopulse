@@ -4433,6 +4433,37 @@ body.app-body:not(.body-dash) {
   color: var(--slate);
 }
 
+.geo-suite {
+  margin-top: 1rem;
+}
+.geo-suite__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+.geo-suite__grid li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.03);
+}
+.geo-suite__grid strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.geo-suite__grid span {
+  font-size: 0.88rem;
+  color: var(--slate);
+  line-height: 1.35;
+}
+
 .body-dash .evidence-badge[data-evidence="proxy"] {
   background: var(--warn-bg);
   border-color: var(--warn-brd);

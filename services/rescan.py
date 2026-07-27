@@ -6,12 +6,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Callable
 
-import requests
-
-from services.analysis_store import mark_rescan_error, persist_analysis
-from services.analyzer import analyze_site
-from services.artifacts import build_optimization_pack
-from services.signals import compare_with_previous
+from services.analyze_pipeline import run_analysis_pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +37,12 @@ def process_due_rescans(
     limit: int = 20,
     daily_limit_for: Callable[[Any], int] | None = None,
     runs_today_for: Callable[[int], int] | None = None,
+    measured: bool = False,
+    public_base: str = "https://geopulse.it",
 ) -> dict[str, int]:
-    """Esegue i re-scan scaduti. Ritorna contatori ok/error/skipped."""
+    """Esegue i re-scan scaduti via pipeline completa (suite + alert)."""
+    from services.analysis_store import mark_rescan_error
+
     stats = {"ok": 0, "error": 0, "skipped": 0}
     sites = due_sites_query(SiteAnalysis, User).limit(max(1, limit)).all()
 
@@ -64,52 +63,21 @@ def process_due_rescans(
                 continue
 
         try:
-            max_pages = getattr(user, "crawl_pages", 8)
-            previous_run = (
-                AnalysisRun.query.filter_by(site_id=site.id, user_id=user.id)
-                .order_by(AnalysisRun.created_at.desc())
-                .first()
-            )
-            result = analyze_site(site.url, max_pages=max_pages)
-            run_diff = compare_with_previous(
-                aio_score=result.get("aio_score"),
-                geo_score=result.get("geo_score"),
-                findings=result.get("findings"),
-                previous=previous_run,
-            )
-            if run_diff.get("findings"):
-                result["findings"] = list(result.get("findings") or []) + list(
-                    run_diff["findings"]
-                )
-            result["diff"] = run_diff
-            pack = build_optimization_pack(
-                site.url,
-                result["scraped"],
-                api_key=openai_api_key,
-                model=openai_model,
-                logger=logger,
-                findings=result.get("findings"),
-                previous=previous_run,
-                diff=run_diff,
-                result=result,
-            )
-            persist_analysis(
-                db_session,
+            run_analysis_pipeline(
+                db_session=db_session,
                 SiteAnalysis=SiteAnalysis,
                 AnalysisRun=AnalysisRun,
-                user_id=user.id,
+                user=user,
                 url=site.url,
-                result=result,
-                pack=pack,
-                existing=site,
+                openai_api_key=openai_api_key,
+                openai_model=openai_model,
+                competitor_urls=[],
+                run_measured=bool(measured),
                 source="scheduled",
+                public_base=public_base,
             )
             stats["ok"] += 1
             logger.info("Rescan ok site_id=%s url=%s", site.id, site.url)
-        except (requests.Timeout, requests.RequestException) as exc:
-            mark_rescan_error(db_session, site, f"Rete: {exc}")
-            stats["error"] += 1
-            logger.warning("Rescan network error site_id=%s: %s", site.id, exc)
         except Exception as exc:
             mark_rescan_error(db_session, site, str(exc)[:500])
             stats["error"] += 1

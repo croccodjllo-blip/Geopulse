@@ -93,6 +93,14 @@ from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.signals import compare_with_previous
+from services.sov_measured import measured_sov_available
+from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
+from services.api_auth import find_user_by_api_key, generate_api_key
+from services.agency import build_whitelabel_markdown, dump_agency_brand, parse_agency_brand
+from services.gsc import gsc_status
+from services.js_crawl import js_crawl_available
+from services.publish_verify import verify_published_pack
+from services.citation_monitor import citation_monitor_available
 
 load_dotenv()
 
@@ -219,6 +227,14 @@ class User(db.Model):
     stripe_subscription_id = db.Column(db.String(120))
     reset_token_hash = db.Column(db.String(64))
     reset_token_expires = db.Column(db.DateTime)
+    # GEO suite settings
+    alert_email_enabled = db.Column(db.Boolean, nullable=False, default=True)
+    webhook_url = db.Column(db.String(500))
+    webhook_secret = db.Column(db.String(120))
+    api_key_hash = db.Column(db.String(64))
+    api_key_prefix = db.Column(db.String(16))
+    prompt_bank_json = db.Column(db.Text, nullable=False, default="")
+    agency_brand_json = db.Column(db.Text, nullable=False, default="")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -703,6 +719,35 @@ class RescanScheduleForm(FlaskForm):
     submit = SubmitField("Salva")
 
 
+class AlertSettingsForm(FlaskForm):
+    alert_email_enabled = BooleanField("Email alert su regressioni", default=True)
+    webhook_url = StringField(
+        "Webhook URL",
+        validators=[Optional(), Length(max=500)],
+    )
+    webhook_secret = StringField(
+        "Webhook secret (HMAC)",
+        validators=[Optional(), Length(max=120)],
+    )
+    submit = SubmitField("Salva alert")
+
+
+class PromptBankForm(FlaskForm):
+    prompts = TextAreaField(
+        "Prompt bank (un prompt per riga)",
+        validators=[Optional(), Length(max=8000)],
+    )
+    submit = SubmitField("Salva prompt bank")
+
+
+class AgencyBrandForm(FlaskForm):
+    brand_name = StringField("Brand agenzia", validators=[Optional(), Length(max=80)])
+    logo_url = StringField("Logo URL", validators=[Optional(), Length(max=300)])
+    primary_color = StringField("Colore primario", validators=[Optional(), Length(max=20)])
+    footer_note = StringField("Nota piè di pagina", validators=[Optional(), Length(max=200)])
+    submit = SubmitField("Salva white-label")
+
+
 # ---------------------------------------------------------------------------
 # Auth helpers
 # ---------------------------------------------------------------------------
@@ -904,6 +949,13 @@ def ensure_schema() -> None:
             "stripe_subscription_id": "TEXT",
             "reset_token_hash": "TEXT",
             "reset_token_expires": "DATETIME",
+            "alert_email_enabled": "BOOLEAN DEFAULT 1",
+            "webhook_url": "TEXT",
+            "webhook_secret": "TEXT",
+            "api_key_hash": "TEXT",
+            "api_key_prefix": "TEXT",
+            "prompt_bank_json": "TEXT DEFAULT ''",
+            "agency_brand_json": "TEXT DEFAULT ''",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -998,7 +1050,7 @@ def process_pending_analyze_jobs(
                 openai_model=model,
                 competitor_urls=job.competitors,
                 run_measured=bool(
-                    MEASURED_SOV_ON_ANALYZE and user.is_pro and api_key
+                    MEASURED_SOV_ON_ANALYZE and user.is_pro and measured_sov_available()
                 ),
                 source="job",
             )
@@ -1771,7 +1823,9 @@ def dashboard():
                         openai_model=OPENAI_MODEL,
                         competitor_urls=competitor_urls[:3],
                         run_measured=bool(
-                            MEASURED_SOV_ON_ANALYZE and user.is_pro and OPENAI_API_KEY
+                            MEASURED_SOV_ON_ANALYZE
+                            and user.is_pro
+                            and measured_sov_available()
                         ),
                         source="manual",
                     )
@@ -1876,6 +1930,7 @@ def dashboard():
     )
 
     engine_breakdown = None
+    geo_suite = {}
     if latest is not None:
         engine_breakdown = compute_engine_breakdown(
             aio_score=latest.aio_score,
@@ -1887,6 +1942,16 @@ def dashboard():
         measured = (latest.signals or {}).get("sov_measured")
         if isinstance(measured, dict):
             engine_breakdown = apply_measured_sov(engine_breakdown, measured)
+        geo_suite = {
+            "entity_graph": (latest.signals or {}).get("entity_graph") or {},
+            "citability": (latest.signals or {}).get("citability") or {},
+            "schema_quality": (latest.signals or {}).get("schema_quality") or {},
+            "locales": (latest.signals or {}).get("locales") or {},
+            "publish_verify": (latest.signals or {}).get("publish_verify") or {},
+            "llms_lint": (latest.signals or {}).get("llms_lint") or {},
+            "local_pack": (latest.signals or {}).get("local_pack") or {},
+            "sov_measured": measured if isinstance(measured, dict) else {},
+        }
 
     return render_template(
         "dashboard.html",
@@ -1895,7 +1960,11 @@ def dashboard():
         latest=latest,
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
+        geo_suite=geo_suite,
         openai_ready=bool(OPENAI_API_KEY),
+        citation_ready=citation_monitor_available(),
+        js_crawl_ready=js_crawl_available(),
+        gsc=gsc_status(),
         used_today=used_today,
         daily_limit=user.daily_limit,
         max_sites=user.max_sites,
@@ -1941,6 +2010,248 @@ def dashboard_job_status(job_id: int):
 @login_required
 def dashboard_guide():
     return render_template("guide.html")
+
+
+@app.route("/dashboard/impostazioni", methods=["GET", "POST"])
+@login_required
+def dashboard_settings():
+    user = current_user()
+    alert_form = AlertSettingsForm(
+        alert_email_enabled=bool(getattr(user, "alert_email_enabled", True)),
+        webhook_url=getattr(user, "webhook_url", None) or "",
+        webhook_secret=getattr(user, "webhook_secret", None) or "",
+    )
+    prompt_form = PromptBankForm(
+        prompts="\n".join(parse_prompt_bank(getattr(user, "prompt_bank_json", None)))
+    )
+    agency = parse_agency_brand(getattr(user, "agency_brand_json", None))
+    agency_form = AgencyBrandForm(
+        brand_name=agency.get("brand_name") or "",
+        logo_url=agency.get("logo_url") or "",
+        primary_color=agency.get("primary_color") or "",
+        footer_note=agency.get("footer_note") or "",
+    )
+
+    if request.method == "POST":
+        action = (request.form.get("action") or "").strip()
+        if action == "alerts" and alert_form.validate_on_submit():
+            user.alert_email_enabled = bool(alert_form.alert_email_enabled.data)
+            user.webhook_url = (alert_form.webhook_url.data or "").strip() or None
+            user.webhook_secret = (alert_form.webhook_secret.data or "").strip() or None
+            db.session.commit()
+            flash("Impostazioni alert salvate.", "success")
+            return redirect(url_for("dashboard_settings"))
+        if action == "prompts" and prompt_form.validate_on_submit():
+            lines = [
+                ln.strip()
+                for ln in (prompt_form.prompts.data or "").splitlines()
+                if ln.strip()
+            ]
+            user.prompt_bank_json = dump_prompt_bank(lines)
+            db.session.commit()
+            flash("Prompt bank aggiornato.", "success")
+            return redirect(url_for("dashboard_settings"))
+        if action == "agency" and agency_form.validate_on_submit():
+            user.agency_brand_json = dump_agency_brand(
+                {
+                    "brand_name": agency_form.brand_name.data or "",
+                    "logo_url": agency_form.logo_url.data or "",
+                    "primary_color": agency_form.primary_color.data or "",
+                    "footer_note": agency_form.footer_note.data or "",
+                }
+            )
+            db.session.commit()
+            flash("White-label salvato.", "success")
+            return redirect(url_for("dashboard_settings"))
+        if action == "api_key":
+            raw, prefix, digest = generate_api_key()
+            user.api_key_hash = digest
+            user.api_key_prefix = prefix
+            db.session.commit()
+            flash(
+                f"Nuova API key (mostrata una sola volta): {raw}",
+                "success",
+            )
+            return redirect(url_for("dashboard_settings"))
+
+    return render_template(
+        "settings.html",
+        alert_form=alert_form,
+        prompt_form=prompt_form,
+        agency_form=agency_form,
+        api_key_prefix=getattr(user, "api_key_prefix", None),
+        citation_ready=citation_monitor_available(),
+        gsc=gsc_status(),
+        js_crawl_ready=js_crawl_available(),
+        default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
+        is_pro=user.is_pro,
+    )
+
+
+@app.route("/dashboard/verify/<int:analysis_id>")
+@login_required
+def dashboard_verify(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+    probes = {}
+    blob = analysis._crawl_blob
+    if isinstance(blob, dict):
+        probes = blob.get("probes") or {}
+    verify = verify_published_pack(
+        probes=probes,
+        previous_run=None,
+        scraped={"has_json_ld": bool(analysis.json_ld_artifact), "domain": analysis.domain},
+    )
+    # live re-probe quick
+    try:
+        from services.analyzer import probe_path
+
+        base = analysis.url if analysis.url.endswith("/") else analysis.url + "/"
+        live = {
+            "llms": probe_path(base, "/llms.txt"),
+            "robots": probe_path(base, "/robots.txt"),
+            "ai": probe_path(base, "/ai.txt"),
+            "sitemap": probe_path(base, "/sitemap.xml"),
+        }
+        verify = verify_published_pack(
+            probes=live,
+            previous_run=None,
+            scraped={"has_json_ld": True, "domain": analysis.domain},
+        )
+        verify["live"] = True
+    except Exception as exc:
+        verify["live_error"] = str(exc)[:160]
+    return render_template("verify.html", analysis=analysis, verify=verify)
+
+
+@app.route("/dashboard/export/whitelabel/<int:analysis_id>.md")
+@login_required
+@pro_required
+def download_whitelabel(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+    md = build_whitelabel_markdown(
+        site=analysis,
+        agency=parse_agency_brand(getattr(user, "agency_brand_json", None)),
+    )
+    buf = io.BytesIO(md.encode("utf-8"))
+    buf.seek(0)
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=f"geopulse-{analysis.domain}-report.md",
+        mimetype="text/markdown; charset=utf-8",
+    )
+
+
+@app.route("/api/v1/analyze", methods=["POST"])
+@csrf.exempt
+def api_v1_analyze():
+    """Public API: Authorization Bearer gp_xxx or X-Api-Key."""
+    auth = request.headers.get("Authorization") or ""
+    raw = ""
+    if auth.lower().startswith("bearer "):
+        raw = auth[7:].strip()
+    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    user = find_user_by_api_key(User, raw)
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not user.is_pro:
+        return jsonify({"ok": False, "error": "plus_required"}), 403
+    payload = request.get_json(silent=True) or {}
+    url_raw = (payload.get("url") or "").strip()
+    if not url_raw:
+        return jsonify({"ok": False, "error": "url_required"}), 400
+    try:
+        url = normalize_url(url_raw)
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 400
+    comps = payload.get("competitors") or []
+    if not isinstance(comps, list):
+        comps = []
+    try:
+        analysis = run_analysis_pipeline(
+            db_session=db.session,
+            SiteAnalysis=SiteAnalysis,
+            AnalysisRun=AnalysisRun,
+            user=user,
+            url=url,
+            openai_api_key=OPENAI_API_KEY,
+            openai_model=OPENAI_MODEL,
+            competitor_urls=[str(c) for c in comps[:3]],
+            run_measured=bool(
+                payload.get("measured") and measured_sov_available()
+            ),
+            source="api",
+            public_base=public_base_url(),
+        )
+    except Exception as exc:
+        app.logger.exception("api analyze failed")
+        return jsonify({"ok": False, "error": str(exc)[:200]}), 500
+    return jsonify(
+        {
+            "ok": True,
+            "site_id": analysis.id,
+            "url": analysis.url,
+            "aio_score": analysis.aio_score,
+            "geo_score": analysis.geo_score,
+            "rating": analysis.rating,
+            "findings": analysis.findings[:50],
+            "signals": {
+                k: analysis.signals.get(k)
+                for k in (
+                    "entity_graph",
+                    "citability",
+                    "publish_verify",
+                    "sov_measured",
+                    "schema_quality",
+                )
+                if analysis.signals.get(k)
+            },
+        }
+    )
+
+
+@app.route("/api/v1/sites", methods=["GET"])
+@csrf.exempt
+def api_v1_sites():
+    auth = request.headers.get("Authorization") or ""
+    raw = ""
+    if auth.lower().startswith("bearer "):
+        raw = auth[7:].strip()
+    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    user = find_user_by_api_key(User, raw)
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    sites = (
+        SiteAnalysis.query.filter_by(user_id=user.id)
+        .order_by(SiteAnalysis.created_at.desc())
+        .limit(50)
+        .all()
+    )
+    return jsonify(
+        {
+            "ok": True,
+            "sites": [
+                {
+                    "id": s.id,
+                    "url": s.url,
+                    "domain": s.domain,
+                    "aio_score": s.aio_score,
+                    "geo_score": s.geo_score,
+                    "rating": (s.rating or {}).get("code"),
+                    "updated_at": s.created_at.isoformat() if s.created_at else None,
+                }
+                for s in sites
+            ],
+        }
+    )
 
 
 @app.route("/dashboard/storico")

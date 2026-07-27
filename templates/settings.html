@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Impostazioni GEO{% endblock %}
+{% block meta_description %}Impostazioni GeoPulse: alert, prompt bank, API key, white-label e connector SoV.{% endblock %}
+
+{% block content %}
+<article class="page">
+  <header class="page-intro">
+    <p class="eyebrow">Account</p>
+    <h1 class="h-display page-intro__title">Impostazioni GEO/AIO</h1>
+    <p class="lede page-intro__lede">
+      Alert outbound, prompt bank per SoV measured, API, white-label agenzia.
+      {% if not is_pro %}<strong>Plus</strong> sblocca measured SoV, API e export white-label.{% endif %}
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Connector</h2>
+    <ul class="plain-list">
+      <li>Citation monitor: {% if citation_ready %}attivo{% else %}configura OPENAI_API_KEY / PERPLEXITY_API_KEY{% endif %}</li>
+      <li>JS crawl: {% if js_crawl_ready %}Playwright pronto{% else %}disabilitato (JS_CRAWL_ENABLED=1){% endif %}</li>
+      <li>Google Search Console: {{ gsc.reason if not gsc.available else gsc.note }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Alert outbound</h2>
+    <form method="post" class="form-grid panel">
+      {{ alert_form.hidden_tag() }}
+      <input type="hidden" name="action" value="alerts" />
+      <label class="checkline">{{ alert_form.alert_email_enabled() }} <span>Email su regressioni / llms sparito / pack verify</span></label>
+      <div class="field">
+        <label for="webhook_url">Webhook URL</label>
+        {{ alert_form.webhook_url(id="webhook_url", placeholder="https://hooks.example.com/geopulse") }}
+      </div>
+      <div class="field">
+        <label for="webhook_secret">Webhook secret (HMAC SHA-256)</label>
+        {{ alert_form.webhook_secret(id="webhook_secret") }}
+      </div>
+      {{ alert_form.submit(class_="btn btn-primary") }}
+    </form>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">Prompt bank</h2>
+    <p class="lede">Usati dal citation monitor / SoV measured. Lascia vuoto per i default.</p>
+    <form method="post" class="form-grid panel">
+      {{ prompt_form.hidden_tag() }}
+      <input type="hidden" name="action" value="prompts" />
+      <div class="field">
+        <label for="prompts">Prompt (uno per riga)</label>
+        {{ prompt_form.prompts(id="prompts", rows="8", placeholder=default_prompts|join('\n')) }}
+      </div>
+      {{ prompt_form.submit(class_="btn btn-primary") }}
+    </form>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">API key</h2>
+    <p class="lede">
+      Endpoints: <code>POST /api/v1/analyze</code>, <code>GET /api/v1/sites</code>
+      (Bearer / X-Api-Key). {% if api_key_prefix %}Prefisso attivo: <code>{{ api_key_prefix }}…</code>{% else %}Nessuna key.{% endif %}
+    </p>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="hidden" name="action" value="api_key" />
+      <button class="btn btn-ghost" type="submit">Genera nuova API key</button>
+    </form>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">White-label agenzia</h2>
+    <form method="post" class="form-grid panel">
+      {{ agency_form.hidden_tag() }}
+      <input type="hidden" name="action" value="agency" />
+      <div class="field"><label for="brand_name">Brand</label>{{ agency_form.brand_name(id="brand_name") }}</div>
+      <div class="field"><label for="logo_url">Logo URL</label>{{ agency_form.logo_url(id="logo_url") }}</div>
+      <div class="field"><label for="primary_color">Colore</label>{{ agency_form.primary_color(id="primary_color", placeholder="#0B1120") }}</div>
+      <div class="field"><label for="footer_note">Nota</label>{{ agency_form.footer_note(id="footer_note") }}</div>
+      {{ agency_form.submit(class_="btn btn-primary") }}
+    </form>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Torna alla dashboard</a>
+  </div>
+</article>
+{% endblock %}

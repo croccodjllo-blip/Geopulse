@@ -8,10 +8,13 @@ from typing import Any
 from services.analyzer import analyze_site
 from services.analysis_store import persist_analysis
 from services.artifacts import build_optimization_pack
+from services.alerts import dispatch_alerts
 from services.deep_checks import analyze_monitoring_alerts
+from services.geo_suite import run_geo_suite
+from services.prompt_bank import resolve_prompts
 from services.rating import compute_rating
 from services.signals import compare_with_previous
-from services.sov_measured import measured_sov_available, run_measured_sov
+from services.sov_measured import measured_sov_available
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +31,7 @@ def run_analysis_pipeline(
     competitor_urls: list[str] | None = None,
     run_measured: bool = False,
     source: str = "manual",
+    public_base: str = "https://geopulse.it",
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     previous_run = None
@@ -44,13 +48,21 @@ def run_analysis_pipeline(
         competitor_urls=(competitor_urls or [])[:3] if user.is_pro else [],
     )
 
-    if run_measured and user.is_pro and measured_sov_available():
-        brand = user.company or (result.get("scraped") or {}).get("domain") or url
-        domain = (result.get("scraped") or {}).get("domain") or url
-        measured = run_measured_sov(brand=str(brand), domain=str(domain))
-        signals = dict(result.get("signals") or {})
-        signals["sov_measured"] = measured
-        result["signals"] = signals
+    prompts = resolve_prompts(
+        user=user,
+        locale="it",
+        domain=str((result.get("scraped") or {}).get("domain") or ""),
+        max_prompts=8 if user.is_pro else 5,
+    )
+
+    # Suite GEO/AIO (entity, citability, schema, locale, publish verify, measured SoV)
+    run_geo_suite(
+        result=result,
+        user=user,
+        previous_run=previous_run,
+        run_measured=bool(run_measured and user.is_pro and measured_sov_available()),
+        prompts=prompts,
+    )
 
     run_diff = compare_with_previous(
         aio_score=result.get("aio_score"),
@@ -101,4 +113,20 @@ def run_analysis_pipeline(
         pack=pack,
         source=source,
     )
+
+    # Outbound alerts (email / webhook) after persist
+    try:
+        if getattr(user, "alert_email_enabled", True) or (
+            getattr(user, "webhook_url", None) or ""
+        ).strip():
+            dispatch_alerts(
+                user=user,
+                site=analysis,
+                findings=result.get("findings") or [],
+                rating=rating_now,
+                base_url=public_base,
+            )
+    except Exception:
+        logger.exception("dispatch_alerts failed")
+
     return analysis
