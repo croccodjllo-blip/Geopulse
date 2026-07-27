@@ -794,6 +794,16 @@ https://rivale2.com", class_="analyze-input") }}
           <a href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico run</a>
           {% endif %}
         </div>
+        {% if is_pro and latest %}
+        <div class="rail-card">
+          <p class="rail-card__eyebrow">Azioni</p>
+          <p class="rail-card__sub">
+            <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">Publish verify</a><br />
+            <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">White-label MD</a><br />
+            <a href="{{ url_for('dashboard_settings') }}">GEO suite settings</a>
+          </p>
+        </div>
+        {% endif %}
       </aside>
       {% endif %}
     </div>

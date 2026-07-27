@@ -1053,6 +1053,7 @@ def process_pending_analyze_jobs(
                     MEASURED_SOV_ON_ANALYZE and user.is_pro and measured_sov_available()
                 ),
                 source="job",
+                public_base=PUBLIC_SITE_URL or "https://geopulse.it",
             )
             complete_job(db.session, job, site_id=getattr(analysis, "id", None))
             stats["ok"] += 1
@@ -1167,7 +1168,9 @@ def health():
                 "ok": db_ok,
                 "service": "geopulse",
                 "openai": bool(OPENAI_API_KEY),
+                "citation_monitor": bool(OPENAI_API_KEY) or citation_monitor_available(),
                 "stripe": stripe_enabled(),
+                "measured_sov": MEASURED_SOV_ON_ANALYZE and bool(OPENAI_API_KEY),
                 "async_analyze": ASYNC_ANALYZE,
                 "time": datetime.now(timezone.utc).isoformat(),
             }

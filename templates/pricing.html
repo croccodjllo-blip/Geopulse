@@ -5,10 +5,12 @@
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Prezzi</p>
+    <p class="eyebrow">Prezzi · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
     <h1 class="h-display page-intro__title">Semplici. Scalabili.</h1>
     <p class="lede page-intro__lede">
-      Free per validare. Plus per crawl completo, SoV measured, monitoraggio e export.
+      Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor (SoV measured),
+      alert, re-scan e export. Prodotto di
+      <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
     </p>
   </header>
 
@@ -38,9 +40,10 @@
       <ul class="plan__features">
         <li>Più siti e analisi</li>
         <li>Crawl dell’intero sito</li>
-        <li>SoV measured (LLM probe)</li>
+        <li>Citation monitor / SoV measured (LLM probe)</li>
+        <li>Prompt bank + alert email/webhook</li>
         <li>Re-scan giornaliero/settimanale</li>
-        <li>Export CSV e ZIP multi-sito</li>
+        <li>API + export CSV/ZIP + white-label</li>
         <li>Storico run avanzato</li>
       </ul>
       {% if stripe_ready and current_user %}

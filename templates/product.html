@@ -29,17 +29,19 @@
     <p class="lede">
       Crawl del dominio, probe di <code>/llms.txt</code>, <code>/robots.txt</code>,
       <code>/sitemap.xml</code>, <code>/ai.txt</code> e valutazione euristica dei segnali
-      usati dagli answer engine. Non è un polling live garantito su ChatGPT/Perplexity/Claude:
-      il SoV in dashboard è etichettato <strong>Stimato (proxy)</strong>.
+      usati dagli answer engine. Di default il SoV in dashboard è
+      <strong>Stimato (proxy)</strong>; su Plus, con API LLM configurata, il
+      <strong>citation monitor</strong> aggiunge menzioni Misurate (OpenAI; Perplexity se presente).
       Riferimenti: <a href="{{ url_for('methodology') }}">metodologia</a>,
       <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>,
       <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llms.txt</a>.
     </p>
     <ul class="plain-list">
       <li>Indice risultato + score AIO/GEO da probe ed euristiche</li>
-      <li>Findings critici prioritizzati</li>
+      <li>Findings critici prioritizzati (entity, citability, schema, publish verify)</li>
       <li>Pagine deboli con problema esplicito</li>
       <li>Badge <em>Stimato</em> / <em>Misurato</em> su ogni finding</li>
+      <li>Suite Plus: prompt bank, alert email/webhook, API <code>/api/v1</code>, white-label</li>
     </ul>
   </section>
 

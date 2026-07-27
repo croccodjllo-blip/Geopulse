@@ -10,10 +10,28 @@ STAT_RE = re.compile(
     re.I,
 )
 QUOTE_RE = re.compile(r"[«\"].{12,180}[»\"]")
+# Evita falsi positivi su disclaimers: "non ranking garantito", "non garantiamo", ecc.
 CLAIM_RE = re.compile(
-    r"\b(garantiamo|il migliore|n[°o]\s*1|sempre|100%\s*accurat|ranking garantito)\b",
+    r"(?<!\bnon\s)(?<!\bnon\suna\s)(?<!\bnessun\s)"
+    r"\b(garantiamo|il migliore|n[°o]\s*1|sempre|100%\s*accurat|(?<!\bnon\s)ranking\s+garantito)\b",
     re.I,
 )
+
+
+def _count_risky_claims(text: str) -> int:
+    """Conta claim assoluti escludendo negazioni tipiche da disclaimer onesto."""
+    risky = 0
+    for m in CLAIM_RE.finditer(text or ""):
+        start = max(0, m.start() - 24)
+        window = text[start : m.end()].lower()
+        if re.search(r"\bnon\s+(?:è\s+|un\s+|una\s+)?(?:ranking\s+)?garant", window):
+            continue
+        if "non ranking garantito" in window or "non garant" in window:
+            continue
+        if "diagnostica, non" in window or "diagnostici, non" in window:
+            continue
+        risky += 1
+    return risky
 DATE_RE = re.compile(
     r"\b(?:20\d{2}|19\d{2})[-/.](?:0?[1-9]|1[0-2])[-/.](?:0?[1-9]|[12]\d|3[01])\b"
     r"|\b(?:0?[1-9]|[12]\d|3[01])[-/.](?:0?[1-9]|1[0-2])[-/.](?:20\d{2}|19\d{2})\b"
@@ -33,7 +51,7 @@ def analyze_citability(
     dates = len(DATE_RE.findall(text))
     stats = len(STAT_RE.findall(text))
     quotes = len(QUOTE_RE.findall(text))
-    risky = len(CLAIM_RE.findall(text))
+    risky = _count_risky_claims(text)
     sources = len(SOURCE_HINT_RE.findall(text))
     cite_links = int(scraped.get("citation_link_count") or 0)
     author = bool(scraped.get("has_author_signal"))

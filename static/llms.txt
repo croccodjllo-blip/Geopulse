@@ -6,7 +6,11 @@ GeoPulse (https://geopulse.it/) è una piattaforma SaaS di **Engineering Factory
 Analizza un sito web pubblico, assegna score AIO/GEO (probe + euristiche), evidenzia findings e genera artifact (`llms.txt`, JSON-LD, meta pack, `robots.txt`) da pubblicare online.
 
 Onestà metodologica: gli score e il Share of Voice non sono, di default, misurazioni live di citazioni su ChatGPT/Perplexity/Claude.
-Sono diagnostici basati su segnali crawlabili; il prodotto etichetta le stime come Stimato (proxy). Dettagli: https://geopulse.it/metodologia
+Sono diagnostici basati su segnali crawlabili; il prodotto etichetta le stime come Stimato (proxy).
+Su piano Plus, con API LLM configurata, il citation monitor aggiunge SoV Misurato (prompt bank).
+Dettagli: https://geopulse.it/metodologia
+
+Self-audit pubblico (2026-07-27): geopulse.it tipicamente AIO ~96 / GEO ~100 / indice AAA con probe llms/robots/sitemap/ai/humans online.
 
 Disambiguazione: in GeoPulse, **GEO non significa Geographic Information System (GIS)** e **AIO non significa All-in-One**.
 Sono metriche di citabilità e visibilità nei sistemi di IA generativa e answer engine.
@@ -70,4 +74,4 @@ Sono metriche di citabilità e visibilità nei sistemi di IA generativa e answer
 - Contatti: https://geopulse.it/contatti
 - Owner / product & editorial: Engineering Factory — https://www.engineeringfactory.app/
 
-_Generated for GeoPulse (geopulse.it) · owned by Engineering Factory · updated 2026-07-27_
+_Generated for GeoPulse (geopulse.it) · owned by Engineering Factory · updated 2026-07-27 · citation monitor enabled when LLM keys present_
