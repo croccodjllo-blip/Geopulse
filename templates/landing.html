@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}GeoPulse{% endblock %}
 {% block meta_description %}GeoPulse analizza i siti per AIO e GEO: score, findings critici e pack di ottimizzazione per essere citati dalle IA.{% endblock %}
+{% block extra_head %}
+  {% include "partials/jsonld_software.html" %}
+{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -21,14 +24,24 @@
   </div>
 
   <div class="hero-copy">
-    <p class="hero-brand" id="hero-brand">GEOPULSE</p>
+    <p class="hero-brand" id="hero-brand">
+      <span class="hero-brand__mark">GEOPULSE</span>
+      <span class="hero-brand__ver">Signal Intelligence</span>
+    </p>
     <h1>Visibilità nelle risposte delle IA.</h1>
     <p class="lede">
-      Analisi AIO &amp; GEO del dominio. Findings critici. Pack pronto da pubblicare.
+      Analisi AIO &amp; GEO del dominio. Findings critici con priorità.<br>
+      Pack operativo pronto da pubblicare in pochi minuti.
     </p>
     <div class="cta-row">
       <a class="btn btn-signal" href="{{ url_for('register') }}">Inizia gratis</a>
       <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Come funziona</a>
+    </div>
+    <div class="hero-trust">
+      <span class="hero-trust__item">Score AIO/GEO misurato</span>
+      <span class="hero-trust__item">Pack pubblicabile in 1 clic</span>
+      <span class="hero-trust__item">Crawl multi-pagina automatico</span>
+      <span class="hero-trust__item">Free · nessuna carta</span>
     </div>
   </div>
 </section>
@@ -37,8 +50,8 @@
   <p class="eyebrow">Il segnale</p>
   <h2>Le IA non cercano ranking. Cercano chiarezza.</h2>
   <p class="lede">
-    Answer engine e modelli generativi citano brand con entity, struttura e file leggibili.
-    GeoPulse misura quei segnali e ti dà gli artifact da mettere online.
+    Answer engine e modelli generativi citano brand con entity chiara, struttura semantica e file machine-readable.
+    GeoPulse misura quei segnali e genera gli artifact da mettere online.
   </p>
 </section>
 
@@ -52,17 +65,45 @@
   <ol class="step-flow">
     <li>
       <strong>01 · Dominio</strong>
-      <span>Inserisci l’URL. Crawl stesso dominio via sitemap e link interni.</span>
+      <span>Inserisci l'URL. Crawl automatico via sitemap e link interni, stesso dominio.</span>
     </li>
     <li>
       <strong>02 · Score</strong>
-      <span>Indice AIO/GEO, pagine critiche e findings con priorità.</span>
+      <span>Indice AIO/GEO, pagine critiche evidenziate, findings con priorità e badge Misurato / Stimato.</span>
     </li>
     <li>
       <strong>03 · Pack</strong>
-      <span>llms.txt, JSON-LD, meta, robots e checklist — ZIP o email.</span>
+      <span><code>llms.txt</code>, JSON-LD, meta-pack HTML, <code>robots.txt</code> e checklist — ZIP scaricabile o email.</span>
     </li>
   </ol>
+</section>
+
+<section class="section-band section-band--wide" id="piattaforma">
+  <p class="eyebrow">Piattaforma</p>
+  <h2>Tutto quello che serve, niente di superfluo.</h2>
+  <p class="lede">Progettato per team tecnici e agenzie che vogliono dati precisi, non dashboard decorative.</p>
+  <div class="feature-grid">
+    <div class="feature-cell">
+      <span class="feature-cell__icon">AI</span>
+      <p class="feature-cell__title">Score AIO &amp; GEO</p>
+      <p class="feature-cell__desc">Indice sintetico calcolato su entity, struttura, file machine-readable e segnali di citabilità answer engine.</p>
+    </div>
+    <div class="feature-cell">
+      <span class="feature-cell__icon">↗</span>
+      <p class="feature-cell__title">Crawl multi-pagina</p>
+      <p class="feature-cell__desc">Crawl automatico via sitemap XML e link interni. Fino a 50 pagine per analisi nel piano Plus.</p>
+    </div>
+    <div class="feature-cell">
+      <span class="feature-cell__icon">⚑</span>
+      <p class="feature-cell__title">Pagine critiche</p>
+      <p class="feature-cell__desc">Le pagine con score più basso sono evidenziate con severity critica, warn e ok per prioritizzare il lavoro.</p>
+    </div>
+    <div class="feature-cell">
+      <span class="feature-cell__icon">📦</span>
+      <p class="feature-cell__title">Pack pubblicabile</p>
+      <p class="feature-cell__desc">Output concreto: <code>llms.txt</code>, <code>organization.jsonld</code>, meta-pack HTML, <code>robots.txt</code> — pronti da caricare.</p>
+    </div>
+  </div>
 </section>
 
 <section class="section-band" id="output">
@@ -72,21 +113,21 @@
     Ogni analisi genera file concreti per crawler IA e answer engine.
   </p>
   <ul class="artifact-list" aria-label="Artifact generati">
-    <li><code>llms.txt</code> — guida per i modelli</li>
-    <li><code>organization.jsonld</code> — entity strutturata</li>
-    <li><code>meta-pack.html</code> — title, description, OG</li>
-    <li><code>robots.txt</code> — regole di crawl</li>
+    <li><code>llms.txt</code> — guida contestuale per i modelli</li>
+    <li><code>organization.jsonld</code> — entity strutturata Schema.org</li>
+    <li><code>meta-pack.html</code> — title, description, OG ottimizzati</li>
+    <li><code>robots.txt</code> — regole di crawl per AI bot</li>
   </ul>
 </section>
 
 <section class="section-cta" id="inizia">
   <div class="section-cta__inner">
-    <p class="eyebrow">Next</p>
+    <p class="eyebrow">Inizia ora</p>
     <h2>Porta il brand nelle risposte generative.</h2>
-    <p class="lede">Account free. Prima analisi in pochi minuti.</p>
+    <p class="lede">Account free. Prima analisi in pochi minuti. Nessuna carta richiesta.</p>
     <div class="cta-row">
       <a class="btn btn-signal" href="{{ url_for('register') }}">Crea account</a>
-      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Piani</a>
+      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Vedi i piani</a>
     </div>
   </div>
 </section>

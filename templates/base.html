@@ -20,12 +20,12 @@
     <meta property="og:url" content="{{ self.canonical() }}" />
     <meta property="og:image" content="{{ url_for('static', filename='img/hero-earth.jpg', _external=True) }}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#0A1115" />
+    <meta name="theme-color" content="#0B1120" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
@@ -107,8 +107,14 @@
         </div>
       </div>
       <div class="site-footer__bottom">
-        <span>© {{ now_year }} GeoPulse</span>
-        <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+        <span>© {{ now_year }} GeoPulse · Signal intelligence for AI visibility</span>
+        <span>
+          <a href="{{ url_for('privacy') }}">Privacy</a>
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('terms') }}">Termini</a>
+          &nbsp;·&nbsp;
+          <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+        </span>
       </div>
     </footer>
     {% endblock %}
