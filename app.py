@@ -852,6 +852,18 @@ def ensure_schema() -> None:
         conn.execute(text("PRAGMA journal_mode=WAL"))
         conn.execute(text("PRAGMA synchronous=NORMAL"))
         conn.execute(text("PRAGMA busy_timeout=5000"))
+
+    def _add_column(table: str, name: str, col_type: str) -> None:
+        """ADD COLUMN idempotente (race-safe tra worker Gunicorn)."""
+        try:
+            with db.engine.begin() as conn:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {col_type}"))
+        except Exception as exc:
+            msg = str(exc).lower()
+            if "duplicate column" in msg or "already exists" in msg:
+                return
+            raise
+
     inspector = inspect(db.engine)
     tables = set(inspector.get_table_names())
     if "site_analyses" in tables:
@@ -875,12 +887,9 @@ def ensure_schema() -> None:
             "last_rescan_at": "DATETIME",
             "last_rescan_error": "TEXT",
         }
-        with db.engine.begin() as conn:
-            for name, col_type in alters.items():
-                if name not in existing:
-                    conn.execute(
-                        text(f"ALTER TABLE site_analyses ADD COLUMN {name} {col_type}")
-                    )
+        for name, col_type in alters.items():
+            if name not in existing:
+                _add_column("site_analyses", name, col_type)
 
     if "users" in tables:
         user_cols = {col["name"] for col in inspector.get_columns("users")}
@@ -896,10 +905,9 @@ def ensure_schema() -> None:
             "reset_token_hash": "TEXT",
             "reset_token_expires": "DATETIME",
         }
-        with db.engine.begin() as conn:
-            for name, col_type in user_alters.items():
-                if name not in user_cols:
-                    conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} {col_type}"))
+        for name, col_type in user_alters.items():
+            if name not in user_cols:
+                _add_column("users", name, col_type)
 
     if "analysis_runs" in tables:
         run_cols = {col["name"] for col in inspector.get_columns("analysis_runs")}
@@ -910,12 +918,9 @@ def ensure_schema() -> None:
             "checklist_artifact": "TEXT DEFAULT ''",
             "before_after_artifact": "TEXT DEFAULT ''",
         }
-        with db.engine.begin() as conn:
-            for name, col_type in run_alters.items():
-                if name not in run_cols:
-                    conn.execute(
-                        text(f"ALTER TABLE analysis_runs ADD COLUMN {name} {col_type}")
-                    )
+        for name, col_type in run_alters.items():
+            if name not in run_cols:
+                _add_column("analysis_runs", name, col_type)
 
     if "analysis_jobs" in tables:
         job_cols = {col["name"] for col in inspector.get_columns("analysis_jobs")}
@@ -955,14 +960,9 @@ def ensure_schema() -> None:
                 "url": "TEXT",
                 "user_id": "INTEGER",
             }
-            with db.engine.begin() as conn:
-                for name, col_type in job_alters.items():
-                    if name not in job_cols:
-                        conn.execute(
-                            text(
-                                f"ALTER TABLE analysis_jobs ADD COLUMN {name} {col_type}"
-                            )
-                        )
+            for name, col_type in job_alters.items():
+                if name not in job_cols:
+                    _add_column("analysis_jobs", name, col_type)
 
     backfill_analysis_runs()
 
