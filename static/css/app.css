@@ -3537,6 +3537,15 @@ body.app-body:not(.body-dash) {
   transition: background 160ms var(--ease);
 }
 
+.pulse-sat[data-tone="grade"] {
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 0.7rem;
+}
+
+.pulse-sat[data-tone="grade"] > div:last-child {
+  min-width: 0;
+}
+
 .pulse-sat:hover {
   border-color: transparent;
   transform: none;
@@ -3602,8 +3611,9 @@ body.app-body:not(.body-dash) {
 .pulse-sat__mark {
   display: grid;
   place-items: center;
-  width: auto;
-  min-width: 3.1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 3.1rem;
   padding: 0;
   border-radius: 0;
@@ -3611,11 +3621,15 @@ body.app-body:not(.body-dash) {
   background: transparent;
   box-shadow: none;
   font-family: var(--font-display);
-  font-size: clamp(1.45rem, 3.2vw, 1.95rem);
+  font-size: clamp(1.15rem, 2.4vw, 1.55rem);
   font-weight: 800;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   line-height: 1;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  justify-self: stretch;
 }
 
 .pulse-sat[data-grade="AAA"] .pulse-sat__mark,
