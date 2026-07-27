@@ -111,20 +111,21 @@ docker volume ls | grep aio
 - DB: `sqlite:////opt/aio-bot/data/database.db` (mai cancellare `data/` o `.venv` con `rsync --delete`)
 - Email pack: imposta `RESEND_API_KEY` + `MAIL_FROM`, oppure `SMTP_HOST` / `SMTP_USER` / `SMTP_PASSWORD` in `.env`, poi `systemctl restart aio-bot`
 
-### Git remote (origin)
+### Git remotes
 
-Bare repo sul VPS: `root@82.165.79.212:/opt/git/geopulse.git`
+- **origin (GitHub):** https://github.com/croccodjllo-blip/Geopulse
+- **vps (deploy):** `root@82.165.79.212:/opt/git/geopulse.git`
 
 ```bash
-# già configurato in questo workspace:
-#   git remote add origin root@82.165.79.212:/opt/git/geopulse.git
-#   git config core.sshCommand 'ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes'
-
+# Push codice su GitHub
 git push -u origin main
 git push -u origin HEAD
+
+# Deploy produzione (push su VPS main → hook post-receive)
+git push vps HEAD:main
 ```
 
-Push su `main` esegue il hook `post-receive` → checkout in `/opt/aio-bot` + `systemctl restart aio-bot`.
+Push su `vps/main` esegue il hook `post-receive` → checkout in `/opt/aio-bot` + `systemctl restart aio-bot`.
 
 ### Sync codice (rsync, fallback)
 
