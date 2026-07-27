@@ -4290,6 +4290,23 @@ body.app-body:not(.body-dash) {
     var(--surface);
 }
 
+.body-dash .pulse-satellites {
+  background: var(--surface-2);
+}
+
+.body-dash .pulse-sat strong {
+  color: #F3F6FB;
+}
+
+.body-dash .pulse-sat em {
+  color: #B6C2D4;
+}
+
+.body-dash .pulse-sat__ring span,
+.body-dash .pulse-sat__risk-n {
+  color: #F3F6FB;
+}
+
 /* ═══════════════════════════════════════════
    RESPONSIVE MOBILE
 ═══════════════════════════════════════════ */
