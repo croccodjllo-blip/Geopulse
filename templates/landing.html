@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block title %}GeoPulse{% endblock %}
-{% block meta_description %}GeoPulse misura AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): score, findings critici e pack per essere citati dalle IA — non un GIS, non una suite All-in-One.{% endblock %}
+{% block meta_description %}GeoPulse analizza AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): score euristici, findings e pack per essere citati dalle IA — non un GIS, non una suite All-in-One.{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
+{% block structured_data %}
+  {% include "partials/jsonld_software.html" %}
+{% endblock %}
 
 {% block content %}
 <section class="hero" aria-labelledby="hero-brand">
@@ -27,7 +30,7 @@
     </p>
     <h1>Visibilità nelle risposte delle IA.</h1>
     <p class="lede">
-      Misuriamo <strong>AI-Driven Visibility (AIO)</strong> e
+      Analizziamo i segnali di <strong>AI-Driven Visibility (AIO)</strong> e
       <strong>Generative Engine Optimization (GEO)</strong>.
       Findings prioritizzati. Pack operativo da pubblicare.
     </p>
@@ -36,7 +39,7 @@
       <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Come funziona</a>
     </div>
     <div class="hero-trust">
-      <span class="hero-trust__item">Score AIO + GEO misurati</span>
+      <span class="hero-trust__item">Score AIO + GEO (probe / euristici)</span>
       <span class="hero-trust__item">Pack pubblicabile in 1 clic</span>
       <span class="hero-trust__item">Crawl multi-pagina automatico</span>
       <span class="hero-trust__item">Free · nessuna carta</span>
@@ -49,7 +52,7 @@
   <h2>Le IA non cercano ranking. Cercano chiarezza.</h2>
   <p class="lede">
     Answer engine e modelli generativi citano brand con entity chiara, struttura semantica e file machine-readable.
-    GeoPulse misura quei segnali — <strong>AIO</strong> (AI-Driven Visibility) e
+    GeoPulse valuta quei segnali — <strong>AIO</strong> (AI-Driven Visibility) e
     <strong>GEO</strong> (Generative Engine Optimization) — e genera gli artifact da mettere online.
     Non è un GIS cartografico né una piattaforma All-in-One generica.
   </p>
@@ -69,7 +72,7 @@
     </li>
     <li>
       <strong>02 · Score</strong>
-      <span>Indice AIO (AI-Driven Visibility) + GEO (Generative Engine Optimization), pagine critiche e findings con badge Misurato / Stimato.</span>
+      <span>Indice AIO + GEO da probe ed euristiche, pagine critiche e findings. SoV answer-engine etichettato Stimato (proxy) finché non c’è polling live.</span>
     </li>
     <li>
       <strong>03 · Pack</strong>
@@ -89,13 +92,13 @@
       <p class="feature-cell__desc">
         <strong>AIO</strong> = AI-Driven Visibility.
         <strong>GEO</strong> = Generative Engine Optimization.
-        Indice su entity, struttura e file machine-readable per answer engine.
+        Indice su entity, struttura e file machine-readable per answer engine (diagnostica, non ranking garantito).
       </p>
     </div>
     <div class="feature-cell">
       <span class="feature-cell__icon">↗</span>
       <p class="feature-cell__title">Crawl multi-pagina</p>
-      <p class="feature-cell__desc">Crawl automatico via sitemap XML e link interni. Fino a 50 pagine per analisi nel piano Plus.</p>
+      <p class="feature-cell__desc">Crawl automatico via sitemap XML e link interni. Free con budget pagine; Plus crawl intero sito (fino al tetto tecnico).</p>
     </div>
     <div class="feature-cell">
       <span class="feature-cell__icon">⚑</span>

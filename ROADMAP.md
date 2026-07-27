@@ -137,7 +137,9 @@ Obiettivo: differenziazione competitiva.
 ### 5.2 Osservabilità e sicurezza
 - [ ] Sentry (errori) + metriche base
 - [ ] Audit login / brute-force protection
-- [ ] Policy privacy + termini + cookie banner se necessario
+- [x] Policy privacy + termini + cookie banner se necessario
+- [x] `/ai.txt` + schema FAQPage / SoftwareApplication
+- [x] Copy honesty: score/SoV come probe/euristici (non “misurati” di default)
 - [ ] Hardening: secrets, CSRF, headers di sicurezza
 
 ### 5.3 Go-to-market

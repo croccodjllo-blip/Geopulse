@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}FAQ{% endblock %}
 {% block meta_description %}Domande frequenti su GeoPulse: AI-Driven Visibility (AIO), Generative Engine Optimization (GEO), pack, limiti Free e privacy. Non è un GIS né una suite All-in-One.{% endblock %}
+{% block structured_data %}
+  {% include "partials/jsonld_faq.html" %}
+{% endblock %}
 
 {% block content %}
 <article class="page">
@@ -24,6 +27,16 @@
       <p>
         In questo prodotto <strong>GEO non significa Geographic Information System (GIS)</strong>
         e <strong>AIO non significa All-in-One</strong>: sono metriche di citabilità e visibilità IA.
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>Gli score AIO e GEO sono misurazioni live sulle IA?</summary>
+      <p>
+        No di default. Score e Share of Voice sono <strong>diagnostici basati su probe ed euristiche</strong>
+        (contenuto, schema, robots, <code>llms.txt</code>).
+        Il badge <em>Stimato (proxy)</em> indica una stima; <em>Misurato</em> è riservato a segnali
+        direttamente osservati sul sito o a polling LLM quando disponibile.
       </p>
     </details>
 

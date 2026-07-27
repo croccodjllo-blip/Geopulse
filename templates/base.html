@@ -30,6 +30,7 @@
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     {% include "partials/jsonld_organization.html" %}
+    {% block structured_data %}{% endblock %}
   </head>
   <body class="app-body {% block body_class %}{% endblock %}">
     {% block shell %}
@@ -109,9 +110,11 @@
       <div class="site-footer__bottom">
         <span>© {{ now_year }} GeoPulse · Signal intelligence for AI visibility</span>
         <span>
-          <a href="/privacy">Privacy</a>
+          <a href="{{ url_for('privacy') }}">Privacy</a>
           &nbsp;·&nbsp;
-          <a href="/termini">Termini</a>
+          <a href="{{ url_for('terms') }}">Termini</a>
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('ai_txt') }}">ai.txt</a>
           &nbsp;·&nbsp;
           <a href="mailto:info@geopulse.it">info@geopulse.it</a>
         </span>

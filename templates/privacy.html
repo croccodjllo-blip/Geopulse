@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Privacy{% endblock %}
+{% block meta_description %}Informativa privacy di GeoPulse (geopulse.it): dati trattati per account, analisi siti e contatti. Titolare e diritti dell’interessato.{% endblock %}
+{% block canonical %}{{ canonical_base }}/privacy{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">Legale</p>
+    <h1 class="h-display page-intro__title">Informativa privacy</h1>
+    <p class="lede page-intro__lede">
+      Ultimo aggiornamento: 27 luglio 2026 · Titolare: GeoPulse (geopulse.it) ·
+      Contatti: <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">1. Cosa trattiamo</h2>
+    <p class="lede">
+      Per erogare il servizio SaaS trattiamo: dati di account (nome, email, password hashata,
+      azienda/ruolo opzionali, telefono e paese se forniti), URL dei siti analizzati,
+      risultati di analisi (score, findings, artifact generati), log tecnici di sicurezza
+      (IP, timestamp) e messaggi inviati volontariamente (es. waitlist Plus).
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">2. Finalità e basi giuridiche</h2>
+    <ul class="plain-list">
+      <li><strong>Esecuzione del contratto</strong> — account, analisi, pack, supporto.</li>
+      <li><strong>Legittimo interesse</strong> — sicurezza, prevenzione abusi, miglioramento prodotto.</li>
+      <li><strong>Obblighi di legge</strong> — ove applicabili (es. richieste autorità).</li>
+      <li><strong>Consenso</strong> — solo per comunicazioni non essenziali, se richieste in futuro.</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">3. Analisi dei siti</h2>
+    <p class="lede">
+      Quando inserisci un URL, GeoPulse effettua un crawl sul dominio indicato (pagine pubbliche
+      raggiungibili) e probe di file come <code>/robots.txt</code>, <code>/llms.txt</code>,
+      <code>/sitemap.xml</code>. Non dobbiamo accedere ad aree autenticate del tuo sito.
+      Gli artifact generati restano nel tuo account finché non li elimini o chiudi l’account.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">4. Conservazione e trasferimenti</h2>
+    <p class="lede">
+      I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura
+      (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori
+      (hosting, email transazionale, OpenAI se configurata per raffinare <code>llms.txt</code>)
+      trattano dati solo per conto del servizio.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">5. Diritti</h2>
+    <p class="lede">
+      Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione
+      scrivendo a <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
+      Hai anche diritto di reclamare presso l’autorità di controllo competente.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">6. Cookie</h2>
+    <p class="lede">
+      Usiamo cookie di sessione tecnici necessari all’autenticazione e alla protezione CSRF.
+      Non usiamo cookie di profilazione pubblicitaria di terze parti in questa versione.
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-ghost" href="{{ url_for('terms') }}">Termini di servizio</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">Crea account</a>
+  </div>
+</article>
+{% endblock %}

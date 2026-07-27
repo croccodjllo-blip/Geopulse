@@ -825,6 +825,13 @@ def llms_txt():
     )
 
 
+@app.route("/ai.txt")
+def ai_txt():
+    return send_from_directory(
+        app.static_folder, "ai.txt", mimetype="text/plain; charset=utf-8"
+    )
+
+
 @app.route("/robots.txt")
 def robots_txt():
     base = public_base_url()
@@ -834,6 +841,7 @@ def robots_txt():
         "Disallow: /dashboard\n"
         "Disallow: /dashboard/\n"
         "Disallow: /logout\n"
+        "Disallow: /admin\n"
         "\n"
         "User-agent: GPTBot\n"
         "Allow: /\n"
@@ -844,6 +852,14 @@ def robots_txt():
         "User-agent: PerplexityBot\n"
         "Allow: /\n"
         "\n"
+        "User-agent: Google-Extended\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Applebot-Extended\n"
+        "Allow: /\n"
+        "\n"
+        f"# AI policy: {base}/ai.txt\n"
+        f"# LLMs guide: {base}/llms.txt\n"
         f"Sitemap: {base}/sitemap.xml\n"
     )
     return Response(body, mimetype="text/plain; charset=utf-8")
@@ -857,9 +873,9 @@ def sitemap_xml():
         ("/prodotto", "0.9", "weekly"),
         ("/prezzi", "0.8", "weekly"),
         ("/faq", "0.7", "monthly"),
-        ("/interesse-pro", "0.6", "monthly"),
-        ("/register", "0.6", "monthly"),
-        ("/login", "0.4", "monthly"),
+        ("/privacy", "0.4", "yearly"),
+        ("/termini", "0.4", "yearly"),
+        ("/interesse-pro", "0.5", "monthly"),
     ]
     today = datetime.now(timezone.utc).date().isoformat()
     urls = []
@@ -880,6 +896,16 @@ def sitemap_xml():
         + "\n</urlset>\n"
     )
     return Response(body, mimetype="application/xml; charset=utf-8")
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
+
+
+@app.route("/termini")
+def terms():
+    return render_template("termini.html")
 
 
 @app.route("/")

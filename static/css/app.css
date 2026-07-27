@@ -942,11 +942,14 @@ body.app-body:not(.body-dash) {
 /* ═══════════════════════════════════════════
    INNER MARKETING PAGES
 ═══════════════════════════════════════════ */
-.page {
-  width: min(var(--max-w-sm), 100%);
-  margin: 0 auto;
-  animation: rise 650ms var(--ease) both;
+.page--legal {
+  width: min(var(--max-w-md), 100%);
 }
+
+.page--legal .page-section__title {
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+}
+
 
 .page-intro { margin-bottom: 3rem; }
 

@@ -13,7 +13,7 @@
     />
     <div class="auth-aside__copy">
       <p class="brand">GEOPULSE</p>
-      <p>Misura i segnali. Chiudi le criticità. Pubblica il pack.</p>
+      <p>Analizza i segnali. Chiudi le criticità. Pubblica il pack.</p>
     </div>
   </aside>
 
@@ -85,7 +85,13 @@
       <div class="span-2">
         <label class="checkline">
           {{ form.accept_terms(id="accept_terms") }}
-          <span>Accetto il trattamento dei dati per l’erogazione del servizio GeoPulse (geopulse.it).</span>
+          <span>
+            Accetto i
+            <a href="{{ url_for('terms') }}" target="_blank" rel="noopener">Termini</a>
+            e l’
+            <a href="{{ url_for('privacy') }}" target="_blank" rel="noopener">Informativa privacy</a>
+            di GeoPulse (geopulse.it).
+          </span>
         </label>
         {% for error in form.accept_terms.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
