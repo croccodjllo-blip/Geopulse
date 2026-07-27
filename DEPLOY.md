@@ -110,7 +110,47 @@ docker volume ls | grep aio
 - URL: http://82.165.79.212/login
 - Stack: Gunicorn + Nginx (porta 80)
 - DB: `sqlite:////opt/aio-bot/data/database.db` (mai cancellare `data/` o `.venv` con `rsync --delete`)
-- Email pack: imposta `RESEND_API_KEY` + `MAIL_FROM`, oppure `SMTP_HOST` / `SMTP_USER` / `SMTP_PASSWORD` in `.env`, poi `systemctl restart aio-bot`
+- Email pack / recupero password: vedi sezione **Email (Resend o SMTP)** sotto
+
+### Email (Resend o SMTP)
+
+Lo stack legge `.env` e preferisce **Resend** se `RESEND_API_KEY` è valorizzata; altrimenti SMTP.
+
+**Opzione A — Resend (consigliata per reset password)**
+
+1. Crea API key su https://resend.com (dominio `geopulse.it` verificato).
+2. Sul VPS:
+
+```bash
+sudo RESEND_API_KEY='re_xxx' \
+  MAIL_FROM='GeoPulse <noreply@geopulse.it>' \
+  bash /opt/aio-bot/scripts/configure_mail.sh
+```
+
+**Opzione B — SMTP Aruba** (MX già su `mx.geopulse.it`)
+
+1. Crea casella `noreply@geopulse.it` (o usa `info@geopulse.it`) nel pannello Aruba.
+2. Sul VPS:
+
+```bash
+sudo SMTP_HOST=smtps.aruba.it SMTP_PORT=465 SMTP_SSL=1 SMTP_STARTTLS=0 \
+  SMTP_USER='noreply@geopulse.it' SMTP_PASSWORD='***' \
+  MAIL_FROM='GeoPulse <noreply@geopulse.it>' \
+  bash /opt/aio-bot/scripts/configure_mail.sh
+```
+
+Variante STARTTLS (porta 587):
+
+```bash
+sudo SMTP_HOST=smtp.aruba.it SMTP_PORT=587 SMTP_SSL=0 SMTP_STARTTLS=1 \
+  SMTP_USER='noreply@geopulse.it' SMTP_PASSWORD='***' \
+  MAIL_FROM='GeoPulse <noreply@geopulse.it>' \
+  bash /opt/aio-bot/scripts/configure_mail.sh
+```
+
+Verifica: `curl -s https://geopulse.it/health` e prova `/recupero-password`.
+
+> Stripe Projects: account non eligible / Resend non in catalogo → le chiavi vanno inserite a mano come sopra.
 
 ### Git remotes
 
