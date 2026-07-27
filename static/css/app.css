@@ -3622,28 +3622,41 @@ body.app-body:not(.body-dash) {
 }
 
 .pulse-sat__mark {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
-  width: 3.75rem;
-  max-width: 100%;
+  width: 3.1rem;
+  max-width: 3.1rem;
   min-width: 0;
-  height: 2.75rem;
-  padding: 0 0.1rem;
-  border-radius: 0;
+  height: 3.1rem;
+  margin: 0;
+  padding: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
   box-shadow: none;
   font-family: var(--font-display);
-  font-size: clamp(0.95rem, 2.1vw, 1.2rem);
+  font-size: 1.05rem;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.05em;
   line-height: 1;
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
   justify-self: end;
+  align-self: center;
+}
+
+.pulse-sat__mark[data-chars="2"] {
+  font-size: 1.15rem;
+  letter-spacing: -0.04em;
+}
+
+.pulse-sat__mark[data-chars="3"] {
+  font-size: 0.92rem;
+  letter-spacing: -0.07em;
 }
 
 .pulse-sat[data-grade="AAA"] .pulse-sat__mark,
