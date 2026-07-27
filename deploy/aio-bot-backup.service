@@ -1,0 +1,15 @@
+[Unit]
+Description=GeoPulse SQLite database backup
+After=network.target aio-bot.service
+
+[Service]
+Type=oneshot
+User=aio-bot
+Group=aio-bot
+WorkingDirectory=/opt/aio-bot
+EnvironmentFile=-/opt/aio-bot/.env
+Environment=AIO_BOT_DIR=/opt/aio-bot
+Environment=BACKUP_DIR=/opt/aio-bot/data/backups
+Environment=BACKUP_KEEP=14
+ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/backup_db.py
+Nice=10

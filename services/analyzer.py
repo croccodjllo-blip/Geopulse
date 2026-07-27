@@ -31,6 +31,7 @@ from services.deep_checks import (
     same_host,
     summarize_competitor,
 )
+from services.ssrf import UnsafeURLError, assert_public_http_url, safe_get
 from services.rating import compute_rating
 from services.signals import (
     analyze_faq_signals,
@@ -90,7 +91,9 @@ def normalize_url(raw: str) -> str:
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise ValueError("URL non valido")
     path = parsed.path or "/"
-    return f"{parsed.scheme}://{parsed.netloc}{path}"
+    candidate = f"{parsed.scheme}://{parsed.netloc}{path}"
+    # Blocca target privati / metadata prima di qualsiasi fetch
+    return assert_public_http_url(candidate, resolve=True)
 
 
 def _host_key(netloc: str) -> str:
@@ -145,10 +148,11 @@ def scrape_page(url: str) -> dict[str, Any]:
     import time
 
     t0 = time.perf_counter()
-    response = _SESSION.get(
+    response = safe_get(
+        _SESSION,
         url,
         timeout=HTTP_TIMEOUT,
-        allow_redirects=True,
+        max_redirects=5,
     )
     elapsed_ms = int((time.perf_counter() - t0) * 1000)
     # Non raise subito su 4xx: servono metriche
@@ -334,20 +338,21 @@ scrape_homepage = scrape_page
 def probe_path(base_url: str, path: str) -> dict[str, Any]:
     target = urljoin(base_url if base_url.endswith("/") else base_url + "/", path.lstrip("/"))
     try:
-        res = _SESSION.get(
+        res = safe_get(
+            _SESSION,
             target,
             timeout=PROBE_TIMEOUT,
-            allow_redirects=True,
+            max_redirects=5,
         )
         body = res.text[:80_000] if res.text else ""
         ok = res.status_code == 200 and bool(body.strip())
         return {
-            "url": target,
+            "url": str(res.url) if getattr(res, "url", None) else target,
             "ok": ok,
             "status": res.status_code,
             "snippet": body if ok else "",
         }
-    except requests.RequestException:
+    except (requests.RequestException, UnsafeURLError):
         return {"url": target, "ok": False, "status": None, "snippet": ""}
 
 
@@ -404,12 +409,17 @@ def collect_sitemap_urls(seed: str, sitemap_probe: dict[str, Any], *, limit: int
         if len(pages) >= limit:
             break
         try:
-            res = _SESSION.get(child, timeout=PROBE_TIMEOUT, allow_redirects=True)
+            res = safe_get(
+                _SESSION,
+                child,
+                timeout=PROBE_TIMEOUT,
+                max_redirects=5,
+            )
             if res.status_code != 200 or not res.text:
                 continue
             more, _ = parse_sitemap_urls(res.text[:200_000], seed=seed, limit=limit - len(pages))
             pages.extend(more)
-        except requests.RequestException:
+        except (requests.RequestException, UnsafeURLError):
             continue
     # dedupe preserve order
     seen: set[str] = set()
@@ -773,13 +783,21 @@ def score_site(
     aio = 28.0
     geo = 26.0
 
-    def push(category: str, severity: str, title: str, detail: str) -> None:
+    def push(
+        category: str,
+        severity: str,
+        title: str,
+        detail: str,
+        *,
+        evidence: str = "measured",
+    ) -> None:
         findings.append(
             {
                 "category": category,
                 "severity": severity,
                 "title": title,
                 "detail": detail,
+                "evidence": evidence if evidence in {"measured", "proxy", "estimated"} else "measured",
             }
         )
 
@@ -1003,6 +1021,14 @@ def score_site(
             "(content, brand, GEO, tecnico, llms/robots)."
         )
 
+    for f in findings:
+        if isinstance(f, dict) and f.get("evidence") not in {
+            "measured",
+            "proxy",
+            "estimated",
+        }:
+            f["evidence"] = "measured"
+
     return {
         "aio_score": _clamp(aio),
         "geo_score": _clamp(geo),
@@ -1014,6 +1040,7 @@ def score_site(
             "llms_quality": llms_score.get("quality"),
             "llms_sections": llms_score.get("sections") or [],
             "bot_policies": bots_score.get("policies") or {},
+            "robots_probe_ok": bool(robots_probe.get("ok")),
             "faq": {
                 "has_faq_page": bool(jsonld_meta.get("has_faq_page")),
                 "faq_questions": jsonld_meta.get("faq_questions") or 0,

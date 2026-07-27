@@ -509,7 +509,13 @@ https://rivale2.com", class_="analyze-input") }}
                 <li data-severity="{{ f.severity }}">
                   <em>{{ f.severity }}</em>
                   <div class="finding-list__body">
-                    <strong>{{ f.title }}</strong>
+                    <strong>
+                      {{ f.title }}
+                      {% set ev = f.evidence or 'measured' %}
+                      <span class="evidence-badge" data-evidence="{{ ev }}">
+                        {% if ev == 'proxy' %}Stimato{% elif ev == 'estimated' %}Stimato{% else %}Misurato{% endif %}
+                      </span>
+                    </strong>
                     <span>{{ f.detail }}</span>
                   </div>
                 </li>

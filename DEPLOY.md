@@ -87,7 +87,8 @@ Possibile, ma meglio **isolare**:
 - [ ] `FLASK_SECRET_KEY` forte
 - [ ] `FLASK_DEBUG=0`
 - [ ] HTTPS attivo
-- [ ] Backup volume `aio_bot_data`
+- [x] Backup SQLite (`aio-bot-backup.timer` → `/opt/aio-bot/data/backups`)
+- [ ] `ADMIN_PASSWORD` in `.env` (niente default in chiaro; `ADMIN_BOOTSTRAP=1` solo per reset)
 - [ ] `OPENAI_API_KEY` impostata (opzionale ma consigliata)
 - [ ] Dominio punta al server
 
@@ -151,4 +152,17 @@ systemctl list-timers | grep aio-bot-rescan
 ```
 
 Esecuzione manuale: `sudo -u aio-bot /opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/rescan_worker.py -v`
+
+### Backup SQLite (timer giornaliero)
+
+```bash
+sudo mkdir -p /opt/aio-bot/data/backups
+sudo chown aio-bot:aio-bot /opt/aio-bot/data/backups
+sudo cp /opt/aio-bot/deploy/aio-bot-backup.service /etc/systemd/system/
+sudo cp /opt/aio-bot/deploy/aio-bot-backup.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now aio-bot-backup.timer
+sudo systemctl start aio-bot-backup.service   # prova immediata
+ls -lh /opt/aio-bot/data/backups/
+```
 

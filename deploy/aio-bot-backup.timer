@@ -1,0 +1,11 @@
+[Unit]
+Description=GeoPulse daily SQLite backup
+
+[Timer]
+OnCalendar=*-*-* 03:15:00
+Persistent=true
+AccuracySec=5min
+Unit=aio-bot-backup.service
+
+[Install]
+WantedBy=timers.target

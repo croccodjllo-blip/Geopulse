@@ -140,6 +140,11 @@ Obiettivo: differenziazione competitiva.
 - [x] Policy privacy + termini + cookie banner se necessario
 - [x] `/ai.txt` + schema FAQPage / SoftwareApplication
 - [x] Copy honesty: score/SoV come probe/euristici (non “misurati” di default)
+- [x] SSRF guard su crawl/probe + redirect hop check
+- [x] Admin senza password default / senza reset a ogni boot
+- [x] SoV da robots probe persistito (non artifact pack)
+- [x] Evidence badge Misurato/Stimato sui findings
+- [x] Backup SQLite giornaliero (systemd timer)
 - [ ] Hardening: secrets, CSRF, headers di sicurezza
 
 ### 5.3 Go-to-market

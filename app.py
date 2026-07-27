@@ -102,8 +102,10 @@ FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 PACK_EMAIL_DAILY_LIMIT = max(1, int(os.getenv("PACK_EMAIL_DAILY_LIMIT", "10")))
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD") or "GeoPulse!Admin26"
+# Nessun default in chiaro: se manca, l’admin non viene (ri)creato automaticamente.
+ADMIN_PASSWORD = (os.getenv("ADMIN_PASSWORD") or "").strip()
 ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin GeoPulse"
+ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 
 
 def resolve_database_uri(raw: str | None) -> str:
@@ -304,6 +306,19 @@ class SiteAnalysis(db.Model):
         return []
 
     @property
+    def robots_probed_text(self) -> str:
+        """Testo /robots.txt osservato in probe (non il pack suggerito)."""
+        data = self._crawl_blob
+        if not isinstance(data, dict):
+            return ""
+        probes = data.get("probes") or {}
+        if isinstance(probes, dict):
+            robots = probes.get("robots") or {}
+            if isinstance(robots, dict) and robots.get("snippet"):
+                return str(robots.get("snippet") or "")
+        return ""
+
+    @property
     def rating(self) -> dict[str, Any]:
         return compute_rating(self.aio_score, self.geo_score, self.findings)
 
@@ -375,6 +390,18 @@ class AnalysisRun(db.Model):
             comps = data.get("competitors") or []
             return comps if isinstance(comps, list) else []
         return []
+
+    @property
+    def robots_probed_text(self) -> str:
+        data = self._crawl_blob
+        if not isinstance(data, dict):
+            return ""
+        probes = data.get("probes") or {}
+        if isinstance(probes, dict):
+            robots = probes.get("robots") or {}
+            if isinstance(robots, dict) and robots.get("snippet"):
+                return str(robots.get("snippet") or "")
+        return ""
 
     @property
     def rating(self) -> dict[str, Any]:
@@ -605,8 +632,20 @@ def current_user() -> User | None:
     return db.session.get(User, user_id)
 
 
-def ensure_admin_user() -> User:
-    """Crea o aggiorna l’utente admin di prova (piano Pro)."""
+def ensure_admin_user() -> User | None:
+    """Crea l’admin solo se ADMIN_PASSWORD è impostata.
+
+    - Nuovo utente: richiede ADMIN_PASSWORD.
+    - Utente esistente: aggiorna metadati; reset password solo se
+      ADMIN_BOOTSTRAP=1 (evita overwrite a ogni restart).
+    """
+    if not ADMIN_PASSWORD:
+        app.logger.warning(
+            "ADMIN_PASSWORD non impostata: skip ensure_admin_user "
+            "(nessun default in chiaro)."
+        )
+        return User.query.filter_by(email=ADMIN_EMAIL).first()
+
     user = User.query.filter_by(email=ADMIN_EMAIL).first()
     if user is None:
         user = User(
@@ -620,13 +659,18 @@ def ensure_admin_user() -> User:
         )
         user.set_password(ADMIN_PASSWORD)
         db.session.add(user)
+        app.logger.info("Admin creato: %s", ADMIN_EMAIL)
     else:
         user.name = ADMIN_NAME
         user.company = user.company or "GeoPulse"
         user.website_url = user.website_url or "https://geopulse.it/"
         user.role = "admin"
         user.plan = "admin"
-        user.set_password(ADMIN_PASSWORD)
+        if ADMIN_BOOTSTRAP:
+            user.set_password(ADMIN_PASSWORD)
+            app.logger.warning(
+                "ADMIN_BOOTSTRAP=1: password admin resettata per %s", ADMIN_EMAIL
+            )
     db.session.commit()
     return user
 
@@ -1270,7 +1314,7 @@ def dashboard():
             aio_score=latest.aio_score,
             geo_score=latest.geo_score,
             findings=findings_all,
-            robots_text=latest.robots_artifact or "",
+            robots_text=latest.robots_probed_text or "",
             competitors=latest.competitors,
         )
 

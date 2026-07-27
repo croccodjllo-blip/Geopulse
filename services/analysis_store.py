@@ -16,6 +16,29 @@ DEFAULT_RESCAN_HOUR = 6
 CRAWL_PAGES_STORE_LIMIT = 150
 
 
+def _probe_for_storage(
+    probe: dict[str, Any] | None,
+    *,
+    include_snippet: bool = True,
+    snippet_limit: int = 80_000,
+) -> dict[str, Any]:
+    """Persiste metadati probe (robots/llms) senza gonfiare inutilmente il JSON."""
+    if not isinstance(probe, dict):
+        return {}
+    out: dict[str, Any] = {
+        "url": probe.get("url") or "",
+        "ok": bool(probe.get("ok")),
+        "status": probe.get("status"),
+    }
+    if include_snippet:
+        snippet = probe.get("snippet") or ""
+        if isinstance(snippet, str) and snippet:
+            out["snippet"] = snippet[:snippet_limit]
+        else:
+            out["snippet"] = ""
+    return out
+
+
 def clamp_hour(hour: Any, default: int = DEFAULT_RESCAN_HOUR) -> int:
     try:
         value = int(hour)
@@ -109,6 +132,14 @@ def persist_analysis(
             "pages": pages_for_storage(pages, limit=CRAWL_PAGES_STORE_LIMIT),
             "competitors": result.get("competitors") or [],
             "signals": result.get("signals") or {},
+            "probes": {
+                "robots": _probe_for_storage((result.get("probes") or {}).get("robots")),
+                "llms": _probe_for_storage((result.get("probes") or {}).get("llms")),
+                "sitemap": _probe_for_storage(
+                    (result.get("probes") or {}).get("sitemap"), include_snippet=False
+                ),
+                "ai": _probe_for_storage((result.get("probes") or {}).get("ai")),
+            },
         },
         ensure_ascii=False,
     )

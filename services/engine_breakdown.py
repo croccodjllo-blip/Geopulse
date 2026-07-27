@@ -231,7 +231,7 @@ def compute_engine_breakdown(
         "has_competitors": bool(rival_aios),
         "top_engine": top["label"] if top else None,
         "note": (
-            "Stima derivata da score AIO/GEO, policy robots e findings. "
+            "Stima derivata da score AIO/GEO, policy robots osservata in probe e findings. "
             "Non è polling live su ChatGPT/Perplexity/Claude."
         ),
     }

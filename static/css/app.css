@@ -3152,7 +3152,8 @@ body.app-body:not(.body-dash) {
   color: var(--ok);
 }
 
-.evidence-badge[data-evidence="proxy"] {
+.evidence-badge[data-evidence="proxy"],
+.evidence-badge[data-evidence="estimated"] {
   background: var(--warn-bg);
   border-color: var(--warn-brd);
   color: var(--warn);
