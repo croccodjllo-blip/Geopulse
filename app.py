@@ -1282,6 +1282,9 @@ def health():
                 "service": "geopulse",
                 "openai": bool(OPENAI_API_KEY),
                 "perplexity": bool((os.getenv("PERPLEXITY_API_KEY") or "").strip()),
+                "anthropic": bool(
+                    (os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or "").strip()
+                ),
                 "citation_monitor": citation_monitor_available(),
                 "stripe": stripe_enabled(),
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),

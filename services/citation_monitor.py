@@ -1,7 +1,6 @@
 """Multi-engine citation / measured SoV monitor.
 
-OpenAI = measured when key present.
-Perplexity = measured when PERPLEXITY_API_KEY present.
+OpenAI / Perplexity / Anthropic (Claude) = measured when the matching API key is set.
 Other engines remain proxy placeholders with explicit evidence labels.
 """
 
@@ -20,10 +19,17 @@ OPENAI_API_KEY = (os.getenv("OPENAI_API_KEY") or "").strip()
 OPENAI_MODEL = (os.getenv("OPENAI_MODEL") or "gpt-4o-mini").strip()
 PERPLEXITY_API_KEY = (os.getenv("PERPLEXITY_API_KEY") or "").strip()
 PERPLEXITY_MODEL = (os.getenv("PERPLEXITY_MODEL") or "sonar").strip()
+ANTHROPIC_API_KEY = (
+    (os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or "").strip()
+)
+ANTHROPIC_MODEL = (
+    os.getenv("ANTHROPIC_MODEL") or os.getenv("CLAUDE_MODEL") or "claude-haiku-4-5-20251001"
+).strip()
+ANTHROPIC_API_VERSION = (os.getenv("ANTHROPIC_API_VERSION") or "2023-06-01").strip()
 
 
 def citation_monitor_available() -> bool:
-    return bool(OPENAI_API_KEY or PERPLEXITY_API_KEY)
+    return bool(OPENAI_API_KEY or PERPLEXITY_API_KEY or ANTHROPIC_API_KEY)
 
 
 def _needles(brand: str, domain: str) -> set[str]:
@@ -151,6 +157,76 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
     }
 
 
+def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
+    """Claude Messages API — SoV measured probe."""
+    if not ANTHROPIC_API_KEY:
+        return {"available": False, "reason": "ANTHROPIC_API_KEY assente", "details": []}
+    try:
+        import requests
+    except Exception as exc:  # pragma: no cover
+        return {"available": False, "reason": str(exc), "details": []}
+
+    hits = 0
+    details: list[dict[str, Any]] = []
+    system = (
+        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
+        "non inventare URL o menzioni."
+    )
+    # Cost control: max 3 prompts
+    for prompt in prompts[:3]:
+        try:
+            res = requests.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": ANTHROPIC_API_VERSION,
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": ANTHROPIC_MODEL,
+                    "max_tokens": 350,
+                    "temperature": 0.2,
+                    "system": system,
+                    "messages": [{"role": "user", "content": prompt}],
+                },
+                timeout=45,
+            )
+            res.raise_for_status()
+            data = res.json()
+            parts = data.get("content") or []
+            text_bits: list[str] = []
+            for part in parts:
+                if isinstance(part, dict) and part.get("type") == "text":
+                    text_bits.append(str(part.get("text") or ""))
+            text = "\n".join(text_bits).strip()
+        except Exception as exc:
+            logger.exception("anthropic citation probe failed")
+            details.append({"prompt": prompt, "error": str(exc)[:160]})
+            continue
+        ok = _mentioned(text, needles)
+        if ok:
+            hits += 1
+        details.append(
+            {
+                "prompt": prompt,
+                "mentioned": ok,
+                "excerpt": text[:280],
+                "engine": "anthropic",
+            }
+        )
+    total = max(1, len([d for d in details if "error" not in d]))
+    rate = round(100.0 * hits / total) if details else 0
+    return {
+        "available": True,
+        "mention_rate": rate,
+        "hits": hits,
+        "samples": total,
+        "details": details,
+        "evidence": "measured",
+        "model": ANTHROPIC_MODEL,
+    }
+
+
 def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
     if not competitors:
         return 0.0
@@ -234,10 +310,38 @@ def run_citation_monitor(
             }
         )
 
+    anthropic = _probe_anthropic(prompts, needles)
+    if anthropic.get("available"):
+        engines_out.append(
+            {
+                "id": "anthropic",
+                "label": "Claude",
+                "vendor": "Anthropic",
+                "mention_rate": anthropic["mention_rate"],
+                "hits": anthropic["hits"],
+                "samples": anthropic["samples"],
+                "evidence": "measured",
+                "accent": "#D4A27F",
+                "model": anthropic.get("model") or ANTHROPIC_MODEL,
+            }
+        )
+        all_details.extend(anthropic.get("details") or [])
+    else:
+        engines_out.append(
+            {
+                "id": "anthropic",
+                "label": "Claude",
+                "vendor": "Anthropic",
+                "mention_rate": None,
+                "evidence": "unavailable",
+                "reason": anthropic.get("reason"),
+                "accent": "#D4A27F",
+            }
+        )
+
     # Placeholders for remaining engines (honest)
     for eng in (
         {"id": "google", "label": "AI Overview", "vendor": "Google", "accent": "#4285F4"},
-        {"id": "anthropic", "label": "Claude", "vendor": "Anthropic", "accent": "#D4A27F"},
         {"id": "bing", "label": "Copilot", "vendor": "Microsoft", "accent": "#7B83EB"},
     ):
         engines_out.append(
@@ -303,7 +407,10 @@ def run_citation_monitor(
                 "category": "geo",
                 "severity": "warn",
                 "title": "Citation monitor non configurato",
-                "detail": "Imposta OPENAI_API_KEY e/o PERPLEXITY_API_KEY per SoV measured.",
+                "detail": (
+                    "Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY e/o ANTHROPIC_API_KEY "
+                    "per SoV measured."
+                ),
                 "evidence": "estimated",
             }
         )
@@ -321,8 +428,8 @@ def run_citation_monitor(
         "competitor_pressure": round(pressure, 1),
         "findings": findings,
         "note": (
-            "ChatGPT/Perplexity: mention rate da prompt pack. "
-            "AI Overview/Claude/Copilot: pending connector. "
+            "ChatGPT / Perplexity / Claude: mention rate da prompt pack. "
+            "AI Overview / Copilot: pending connector. "
             "Non equivale a ranking garantito nelle risposte live."
         ),
     }

@@ -16,7 +16,7 @@
   <section class="page-section">
     <h2 class="page-section__title">Connector</h2>
     <ul class="plain-list">
-      <li>Citation monitor: {% if citation_ready %}attivo{% else %}configura OPENAI_API_KEY / PERPLEXITY_API_KEY{% endif %}</li>
+      <li>Citation monitor: {% if citation_ready %}attivo{% else %}configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY{% endif %}</li>
       <li>JS crawl: {% if js_crawl_ready %}Playwright pronto{% else %}disabilitato (JS_CRAWL_ENABLED=1){% endif %}</li>
       <li>Google Search Console: {{ gsc.reason if not gsc.available else gsc.note }}</li>
     </ul>
