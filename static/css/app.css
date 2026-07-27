@@ -3602,15 +3602,19 @@ body.app-body:not(.body-dash) {
 .pulse-sat__mark {
   display: grid;
   place-items: center;
-  width: 3.1rem;
+  width: auto;
+  min-width: 3.1rem;
   height: 3.1rem;
-  border-radius: var(--radius);
+  padding: 0;
+  border-radius: 0;
   border: 0;
-  background: var(--surface-3);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3.2vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
   color: var(--ink);
 }
 
@@ -3618,28 +3622,28 @@ body.app-body:not(.body-dash) {
 .pulse-sat[data-grade="AA"] .pulse-sat__mark,
 .pulse-sat[data-grade="A"] .pulse-sat__mark {
   color: var(--ok);
-  background: var(--ok-bg);
+  background: transparent;
 }
 
 .pulse-sat[data-grade="BBB"] .pulse-sat__mark,
 .pulse-sat[data-grade="BB"] .pulse-sat__mark,
 .pulse-sat[data-grade="B"] .pulse-sat__mark {
   color: var(--signal-soft);
-  background: var(--signal-pale);
+  background: transparent;
 }
 
 .pulse-sat[data-grade="CCC"] .pulse-sat__mark,
 .pulse-sat[data-grade="CC"] .pulse-sat__mark,
 .pulse-sat[data-grade="C"] .pulse-sat__mark {
   color: var(--warn);
-  background: var(--warn-bg);
+  background: transparent;
 }
 
 .pulse-sat[data-grade="D"] .pulse-sat__mark,
 .pulse-sat[data-grade="DD"] .pulse-sat__mark,
 .pulse-sat[data-grade="DDD"] .pulse-sat__mark {
   color: var(--danger);
-  background: var(--danger-bg);
+  background: transparent;
 }
 
 .pulse-sat__risk {
@@ -3990,11 +3994,36 @@ body.app-body:not(.body-dash) {
 .rail-card__grade {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 2.35rem;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   line-height: 1;
   color: var(--ink);
+  background: transparent;
+}
+
+.rail-card__grade[data-grade="AAA"],
+.rail-card__grade[data-grade="AA"],
+.rail-card__grade[data-grade="A"] {
+  color: var(--ok);
+}
+
+.rail-card__grade[data-grade="BBB"],
+.rail-card__grade[data-grade="BB"],
+.rail-card__grade[data-grade="B"] {
+  color: var(--signal-soft);
+}
+
+.rail-card__grade[data-grade="CCC"],
+.rail-card__grade[data-grade="CC"],
+.rail-card__grade[data-grade="C"] {
+  color: var(--warn);
+}
+
+.rail-card__grade[data-grade="D"],
+.rail-card__grade[data-grade="DD"],
+.rail-card__grade[data-grade="DDD"] {
+  color: var(--danger);
 }
 
 .rail-card__sov {
@@ -4332,6 +4361,58 @@ body.app-body:not(.body-dash) {
 .body-dash .pulse-sat__ring span,
 .body-dash .pulse-sat__risk-n {
   color: #F3F6FB;
+}
+
+.body-dash .pulse-sat__mark {
+  background: transparent;
+}
+
+.body-dash .pulse-sat[data-grade="AAA"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="AA"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="A"] .pulse-sat__mark {
+  color: #34D399;
+}
+
+.body-dash .pulse-sat[data-grade="BBB"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="BB"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="B"] .pulse-sat__mark {
+  color: #A5B4FC;
+}
+
+.body-dash .pulse-sat[data-grade="CCC"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="CC"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="C"] .pulse-sat__mark {
+  color: #FBBF24;
+}
+
+.body-dash .pulse-sat[data-grade="D"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="DD"] .pulse-sat__mark,
+.body-dash .pulse-sat[data-grade="DDD"] .pulse-sat__mark {
+  color: #F87171;
+}
+
+.body-dash .rail-card__grade[data-grade="AAA"],
+.body-dash .rail-card__grade[data-grade="AA"],
+.body-dash .rail-card__grade[data-grade="A"] {
+  color: #34D399;
+}
+
+.body-dash .rail-card__grade[data-grade="BBB"],
+.body-dash .rail-card__grade[data-grade="BB"],
+.body-dash .rail-card__grade[data-grade="B"] {
+  color: #A5B4FC;
+}
+
+.body-dash .rail-card__grade[data-grade="CCC"],
+.body-dash .rail-card__grade[data-grade="CC"],
+.body-dash .rail-card__grade[data-grade="C"] {
+  color: #FBBF24;
+}
+
+.body-dash .rail-card__grade[data-grade="D"],
+.body-dash .rail-card__grade[data-grade="DD"],
+.body-dash .rail-card__grade[data-grade="DDD"] {
+  color: #F87171;
 }
 
 /* ═══════════════════════════════════════════
