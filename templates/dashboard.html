@@ -312,7 +312,11 @@ https://rivale2.com", class_="analyze-input") }}
                     <strong>Indice</strong>
                     <em>{{ rating.score }}/100 · {{ rating.label.split('—')[0].strip() }}</em>
                   </div>
-                  <div class="pulse-sat__mark" aria-hidden="true">{{ rating.code }}</div>
+                  <div
+                    class="pulse-sat__mark"
+                    data-chars="{{ rating.code|length }}"
+                    aria-hidden="true"
+                  >{{ rating.code }}</div>
                 </article>
 
                 <article class="pulse-sat" role="listitem" data-tone="risk">
