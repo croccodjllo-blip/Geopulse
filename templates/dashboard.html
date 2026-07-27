@@ -292,6 +292,10 @@ https://rivale2.com", class_="analyze-input") }}
 
               <div class="pulse-satellites" role="list">
                 <article class="pulse-sat" role="listitem" data-tone="geo">
+                  <div class="pulse-sat__copy">
+                    <strong>GEO <span class="evidence-badge" data-evidence="proxy">Stimato</span></strong>
+                    <em>Generative Engine Optimization</em>
+                  </div>
                   <div class="pulse-sat__ring" style="--p: {{ geo_n }};" aria-hidden="true">
                     <svg viewBox="0 0 48 48">
                       <circle class="pulse-sat__track" cx="24" cy="24" r="18" />
@@ -302,29 +306,18 @@ https://rivale2.com", class_="analyze-input") }}
                     </svg>
                     <span>{{ geo_n }}</span>
                   </div>
-                  <div>
-                    <strong>GEO <span class="evidence-badge" data-evidence="proxy">Stimato</span></strong>
-                    <em>Generative Engine Optimization</em>
-                  </div>
                 </article>
 
                 <article class="pulse-sat" role="listitem" data-tone="grade" data-grade="{{ rating.code }}">
-                  <div class="pulse-sat__mark" aria-hidden="true">{{ rating.code }}</div>
-                  <div>
+                  <div class="pulse-sat__copy">
                     <strong>Indice</strong>
                     <em>{{ rating.score }}/100 · {{ rating.label.split('—')[0].strip() }}</em>
                   </div>
+                  <div class="pulse-sat__mark" aria-hidden="true">{{ rating.code }}</div>
                 </article>
 
                 <article class="pulse-sat" role="listitem" data-tone="risk">
-                  <div class="pulse-sat__risk" aria-hidden="true">
-                    <span class="pulse-sat__risk-n">{{ findings_n }}</span>
-                    <span class="pulse-sat__risk-dots">
-                      {% for _ in range([crit_n, 5]|min) %}<i data-sev="critical"></i>{% endfor %}
-                      {% for _ in range([warn_n, 5]|min) %}<i data-sev="warn"></i>{% endfor %}
-                    </span>
-                  </div>
-                  <div>
+                  <div class="pulse-sat__copy">
                     <strong>Interferenze</strong>
                     <em>
                       {% if crit_n or warn_n %}
@@ -333,6 +326,13 @@ https://rivale2.com", class_="analyze-input") }}
                         Nessuna criticità aperta
                       {% endif %}
                     </em>
+                  </div>
+                  <div class="pulse-sat__risk" aria-hidden="true">
+                    <span class="pulse-sat__risk-n">{{ findings_n }}</span>
+                    <span class="pulse-sat__risk-dots">
+                      {% for _ in range([crit_n, 5]|min) %}<i data-sev="critical"></i>{% endfor %}
+                      {% for _ in range([warn_n, 5]|min) %}<i data-sev="warn"></i>{% endfor %}
+                    </span>
                   </div>
                 </article>
               </div>

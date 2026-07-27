@@ -3526,7 +3526,7 @@ body.app-body:not(.body-dash) {
 
 .pulse-sat {
   display: grid;
-  grid-template-columns: 3.1rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.85rem;
   align-items: center;
   padding: 0.85rem 1rem;
@@ -3538,11 +3538,11 @@ body.app-body:not(.body-dash) {
 }
 
 .pulse-sat[data-tone="grade"] {
-  grid-template-columns: 5rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 5rem;
   gap: 0.7rem;
 }
 
-.pulse-sat[data-tone="grade"] > div:last-child {
+.pulse-sat__copy {
   min-width: 0;
 }
 
@@ -3574,6 +3574,7 @@ body.app-body:not(.body-dash) {
   position: relative;
   width: 3.1rem;
   height: 3.1rem;
+  justify-self: end;
 }
 
 .pulse-sat__ring svg {
@@ -3629,7 +3630,7 @@ body.app-body:not(.body-dash) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
-  justify-self: stretch;
+  justify-self: end;
 }
 
 .pulse-sat[data-grade="AAA"] .pulse-sat__mark,
@@ -3663,7 +3664,8 @@ body.app-body:not(.body-dash) {
 .pulse-sat__risk {
   display: grid;
   gap: 0.3rem;
-  justify-items: center;
+  justify-items: end;
+  justify-self: end;
 }
 
 .pulse-sat__risk-n {
