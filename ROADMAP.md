@@ -195,8 +195,19 @@ Obiettivo: differenziazione competitiva.
 
 ---
 
+## Roadmap A→F (honesty → billing → async → measured SoV)
+
+- [x] **A** Trust/honesty: rating copy soft, evidence Misurato/Stimato, propensity “signal diagnostics”
+- [x] **B** Metodologia + guide evergreen (`/metodologia`, `/guide/llms-txt`, `/guide/schema-ai`, `/guide/score-vs-sov`) + Article schema
+- [x] **C** Logo Organization, sameAs ampliato, autore nominato (Alessandro)
+- [x] **D** Stripe Checkout + Portal + webhook → `plan` Plus (attivo se env Stripe presenti)
+- [x] **E** Coda analisi async (`analysis_jobs`) + UI status + worker systemd
+- [x] **F** SoV measured scaffold (OpenAI probe) per Plus, overlay sul breakdown proxy
+
+---
+
 ## Prossimo incremento consigliato
 
-**Completato:** score AIO/GEO, findings, pack artifact + ZIP.
+**Completato:** score AIO/GEO, findings, pack artifact + ZIP, roadmap A→F.
 
-**Sprint successivo:** Fase 1.3 (reset password / limiti Free) oppure direttamente **Stripe Pro (Fase 2)**.
+**Sprint successivo:** verifica email / reset password, Postgres, Stripe price live in Dashboard.

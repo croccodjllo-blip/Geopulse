@@ -6,6 +6,13 @@
   "name": "GeoPulse",
   "alternateName": "GEOPULSE",
   "url": "{{ canonical_base }}/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "{{ canonical_base }}/static/img/logo.svg",
+    "width": 512,
+    "height": 512
+  },
+  "image": "{{ canonical_base }}/static/img/logo.svg",
   "email": "info@geopulse.it",
   "description": "GeoPulse analizza segnali di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): score euristici, findings e pack per answer engine. Non è un GIS né una suite All-in-One.",
   "slogan": "Ottimizza il sito per le IA.",
@@ -25,9 +32,11 @@
     "{{ canonical_base }}/chi-siamo",
     "{{ canonical_base }}/contatti",
     "{{ canonical_base }}/prodotto",
+    "{{ canonical_base }}/metodologia",
     "{{ canonical_base }}/faq",
     "{{ canonical_base }}/llms.txt",
-    "{{ canonical_base }}/ai.txt"
+    "{{ canonical_base }}/ai.txt",
+    "{{ canonical_base }}/humans.txt"
   ],
   "contactPoint": {
     "@type": "ContactPoint",
@@ -36,11 +45,19 @@
     "availableLanguage": ["Italian", "English"],
     "url": "{{ canonical_base }}/contatti"
   },
+  "founder": {
+    "@type": "Person",
+    "name": "{{ site_author_name }}",
+    "jobTitle": "{{ site_author_title }}",
+    "email": "info@geopulse.it",
+    "url": "{{ canonical_base }}/chi-siamo",
+    "worksFor": { "@id": "{{ canonical_base }}/#organization" }
+  },
   "employee": {
     "@type": "Person",
-    "name": "Team GeoPulse",
+    "name": "{{ site_author_name }}",
     "email": "info@geopulse.it",
-    "jobTitle": "Product & editorial",
+    "jobTitle": "{{ site_author_title }}",
     "worksFor": { "@id": "{{ canonical_base }}/#organization" },
     "url": "{{ canonical_base }}/chi-siamo"
   }

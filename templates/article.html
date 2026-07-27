@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ article_title }}{% endblock %}
+{% block meta_description %}{{ article_description }}{% endblock %}
+{% block canonical %}{{ canonical_base }}{{ article_path }}{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ article_title|tojson }},
+  "description": {{ article_description|tojson }},
+  "datePublished": "{{ article_date }}",
+  "dateModified": "{{ article_date }}",
+  "inLanguage": "it-IT",
+  "author": {
+    "@type": "Person",
+    "name": "{{ site_author_name }}",
+    "jobTitle": "{{ site_author_title }}",
+    "url": "{{ canonical_base }}/chi-siamo"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "@id": "{{ canonical_base }}/#organization",
+    "name": "GeoPulse",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ canonical_base }}/static/img/logo.svg"
+    }
+  },
+  "mainEntityOfPage": "{{ canonical_base }}{{ article_path }}",
+  "image": "{{ canonical_base }}/static/img/logo.svg"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">{{ article_eyebrow }}</p>
+    <h1 class="h-display page-intro__title">{{ article_title }}</h1>
+    <p class="lede page-intro__lede">
+      {{ article_lede }}
+      · Aggiornato <time datetime="{{ article_date }}">{{ article_date_human }}</time>
+      · Autore <a href="{{ url_for('about') }}">{{ site_author_name }}</a>
+    </p>
+  </header>
+  {{ article_body|safe }}
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('register') }}">Prova GeoPulse</a>
+    <a class="btn btn-ghost" href="{{ url_for('methodology') }}">Metodologia</a>
+  </div>
+</article>
+{% endblock %}

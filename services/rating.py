@@ -6,18 +6,18 @@ from typing import Any
 
 # Scala ordinata dal peggiore al migliore
 RATING_SCALE: list[tuple[str, int, str]] = [
-    ("DDD", 0, "Critico — segnali AIO/GEO (AI-Driven Visibility / Generative Engine Optimization) assenti o bloccati"),
-    ("DD", 15, "Molto debole — interventi urgenti"),
+    ("DDD", 0, "Critico — segnali AIO/GEO assenti o bloccati (diagnostica probe)"),
+    ("DD", 15, "Molto debole — interventi urgenti sui segnali crawlabili"),
     ("D", 25, "Debole — base tecnica insufficiente"),
-    ("CCC", 35, "Insufficiente — mancano asset chiave"),
+    ("CCC", 35, "Insufficiente — mancano asset chiave (llms/schema/robots)"),
     ("CC", 45, "Scarso — ottimizzazione ancora iniziale"),
     ("C", 55, "Mediocre — alcuni segnali, molti gap"),
     ("B", 63, "Discreto — struttura utile ma incompleta"),
     ("BB", 71, "Buono — buona base, margini chiari"),
     ("BBB", 78, "Solido — pronto per rafforzamenti mirati"),
-    ("A", 85, "Ottimo — segnali AIO/GEO (AI-Driven Visibility / Generative Engine Optimization) ben impostati"),
-    ("AA", 92, "Eccellente — quasi completo"),
-    ("AAA", 97, "Top — sito molto citabile dalle IA"),
+    ("A", 85, "Ottimo — segnali AIO/GEO ben impostati (euristico)"),
+    ("AA", 92, "Eccellente — superficie machine-readable quasi completa"),
+    ("AAA", 97, "Top — diagnostica probe completa; non equivale a citazioni live garantite"),
 ]
 
 RATING_ORDER = [code for code, _, _ in RATING_SCALE]

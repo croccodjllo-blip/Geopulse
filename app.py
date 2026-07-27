@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import threading
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any
@@ -61,16 +62,23 @@ from services.analysis_store import (
     RESCAN_INTERVALS,
     clamp_hour,
     next_rescan_after,
-    persist_analysis,
 )
+from services.analyze_pipeline import run_analysis_pipeline
 from services.analyzer import (
     ABS_MAX_CRAWL_PAGES,
-    analyze_site,
     critical_crawl_pages,
     normalize_url,
 )
-from services.artifacts import build_optimization_pack
+from services.billing import (
+    construct_event as stripe_construct_event,
+    create_checkout_session,
+    create_portal_session,
+    plan_from_subscription_status,
+    stripe_enabled,
+)
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
+from services.guides import GUIDES
+from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_job
 from services.mailer import (
     build_pack_email,
     mail_configured,
@@ -78,8 +86,7 @@ from services.mailer import (
 )
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
-from services.deep_checks import analyze_monitoring_alerts
-from services.engine_breakdown import compute_engine_breakdown
+from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.signals import compare_with_previous
 
 load_dotenv()
@@ -106,6 +113,13 @@ ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
 ADMIN_PASSWORD = (os.getenv("ADMIN_PASSWORD") or "").strip()
 ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin GeoPulse"
 ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
+ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
+MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
+ANALYZE_BATCH_LIMIT = max(1, int(os.getenv("ANALYZE_BATCH_LIMIT", "5")))
+SITE_AUTHOR_NAME = (os.getenv("SITE_AUTHOR_NAME") or "Alessandro").strip()
+SITE_AUTHOR_TITLE = (
+    os.getenv("SITE_AUTHOR_TITLE") or "Product & editorial · GeoPulse"
+).strip()
 
 
 def resolve_database_uri(raw: str | None) -> str:
@@ -190,11 +204,14 @@ class User(db.Model):
     country = db.Column(db.String(80))
     plan = db.Column(db.String(40), nullable=False, default="free")  # free|plus|pro|admin
     password_hash = db.Column(db.String(255), nullable=False)
+    stripe_customer_id = db.Column(db.String(120))
+    stripe_subscription_id = db.Column(db.String(120))
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     sites = db.relationship("SiteAnalysis", back_populates="user", lazy="dynamic")
+    jobs = db.relationship("AnalysisJob", back_populates="user", lazy="dynamic")
 
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
@@ -320,12 +337,50 @@ class SiteAnalysis(db.Model):
         return ""
 
     @property
+    def signals(self) -> dict[str, Any]:
+        data = self._crawl_blob
+        if isinstance(data, dict):
+            sig = data.get("signals") or {}
+            return sig if isinstance(sig, dict) else {}
+        return {}
+
+    @property
     def rating(self) -> dict[str, Any]:
         return compute_rating(self.aio_score, self.geo_score, self.findings)
 
     @property
     def rescan_active(self) -> bool:
         return (self.rescan_interval or "off").lower() in {"daily", "weekly"}
+
+
+class AnalysisJob(db.Model):
+    """Coda analisi async (pending → running → done|error)."""
+
+    __tablename__ = "analysis_jobs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    site_id = db.Column(db.Integer, db.ForeignKey("site_analyses.id"), index=True)
+    url = db.Column(db.String(500), nullable=False)
+    max_pages = db.Column(db.Integer, nullable=False, default=8)
+    competitors_json = db.Column(db.Text, nullable=False, default="[]")
+    status = db.Column(db.String(20), nullable=False, default="pending", index=True)
+    error = db.Column(db.String(500))
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
+    )
+    started_at = db.Column(db.DateTime)
+    finished_at = db.Column(db.DateTime)
+
+    user = db.relationship("User", back_populates="jobs")
+
+    @property
+    def competitors(self) -> list[str]:
+        try:
+            data = json.loads(self.competitors_json or "[]")
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
 
 
 class AnalysisRun(db.Model):
@@ -704,6 +759,10 @@ def inject_globals() -> dict[str, Any]:
         "canonical_base": base,
         "canonical_url": canonical,
         "admin_email": ADMIN_EMAIL,
+        "stripe_ready": stripe_enabled(),
+        "site_author_name": SITE_AUTHOR_NAME,
+        "site_author_title": SITE_AUTHOR_TITLE,
+        "async_analyze": ASYNC_ANALYZE,
     }
 
 
@@ -758,6 +817,8 @@ def ensure_schema() -> None:
             "role": "TEXT",
             "country": "TEXT",
             "plan": "TEXT DEFAULT 'free'",
+            "stripe_customer_id": "TEXT",
+            "stripe_subscription_id": "TEXT",
         }
         with db.engine.begin() as conn:
             for name, col_type in user_alters.items():
@@ -780,7 +841,129 @@ def ensure_schema() -> None:
                         text(f"ALTER TABLE analysis_runs ADD COLUMN {name} {col_type}")
                     )
 
+    if "analysis_jobs" in tables:
+        job_cols = {col["name"] for col in inspector.get_columns("analysis_jobs")}
+        legacy = {"progress", "message", "payload_json", "result_site_id"} & job_cols
+        needed = {"max_pages", "competitors_json"}
+        if legacy or not needed.issubset(job_cols):
+            # Schema precedente incompatibile: ricrea (coda volatile, ok perdere pending).
+            with db.engine.begin() as conn:
+                conn.execute(text("DROP TABLE IF EXISTS analysis_jobs"))
+            try:
+                inspect(db.engine).clear_cache()
+            except Exception:
+                pass
+            db.create_all()
+            # Verifica: se ancora legacy, forza CREATE senza checkfirst
+            try:
+                inspect(db.engine).clear_cache()
+            except Exception:
+                pass
+            cols_after = {
+                col["name"] for col in inspect(db.engine).get_columns("analysis_jobs")
+            }
+            if {"progress", "message"} & cols_after:
+                with db.engine.begin() as conn:
+                    conn.execute(text("DROP TABLE IF EXISTS analysis_jobs"))
+                AnalysisJob.__table__.create(db.engine, checkfirst=False)
+        else:
+            job_alters = {
+                "site_id": "INTEGER",
+                "max_pages": "INTEGER DEFAULT 8",
+                "competitors_json": "TEXT DEFAULT '[]'",
+                "status": "TEXT DEFAULT 'pending'",
+                "error": "TEXT",
+                "created_at": "DATETIME",
+                "started_at": "DATETIME",
+                "finished_at": "DATETIME",
+                "url": "TEXT",
+                "user_id": "INTEGER",
+            }
+            with db.engine.begin() as conn:
+                for name, col_type in job_alters.items():
+                    if name not in job_cols:
+                        conn.execute(
+                            text(
+                                f"ALTER TABLE analysis_jobs ADD COLUMN {name} {col_type}"
+                            )
+                        )
+
     backfill_analysis_runs()
+
+
+def process_pending_analyze_jobs(
+    *,
+    limit: int = 5,
+    openai_api_key: str | None = None,
+    openai_model: str | None = None,
+) -> dict[str, int]:
+    """Claim e processa job pending. Usato da worker e thread kick."""
+    stats = {"ok": 0, "error": 0, "empty": 0}
+    api_key = openai_api_key if openai_api_key is not None else OPENAI_API_KEY
+    model = openai_model or OPENAI_MODEL
+    for _ in range(max(1, limit)):
+        job = claim_next_job(db.session, AnalysisJob)
+        if job is None:
+            stats["empty"] += 1
+            break
+        user = User.query.get(job.user_id)
+        if user is None:
+            fail_job(db.session, job, "Utente non trovato")
+            stats["error"] += 1
+            continue
+        try:
+            analysis = run_analysis_pipeline(
+                db_session=db.session,
+                SiteAnalysis=SiteAnalysis,
+                AnalysisRun=AnalysisRun,
+                user=user,
+                url=job.url,
+                openai_api_key=api_key,
+                openai_model=model,
+                competitor_urls=job.competitors,
+                run_measured=bool(
+                    MEASURED_SOV_ON_ANALYZE and user.is_pro and api_key
+                ),
+                source="job",
+            )
+            complete_job(db.session, job, site_id=getattr(analysis, "id", None))
+            stats["ok"] += 1
+        except Exception as exc:
+            app.logger.exception("Analyze job %s failed", job.id)
+            fail_job(db.session, job, str(exc)[:500])
+            stats["error"] += 1
+    return stats
+
+
+def kick_analyze_worker() -> None:
+    """Avvia un worker one-shot in background (daemon)."""
+
+    def _run() -> None:
+        try:
+            with app.app_context():
+                process_pending_analyze_jobs(limit=1)
+        except Exception:
+            app.logger.exception("kick_analyze_worker failed")
+
+    threading.Thread(target=_run, daemon=True, name="analyze-kick").start()
+
+
+def render_guide(slug: str):
+    guide = GUIDES.get(slug)
+    if not guide:
+        return redirect(url_for("methodology"))
+    date_iso = "2026-07-27"
+    return render_template(
+        "article.html",
+        article_path=guide["path"],
+        article_eyebrow=guide["eyebrow"],
+        article_title=guide["title"],
+        article_description=guide["description"],
+        article_lede=guide["lede"],
+        article_body=guide["body"],
+        article_date=date_iso,
+        article_date_human="27 luglio 2026",
+    )
 
 
 def backfill_analysis_runs() -> None:
@@ -856,6 +1039,8 @@ def health():
                 "ok": db_ok,
                 "service": "geopulse",
                 "openai": bool(OPENAI_API_KEY),
+                "stripe": stripe_enabled(),
+                "async_analyze": ASYNC_ANALYZE,
                 "time": datetime.now(timezone.utc).isoformat(),
             }
         ),
@@ -925,6 +1110,10 @@ def sitemap_xml():
         ("/", "1.0", "weekly"),
         ("/prodotto", "0.9", "weekly"),
         ("/prezzi", "0.8", "weekly"),
+        ("/metodologia", "0.8", "monthly"),
+        ("/guide/llms-txt", "0.7", "monthly"),
+        ("/guide/schema-ai", "0.7", "monthly"),
+        ("/guide/score-vs-sov", "0.7", "monthly"),
         ("/faq", "0.7", "monthly"),
         ("/chi-siamo", "0.6", "monthly"),
         ("/contatti", "0.6", "monthly"),
@@ -973,6 +1162,26 @@ def contact():
     return render_template("contact.html")
 
 
+@app.route("/metodologia")
+def methodology():
+    return render_guide("metodologia")
+
+
+@app.route("/guide/llms-txt")
+def guide_llms_txt():
+    return render_guide("llms-txt")
+
+
+@app.route("/guide/schema-ai")
+def guide_schema_ai():
+    return render_guide("schema-ai")
+
+
+@app.route("/guide/score-vs-sov")
+def guide_score_vs_sov():
+    return render_guide("score-vs-sov")
+
+
 @app.route("/")
 def index():
     return render_template("landing.html")
@@ -985,7 +1194,128 @@ def product():
 
 @app.route("/prezzi")
 def pricing():
-    return render_template("pricing.html")
+    return render_template("pricing.html", stripe_ready=stripe_enabled())
+
+
+@app.route("/billing/checkout", methods=["POST"])
+@login_required
+def billing_checkout():
+    user = current_user()
+    if not stripe_enabled():
+        flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
+        return redirect(url_for("pro_interest"))
+    if user.is_pro and not user.is_admin:
+        flash("Hai già un piano Plus attivo.", "success")
+        return redirect(url_for("dashboard"))
+    try:
+        session_data = create_checkout_session(
+            user_id=user.id,
+            email=user.email,
+            name=user.name,
+            customer_id=user.stripe_customer_id,
+            success_url=url_for("billing_success", _external=True)
+            + "?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=url_for("pricing", _external=True),
+        )
+        if session_data.get("customer_id") and not user.stripe_customer_id:
+            user.stripe_customer_id = session_data["customer_id"]
+            db.session.commit()
+        return redirect(session_data["url"])
+    except Exception:
+        app.logger.exception("Stripe checkout failed")
+        flash("Impossibile avviare il checkout. Riprova o contattaci.", "error")
+        return redirect(url_for("pricing"))
+
+
+@app.route("/billing/portal", methods=["POST"])
+@login_required
+def billing_portal():
+    user = current_user()
+    if not stripe_enabled() or not user.stripe_customer_id:
+        flash("Portale abbonamento non disponibile.", "warning")
+        return redirect(url_for("pricing"))
+    try:
+        url = create_portal_session(
+            customer_id=user.stripe_customer_id,
+            return_url=url_for("dashboard", _external=True),
+        )
+        return redirect(url)
+    except Exception:
+        app.logger.exception("Stripe portal failed")
+        flash("Impossibile aprire il portale abbonamento.", "error")
+        return redirect(url_for("dashboard"))
+
+
+@app.route("/billing/success")
+@login_required
+def billing_success():
+    flash(
+        "Pagamento ricevuto. Il piano Plus si attiva entro pochi secondi via webhook.",
+        "success",
+    )
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/billing/webhook", methods=["POST"])
+@csrf.exempt
+def billing_webhook():
+    payload = request.get_data()
+    sig = request.headers.get("Stripe-Signature", "")
+    try:
+        event = stripe_construct_event(payload, sig)
+    except Exception as exc:
+        app.logger.warning("Stripe webhook reject: %s", exc)
+        return jsonify({"ok": False}), 400
+
+    etype = event.get("type") or ""
+    data = (event.get("data") or {}).get("object") or {}
+
+    def _user_from_meta(obj: dict) -> User | None:
+        meta = obj.get("metadata") or {}
+        uid = meta.get("geopulse_user_id") or obj.get("client_reference_id")
+        if uid:
+            try:
+                return User.query.get(int(uid))
+            except (TypeError, ValueError):
+                return None
+        customer = obj.get("customer")
+        if customer:
+            return User.query.filter_by(stripe_customer_id=str(customer)).first()
+        return None
+
+    try:
+        if etype == "checkout.session.completed":
+            user = _user_from_meta(data)
+            if user is not None:
+                cust = data.get("customer")
+                sub = data.get("subscription")
+                if cust:
+                    user.stripe_customer_id = str(cust)
+                if sub:
+                    user.stripe_subscription_id = str(sub)
+                if (user.plan or "").lower() != "admin":
+                    user.plan = "plus"
+                db.session.commit()
+        elif etype in {
+            "customer.subscription.updated",
+            "customer.subscription.deleted",
+        }:
+            user = _user_from_meta(data)
+            if user is None and data.get("customer"):
+                user = User.query.filter_by(
+                    stripe_customer_id=str(data.get("customer"))
+                ).first()
+            if user is not None and (user.plan or "").lower() != "admin":
+                user.plan = plan_from_subscription_status(data.get("status"))
+                sub_id = data.get("id")
+                if sub_id:
+                    user.stripe_subscription_id = str(sub_id)
+                db.session.commit()
+    except Exception:
+        app.logger.exception("Stripe webhook handler failed")
+        return jsonify({"ok": False}), 500
+
+    return jsonify({"ok": True})
 
 
 @app.route("/interesse-pro", methods=["GET", "POST"])
@@ -1151,6 +1481,14 @@ def dashboard():
         .order_by(SiteAnalysis.created_at.desc())
         .first()
     )
+    pending_job = (
+        AnalysisJob.query.filter(
+            AnalysisJob.user_id == user.id,
+            AnalysisJob.status.in_(("pending", "running")),
+        )
+        .order_by(AnalysisJob.created_at.desc())
+        .first()
+    )
 
     if form.validate_on_submit():
         try:
@@ -1176,77 +1514,44 @@ def dashboard():
                     "warning",
                 )
             else:
-                try:
-                    previous_run = None
-                    if existing is not None:
-                        previous_run = (
-                            AnalysisRun.query.filter_by(
-                                site_id=existing.id, user_id=user.id
-                            )
-                            .order_by(AnalysisRun.created_at.desc())
-                            .first()
-                        )
-                    competitor_urls = []
-                    raw_comp = (form.competitors.data or "").strip()
-                    if raw_comp:
-                        for line in re.split(r"[\n,;]+", raw_comp):
-                            line = line.strip()
-                            if line:
-                                competitor_urls.append(line)
-                    result = analyze_site(
-                        url,
-                        max_pages=user.crawl_pages,
-                        competitor_urls=competitor_urls[:3] if user.is_pro else [],
-                    )
-                    run_diff = compare_with_previous(
-                        aio_score=result.get("aio_score"),
-                        geo_score=result.get("geo_score"),
-                        findings=result.get("findings"),
-                        previous=previous_run,
-                    )
-                    if run_diff.get("findings"):
-                        result["findings"] = list(result.get("findings") or []) + list(
-                            run_diff["findings"]
-                        )
-                    result["diff"] = run_diff
-                    rating_now = compute_rating(
-                        result.get("aio_score"),
-                        result.get("geo_score"),
-                        result.get("findings"),
-                    )
-                    alerts = analyze_monitoring_alerts(
-                        probes=result.get("probes") or {},
-                        rating=rating_now,
-                        previous=previous_run,
-                        diff=run_diff,
-                    )
-                    if alerts.get("findings"):
-                        result["findings"] = list(result.get("findings") or []) + list(
-                            alerts["findings"]
-                        )
-                    pack = build_optimization_pack(
-                        url,
-                        result["scraped"],
-                        api_key=OPENAI_API_KEY,
-                        model=OPENAI_MODEL,
-                        logger=app.logger,
-                        findings=result.get("findings"),
-                        previous=previous_run,
-                        diff=run_diff,
-                        result=result,
-                    )
-                    latest = persist_analysis(
+                competitor_urls: list[str] = []
+                raw_comp = (form.competitors.data or "").strip()
+                if raw_comp and user.is_pro:
+                    for line in re.split(r"[\n,;]+", raw_comp):
+                        line = line.strip()
+                        if line:
+                            competitor_urls.append(line)
+                if ASYNC_ANALYZE:
+                    job = enqueue_analysis(
                         db.session,
-                        SiteAnalysis=SiteAnalysis,
-                        AnalysisRun=AnalysisRun,
+                        AnalysisJob,
                         user_id=user.id,
                         url=url,
-                        result=result,
-                        pack=pack,
-                        existing=existing,
+                        max_pages=user.crawl_pages,
+                        competitor_urls=competitor_urls[:3],
+                    )
+                    kick_analyze_worker()
+                    flash(
+                        "Analisi in coda. Aggiorniamo lo stato automaticamente…",
+                        "success",
+                    )
+                    return redirect(url_for("dashboard", job=job.id))
+                try:
+                    latest = run_analysis_pipeline(
+                        db_session=db.session,
+                        SiteAnalysis=SiteAnalysis,
+                        AnalysisRun=AnalysisRun,
+                        user=user,
+                        url=url,
+                        openai_api_key=OPENAI_API_KEY,
+                        openai_model=OPENAI_MODEL,
+                        competitor_urls=competitor_urls[:3],
+                        run_measured=bool(
+                            MEASURED_SOV_ON_ANALYZE and user.is_pro and OPENAI_API_KEY
+                        ),
                         source="manual",
                     )
-                    pages_n = result.get("pages_analyzed") or 1
+                    pages_n = int(latest.pages_analyzed or 1)
                     flash(
                         f"Analisi dominio completata su {pages_n} pagine: "
                         "score, findings e pack pronti.",
@@ -1264,6 +1569,24 @@ def dashboard():
                     flash("Errore durante l’analisi. Riprova tra poco.", "error")
         except ValueError as exc:
             flash(str(exc), "error")
+
+    job_id_q = request.args.get("job", type=int)
+    if job_id_q and (
+        pending_job is None
+        or pending_job.id != job_id_q
+    ):
+        qjob = AnalysisJob.query.filter_by(id=job_id_q, user_id=user.id).first()
+        if qjob is not None and qjob.status in {"pending", "running"}:
+            pending_job = qjob
+        elif pending_job is None:
+            pending_job = qjob
+
+    # Refresh latest after possible async completion
+    latest = (
+        SiteAnalysis.query.filter_by(user_id=user.id)
+        .order_by(SiteAnalysis.created_at.desc())
+        .first()
+    )
 
     schedule_form = RescanScheduleForm()
     if latest and not schedule_form.is_submitted():
@@ -1290,7 +1613,6 @@ def dashboard():
                 previous=recent_runs[1],
             )
         elif recent_runs:
-            # Diff già incorporato nei findings dell’ultima run se presente
             diff_findings = [
                 f
                 for f in recent_runs[0].findings
@@ -1338,6 +1660,9 @@ def dashboard():
             robots_text=latest.robots_probed_text or "",
             competitors=latest.competitors,
         )
+        measured = (latest.signals or {}).get("sov_measured")
+        if isinstance(measured, dict):
+            engine_breakdown = apply_measured_sov(engine_breakdown, measured)
 
     return render_template(
         "dashboard.html",
@@ -1362,6 +1687,29 @@ def dashboard():
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
+        pending_job=pending_job,
+        stripe_ready=stripe_enabled(),
+    )
+
+
+@app.route("/dashboard/jobs/<int:job_id>")
+@login_required
+def dashboard_job_status(job_id: int):
+    user = current_user()
+    job = AnalysisJob.query.filter_by(id=job_id, user_id=user.id).first()
+    if job is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    return jsonify(
+        {
+            "ok": True,
+            "id": job.id,
+            "status": job.status,
+            "url": job.url,
+            "error": job.error,
+            "site_id": job.site_id,
+            "created_at": job.created_at.isoformat() if job.created_at else None,
+            "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+        }
     )
 
 

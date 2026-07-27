@@ -35,7 +35,8 @@
     <h2 class="page-section__title">Team e responsabilità editoriale</h2>
     <p class="lede">
       GeoPulse è un prodotto software italiano remote-first.
-      Responsabile contenuti e prodotto: team GeoPulse —
+      Responsabile contenuti e prodotto:
+      <strong>{{ site_author_name }}</strong> ({{ site_author_title }}) —
       contatto <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
       Non operiamo come LocalBusiness con sede fisica al pubblico:
       il rapporto con i clienti è digitale via account e email.
@@ -56,7 +57,9 @@
     <p class="lede">
       Crawl dello stesso dominio, probe di <code>/llms.txt</code>, <code>/robots.txt</code>,
       <code>/sitemap.xml</code> e <code>/ai.txt</code>, poi un report con criticità e artifact
-      da pubblicare. Aggiorniamo il prodotto in pubblico su
+      da pubblicare. Metodologia pubblica su
+      <a href="{{ url_for('methodology') }}">Metodologia</a>.
+      Aggiorniamo il prodotto in pubblico su
       <a href="{{ url_for('product') }}">Prodotto</a> e
       <a href="{{ url_for('faq') }}">FAQ</a>.
     </p>

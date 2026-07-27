@@ -31,7 +31,7 @@ from services.deep_checks import (
     same_host,
     summarize_competitor,
 )
-from services.ssrf import UnsafeURLError, assert_public_http_url, safe_get
+from services.evidence import normalize_finding_evidence
 from services.rating import compute_rating
 from services.signals import (
     analyze_faq_signals,
@@ -41,6 +41,7 @@ from services.signals import (
     detect_html_faq,
     extract_json_ld_from_soup,
 )
+from services.ssrf import UnsafeURLError, assert_public_http_url, safe_get
 
 HTTP_TIMEOUT = 12
 PROBE_TIMEOUT = 6
@@ -789,7 +790,7 @@ def score_site(
         title: str,
         detail: str,
         *,
-        evidence: str = "measured",
+        evidence: str = "estimated",
     ) -> None:
         findings.append(
             {
@@ -797,7 +798,9 @@ def score_site(
                 "severity": severity,
                 "title": title,
                 "detail": detail,
-                "evidence": evidence if evidence in {"measured", "proxy", "estimated"} else "measured",
+                "evidence": evidence
+                if evidence in {"measured", "proxy", "estimated"}
+                else "estimated",
             }
         )
 
@@ -805,7 +808,7 @@ def score_site(
     if len(title) >= 10:
         aio += 10
         geo += 8
-        push("aio", "ok", "Title presente", f"Trovato: “{title[:90]}”")
+        push("aio", "ok", "Title presente", f"Trovato: “{title[:90]}”", evidence="measured")
     else:
         push(
             "aio",
@@ -818,7 +821,7 @@ def score_site(
     if len(description) >= 50:
         aio += 8
         geo += 10
-        push("geo", "ok", "Meta description utile", "Buona base per snippet generativi.")
+        push("geo", "ok", "Meta description utile", "Buona base per snippet generativi.", evidence="measured")
     else:
         push(
             "geo",
@@ -852,7 +855,7 @@ def score_site(
 
     if scraped.get("canonical"):
         geo += 8
-        push("technical", "ok", "Canonical impostato", scraped["canonical"])
+        push("technical", "ok", "Canonical impostato", scraped["canonical"], evidence="measured")
     else:
         push(
             "technical",
@@ -863,7 +866,7 @@ def score_site(
 
     if scraped.get("og_title") or scraped.get("og_description"):
         geo += 6
-        push("geo", "ok", "Open Graph presente", "Utile per anteprime e citazioni.")
+        push("geo", "ok", "Open Graph presente", "Utile per anteprime e citazioni.", evidence="measured")
     else:
         push(
             "geo",
@@ -874,7 +877,7 @@ def score_site(
 
     if scraped.get("has_h1"):
         aio += 6
-        push("aio", "ok", "H1 presente", "Gerarchia semantica rilevata.")
+        push("aio", "ok", "H1 presente", "Gerarchia semantica rilevata.", evidence="measured")
     else:
         push(
             "aio",
@@ -885,7 +888,7 @@ def score_site(
 
     if scraped.get("lang"):
         geo += 6
-        push("geo", "ok", "Lingua dichiarata", f'lang="{scraped["lang"]}"')
+        push("geo", "ok", "Lingua dichiarata", f'lang="{scraped["lang"]}"', evidence="measured")
     else:
         push(
             "geo",
@@ -923,7 +926,7 @@ def score_site(
     sitemap = probes.get("sitemap") or {}
     if sitemap.get("ok"):
         geo += 8
-        push("geo", "ok", "sitemap.xml presente", sitemap.get("url") or "/sitemap.xml")
+        push("geo", "ok", "sitemap.xml presente", sitemap.get("url") or "/sitemap.xml", evidence="measured")
     else:
         push(
             "geo",
@@ -1021,13 +1024,7 @@ def score_site(
             "(content, brand, GEO, tecnico, llms/robots)."
         )
 
-    for f in findings:
-        if isinstance(f, dict) and f.get("evidence") not in {
-            "measured",
-            "proxy",
-            "estimated",
-        }:
-            f["evidence"] = "measured"
+    findings = normalize_finding_evidence(findings)
 
     return {
         "aio_score": _clamp(aio),

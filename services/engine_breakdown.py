@@ -230,8 +230,67 @@ def compute_engine_breakdown(
         "other_sov": other_sov,
         "has_competitors": bool(rival_aios),
         "top_engine": top["label"] if top else None,
+        "measured": None,
         "note": (
             "Stima derivata da score AIO/GEO, policy robots osservata in probe e findings. "
             "Non è polling live su ChatGPT/Perplexity/Claude."
         ),
     }
+
+
+def apply_measured_sov(
+    breakdown: dict[str, Any],
+    measured: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Sovrappone SoV measured (LLM probe) sul breakdown proxy, senza sostituire gli altri engine."""
+    if not measured or not measured.get("available"):
+        return breakdown
+    out = dict(breakdown)
+    engines = [dict(e) for e in (out.get("engines") or [])]
+    measured_engines = {
+        str(e.get("id")): e for e in (measured.get("engines") or []) if isinstance(e, dict)
+    }
+    for eng in engines:
+        m = measured_engines.get(eng.get("id"))
+        if not m:
+            continue
+        rate = m.get("mention_rate")
+        if rate is None:
+            continue
+        eng["propensity"] = _clamp(float(rate))
+        eng["evidence"] = "measured"
+        eng["mention_rate"] = eng["propensity"]
+        eng["band"] = (
+            "high"
+            if eng["propensity"] >= 70
+            else "mid"
+            if eng["propensity"] >= 45
+            else "low"
+            if eng["propensity"] >= 25
+            else "crit"
+        )
+    # Ricalcola share solo se almeno un engine è measured
+    if any(e.get("evidence") == "measured" for e in engines):
+        raw = [max(0.5, float(e.get("propensity") or 0) * 1.0) for e in engines]
+        total = sum(raw) or 1.0
+        for i, eng in enumerate(engines):
+            eng["share"] = round(100.0 * raw[i] / total, 1)
+        drift = round(100.0 - sum(e["share"] for e in engines), 1)
+        if engines:
+            engines[-1]["share"] = round(engines[-1]["share"] + drift, 1)
+        brand_rate = measured.get("brand_mention_rate")
+        if brand_rate is not None:
+            out["brand_sov"] = _clamp(float(brand_rate))
+            out["other_sov"] = round(100.0 - out["brand_sov"], 1)
+            out["rivals_sov"] = 0.0
+        out["evidence"] = "mixed"
+        out["label"] = "Misto (proxy + measured)"
+        out["note"] = measured.get("note") or (
+            "ChatGPT: mention rate da probe LLM. Altri engine restano proxy euristico."
+        )
+    out["engines"] = engines
+    out["composition"] = engines
+    out["measured"] = measured
+    top = max(engines, key=lambda e: e.get("propensity") or 0) if engines else None
+    out["top_engine"] = top["label"] if top else out.get("top_engine")
+    return out

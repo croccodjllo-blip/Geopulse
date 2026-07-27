@@ -86,6 +86,27 @@ https://rivale2.com", class_="analyze-input") }}
       </div>
     </form>
 
+    {% if pending_job and pending_job.status in ('pending', 'running') %}
+    <div
+      class="job-status"
+      id="job-status"
+      data-job-id="{{ pending_job.id }}"
+      data-status-url="{{ url_for('dashboard_job_status', job_id=pending_job.id) }}"
+      role="status"
+      aria-live="polite"
+    >
+      <p class="job-status__label">
+        Analisi {{ pending_job.status }} · <code>{{ pending_job.url }}</code>
+      </p>
+      <p class="job-status__hint">Coda async: aggiornamento automatico…</p>
+    </div>
+    {% elif pending_job and pending_job.status == 'error' %}
+    <div class="job-status job-status--error" role="alert">
+      <p class="job-status__label">Analisi fallita</p>
+      <p class="job-status__hint">{{ pending_job.error or 'Errore sconosciuto' }}</p>
+    </div>
+    {% endif %}
+
     <div class="workspace-grid{% if latest %} workspace-grid--rail{% else %} workspace-grid--solo{% endif %}">
       <div class="workspace-main">
         {% if latest %}
@@ -134,24 +155,24 @@ https://rivale2.com", class_="analyze-input") }}
           {% set health = health_raw if health_raw > 8 else 8 %}
           {% if aio_n >= 90 %}
             {% set band = 'peak' %}
-            {% set propensity = 'Citabilità elevata' %}
-            {% set propensity_lede = 'Le IA sono fortemente propense a raccomandare questo business.' %}
+            {% set propensity = 'Segnali AIO molto forti' %}
+            {% set propensity_lede = 'Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. Non è una garanzia di citazione live.' %}
           {% elif aio_n >= 75 %}
             {% set band = 'high' %}
-            {% set propensity = 'Alta propensione' %}
-            {% set propensity_lede = 'Alta probabilità che le IA citino o raccomandino questo brand.' %}
+            {% set propensity = 'Segnali AIO solidi' %}
+            {% set propensity_lede = 'Buona base machine-readable. Chiudi i gap rimanenti per salire. Score euristico (Stimato), non polling LLM.' %}
           {% elif aio_n >= 55 %}
             {% set band = 'mid' %}
-            {% set propensity = 'Propensione moderata' %}
-            {% set propensity_lede = 'Le IA possono citarvi in contesti mirati: chiudi i gap per salire.' %}
+            {% set propensity = 'Segnali AIO moderati' %}
+            {% set propensity_lede = 'Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn.' %}
           {% elif aio_n >= 35 %}
             {% set band = 'low' %}
-            {% set propensity = 'Propensione emergente' %}
-            {% set propensity_lede = 'Segnali deboli: le IA raramente raccomandano questo business oggi.' %}
+            {% set propensity = 'Segnali AIO emergenti' %}
+            {% set propensity_lede = 'Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file AI.' %}
           {% else %}
             {% set band = 'crit' %}
-            {% set propensity = 'Bassa propensione' %}
-            {% set propensity_lede = 'Citabilità minima: serve un intervento strutturale sui segnali di AI-Driven Visibility (AIO).' %}
+            {% set propensity = 'Segnali AIO critici' %}
+            {% set propensity_lede = 'Base insufficiente: intervento prioritario su title, schema, robots/llms e contenuti citabili.' %}
           {% endif %}
           {% set aio_c = 741.42 %}
           {% set geo_c = 942.48 %}
@@ -253,7 +274,7 @@ https://rivale2.com", class_="analyze-input") }}
                 </svg>
 
                 <div class="pulse-core__hub">
-                  <span class="pulse-core__kicker">AIO · AI-Driven Visibility</span>
+                  <span class="pulse-core__kicker">AIO · AI-Driven Visibility <span class="evidence-badge" data-evidence="proxy">Stimato</span></span>
                   <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
                   <span class="pulse-core__denom">/100</span>
                   <span class="pulse-core__propensity">{{ propensity }}</span>
@@ -262,9 +283,12 @@ https://rivale2.com", class_="analyze-input") }}
             </div>
 
             <div class="pulse-core__intel">
-              <p class="eyebrow">Recommendation propensity</p>
-              <h3 class="pulse-core__title">Quanto le IA raccomandano questo business</h3>
-              <p class="pulse-core__lede">{{ propensity_lede }} <span class="hint">AIO = AI-Driven Visibility · GEO = Generative Engine Optimization.</span></p>
+              <p class="eyebrow">Signal diagnostics <span class="evidence-badge" data-evidence="proxy">Stimato</span></p>
+              <h3 class="pulse-core__title">Quanto sono solidi i segnali AIO/GEO</h3>
+              <p class="pulse-core__lede">
+                {{ propensity_lede }}
+                <span class="hint">AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score da probe/euristiche, non citazioni live garantite.</span>
+              </p>
 
               <div class="pulse-satellites" role="list">
                 <article class="pulse-sat" role="listitem" data-tone="geo">
@@ -279,7 +303,7 @@ https://rivale2.com", class_="analyze-input") }}
                     <span>{{ geo_n }}</span>
                   </div>
                   <div>
-                    <strong>GEO</strong>
+                    <strong>GEO <span class="evidence-badge" data-evidence="proxy">Stimato</span></strong>
                     <em>Generative Engine Optimization</em>
                   </div>
                 </article>
@@ -328,10 +352,16 @@ https://rivale2.com", class_="analyze-input") }}
               <header class="engine-breakdown__head">
                 <div>
                   <p class="eyebrow">AI Engine Breakdown</p>
-                  <h3 class="engine-breakdown__title" id="sov-title">Share of Voice stimato</h3>
+                  <h3 class="engine-breakdown__title" id="sov-title">
+                    {% if engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
+                    Share of Voice
+                    {% else %}
+                    Share of Voice stimato
+                    {% endif %}
+                  </h3>
                   <p class="engine-breakdown__lede">
                     Propensione relativa per answer engine.
-                    <span class="evidence-badge" data-evidence="proxy">{{ engine_breakdown.label }}</span>
+                    <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
                   </p>
                 </div>
                 <div class="engine-breakdown__brand-sov" aria-label="Brand SoV">
@@ -374,6 +404,9 @@ https://rivale2.com", class_="analyze-input") }}
                     <span class="engine-bar__access" data-access="blocked">bot blocked</span>
                     {% elif e.access == 'allow' %}
                     <span class="engine-bar__access" data-access="allow">bot allow</span>
+                    {% endif %}
+                    {% if e.evidence == 'measured' %}
+                    <span class="evidence-badge" data-evidence="measured">Misurato</span>
                     {% endif %}
                   </div>
                   <div class="engine-bar__track" aria-hidden="true">
@@ -511,9 +544,9 @@ https://rivale2.com", class_="analyze-input") }}
                   <div class="finding-list__body">
                     <strong>
                       {{ f.title }}
-                      {% set ev = f.evidence or 'measured' %}
+                      {% set ev = f.evidence or 'estimated' %}
                       <span class="evidence-badge" data-evidence="{{ ev }}">
-                        {% if ev == 'proxy' %}Stimato{% elif ev == 'estimated' %}Stimato{% else %}Misurato{% endif %}
+                        {% if ev == 'measured' %}Misurato{% else %}Stimato{% endif %}
                       </span>
                     </strong>
                     <span>{{ f.detail }}</span>
@@ -692,7 +725,7 @@ https://rivale2.com", class_="analyze-input") }}
             Brand share
             {% if engine_breakdown.top_engine %}· top {{ engine_breakdown.top_engine }}{% endif %}
           </p>
-          <span class="evidence-badge" data-evidence="proxy">proxy</span>
+          <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.evidence or 'proxy' }}</span>
         </div>
         {% endif %}
         <div class="rail-card rail-card--actions">
@@ -753,6 +786,36 @@ https://rivale2.com", class_="analyze-input") }}
       }
     });
   });
+
+  const jobEl = document.getElementById('job-status');
+  if (jobEl) {
+    const statusUrl = jobEl.getAttribute('data-status-url');
+    let tries = 0;
+    const poll = async () => {
+      tries += 1;
+      try {
+        const res = await fetch(statusUrl, { headers: { Accept: 'application/json' } });
+        const data = await res.json();
+        if (!data.ok) return;
+        const label = jobEl.querySelector('.job-status__label');
+        if (label) {
+          label.textContent = `Analisi ${data.status} · ${data.url || ''}`;
+        }
+        if (data.status === 'done') {
+          window.location.href = '{{ url_for("dashboard") }}';
+          return;
+        }
+        if (data.status === 'error') {
+          jobEl.classList.add('job-status--error');
+          const hint = jobEl.querySelector('.job-status__hint');
+          if (hint) hint.textContent = data.error || 'Errore durante l’analisi';
+          return;
+        }
+      } catch (e) { /* ignore transient */ }
+      if (tries < 90) setTimeout(poll, 2000);
+    };
+    setTimeout(poll, 1500);
+  }
 })();
 </script>
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Prezzi{% endblock %}
-{% block meta_description %}Prezzi GeoPulse 2026: piano Free senza carta e waitlist Plus con crawl intero sito, monitoraggio e export per team e agenzie.{% endblock %}
+{% block meta_description %}Prezzi GeoPulse 2026: piano Free senza carta e Plus con crawl intero sito, SoV measured, monitoraggio e export.{% endblock %}
 
 {% block content %}
 <article class="page">
@@ -8,7 +8,7 @@
     <p class="eyebrow">Prezzi</p>
     <h1 class="h-display page-intro__title">Semplici. Scalabili.</h1>
     <p class="lede page-intro__lede">
-      Free per validare. Plus per crawl completo, monitoraggio e export.
+      Free per validare. Plus per crawl completo, SoV measured, monitoraggio e export.
     </p>
   </header>
 
@@ -21,7 +21,7 @@
         <li>Fino a {{ max_sites_free }} siti</li>
         <li>Crawl fino a {{ free_crawl_pages }} pagine</li>
         <li>{{ free_daily_analyses }} analisi / 24h</li>
-        <li>Score + findings critici</li>
+        <li>Score + findings (Misurato/Stimato)</li>
         <li>Pack ZIP</li>
       </ul>
       <a class="btn btn-primary btn-block" href="{{ url_for('register') }}">Inizia gratis</a>
@@ -29,22 +29,37 @@
 
     <section class="plan plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
+      {% if stripe_ready %}
+      <p class="plan__price">Abbonamento<span>/mese</span></p>
+      {% else %}
       <p class="plan__price">In arrivo</p>
+      {% endif %}
       <p class="plan__desc">Per team che ottimizzano più brand in continuo.</p>
       <ul class="plan__features">
         <li>Più siti e analisi</li>
         <li>Crawl dell’intero sito</li>
+        <li>SoV measured (LLM probe)</li>
         <li>Re-scan giornaliero/settimanale</li>
         <li>Export CSV e ZIP multi-sito</li>
         <li>Storico run avanzato</li>
       </ul>
+      {% if stripe_ready and current_user %}
+      <form method="post" action="{{ url_for('billing_checkout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button type="submit" class="btn btn-primary btn-block">Passa a Plus</button>
+      </form>
+      {% elif stripe_ready %}
+      <a class="btn btn-primary btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">Accedi e passa a Plus</a>
+      {% else %}
       <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">Prenota interesse</a>
+      {% endif %}
     </section>
   </div>
 
   <p class="plan-note">
     Domande? <a href="mailto:info@geopulse.it">info@geopulse.it</a>
     · <a href="{{ url_for('faq') }}">FAQ</a>
+    · <a href="{{ url_for('methodology') }}">Metodologia</a>
     · <a href="{{ url_for('register') }}">Account Free</a>
   </p>
 </article>

@@ -23,7 +23,7 @@
     <meta property="og:image" content="{{ url_for('static', filename='img/hero-earth.jpg', _external=True) }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#0B1120" />
-    <meta name="author" content="Team GeoPulse" />
+    <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ canonical_base }}/chi-siamo" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -47,6 +47,7 @@
         <nav class="nav-links" aria-label="Principale">
           <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
           <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Prezzi</a>
+          <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">Metodologia</a>
           <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
           <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">Chi siamo</a>
           <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">Contatti</a>
@@ -95,6 +96,8 @@
           <p class="site-footer__label">Prodotto</p>
           <a href="{{ url_for('product') }}">Come funziona</a>
           <a href="{{ url_for('pricing') }}">Prezzi</a>
+          <a href="{{ url_for('methodology') }}">Metodologia</a>
+          <a href="{{ url_for('guide_llms_txt') }}">Guida llms.txt</a>
           <a href="{{ url_for('faq') }}">FAQ</a>
           <a href="{{ url_for('about') }}">Chi siamo</a>
         </div>

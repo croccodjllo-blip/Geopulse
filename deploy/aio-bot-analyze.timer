@@ -1,0 +1,12 @@
+[Unit]
+Description=GeoPulse async analyze queue every 2 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+AccuracySec=30s
+Persistent=true
+Unit=aio-bot-analyze.service
+
+[Install]
+WantedBy=timers.target

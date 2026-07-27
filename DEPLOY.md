@@ -153,6 +153,20 @@ systemctl list-timers | grep aio-bot-rescan
 
 Esecuzione manuale: `sudo -u aio-bot /opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/rescan_worker.py -v`
 
+### Analyze async queue (timer)
+
+```bash
+sudo cp /opt/aio-bot/deploy/aio-bot-analyze.service /etc/systemd/system/
+sudo cp /opt/aio-bot/deploy/aio-bot-analyze.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now aio-bot-analyze.timer
+systemctl list-timers | grep aio-bot-analyze
+```
+
+Esecuzione manuale: `sudo -u aio-bot /opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/analyze_worker.py -v`
+
+Env utili: `ASYNC_ANALYZE=1`, `ANALYZE_BATCH_LIMIT=5`, `MEASURED_SOV_ON_ANALYZE=1`.
+
 ### Backup SQLite (timer giornaliero)
 
 ```bash
