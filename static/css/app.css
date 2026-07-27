@@ -3869,6 +3869,18 @@ body.app-body:not(.body-dash) {
 
 .body-dash .pro-upsell a { color: var(--signal-soft); }
 
+.body-dash .btn-primary {
+  background: var(--signal);
+  color: #fff;
+  border-color: var(--signal-deep);
+  box-shadow: 0 1px 3px rgba(79, 110, 247, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.body-dash .btn-primary:hover {
+  background: var(--signal-deep);
+  box-shadow: 0 4px 14px rgba(79, 110, 247, 0.45);
+}
+
 /* Tabs Score / SoV */
 .report-tabs {
   display: inline-flex;
