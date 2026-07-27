@@ -1,0 +1,33 @@
+{# Contenuto citabile condiviso sulle pagine account (anti thin-page / E-E-A-T). #}
+<section class="auth-help" aria-label="Informazioni account GeoPulse">
+  <h2 class="auth-help__title">Come funziona l’account GeoPulse</h2>
+  <p class="auth-help__text">
+    GeoPulse è il SaaS di
+    <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>
+    per <strong>AI-Driven Visibility (AIO)</strong> e
+    <strong>Generative Engine Optimization (GEO)</strong>.
+    Dopo l’accesso analizzi un dominio pubblico, leggi findings prioritizzati e scarichi il pack
+    (<code>llms.txt</code>, JSON-LD, meta, <code>robots.txt</code>).
+  </p>
+  <p class="auth-help__text">
+    Aggiornato il <time datetime="2026-07-27">27/07/2026</time>.
+    Metodo e limiti degli score:
+    <a href="{{ url_for('methodology') }}">metodologia</a>,
+    <a href="{{ url_for('guide_score_vs_sov') }}">score vs Share of Voice</a>,
+    riferimenti
+    <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>
+    e
+    <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llms.txt</a>.
+    Supporto:
+    <a href="mailto:info@geopulse.it">info@geopulse.it</a>
+    ·
+    <a href="{{ url_for('contact') }}">Contatti</a>
+    ·
+    <a href="{{ url_for('privacy') }}">Privacy</a>.
+  </p>
+  <ul class="auth-help__list">
+    <li>GEO ≠ GIS · AIO ≠ All-in-One: metriche di citabilità nelle risposte generative.</li>
+    <li>Gli score di default sono probe/euristiche (badge Stimato); Misurato solo su segnali osservati.</li>
+    <li>Non chiediamo la carta sul piano Free; i dati di analisi restano nel tuo account.</li>
+  </ul>
+</section>

@@ -548,6 +548,46 @@ body.app-body:not(.body-dash) {
   line-height: 1.1;
 }
 .auth-lede { margin-top: 0.7rem; }
+.auth-notes {
+  margin: 1.25rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+.auth-notes__title {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.auth-notes p {
+  margin: 0 0 0.65rem;
+  color: var(--slate);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.auth-help {
+  margin: 1.35rem 0 0.5rem;
+  padding: 1rem 0 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+.auth-help__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.auth-help__text {
+  margin: 0 0 0.65rem;
+  color: var(--slate);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.auth-help__list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--slate);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.auth-help__list li { margin-bottom: 0.35rem; }
 .auth-wrap {
   width: min(500px, 100%);
   margin: 0 auto;

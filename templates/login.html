@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Accedi{% endblock %}
+{% block meta_description %}Accedi a GeoPulse: dashboard per score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings e pack llms.txt/JSON-LD.{% endblock %}
+{% block canonical %}{{ canonical_base }}/login{% endblock %}
 
 {% block content %}
 <section class="auth-shell">
@@ -18,9 +20,12 @@
   </aside>
 
   <div class="auth-wrap">
-    <p class="eyebrow">Accesso</p>
+    <p class="eyebrow">Accesso · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
     <h1 class="h-display auth-title">Bentornato</h1>
-    <p class="lede auth-lede">Entra in dashboard e lancia l’analisi del tuo sito.</p>
+    <p class="lede auth-lede">
+      Entra in dashboard, analizza il dominio e pubblica il pack per crawler IA e answer engine.
+      Piano Free senza carta; Plus in waitlist per crawl intero sito e limiti più alti.
+    </p>
 
     <form method="post" class="form-grid panel" novalidate>
       {{ form.hidden_tag() }}
@@ -40,9 +45,24 @@
       {{ form.submit(class_="btn btn-primary btn-block") }}
     </form>
 
+    <div class="auth-notes">
+      <h2 class="auth-notes__title">Cosa trovi in dashboard</h2>
+      <p>
+        Score AIO/GEO da probe ed euristiche, findings con badge Stimato/Misurato,
+        pagine deboli del crawl e artifact pronti da copiare o scaricare in ZIP.
+        Documentazione: <a href="{{ url_for('product') }}">prodotto</a>,
+        <a href="{{ url_for('methodology') }}">metodologia</a>,
+        <a href="{{ url_for('faq') }}">FAQ</a>.
+      </p>
+    </div>
+
+    {% include "partials/auth_help.html" %}
+
     <p class="switch-line">
       Nuovo su GeoPulse?
       <a href="{{ url_for('register') }}">Crea account</a>
+      ·
+      <a href="{{ url_for('pricing') }}">Prezzi</a>
     </p>
   </div>
 </section>

@@ -67,20 +67,31 @@ GUIDES: dict[str, dict[str, str]] = {
         "eyebrow": "Guida",
         "title": "Schema.org per answer engine (AIO/GEO)",
         "description": "Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine Optimization: Organization, WebSite, FAQPage, SoftwareApplication, Article.",
-        "lede": "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity leggibile a crawler e modelli.",
+        "lede": "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity leggibile a crawler e modelli. Aggiornato 27/07/2026.",
         "body": """
   <section class="page-section">
     <h2 class="page-section__title">Tipi prioritari</h2>
     <ul class="plain-list">
       <li><strong>Organization</strong> + <strong>WebSite</strong> collegati via @id</li>
-      <li><strong>FAQPage</strong> per Q&A tipizzate</li>
+      <li><strong>FAQPage</strong> per Q&A tipizzate allineate all’HTML visibile</li>
       <li><strong>SoftwareApplication</strong> o Product se vendi software</li>
-      <li><strong>Article</strong> / HowTo per guide evergreen</li>
+      <li><strong>Article</strong> / HowTo per guide evergreen con author e date</li>
     </ul>
+    <p class="lede">Riferimento normativo: <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">schema.org</a>. In GeoPulse i tipi rilevati alimentano score AIO/GEO (probe Misurato).</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Errori comuni</h2>
-    <p class="lede">JSON-LD orfano senza tipi chiave, sameAs solo self-referenziali, FAQ senza acceptedAnswer, Organization senza contatto. GeoPulse li segnala nei findings.</p>
+    <p class="lede">JSON-LD orfano senza tipi chiave, sameAs solo self-referenziali, FAQ senza acceptedAnswer, Organization senza contatto o logo. GeoPulse li segnala nei findings.</p>
+  </section>
+  <section class="page-section">
+    <h2 class="page-section__title">Checklist minima</h2>
+    <ul class="plain-list">
+      <li>name + url + email (o telephone) su Organization</li>
+      <li>sameAs verso profili esterni reali (non pagine interne del sito)</li>
+      <li>logo ImageObject con URL assoluto https</li>
+      <li>FAQPage solo se le domande sono visibili in pagina</li>
+    </ul>
+    <p class="lede">Vedi anche <a href="/metodologia">metodologia</a> e <a href="/guide/llms-txt">llms.txt</a>.</p>
   </section>
 """,
     },

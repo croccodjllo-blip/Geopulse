@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Registrati{% endblock %}
+{% block meta_description %}Crea un account Free GeoPulse: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito.{% endblock %}
+{% block canonical %}{{ canonical_base }}/register{% endblock %}
 
 {% block content %}
 <section class="auth-shell">
@@ -18,11 +20,12 @@
   </aside>
 
   <div class="auth-wrap auth-wrap--wide">
-    <p class="eyebrow">Registrazione</p>
+    <p class="eyebrow">Registrazione · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
     <h1 class="h-display auth-title">Crea account</h1>
     <p class="lede auth-lede">
       Raccontaci chi sei e il sito da ottimizzare: partiamo da lì con l’analisi
       AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO).
+      Email univoca per account; supporto su <a href="mailto:info@geopulse.it">info@geopulse.it</a>.
     </p>
 
     <form method="post" class="form-grid form-grid--2 panel" novalidate>
@@ -101,11 +104,15 @@
       </div>
     </form>
 
+    {% include "partials/auth_help.html" %}
+
     <p class="switch-line">
       Hai già un account?
       <a href="{{ url_for('login') }}">Accedi</a>
       ·
       <a href="{{ url_for('forgot_password') }}">Password dimenticata?</a>
+      ·
+      <a href="{{ url_for('pricing') }}">Prezzi</a>
     </p>
   </div>
 </section>

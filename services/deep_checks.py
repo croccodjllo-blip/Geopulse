@@ -612,7 +612,12 @@ def analyze_crawl_aggregate(
         return {"aio": aio, "geo": geo, "findings": findings, "coverage": 0.0}
 
     titles = [(p.get("title") or "").strip().lower() for p in pages]
-    descs = [(p.get("description") or "").strip().lower() for p in pages]
+    # Ignora description vuote: non sono “duplicate” utili (spesso storage incompleto).
+    descs = [
+        (p.get("description") or "").strip().lower()
+        for p in pages
+        if (p.get("description") or "").strip()
+    ]
     title_dupes = [t for t, n in Counter(titles).items() if t and n > 1]
     desc_dupes = [d for d, n in Counter(descs).items() if d and n > 1]
     if title_dupes:

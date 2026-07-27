@@ -686,6 +686,7 @@ def critical_crawl_pages(pages: list[dict[str, Any]] | None) -> list[dict[str, A
 _STORAGE_PAGE_KEYS = (
     "url",
     "title",
+    "description",
     "aio_score",
     "geo_score",
     "issues",
@@ -944,11 +945,11 @@ def score_site(
             {
                 "url": p.get("url") or sc.get("final_url"),
                 "title": p.get("title") or sc.get("title"),
-                "description": sc.get("description"),
-                "word_count": sc.get("word_count"),
-                "status_code": sc.get("status_code"),
-                "response_ms": sc.get("response_ms"),
-                "internal_hrefs": sc.get("internal_hrefs") or [],
+                "description": p.get("description") or sc.get("description") or "",
+                "word_count": p.get("word_count") if p.get("word_count") is not None else sc.get("word_count"),
+                "status_code": p.get("status_code") if p.get("status_code") is not None else sc.get("status_code"),
+                "response_ms": p.get("response_ms") if p.get("response_ms") is not None else sc.get("response_ms"),
+                "internal_hrefs": sc.get("internal_hrefs") or p.get("internal_hrefs") or [],
                 "aio_score": p.get("aio_score"),
                 "geo_score": p.get("geo_score"),
                 "issues": p.get("issues") or [],
@@ -1143,6 +1144,7 @@ def analyze_site(
         {
             "url": p.get("url"),
             "title": p.get("title") or "",
+            "description": ((p.get("scraped") or {}).get("description") or "")[:300],
             "aio_score": p.get("aio_score"),
             "geo_score": p.get("geo_score"),
             "issues": p.get("issues") or [],
