@@ -105,10 +105,13 @@ from services.citation_monitor import citation_monitor_available
 load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-FREE_DAILY_ANALYSES = max(1, int(os.getenv("FREE_DAILY_ANALYSES", "10")))
-MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "5")))
-PRO_DAILY_ANALYSES = max(FREE_DAILY_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
+# Piano Free: 1 sito + 2 analisi lifetime (nessun reset giornaliero).
+FREE_TOTAL_ANALYSES = max(1, int(os.getenv("FREE_TOTAL_ANALYSES", "2")))
+MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "1")))
+PRO_DAILY_ANALYSES = max(FREE_TOTAL_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
 MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
+# Alias template (Free non ha più quota 24h; nome storico free_daily_analyses).
+FREE_DAILY_ANALYSES = FREE_TOTAL_ANALYSES
 FREE_CRAWL_PAGES = max(1, min(20, int(os.getenv("FREE_CRAWL_PAGES", "8"))))
 # Piano Plus: 0 = crawl intero sito (tetto operativo ABS_MAX_CRAWL_PAGES).
 _PRO_CRAWL_RAW = int(os.getenv("PRO_CRAWL_PAGES", "0"))
@@ -292,7 +295,16 @@ class User(db.Model):
 
     @property
     def daily_limit(self) -> int:
-        return PRO_DAILY_ANALYSES if self.is_pro else FREE_DAILY_ANALYSES
+        """Plus: analisi / 24h. Free: tetto lifetime (nessun reset)."""
+        return PRO_DAILY_ANALYSES if self.is_pro else FREE_TOTAL_ANALYSES
+
+    @property
+    def analysis_limit(self) -> int:
+        return self.daily_limit
+
+    @property
+    def analysis_limit_lifetime(self) -> bool:
+        return not self.is_pro
 
     @property
     def crawl_pages(self) -> int:
@@ -864,7 +876,8 @@ def inject_globals() -> dict[str, Any]:
         "current_user": current_user(),
         "csrf_token": generate_csrf,
         "max_sites_free": MAX_SITES_FREE,
-        "free_daily_analyses": FREE_DAILY_ANALYSES,
+        "free_daily_analyses": FREE_TOTAL_ANALYSES,
+        "free_total_analyses": FREE_TOTAL_ANALYSES,
         "free_crawl_pages": FREE_CRAWL_PAGES,
         "pro_crawl_pages": PRO_CRAWL_PAGES,
         "pro_crawl_unlimited": PRO_CRAWL_UNLIMITED,
@@ -1142,6 +1155,106 @@ def analyses_today(user_id: int) -> int:
             AnalysisRun.created_at >= start,
         ).count()
     )
+
+
+def analyses_total(user_id: int) -> int:
+    """Conteggio lifetime di AnalysisRun per account (piano Free)."""
+    return AnalysisRun.query.filter_by(user_id=user_id).count()
+
+
+def analyses_used_for_quota(user: User) -> int:
+    if user.is_pro:
+        return analyses_today(user.id)
+    return analyses_total(user.id)
+
+
+def free_analyses_exhausted(user: User) -> bool:
+    if user.is_pro:
+        return False
+    return analyses_total(user.id) >= FREE_TOTAL_ANALYSES
+
+
+def wants_json_response() -> bool:
+    if request.path.startswith("/api/"):
+        return True
+    if request.is_json:
+        return True
+    accept = request.accept_mimetypes
+    best = accept.best_match(["application/json", "text/html"])
+    return bool(
+        best == "application/json"
+        and accept[best] >= accept["text/html"]
+    )
+
+
+FREE_QUOTA_BANNER = (
+    "Hai esaurito le tue analisi gratuite. Passa al piano Plus per analizzare "
+    "interi siti e monitorare i tuoi clienti"
+)
+
+
+def quota_block_response(
+    *,
+    message: str,
+    code: str = "quota_exceeded",
+) -> Any:
+    """HTTP 423 (JSON) oppure redirect a /prezzi (HTML)."""
+    if wants_json_response():
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": code,
+                    "message": message,
+                    "upgrade_url": url_for("pricing"),
+                }
+            ),
+            423,
+        )
+    flash(message, "warning")
+    return redirect(url_for("pricing"))
+
+
+def enforce_analyze_limits(
+    user: User,
+    *,
+    url: str,
+    existing: SiteAnalysis | None,
+) -> Any | None:
+    """
+    Controlla siti + quota analisi.
+    Ritorna una Response di blocco, oppure None se l’analisi può procedere.
+    """
+    site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
+    max_sites = user.max_sites
+    if existing is None and site_count >= max_sites:
+        msg = (
+            f"Piano {user.plan_label}: massimo {max_sites} "
+            f"{'sito' if max_sites == 1 else 'siti'}. "
+            "Riusa un URL già analizzato o passa a Plus."
+        )
+        return quota_block_response(message=msg, code="site_limit_exceeded")
+
+    if user.is_pro:
+        if not limiter.allow(
+            f"analyze:{user.id}",
+            limit=user.daily_limit,
+            window_seconds=86400,
+        ):
+            msg = (
+                f"Limite raggiunto: max {user.daily_limit} analisi ogni 24 ore "
+                f"(piano {user.plan_label})."
+            )
+            return quota_block_response(message=msg, code="daily_limit_exceeded")
+        return None
+
+    used = analyses_total(user.id)
+    if used >= FREE_TOTAL_ANALYSES:
+        return quota_block_response(
+            message=FREE_QUOTA_BANNER + ".",
+            code="free_analyses_exhausted",
+        )
+    return None
 
 
 def history_limit_for(user: User) -> int:
@@ -1774,81 +1887,64 @@ def dashboard():
         try:
             url = normalize_url(form.url.data)
             existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
-            site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
-            max_sites = user.max_sites
-            daily_limit = user.daily_limit
-            if existing is None and site_count >= max_sites:
-                flash(
-                    f"Piano {user.plan_label}: massimo {max_sites} siti. "
-                    "Riusa un URL già analizzato o passa a Plus.",
-                    "warning",
+            blocked = enforce_analyze_limits(user, url=url, existing=existing)
+            if blocked is not None:
+                return blocked
+            competitor_urls: list[str] = []
+            raw_comp = (form.competitors.data or "").strip()
+            if raw_comp and user.is_pro:
+                for line in re.split(r"[\n,;]+", raw_comp):
+                    line = line.strip()
+                    if line:
+                        competitor_urls.append(line)
+            if ASYNC_ANALYZE:
+                job = enqueue_analysis(
+                    db.session,
+                    AnalysisJob,
+                    user_id=user.id,
+                    url=url,
+                    max_pages=user.crawl_pages,
+                    competitor_urls=competitor_urls[:3],
                 )
-            elif not limiter.allow(
-                f"analyze:{user.id}",
-                limit=daily_limit,
-                window_seconds=86400,
-            ):
+                kick_analyze_worker()
                 flash(
-                    f"Limite raggiunto: max {daily_limit} analisi ogni 24 ore "
-                    f"(piano {user.plan_label}).",
-                    "warning",
+                    "Analisi in coda. Aggiorniamo lo stato automaticamente…",
+                    "success",
                 )
-            else:
-                competitor_urls: list[str] = []
-                raw_comp = (form.competitors.data or "").strip()
-                if raw_comp and user.is_pro:
-                    for line in re.split(r"[\n,;]+", raw_comp):
-                        line = line.strip()
-                        if line:
-                            competitor_urls.append(line)
-                if ASYNC_ANALYZE:
-                    job = enqueue_analysis(
-                        db.session,
-                        AnalysisJob,
-                        user_id=user.id,
-                        url=url,
-                        max_pages=user.crawl_pages,
-                        competitor_urls=competitor_urls[:3],
-                    )
-                    kick_analyze_worker()
-                    flash(
-                        "Analisi in coda. Aggiorniamo lo stato automaticamente…",
-                        "success",
-                    )
-                    return redirect(url_for("dashboard", job=job.id))
-                try:
-                    latest = run_analysis_pipeline(
-                        db_session=db.session,
-                        SiteAnalysis=SiteAnalysis,
-                        AnalysisRun=AnalysisRun,
-                        user=user,
-                        url=url,
-                        openai_api_key=OPENAI_API_KEY,
-                        openai_model=OPENAI_MODEL,
-                        competitor_urls=competitor_urls[:3],
-                        run_measured=bool(
-                            MEASURED_SOV_ON_ANALYZE
-                            and user.is_pro
-                            and measured_sov_available()
-                        ),
-                        source="manual",
-                    )
-                    pages_n = int(latest.pages_analyzed or 1)
-                    flash(
-                        f"Analisi dominio completata su {pages_n} pagine: "
-                        "score, findings e pack pronti.",
-                        "success",
-                    )
-                except requests.Timeout:
-                    flash("Timeout nel raggiungimento del sito. Riprova.", "error")
-                except requests.RequestException:
-                    flash(
-                        "Impossibile raggiungere il sito. Verifica l’URL e riprova.",
-                        "error",
-                    )
-                except Exception:
-                    app.logger.exception("Dashboard analyze failed")
-                    flash("Errore durante l’analisi. Riprova tra poco.", "error")
+                return redirect(url_for("dashboard", job=job.id))
+            try:
+                latest = run_analysis_pipeline(
+                    db_session=db.session,
+                    SiteAnalysis=SiteAnalysis,
+                    AnalysisRun=AnalysisRun,
+                    user=user,
+                    url=url,
+                    openai_api_key=OPENAI_API_KEY,
+                    openai_model=OPENAI_MODEL,
+                    competitor_urls=competitor_urls[:3],
+                    run_measured=bool(
+                        MEASURED_SOV_ON_ANALYZE
+                        and user.is_pro
+                        and measured_sov_available()
+                    ),
+                    source="manual",
+                )
+                pages_n = int(latest.pages_analyzed or 1)
+                flash(
+                    f"Analisi dominio completata su {pages_n} pagine: "
+                    "score, findings e pack pronti.",
+                    "success",
+                )
+            except requests.Timeout:
+                flash("Timeout nel raggiungimento del sito. Riprova.", "error")
+            except requests.RequestException:
+                flash(
+                    "Impossibile raggiungere il sito. Verifica l’URL e riprova.",
+                    "error",
+                )
+            except Exception:
+                app.logger.exception("Dashboard analyze failed")
+                flash("Errore durante l’analisi. Riprova tra poco.", "error")
         except ValueError as exc:
             flash(str(exc), "error")
 
@@ -1879,6 +1975,8 @@ def dashboard():
         )
 
     used_today = analyses_today(user.id)
+    analyses_used = analyses_used_for_quota(user)
+    free_exhausted = free_analyses_exhausted(user)
     run_diff = None
     if latest is not None:
         recent_runs = (
@@ -1970,7 +2068,11 @@ def dashboard():
         js_crawl_ready=js_crawl_available(),
         gsc=gsc_status(),
         used_today=used_today,
+        analyses_used=analyses_used,
         daily_limit=user.daily_limit,
+        analysis_limit_lifetime=user.analysis_limit_lifetime,
+        free_exhausted=free_exhausted,
+        free_quota_banner=FREE_QUOTA_BANNER,
         max_sites=user.max_sites,
         crawl_pages_limit=user.crawl_pages,
         crawl_unlimited=user.crawl_unlimited,

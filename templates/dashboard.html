@@ -43,15 +43,22 @@
           <dd>{% if crawl_unlimited %}Intero sito{% else %}{{ crawl_pages_limit }} pag.{% endif %}</dd>
         </div>
         <div>
-          <dt>Quote 24h</dt>
-          <dd>{{ used_today }}/{{ daily_limit }}</dd>
+          <dt>{% if analysis_limit_lifetime %}Analisi totali{% else %}Quote 24h{% endif %}</dt>
+          <dd>{{ analyses_used }}/{{ daily_limit }}</dd>
         </div>
       </dl>
     </div>
   </header>
 
   <div class="workspace-body">
-    <form method="post" class="js-analyze-form analyze-form" novalidate>
+    {% if free_exhausted %}
+    <aside class="quota-banner" role="alert">
+      <p class="quota-banner__text">{{ free_quota_banner }}</p>
+      <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">Vedi piano Plus</a>
+    </aside>
+    {% endif %}
+
+    <form method="post" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
       {{ form.hidden_tag() }}
       <div class="analyze-composer analyze-composer--cmd">
         <div class="analyze-composer__head">
@@ -59,7 +66,9 @@
           <div>
             <p class="analyze-composer__label">Nuova analisi</p>
             <p class="analyze-composer__sub">
-              {% if crawl_unlimited %}
+              {% if free_exhausted %}
+              Quote Free esaurite · passa a Plus per continuare
+              {% elif crawl_unlimited %}
               Crawl BFS · intero sito ({{ user_plan }})
               {% else %}
               Crawl stesso dominio · max {{ crawl_pages_limit }} pagine ({{ user_plan }})
@@ -70,8 +79,8 @@
         <div class="field analyze-composer__field">
           <label class="visually-hidden" for="url">URL del dominio</label>
           <div class="analyze-row">
-            {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input") }}
-            {{ form.submit(class_="btn btn-signal analyze-submit") }}
+            {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
+            {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
           </div>
           {% if is_pro %}
           <div class="field analyze-competitors">

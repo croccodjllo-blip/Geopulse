@@ -1551,6 +1551,32 @@ body.app-body:not(.body-dash) {
 
 .analyze-form { margin-bottom: 1.75rem; }
 
+.quota-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1.25rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--warn-brd);
+  border-radius: var(--radius);
+  background: var(--warn-bg);
+  color: var(--warn);
+  animation: rise 420ms var(--ease) both;
+}
+.quota-banner__text {
+  margin: 0;
+  flex: 1 1 16rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: inherit;
+}
+.quota-banner__cta {
+  flex: 0 0 auto;
+}
+
 .job-status {
   margin: 0 0 1.25rem;
   padding: 0.9rem 1.1rem;
