@@ -256,6 +256,11 @@ def apply_measured_sov(
             continue
         rate = m.get("mention_rate")
         if rate is None:
+            # Preserve unavailable/pending reason from measured probe
+            if m.get("evidence") in {"unavailable", "pending"}:
+                eng["evidence"] = m.get("evidence")
+                if m.get("reason"):
+                    eng["reason"] = m.get("reason")
             continue
         eng["propensity"] = _clamp(float(rate))
         eng["evidence"] = "measured"

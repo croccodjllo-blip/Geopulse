@@ -2,6 +2,8 @@
 
 OpenAI / Perplexity / Anthropic (Claude) = measured when the matching API key is set.
 Other engines remain proxy placeholders with explicit evidence labels.
+
+Keys are read at call-time (not only at import) so load_dotenv / systemd env stay in sync.
 """
 
 from __future__ import annotations
@@ -15,46 +17,111 @@ from services.prompt_bank import default_prompts
 
 logger = logging.getLogger(__name__)
 
-OPENAI_API_KEY = (os.getenv("OPENAI_API_KEY") or "").strip()
-OPENAI_MODEL = (os.getenv("OPENAI_MODEL") or "gpt-4o-mini").strip()
-PERPLEXITY_API_KEY = (os.getenv("PERPLEXITY_API_KEY") or "").strip()
-PERPLEXITY_MODEL = (os.getenv("PERPLEXITY_MODEL") or "sonar").strip()
-ANTHROPIC_API_KEY = (
-    (os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or "").strip()
-)
-ANTHROPIC_MODEL = (
-    os.getenv("ANTHROPIC_MODEL") or os.getenv("CLAUDE_MODEL") or "claude-haiku-4-5-20251001"
-).strip()
-ANTHROPIC_API_VERSION = (os.getenv("ANTHROPIC_API_VERSION") or "2023-06-01").strip()
+
+def _env(*names: str, default: str = "") -> str:
+    for name in names:
+        val = (os.getenv(name) or "").strip()
+        if val:
+            return val
+    return default
+
+
+def _openai_key() -> str:
+    return _env("OPENAI_API_KEY")
+
+
+def _openai_model() -> str:
+    return _env("OPENAI_MODEL", default="gpt-4o-mini") or "gpt-4o-mini"
+
+
+def _perplexity_key() -> str:
+    return _env("PERPLEXITY_API_KEY")
+
+
+def _perplexity_model() -> str:
+    return _env("PERPLEXITY_MODEL", default="sonar") or "sonar"
+
+
+def _anthropic_key() -> str:
+    return _env("ANTHROPIC_API_KEY", "CLAUDE_API_KEY")
+
+
+def _anthropic_model() -> str:
+    return (
+        _env("ANTHROPIC_MODEL", "CLAUDE_MODEL", default="claude-haiku-4-5-20251001")
+        or "claude-haiku-4-5-20251001"
+    )
+
+
+def _anthropic_version() -> str:
+    return _env("ANTHROPIC_API_VERSION", default="2023-06-01") or "2023-06-01"
+
+
+# Back-compat aliases (may be empty if read before load_dotenv in odd import orders).
+OPENAI_API_KEY = _openai_key()
+OPENAI_MODEL = _openai_model()
+PERPLEXITY_API_KEY = _perplexity_key()
+PERPLEXITY_MODEL = _perplexity_model()
+ANTHROPIC_API_KEY = _anthropic_key()
+ANTHROPIC_MODEL = _anthropic_model()
+ANTHROPIC_API_VERSION = _anthropic_version()
 
 
 def citation_monitor_available() -> bool:
-    return bool(OPENAI_API_KEY or PERPLEXITY_API_KEY or ANTHROPIC_API_KEY)
+    return bool(_openai_key() or _perplexity_key() or _anthropic_key())
+
+
+def _normalize_needle(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", (text or "").lower())
 
 
 def _needles(brand: str, domain: str) -> set[str]:
-    return {n for n in {(brand or "").lower(), (domain or "").lower()} if n and len(n) > 2}
+    raw = {(brand or "").strip(), (domain or "").strip()}
+    out: set[str] = set()
+    for item in raw:
+        if not item or len(item) < 3:
+            continue
+        out.add(item.lower())
+        compact = _normalize_needle(item)
+        if len(compact) >= 3:
+            out.add(compact)
+        if "." in item:
+            apex = item.split(".")[0].lower()
+            if len(apex) >= 3:
+                out.add(apex)
+                out.add(_normalize_needle(apex))
+    return out
 
 
 def _mentioned(text: str, needles: set[str]) -> bool:
-    return any(re.search(re.escape(n), text, re.I) for n in needles)
+    blob = text or ""
+    lower = blob.lower()
+    compact = _normalize_needle(blob)
+    for n in needles:
+        if not n:
+            continue
+        if n in lower or (len(n) >= 3 and n in compact):
+            return True
+    return False
 
 
 def _probe_openai(prompts: list[str], needles: set[str]) -> dict[str, Any]:
-    if not OPENAI_API_KEY:
+    api_key = _openai_key()
+    model = _openai_model()
+    if not api_key:
         return {"available": False, "reason": "OPENAI_API_KEY assente", "details": []}
     try:
         from openai import OpenAI
     except Exception as exc:  # pragma: no cover
         return {"available": False, "reason": str(exc), "details": []}
 
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    client = OpenAI(api_key=api_key)
     hits = 0
     details: list[dict[str, Any]] = []
     for prompt in prompts:
         try:
             resp = client.chat.completions.create(
-                model=OPENAI_MODEL,
+                model=model,
                 temperature=0.2,
                 max_tokens=350,
                 messages=[
@@ -79,8 +146,15 @@ def _probe_openai(prompts: list[str], needles: set[str]) -> dict[str, Any]:
         details.append(
             {"prompt": prompt, "mentioned": ok, "excerpt": text[:280], "engine": "openai"}
         )
-    total = max(1, len([d for d in details if "error" not in d]))
-    rate = round(100.0 * hits / total) if details else 0
+    ok_details = [d for d in details if "error" not in d]
+    if not ok_details:
+        return {
+            "available": False,
+            "reason": "OpenAI probe fallito su tutti i prompt",
+            "details": details,
+        }
+    total = max(1, len(ok_details))
+    rate = round(100.0 * hits / total)
     return {
         "available": True,
         "mention_rate": rate,
@@ -88,11 +162,14 @@ def _probe_openai(prompts: list[str], needles: set[str]) -> dict[str, Any]:
         "samples": total,
         "details": details,
         "evidence": "measured",
+        "model": model,
     }
 
 
 def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
-    if not PERPLEXITY_API_KEY:
+    api_key = _perplexity_key()
+    model = _perplexity_model()
+    if not api_key:
         return {"available": False, "reason": "PERPLEXITY_API_KEY assente", "details": []}
     try:
         import requests
@@ -101,30 +178,38 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
 
     hits = 0
     details: list[dict[str, Any]] = []
-    # Limit cost: max 3 prompts on Perplexity
+    system = "Be factual. Cite real brands only. Answer briefly."
     for prompt in prompts[:3]:
         try:
             res = requests.post(
                 "https://api.perplexity.ai/chat/completions",
                 headers={
-                    "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+                    "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": PERPLEXITY_MODEL,
+                    "model": model,
                     "temperature": 0.2,
                     "max_tokens": 350,
                     "messages": [
                         {
-                            "role": "system",
-                            "content": "Be factual. Cite real brands only.",
-                        },
-                        {"role": "user", "content": prompt},
+                            "role": "user",
+                            "content": f"{system}\n\n{prompt}",
+                        }
                     ],
                 },
                 timeout=45,
             )
-            res.raise_for_status()
+            if not res.ok:
+                err_body = (res.text or "")[:180]
+                details.append(
+                    {
+                        "prompt": prompt,
+                        "error": f"HTTP {res.status_code}: {err_body}",
+                        "engine": "perplexity",
+                    }
+                )
+                continue
             data = res.json()
             text = (
                 ((data.get("choices") or [{}])[0].get("message") or {}).get("content")
@@ -132,7 +217,9 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
             ).strip()
         except Exception as exc:
             logger.exception("perplexity citation probe failed")
-            details.append({"prompt": prompt, "error": str(exc)[:160]})
+            details.append(
+                {"prompt": prompt, "error": str(exc)[:160], "engine": "perplexity"}
+            )
             continue
         ok = _mentioned(text, needles)
         if ok:
@@ -145,8 +232,14 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
                 "engine": "perplexity",
             }
         )
-    total = max(1, len([d for d in details if "error" not in d]))
-    rate = round(100.0 * hits / total) if details else 0
+    ok_details = [d for d in details if "error" not in d]
+    if not ok_details:
+        reason = "Perplexity probe fallito su tutti i prompt"
+        if details and details[0].get("error"):
+            reason = str(details[0]["error"])[:160]
+        return {"available": False, "reason": reason, "details": details}
+    total = max(1, len(ok_details))
+    rate = round(100.0 * hits / total)
     return {
         "available": True,
         "mention_rate": rate,
@@ -154,12 +247,16 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
         "samples": total,
         "details": details,
         "evidence": "measured",
+        "model": model,
     }
 
 
 def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
     """Claude Messages API — SoV measured probe."""
-    if not ANTHROPIC_API_KEY:
+    api_key = _anthropic_key()
+    model = _anthropic_model()
+    version = _anthropic_version()
+    if not api_key:
         return {"available": False, "reason": "ANTHROPIC_API_KEY assente", "details": []}
     try:
         import requests
@@ -172,18 +269,17 @@ def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
         "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
         "non inventare URL o menzioni."
     )
-    # Cost control: max 3 prompts
     for prompt in prompts[:3]:
         try:
             res = requests.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={
-                    "x-api-key": ANTHROPIC_API_KEY,
-                    "anthropic-version": ANTHROPIC_API_VERSION,
+                    "x-api-key": api_key,
+                    "anthropic-version": version,
                     "content-type": "application/json",
                 },
                 json={
-                    "model": ANTHROPIC_MODEL,
+                    "model": model,
                     "max_tokens": 350,
                     "temperature": 0.2,
                     "system": system,
@@ -191,7 +287,15 @@ def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
                 },
                 timeout=45,
             )
-            res.raise_for_status()
+            if not res.ok:
+                details.append(
+                    {
+                        "prompt": prompt,
+                        "error": f"HTTP {res.status_code}: {(res.text or '')[:180]}",
+                        "engine": "anthropic",
+                    }
+                )
+                continue
             data = res.json()
             parts = data.get("content") or []
             text_bits: list[str] = []
@@ -201,7 +305,9 @@ def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
             text = "\n".join(text_bits).strip()
         except Exception as exc:
             logger.exception("anthropic citation probe failed")
-            details.append({"prompt": prompt, "error": str(exc)[:160]})
+            details.append(
+                {"prompt": prompt, "error": str(exc)[:160], "engine": "anthropic"}
+            )
             continue
         ok = _mentioned(text, needles)
         if ok:
@@ -214,8 +320,14 @@ def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
                 "engine": "anthropic",
             }
         )
-    total = max(1, len([d for d in details if "error" not in d]))
-    rate = round(100.0 * hits / total) if details else 0
+    ok_details = [d for d in details if "error" not in d]
+    if not ok_details:
+        reason = "Anthropic probe fallito su tutti i prompt"
+        if details and details[0].get("error"):
+            reason = str(details[0]["error"])[:160]
+        return {"available": False, "reason": reason, "details": details}
+    total = max(1, len(ok_details))
+    rate = round(100.0 * hits / total)
     return {
         "available": True,
         "mention_rate": rate,
@@ -223,7 +335,7 @@ def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
         "samples": total,
         "details": details,
         "evidence": "measured",
-        "model": ANTHROPIC_MODEL,
+        "model": model,
     }
 
 
@@ -233,7 +345,9 @@ def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
     scores = []
     for c in competitors:
         try:
-            scores.append(float(c.get("aio_score") or 0) * 0.5 + float(c.get("geo_score") or 0) * 0.5)
+            scores.append(
+                float(c.get("aio_score") or 0) * 0.5 + float(c.get("geo_score") or 0) * 0.5
+            )
         except (TypeError, ValueError):
             continue
     if not scores:
@@ -294,6 +408,7 @@ def run_citation_monitor(
                 "samples": pplx["samples"],
                 "evidence": "measured",
                 "accent": "#20B8CD",
+                "model": pplx.get("model") or _perplexity_model(),
             }
         )
         all_details.extend(pplx.get("details") or [])
@@ -322,7 +437,7 @@ def run_citation_monitor(
                 "samples": anthropic["samples"],
                 "evidence": "measured",
                 "accent": "#D4A27F",
-                "model": anthropic.get("model") or ANTHROPIC_MODEL,
+                "model": anthropic.get("model") or _anthropic_model(),
             }
         )
         all_details.extend(anthropic.get("details") or [])
@@ -339,7 +454,6 @@ def run_citation_monitor(
             }
         )
 
-    # Placeholders for remaining engines (honest)
     for eng in (
         {"id": "google", "label": "AI Overview", "vendor": "Google", "accent": "#4285F4"},
         {"id": "bing", "label": "Copilot", "vendor": "Microsoft", "accent": "#7B83EB"},
@@ -361,7 +475,6 @@ def run_citation_monitor(
     brand_rate = round(sum(measured_rates) / len(measured_rates)) if measured_rates else None
     pressure = _competitor_pressure(competitors or [])
 
-    # Competitor SoV benchmark note
     competitor_benchmark = []
     for c in (competitors or [])[:3]:
         competitor_benchmark.append(
@@ -370,7 +483,10 @@ def run_citation_monitor(
                 "aio_score": c.get("aio_score"),
                 "geo_score": c.get("geo_score"),
                 "rating": c.get("rating"),
-                "note": "Score snapshot; SoV measured condiviso richiede stessi prompt sul rivale (Plus).",
+                "note": (
+                    "Score snapshot; SoV measured condiviso richiede stessi prompt "
+                    "sul rivale (Plus)."
+                ),
             }
         )
 
@@ -435,6 +551,9 @@ def run_citation_monitor(
     }
 
 
-# Back-compat alias used by older imports
-def run_measured_sov(*, brand: str, domain: str, engines: list[str] | None = None) -> dict[str, Any]:
-    return run_citation_monitor(brand=brand, domain=domain, prompts=None, competitors=None)
+def run_measured_sov(
+    *, brand: str, domain: str, engines: list[str] | None = None
+) -> dict[str, Any]:
+    return run_citation_monitor(
+        brand=brand, domain=domain, prompts=None, competitors=None
+    )

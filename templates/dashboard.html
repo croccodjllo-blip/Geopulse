@@ -418,7 +418,11 @@ https://rivale2.com", class_="analyze-input") }}
                     <span class="engine-bar__access" data-access="allow">bot allow</span>
                     {% endif %}
                     {% if e.evidence == 'measured' %}
-                    <span class="evidence-badge" data-evidence="measured">Misurato</span>
+                    <span class="evidence-badge" data-evidence="measured">Misurato{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}</span>
+                    {% elif e.evidence == 'unavailable' %}
+                    <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">Non disponibile</span>
+                    {% elif e.evidence == 'pending' %}
+                    <span class="evidence-badge" data-evidence="estimated">In arrivo</span>
                     {% endif %}
                   </div>
                   <div class="engine-bar__track" aria-hidden="true">
@@ -428,6 +432,9 @@ https://rivale2.com", class_="analyze-input") }}
                     <span class="engine-bar__n">{{ e.propensity }}</span>
                     <span class="engine-bar__unit">/100</span>
                   </div>
+                  {% if e.evidence == 'unavailable' and e.reason %}
+                  <p class="engine-bar__hint">{{ e.reason }}</p>
+                  {% endif %}
                 </li>
                 {% endfor %}
               </ul>

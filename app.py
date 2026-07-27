@@ -20,6 +20,10 @@ from urllib.parse import urlparse
 
 import requests
 from dotenv import load_dotenv
+
+# Carica .env PRIMA di qualsiasi import services che legge os.getenv a livello modulo.
+load_dotenv()
+
 from flask import (
     Flask,
     Response,
@@ -101,8 +105,6 @@ from services.gsc import gsc_status
 from services.js_crawl import js_crawl_available
 from services.publish_verify import verify_published_pack
 from services.citation_monitor import citation_monitor_available
-
-load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Piano Free: 1 sito + 2 analisi lifetime (nessun reset giornaliero).
