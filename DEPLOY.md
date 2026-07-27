@@ -86,11 +86,11 @@ Possibile, ma meglio **isolare**:
 
 - [ ] `FLASK_SECRET_KEY` forte
 - [ ] `FLASK_DEBUG=0`
-- [ ] HTTPS attivo
+- [x] HTTPS attivo (Let's Encrypt su geopulse.it / www)
 - [x] Backup SQLite (`aio-bot-backup.timer` → `/opt/aio-bot/data/backups`)
 - [ ] `ADMIN_PASSWORD` in `.env` (niente default in chiaro; `ADMIN_BOOTSTRAP=1` solo per reset)
 - [ ] `OPENAI_API_KEY` impostata (opzionale ma consigliata)
-- [ ] Dominio punta al server
+- [x] Dominio punta al server (`geopulse.it` → VPS)
 
 ## Comandi utili
 
