@@ -1,6 +1,10 @@
 # GeoPulse (geopulse.it)
 
-Sito e SaaS per **GEO/AIO Optimization**: registrazione utenti, analisi homepage e generazione automatica di `llms.txt` (OpenAI + fallback locale).
+Sito e SaaS per **AI-Driven Visibility (AIO)** e **Generative Engine Optimization (GEO)**:
+registrazione utenti, analisi del dominio e generazione di pack (`llms.txt`, JSON-LD, meta, robots).
+
+> Nota: in GeoPulse, **GEO ≠ GIS** (Geographic Information System) e **AIO ≠ All-in-One**.
+> Sono metriche di citabilità IA / answer engine.
 
 Dominio pubblico: **https://geopulse.it**
 
@@ -13,7 +17,7 @@ aio-bot/
 ├── ROADMAP.md
 ├── database.db          # creato al primo avvio
 ├── services/
-│   ├── analyzer.py      # scrape, probe, score AIO/GEO
+│   ├── analyzer.py      # scrape, probe, score AIO (AI-Driven Visibility) / GEO (Generative Engine Optimization)
 │   └── artifacts.py     # llms.txt, JSON-LD, meta, robots
 ├── templates/
 │   ├── base.html

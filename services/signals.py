@@ -1,4 +1,4 @@
-"""Check avanzati AIO/GEO: JSON-LD tipizzato, bots, llms, FAQ, diff run."""
+"""Check avanzati AIO (AI-Driven Visibility) / GEO (Generative Engine Optimization): JSON-LD tipizzato, bots, llms, FAQ, diff run."""
 
 from __future__ import annotations
 

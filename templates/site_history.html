@@ -37,8 +37,8 @@
               <em class="history-grade" data-grade="{{ item.rating.code }}">{{ item.rating.code }}</em>
             </strong>
             <div class="history-scores">
-              <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
-              <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
+              <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }} <span class="hint">AI-Driven Visibility</span></span>
+              <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }} <span class="hint">Generative Engine Opt.</span></span>
               <span>{{ 'Schedulato' if item.source == 'scheduled' else 'Manuale' }}</span>
             </div>
           </div>

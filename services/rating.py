@@ -6,7 +6,7 @@ from typing import Any
 
 # Scala ordinata dal peggiore al migliore
 RATING_SCALE: list[tuple[str, int, str]] = [
-    ("DDD", 0, "Critico — segnali AIO/GEO assenti o bloccati"),
+    ("DDD", 0, "Critico — segnali AIO/GEO (AI-Driven Visibility / Generative Engine Optimization) assenti o bloccati"),
     ("DD", 15, "Molto debole — interventi urgenti"),
     ("D", 25, "Debole — base tecnica insufficiente"),
     ("CCC", 35, "Insufficiente — mancano asset chiave"),
@@ -15,7 +15,7 @@ RATING_SCALE: list[tuple[str, int, str]] = [
     ("B", 63, "Discreto — struttura utile ma incompleta"),
     ("BB", 71, "Buono — buona base, margini chiari"),
     ("BBB", 78, "Solido — pronto per rafforzamenti mirati"),
-    ("A", 85, "Ottimo — segnali AIO/GEO ben impostati"),
+    ("A", 85, "Ottimo — segnali AIO/GEO (AI-Driven Visibility / Generative Engine Optimization) ben impostati"),
     ("AA", 92, "Eccellente — quasi completo"),
     ("AAA", 97, "Top — sito molto citabile dalle IA"),
 ]
@@ -28,7 +28,7 @@ def composite_score(
     geo_score: int | None,
     findings: list[dict[str, Any]] | None = None,
 ) -> int:
-    """Media AIO/GEO con penalità sui findings critical/warn."""
+    """Media AIO (AI-Driven Visibility) / GEO (Generative Engine Optimization) con penalità sui findings critical/warn."""
     aio = 0 if aio_score is None else max(0, min(100, int(aio_score)))
     geo = 0 if geo_score is None else max(0, min(100, int(geo_score)))
     base = round((aio + geo) / 2)

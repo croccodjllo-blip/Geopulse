@@ -1,6 +1,9 @@
 # GeoPulse (geopulse.it) — Roadmap di progetto
 
-Piattaforma SaaS per **GEO/AIO Optimization**: l’utente si registra, inserisce il sito, riceve analisi e ottimizzazioni automatiche (a partire da `llms.txt`), con piano a pagamento.
+Piattaforma SaaS per **AI-Driven Visibility (AIO)** e **Generative Engine Optimization (GEO)**:
+l’utente si registra, inserisce il sito, riceve analisi e ottimizzazioni automatiche (a partire da `llms.txt`), con piano a pagamento.
+
+> GEO qui non è GIS; AIO non è All-in-One.
 
 Stato attuale: **MVP tecnico locale** (auth, scraping, generazione `llms.txt`, SQLite).
 

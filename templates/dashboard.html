@@ -150,7 +150,7 @@ https://rivale2.com", class_="analyze-input") }}
           {% else %}
             {% set band = 'crit' %}
             {% set propensity = 'Bassa propensione' %}
-            {% set propensity_lede = 'Citabilità minima: serve un intervento strutturale sui segnali AIO.' %}
+            {% set propensity_lede = 'Citabilità minima: serve un intervento strutturale sui segnali di AI-Driven Visibility (AIO).' %}
           {% endif %}
           {% set aio_c = 741.42 %}
           {% set geo_c = 942.48 %}
@@ -160,7 +160,7 @@ https://rivale2.com", class_="analyze-input") }}
 
           <section
             class="pulse-core"
-            aria-label="AIO Recommendation Propensity"
+            aria-label="AI-Driven Visibility (AIO) recommendation propensity"
             data-band="{{ band }}"
             style="--aio: {{ aio_n }}; --geo: {{ geo_n }}; --health: {{ health }}; --aio-c: {{ '%.2f'|format(aio_c) }}; --aio-offset: {{ '%.2f'|format(aio_offset) }}; --geo-c: {{ '%.2f'|format(geo_c) }}; --geo-offset: {{ '%.2f'|format(geo_offset) }}; --geo-angle: {{ '%.1f'|format(geo_angle) }}deg;"
           >
@@ -246,7 +246,7 @@ https://rivale2.com", class_="analyze-input") }}
                 </svg>
 
                 <div class="pulse-core__hub">
-                  <span class="pulse-core__kicker">AIO Score</span>
+                  <span class="pulse-core__kicker">AIO · AI-Driven Visibility</span>
                   <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
                   <span class="pulse-core__denom">/100</span>
                   <span class="pulse-core__propensity">{{ propensity }}</span>
@@ -257,7 +257,7 @@ https://rivale2.com", class_="analyze-input") }}
             <div class="pulse-core__intel">
               <p class="eyebrow">Recommendation propensity</p>
               <h3 class="pulse-core__title">Quanto le IA raccomandano questo business</h3>
-              <p class="pulse-core__lede">{{ propensity_lede }}</p>
+              <p class="pulse-core__lede">{{ propensity_lede }} <span class="hint">AIO = AI-Driven Visibility · GEO = Generative Engine Optimization.</span></p>
 
               <div class="pulse-satellites" role="list">
                 <article class="pulse-sat" role="listitem" data-tone="geo">
@@ -273,7 +273,7 @@ https://rivale2.com", class_="analyze-input") }}
                   </div>
                   <div>
                     <strong>GEO</strong>
-                    <em>Generative engine readiness</em>
+                    <em>Generative Engine Optimization</em>
                   </div>
                 </article>
 
@@ -320,8 +320,8 @@ https://rivale2.com", class_="analyze-input") }}
               <span class="diff-strip__label">Vs run precedente</span>
               {% if run_diff.delta_aio is not none or run_diff.delta_geo is not none %}
               <span class="diff-strip__deltas">
-                <em data-delta="{{ run_diff.delta_aio }}">AIO {{ '%+d'|format(run_diff.delta_aio or 0) }}</em>
-                <em data-delta="{{ run_diff.delta_geo }}">GEO {{ '%+d'|format(run_diff.delta_geo or 0) }}</em>
+                <em data-delta="{{ run_diff.delta_aio }}">AIO (AI-Driven Visibility) {{ '%+d'|format(run_diff.delta_aio or 0) }}</em>
+                <em data-delta="{{ run_diff.delta_geo }}">GEO (Generative Engine Opt.) {{ '%+d'|format(run_diff.delta_geo or 0) }}</em>
               </span>
               {% endif %}
             </div>
