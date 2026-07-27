@@ -1168,9 +1168,10 @@ def health():
                 "ok": db_ok,
                 "service": "geopulse",
                 "openai": bool(OPENAI_API_KEY),
-                "citation_monitor": bool(OPENAI_API_KEY) or citation_monitor_available(),
+                "perplexity": bool((os.getenv("PERPLEXITY_API_KEY") or "").strip()),
+                "citation_monitor": citation_monitor_available(),
                 "stripe": stripe_enabled(),
-                "measured_sov": MEASURED_SOV_ON_ANALYZE and bool(OPENAI_API_KEY),
+                "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "async_analyze": ASYNC_ANALYZE,
                 "time": datetime.now(timezone.utc).isoformat(),
             }
