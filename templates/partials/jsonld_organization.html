@@ -20,6 +20,12 @@
     "@type": "Place",
     "name": "Italia"
   },
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "{{ site_owner_name }}",
+    "url": "{{ site_owner_url }}",
+    "sameAs": ["{{ site_owner_url }}"]
+  },
   "knowsAbout": [
     "AI-Driven Visibility",
     "Generative Engine Optimization",
@@ -36,7 +42,8 @@
     "{{ canonical_base }}/faq",
     "{{ canonical_base }}/llms.txt",
     "{{ canonical_base }}/ai.txt",
-    "{{ canonical_base }}/humans.txt"
+    "{{ canonical_base }}/humans.txt",
+    "{{ site_owner_url }}"
   ],
   "contactPoint": {
     "@type": "ContactPoint",
@@ -46,20 +53,17 @@
     "url": "{{ canonical_base }}/contatti"
   },
   "founder": {
-    "@type": "Person",
-    "name": "{{ site_author_name }}",
-    "jobTitle": "{{ site_author_title }}",
-    "email": "info@geopulse.it",
-    "url": "{{ canonical_base }}/chi-siamo",
-    "worksFor": { "@id": "{{ canonical_base }}/#organization" }
+    "@type": "Organization",
+    "name": "{{ site_owner_name }}",
+    "url": "{{ site_owner_url }}",
+    "sameAs": ["{{ site_owner_url }}"]
   },
-  "employee": {
-    "@type": "Person",
+  "publishingPrinciples": "{{ canonical_base }}/metodologia",
+  "author": {
+    "@type": "Organization",
     "name": "{{ site_author_name }}",
-    "email": "info@geopulse.it",
-    "jobTitle": "{{ site_author_title }}",
-    "worksFor": { "@id": "{{ canonical_base }}/#organization" },
-    "url": "{{ canonical_base }}/chi-siamo"
+    "url": "{{ site_author_url }}",
+    "description": "{{ site_author_title }}"
   }
 }
 </script>

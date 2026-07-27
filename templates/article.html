@@ -13,10 +13,10 @@
   "dateModified": "{{ article_date }}",
   "inLanguage": "it-IT",
   "author": {
-    "@type": "Person",
+    "@type": "Organization",
     "name": "{{ site_author_name }}",
-    "jobTitle": "{{ site_author_title }}",
-    "url": "{{ canonical_base }}/chi-siamo"
+    "url": "{{ site_author_url }}",
+    "description": "{{ site_author_title }}"
   },
   "publisher": {
     "@type": "Organization",
@@ -25,6 +25,11 @@
     "logo": {
       "@type": "ImageObject",
       "url": "{{ canonical_base }}/static/img/logo.svg"
+    },
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "{{ site_owner_name }}",
+      "url": "{{ site_owner_url }}"
     }
   },
   "mainEntityOfPage": "{{ canonical_base }}{{ article_path }}",
@@ -41,7 +46,9 @@
     <p class="lede page-intro__lede">
       {{ article_lede }}
       · Aggiornato <time datetime="{{ article_date }}">{{ article_date_human }}</time>
-      · Autore <a href="{{ url_for('about') }}">{{ site_author_name }}</a>
+      · Autore
+      <a href="{{ site_author_url }}" rel="noopener noreferrer" target="_blank">{{ site_author_name }}</a>
+      · <a href="{{ url_for('about') }}">Chi siamo</a>
     </p>
   </header>
   {{ article_body|safe }}

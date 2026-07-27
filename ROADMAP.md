@@ -199,7 +199,7 @@ Obiettivo: differenziazione competitiva.
 
 - [x] **A** Trust/honesty: rating copy soft, evidence Misurato/Stimato, propensity “signal diagnostics”
 - [x] **B** Metodologia + guide evergreen (`/metodologia`, `/guide/llms-txt`, `/guide/schema-ai`, `/guide/score-vs-sov`) + Article schema
-- [x] **C** Logo Organization, sameAs ampliato, autore nominato (Alessandro)
+- [x] **C** Logo Organization, sameAs ampliato, proprietario/autore Engineering Factory (engineeringfactory.app)
 - [x] **D** Stripe Checkout + Portal + webhook → `plan` Plus (attivo se env Stripe presenti)
 - [x] **E** Coda analisi async (`analysis_jobs`) + UI status + worker systemd
 - [x] **F** SoV measured scaffold (OpenAI probe) per Plus, overlay sul breakdown proxy

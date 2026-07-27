@@ -116,10 +116,15 @@ ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
 ANALYZE_BATCH_LIMIT = max(1, int(os.getenv("ANALYZE_BATCH_LIMIT", "5")))
-SITE_AUTHOR_NAME = (os.getenv("SITE_AUTHOR_NAME") or "Alessandro").strip()
+SITE_AUTHOR_NAME = (os.getenv("SITE_AUTHOR_NAME") or "Engineering Factory").strip()
 SITE_AUTHOR_TITLE = (
-    os.getenv("SITE_AUTHOR_TITLE") or "Product & editorial · GeoPulse"
+    os.getenv("SITE_AUTHOR_TITLE") or "Proprietario · Responsabile contenuti e prodotto"
 ).strip()
+SITE_AUTHOR_URL = (
+    os.getenv("SITE_AUTHOR_URL") or "https://www.engineeringfactory.app/"
+).strip().rstrip("/") + "/"
+SITE_OWNER_NAME = (os.getenv("SITE_OWNER_NAME") or SITE_AUTHOR_NAME).strip()
+SITE_OWNER_URL = (os.getenv("SITE_OWNER_URL") or SITE_AUTHOR_URL).strip()
 
 
 def resolve_database_uri(raw: str | None) -> str:
@@ -762,6 +767,9 @@ def inject_globals() -> dict[str, Any]:
         "stripe_ready": stripe_enabled(),
         "site_author_name": SITE_AUTHOR_NAME,
         "site_author_title": SITE_AUTHOR_TITLE,
+        "site_author_url": SITE_AUTHOR_URL,
+        "site_owner_name": SITE_OWNER_NAME,
+        "site_owner_url": SITE_OWNER_URL,
         "async_analyze": ASYNC_ANALYZE,
     }
 
