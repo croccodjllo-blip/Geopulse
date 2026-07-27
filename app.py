@@ -79,6 +79,7 @@ from services.mailer import (
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.deep_checks import analyze_monitoring_alerts
+from services.engine_breakdown import compute_engine_breakdown
 from services.signals import compare_with_previous
 
 load_dotenv()
@@ -1237,12 +1238,23 @@ def dashboard():
         if str((f or {}).get("severity") or "").lower() == "ok"
     )
 
+    engine_breakdown = None
+    if latest is not None:
+        engine_breakdown = compute_engine_breakdown(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            robots_text=latest.robots_artifact or "",
+            competitors=latest.competitors,
+        )
+
     return render_template(
         "dashboard.html",
         form=form,
         schedule_form=schedule_form,
         latest=latest,
         run_diff=run_diff,
+        engine_breakdown=engine_breakdown,
         openai_ready=bool(OPENAI_API_KEY),
         used_today=used_today,
         daily_limit=user.daily_limit,

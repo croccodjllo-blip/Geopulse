@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block body_class %}body-dash{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--dash{% endblock %}
 
 {% block content %}
 <section class="workspace">
-  <header class="workspace-banner workspace-banner--compact">
+  <header class="workspace-banner workspace-banner--compact workspace-banner--void">
     <img
       class="workspace-banner__img"
       src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
@@ -85,7 +86,7 @@ https://rivale2.com", class_="analyze-input") }}
       </div>
     </form>
 
-    <div class="workspace-grid workspace-grid--solo">
+    <div class="workspace-grid{% if latest %} workspace-grid--rail{% else %} workspace-grid--solo{% endif %}">
       <div class="workspace-main">
         {% if latest %}
         {% set rating = latest.rating %}
@@ -158,6 +159,12 @@ https://rivale2.com", class_="analyze-input") }}
           {% set geo_offset = geo_c * (1 - geo_n / 100) %}
           {% set geo_angle = (geo_n / 100 * 360) - 90 %}
 
+          <div class="report-tabs" role="tablist" aria-label="Vista report">
+            <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">Score</button>
+            <button type="button" class="report-tabs__btn" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="false" data-tab="sov">SoV</button>
+          </div>
+
+          <div class="report-panel is-active" id="panel-score" role="tabpanel" aria-labelledby="tab-score" data-panel="score">
           <section
             class="pulse-core"
             aria-label="AI-Driven Visibility (AIO) recommendation propensity"
@@ -313,6 +320,94 @@ https://rivale2.com", class_="analyze-input") }}
               </ol>
             </div>
           </section>
+          </div>
+
+          <div class="report-panel" id="panel-sov" role="tabpanel" aria-labelledby="tab-sov" data-panel="sov" hidden>
+            {% if engine_breakdown %}
+            <section class="engine-breakdown" aria-labelledby="sov-title">
+              <header class="engine-breakdown__head">
+                <div>
+                  <p class="eyebrow">AI Engine Breakdown</p>
+                  <h3 class="engine-breakdown__title" id="sov-title">Share of Voice stimato</h3>
+                  <p class="engine-breakdown__lede">
+                    Propensione relativa per answer engine.
+                    <span class="evidence-badge" data-evidence="proxy">{{ engine_breakdown.label }}</span>
+                  </p>
+                </div>
+                <div class="engine-breakdown__brand-sov" aria-label="Brand SoV">
+                  <span class="engine-breakdown__brand-n">{{ engine_breakdown.brand_sov }}%</span>
+                  <span class="engine-breakdown__brand-l">Brand SoV</span>
+                </div>
+              </header>
+
+              <div
+                class="sov-stack"
+                role="img"
+                aria-label="Composizione SoV per engine"
+                style="--segments: {{ engine_breakdown.engines|length }};"
+              >
+                {% for e in engine_breakdown.engines %}
+                <span
+                  class="sov-stack__seg"
+                  data-engine="{{ e.id }}"
+                  style="--share: {{ e.share }}; --accent: {{ e.accent }};"
+                  title="{{ e.label }} {{ e.share }}%"
+                ></span>
+                {% endfor %}
+              </div>
+              <ul class="sov-stack__legend">
+                {% for e in engine_breakdown.engines %}
+                <li>
+                  <i style="--accent: {{ e.accent }};" aria-hidden="true"></i>
+                  {{ e.label }} <em>{{ e.share }}%</em>
+                </li>
+                {% endfor %}
+              </ul>
+
+              <ul class="engine-bars" role="list">
+                {% for e in engine_breakdown.engines %}
+                <li class="engine-bar" data-engine="{{ e.id }}" data-band="{{ e.band }}" style="--accent: {{ e.accent }}; --p: {{ e.propensity }};">
+                  <div class="engine-bar__meta">
+                    <strong>{{ e.label }}</strong>
+                    <span class="engine-bar__vendor">{{ e.vendor }}</span>
+                    {% if e.access == 'blocked' %}
+                    <span class="engine-bar__access" data-access="blocked">bot blocked</span>
+                    {% elif e.access == 'allow' %}
+                    <span class="engine-bar__access" data-access="allow">bot allow</span>
+                    {% endif %}
+                  </div>
+                  <div class="engine-bar__track" aria-hidden="true">
+                    <span class="engine-bar__fill"></span>
+                  </div>
+                  <div class="engine-bar__score">
+                    <span class="engine-bar__n">{{ e.propensity }}</span>
+                    <span class="engine-bar__unit">/100</span>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+
+              {% if engine_breakdown.has_competitors %}
+              <div class="sov-field" aria-label="Campo competitivo">
+                <div class="sov-field__bar">
+                  <span style="--w: {{ engine_breakdown.brand_sov }};" data-tone="brand"></span>
+                  <span style="--w: {{ engine_breakdown.rivals_sov }};" data-tone="rivals"></span>
+                  <span style="--w: {{ engine_breakdown.other_sov }};" data-tone="other"></span>
+                </div>
+                <ul class="sov-field__legend">
+                  <li data-tone="brand">Brand {{ engine_breakdown.brand_sov }}%</li>
+                  <li data-tone="rivals">Rivali {{ engine_breakdown.rivals_sov }}%</li>
+                  <li data-tone="other">Altro {{ engine_breakdown.other_sov }}%</li>
+                </ul>
+              </div>
+              {% endif %}
+
+              <p class="engine-breakdown__note">{{ engine_breakdown.note }}</p>
+            </section>
+            {% else %}
+            <p class="dash-block__empty">Nessun breakdown disponibile.</p>
+            {% endif %}
+          </div>
 
           {% if run_diff and run_diff.has_previous %}
           <section class="diff-strip" aria-label="Confronto con run precedente">
@@ -558,28 +653,100 @@ https://rivale2.com", class_="analyze-input") }}
         </div>
         {% endif %}
       </div>
+
+      {% if latest %}
+      <aside class="workspace-rail" aria-label="Contesto report">
+        <div class="rail-card">
+          <p class="rail-card__eyebrow">Indice</p>
+          <p class="rail-card__grade" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</p>
+          <p class="rail-card__sub">{{ latest.rating.score }}/100</p>
+        </div>
+        <div class="rail-card">
+          <p class="rail-card__eyebrow">Signal</p>
+          <dl class="rail-metrics">
+            <div>
+              <dt>AIO</dt>
+              <dd>{{ latest.aio_score if latest.aio_score is not none else '—' }}</dd>
+            </div>
+            <div>
+              <dt>GEO</dt>
+              <dd>{{ latest.geo_score if latest.geo_score is not none else '—' }}</dd>
+            </div>
+            <div>
+              <dt>Gap</dt>
+              <dd>{{ findings_critical|length if findings_critical is defined else 0 }}</dd>
+            </div>
+          </dl>
+        </div>
+        {% if engine_breakdown %}
+        <div class="rail-card">
+          <p class="rail-card__eyebrow">SoV</p>
+          <p class="rail-card__sov">{{ engine_breakdown.brand_sov }}%</p>
+          <p class="rail-card__sub">
+            Brand share
+            {% if engine_breakdown.top_engine %}· top {{ engine_breakdown.top_engine }}{% endif %}
+          </p>
+          <span class="evidence-badge" data-evidence="proxy">proxy</span>
+        </div>
+        {% endif %}
+        <div class="rail-card rail-card--actions">
+          <p class="rail-card__eyebrow">Azioni</p>
+          <a href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica pack</a>
+          <a href="#findings-title">Findings critici</a>
+          {% if is_pro %}
+          <a href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico run</a>
+          {% endif %}
+        </div>
+      </aside>
+      {% endif %}
     </div>
   </div>
 </section>
 <script>
 (() => {
   const el = document.querySelector('.pulse-core__value[data-count-to]');
-  if (!el) return;
-  const target = Number(el.getAttribute('data-count-to') || 0);
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce || !Number.isFinite(target)) {
-    el.textContent = String(target);
-    return;
+  if (el) {
+    const target = Number(el.getAttribute('data-count-to') || 0);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !Number.isFinite(target)) {
+      el.textContent = String(target);
+    } else {
+      const dur = 1100;
+      const t0 = performance.now();
+      const tick = (now) => {
+        const p = Math.min(1, (now - t0) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = String(Math.round(target * eased));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
   }
-  const dur = 1100;
-  const t0 = performance.now();
-  const tick = (now) => {
-    const p = Math.min(1, (now - t0) / dur);
-    const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = String(Math.round(target * eased));
-    if (p < 1) requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
+
+  const tabs = document.querySelectorAll('.report-tabs__btn');
+  const panels = document.querySelectorAll('.report-panel');
+  tabs.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-tab');
+      tabs.forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach((p) => {
+        const on = p.getAttribute('data-panel') === id;
+        p.classList.toggle('is-active', on);
+        p.hidden = !on;
+      });
+      if (id === 'sov') {
+        document.querySelectorAll('.engine-bar').forEach((row) => {
+          row.classList.remove('is-animated');
+          void row.offsetWidth;
+          row.classList.add('is-animated');
+        });
+      }
+    });
+  });
 })();
 </script>
 {% endblock %}
