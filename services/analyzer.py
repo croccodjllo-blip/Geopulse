@@ -12,6 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from services.advanced_checks import run_advanced_suite
+from services.extended_checks import run_extended_suite
 from services.deep_checks import (
     ADDRESS_RE,
     AUTHOR_RE,
@@ -242,11 +243,81 @@ def scrape_page(url: str) -> dict[str, Any]:
         if str(i.get("loading") or "").lower() == "lazy"
         or "lazy" in str(i.get("class") or "").lower()
     )
+    img_with_srcset = sum(1 for i in imgs if (i.get("srcset") or "").strip())
+    img_modern = 0
+    for i in imgs:
+        src = " ".join(
+            [
+                str(i.get("src") or ""),
+                str(i.get("srcset") or ""),
+                str(i.get("data-src") or ""),
+            ]
+        ).lower()
+        if any(ext in src for ext in (".webp", ".avif", "format=webp", "format=avif")):
+            img_modern += 1
 
     blocking_scripts = 0
+    script_srcs: list[str] = []
+    third_party_scripts = 0
+    seed_host = _host_key(urlparse(str(response.url)).netloc)
     for script in soup.find_all("script"):
-        if script.get("src") and not script.get("async") and not script.get("defer"):
-            blocking_scripts += 1
+        src = (script.get("src") or "").strip()
+        if src:
+            script_srcs.append(src)
+            abs_src = urljoin(str(response.url), src)
+            host = _host_key(urlparse(abs_src).netloc)
+            if host and host != seed_host:
+                third_party_scripts += 1
+            if not script.get("async") and not script.get("defer"):
+                blocking_scripts += 1
+
+    font_preloads = 0
+    for link in soup.find_all("link"):
+        rel = " ".join(link.get("rel") or []).lower()
+        as_attr = str(link.get("as") or "").lower()
+        href = str(link.get("href") or "")
+        if "preload" in rel and (as_attr == "font" or ".woff" in href.lower()):
+            font_preloads += 1
+    has_font_face = bool(re.search(r"@font-face", html[:200000], re.I))
+
+    rel_next = ""
+    rel_prev = ""
+    for link in soup.find_all("link", attrs={"rel": True}):
+        rels = [str(r).lower() for r in (link.get("rel") or [])]
+        href = str(link.get("href") or "").strip()
+        if "next" in rels and href:
+            rel_next = href
+        if "prev" in rels and href:
+            rel_prev = href
+
+    mixed_content = 0
+    if str(response.url).startswith("https://"):
+        mixed_content = len(
+            re.findall(r"""(?:src|href)=["']http://[^"']+""", html[:300000], re.I)
+        )
+
+    buttons_no_name = 0
+    for btn in soup.find_all("button"):
+        label = (
+            btn.get_text(" ", strip=True)
+            or btn.get("aria-label")
+            or btn.get("title")
+            or ""
+        ).strip()
+        if not label:
+            buttons_no_name += 1
+    inputs_no_label = 0
+    for inp in soup.find_all(["input", "select", "textarea"]):
+        if str(inp.get("type") or "").lower() in {"hidden", "submit", "button"}:
+            continue
+        iid = inp.get("id")
+        has_label = bool(
+            inp.get("aria-label") or inp.get("aria-labelledby") or inp.get("title")
+        )
+        if iid and soup.find("label", attrs={"for": iid}):
+            has_label = True
+        if not has_label:
+            inputs_no_label += 1
 
     clean = BeautifulSoup(html, "lxml")
     for tag in clean(["script", "style", "noscript"]):
@@ -267,6 +338,18 @@ def scrape_page(url: str) -> dict[str, Any]:
     citation_link_count = 0
     has_about_link = False
     has_contact_link = False
+    LEGAL_RE = re.compile(
+        r"(privacy|cookie|legal|terms|condizioni|policy|gdpr|note-legali)",
+        re.I,
+    )
+    GBP_RE = re.compile(
+        r"maps\.google|google\.[^/]+/maps|g\.page/|business\.google", re.I
+    )
+    has_privacy_link = False
+    has_cookie_link = False
+    has_legal_link = False
+    gbp_links: list[str] = []
+    external_hrefs: list[str] = []
     for a in clean.find_all("a", href=True):
         href = a["href"].strip()
         if href.startswith("#") or href.lower().startswith("javascript:"):
@@ -283,6 +366,18 @@ def scrape_page(url: str) -> dict[str, Any]:
             external_link_count += 1
             if href.startswith("http"):
                 citation_link_count += 1
+                abs_ext = urljoin(final_url, href)
+                external_hrefs.append(abs_ext)
+                if GBP_RE.search(abs_ext):
+                    gbp_links.append(abs_ext)
+        blob = f"{href} {text or ''}"
+        if LEGAL_RE.search(blob):
+            if re.search(r"privacy|gdpr", blob, re.I):
+                has_privacy_link = True
+            if re.search(r"cookie", blob, re.I):
+                has_cookie_link = True
+            if re.search(r"legal|terms|condizioni|note-legali|policy", blob, re.I):
+                has_legal_link = True
         if ABOUT_HREF_RE.search(href) or ABOUT_HREF_RE.search(text or ""):
             has_about_link = True
         if CONTACT_HREF_RE.search(href) or CONTACT_HREF_RE.search(text or ""):
@@ -290,6 +385,13 @@ def scrape_page(url: str) -> dict[str, Any]:
 
     body_text = " ".join(clean.get_text(" ", strip=True).split())
     words = len(body_text.split())
+    claim_hits = len(
+        re.findall(
+            r"\b\d{1,3}\s*%|\b(?:studio|ricerca|secondo|fonte|fonte:|source:)\b",
+            body_text[:8000],
+            re.I,
+        )
+    )
     html_faq = detect_html_faq(soup, body_text)
     phones = list({m.group(0) for m in PHONE_RE.finditer(body_text[:8000])})[:5]
     emails = list({m.group(0) for m in EMAIL_RE.finditer(body_text[:8000])})[:5]
@@ -317,6 +419,23 @@ def scrape_page(url: str) -> dict[str, Any]:
         "redirect_count": redirect_count,
         "html_kb": round(len(html.encode("utf-8", errors="ignore")) / 1024.0, 1),
         "blocking_scripts": blocking_scripts,
+        "third_party_scripts": third_party_scripts,
+        "script_srcs": script_srcs[:40],
+        "img_with_srcset": img_with_srcset,
+        "img_modern": img_modern,
+        "font_preloads": font_preloads,
+        "has_font_face": has_font_face,
+        "rel_next": rel_next,
+        "rel_prev": rel_prev,
+        "mixed_content": mixed_content,
+        "has_privacy_link": has_privacy_link,
+        "has_cookie_link": has_cookie_link,
+        "has_legal_link": has_legal_link,
+        "gbp_links": gbp_links[:5],
+        "external_hrefs": external_hrefs[:40],
+        "buttons_no_name": buttons_no_name,
+        "inputs_no_label": inputs_no_label,
+        "claim_hits": claim_hits,
         "title": title,
         "description": description,
         "headings": headings,
@@ -1104,6 +1223,7 @@ def analyze_site(
     competitor_urls: list[str] | None = None,
     previous: Any | None = None,
     run_advanced: bool = True,
+    score_history: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """
     Analizza il dominio a partire da `url`.
@@ -1230,11 +1350,56 @@ def analyze_site(
         scored["signals"] = signals
         advanced_artifacts = dict(adv.get("artifacts") or {})
         executive_pdf = adv.get("executive_pdf")
+
+        readiness_score = int(
+            (adv.get("signals") or {}).get("answer_readiness_score") or 0
+        )
+        hist = list(score_history or [])
+        if not hist and previous is not None:
+            hist = [
+                {
+                    "aio": getattr(previous, "aio_score", 0) or 0,
+                    "geo": getattr(previous, "geo_score", 0) or 0,
+                },
+            ]
+        hist.append(
+            {
+                "aio": scored.get("aio_score") or 0,
+                "geo": scored.get("geo_score") or 0,
+            }
+        )
+        ext = run_extended_suite(
+            url=url,
+            scraped=scraped,
+            probes=probes,
+            page_reports=page_reports,
+            competitors=competitors,
+            previous=previous,
+            aio_score=scored.get("aio_score"),
+            geo_score=scored.get("geo_score"),
+            readiness_score=readiness_score,
+            score_history=hist,
+            send_alerts=True,
+        )
+        scored["aio_score"] = _clamp(
+            float(scored.get("aio_score") or 0) + float(ext.get("aio") or 0)
+        )
+        scored["geo_score"] = _clamp(
+            float(scored.get("geo_score") or 0) + float(ext.get("geo") or 0)
+        )
+        scored["findings"] = list(scored.get("findings") or []) + list(
+            ext.get("findings") or []
+        )
+        signals = dict(scored.get("signals") or {})
+        adv_sig = dict(signals.get("advanced") or {})
+        adv_sig["extended"] = ext.get("signals") or {}
+        signals["advanced"] = adv_sig
+        scored["signals"] = signals
+        advanced_artifacts.update(ext.get("artifacts") or {})
         scored["notes"] = (
             (scored.get("notes") or "")
-            + " Suite avanzata: schema rich, CWV proxy, indexabilità, "
-            "link, hreflang, header, mobile/SPA, E-E-A-T/YMYL, NAP, "
-            "answer readiness, KG, competitor, regressioni pack."
+            + " Suite avanzata + estesa (citazioni proxy, schema strict, CWV/Lighthouse opz., "
+            "JS render, SoV, forecast, alert Slack/Telegram)."
         ).strip()
 
     return {

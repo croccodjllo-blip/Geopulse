@@ -152,6 +152,22 @@ https://rivale2.com", class_="analyze-input") }}
             {% if advanced.near_duplicate_clusters %}
             <span class="adv-strip__item" data-tone="warn">Near-dupe · {{ advanced.near_duplicate_clusters }}</span>
             {% endif %}
+            {% set ext = advanced.extended or {} %}
+            {% if ext.citation_proxy %}
+            <span class="adv-strip__item" data-tone="{{ ext.citation_proxy }}">Citazioni · {{ ext.citation_proxy }}</span>
+            {% endif %}
+            {% if ext.readability is not none %}
+            <span class="adv-strip__item">Readability · {{ ext.readability }}</span>
+            {% endif %}
+            {% if ext.sov_pct is not none %}
+            <span class="adv-strip__item">SoV · {{ ext.sov_pct }}%</span>
+            {% endif %}
+            {% if ext.forecast and ext.forecast.risk %}
+            <span class="adv-strip__item" data-tone="{{ 'warn' if ext.forecast.risk == 'calo' else 'alta' }}">Forecast · {{ ext.forecast.risk }}</span>
+            {% endif %}
+            {% if ext.a11y_issues %}
+            <span class="adv-strip__item" data-tone="warn">A11y · {{ ext.a11y_issues }}</span>
+            {% endif %}
           </div>
           {% endif %}
 
@@ -582,6 +598,15 @@ https://rivale2.com", class_="analyze-input") }}
                 </div>
                 <pre id="robots-box">{{ latest.robots_artifact }}</pre>
               </div>
+              {% if pack_artifacts.get('extended-analysis.md') %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>extended-analysis.md</span>
+                  <button type="button" class="linkish" onclick="copyFrom('ext-box', this)">Copia</button>
+                </div>
+                <pre id="ext-box">{{ pack_artifacts.get('extended-analysis.md') }}</pre>
+              </div>
+              {% endif %}
               {% if pack_artifacts.get('executive-report.html') %}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">

@@ -135,6 +135,30 @@ def parse_json_ld_scripts(scripts_text: list[str]) -> dict[str, Any]:
         "has_website": "WebSite" in uniq,
         "valuable_types": [t for t in uniq if t in VALUABLE_TYPES],
         "org_nodes": org_nodes,
+        "typed_nodes": [
+            {
+                "types": b["types"],
+                "keys": sorted(str(k) for k in (b["node"] or {}).keys())[:24],
+                "name": (b["node"] or {}).get("name")
+                if isinstance((b["node"] or {}).get("name"), str)
+                else None,
+                "has_steps": bool((b["node"] or {}).get("step")),
+                "has_offers": bool((b["node"] or {}).get("offers")),
+                "has_aggregate": bool((b["node"] or {}).get("aggregateRating")),
+                "has_review": bool((b["node"] or {}).get("review")),
+                "has_transcript": bool(
+                    (b["node"] or {}).get("transcript")
+                    or (b["node"] or {}).get("caption")
+                ),
+                "has_speakable": bool((b["node"] or {}).get("speakable")),
+                "has_author": bool((b["node"] or {}).get("author")),
+                "has_date": bool(
+                    (b["node"] or {}).get("datePublished")
+                    or (b["node"] or {}).get("dateModified")
+                ),
+            }
+            for b in blocks[:40]
+        ],
         "has_article": any(
             t in {"Article", "NewsArticle", "BlogPosting"} for t in uniq
         ),

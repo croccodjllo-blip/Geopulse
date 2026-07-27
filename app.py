@@ -1189,11 +1189,28 @@ def dashboard():
                             line = line.strip()
                             if line:
                                 competitor_urls.append(line)
+                    hist_for_forecast: list[dict[str, Any]] = []
+                    if existing is not None:
+                        for run in (
+                            AnalysisRun.query.filter_by(
+                                site_id=existing.id, user_id=user.id
+                            )
+                            .order_by(AnalysisRun.created_at.asc())
+                            .limit(12)
+                            .all()
+                        ):
+                            hist_for_forecast.append(
+                                {
+                                    "aio": run.aio_score or 0,
+                                    "geo": run.geo_score or 0,
+                                }
+                            )
                     result = analyze_site(
                         url,
                         max_pages=user.crawl_pages,
                         competitor_urls=competitor_urls[:3] if user.is_pro else [],
                         previous=previous_run,
+                        score_history=hist_for_forecast,
                     )
                     run_diff = compare_with_previous(
                         aio_score=result.get("aio_score"),

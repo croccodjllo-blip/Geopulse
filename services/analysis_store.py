@@ -116,6 +116,7 @@ def persist_analysis(
                 "brand-knowledge-graph.json",
                 "competitor-benchmark.md",
                 "executive-report.html",
+                "extended-analysis.md",
             }
             and isinstance(v, str)
         }
