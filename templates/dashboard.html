@@ -168,6 +168,22 @@ https://rivale2.com", class_="analyze-input") }}
             {% if ext.a11y_issues %}
             <span class="adv-strip__item" data-tone="warn">A11y · {{ ext.a11y_issues }}</span>
             {% endif %}
+            {% set expert = advanced.expert_geo or {} %}
+            {% if expert.citation_live and expert.citation_live.share is not none %}
+            <span class="adv-strip__item">Citations · {{ expert.citation_live.share }}%</span>
+            {% endif %}
+            {% if expert.entity_score is not none %}
+            <span class="adv-strip__item">Entity KG · {{ expert.entity_score }}</span>
+            {% endif %}
+            {% if expert.surfaces %}
+            <span class="adv-strip__item">Surfaces · {{ expert.surfaces|length }}</span>
+            {% endif %}
+            {% if expert.docs_hub_score is not none %}
+            <span class="adv-strip__item">Docs hub · {{ expert.docs_hub_score }}/3</span>
+            {% endif %}
+            {% if expert.citation_position %}
+            <span class="adv-strip__item">Position · {{ expert.citation_position }}</span>
+            {% endif %}
           </div>
           {% endif %}
 
@@ -607,6 +623,23 @@ https://rivale2.com", class_="analyze-input") }}
                 <pre id="ext-box">{{ pack_artifacts.get('extended-analysis.md') }}</pre>
               </div>
               {% endif %}
+              {% for fname, box in [
+                ('geo-prompt-library.md', 'geo-lib-box'),
+                ('geo-content-brief.md', 'geo-brief-box'),
+                ('geo-experiment-design.md', 'geo-exp-box'),
+                ('geo-citation-rescan.md', 'geo-rescan-box'),
+                ('expert-geo.json', 'expert-geo-box')
+              ] %}
+              {% if pack_artifacts.get(fname) %}
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>{{ fname }}</span>
+                  <button type="button" class="linkish" onclick="copyFrom('{{ box }}', this)">Copia</button>
+                </div>
+                <pre id="{{ box }}">{{ pack_artifacts.get(fname) }}</pre>
+              </div>
+              {% endif %}
+              {% endfor %}
               {% if pack_artifacts.get('executive-report.html') %}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">

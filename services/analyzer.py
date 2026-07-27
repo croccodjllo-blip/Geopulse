@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 
 from services.advanced_checks import run_advanced_suite
 from services.extended_checks import run_extended_suite
+from services.expert_geo import run_expert_geo_suite
 from services.deep_checks import (
     ADDRESS_RE,
     AUTHOR_RE,
@@ -1396,10 +1397,37 @@ def analyze_site(
         signals["advanced"] = adv_sig
         scored["signals"] = signals
         advanced_artifacts.update(ext.get("artifacts") or {})
+
+        expert = run_expert_geo_suite(
+            url=url,
+            scraped=scraped,
+            probes=probes,
+            page_reports=page_reports,
+            competitors=competitors,
+            previous=previous,
+            aio_score=scored.get("aio_score"),
+            geo_score=scored.get("geo_score"),
+            score_history=hist,
+        )
+        scored["aio_score"] = _clamp(
+            float(scored.get("aio_score") or 0) + float(expert.get("aio") or 0)
+        )
+        scored["geo_score"] = _clamp(
+            float(scored.get("geo_score") or 0) + float(expert.get("geo") or 0)
+        )
+        scored["findings"] = list(scored.get("findings") or []) + list(
+            expert.get("findings") or []
+        )
+        signals = dict(scored.get("signals") or {})
+        adv_sig = dict(signals.get("advanced") or {})
+        adv_sig["expert_geo"] = expert.get("signals") or {}
+        signals["advanced"] = adv_sig
+        scored["signals"] = signals
+        advanced_artifacts.update(expert.get("artifacts") or {})
         scored["notes"] = (
             (scored.get("notes") or "")
-            + " Suite avanzata + estesa (citazioni proxy, schema strict, CWV/Lighthouse opz., "
-            "JS render, SoV, forecast, alert Slack/Telegram)."
+            + " Suite expert GEO: citazioni/intent, entity KG, answer-ready, "
+            "multi-surface, trust, prompt library, experiment design."
         ).strip()
 
     return {

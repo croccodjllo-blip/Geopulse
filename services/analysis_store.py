@@ -117,6 +117,11 @@ def persist_analysis(
                 "competitor-benchmark.md",
                 "executive-report.html",
                 "extended-analysis.md",
+                "geo-prompt-library.md",
+                "geo-content-brief.md",
+                "geo-experiment-design.md",
+                "geo-citation-rescan.md",
+                "expert-geo.json",
             }
             and isinstance(v, str)
         }
