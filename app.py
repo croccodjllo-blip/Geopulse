@@ -5,11 +5,13 @@ Analisi score + findings + generazione pack artifact (llms.txt, JSON-LD, meta, r
 
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import logging
 import os
 import re
+import secrets
 import threading
 from datetime import datetime, timedelta, timezone
 from functools import wraps
@@ -35,6 +37,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
 from sqlalchemy import UniqueConstraint, inspect, text
+from sqlalchemy.exc import IntegrityError
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import (
@@ -81,7 +84,9 @@ from services.guides import GUIDES
 from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_job
 from services.mailer import (
     build_pack_email,
+    build_password_reset_email,
     mail_configured,
+    send_email,
     send_email_with_attachment,
 )
 from services.rate_limit import limiter
@@ -116,6 +121,7 @@ ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
 ANALYZE_BATCH_LIMIT = max(1, int(os.getenv("ANALYZE_BATCH_LIMIT", "5")))
+PASSWORD_RESET_HOURS = max(1, int(os.getenv("PASSWORD_RESET_HOURS", "2")))
 SITE_AUTHOR_NAME = (os.getenv("SITE_AUTHOR_NAME") or "Engineering Factory").strip()
 SITE_AUTHOR_TITLE = (
     os.getenv("SITE_AUTHOR_TITLE") or "Proprietario · Responsabile contenuti e prodotto"
@@ -211,6 +217,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     stripe_customer_id = db.Column(db.String(120))
     stripe_subscription_id = db.Column(db.String(120))
+    reset_token_hash = db.Column(db.String(64))
+    reset_token_expires = db.Column(db.DateTime)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -223,6 +231,27 @@ class User(db.Model):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+
+    def clear_reset_token(self) -> None:
+        self.reset_token_hash = None
+        self.reset_token_expires = None
+
+    def issue_reset_token(self, *, hours: int = PASSWORD_RESET_HOURS) -> str:
+        raw = secrets.token_urlsafe(32)
+        self.reset_token_hash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        self.reset_token_expires = datetime.now(timezone.utc) + timedelta(hours=hours)
+        return raw
+
+    def matches_reset_token(self, raw_token: str) -> bool:
+        if not raw_token or not self.reset_token_hash or not self.reset_token_expires:
+            return False
+        expires = self.reset_token_expires
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        if expires < datetime.now(timezone.utc):
+            return False
+        digest = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+        return secrets.compare_digest(digest, self.reset_token_hash)
 
     @property
     def is_admin(self) -> bool:
@@ -560,6 +589,16 @@ class RegisterForm(FlaskForm):
     )
     submit = SubmitField("Crea account")
 
+    def validate_email(self, field: StringField) -> None:
+        email = (field.data or "").strip().lower()
+        if not email:
+            return
+        existing = User.query.filter_by(email=email).first()
+        if existing is not None:
+            raise ValidationError(
+                "Questa email è già registrata. Accedi o recupera la password."
+            )
+
 
 class LoginForm(FlaskForm):
     email = StringField(
@@ -572,6 +611,33 @@ class LoginForm(FlaskForm):
     )
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Accedi")
+
+
+class ForgotPasswordForm(FlaskForm):
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(),
+            Email(message="Email non valida.", check_deliverability=False),
+            Length(max=255),
+        ],
+    )
+    submit = SubmitField("Invia link di recupero")
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField(
+        "Nuova password",
+        validators=[DataRequired(), Length(min=8, max=128)],
+    )
+    confirm = PasswordField(
+        "Conferma password",
+        validators=[
+            DataRequired(),
+            EqualTo("password", message="Le password non coincidono."),
+        ],
+    )
+    submit = SubmitField("Salva nuova password")
 
 
 class AnalyzeForm(FlaskForm):
@@ -827,6 +893,8 @@ def ensure_schema() -> None:
             "plan": "TEXT DEFAULT 'free'",
             "stripe_customer_id": "TEXT",
             "stripe_subscription_id": "TEXT",
+            "reset_token_hash": "TEXT",
+            "reset_token_expires": "DATETIME",
         }
         with db.engine.begin() as conn:
             for name, col_type in user_alters.items():
@@ -1417,8 +1485,15 @@ def register():
             return render_template("register.html", form=form)
         email = form.email.data.strip().lower()
         if User.query.filter_by(email=email).first():
-            flash("Questa email è già registrata.", "error")
-        else:
+            form.email.errors.append(
+                "Questa email è già registrata. Accedi o recupera la password."
+            )
+            flash(
+                "Questa email è già registrata. Accedi oppure usa il recupero password.",
+                "error",
+            )
+            return render_template("register.html", form=form)
+        try:
             website = normalize_url(form.website_url.data)
             user = User(
                 email=email,
@@ -1433,11 +1508,25 @@ def register():
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
-            session.clear()
-            session["user_id"] = user.id
-            session.permanent = True
-            flash("Account creato. Benvenuto su GeoPulse.", "success")
-            return redirect(url_for("dashboard"))
+        except IntegrityError:
+            db.session.rollback()
+            form.email.errors.append(
+                "Questa email è già registrata. Accedi o recupera la password."
+            )
+            flash(
+                "Questa email è già registrata. Accedi oppure usa il recupero password.",
+                "error",
+            )
+            return render_template("register.html", form=form)
+        except ValueError as exc:
+            flash(str(exc), "error")
+            return render_template("register.html", form=form)
+
+        session.clear()
+        session["user_id"] = user.id
+        session.permanent = True
+        flash("Account creato. Benvenuto su GeoPulse.", "success")
+        return redirect(url_for("dashboard"))
 
     return render_template("register.html", form=form)
 
@@ -1467,6 +1556,108 @@ def login():
             return redirect(url_for("dashboard"))
 
     return render_template("login.html", form=form)
+
+
+@app.route("/recupero-password", methods=["GET", "POST"])
+def forgot_password():
+    if session.get("user_id"):
+        return redirect(url_for("dashboard"))
+
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        if not limiter.allow(
+            f"forgot:{client_ip()}", limit=8, window_seconds=3600
+        ):
+            flash("Troppe richieste di recupero. Riprova più tardi.", "error")
+            return render_template("forgot_password.html", form=form)
+
+        email = form.email.data.strip().lower()
+        user = User.query.filter_by(email=email).first()
+        generic_ok = (
+            "Se l’email è registrata e l’invio mail è attivo, "
+            "riceverai un link per reimpostare la password."
+        )
+
+        if user is None:
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
+
+        if not mail_configured():
+            flash(
+                "Invio email non ancora attivo su questo server. "
+                "Contatta info@geopulse.it per il reset password.",
+                "warning",
+            )
+            return render_template("forgot_password.html", form=form)
+
+        try:
+            raw_token = user.issue_reset_token(hours=PASSWORD_RESET_HOURS)
+            db.session.commit()
+            reset_url = url_for(
+                "reset_password", token=raw_token, _external=True
+            )
+            subject, text_body, html_body = build_password_reset_email(
+                user_name=user.name,
+                reset_url=reset_url,
+                expires_hours=PASSWORD_RESET_HOURS,
+            )
+            send_email(
+                to_email=user.email,
+                subject=subject,
+                text_body=text_body,
+                html_body=html_body,
+            )
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Password reset email failed for %s", email)
+            flash(
+                "Non siamo riusciti a inviare l’email di recupero. Riprova tra poco.",
+                "error",
+            )
+            return render_template("forgot_password.html", form=form)
+
+        flash(generic_ok, "success")
+        return redirect(url_for("login"))
+
+    return render_template("forgot_password.html", form=form)
+
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token: str):
+    if session.get("user_id"):
+        return redirect(url_for("dashboard"))
+
+    token = (token or "").strip()
+    user = None
+    if token:
+        digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        candidate = User.query.filter_by(reset_token_hash=digest).first()
+        if candidate is not None and candidate.matches_reset_token(token):
+            user = candidate
+
+    if user is None:
+        flash(
+            "Link di recupero non valido o scaduto. Richiedine uno nuovo.",
+            "error",
+        )
+        return redirect(url_for("forgot_password"))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        if not limiter.allow(
+            f"reset:{client_ip()}", limit=10, window_seconds=3600
+        ):
+            flash("Troppi tentativi. Riprova più tardi.", "error")
+            return render_template("reset_password.html", form=form)
+
+        user.set_password(form.password.data)
+        user.clear_reset_token()
+        db.session.commit()
+        session.clear()
+        flash("Password aggiornata. Ora puoi accedere.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("reset_password.html", form=form)
 
 
 @app.route("/logout", methods=["POST"])

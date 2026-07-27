@@ -29,6 +29,139 @@ def mail_from_address() -> str:
     )
 
 
+def send_email(
+    *,
+    to_email: str,
+    subject: str,
+    text_body: str,
+    html_body: str | None = None,
+) -> dict[str, Any]:
+    """Invia email senza allegato (Resend o SMTP)."""
+    to_email = (to_email or "").strip()
+    if not to_email or "@" not in to_email:
+        raise ValueError("Indirizzo email destinatario non valido.")
+    if not mail_configured():
+        raise RuntimeError(
+            "Invio email non configurato. Imposta RESEND_API_KEY oppure SMTP_HOST."
+        )
+
+    if (os.getenv("RESEND_API_KEY") or "").strip():
+        return _send_plain_via_resend(
+            to_email=to_email,
+            subject=subject,
+            text_body=text_body,
+            html_body=html_body,
+        )
+    return _send_plain_via_smtp(
+        to_email=to_email,
+        subject=subject,
+        text_body=text_body,
+        html_body=html_body,
+    )
+
+
+def _send_plain_via_resend(
+    *,
+    to_email: str,
+    subject: str,
+    text_body: str,
+    html_body: str | None,
+) -> dict[str, Any]:
+    api_key = (os.getenv("RESEND_API_KEY") or "").strip()
+    payload: dict[str, Any] = {
+        "from": mail_from_address(),
+        "to": [to_email],
+        "subject": subject,
+        "text": text_body,
+    }
+    if html_body:
+        payload["html"] = html_body
+
+    response = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json=payload,
+        timeout=45,
+    )
+    if response.status_code >= 400:
+        detail = response.text[:300]
+        logger.error("Resend send failed status=%s body=%s", response.status_code, detail)
+        raise RuntimeError(f"Invio email fallito (Resend {response.status_code}).")
+    data = response.json() if response.content else {}
+    return {"provider": "resend", "id": data.get("id"), "to": to_email}
+
+
+def _send_plain_via_smtp(
+    *,
+    to_email: str,
+    subject: str,
+    text_body: str,
+    html_body: str | None,
+) -> dict[str, Any]:
+    host = (os.getenv("SMTP_HOST") or "").strip()
+    port = int(os.getenv("SMTP_PORT") or "587")
+    user = (os.getenv("SMTP_USER") or "").strip()
+    password = os.getenv("SMTP_PASSWORD") or ""
+    use_ssl = (os.getenv("SMTP_SSL") or "0").strip() == "1"
+    use_starttls = (os.getenv("SMTP_STARTTLS") or "1").strip() != "0"
+    from_addr = mail_from_address()
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = from_addr
+    msg["To"] = to_email
+    msg.set_content(text_body)
+    if html_body:
+        msg.add_alternative(html_body, subtype="html")
+
+    if use_ssl:
+        with smtplib.SMTP_SSL(host, port, timeout=45) as smtp:
+            if user:
+                smtp.login(user, password)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(host, port, timeout=45) as smtp:
+            smtp.ehlo()
+            if use_starttls:
+                smtp.starttls()
+                smtp.ehlo()
+            if user:
+                smtp.login(user, password)
+            smtp.send_message(msg)
+
+    return {"provider": "smtp", "to": to_email, "host": host}
+
+
+def build_password_reset_email(
+    *,
+    user_name: str,
+    reset_url: str,
+    expires_hours: int = 2,
+) -> tuple[str, str, str]:
+    first = (user_name or "ciao").strip().split(" ")[0] or "ciao"
+    subject = "GeoPulse — recupero password"
+    text = (
+        f"Ciao {first},\n\n"
+        "hai richiesto il reset della password GeoPulse.\n"
+        f"Apri questo link entro {expires_hours} ore:\n\n"
+        f"{reset_url}\n\n"
+        "Se non hai richiesto tu il reset, ignora questa email.\n\n"
+        "— GeoPulse (geopulse.it)\n"
+    )
+    html = (
+        f"<p>Ciao {first},</p>"
+        "<p>hai richiesto il reset della password GeoPulse.</p>"
+        f"<p><a href=\"{reset_url}\">Imposta una nuova password</a> "
+        f"(valido {expires_hours} ore).</p>"
+        "<p>Se non hai richiesto tu il reset, ignora questa email.</p>"
+        "<p>— GeoPulse · <a href=\"https://geopulse.it\">geopulse.it</a></p>"
+    )
+    return subject, text, html
+
+
 def send_email_with_attachment(
     *,
     to_email: str,
