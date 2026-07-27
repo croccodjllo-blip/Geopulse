@@ -127,51 +127,192 @@ https://rivale2.com", class_="analyze-input") }}
             </div>
           </div>
 
-          <div class="signal-board" aria-label="Panoramica score">
-            <section class="signal-board__grade" aria-labelledby="grade-code">
-              <div class="grade-panel__mark" data-grade="{{ rating.code }}">
-                <span class="grade-panel__eyebrow">Indice</span>
-                <p class="grade-panel__code" id="grade-code">{{ rating.code }}</p>
-                <p class="grade-panel__label">{{ rating.label }}</p>
-                <p class="grade-panel__score">{{ rating.score }}/100</p>
-              </div>
-              <div class="grade-panel__scale" aria-label="Scala da DDD a AAA">
-                <div class="grade-panel__scale-head">
-                  <span>DDD</span>
-                  <span>AAA</span>
-                </div>
-                <div class="grade-rail" aria-hidden="true">
-                  <i style="--p: {{ rating.progress }}%"></i>
-                </div>
-                <ol class="grade-steps">
-                  {% for code in rating.scale %}
-                  <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
-                  {% endfor %}
-                </ol>
-              </div>
-            </section>
+          {% set aio_n = aio if aio is number else 0 %}
+          {% set geo_n = geo if geo is number else 0 %}
+          {% set health_raw = 100 - (findings_n * 8) %}
+          {% set health = health_raw if health_raw > 8 else 8 %}
+          {% if aio_n >= 90 %}
+            {% set band = 'peak' %}
+            {% set propensity = 'Citabilità elevata' %}
+            {% set propensity_lede = 'Le IA sono fortemente propense a raccomandare questo business.' %}
+          {% elif aio_n >= 75 %}
+            {% set band = 'high' %}
+            {% set propensity = 'Alta propensione' %}
+            {% set propensity_lede = 'Alta probabilità che le IA citino o raccomandino questo brand.' %}
+          {% elif aio_n >= 55 %}
+            {% set band = 'mid' %}
+            {% set propensity = 'Propensione moderata' %}
+            {% set propensity_lede = 'Le IA possono citarvi in contesti mirati: chiudi i gap per salire.' %}
+          {% elif aio_n >= 35 %}
+            {% set band = 'low' %}
+            {% set propensity = 'Propensione emergente' %}
+            {% set propensity_lede = 'Segnali deboli: le IA raramente raccomandano questo business oggi.' %}
+          {% else %}
+            {% set band = 'crit' %}
+            {% set propensity = 'Bassa propensione' %}
+            {% set propensity_lede = 'Citabilità minima: serve un intervento strutturale sui segnali AIO.' %}
+          {% endif %}
+          {% set aio_c = 741.42 %}
+          {% set geo_c = 942.48 %}
+          {% set aio_offset = aio_c * (1 - aio_n / 100) %}
+          {% set geo_offset = geo_c * (1 - geo_n / 100) %}
+          {% set geo_angle = (geo_n / 100 * 360) - 90 %}
 
-            <div class="signal-board__meters" aria-label="Score">
-              <div class="meter">
-                <div class="meter__label"><span>AIO</span><strong>{{ latest.aio_score if latest.aio_score is not none else '—' }}</strong></div>
-                <div class="meter__track"><i style="--m: {{ aio }}%"></i></div>
-              </div>
-              <div class="meter">
-                <div class="meter__label"><span>GEO</span><strong>{{ latest.geo_score if latest.geo_score is not none else '—' }}</strong></div>
-                <div class="meter__track"><i style="--m: {{ geo }}%"></i></div>
-              </div>
-              <div class="meter meter--alert">
-                <div class="meter__label"><span>Criticità</span><strong>{{ findings_n }}</strong></div>
-                <div class="meter__track"><i style="--m: {{ [findings_n * 12, 100]|min }}%"></i></div>
-                {% if crit_n or warn_n %}
-                <p class="meter__hint">
-                  {% if crit_n %}<span data-sev="critical">{{ crit_n }} critical</span>{% endif %}
-                  {% if warn_n %}<span data-sev="warn">{{ warn_n }} warn</span>{% endif %}
-                </p>
-                {% endif %}
+          <section
+            class="pulse-core"
+            aria-label="AIO Recommendation Propensity"
+            data-band="{{ band }}"
+            style="--aio: {{ aio_n }}; --geo: {{ geo_n }}; --health: {{ health }}; --aio-c: {{ '%.2f'|format(aio_c) }}; --aio-offset: {{ '%.2f'|format(aio_offset) }}; --geo-c: {{ '%.2f'|format(geo_c) }}; --geo-offset: {{ '%.2f'|format(geo_offset) }}; --geo-angle: {{ '%.1f'|format(geo_angle) }}deg;"
+          >
+            <div class="pulse-core__stage">
+              <div class="pulse-core__aura" aria-hidden="true"></div>
+              <div class="pulse-core__viz" aria-hidden="true">
+                <svg class="pulse-core__svg" viewBox="0 0 360 360" role="presentation">
+                  <defs>
+                    <linearGradient id="aioArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="var(--pc-grad-a)" />
+                      <stop offset="55%" stop-color="var(--pc-grad-b)" />
+                      <stop offset="100%" stop-color="var(--pc-grad-c)" />
+                    </linearGradient>
+                    <linearGradient id="geoArcGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.15" />
+                      <stop offset="100%" stop-color="#4F6EF7" stop-opacity="0.85" />
+                    </linearGradient>
+                    <radialGradient id="coreGlow" cx="50%" cy="45%" r="55%">
+                      <stop offset="0%" stop-color="var(--pc-glow)" stop-opacity="0.55" />
+                      <stop offset="55%" stop-color="var(--pc-glow)" stop-opacity="0.12" />
+                      <stop offset="100%" stop-color="var(--pc-glow)" stop-opacity="0" />
+                    </radialGradient>
+                    <filter id="softBloom" x="-40%" y="-40%" width="180%" height="180%">
+                      <feGaussianBlur stdDeviation="3.5" result="b" />
+                      <feMerge>
+                        <feMergeNode in="b" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  <!-- Field grid -->
+                  <circle class="pc-field" cx="180" cy="180" r="168" />
+                  <circle class="pc-field pc-field--mid" cx="180" cy="180" r="148" />
+
+                  <!-- GEO orbit track + progress -->
+                  <circle class="pc-geo-track" cx="180" cy="180" r="150" />
+                  <circle
+                    class="pc-geo-arc"
+                    cx="180" cy="180" r="150"
+                    stroke-dasharray="{{ '%.2f'|format(geo_c) }}"
+                    stroke-dashoffset="{{ '%.2f'|format(geo_offset) }}"
+                    transform="rotate(-90 180 180)"
+                  />
+
+                  <!-- GEO satellite -->
+                  <g class="pc-satellite" style="--orbit-r: 150px; --orbit-a: {{ '%.1f'|format(geo_angle) }}deg;">
+                    <circle class="pc-satellite__glow" r="10" />
+                    <circle class="pc-satellite__dot" r="3.5" />
+                  </g>
+
+                  <!-- AIO track + arc -->
+                  <circle class="pc-aio-track" cx="180" cy="180" r="118" />
+                  <circle
+                    class="pc-aio-arc"
+                    cx="180" cy="180" r="118"
+                    stroke-dasharray="{{ '%.2f'|format(aio_c) }}"
+                    stroke-dashoffset="{{ '%.2f'|format(aio_offset) }}"
+                    transform="rotate(-90 180 180)"
+                    filter="url(#softBloom)"
+                  />
+
+                  <!-- Sweep needle at AIO tip -->
+                  <g class="pc-needle" style="--needle: {{ aio_n }};">
+                    <line x1="180" y1="180" x2="180" y2="62" />
+                    <circle cx="180" cy="62" r="4.5" />
+                  </g>
+
+                  <!-- Constellation ticks -->
+                  {% for i in range(24) %}
+                  {% set ang = i * 15 - 90 %}
+                  {% set lit = (i / 24 * 100) <= health %}
+                  <circle
+                    class="pc-tick{% if lit %} is-lit{% endif %}"
+                    cx="0" cy="0" r="2.2"
+                    transform="rotate({{ ang }} 180 180) translate(180 80)"
+                  />
+                  {% endfor %}
+
+                  <!-- Core glow disc -->
+                  <circle class="pc-core-glow" cx="180" cy="180" r="78" fill="url(#coreGlow)" />
+                  <circle class="pc-core-ring" cx="180" cy="180" r="72" />
+                </svg>
+
+                <div class="pulse-core__hub">
+                  <span class="pulse-core__kicker">AIO Score</span>
+                  <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
+                  <span class="pulse-core__denom">/100</span>
+                  <span class="pulse-core__propensity">{{ propensity }}</span>
+                </div>
               </div>
             </div>
-          </div>
+
+            <div class="pulse-core__intel">
+              <p class="eyebrow">Recommendation propensity</p>
+              <h3 class="pulse-core__title">Quanto le IA raccomandano questo business</h3>
+              <p class="pulse-core__lede">{{ propensity_lede }}</p>
+
+              <div class="pulse-satellites" role="list">
+                <article class="pulse-sat" role="listitem" data-tone="geo">
+                  <div class="pulse-sat__ring" style="--p: {{ geo_n }};" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <circle class="pulse-sat__track" cx="24" cy="24" r="18" />
+                      <circle class="pulse-sat__prog" cx="24" cy="24" r="18"
+                        stroke-dasharray="113.1"
+                        stroke-dashoffset="{{ '%.1f'|format(113.1 * (1 - geo_n / 100)) }}"
+                        transform="rotate(-90 24 24)" />
+                    </svg>
+                    <span>{{ geo_n }}</span>
+                  </div>
+                  <div>
+                    <strong>GEO</strong>
+                    <em>Generative engine readiness</em>
+                  </div>
+                </article>
+
+                <article class="pulse-sat" role="listitem" data-tone="grade" data-grade="{{ rating.code }}">
+                  <div class="pulse-sat__mark" aria-hidden="true">{{ rating.code }}</div>
+                  <div>
+                    <strong>Indice</strong>
+                    <em>{{ rating.score }}/100 · {{ rating.label.split('—')[0].strip() }}</em>
+                  </div>
+                </article>
+
+                <article class="pulse-sat" role="listitem" data-tone="risk">
+                  <div class="pulse-sat__risk" aria-hidden="true">
+                    <span class="pulse-sat__risk-n">{{ findings_n }}</span>
+                    <span class="pulse-sat__risk-dots">
+                      {% for _ in range([crit_n, 5]|min) %}<i data-sev="critical"></i>{% endfor %}
+                      {% for _ in range([warn_n, 5]|min) %}<i data-sev="warn"></i>{% endfor %}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>Interferenze</strong>
+                    <em>
+                      {% if crit_n or warn_n %}
+                        {{ crit_n }} critical · {{ warn_n }} warn
+                      {% else %}
+                        Nessuna criticità aperta
+                      {% endif %}
+                    </em>
+                  </div>
+                </article>
+              </div>
+
+              <ol class="pulse-scale" aria-label="Scala da DDD a AAA">
+                {% for code in rating.scale %}
+                <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
+                {% endfor %}
+              </ol>
+            </div>
+          </section>
 
           {% if run_diff and run_diff.has_previous %}
           <section class="diff-strip" aria-label="Confronto con run precedente">
@@ -420,4 +561,25 @@ https://rivale2.com", class_="analyze-input") }}
     </div>
   </div>
 </section>
+<script>
+(() => {
+  const el = document.querySelector('.pulse-core__value[data-count-to]');
+  if (!el) return;
+  const target = Number(el.getAttribute('data-count-to') || 0);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !Number.isFinite(target)) {
+    el.textContent = String(target);
+    return;
+  }
+  const dur = 1100;
+  const t0 = performance.now();
+  const tick = (now) => {
+    const p = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = String(Math.round(target * eased));
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+})();
+</script>
 {% endblock %}

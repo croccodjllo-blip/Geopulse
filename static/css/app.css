@@ -3183,6 +3183,542 @@ body.app-body:not(.body-dash) {
 }
 
 /* ═══════════════════════════════════════════
+   PULSE CORE — AIO Recommendation Propensity
+   Orbital signal visualization (not a bar chart)
+═══════════════════════════════════════════ */
+.pulse-core {
+  --pc-grad-a: #818CF8;
+  --pc-grad-b: #4F6EF7;
+  --pc-grad-c: #22D3EE;
+  --pc-glow: #4F6EF7;
+  --pc-ink: var(--ink);
+  --pc-muted: var(--slate);
+  --pc-surface: #0B1120;
+
+  display: grid;
+  gap: 1.75rem;
+  margin: 0 0 1.5rem;
+  padding: 1.5rem 1.4rem 1.55rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse 80% 70% at 22% 40%, rgba(79, 110, 247, 0.10), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(34, 211, 238, 0.06), transparent 50%),
+    linear-gradient(165deg, #fff 0%, var(--surface-2) 100%);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  animation: rise 720ms var(--ease) both;
+}
+
+.pulse-core[data-band="peak"] {
+  --pc-grad-a: #34D399;
+  --pc-grad-b: #059669;
+  --pc-grad-c: #22D3EE;
+  --pc-glow: #059669;
+}
+.pulse-core[data-band="high"] {
+  --pc-grad-a: #A5B4FC;
+  --pc-grad-b: #4F6EF7;
+  --pc-grad-c: #22D3EE;
+  --pc-glow: #4F6EF7;
+}
+.pulse-core[data-band="mid"] {
+  --pc-grad-a: #FCD34D;
+  --pc-grad-b: #4F6EF7;
+  --pc-grad-c: #818CF8;
+  --pc-glow: #6366F1;
+}
+.pulse-core[data-band="low"] {
+  --pc-grad-a: #FDBA74;
+  --pc-grad-b: #D97706;
+  --pc-grad-c: #4F6EF7;
+  --pc-glow: #D97706;
+}
+.pulse-core[data-band="crit"] {
+  --pc-grad-a: #FB7185;
+  --pc-grad-b: #DC2626;
+  --pc-grad-c: #F97316;
+  --pc-glow: #DC2626;
+}
+
+@media (min-width: 920px) {
+  .pulse-core {
+    grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.15fr);
+    gap: 2rem 2.5rem;
+    align-items: center;
+    padding: 1.75rem 1.85rem 1.85rem;
+  }
+}
+
+.pulse-core__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 20rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(79, 110, 247, 0.22), transparent 42%),
+    radial-gradient(circle at 70% 70%, rgba(34, 211, 238, 0.08), transparent 45%),
+    linear-gradient(160deg, #111827 0%, #0B1120 55%, #070B14 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 40px rgba(11, 17, 32, 0.28);
+  overflow: hidden;
+}
+
+.pulse-core__stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at 50% 50%, #000 20%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 20%, transparent 72%);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.pulse-core__aura {
+  position: absolute;
+  inset: 8% 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--pc-glow) 0%, transparent 68%);
+  opacity: 0.28;
+  filter: blur(22px);
+  animation: pc-breathe 4.8s var(--ease) infinite;
+  pointer-events: none;
+}
+
+.pulse-core__viz {
+  position: relative;
+  width: min(100%, 22rem);
+  aspect-ratio: 1;
+}
+
+.pulse-core__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.pc-field {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1;
+  stroke-dasharray: 2 10;
+}
+
+.pc-field--mid {
+  stroke: rgba(165, 180, 252, 0.14);
+  stroke-dasharray: 1 8;
+  animation: pc-spin 48s linear infinite;
+  transform-origin: 180px 180px;
+}
+
+.pc-geo-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 7;
+}
+
+.pc-geo-arc {
+  fill: none;
+  stroke: url(#geoArcGrad);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  animation: pc-draw-geo 1.4s var(--ease) both;
+}
+
+.pc-aio-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 12;
+}
+
+.pc-aio-arc {
+  fill: none;
+  stroke: url(#aioArcGrad);
+  stroke-width: 12;
+  stroke-linecap: round;
+  animation: pc-draw-aio 1.55s var(--ease) both;
+}
+
+.pc-satellite {
+  transform-origin: 180px 180px;
+  transform: translate(180px, 180px) rotate(var(--orbit-a, -90deg)) translateY(-150px);
+  animation: pc-sat-pulse 2.6s var(--ease) infinite;
+}
+
+.pc-satellite__glow {
+  fill: rgba(79, 110, 247, 0.28);
+}
+
+.pc-satellite__dot {
+  fill: #4F6EF7;
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.pc-needle {
+  transform-origin: 180px 180px;
+  transform: rotate(calc(var(--needle, 0) * 3.6deg));
+  animation: pc-needle-in 1.55s var(--ease) both;
+}
+
+.pc-needle line {
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.pc-needle circle {
+  fill: var(--pc-glow);
+  stroke: #fff;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 6px var(--pc-glow));
+}
+
+.pc-tick {
+  fill: rgba(255, 255, 255, 0.14);
+}
+
+.pc-tick.is-lit {
+  fill: var(--pc-glow);
+  opacity: 0.85;
+  animation: pc-tick-lit 900ms var(--ease) both;
+}
+
+.pc-core-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.10);
+  stroke-width: 1;
+}
+
+.pulse-core__hub {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  pointer-events: none;
+  padding-bottom: 0.35rem;
+}
+
+.pulse-core__kicker {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.15rem;
+}
+
+.pulse-core__value {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 9vw, 4.4rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fff 20%, color-mix(in srgb, var(--pc-glow) 65%, #fff));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--pc-glow) 45%, transparent));
+}
+
+.pulse-core__denom {
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.42);
+  letter-spacing: 0.04em;
+}
+
+.pulse-core__propensity {
+  margin-top: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.55rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--pc-glow) 45%, transparent);
+  background: color-mix(in srgb, var(--pc-glow) 18%, rgba(11, 17, 32, 0.65));
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+.pulse-core__intel {
+  min-width: 0;
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.pulse-core__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.pulse-core__lede {
+  margin: 0;
+  color: var(--slate);
+  line-height: 1.65;
+  font-size: 0.95rem;
+  max-width: 40ch;
+}
+
+.pulse-satellites {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.pulse-sat {
+  display: grid;
+  grid-template-columns: 3.1rem minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.82);
+  transition: border-color 160ms var(--ease), transform 160ms var(--ease);
+}
+
+.pulse-sat:hover {
+  border-color: color-mix(in srgb, var(--signal) 30%, var(--border));
+  transform: translateY(-1px);
+}
+
+.pulse-sat strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.pulse-sat em {
+  display: block;
+  margin-top: 0.12rem;
+  font-style: normal;
+  font-size: 0.78rem;
+  color: var(--slate);
+  line-height: 1.4;
+}
+
+.pulse-sat__ring {
+  position: relative;
+  width: 3.1rem;
+  height: 3.1rem;
+}
+
+.pulse-sat__ring svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pulse-sat__track {
+  fill: none;
+  stroke: rgba(15, 23, 42, 0.08);
+  stroke-width: 4;
+}
+
+.pulse-sat__prog {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 4;
+  stroke-linecap: round;
+  animation: pc-draw-sat 1.2s var(--ease) both;
+}
+
+.pulse-sat__ring span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pulse-sat__mark {
+  display: grid;
+  place-items: center;
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-3);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.pulse-sat[data-grade="AAA"] .pulse-sat__mark,
+.pulse-sat[data-grade="AA"] .pulse-sat__mark,
+.pulse-sat[data-grade="A"] .pulse-sat__mark {
+  color: var(--ok);
+  border-color: var(--ok-brd);
+  background: var(--ok-bg);
+}
+
+.pulse-sat[data-grade="BBB"] .pulse-sat__mark,
+.pulse-sat[data-grade="BB"] .pulse-sat__mark,
+.pulse-sat[data-grade="B"] .pulse-sat__mark {
+  color: var(--signal-deep);
+  border-color: color-mix(in srgb, var(--signal) 40%, transparent);
+  background: var(--signal-pale);
+}
+
+.pulse-sat[data-grade="CCC"] .pulse-sat__mark,
+.pulse-sat[data-grade="CC"] .pulse-sat__mark,
+.pulse-sat[data-grade="C"] .pulse-sat__mark {
+  color: var(--warn);
+  border-color: var(--warn-brd);
+  background: var(--warn-bg);
+}
+
+.pulse-sat[data-grade="D"] .pulse-sat__mark,
+.pulse-sat[data-grade="DD"] .pulse-sat__mark,
+.pulse-sat[data-grade="DDD"] .pulse-sat__mark {
+  color: var(--danger);
+  border-color: var(--danger-brd);
+  background: var(--danger-bg);
+}
+
+.pulse-sat__risk {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+}
+
+.pulse-sat__risk-n {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.pulse-sat__risk-dots {
+  display: flex;
+  gap: 0.18rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 0.4rem;
+}
+
+.pulse-sat__risk-dots i {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: var(--slate-pale);
+  font-style: normal;
+}
+
+.pulse-sat__risk-dots i[data-sev="critical"] {
+  background: var(--danger);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 20%, transparent);
+}
+
+.pulse-sat__risk-dots i[data-sev="warn"] {
+  background: var(--warn);
+}
+
+.pulse-scale {
+  list-style: none;
+  margin: 0.85rem 0 0;
+  padding: 0.55rem 0 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+}
+
+.pulse-scale li {
+  min-width: 2.15rem;
+  padding: 0.22rem 0.3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--slate-light);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+
+.pulse-scale li.is-active {
+  color: var(--pc-glow);
+  border-color: color-mix(in srgb, var(--pc-glow) 45%, transparent);
+  background: color-mix(in srgb, var(--pc-glow) 10%, #fff);
+}
+
+@keyframes pc-draw-aio {
+  from { stroke-dashoffset: var(--aio-c); }
+  to   { stroke-dashoffset: var(--aio-offset); }
+}
+
+@keyframes pc-draw-geo {
+  from { stroke-dashoffset: var(--geo-c); }
+  to   { stroke-dashoffset: var(--geo-offset); }
+}
+
+@keyframes pc-draw-sat {
+  from { stroke-dashoffset: 113.1; }
+}
+
+@keyframes pc-breathe {
+  0%, 100% { opacity: 0.14; transform: scale(0.96); }
+  50%      { opacity: 0.28; transform: scale(1.04); }
+}
+
+@keyframes pc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pc-sat-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.72; }
+}
+
+@keyframes pc-needle-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pc-tick-lit {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 0.85; transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════
    RESPONSIVE MOBILE
 ═══════════════════════════════════════════ */
 @media (max-width: 720px) {
@@ -3201,6 +3737,9 @@ body.app-body:not(.body-dash) {
   .report-top__actions .inline-action .btn { width: 100%; }
   .dash-block--panel { padding: 1rem; }
   .workspace-status { gap: 0.6rem; }
+  .pulse-core { padding: 1.15rem 1rem 1.25rem; }
+  .pulse-core__stage { min-height: 16rem; }
+  .pulse-core__viz { width: min(100%, 18.5rem); }
 }
 
 /* ═══════════════════════════════════════════
