@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 from openai import OpenAI
 
+from services.security import html_attr
+
 
 def fallback_llms_txt(url: str, scraped: dict[str, Any]) -> str:
     brand = scraped.get("domain") or urlparse(url).netloc
@@ -147,16 +149,21 @@ def build_meta_pack(url: str, scraped: dict[str, Any]) -> str:
         description = description[:157].rstrip() + "..."
     lang = scraped.get("lang") or "it"
     canonical = scraped.get("canonical") or url
+    t = html_attr(title)
+    d = html_attr(description)
+    c = html_attr(canonical)
+    u = html_attr(url)
+    l = html_attr(lang)
     return "\n".join(
         [
-            f"<title>{title}</title>",
-            f'<meta name="description" content="{description}">',
-            f'<link rel="canonical" href="{canonical}">',
-            f'<meta property="og:title" content="{title}">',
-            f'<meta property="og:description" content="{description}">',
-            f'<meta property="og:url" content="{url}">',
+            f"<title>{t}</title>",
+            f'<meta name="description" content="{d}">',
+            f'<link rel="canonical" href="{c}">',
+            f'<meta property="og:title" content="{t}">',
+            f'<meta property="og:description" content="{d}">',
+            f'<meta property="og:url" content="{u}">',
             '<meta property="og:type" content="website">',
-            f'<!-- Assicurati che <html lang="{lang}"> sia impostato -->',
+            f"<!-- Assicurati che <html lang=\"{l}\"> sia impostato -->",
             "",
         ]
     )

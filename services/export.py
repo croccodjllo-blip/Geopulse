@@ -9,6 +9,8 @@ import zipfile
 from datetime import datetime
 from typing import Any, Iterable
 
+from services.security import csv_cell
+
 
 def _iso(dt: datetime | None) -> str:
     if dt is None:
@@ -42,16 +44,16 @@ def runs_to_csv(runs: Iterable[Any]) -> bytes:
             [
                 run.id,
                 getattr(run, "site_id", ""),
-                run.domain,
-                run.url,
+                csv_cell(run.domain),
+                csv_cell(run.url),
                 run.aio_score if run.aio_score is not None else "",
                 run.geo_score if run.geo_score is not None else "",
-                rating.get("code", ""),
+                csv_cell(rating.get("code", "")),
                 rating.get("score", ""),
-                getattr(run, "source", "manual"),
+                csv_cell(getattr(run, "source", "manual")),
                 len(findings) if isinstance(findings, list) else 0,
                 _iso(run.created_at),
-                run.page_title or "",
+                csv_cell(run.page_title or ""),
             ]
         )
     return buffer.getvalue().encode("utf-8-sig")

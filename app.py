@@ -89,6 +89,7 @@ from services.guides import GUIDES
 from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_job
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
+from services.security import safe_next_url
 from services.mailer import (
     build_pack_email,
     build_password_reset_email,
@@ -184,8 +185,15 @@ app.config["SQLALCHEMY_DATABASE_URI"] = resolve_database_uri(os.getenv("DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "0") == "1"
-app.config["PREFERRED_URL_SCHEME"] = os.getenv("PREFERRED_URL_SCHEME", "http")
+# Secure cookies by default outside local debug.
+_secure_default = "0" if os.getenv("FLASK_DEBUG", "0") == "1" else "1"
+app.config["SESSION_COOKIE_SECURE"] = (
+    os.getenv("SESSION_COOKIE_SECURE", _secure_default) == "1"
+)
+app.config["PREFERRED_URL_SCHEME"] = os.getenv(
+    "PREFERRED_URL_SCHEME",
+    "http" if os.getenv("FLASK_DEBUG", "0") == "1" else "https",
+)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 app.config["INSTANCE_RELATIVE_CONFIG"] = False
@@ -230,6 +238,7 @@ def set_security_headers(response):
         "font-src 'self' https://fonts.gstatic.com data:; "
         "img-src 'self' data:; "
         "connect-src 'self'; "
+        "object-src 'none'; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
         "form-action 'self'"
@@ -1714,6 +1723,14 @@ def humans_txt():
     )
 
 
+@app.route("/.well-known/security.txt")
+@app.route("/security.txt")
+def security_txt():
+    return send_from_directory(
+        app.static_folder, "security.txt", mimetype="text/plain; charset=utf-8"
+    )
+
+
 @app.route("/robots.txt")
 def robots_txt():
     base = public_base_url()
@@ -2172,8 +2189,8 @@ def login():
             session["user_id"] = user.id
             session.permanent = True
             flash("Accesso effettuato.", "success")
-            next_url = request.args.get("next")
-            if next_url and next_url.startswith("/"):
+            next_url = safe_next_url(request.args.get("next"), fallback="")
+            if next_url:
                 return redirect(next_url)
             return redirect(url_for("dashboard"))
 
@@ -2312,6 +2329,22 @@ def dashboard():
     )
 
     if form.validate_on_submit():
+        if not limiter.allow(
+            f"analyze:user:{user.id}", limit=20, window_seconds=3600
+        ):
+            flash(
+                "Troppe analisi in poco tempo. Attendi qualche minuto e riprova.",
+                "warning",
+            )
+            return redirect(url_for("dashboard"))
+        if not limiter.allow(
+            f"analyze:ip:{client_ip()}", limit=40, window_seconds=3600
+        ):
+            flash(
+                "Limite di richieste raggiunto da questo IP. Riprova più tardi.",
+                "warning",
+            )
+            return redirect(url_for("dashboard"))
         try:
             url = normalize_url(form.url.data)
             existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
@@ -2674,10 +2707,27 @@ def dashboard_settings():
             user.api_key_prefix = prefix
             db.session.commit()
             flash(
-                f"Nuova API key (mostrata una sola volta): {raw}",
+                "Nuova API key generata. Copiala ora: non sarà più mostrata per intero.",
                 "success",
             )
-            return redirect(url_for("dashboard_settings"))
+            # One-time reveal in this response only (never via flash/session cookie).
+            ents = plan_entitlements(user)
+            return render_template(
+                "settings.html",
+                alert_form=alert_form,
+                prompt_form=prompt_form,
+                agency_form=agency_form,
+                api_key_prefix=prefix,
+                api_key_once=raw,
+                citation_ready=citation_monitor_available(),
+                gsc=gsc_status(),
+                js_crawl_ready=js_crawl_available(),
+                default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
+                is_pro=user.is_pro,
+                can_api=ents.can("api_access"),
+                can_agency=ents.can("agency_whitelabel"),
+                can_prompt_bank=ents.can("prompt_bank"),
+            )
 
     ents = plan_entitlements(user)
     return render_template(
@@ -2686,6 +2736,7 @@ def dashboard_settings():
         prompt_form=prompt_form,
         agency_form=agency_form,
         api_key_prefix=getattr(user, "api_key_prefix", None),
+        api_key_once=None,
         citation_ready=citation_monitor_available(),
         gsc=gsc_status(),
         js_crawl_ready=js_crawl_available(),

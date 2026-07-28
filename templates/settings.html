@@ -82,6 +82,12 @@
       {% endif %}
     </p>
     {% if can_api %}
+    {% if api_key_once %}
+    <aside class="panel" role="status">
+      <p class="lede"><strong>API key (una sola volta)</strong> — copiala e conservala in un secret store. Non la rimostreremo per intero.</p>
+      <p><code id="api-key-once">{{ api_key_once }}</code></p>
+    </aside>
+    {% endif %}
     <form method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <input type="hidden" name="action" value="api_key" />

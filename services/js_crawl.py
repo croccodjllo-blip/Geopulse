@@ -24,6 +24,14 @@ def js_crawl_available() -> bool:
         return False
 
 
+def _allow_request(url: str) -> bool:
+    try:
+        assert_public_http_url(url, resolve=True)
+        return True
+    except UnsafeURLError:
+        return False
+
+
 def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
     """Fetch page HTML after JS render. Returns {ok, html, error}."""
     if not js_crawl_available():
@@ -47,9 +55,28 @@ def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(safe_url, wait_until="networkidle", timeout=timeout_ms)
+            context = browser.new_context(
+                java_script_enabled=True,
+                ignore_https_errors=False,
+            )
+            page = context.new_page()
+
+            def _on_route(route):  # type: ignore[no-untyped-def]
+                req_url = route.request.url
+                # Block non-document subresources that are not public HTTP(S).
+                if not _allow_request(req_url):
+                    return route.abort()
+                return route.continue_()
+
+            page.route("**/*", _on_route)
+            page.goto(safe_url, wait_until="domcontentloaded", timeout=timeout_ms)
+            # Cap wait: avoid hanging forever on noisy SPAs.
+            try:
+                page.wait_for_load_state("networkidle", timeout=min(8000, timeout_ms))
+            except Exception:
+                pass
             html = page.content()
+            context.close()
             browser.close()
         return {"ok": True, "html": html, "error": None, "mode": "playwright"}
     except Exception as exc:
