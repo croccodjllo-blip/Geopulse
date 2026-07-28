@@ -129,7 +129,7 @@ sudo RESEND_API_KEY='re_xxx' \
 
 **Opzione B — SMTP Aruba** (MX già su `mx.geopulse.it`)
 
-1. Crea casella `noreply@geopulse.it` (o usa `info@geopulse.it`) nel pannello Aruba.
+1. Crea casella `noreply@geopulse.it` (o usa `info@centropic.ai`) nel pannello Aruba.
 2. Sul VPS:
 
 ```bash

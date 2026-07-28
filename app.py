@@ -1985,7 +1985,7 @@ def pro_interest():
         flash(
             "Interesse Plus registrato. Ti contatteremo a "
             f"{email} appena il piano sarà disponibile "
-            "(o scrivici a info@geopulse.it).",
+            "(o scrivici a info@centropic.ai).",
             "success",
         )
         return redirect(url_for("pricing"))
@@ -2115,7 +2115,7 @@ def forgot_password():
         if not mail_configured():
             flash(
                 "Invio email non ancora attivo su questo server. "
-                "Contatta info@geopulse.it per il reset password.",
+                "Contatta info@centropic.ai per il reset password.",
                 "warning",
             )
             return render_template("forgot_password.html", form=form)
