@@ -3,58 +3,69 @@
    Palette: Chaos (night), Core (emerald), Flow (cyan), Clarity (platinum)
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* ——— Centropic tokens (align with tailwind.config.js) ——— */
-  --centropic-chaos:   #0A0F24;
-  --centropic-core:    #00FF9D;
-  --centropic-flow:    #00D2FF;
-  --centropic-clarity: #F5F7FA;
+  /* ——— Centropic brand tokens ——— */
+  --color-chaos: #0A0F24;
+  --color-core: #00FF9D;
+  --color-flow: #00D2FF;
+  --color-clarity: #F5F7FA;
+
+  /* Gradienti del Brand */
+  --bg-gradient: linear-gradient(135deg, var(--color-chaos) 0%, #121A3A 100%);
+  --accent-gradient: linear-gradient(90deg, var(--color-flow) 0%, var(--color-core) 100%);
+
+  /* Aliases (Tailwind + legacy vars) */
+  --centropic-chaos: var(--color-chaos);
+  --centropic-core: var(--color-core);
+  --centropic-flow: var(--color-flow);
+  --centropic-clarity: var(--color-clarity);
 
   /* ——— Core palette ——— */
-  --ink:         var(--centropic-chaos);
+  --ink:         var(--color-chaos);
   --ink-soft:    #121833;
   --ink-mid:     #1C2548;
 
-  --slate:       #7B8499;
-  --slate-light: #A8B0C0;
+  --slate:       #8B93A7;
+  --slate-light: #B4BBC9;
   --slate-pale:  #D0D5DE;
 
-  --surface:     #FFFFFF;
-  --surface-2:   var(--centropic-clarity);
-  --surface-3:   #E8ECF2;
-  --surface-4:   #DCE1EA;
+  --surface:     rgba(245, 247, 250, 0.06);
+  --surface-2:   rgba(245, 247, 250, 0.09);
+  --surface-3:   rgba(245, 247, 250, 0.12);
+  --surface-4:   rgba(245, 247, 250, 0.16);
+  --surface-solid: #F5F7FA;
 
-  --border:      rgba(10, 15, 36, 0.10);
-  --border-mid:  rgba(10, 15, 36, 0.16);
-  --border-str:  rgba(10, 15, 36, 0.24);
+  --border:      rgba(245, 247, 250, 0.12);
+  --border-mid:  rgba(245, 247, 250, 0.18);
+  --border-str:  rgba(245, 247, 250, 0.28);
 
   /* ——— Brand accent: Core emerald + Flow cyan ——— */
-  --signal:      var(--centropic-core);
+  --signal:      var(--color-core);
   --signal-deep: #00D984;
   --signal-glow: rgba(0, 255, 157, 0.22);
   --signal-pale: rgba(0, 255, 157, 0.10);
-  --signal-soft: var(--centropic-flow);
+  --signal-soft: var(--color-flow);
 
   /* ——— Positive: emerald ——— */
-  --ok:     #059669;
-  --ok-bg:  #ECFDF5;
-  --ok-brd: #6EE7B7;
+  --ok:     #00FF9D;
+  --ok-bg:  rgba(0, 255, 157, 0.12);
+  --ok-brd: rgba(0, 255, 157, 0.35);
 
   /* ——— Warning: amber ——— */
-  --warn:     #D97706;
-  --warn-bg:  #FFFBEB;
-  --warn-brd: #FCD34D;
+  --warn:     #FBBF24;
+  --warn-bg:  rgba(251, 191, 36, 0.12);
+  --warn-brd: rgba(251, 191, 36, 0.35);
 
   /* ——— Danger: rose ——— */
-  --danger:     #DC2626;
-  --danger-bg:  #FFF1F2;
-  --danger-brd: #FECDD3;
+  --danger:     #FB7185;
+  --danger-bg:  rgba(251, 113, 133, 0.12);
+  --danger-brd: rgba(251, 113, 133, 0.35);
 
   /* ——— Typography ——— */
-  --font-display: "Syne", "Inter", sans-serif;
-  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Syne", "Plus Jakarta Sans", sans-serif;
+  --font-body:    "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* ——— Geometry ——— */
@@ -65,12 +76,12 @@
   --radius-xl:  1rem;
 
   /* ——— Shadow system ——— */
-  --shadow-xs:   0 1px 2px rgba(11, 17, 32, 0.07);
-  --shadow-sm:   0 1px 3px rgba(11, 17, 32, 0.08), 0 1px 2px rgba(11, 17, 32, 0.06);
-  --shadow:      0 4px 6px -1px rgba(11, 17, 32, 0.08), 0 2px 4px -2px rgba(11, 17, 32, 0.06);
-  --shadow-md:   0 10px 15px -3px rgba(11, 17, 32, 0.08), 0 4px 6px -4px rgba(11, 17, 32, 0.05);
-  --shadow-lg:   0 20px 25px -5px rgba(11, 17, 32, 0.10), 0 8px 10px -6px rgba(11, 17, 32, 0.06);
-  --shadow-xl:   0 25px 50px -12px rgba(11, 17, 32, 0.25);
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow:      0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-md:   0 10px 15px -3px rgba(0, 0, 0, 0.32), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --shadow-lg:   0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.22);
+  --shadow-xl:   0 25px 50px -12px rgba(0, 0, 0, 0.45);
   --shadow-signal: 0 0 0 3px var(--signal-glow);
 
   /* ——— Easing ——— */
@@ -92,24 +103,25 @@ a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 img { max-width: 100%; display: block; }
 
+body,
 body.app-body {
   margin: 0;
-  color: var(--ink);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--color-clarity);
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.6;
-  background-color: var(--surface-2);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle grid texture on marketing pages */
+/* Accent wash + subtle grid on marketing pages */
 body.app-body:not(.body-dash) {
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79, 110, 247, 0.06) 0%, transparent 60%),
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: auto, 56px 56px, 56px 56px;
+    radial-gradient(ellipse 70% 45% at 80% -5%, rgba(0, 210, 255, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 10% 20%, rgba(0, 255, 157, 0.08) 0%, transparent 50%),
+    var(--bg-gradient);
   background-attachment: fixed;
 }
 
@@ -125,35 +137,46 @@ body.app-body:not(.body-dash) {
   top: 0;
   z-index: 40;
   height: var(--header-h);
-  background: rgba(248, 250, 252, 0.90);
+  background: rgba(10, 15, 36, 0.72);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  color: var(--color-clarity);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .site-header--invert {
-  background: rgba(11, 17, 32, 0.65);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(10, 15, 36, 0.55);
+  border-bottom-color: rgba(245, 247, 250, 0.1);
+  color: var(--color-clarity);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
 
+.site-header .nav-links a,
+.site-header .nav-links button,
+.site-header .brand-mark,
 .site-header--invert .nav-links a,
 .site-header--invert .nav-links button,
-.site-header--invert .brand-mark { color: rgba(255, 255, 255, 0.92); }
+.site-header--invert .brand-mark { color: rgba(245, 247, 250, 0.88); }
 
+.site-header .nav-links a:hover,
+.site-header .nav-links button:hover,
 .site-header--invert .nav-links a:hover,
 .site-header--invert .nav-links button:hover { color: #fff; }
 
+.site-header .nav-links a.is-active { color: var(--color-core); }
+
+.site-header .nav-cta,
 .site-header--invert .nav-cta {
-  border-color: rgba(255, 255, 255, 0.30) !important;
-  color: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(245, 247, 250, 0.28) !important;
+  color: rgba(245, 247, 250, 0.92) !important;
+  background: transparent !important;
 }
+.site-header .nav-cta:hover,
 .site-header--invert .nav-cta:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.55) !important;
-  color: #fff !important;
+  background: var(--accent-gradient) !important;
+  border-color: transparent !important;
+  color: var(--color-chaos) !important;
 }
 
 .site-header__inner {
@@ -399,18 +422,25 @@ body.app-body:not(.body-dash) {
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.05;
-  color: var(--ink);
+  color: var(--color-clarity);
 }
 
 .lede {
   margin: 0;
-  color: var(--slate);
+  color: var(--slate-light);
   line-height: 1.7;
   font-size: 1rem;
 }
 
 .muted { color: var(--slate); }
 .hint  { color: var(--slate-light); font-size: 0.875rem; }
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
 /* ═══════════════════════════════════════════
    BUTTONS
@@ -441,28 +471,30 @@ body.app-body:not(.body-dash) {
 .btn:active { transform: translateY(0); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-/* Primary: signal indigo */
+/* Primary: Centropic core emerald */
 .btn-signal {
   background: var(--signal);
-  color: #fff;
+  color: var(--centropic-chaos);
   border-color: var(--signal-deep);
-  box-shadow: 0 1px 3px rgba(79, 110, 247, 0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+  box-shadow: 0 1px 3px rgba(0, 255, 157, 0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+  font-weight: 700;
 }
 .btn-signal:hover {
   background: var(--signal-deep);
-  box-shadow: 0 4px 14px rgba(79, 110, 247, 0.45), inset 0 1px 0 rgba(255,255,255,0.10);
+  color: var(--centropic-chaos);
+  box-shadow: 0 4px 14px rgba(0, 210, 255, 0.35), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 /* Primary dark */
 .btn-primary {
   background: var(--ink);
-  color: #fff;
+  color: var(--centropic-clarity);
   border-color: var(--ink-soft);
-  box-shadow: 0 1px 3px rgba(11, 17, 32, 0.30);
+  box-shadow: 0 1px 3px rgba(10, 15, 36, 0.30);
 }
 .btn-primary:hover {
   background: var(--ink-soft);
-  box-shadow: 0 4px 12px rgba(11, 17, 32, 0.35);
+  box-shadow: 0 4px 12px rgba(10, 15, 36, 0.35);
 }
 
 /* Ghost */
@@ -498,9 +530,9 @@ body.app-body:not(.body-dash) {
 .field label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--ink-soft);
+  color: var(--color-clarity);
 }
-.field .hint { font-size: 0.8rem; color: var(--slate); }
+.field .hint { font-size: 0.8rem; color: var(--slate-light); }
 
 .field input,
 .field select,
@@ -509,15 +541,15 @@ body.app-body:not(.body-dash) {
   width: 100%;
   border: 1px solid var(--border-mid);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: rgba(10, 15, 36, 0.45);
   padding: 0.65rem 0.9rem;
-  color: var(--ink);
+  color: var(--color-clarity);
   outline: none;
   transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease);
   font-size: 0.9rem;
 }
 .field input::placeholder,
-.field textarea::placeholder { color: var(--slate-pale); }
+.field textarea::placeholder { color: var(--slate); }
 .field input:hover,
 .field select:hover,
 .field textarea:hover { border-color: var(--border-str); }
@@ -531,10 +563,12 @@ body.app-body:not(.body-dash) {
 
 .panel {
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: rgba(18, 26, 58, 0.55);
   border-radius: var(--radius-md);
   padding: 1.4rem;
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* ═══════════════════════════════════════════
@@ -936,7 +970,7 @@ body.app-body:not(.body-dash) {
   font-weight: 800;
   letter-spacing: -0.025em;
   line-height: 1.1;
-  color: var(--ink);
+  color: var(--color-clarity);
 }
 
 .section-band--wide { width: min(820px, calc(100% - 2.5rem)); }
@@ -984,12 +1018,12 @@ body.app-body:not(.body-dash) {
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--color-clarity);
   margin: 0;
 }
 
 .feature-cell__desc {
-  color: var(--slate);
+  color: var(--slate-light);
   font-size: 0.875rem;
   line-height: 1.6;
   margin: 0;
