@@ -2,15 +2,17 @@
 
 Reject private, loopback, link-local, and cloud metadata targets.
 Validate every redirect hop before following.
+Pin DNS resolution to a public IP at connect time (mitigate rebinding TOCTOU).
 """
 
 from __future__ import annotations
 
 import ipaddress
 import socket
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, urlunparse
 
 import requests
+from requests.adapters import HTTPAdapter
 
 # Hostnames commonly used for cloud metadata (resolve to link-local)
 _BLOCKED_HOSTNAMES = frozenset(
@@ -36,6 +38,42 @@ def _is_blocked_ip(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
         return _is_blocked_ip(ip.ipv4_mapped)
     # AWS/GCP/Azure metadata commonly 169.254.169.254 (link-local — already covered)
     return False
+
+
+def resolve_public_ips(hostname: str) -> list[str]:
+    """Resolve hostname; raise if any address is non-public. Prefer IPv4 order."""
+    host = (hostname or "").lower().rstrip(".")
+    if not host:
+        raise UnsafeURLError("Host mancante")
+    try:
+        infos = socket.getaddrinfo(host, None, type=socket.SOCK_STREAM)
+    except socket.gaierror as exc:
+        raise UnsafeURLError(f"Host non risolvibile: {host}") from exc
+    if not infos:
+        raise UnsafeURLError(f"Host non risolvibile: {host}")
+
+    v4: list[str] = []
+    v6: list[str] = []
+    seen: set[str] = set()
+    for info in infos:
+        addr = info[4][0]
+        if addr in seen:
+            continue
+        seen.add(addr)
+        try:
+            ip = ipaddress.ip_address(addr)
+        except ValueError:
+            continue
+        if _is_blocked_ip(ip):
+            raise UnsafeURLError(f"Host risolve a rete non pubblica ({addr})")
+        if isinstance(ip, ipaddress.IPv4Address):
+            v4.append(addr)
+        else:
+            v6.append(addr)
+    ordered = v4 + v6
+    if not ordered:
+        raise UnsafeURLError(f"Host non risolvibile: {host}")
+    return ordered
 
 
 def assert_public_http_url(url: str, *, resolve: bool = True) -> str:
@@ -67,22 +105,7 @@ def assert_public_http_url(url: str, *, resolve: bool = True) -> str:
     except ValueError:
         # hostname — resolve if requested
         if resolve:
-            try:
-                infos = socket.getaddrinfo(host, None, type=socket.SOCK_STREAM)
-            except socket.gaierror as exc:
-                raise UnsafeURLError(f"Host non risolvibile: {host}") from exc
-            if not infos:
-                raise UnsafeURLError(f"Host non risolvibile: {host}")
-            for info in infos:
-                addr = info[4][0]
-                try:
-                    ip = ipaddress.ip_address(addr)
-                except ValueError:
-                    continue
-                if _is_blocked_ip(ip):
-                    raise UnsafeURLError(
-                        f"Host risolve a rete non pubblica ({addr})"
-                    )
+            resolve_public_ips(host)
 
     # Rebuild without userinfo
     netloc = parsed.hostname or ""
@@ -95,6 +118,56 @@ def assert_public_http_url(url: str, *, resolve: bool = True) -> str:
     return cleaned
 
 
+class _HostHeaderSSLAdapter(HTTPAdapter):
+    """Verify TLS against the original Host when the URL uses a pinned IP."""
+
+    def send(self, request, **kwargs):  # type: ignore[no-untyped-def]
+        host_header = None
+        for header in request.headers:
+            if header.lower() == "host":
+                host_header = request.headers[header]
+                break
+        pool_kw = self.poolmanager.connection_pool_kw
+        if host_header:
+            # Strip port for SNI when present (e.g. example.com:443)
+            sni = host_header.split(":")[0].strip("[]")
+            pool_kw["server_hostname"] = sni
+            pool_kw["assert_hostname"] = sni
+        else:
+            pool_kw.pop("server_hostname", None)
+            pool_kw.pop("assert_hostname", None)
+        return super().send(request, **kwargs)
+
+
+def _pin_url_to_ip(url: str, ip: str) -> tuple[str, str]:
+    """Rewrite URL netloc to a pinned IP; return (pinned_url, Host header value)."""
+    parsed = urlparse(url)
+    host = parsed.hostname or ""
+    port = parsed.port
+    host_header = host
+    if port:
+        host_header = f"{host}:{port}"
+
+    if ":" in ip:
+        netloc = f"[{ip}]"
+    else:
+        netloc = ip
+    if port:
+        netloc = f"{netloc}:{port}"
+
+    pinned = urlunparse(
+        (
+            parsed.scheme,
+            netloc,
+            parsed.path or "/",
+            parsed.params,
+            parsed.query,
+            "",
+        )
+    )
+    return pinned, host_header
+
+
 def safe_get(
     session: requests.Session,
     url: str,
@@ -103,17 +176,48 @@ def safe_get(
     max_redirects: int = 5,
     **kwargs,
 ) -> requests.Response:
-    """GET with per-hop SSRF checks (no automatic cross-host private redirect)."""
+    """GET with per-hop SSRF checks and DNS pinning (no private redirect / rebinding)."""
     current = assert_public_http_url(url, resolve=True)
     history: list[requests.Response] = []
 
+    # Dedicated session so we can mount the TLS Host adapter without mutating caller.
+    pin_session = requests.Session()
+    pin_session.mount("https://", _HostHeaderSSLAdapter())
+    # Copy useful defaults from caller session
+    pin_session.headers.update(session.headers)
+    pin_session.cookies.update(session.cookies)
+    if session.proxies:
+        pin_session.proxies.update(session.proxies)
+    if session.verify is not None:
+        pin_session.verify = session.verify
+
+    base_headers = dict(kwargs.pop("headers", {}) or {})
+
     for _ in range(max_redirects + 1):
-        resp = session.get(
-            current,
+        parsed = urlparse(current)
+        host = (parsed.hostname or "").lower().rstrip(".")
+
+        # Literal IP: already validated; connect as-is.
+        try:
+            ipaddress.ip_address(host)
+            request_url = current
+            headers = dict(base_headers)
+        except ValueError:
+            ips = resolve_public_ips(host)
+            request_url, host_header = _pin_url_to_ip(current, ips[0])
+            headers = dict(base_headers)
+            headers["Host"] = host_header
+
+        resp = pin_session.get(
+            request_url,
             timeout=timeout,
             allow_redirects=False,
+            headers=headers,
             **kwargs,
         )
+        # Preserve logical URL for callers (not the pinned IP form).
+        resp.url = current  # type: ignore[misc]
+
         if resp.is_redirect or resp.status_code in {301, 302, 303, 307, 308}:
             location = resp.headers.get("Location")
             if not location:
