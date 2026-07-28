@@ -3,18 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}GeoPulse{% endblock %} · geopulse.it</title>
+    <title>{% block title %}Centropic{% endblock %} · centropic.ai</title>
     <meta
       name="description"
-      content="{% block meta_description %}GeoPulse (geopulse.it) — AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): analisi e pack per essere citati dalle IA.{% endblock %}"
+      content="{% block meta_description %}Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.{% endblock %}"
     />
     <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}" />
     <link rel="alternate" hreflang="it" href="{{ self.canonical() }}" />
     <link rel="alternate" hreflang="x-default" href="{{ self.canonical() }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="GeoPulse" />
+    <meta property="og:site_name" content="Centropic" />
     <meta property="og:locale" content="it_IT" />
-    <meta property="og:title" content="{% block og_title %}{{ self.title() }} · geopulse.it{% endblock %}" />
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }} · centropic.ai{% endblock %}" />
     <meta
       property="og:description"
       content="{% block og_description %}{{ self.meta_description() }}{% endblock %}"
@@ -51,7 +51,7 @@
             height="28"
             decoding="async"
           />
-          GEOPULSE
+          CENTROPIC
         </a>
         <nav class="nav-links" aria-label="Principale">
           <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
@@ -104,7 +104,7 @@
               height="28"
               decoding="async"
             />
-            GEOPULSE
+            CENTROPIC
           </a>
           <p>AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO). Pack per essere citati dalle IA. Prodotto di <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
         </div>
@@ -136,7 +136,7 @@
         </div>
       </div>
       <div class="site-footer__bottom">
-        <span>© {{ now_year }} GeoPulse · Signal intelligence for AI visibility</span>
+        <span>© {{ now_year }} Centropic · Signal Intelligence for generative visibility</span>
         <span>
           <a href="{{ url_for('privacy') }}">Privacy</a>
           &nbsp;·&nbsp;
