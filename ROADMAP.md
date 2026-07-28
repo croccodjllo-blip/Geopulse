@@ -33,14 +33,17 @@
 - [x] **Agency white-label** MD export
 - [x] **GSC scaffold** (`GOOGLE_OAUTH_*`)
 - [x] **Edge Signals hosting** (`/e/<token>/*` + Cloudflare Worker template)
+- [x] **Platform hardening P0–P2** (SSRF webhook, measured Plus-only, claim atomico, limiter SQLite, Edge rate-limit, test suite)
 
 ## Next (connector depth)
 - [ ] AI Overview / Claude / Copilot live connectors
 - [ ] GSC OAuth complete + Search Analytics overlay
 - [ ] CMS push / GitHub PR apply pack
 - [ ] Multi-region Edge cache (Cloudflare in front of `/e/`)
+- [ ] Postgres managed + backup offsite
 - [ ] Playwright default path in crawl BFS
 - [ ] PDF white-label branded
+- [ ] Alembic versioned migrations (replace ensure_schema DROP)
 
 ## Env keys utili
 ```

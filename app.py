@@ -171,7 +171,15 @@ def resolve_database_uri(raw: str | None) -> str:
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY") or os.urandom(32)
+_flask_secret = (os.getenv("FLASK_SECRET_KEY") or "").strip()
+if not _flask_secret:
+    if os.getenv("FLASK_DEBUG", "0") == "1":
+        _flask_secret = secrets.token_hex(32)
+    else:
+        raise RuntimeError(
+            "FLASK_SECRET_KEY obbligatoria in produzione (FLASK_DEBUG!=1)."
+        )
+app.config["SECRET_KEY"] = _flask_secret
 app.config["SQLALCHEMY_DATABASE_URI"] = resolve_database_uri(os.getenv("DATABASE_URL"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -192,9 +200,19 @@ if os.getenv("FLASK_DEBUG", "0") != "1":
 db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
 
+from services.observability import configure_app_logging  # noqa: E402
+
+configure_app_logging(app)
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://geopulse.it").rstrip("/")
+# CORS Edge: vuoto = nessun header ACAO (crawler non ne hanno bisogno).
+# Imposta EDGE_CORS_ORIGIN=* o un origin esatto se serve embed browser.
+EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
+EDGE_RATE_LIMIT = max(30, int(os.getenv("EDGE_RATE_LIMIT", "120")))
+EDGE_RATE_WINDOW = max(60, int(os.getenv("EDGE_RATE_WINDOW", "60")))
+ALLOW_DROP_ANALYSIS_JOBS = os.getenv("ALLOW_DROP_ANALYSIS_JOBS", "0") == "1"
 
 
 @app.after_request
@@ -1036,26 +1054,36 @@ def ensure_schema() -> None:
         legacy = {"progress", "message", "payload_json", "result_site_id"} & job_cols
         needed = {"max_pages", "competitors_json"}
         if legacy or not needed.issubset(job_cols):
-            # Schema precedente incompatibile: ricrea (coda volatile, ok perdere pending).
-            with db.engine.begin() as conn:
-                conn.execute(text("DROP TABLE IF EXISTS analysis_jobs"))
-            try:
-                inspect(db.engine).clear_cache()
-            except Exception:
-                pass
-            db.create_all()
-            # Verifica: se ancora legacy, forza CREATE senza checkfirst
-            try:
-                inspect(db.engine).clear_cache()
-            except Exception:
-                pass
-            cols_after = {
-                col["name"] for col in inspect(db.engine).get_columns("analysis_jobs")
-            }
-            if {"progress", "message"} & cols_after:
+            # DROP solo se esplicitamente permesso (coda volatile) — evita wipe accidentale.
+            if not ALLOW_DROP_ANALYSIS_JOBS:
+                app.logger.error(
+                    "analysis_jobs schema legacy rilevato ma "
+                    "ALLOW_DROP_ANALYSIS_JOBS=0: skip DROP. "
+                    "Imposta ALLOW_DROP_ANALYSIS_JOBS=1 per ricreare la coda."
+                )
+            else:
+                app.logger.warning(
+                    "Ricreo analysis_jobs (legacy schema, ALLOW_DROP_ANALYSIS_JOBS=1)"
+                )
                 with db.engine.begin() as conn:
                     conn.execute(text("DROP TABLE IF EXISTS analysis_jobs"))
-                AnalysisJob.__table__.create(db.engine, checkfirst=False)
+                try:
+                    inspect(db.engine).clear_cache()
+                except Exception:
+                    pass
+                db.create_all()
+                try:
+                    inspect(db.engine).clear_cache()
+                except Exception:
+                    pass
+                cols_after = {
+                    col["name"]
+                    for col in inspect(db.engine).get_columns("analysis_jobs")
+                }
+                if {"progress", "message"} & cols_after:
+                    with db.engine.begin() as conn:
+                        conn.execute(text("DROP TABLE IF EXISTS analysis_jobs"))
+                    AnalysisJob.__table__.create(db.engine, checkfirst=False)
         else:
             job_alters = {
                 "site_id": "INTEGER",
@@ -1107,7 +1135,9 @@ def process_pending_analyze_jobs(
                 openai_model=model,
                 competitor_urls=job.competitors,
                 run_measured=bool(
-                    MEASURED_SOV_ON_ANALYZE and measured_sov_available()
+                    MEASURED_SOV_ON_ANALYZE
+                    and user.is_pro
+                    and measured_sov_available()
                 ),
                 source="job",
                 public_base=PUBLIC_SITE_URL or "https://geopulse.it",
@@ -1284,7 +1314,9 @@ def enforce_analyze_limits(
     """
     Controlla siti + quota analisi.
     Free: ri-analisi dello stesso URL non consuma la quota lifetime.
-    Plus: tetto giornaliero su AnalysisRun (DB), non limiter in-memory.
+    Plus: tetto giornaliero su AnalysisRun (DB).
+    Nota: la race residua è mitigata da UniqueConstraint(user_id,url) e
+    dal rate limiter SQLite condiviso su API/dashboard.
     """
     site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
     max_sites = user.max_sites
@@ -1344,7 +1376,8 @@ def health():
     # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     want_detail = False
-    if detail_token and request.args.get("token") == detail_token:
+    provided = (request.args.get("token") or "").strip()
+    if detail_token and provided and secrets.compare_digest(detail_token, provided):
         want_detail = True
     else:
         user = current_user()
@@ -1387,6 +1420,20 @@ def _edge_site_or_404(token: str) -> SiteAnalysis:
     return analysis
 
 
+def _edge_client_key() -> str:
+    forwarded = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
+    return forwarded or (request.remote_addr or "unknown")
+
+
+def _edge_rate_limited(token: str) -> bool:
+    """True se il client ha superato il budget Edge."""
+    return not limiter.allow(
+        f"edge:{token}:{_edge_client_key()}",
+        limit=EDGE_RATE_LIMIT,
+        window_seconds=EDGE_RATE_WINDOW,
+    )
+
+
 def _edge_response(
     body: str | bytes,
     *,
@@ -1405,7 +1452,8 @@ def _edge_response(
     resp.headers["X-GeoPulse-Version"] = str(version)
     if is_ai_crawler(request.headers.get("User-Agent")):
         resp.headers["X-GeoPulse-Bot"] = "1"
-    resp.headers["Access-Control-Allow-Origin"] = "*"
+    if EDGE_CORS_ORIGIN:
+        resp.headers["Access-Control-Allow-Origin"] = EDGE_CORS_ORIGIN
     return resp
 
 
@@ -1418,6 +1466,8 @@ def _edge_full_access(analysis: SiteAnalysis) -> bool:
 @app.route("/e/<token>/llms.txt")
 @csrf.exempt
 def edge_llms_txt(token: str):
+    if _edge_rate_limited(token):
+        return Response("rate_limited", status=429, mimetype="text/plain")
     analysis = _edge_site_or_404(token)
     body = analysis.llms_txt or f"# {analysis.domain}\n\n_Hosted by GeoPulse Edge Signals_\n"
     return _edge_response(
@@ -1431,6 +1481,8 @@ def edge_llms_txt(token: str):
 @app.route("/e/<token>/robots.txt")
 @csrf.exempt
 def edge_robots_txt(token: str):
+    if _edge_rate_limited(token):
+        return Response("rate_limited", status=429, mimetype="text/plain")
     analysis = _edge_site_or_404(token)
     if not _edge_full_access(analysis):
         return jsonify(
@@ -1452,6 +1504,8 @@ def edge_robots_txt(token: str):
 @app.route("/e/<token>/organization.jsonld")
 @csrf.exempt
 def edge_organization_jsonld(token: str):
+    if _edge_rate_limited(token):
+        return jsonify({"error": "rate_limited"}), 429
     analysis = _edge_site_or_404(token)
     if not _edge_full_access(analysis):
         return jsonify(
@@ -1472,6 +1526,8 @@ def edge_organization_jsonld(token: str):
 @app.route("/e/<token>/signals.json")
 @csrf.exempt
 def edge_signals_json(token: str):
+    if _edge_rate_limited(token):
+        return jsonify({"error": "rate_limited"}), 429
     analysis = _edge_site_or_404(token)
     full = _edge_full_access(analysis)
     payload = build_signals_payload(
@@ -1493,6 +1549,8 @@ def edge_signals_json(token: str):
 @app.route("/e/<token>/meta")
 @csrf.exempt
 def edge_meta(token: str):
+    if _edge_rate_limited(token):
+        return jsonify({"error": "rate_limited"}), 429
     analysis = _edge_site_or_404(token)
     full = _edge_full_access(analysis)
     base = edge_base_url(public_base_url(), token)
@@ -2199,7 +2257,9 @@ def dashboard():
                     openai_model=OPENAI_MODEL,
                     competitor_urls=competitor_urls[:3],
                     run_measured=bool(
-                        MEASURED_SOV_ON_ANALYZE and measured_sov_available()
+                        MEASURED_SOV_ON_ANALYZE
+                        and user.is_pro
+                        and measured_sov_available()
                     ),
                     source="manual",
                 )
@@ -2439,7 +2499,24 @@ def dashboard_settings():
         action = (request.form.get("action") or "").strip()
         if action == "alerts" and alert_form.validate_on_submit():
             user.alert_email_enabled = bool(alert_form.alert_email_enabled.data)
-            user.webhook_url = (alert_form.webhook_url.data or "").strip() or None
+            raw_hook = (alert_form.webhook_url.data or "").strip() or None
+            if raw_hook:
+                from services.ssrf import UnsafeURLError, assert_public_http_url
+
+                try:
+                    safe = assert_public_http_url(raw_hook, resolve=True)
+                    if not safe.startswith("https://"):
+                        flash("Webhook: è richiesto HTTPS pubblico.", "error")
+                        return redirect(url_for("dashboard_settings"))
+                    user.webhook_url = safe
+                except UnsafeURLError:
+                    flash(
+                        "Webhook URL non consentito (solo HTTPS pubblici, no IP privati).",
+                        "error",
+                    )
+                    return redirect(url_for("dashboard_settings"))
+            else:
+                user.webhook_url = None
             user.webhook_secret = (alert_form.webhook_secret.data or "").strip() or None
             db.session.commit()
             flash("Impostazioni alert salvate.", "success")
@@ -2576,10 +2653,18 @@ def api_v1_analyze():
     try:
         url = normalize_url(url_raw)
     except Exception as exc:
-        return jsonify({"ok": False, "error": str(exc)}), 400
+        return jsonify({"ok": False, "error": "invalid_url"}), 400
+    existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    blocked = enforce_analyze_limits(user, url=url, existing=existing)
+    if blocked is not None:
+        # quota_block_response può essere redirect/JSON HTML — normalizza per API
+        if isinstance(blocked, tuple):
+            return blocked
+        return jsonify({"ok": False, "error": "quota_exceeded"}), 423
     comps = payload.get("competitors") or []
     if not isinstance(comps, list):
         comps = []
+    want_measured = bool(payload.get("measured")) and measured_sov_available()
     try:
         analysis = run_analysis_pipeline(
             db_session=db.session,
@@ -2590,15 +2675,13 @@ def api_v1_analyze():
             openai_api_key=OPENAI_API_KEY,
             openai_model=OPENAI_MODEL,
             competitor_urls=[str(c) for c in comps[:3]],
-            run_measured=bool(
-                payload.get("measured") and measured_sov_available()
-            ),
+            run_measured=want_measured,
             source="api",
             public_base=public_base_url(),
         )
-    except Exception as exc:
+    except Exception:
         app.logger.exception("api analyze failed")
-        return jsonify({"ok": False, "error": str(exc)[:200]}), 500
+        return jsonify({"ok": False, "error": "analyze_failed"}), 500
     return jsonify(
         {
             "ok": True,
@@ -2634,6 +2717,10 @@ def api_v1_sites():
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not user.is_pro:
+        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not limiter.allow(f"api_sites:{user.id}", limit=60, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
     sites = (
         SiteAnalysis.query.filter_by(user_id=user.id)
         .order_by(SiteAnalysis.created_at.desc())

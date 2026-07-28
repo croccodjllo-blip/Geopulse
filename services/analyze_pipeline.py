@@ -60,7 +60,11 @@ def run_analysis_pipeline(
         result=result,
         user=user,
         previous_run=previous_run,
-        run_measured=bool(run_measured and measured_sov_available()),
+        run_measured=bool(
+            run_measured
+            and getattr(user, "is_pro", False)
+            and measured_sov_available()
+        ),
         prompts=prompts,
     )
 

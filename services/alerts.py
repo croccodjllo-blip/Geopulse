@@ -6,14 +6,16 @@ import hashlib
 import hmac
 import json
 import logging
-import os
 from typing import Any
 
 import requests
 
 from services.mailer import mail_configured, send_email
+from services.ssrf import UnsafeURLError, assert_public_http_url
 
 logger = logging.getLogger(__name__)
+
+WEBHOOK_MAX_BODY = 64_000
 
 
 def _alert_findings(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -45,7 +47,20 @@ def deliver_webhook(
     payload: dict[str, Any],
     timeout: int = 12,
 ) -> dict[str, Any]:
+    """POST firmato verso URL pubblico HTTPS (SSRF-safe)."""
+    try:
+        safe_url = assert_public_http_url(url, resolve=True)
+    except UnsafeURLError as exc:
+        logger.warning("alert webhook blocked (ssrf): %s", exc)
+        return {"ok": False, "error": f"ssrf_blocked:{exc}"[:160]}
+
+    # Solo HTTPS in produzione alert outbound (mitiga MITM su endpoint clienti).
+    if not safe_url.startswith("https://"):
+        return {"ok": False, "error": "webhook_https_required"}
+
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    if len(body) > WEBHOOK_MAX_BODY:
+        body = body[:WEBHOOK_MAX_BODY]
     headers = {
         "Content-Type": "application/json",
         "User-Agent": "GeoPulse-Webhook/1.0",
@@ -53,8 +68,18 @@ def deliver_webhook(
     }
     if secret:
         headers["X-GeoPulse-Signature"] = sign_payload(secret, body)
-    res = requests.post(url, data=body, headers=headers, timeout=timeout)
-    return {"ok": res.status_code < 300, "status": res.status_code, "body": (res.text or "")[:200]}
+    res = requests.post(
+        safe_url,
+        data=body,
+        headers=headers,
+        timeout=timeout,
+        allow_redirects=False,
+    )
+    return {
+        "ok": res.status_code < 300,
+        "status": res.status_code,
+        "body": (res.text or "")[:200],
+    }
 
 
 def dispatch_alerts(
