@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}GeoPulse{% endblock %}
-{% block meta_description %}GeoPulse misura AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi del dominio, findings prioritizzati e pack artifact per la citabilità nelle risposte dei modelli generativi.{% endblock %}
+{% block title %}Centropic{% endblock %}
+{% block meta_description %}Centropic — Signal Intelligence per Generative Engine Optimization: diagnosi del dominio, artifact machine-readable e citabilità nelle risposte IA.{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -10,50 +10,29 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero" aria-labelledby="hero-title">
-  <div class="hero-visual">
-    <img
-      class="hero-visual__img"
-      src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
-      alt="Vista illuminata della Terra — metafora di visibilità globale del brand nelle risposte IA"
-      width="1536"
-      height="1024"
-      fetchpriority="high"
-    />
-    <div class="hero-visual__veil" aria-hidden="true"></div>
-    <div class="hero-visual__grid" aria-hidden="true"></div>
+<section class="hero hero--centropic" aria-labelledby="hero-brand">
+  <div class="hero-visual hero-visual--chaos" aria-hidden="true">
+    <div class="hero-visual__glow"></div>
+    <div class="hero-visual__grid"></div>
   </div>
 
   <div class="hero-copy">
-    <p class="hero-kicker">Signal Intelligence</p>
-    <h1 class="hero-title" id="hero-title">
-      <img
-        class="hero-title__logo"
-        src="{{ url_for('static', filename='img/logo.png') }}"
-        alt=""
-        width="72"
-        height="72"
-        decoding="async"
-      />
-      <span class="hero-title__stack">
-        <span class="hero-title__brand">GEOPULSE</span>
-        <span class="hero-title__line">Visibilità del brand nelle risposte dei modelli generativi.</span>
-      </span>
+    <p class="hero-brand" id="hero-brand">
+      <span class="hero-brand__mark">CENTROPIC</span>
+      <span class="hero-brand__ver">Signal Intelligence</span>
+    </p>
+    <h1 class="hero-headline">
+      Bringing
+      <span class="text-gradient">Order</span>
+      to Intelligence
     </h1>
-    <p class="lede">
-      Diagnostichiamo i segnali del tuo sito per ChatGPT, Claude e Perplexity —
-      e consegniamo un pack operativo da pubblicare. Lo Share of Voice measured
-      usa probe LLM quando le API sono configurate; altrimenti resta Stimato.
+    <p class="lede hero-lede">
+      Diagnostichiamo i segnali pubblici del dominio e consegniamo artifact machine-readable
+      per la citabilità nelle risposte di ChatGPT, Claude e Perplexity.
     </p>
     <div class="cta-row">
-      <a class="btn btn-signal" href="{{ url_for('register') }}">Avvia l’analisi</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Scopri il prodotto</a>
-    </div>
-    <div class="hero-trust">
-      <span class="hero-trust__item">Diagnosi AIO · GEO</span>
-      <span class="hero-trust__item">Findings prioritizzati</span>
-      <span class="hero-trust__item">Pack pubblicabile</span>
-      <span class="hero-trust__item">Piano Free senza carta</span>
+      <a class="btn btn-core" href="{{ url_for('register') }}">Avvia la diagnosi</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Scopri il metodo</a>
     </div>
   </div>
 </section>
