@@ -26,12 +26,13 @@
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any" />
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo.png') }}" />
-    <link rel="preload" as="image" href="{{ url_for('static', filename='img/logo.png') }}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/logo.svg') }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
@@ -42,16 +43,16 @@
     {% block shell %}
     <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        <a class="brand-mark" href="{{ url_for('index') }}">
+        <a class="brand-mark" href="{{ url_for('index') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
-            src="{{ url_for('static', filename='img/logo.png') }}"
+            src="{{ url_for('static', filename='img/logo.svg') }}"
             alt=""
-            width="28"
-            height="28"
+            width="32"
+            height="32"
             decoding="async"
           />
-          CENTROPIC
+          <span class="brand-mark__word">CENTROPIC</span>
         </a>
         <nav class="nav-links" aria-label="Principale">
           <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
@@ -95,18 +96,18 @@
     <footer class="site-footer">
       <div class="site-footer__inner site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand-mark" href="{{ url_for('index') }}">
+          <a class="brand-mark" href="{{ url_for('index') }}" aria-label="Centropic home">
             <img
               class="brand-mark__logo"
-              src="{{ url_for('static', filename='img/logo.png') }}"
+              src="{{ url_for('static', filename='img/logo.svg') }}"
               alt=""
-              width="28"
-              height="28"
+              width="32"
+              height="32"
               decoding="async"
             />
-            CENTROPIC
+            <span class="brand-mark__word">CENTROPIC</span>
           </a>
-          <p>AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO). Pack per essere citati dalle IA. Prodotto di <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
+          <p>Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle risposte IA. Prodotto di <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
         </div>
         <div class="site-footer__col">
           <p class="site-footer__label">Prodotto</p>

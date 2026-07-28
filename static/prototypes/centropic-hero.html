@@ -18,7 +18,8 @@
               },
             },
             fontFamily: {
-              sans: ['"Plus Jakarta Sans"', "Inter", "system-ui", "sans-serif"],
+              sans: ['"Sora"', "system-ui", "sans-serif"],
+              mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
             },
             backgroundImage: {
               "centropic-accent":
@@ -29,7 +30,7 @@
       };
     </script>
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -39,21 +40,22 @@
       aria-labelledby="hero-brand"
     >
       <div
-        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_70%_20%,rgba(0,210,255,0.18),transparent_60%),radial-gradient(ellipse_45%_40%_at_20%_40%,rgba(0,255,157,0.12),transparent_55%)]"
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_50%_at_70%_20%,rgba(0,210,255,0.16),transparent_60%),radial-gradient(ellipse_45%_40%_at_20%_40%,rgba(0,255,157,0.10),transparent_55%)]"
         aria-hidden="true"
       ></div>
 
       <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-24">
-        <p id="hero-brand" class="mb-5 inline-flex flex-wrap items-center gap-3">
-          <span class="text-sm font-extrabold tracking-[0.22em] text-[#F5F7FA]">CENTROPIC</span>
+        <p id="hero-brand" class="mb-6 inline-flex flex-wrap items-center gap-3">
+          <img src="/static/img/logo.svg" width="56" height="56" alt="" class="h-14 w-14" />
+          <span class="text-[clamp(1.35rem,3.2vw,1.85rem)] font-bold tracking-[0.28em] text-[#F5F7FA]">CENTROPIC</span>
           <span
-            class="rounded border border-[#00D2FF]/35 px-2 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#00D2FF]"
+            class="border-l border-[#00D2FF]/45 pl-3 font-mono text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[#00D2FF]"
             >Signal Intelligence</span
           >
         </p>
 
         <h1
-          class="mb-5 max-w-[14ch] text-[clamp(2.6rem,8vw,5rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-[#F5F7FA]"
+          class="mb-5 max-w-[12ch] text-[clamp(2.75rem,8.5vw,5.25rem)] font-bold leading-[0.98] tracking-[-0.045em] text-[#F5F7FA]"
         >
           Bringing
           <span
@@ -63,7 +65,7 @@
           to Intelligence
         </h1>
 
-        <p class="mb-8 max-w-[38ch] text-lg leading-relaxed text-[#F5F7FA]/70">
+        <p class="mb-8 max-w-[36ch] text-lg font-normal leading-relaxed text-[#F5F7FA]/68">
           We diagnose public domain signals and deliver machine-readable artifacts
           for brand citability across generative answer engines.
         </p>

@@ -14,10 +14,14 @@
   <div class="hero-visual hero-visual--chaos" aria-hidden="true">
     <div class="hero-visual__glow"></div>
     <div class="hero-visual__grid"></div>
+    <div class="hero-visual__orbit">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="512" height="512" decoding="async">
+    </div>
   </div>
 
   <div class="hero-copy">
     <p class="hero-brand" id="hero-brand">
+      <img class="hero-brand__logo" src="{{ url_for('static', filename='img/logo.svg') }}" width="56" height="56" alt="" decoding="async">
       <span class="hero-brand__mark">CENTROPIC</span>
       <span class="hero-brand__ver">Signal Intelligence</span>
     </p>
@@ -42,7 +46,7 @@
   <h2>I modelli generativi citano ciò che è chiaro, strutturato e machine-readable.</h2>
   <p class="lede">
     Le risposte degli answer engine influenzano confronti e raccomandazioni di brand.
-    GeoPulse valuta i segnali del sito rispetto a
+    Centropic valuta i segnali del sito rispetto a
     <strong>AI-Driven Visibility (AIO)</strong> e
     <strong>Generative Engine Optimization (GEO)</strong>,
     identifica i gap e produce gli artifact da mettere online.
@@ -60,7 +64,7 @@
   <ol class="step-flow">
     <li>
       <strong>01 · Acquisizione</strong>
-      <span>Inserisci l’URL. GeoPulse esegue il crawl del dominio e i probe sui segnali pubblici rilevanti per i modelli e i crawler IA.</span>
+      <span>Inserisci l’URL. Centropic esegue il crawl del dominio e i probe sui segnali pubblici rilevanti per i modelli e i crawler IA.</span>
     </li>
     <li>
       <strong>02 · Valutazione</strong>
@@ -168,7 +172,7 @@
   <p class="lede">Sintesi; la documentazione completa è nella pagina <a href="{{ url_for('faq') }}">FAQ</a>.</p>
   <div class="faq-list">
     <details class="faq-item" open>
-      <summary>Cosa significano AIO e GEO in GeoPulse?</summary>
+      <summary>Cosa significano AIO e GEO in Centropic?</summary>
       <p>
         <strong>AIO</strong> (AI-Driven Visibility) indica quanto modelli e crawler IA
         possono interpretare il brand sul dominio.

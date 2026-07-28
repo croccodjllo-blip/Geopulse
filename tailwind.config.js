@@ -25,8 +25,9 @@ module.exports = {
           "linear-gradient(90deg, #00D2FF 0%, #00FF9D 100%)",
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', "Inter", "system-ui", "sans-serif"],
-        display: ['"Syne"', '"Plus Jakarta Sans"', "sans-serif"],
+        sans: ['"Sora"', "system-ui", "sans-serif"],
+        display: ['"Sora"', "system-ui", "sans-serif"],
+        mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
       },
     },
   },
