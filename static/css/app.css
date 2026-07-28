@@ -2971,6 +2971,114 @@ body.app-body:not(.body-dash) {
   .pack-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+.dash-block--edge {
+  margin-top: 1.2rem;
+  border-color: color-mix(in srgb, var(--signal) 28%, var(--border));
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--signal) 8%, var(--surface)) 0%,
+      var(--surface) 55%
+    );
+}
+
+.edge-lede {
+  margin: 0 0 1rem;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 52rem;
+}
+
+.edge-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate-light);
+  border: 1px solid var(--border);
+  padding: 0.28rem 0.55rem;
+  border-radius: 0.35rem;
+}
+
+.edge-status--on {
+  color: var(--signal-deep);
+  border-color: color-mix(in srgb, var(--signal) 45%, var(--border));
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+}
+
+.edge-urls {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.edge-urls li {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.7rem;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  font-size: 0.86rem;
+}
+
+.edge-urls li span {
+  color: var(--slate-light);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.edge-urls li a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.edge-urls__locked {
+  opacity: 0.85;
+}
+
+.edge-urls__locked em {
+  font-style: normal;
+  color: var(--ink-soft);
+  grid-column: 2 / -1;
+}
+
+.edge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 0.75rem;
+}
+
+.edge-actions--row {
+  margin-top: 0.25rem;
+}
+
+.edge-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.pack-grid--edge {
+  margin-top: 1rem;
+}
+
+@media (max-width: 720px) {
+  .edge-urls li {
+    grid-template-columns: 1fr;
+  }
+}
+
 .code-shell--compact {
   margin-top: 0;
   border-color: var(--border);

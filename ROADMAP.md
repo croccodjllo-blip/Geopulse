@@ -32,11 +32,13 @@
 - [x] **Local pack** heuristics (LocalBusiness vs digitale)
 - [x] **Agency white-label** MD export
 - [x] **GSC scaffold** (`GOOGLE_OAUTH_*`)
+- [x] **Edge Signals hosting** (`/e/<token>/*` + Cloudflare Worker template)
 
 ## Next (connector depth)
 - [ ] AI Overview / Claude / Copilot live connectors
 - [ ] GSC OAuth complete + Search Analytics overlay
 - [ ] CMS push / GitHub PR apply pack
+- [ ] Multi-region Edge cache (Cloudflare in front of `/e/`)
 - [ ] Playwright default path in crawl BFS
 - [ ] PDF white-label branded
 

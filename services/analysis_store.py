@@ -143,6 +143,9 @@ def persist_analysis(
         },
         ensure_ascii=False,
     )
+    # Edge hosting: ogni re-analisi invalida la cache client (version bump).
+    if getattr(analysis, "signals_hosted", False):
+        analysis.signals_version = int(getattr(analysis, "signals_version", 1) or 1) + 1
     analysis.created_at = now
 
     if source == "scheduled":

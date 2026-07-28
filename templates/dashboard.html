@@ -700,6 +700,107 @@ https://rivale2.com", class_="analyze-input") }}
           </section>
           {% endif %}
 
+          <section class="dash-block dash-block--panel dash-block--edge" id="edge-signals" aria-labelledby="edge-title">
+            <header class="dash-block__head">
+              <div>
+                <p class="dash-block__eyebrow">Infrastruttura</p>
+                <h3 class="dash-block__title" id="edge-title">Edge Signals</h3>
+              </div>
+              {% if latest.signals_hosted %}
+              <span class="edge-status edge-status--on">Attivo · v{{ latest.signals_version or 1 }}</span>
+              {% else %}
+              <span class="edge-status">ZIP only</span>
+              {% endif %}
+            </header>
+            <p class="edge-lede">
+              Invece di ridistribuire un pack statico, ospita <code>llms.txt</code>,
+              <code>robots.txt</code> e <code>signals.json</code> su endpoint GeoPulse
+              aggiornati quando cambiano i crawler IA. Collega il tuo dominio con
+              Cloudflare Worker o rewrite Vercel.
+            </p>
+            {% if not latest.signals_hosted or not edge %}
+            <form method="post" action="{{ url_for('edge_enable', analysis_id=latest.id) }}" class="edge-actions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="btn btn-primary">Attiva hosting dinamico</button>
+            </form>
+            <p class="edge-hint">
+              Free: <code>llms.txt</code> + <code>signals.json</code>.
+              Plus: robots live, JSON-LD e snippet Worker/Vercel.
+            </p>
+            {% else %}
+            <ul class="edge-urls">
+              <li>
+                <span>llms.txt</span>
+                <a href="{{ edge.llms_url }}" target="_blank" rel="noopener noreferrer">{{ edge.llms_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.llms_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+              </li>
+              <li>
+                <span>signals.json</span>
+                <a href="{{ edge.signals_url }}" target="_blank" rel="noopener noreferrer">{{ edge.signals_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.signals_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+              </li>
+              {% if is_pro %}
+              <li>
+                <span>robots.txt</span>
+                <a href="{{ edge.robots_url }}" target="_blank" rel="noopener noreferrer">{{ edge.robots_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.robots_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+              </li>
+              <li>
+                <span>organization.jsonld</span>
+                <a href="{{ edge.jsonld_url }}" target="_blank" rel="noopener noreferrer">{{ edge.jsonld_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.jsonld_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+              </li>
+              {% else %}
+              <li class="edge-urls__locked">
+                <span>robots + JSON-LD</span>
+                <em>Piano Plus — lista crawler IA live sul tuo dominio</em>
+              </li>
+              {% endif %}
+            </ul>
+            <div class="edge-actions edge-actions--row">
+              <form method="post" action="{{ url_for('edge_rotate', analysis_id=latest.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-ghost">Rigenera token</button>
+              </form>
+              <form method="post" action="{{ url_for('edge_disable', analysis_id=latest.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-ghost">Disattiva</button>
+              </form>
+            </div>
+            {% if is_pro %}
+            <div class="pack-grid pack-grid--edge">
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>cloudflare-worker.js</span>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-worker-box', this)">Copia</button>
+                </div>
+                <pre id="edge-worker-box">{{ edge.worker }}</pre>
+              </div>
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>vercel.json</span>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-vercel-box', this)">Copia</button>
+                </div>
+                <pre id="edge-vercel-box">{{ edge.vercel }}</pre>
+              </div>
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>embed.html</span>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-embed-box', this)">Copia</button>
+                </div>
+                <pre id="edge-embed-box">{{ edge.embed }}</pre>
+              </div>
+            </div>
+            {% else %}
+            <p class="edge-hint">
+              Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati
+              automaticamente alla lista crawler GeoPulse.
+              <a href="{{ url_for('pricing') }}">Vedi piani</a>
+            </p>
+            {% endif %}
+            {% endif %}
+          </section>
+
           <section class="dash-block dash-block--panel dash-block--pack" aria-labelledby="pack-title">
             <header class="dash-block__head">
               <div>
@@ -779,7 +880,7 @@ https://rivale2.com", class_="analyze-input") }}
           <ol class="empty-state__steps">
             <li>Incolla l’URL del sito nella barra sopra</li>
             <li>Avvia l’analisi: score AIO/GEO, findings e SoV</li>
-            <li>Scarica il pack e pubblicalo (llms.txt, schema, robots)</li>
+            <li>Attiva Edge Signals o scarica il pack (llms.txt, schema, robots)</li>
           </ol>
           <p class="empty-state__hint">
             Piano Free: {{ max_sites }} sito · puoi ri-analizzare lo stesso dominio dopo le prime
@@ -827,6 +928,11 @@ https://rivale2.com", class_="analyze-input") }}
         <div class="rail-card rail-card--actions">
           <p class="rail-card__eyebrow">Azioni</p>
           <a href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica pack</a>
+          {% if latest.signals_hosted %}
+          <a href="#edge-signals">Edge Signals</a>
+          {% else %}
+          <a href="#edge-signals">Attiva Edge</a>
+          {% endif %}
           <a href="#findings-title">Findings critici</a>
           {% if is_pro %}
           <a href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico run</a>

@@ -1,7 +1,8 @@
 # GeoPulse (geopulse.it)
 
 Sito e SaaS per **AI-Driven Visibility (AIO)** e **Generative Engine Optimization (GEO)**:
-registrazione utenti, analisi del dominio e generazione di pack (`llms.txt`, JSON-LD, meta, robots).
+registrazione utenti, analisi del dominio, pack artifact e **Edge Signals**
+(hosting dinamico `llms.txt` / `robots` / `signals.json` via `/e/<token>` + Worker CDN).
 
 > Nota: in GeoPulse, **GEO ≠ GIS** (Geographic Information System) e **AIO ≠ All-in-One**.
 > Sono metriche di citabilità IA / answer engine.
@@ -17,8 +18,11 @@ aio-bot/
 ├── ROADMAP.md
 ├── database.db          # creato al primo avvio
 ├── services/
-│   ├── analyzer.py      # scrape, probe, score AIO (AI-Driven Visibility) / GEO (Generative Engine Optimization)
-│   └── artifacts.py     # llms.txt, JSON-LD, meta, robots
+│   ├── analyzer.py      # scrape, probe, score AIO/GEO
+│   ├── artifacts.py     # llms.txt, JSON-LD, meta, robots
+│   └── edge_signals.py  # hosting dinamico + snippet Worker/Vercel
+├── workers/
+│   └── geopulse-signals/  # Cloudflare Worker template
 ├── templates/
 │   ├── base.html
 │   ├── login.html

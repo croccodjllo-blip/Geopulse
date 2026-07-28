@@ -27,6 +27,7 @@ load_dotenv()
 from flask import (
     Flask,
     Response,
+    abort,
     flash,
     jsonify,
     redirect,
@@ -105,6 +106,19 @@ from services.gsc import gsc_status
 from services.js_crawl import js_crawl_available
 from services.publish_verify import verify_published_pack
 from services.citation_monitor import citation_monitor_available
+from services.edge_signals import (
+    CACHE_CONTROL as EDGE_CACHE_CONTROL,
+    build_live_robots_txt,
+    build_signals_payload,
+    cloudflare_worker_snippet,
+    content_etag,
+    edge_base_url,
+    extract_jsonld_body,
+    html_embed_snippet,
+    is_ai_crawler,
+    new_public_token,
+    vercel_edge_config_snippet,
+)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Piano Free: 1 sito + 2 analisi lifetime (nessun reset giornaliero).
@@ -344,6 +358,10 @@ class SiteAnalysis(db.Model):
     next_rescan_at = db.Column(db.DateTime)
     last_rescan_at = db.Column(db.DateTime)
     last_rescan_error = db.Column(db.String(500))
+    # Edge Signals hosting: token pubblico + flag + versione payload
+    public_token = db.Column(db.String(48), unique=True, index=True)
+    signals_hosted = db.Column(db.Boolean, nullable=False, default=False)
+    signals_version = db.Column(db.Integer, nullable=False, default=1)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -957,10 +975,23 @@ def ensure_schema() -> None:
             "next_rescan_at": "DATETIME",
             "last_rescan_at": "DATETIME",
             "last_rescan_error": "TEXT",
+            "public_token": "TEXT",
+            "signals_hosted": "BOOLEAN DEFAULT 0",
+            "signals_version": "INTEGER DEFAULT 1",
         }
         for name, col_type in alters.items():
             if name not in existing:
                 _add_column("site_analyses", name, col_type)
+        try:
+            with db.engine.begin() as conn:
+                conn.execute(
+                    text(
+                        "CREATE UNIQUE INDEX IF NOT EXISTS "
+                        "ix_site_analyses_public_token ON site_analyses(public_token)"
+                    )
+                )
+        except Exception:
+            pass
 
     if "users" in tables:
         user_cols = {col["name"] for col in inspector.get_columns("users")}
@@ -1345,6 +1376,201 @@ def llms_txt():
     return send_from_directory(
         app.static_folder, "llms.txt", mimetype="text/plain; charset=utf-8"
     )
+
+
+def _edge_site_or_404(token: str) -> SiteAnalysis:
+    analysis = SiteAnalysis.query.filter_by(
+        public_token=token, signals_hosted=True
+    ).first()
+    if analysis is None:
+        abort(404)
+    return analysis
+
+
+def _edge_response(
+    body: str | bytes,
+    *,
+    mimetype: str,
+    etag_seed: str,
+    analysis: SiteAnalysis,
+) -> Response:
+    version = int(getattr(analysis, "signals_version", 1) or 1)
+    etag = f'W/"{content_etag(etag_seed, str(version), str(analysis.id))}"'
+    if request.headers.get("If-None-Match") == etag:
+        return Response(status=304)
+    resp = Response(body, mimetype=mimetype)
+    resp.headers["ETag"] = etag
+    resp.headers["Cache-Control"] = EDGE_CACHE_CONTROL
+    resp.headers["X-GeoPulse-Edge"] = "1"
+    resp.headers["X-GeoPulse-Version"] = str(version)
+    if is_ai_crawler(request.headers.get("User-Agent")):
+        resp.headers["X-GeoPulse-Bot"] = "1"
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
+
+
+def _edge_full_access(analysis: SiteAnalysis) -> bool:
+    """Plus/Admin: artifact completi (robots + JSON-LD). Free: llms + signals."""
+    owner = db.session.get(User, analysis.user_id)
+    return bool(owner and owner.is_pro)
+
+
+@app.route("/e/<token>/llms.txt")
+@csrf.exempt
+def edge_llms_txt(token: str):
+    analysis = _edge_site_or_404(token)
+    body = analysis.llms_txt or f"# {analysis.domain}\n\n_Hosted by GeoPulse Edge Signals_\n"
+    return _edge_response(
+        body,
+        mimetype="text/plain; charset=utf-8",
+        etag_seed=body[:2000],
+        analysis=analysis,
+    )
+
+
+@app.route("/e/<token>/robots.txt")
+@csrf.exempt
+def edge_robots_txt(token: str):
+    analysis = _edge_site_or_404(token)
+    if not _edge_full_access(analysis):
+        return jsonify(
+            {
+                "error": "plus_required",
+                "message": "robots.txt Edge completo è riservato al piano Plus.",
+            }
+        ), 402
+    # Sempre live dalla lista crawler (non ZIP statico).
+    body = build_live_robots_txt(analysis.url or f"https://{analysis.domain}")
+    return _edge_response(
+        body,
+        mimetype="text/plain; charset=utf-8",
+        etag_seed=body,
+        analysis=analysis,
+    )
+
+
+@app.route("/e/<token>/organization.jsonld")
+@csrf.exempt
+def edge_organization_jsonld(token: str):
+    analysis = _edge_site_or_404(token)
+    if not _edge_full_access(analysis):
+        return jsonify(
+            {
+                "error": "plus_required",
+                "message": "JSON-LD Edge completo è riservato al piano Plus.",
+            }
+        ), 402
+    body = extract_jsonld_body(analysis.json_ld_artifact or "")
+    return _edge_response(
+        body,
+        mimetype="application/ld+json; charset=utf-8",
+        etag_seed=body[:4000],
+        analysis=analysis,
+    )
+
+
+@app.route("/e/<token>/signals.json")
+@csrf.exempt
+def edge_signals_json(token: str):
+    analysis = _edge_site_or_404(token)
+    full = _edge_full_access(analysis)
+    payload = build_signals_payload(
+        analysis=analysis,
+        public_base=public_base_url(),
+        token=token,
+        version=int(getattr(analysis, "signals_version", 1) or 1),
+        full=full,
+    )
+    body = json.dumps(payload, ensure_ascii=False, indent=2)
+    return _edge_response(
+        body,
+        mimetype="application/json; charset=utf-8",
+        etag_seed=body[:4000],
+        analysis=analysis,
+    )
+
+
+@app.route("/e/<token>/meta")
+@csrf.exempt
+def edge_meta(token: str):
+    analysis = _edge_site_or_404(token)
+    full = _edge_full_access(analysis)
+    base = edge_base_url(public_base_url(), token)
+    return jsonify(
+        {
+            "ok": True,
+            "hosted": True,
+            "tier": "full" if full else "basic",
+            "version": int(getattr(analysis, "signals_version", 1) or 1),
+            "domain": analysis.domain,
+            "base": base,
+            "endpoints": {
+                "llms_txt": f"{base}/llms.txt",
+                "signals_json": f"{base}/signals.json",
+                **(
+                    {
+                        "robots_txt": f"{base}/robots.txt",
+                        "organization_jsonld": f"{base}/organization.jsonld",
+                    }
+                    if full
+                    else {}
+                ),
+            },
+        }
+    )
+
+
+@app.route("/dashboard/edge/<int:analysis_id>/enable", methods=["POST"])
+@login_required
+def edge_enable(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    if not analysis.public_token:
+        analysis.public_token = new_public_token()
+    analysis.signals_hosted = True
+    analysis.signals_version = int(getattr(analysis, "signals_version", 1) or 1)
+    if analysis.signals_version < 1:
+        analysis.signals_version = 1
+    db.session.commit()
+    flash(
+        "Edge Signals attivo: gli artifact sono serviti dinamicamente da GeoPulse.",
+        "success",
+    )
+    return redirect(url_for("dashboard") + "#edge-signals")
+
+
+@app.route("/dashboard/edge/<int:analysis_id>/disable", methods=["POST"])
+@login_required
+def edge_disable(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    analysis.signals_hosted = False
+    db.session.commit()
+    flash("Edge Signals disattivato. Gli URL pubblici non rispondono più.", "success")
+    return redirect(url_for("dashboard") + "#edge-signals")
+
+
+@app.route("/dashboard/edge/<int:analysis_id>/rotate", methods=["POST"])
+@login_required
+def edge_rotate(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    analysis.public_token = new_public_token()
+    analysis.signals_version = int(getattr(analysis, "signals_version", 1) or 1) + 1
+    if not analysis.signals_hosted:
+        analysis.signals_hosted = True
+    db.session.commit()
+    flash("Token Edge rigenerato. Aggiorna Worker / rewrite con il nuovo URL.", "success")
+    return redirect(url_for("dashboard") + "#edge-signals")
 
 
 @app.route("/ai.txt")
@@ -2104,6 +2330,26 @@ def dashboard():
             "sov_measured": measured if isinstance(measured, dict) else {},
         }
 
+    edge_ctx: dict[str, Any] | None = None
+    if latest is not None and getattr(latest, "signals_hosted", False) and latest.public_token:
+        base = edge_base_url(public_base_url(), latest.public_token)
+        signals_url = f"{base}/signals.json"
+        edge_ctx = {
+            "base": base,
+            "llms_url": f"{base}/llms.txt",
+            "robots_url": f"{base}/robots.txt",
+            "jsonld_url": f"{base}/organization.jsonld",
+            "signals_url": signals_url,
+            "meta_url": f"{base}/meta",
+            "version": int(getattr(latest, "signals_version", 1) or 1),
+            "worker": cloudflare_worker_snippet(
+                origin_edge_base=base,
+                site_origin=latest.url or f"https://{latest.domain}",
+            ),
+            "vercel": vercel_edge_config_snippet(origin_edge_base=base),
+            "embed": html_embed_snippet(signals_url=signals_url),
+        }
+
     return render_template(
         "dashboard.html",
         form=form,
@@ -2112,6 +2358,7 @@ def dashboard():
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,
+        edge=edge_ctx,
         openai_ready=bool(OPENAI_API_KEY),
         citation_ready=citation_monitor_available(),
         js_crawl_ready=js_crawl_available(),

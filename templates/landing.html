@@ -89,7 +89,7 @@
     </li>
     <li>
       <strong>03 · Consegna</strong>
-      <span>Scarichi il pack (llms.txt, schema Organization, meta, robots) da pubblicare sul sito o da assegnare al team tecnico.</span>
+      <span>Attivi Edge Signals (hosting dinamico su CDN/Edge) o scarichi il pack (llms.txt, schema, robots) da pubblicare sul sito.</span>
     </li>
   </ol>
 </section>
@@ -143,8 +143,9 @@
   <p class="lede">
     Ogni finding deriva da un segnale osservato sul sito oppure è etichettato
     <em>Stimato</em> quando rappresenta una proiezione (ad esempio Share of Voice).
-    Sul piano Plus, il citation monitor può integrare menzioni <em>Misurate</em>
-    mediante probe sui modelli configurati.
+    Sul piano Plus, e in generale quando le API LLM sono configurate,
+    il citation monitor può integrare menzioni <em>Misurate</em>
+    mediante probe sui modelli.
     Documentazione:
     <a href="{{ url_for('methodology') }}">Metodologia</a>,
     <a href="{{ url_for('guide_score_vs_sov') }}">Score vs Share of Voice</a>.
@@ -201,7 +202,7 @@
       <summary>Gli score rappresentano menzioni live sui modelli?</summary>
       <p>
         No, di default. Sono diagnostici sui segnali del sito e, ove applicabile, etichettati Stimato.
-        Sul piano Plus, il citation monitor può aggiungere menzioni Misurate tramite probe LLM.
+        Con citation monitor e API LLM configurate, i probe aggiungono menzioni Misurate.
       </p>
     </details>
     <details class="faq-item">
