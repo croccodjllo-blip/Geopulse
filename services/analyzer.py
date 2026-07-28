@@ -577,6 +577,8 @@ PAGE_ISSUE_LABELS: dict[str, str] = {
     "h1": "H1",
     "lang": "Lang",
     "noindex": "noindex",
+    "crawl_fetch_failed": "Fetch",
+    "off_domain_redirect": "Redirect",
 }
 
 PAGE_ISSUE_DETAILS: dict[str, str] = {
@@ -589,6 +591,8 @@ PAGE_ISSUE_DETAILS: dict[str, str] = {
     "lang": "Attributo lang mancante",
     "noindex": "Pagina con noindex (non indicizzabile)",
     "low_score": "Score AIO/GEO sotto soglia",
+    "crawl_fetch_failed": "Fetch pagina fallito (timeout/rete/WAF)",
+    "off_domain_redirect": "Redirect fuori dominio: pagina esclusa",
 }
 
 # Issues that always mark a page as critical.
@@ -693,6 +697,7 @@ _STORAGE_PAGE_KEYS = (
     "word_count",
     "response_ms",
     "status_code",
+    "crawl_error",
 )
 
 
@@ -1059,7 +1064,11 @@ def score_site(
 
 
 def _crawl_extra_pages(urls: list[str], *, seed_url: str, max_workers: int = 4) -> list[dict[str, Any]]:
-    """Scarica e scorea URL aggiuntivi (seed già fatto dal caller)."""
+    """Scarica e scorea URL aggiuntivi (seed già fatto dal caller).
+
+    Le pagine fallite restano come evidence (status/error) invece di sparire
+    silenziosamente: utile per coverage e debug WAF/timeout.
+    """
     reports: list[dict[str, Any]] = []
     if not urls:
         return reports
@@ -1069,12 +1078,42 @@ def _crawl_extra_pages(urls: list[str], *, seed_url: str, max_workers: int = 4) 
             page = scrape_page(u)
             # Se redirect fuori dominio, salta
             if not same_domain(page.get("final_url") or u, seed_url):
-                return None
+                return {
+                    "url": u,
+                    "title": "",
+                    "aio_score": None,
+                    "geo_score": None,
+                    "issues": ["off_domain_redirect"],
+                    "scraped": {
+                        "url": u,
+                        "final_url": page.get("final_url") or u,
+                        "status_code": page.get("status_code"),
+                        "word_count": 0,
+                        "response_ms": page.get("response_ms"),
+                        "description": "",
+                    },
+                    "crawl_error": "off_domain_redirect",
+                }
             scored = score_page_signals(page)
             scored["scraped"] = page
             return scored
-        except Exception:
-            return None
+        except Exception as exc:
+            return {
+                "url": u,
+                "title": "",
+                "aio_score": None,
+                "geo_score": None,
+                "issues": ["crawl_fetch_failed"],
+                "scraped": {
+                    "url": u,
+                    "final_url": u,
+                    "status_code": None,
+                    "word_count": 0,
+                    "response_ms": None,
+                    "description": "",
+                },
+                "crawl_error": str(exc)[:200],
+            }
 
     workers = max(1, min(max_workers, len(urls)))
     with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -1151,6 +1190,7 @@ def analyze_site(
             "word_count": (p.get("scraped") or {}).get("word_count"),
             "response_ms": (p.get("scraped") or {}).get("response_ms"),
             "status_code": (p.get("scraped") or {}).get("status_code"),
+            "crawl_error": p.get("crawl_error"),
         }
         for p in page_reports
     ]

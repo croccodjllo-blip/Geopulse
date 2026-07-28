@@ -49,3 +49,32 @@ def test_claim_next_job_is_exclusive():
         assert won is not None
         assert won.id == j1.id
         assert claim_next_job(db.session, AnalysisJob) is None
+
+
+def test_reclaim_stale_running_jobs():
+    from datetime import timedelta
+
+    from services.jobs import reclaim_stale_jobs
+
+    with app.app_context():
+        ensure_schema()
+        user = User(email="stale-test@example.com", name="S", plan="plus")
+        user.set_password("x" * 12)
+        db.session.add(user)
+        db.session.commit()
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url="https://example.com/stale",
+            max_pages=2,
+        )
+        job.status = "running"
+        job.started_at = datetime.now(timezone.utc) - timedelta(minutes=40)
+        db.session.commit()
+
+        n = reclaim_stale_jobs(db.session, AnalysisJob, older_than_minutes=25)
+        assert n == 1
+        db.session.refresh(job)
+        assert job.status == "pending"
+        assert job.started_at is None

@@ -87,6 +87,8 @@ from services.billing import (
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
 from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_job
+from services.analyze_errors import classify_analyze_error, format_job_error
+from services.entitlements import entitlements_for, require_capability
 from services.mailer import (
     build_pack_email,
     build_password_reset_email,
@@ -1147,7 +1149,7 @@ def process_pending_analyze_jobs(
             stats["ok"] += 1
         except Exception as exc:
             app.logger.exception("Analyze job %s failed", job.id)
-            fail_job(db.session, job, str(exc)[:500])
+            fail_job(db.session, job, format_job_error(exc))
             stats["error"] += 1
     return stats
 
@@ -1352,7 +1354,71 @@ def enforce_analyze_limits(
 
 
 def history_limit_for(user: User) -> int:
-    return PRO_HISTORY_LIMIT if user.is_pro else FREE_HISTORY_LIMIT
+    return plan_entitlements(user).history_limit
+
+
+def plan_entitlements(user: User | None):
+    """Resolved Free/Plus entitlements for the current user."""
+    return entitlements_for(
+        user,
+        max_sites_free=MAX_SITES_FREE,
+        max_sites_pro=MAX_SITES_PRO,
+        free_total_analyses=FREE_TOTAL_ANALYSES,
+        pro_daily_analyses=PRO_DAILY_ANALYSES,
+        free_crawl_pages=FREE_CRAWL_PAGES,
+        pro_crawl_pages=PRO_CRAWL_PAGES,
+        pro_crawl_unlimited=PRO_CRAWL_UNLIMITED,
+        free_history_limit=FREE_HISTORY_LIMIT,
+        pro_history_limit=PRO_HISTORY_LIMIT,
+    )
+
+
+def flash_analyze_error(exc: BaseException) -> None:
+    info = classify_analyze_error(exc)
+    flash(f"{info['title']}. {info['message']} {info['hint']}", "error")
+
+
+def start_first_analysis_if_needed(user: User, website: str | None) -> int | None:
+    """Enqueue first diagnosis after signup when website_url is present."""
+    if not website:
+        return None
+    try:
+        url = normalize_url(website)
+    except ValueError:
+        return None
+    existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    blocked = enforce_analyze_limits(user, url=url, existing=existing)
+    if blocked is not None:
+        return None
+    if ASYNC_ANALYZE:
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url=url,
+            max_pages=user.crawl_pages,
+            competitor_urls=[],
+        )
+        kick_analyze_worker()
+        return int(job.id)
+    try:
+        run_analysis_pipeline(
+            db_session=db.session,
+            SiteAnalysis=SiteAnalysis,
+            AnalysisRun=AnalysisRun,
+            user=user,
+            url=url,
+            openai_api_key=OPENAI_API_KEY,
+            openai_model=OPENAI_MODEL,
+            competitor_urls=[],
+            run_measured=False,
+            measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
+            source="onboarding",
+        )
+    except Exception as exc:
+        app.logger.exception("Onboarding analyze failed")
+        flash_analyze_error(exc)
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -2055,7 +2121,18 @@ def register():
         session.clear()
         session["user_id"] = user.id
         session.permanent = True
-        flash("Account creato. Benvenuto su GeoPulse.", "success")
+        job_id = start_first_analysis_if_needed(user, website)
+        if job_id:
+            flash(
+                "Account creato. Prima diagnosi avviata sul sito indicato — "
+                "resti in dashboard mentre elaboriamo score e pack.",
+                "success",
+            )
+            return redirect(url_for("dashboard", job=job_id))
+        flash(
+            "Account creato. Inserisci l’URL del dominio per avviare la prima diagnosi.",
+            "success",
+        )
         return redirect(url_for("dashboard"))
 
     return render_template("register.html", form=form)
@@ -2272,16 +2349,13 @@ def dashboard():
                     "score, findings e pack pronti.",
                     "success",
                 )
-            except requests.Timeout:
-                flash("Timeout nel raggiungimento del sito. Riprova.", "error")
-            except requests.RequestException:
-                flash(
-                    "Impossibile raggiungere il sito. Verifica l’URL e riprova.",
-                    "error",
-                )
-            except Exception:
+            except requests.Timeout as exc:
+                flash_analyze_error(exc)
+            except requests.RequestException as exc:
+                flash_analyze_error(exc)
+            except Exception as exc:
                 app.logger.exception("Dashboard analyze failed")
-                flash("Errore durante l’analisi. Riprova tra poco.", "error")
+                flash_analyze_error(exc)
         except ValueError as exc:
             flash(str(exc), "error")
 
@@ -2470,8 +2544,24 @@ def dashboard_job_status(job_id: int):
             "status": job.status,
             "url": job.url,
             "error": job.error,
+            "error_info": classify_analyze_error(job.error) if job.error else None,
             "site_id": job.site_id,
+            "phase": (
+                "in_coda"
+                if job.status == "pending"
+                else "in_esecuzione"
+                if job.status == "running"
+                else job.status
+            ),
+            "hint": (
+                "In coda: il worker sta per partire."
+                if job.status == "pending"
+                else "Crawl e scoring in corso — di solito 30–90 secondi."
+                if job.status == "running"
+                else None
+            ),
             "created_at": job.created_at.isoformat() if job.created_at else None,
+            "started_at": job.started_at.isoformat() if job.started_at else None,
             "finished_at": job.finished_at.isoformat() if job.finished_at else None,
         }
     )
@@ -2530,11 +2620,9 @@ def dashboard_settings():
             flash("Impostazioni alert salvate.", "success")
             return redirect(url_for("dashboard_settings"))
         if action == "prompts" and prompt_form.validate_on_submit():
-            if not user.is_pro:
-                flash(
-                    "Prompt bank e SoV measured sono riservati al piano Plus.",
-                    "warning",
-                )
+            blocked = require_capability(plan_entitlements(user), "prompt_bank")
+            if blocked:
+                flash(blocked, "warning")
                 return redirect(url_for("pricing"))
             lines = [
                 ln.strip()
@@ -2546,6 +2634,10 @@ def dashboard_settings():
             flash("Prompt bank aggiornato.", "success")
             return redirect(url_for("dashboard_settings"))
         if action == "agency" and agency_form.validate_on_submit():
+            blocked = require_capability(plan_entitlements(user), "agency_whitelabel")
+            if blocked:
+                flash(blocked, "warning")
+                return redirect(url_for("pricing"))
             user.agency_brand_json = dump_agency_brand(
                 {
                     "brand_name": agency_form.brand_name.data or "",
@@ -2558,6 +2650,10 @@ def dashboard_settings():
             flash("White-label salvato.", "success")
             return redirect(url_for("dashboard_settings"))
         if action == "api_key":
+            blocked = require_capability(plan_entitlements(user), "api_access")
+            if blocked:
+                flash(blocked, "warning")
+                return redirect(url_for("pricing"))
             raw, prefix, digest = generate_api_key()
             user.api_key_hash = digest
             user.api_key_prefix = prefix
@@ -2568,6 +2664,7 @@ def dashboard_settings():
             )
             return redirect(url_for("dashboard_settings"))
 
+    ents = plan_entitlements(user)
     return render_template(
         "settings.html",
         alert_form=alert_form,
@@ -2579,6 +2676,9 @@ def dashboard_settings():
         js_crawl_ready=js_crawl_available(),
         default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
         is_pro=user.is_pro,
+        can_api=ents.can("api_access"),
+        can_agency=ents.can("agency_whitelabel"),
+        can_prompt_bank=ents.can("prompt_bank"),
     )
 
 
@@ -2699,9 +2799,21 @@ def api_v1_analyze():
             source="api",
             public_base=public_base_url(),
         )
-    except Exception:
+    except Exception as exc:
         app.logger.exception("api analyze failed")
-        return jsonify({"ok": False, "error": "analyze_failed"}), 500
+        info = classify_analyze_error(exc)
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": info["code"],
+                    "message": info["message"],
+                    "hint": info["hint"],
+                    "title": info["title"],
+                }
+            ),
+            502,
+        )
     return jsonify(
         {
             "ok": True,

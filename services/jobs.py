@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
+
+# Job stuck in "running" longer than this are re-queued (worker crash / hang).
+STALE_RUNNING_MINUTES = 25
 
 
 def enqueue_analysis(
@@ -34,8 +37,43 @@ def enqueue_analysis(
     return job
 
 
+def reclaim_stale_jobs(
+    db_session,
+    AnalysisJob,
+    *,
+    older_than_minutes: int = STALE_RUNNING_MINUTES,
+) -> int:
+    """Re-queue jobs stuck in running (lost worker). Returns count reclaimed."""
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(5, older_than_minutes))
+    stale = (
+        AnalysisJob.query.filter(
+            AnalysisJob.status == "running",
+            AnalysisJob.started_at.isnot(None),
+            AnalysisJob.started_at < cutoff,
+        )
+        .limit(50)
+        .all()
+    )
+    n = 0
+    for job in stale:
+        job.status = "pending"
+        job.started_at = None
+        job.error = None
+        n += 1
+        logger.warning("Reclaimed stale analysis job %s (url=%s)", job.id, job.url)
+    if n:
+        db_session.commit()
+    return n
+
+
 def claim_next_job(db_session, AnalysisJob) -> Any | None:
     """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending."""
+    try:
+        reclaim_stale_jobs(db_session, AnalysisJob)
+    except Exception:
+        logger.exception("reclaim_stale_jobs failed")
+        db_session.rollback()
+
     now = datetime.now(timezone.utc)
     # Fino a 3 tentativi in caso di race stretta tra worker.
     for _ in range(3):

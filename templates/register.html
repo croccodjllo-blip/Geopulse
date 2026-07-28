@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Registrati{% endblock %}
-{% block meta_description %}Crea un account Free GeoPulse: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito.{% endblock %}
+{% block meta_description %}Crea un account Free Centropic: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito.{% endblock %}
 {% block canonical %}{{ canonical_base }}/register{% endblock %}
 
 {% block content %}
@@ -23,8 +23,8 @@
     <p class="eyebrow">Registrazione · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
     <h1 class="h-display auth-title">Crea account</h1>
     <p class="lede auth-lede">
-      Crea l’account e analizza subito il tuo dominio.
-      Nome, email e password bastano per iniziare; azienda e sito sono opzionali.
+      Crea l’account e, se indichi il sito, avviamo subito la prima diagnosi.
+      Nome, email e password bastano; azienda e URL sono opzionali ma accelerano l’activation loop.
       Supporto: <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
 
@@ -74,7 +74,7 @@
       </div>
 
       <div class="field span-2">
-        <label for="website_url">Sito web principale <span class="hint">(opzionale)</span></label>
+        <label for="website_url">Sito web principale <span class="hint">(opzionale — se lo indichi, la prima diagnosi parte subito)</span></label>
         {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
         {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>

@@ -55,16 +55,12 @@
           <span class="brand-mark__word">CENTROPIC</span>
         </a>
         <nav class="nav-links" aria-label="Principale">
-          <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
-          <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Prezzi</a>
-          <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">Metodologia</a>
-          <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
-          <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">Chi siamo</a>
-          <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">Contatti</a>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">Dashboard</a>
+            <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">Storico</a>
             <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">Guida</a>
-            <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">GEO suite</a>
+            <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">Impostazioni</a>
+            <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Plus</a>
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
@@ -73,6 +69,12 @@
               <button type="submit">Esci</button>
             </form>
           {% else %}
+            <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
+            <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Prezzi</a>
+            <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">Metodologia</a>
+            <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
+            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">Chi siamo</a>
+            <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">Contatti</a>
             <a href="{{ url_for('login') }}">Accedi</a>
             <a class="nav-cta" href="{{ url_for('register') }}">Inizia gratis</a>
           {% endif %}

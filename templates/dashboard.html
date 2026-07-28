@@ -116,14 +116,24 @@ https://rivale2.com", class_="analyze-input") }}
       aria-live="polite"
     >
       <p class="job-status__label">
-        Analisi {{ pending_job.status }} · <code>{{ pending_job.url }}</code>
+        {% if pending_job.status == 'pending' %}In coda{% else %}In esecuzione{% endif %}
+        · <code>{{ pending_job.url }}</code>
       </p>
-      <p class="job-status__hint">Coda async: aggiornamento automatico…</p>
+      <p class="job-status__hint">
+        {% if pending_job.status == 'pending' %}
+        Worker in avvio — di solito parte entro pochi secondi.
+        {% else %}
+        Crawl, probe e scoring in corso (tipicamente 30–90 secondi).
+        {% endif %}
+      </p>
     </div>
     {% elif pending_job and pending_job.status == 'error' %}
     <div class="job-status job-status--error" role="alert">
       <p class="job-status__label">Analisi fallita</p>
       <p class="job-status__hint">{{ pending_job.error or 'Errore sconosciuto' }}</p>
+      <p class="job-status__hint">
+        Controlla l’URL e riprova. Supporto: <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      </p>
     </div>
     {% endif %}
 
@@ -889,17 +899,24 @@ https://rivale2.com", class_="analyze-input") }}
         </section>
         {% else %}
         <div class="empty-state">
-          <p class="empty-state__eyebrow">Prima analisi</p>
-          <strong>Tre passi per il primo report</strong>
+          <p class="empty-state__eyebrow">Activation loop</p>
+          <strong>Prima diagnosi in un passo</strong>
+          {% if pending_job and pending_job.status in ('pending', 'running') %}
+          <p class="empty-state__hint">
+            Stiamo già elaborando <code>{{ pending_job.url }}</code>.
+            Resta su questa pagina: al termine vedrai score, findings e pack.
+          </p>
+          {% else %}
           <ol class="empty-state__steps">
-            <li>Incolla l’URL del sito nella barra sopra</li>
-            <li>Avvia l’analisi: score AIO/GEO, findings e SoV</li>
-            <li>Attiva Edge Signals o scarica il pack (llms.txt, schema, robots)</li>
+            <li>Incolla l’URL pubblico del brand nella barra sopra (https://…)</li>
+            <li>Avvia: crawl, score AIO/GEO, findings prioritizzati</li>
+            <li>Attiva Edge Signals o scarica il pack da pubblicare</li>
           </ol>
           <p class="empty-state__hint">
-            Piano Free: {{ max_sites }} sito · puoi ri-analizzare lo stesso dominio dopo le prime
-            {{ daily_limit }} analisi. Nessuna carta richiesta.
+            Piano Free: {{ max_sites }} sito · {{ daily_limit }} analisi iniziali, poi puoi ri-misurare lo stesso dominio.
+            Nessuna carta. In registrazione, se indichi il sito, la prima analisi parte da sola.
           </p>
+          {% endif %}
         </div>
         {% endif %}
       </div>
@@ -1024,8 +1041,13 @@ https://rivale2.com", class_="analyze-input") }}
         const data = await res.json();
         if (!data.ok) return;
         const label = jobEl.querySelector('.job-status__label');
+        const hint = jobEl.querySelector('.job-status__hint');
         if (label) {
-          label.textContent = `Analisi ${data.status} · ${data.url || ''}`;
+          const phase = data.phase || data.status;
+          label.textContent = `${phase} · ${data.url || ''}`;
+        }
+        if (hint && data.hint && data.status !== 'error') {
+          hint.textContent = data.hint;
         }
         if (data.status === 'done') {
           window.location.href = '{{ url_for("dashboard") }}';
@@ -1033,8 +1055,12 @@ https://rivale2.com", class_="analyze-input") }}
         }
         if (data.status === 'error') {
           jobEl.classList.add('job-status--error');
-          const hint = jobEl.querySelector('.job-status__hint');
-          if (hint) hint.textContent = data.error || 'Errore durante l’analisi';
+          if (hint) {
+            const info = data.error_info;
+            hint.textContent = info
+              ? `${info.title}. ${info.message} ${info.hint || ''}`
+              : (data.error || 'Errore durante l’analisi');
+          }
           return;
         }
       } catch (e) { /* ignore transient */ }

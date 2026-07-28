@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Impostazioni GEO{% endblock %}
-{% block meta_description %}Impostazioni GeoPulse: alert, prompt bank, API key, white-label e connector SoV.{% endblock %}
+{% block meta_description %}Impostazioni Centropic: alert, prompt bank, API key, white-label e connector SoV.{% endblock %}
 
 {% block content %}
 <article class="page">
@@ -37,7 +37,7 @@
       <label class="checkline">{{ alert_form.alert_email_enabled() }} <span>Email su regressioni / llms sparito / pack verify</span></label>
       <div class="field">
         <label for="webhook_url">Webhook URL</label>
-        {{ alert_form.webhook_url(id="webhook_url", placeholder="https://hooks.example.com/geopulse") }}
+        {{ alert_form.webhook_url(id="webhook_url", placeholder="https://hooks.example.com/centropic") }}
       </div>
       <div class="field">
         <label for="webhook_secret">Webhook secret (HMAC SHA-256)</label>
@@ -51,13 +51,13 @@
     <h2 class="page-section__title">Prompt bank</h2>
     <p class="lede">
       Usati dal citation monitor / SoV measured (piano Plus).
-      {% if not is_pro %}
+      {% if not can_prompt_bank %}
       <a href="{{ url_for('pricing') }}">Passa a Plus</a> per personalizzare i prompt di misurazione.
       {% else %}
       Lascia vuoto per i default.
       {% endif %}
     </p>
-    {% if is_pro %}
+    {% if can_prompt_bank %}
     <form method="post" class="form-grid panel">
       {{ prompt_form.hidden_tag() }}
       <input type="hidden" name="action" value="prompts" />
@@ -74,17 +74,27 @@
     <h2 class="page-section__title">API key</h2>
     <p class="lede">
       Endpoints: <code>POST /api/v1/analyze</code>, <code>GET /api/v1/sites</code>
-      (Bearer / X-Api-Key). {% if api_key_prefix %}Prefisso attivo: <code>{{ api_key_prefix }}…</code>{% else %}Nessuna key.{% endif %}
+      (Bearer / X-Api-Key).
+      {% if can_api %}
+        {% if api_key_prefix %}Prefisso attivo: <code>{{ api_key_prefix }}…</code>{% else %}Nessuna key.{% endif %}
+      {% else %}
+        Riservato a <a href="{{ url_for('pricing') }}">Plus</a> — genera e usa le key solo sul piano a pagamento.
+      {% endif %}
     </p>
+    {% if can_api %}
     <form method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <input type="hidden" name="action" value="api_key" />
       <button class="btn btn-ghost" type="submit">Genera nuova API key</button>
     </form>
+    {% else %}
+    <a class="btn btn-signal" href="{{ url_for('pricing') }}">Sblocca API con Plus</a>
+    {% endif %}
   </section>
 
   <section class="page-section">
     <h2 class="page-section__title">White-label agenzia</h2>
+    {% if can_agency %}
     <form method="post" class="form-grid panel">
       {{ agency_form.hidden_tag() }}
       <input type="hidden" name="action" value="agency" />
@@ -94,6 +104,12 @@
       <div class="field"><label for="footer_note">Nota</label>{{ agency_form.footer_note(id="footer_note") }}</div>
       {{ agency_form.submit(class_="btn btn-primary") }}
     </form>
+    {% else %}
+    <p class="lede">
+      Export white-label per agenzie riservato a <a href="{{ url_for('pricing') }}">Plus</a>.
+    </p>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Vedi piano Plus</a>
+    {% endif %}
   </section>
 
   <div class="page-cta">

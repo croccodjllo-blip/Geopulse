@@ -35,6 +35,15 @@
 - [x] **Edge Signals hosting** (`/e/<token>/*` + Cloudflare Worker template)
 - [x] **Platform hardening P0–P2** (SSRF webhook, measured Plus-only, claim atomico, limiter SQLite, Edge rate-limit, test suite)
 
+## Shipped — platform UX/reliability (2026-07-28)
+- [x] **Entitlements layer** (`services/entitlements.py`) — Free/Plus capability source of truth
+- [x] **Onboarding auto-analyze** — register with website_url enqueues first diagnosis
+- [x] **Settings Plus gates** — API key + white-label blocked for Free (UI + server)
+- [x] **Analyze error taxonomy** (`services/analyze_errors.py`) — actionable DNS/SSL/HTTP/timeout messages
+- [x] **Stale job reclaim** — running jobs >25m re-queued
+- [x] **Crawl failure evidence** — failed pages kept with `crawl_error` instead of silent drop
+- [x] **App nav** — logged-in header focuses on product tasks (dashboard/storico/guida/settings)
+
 ## Next (connector depth)
 - [ ] AI Overview / Claude / Copilot live connectors
 - [ ] GSC OAuth complete + Search Analytics overlay
