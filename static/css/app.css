@@ -1,35 +1,41 @@
-/* GeoPulse — Enterprise Brand System v2
-   Design language: precision · clarity · scalable intelligence
-   Palette: Navy ink, Indigo signal, Slate grey, Clean white
+/* Centropic — Brand System
+   Design language: sintropia · signal intelligence · clarity
+   Palette: Chaos (night), Core (emerald), Flow (cyan), Clarity (platinum)
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* ——— Core palette ——— */
-  --ink:         #0B1120;
-  --ink-soft:    #1E2D40;
-  --ink-mid:     #2D3F55;
+  /* ——— Centropic tokens (align with tailwind.config.js) ——— */
+  --centropic-chaos:   #0A0F24;
+  --centropic-core:    #00FF9D;
+  --centropic-flow:    #00D2FF;
+  --centropic-clarity: #F5F7FA;
 
-  --slate:       #64748B;
-  --slate-light: #94A3B8;
-  --slate-pale:  #CBD5E1;
+  /* ——— Core palette ——— */
+  --ink:         var(--centropic-chaos);
+  --ink-soft:    #121833;
+  --ink-mid:     #1C2548;
+
+  --slate:       #7B8499;
+  --slate-light: #A8B0C0;
+  --slate-pale:  #D0D5DE;
 
   --surface:     #FFFFFF;
-  --surface-2:   #F8FAFC;
-  --surface-3:   #F1F5F9;
-  --surface-4:   #E2E8F0;
+  --surface-2:   var(--centropic-clarity);
+  --surface-3:   #E8ECF2;
+  --surface-4:   #DCE1EA;
 
-  --border:      rgba(15, 23, 42, 0.10);
-  --border-mid:  rgba(15, 23, 42, 0.16);
-  --border-str:  rgba(15, 23, 42, 0.24);
+  --border:      rgba(10, 15, 36, 0.10);
+  --border-mid:  rgba(10, 15, 36, 0.16);
+  --border-str:  rgba(10, 15, 36, 0.24);
 
-  /* ——— Brand accent: Indigo signal ——— */
-  --signal:      #4F6EF7;
-  --signal-deep: #3B55E0;
-  --signal-glow: rgba(79, 110, 247, 0.18);
-  --signal-pale: rgba(79, 110, 247, 0.08);
-  --signal-soft: #A5B4FC;
+  /* ——— Brand accent: Core emerald + Flow cyan ——— */
+  --signal:      var(--centropic-core);
+  --signal-deep: #00D984;
+  --signal-glow: rgba(0, 255, 157, 0.22);
+  --signal-pale: rgba(0, 255, 157, 0.10);
+  --signal-soft: var(--centropic-flow);
 
   /* ——— Positive: emerald ——— */
   --ok:     #059669;
@@ -1730,6 +1736,13 @@ body.app-body:not(.body-dash) {
   font-size: 0.82rem;
   line-height: 1.45;
 }
+.analyze-composer__hint {
+  margin: 0.55rem 0 0;
+  font-size: 0.8rem;
+  color: var(--slate);
+  line-height: 1.45;
+}
+.analyze-composer__hint a { text-decoration: underline; }
 
 .analyze-composer__field label {
   font-size: 0.82rem;
