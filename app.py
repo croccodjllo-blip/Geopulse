@@ -1,5 +1,5 @@
 """
-GeoPulse (geopulse.it) — SaaS per ottimizzazione GEO/AIO dei siti web.
+Centropic (centropic.ai) — SaaS per ottimizzazione GEO/AIO dei siti web.
 Analisi score + findings + generazione pack artifact (llms.txt, JSON-LD, meta, robots).
 """
 
@@ -143,7 +143,7 @@ PACK_EMAIL_DAILY_LIMIT = max(1, int(os.getenv("PACK_EMAIL_DAILY_LIMIT", "10")))
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
 # Nessun default in chiaro: se manca, l’admin non viene (ri)creato automaticamente.
 ADMIN_PASSWORD = (os.getenv("ADMIN_PASSWORD") or "").strip()
-ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin GeoPulse"
+ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin Centropic"
 ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
@@ -884,8 +884,8 @@ def ensure_admin_user() -> User | None:
         user = User(
             email=ADMIN_EMAIL,
             name=ADMIN_NAME,
-            company="GeoPulse",
-            website_url="https://geopulse.it/",
+            company="Centropic",
+            website_url="https://centropic.ai/",
             role="admin",
             country="Italia",
             plan="admin",
@@ -895,8 +895,8 @@ def ensure_admin_user() -> User | None:
         app.logger.info("Admin creato: %s", ADMIN_EMAIL)
     else:
         user.name = ADMIN_NAME
-        user.company = user.company or "GeoPulse"
-        user.website_url = user.website_url or "https://geopulse.it/"
+        user.company = user.company or "Centropic"
+        user.website_url = user.website_url or "https://centropic.ai/"
         user.role = "admin"
         user.plan = "admin"
         if ADMIN_BOOTSTRAP:
@@ -1438,7 +1438,7 @@ def health():
     status = 200 if db_ok else 503
     payload: dict[str, Any] = {
         "ok": db_ok,
-        "service": "geopulse",
+        "service": "centropic",
         "time": datetime.now(timezone.utc).isoformat(),
     }
     # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
@@ -1538,7 +1538,7 @@ def edge_llms_txt(token: str):
     if _edge_rate_limited(token):
         return Response("rate_limited", status=429, mimetype="text/plain")
     analysis = _edge_site_or_404(token)
-    body = analysis.llms_txt or f"# {analysis.domain}\n\n_Hosted by GeoPulse Edge Signals_\n"
+    body = analysis.llms_txt or f"# {analysis.domain}\n\n_Hosted by Centropic Edge Signals_\n"
     return _edge_response(
         body,
         mimetype="text/plain; charset=utf-8",
@@ -1663,7 +1663,7 @@ def edge_enable(analysis_id: int):
         analysis.signals_version = 1
     db.session.commit()
     flash(
-        "Edge Signals attivo: gli artifact sono serviti dinamicamente da GeoPulse.",
+        "Edge Signals attivo: gli artifact sono serviti dinamicamente da Centropic.",
         "success",
     )
     return redirect(url_for("dashboard") + "#edge-signals")
@@ -2754,7 +2754,7 @@ def download_whitelabel(analysis_id: int):
     return send_file(
         buf,
         as_attachment=True,
-        download_name=f"geopulse-{analysis.domain}-report.md",
+        download_name=f"centropic-{analysis.domain}-report.md",
         mimetype="text/markdown; charset=utf-8",
     )
 
@@ -2972,7 +2972,7 @@ def download_pack(analysis_id: int):
         return redirect(url_for("dashboard"))
 
     buffer = io.BytesIO(pack_zip_bytes(analysis))
-    filename = f"geopulse-{analysis.domain.replace(':', '_')}.zip"
+    filename = f"centropic-{analysis.domain.replace(':', '_')}.zip"
     return send_file(
         buffer,
         mimetype="application/zip",
@@ -3011,7 +3011,7 @@ def email_pack(analysis_id: int):
         return redirect(url_for("dashboard"))
 
     zip_bytes = pack_zip_bytes(analysis)
-    filename = f"geopulse-{analysis.domain.replace(':', '_')}.zip"
+    filename = f"centropic-{analysis.domain.replace(':', '_')}.zip"
     subject, text_body, html_body = build_pack_email(
         user_name=user.name,
         domain=analysis.domain,
@@ -3130,7 +3130,7 @@ def download_run_pack(run_id: int):
 
     buffer = io.BytesIO(pack_zip_bytes(run))
     stamp = run.created_at.strftime("%Y%m%d-%H%M") if run.created_at else "run"
-    filename = f"geopulse-{run.domain.replace(':', '_')}-{stamp}.zip"
+    filename = f"centropic-{run.domain.replace(':', '_')}-{stamp}.zip"
     return send_file(
         buffer,
         mimetype="application/zip",
@@ -3155,7 +3155,7 @@ def export_history_csv():
         io.BytesIO(data),
         mimetype="text/csv; charset=utf-8",
         as_attachment=True,
-        download_name=f"geopulse-storico-{datetime.now(timezone.utc).strftime('%Y%m%d')}.csv",
+        download_name=f"centropic-storico-{datetime.now(timezone.utc).strftime('%Y%m%d')}.csv",
     )
 
 
@@ -3177,7 +3177,7 @@ def export_all_sites_zip():
         buffer,
         mimetype="application/zip",
         as_attachment=True,
-        download_name=f"geopulse-siti-{datetime.now(timezone.utc).strftime('%Y%m%d')}.zip",
+        download_name=f"centropic-siti-{datetime.now(timezone.utc).strftime('%Y%m%d')}.zip",
     )
 
 

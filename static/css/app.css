@@ -452,7 +452,9 @@ body.app-body:not(.body-dash) {
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
+  display: inline;
 }
 
 /* ═══════════════════════════════════════════
@@ -809,8 +811,10 @@ body.app-body:not(.body-dash) {
   height: min(52vw, 520px);
   transform: translateY(-50%);
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.45;
   animation: orbit-spin 48s linear infinite;
+  mask-image: radial-gradient(circle at 45% 50%, #000 0%, #000 52%, transparent 78%);
+  -webkit-mask-image: radial-gradient(circle at 45% 50%, #000 0%, #000 52%, transparent 78%);
 }
 
 .hero-visual__orbit img {

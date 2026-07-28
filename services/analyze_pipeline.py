@@ -32,7 +32,7 @@ def run_analysis_pipeline(
     run_measured: bool = False,
     measured_env_enabled: bool = True,
     source: str = "manual",
-    public_base: str = "https://geopulse.it",
+    public_base: str = "https://centropic.ai",
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     previous_run = None

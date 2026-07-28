@@ -91,7 +91,7 @@ def build_live_robots_txt(site_url: str) -> str:
     """robots.txt dinamico: Allow per ogni crawler IA noto + sitemap."""
     sitemap = site_url.rstrip("/") + "/sitemap.xml"
     lines = [
-        "# GeoPulse Edge Signals — AI crawler policy (live)",
+        "# Centropic Edge Signals — AI crawler policy (live)",
         "# Aggiornato server-side quando la lista crawler cambia.",
         "",
         "User-agent: *",
@@ -170,7 +170,7 @@ def build_signals_payload(
             "tier": "full" if full else "basic",
         },
         "provider": {
-            "name": "GeoPulse",
+            "name": "Centropic",
             "docs": f"{public_base.rstrip('/')}/faq#edge-signals",
         },
     }
@@ -179,15 +179,15 @@ def build_signals_payload(
 
 def cloudflare_worker_snippet(*, origin_edge_base: str, site_origin: str) -> str:
     """
-    Worker che fa proxy degli artifact GeoPulse verso il dominio del cliente.
+    Worker che fa proxy degli artifact Centropic verso il dominio del cliente.
     origin_edge_base: https://app.../e/<token>
     site_origin: https://cliente.com (documentazione)
     """
-    return f"""// GeoPulse Edge Signals — Cloudflare Worker
+    return f"""// Centropic Edge Signals — Cloudflare Worker
 // Deploy: wrangler deploy (vedi workers/geopulse-signals/)
-// Sostituisci GEOPULSE_ORIGIN con il tuo endpoint Edge assegnato.
+// Sostituisci CENTROPIC_ORIGIN con il tuo endpoint Edge assegnato.
 
-const GEOPULSE_ORIGIN = "{origin_edge_base}";
+const CENTROPIC_ORIGIN = "{origin_edge_base}";
 const SITE_ORIGIN = "{site_origin.rstrip('/')}";
 
 const ROUTES = {{
@@ -205,7 +205,7 @@ export default {{
     if (!path) {{
       return new Response("Not found", {{ status: 404 }});
     }}
-    const upstream = GEOPULSE_ORIGIN.replace(/\\/$/, "") + path;
+    const upstream = CENTROPIC_ORIGIN.replace(/\\/$/, "") + path;
     const headers = new Headers(request.headers);
     headers.set("X-GeoPulse-Site", SITE_ORIGIN);
     headers.set("Accept", "text/plain, application/json, */*");
@@ -227,7 +227,7 @@ def html_embed_snippet(*, signals_url: str) -> str:
     """Snippet opzionale: discovery link + JSON-LD remoto via link tag."""
     llms = signals_url.replace("/signals.json", "/llms.txt")
     return (
-        "<!-- GeoPulse Edge Signals -->\n"
+        "<!-- Centropic Edge Signals -->\n"
         f'<link rel="alternate" type="text/plain" href="{llms}" title="llms.txt" />\n'
         f'<link rel="describedby" href="{signals_url}" type="application/json" />\n'
         '<script type="application/ld+json" id="geopulse-org">\n'

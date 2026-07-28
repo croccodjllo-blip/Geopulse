@@ -25,7 +25,7 @@ def mail_from_address() -> str:
     return (
         (os.getenv("MAIL_FROM") or "").strip()
         or (os.getenv("SMTP_FROM") or "").strip()
-        or (os.getenv("ADMIN_EMAIL") or "noreply@geopulse.it").strip()
+        or (os.getenv("ADMIN_EMAIL") or "noreply@centropic.ai").strip()
     )
 
 
@@ -142,22 +142,22 @@ def build_password_reset_email(
     expires_hours: int = 2,
 ) -> tuple[str, str, str]:
     first = (user_name or "ciao").strip().split(" ")[0] or "ciao"
-    subject = "GeoPulse — recupero password"
+    subject = "Centropic — recupero password"
     text = (
         f"Ciao {first},\n\n"
-        "hai richiesto il reset della password GeoPulse.\n"
+        "hai richiesto il reset della password Centropic.\n"
         f"Apri questo link entro {expires_hours} ore:\n\n"
         f"{reset_url}\n\n"
         "Se non hai richiesto tu il reset, ignora questa email.\n\n"
-        "— GeoPulse (geopulse.it)\n"
+        "— Centropic (centropic.ai)\n"
     )
     html = (
         f"<p>Ciao {first},</p>"
-        "<p>hai richiesto il reset della password GeoPulse.</p>"
+        "<p>hai richiesto il reset della password Centropic.</p>"
         f"<p><a href=\"{reset_url}\">Imposta una nuova password</a> "
         f"(valido {expires_hours} ore).</p>"
         "<p>Se non hai richiesto tu il reset, ignora questa email.</p>"
-        "<p>— GeoPulse · <a href=\"https://geopulse.it\">geopulse.it</a></p>"
+        "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
     )
     return subject, text, html
 
@@ -311,14 +311,14 @@ def build_pack_email(
     first = (user_name or "ciao").strip().split(" ")[0] or "ciao"
     aio = "—" if aio_score is None else str(aio_score)
     geo = "—" if geo_score is None else str(geo_score)
-    subject = f"GeoPulse — pack ottimizzazione {domain}"
+    subject = f"Centropic — pack ottimizzazione {domain}"
     text = (
         f"Ciao {first},\n\n"
         f"in allegato il pack di ottimizzazione GEO/AIO per {domain}.\n"
         f"Score: AIO {aio} · GEO {geo}.\n\n"
         "Contiene llms.txt, JSON-LD, meta pack, robots e checklist.\n"
         "Apri lo ZIP e applica gli artifact sul sito.\n\n"
-        "— GeoPulse (geopulse.it)\n"
+        "— Centropic (centropic.ai)\n"
     )
     html = (
         f"<p>Ciao {first},</p>"
@@ -327,6 +327,6 @@ def build_pack_email(
         f"<p>Score: AIO {aio} · GEO {geo}.</p>"
         "<p>Contiene <code>llms.txt</code>, JSON-LD, meta pack, robots e checklist. "
         "Apri lo ZIP e applica gli artifact sul sito.</p>"
-        "<p>— GeoPulse · <a href=\"https://geopulse.it\">geopulse.it</a></p>"
+        "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
     )
     return subject, text, html

@@ -6,8 +6,8 @@ GUIDES: dict[str, dict[str, str]] = {
     "metodologia": {
         "path": "/metodologia",
         "eyebrow": "Metodologia",
-        "title": "Come GeoPulse misura AIO e GEO",
-        "description": "Metodologia GeoPulse: score AIO/GEO da probe ed euristiche, badge Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured.",
+        "title": "Come Centropic misura AIO e GEO",
+        "description": "Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured.",
         "lede": "Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non promettiamo.",
         "body": """
   <section class="page-section">
@@ -40,12 +40,12 @@ GUIDES: dict[str, dict[str, str]] = {
         "path": "/guide/llms-txt",
         "eyebrow": "Guida",
         "title": "llms.txt: guida pratica per la citabilità IA",
-        "description": "Cos’è llms.txt, come strutturarlo per AIO/GEO e come GeoPulse lo genera e lo valida nel crawl.",
+        "description": "Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera e lo valida nel crawl.",
         "lede": "Un file root machine-readable che spiega brand, topic e pagine preferite ai modelli e crawler AI.",
         "body": """
   <section class="page-section">
     <h2 class="page-section__title">Perché conta</h2>
-    <p class="lede">llms.txt riduce ambiguità entity: dice chi sei, cosa offri e quali URL citare. In GeoPulse la presenza e la qualità del file alimentano score AIO/GEO (probe Misurato).</p>
+    <p class="lede">llms.txt riduce ambiguità entity: dice chi sei, cosa offri e quali URL citare. In Centropic la presenza e la qualità del file alimentano score AIO/GEO (probe Misurato).</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Sezioni utili</h2>
@@ -57,7 +57,7 @@ GUIDES: dict[str, dict[str, str]] = {
     </ul>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">Come GeoPulse aiuta</h2>
+    <h2 class="page-section__title">Come Centropic aiuta</h2>
     <p class="lede">Ogni analisi genera una bozza <code>llms.txt</code> nel pack ZIP. Pubblicala in root e ri-analizza: il finding passa a “disponibile” se il probe la trova.</p>
   </section>
 """,
@@ -77,11 +77,11 @@ GUIDES: dict[str, dict[str, str]] = {
       <li><strong>SoftwareApplication</strong> o Product se vendi software</li>
       <li><strong>Article</strong> / HowTo per guide evergreen con author e date</li>
     </ul>
-    <p class="lede">Riferimento normativo: <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">schema.org</a>. In GeoPulse i tipi rilevati alimentano score AIO/GEO (probe Misurato).</p>
+    <p class="lede">Riferimento normativo: <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">schema.org</a>. In Centropic i tipi rilevati alimentano score AIO/GEO (probe Misurato).</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Errori comuni</h2>
-    <p class="lede">JSON-LD orfano senza tipi chiave, sameAs solo self-referenziali, FAQ senza acceptedAnswer, Organization senza contatto o logo. GeoPulse li segnala nei findings.</p>
+    <p class="lede">JSON-LD orfano senza tipi chiave, sameAs solo self-referenziali, FAQ senza acceptedAnswer, Organization senza contatto o logo. Centropic li segnala nei findings.</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Checklist minima</h2>
@@ -99,7 +99,7 @@ GUIDES: dict[str, dict[str, str]] = {
         "path": "/guide/score-vs-sov",
         "eyebrow": "Guida",
         "title": "Score AIO/GEO vs Share of Voice",
-        "description": "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in GeoPulse.",
+        "description": "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in Centropic.",
         "lede": "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la presenza relativa negli engine.",
         "body": """
   <section class="page-section">

@@ -513,7 +513,7 @@ def analyze_llms_txt(content: str, *, present: bool) -> dict[str, Any]:
                 "category": "aio",
                 "severity": "critical",
                 "title": "llms.txt povero",
-                "detail": "File troppo corto o senza sezioni/link utili. Usa il pack GeoPulse come base.",
+                "detail": "File troppo corto o senza sezioni/link utili. Usa il pack Centropic come base.",
             }
         )
 

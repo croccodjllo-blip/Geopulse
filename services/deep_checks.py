@@ -760,7 +760,7 @@ def build_fix_checklist(findings: list[dict[str, Any]]) -> str:
     crit = [f for f in findings if str(f.get("severity")).lower() == "critical"]
     warn = [f for f in findings if str(f.get("severity")).lower() == "warn"]
     lines = [
-        "# Fix this week — GeoPulse",
+        "# Fix this week — Centropic",
         "",
         "Priorità consigliata per i prossimi 7 giorni.",
         "",
@@ -800,7 +800,7 @@ def build_before_after_report(
     cur_geo = current.get("geo_score")
     rating = compute_rating(cur_aio, cur_geo, current.get("findings"))
     lines = [
-        "# Before / After — GeoPulse",
+        "# Before / After — Centropic",
         "",
         f"## After (questa run)",
         f"- AIO: {cur_aio}",

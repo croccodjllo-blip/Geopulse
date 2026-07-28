@@ -88,7 +88,7 @@ def dispatch_alerts(
     site: Any,
     findings: list[dict[str, Any]],
     rating: dict[str, Any] | None = None,
-    base_url: str = "https://geopulse.it",
+    base_url: str = "https://centropic.ai",
 ) -> dict[str, Any]:
     """Invia email/webhook se l’utente ha abilitato gli alert."""
     alerts = _alert_findings(findings)
@@ -101,7 +101,7 @@ def dispatch_alerts(
     webhook_secret = (getattr(user, "webhook_secret", None) or "").strip()
 
     lines = [
-        f"GeoPulse alert — {getattr(site, 'domain', '') or getattr(site, 'url', '')}",
+        f"Centropic alert — {getattr(site, 'domain', '') or getattr(site, 'url', '')}",
         f"Rating: {(rating or {}).get('code', 'n/d')}",
         "",
     ]
@@ -115,7 +115,7 @@ def dispatch_alerts(
         try:
             send_email(
                 to_email=user.email,
-                subject=f"[GeoPulse] Alert su {getattr(site, 'domain', 'sito')}",
+                subject=f"[Centropic] Alert su {getattr(site, 'domain', 'sito')}",
                 text_body=text,
             )
             result["email"] = {"ok": True}

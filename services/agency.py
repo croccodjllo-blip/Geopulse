@@ -32,7 +32,7 @@ def build_whitelabel_markdown(
     agency: dict[str, Any] | None = None,
 ) -> str:
     agency = agency or {}
-    brand = agency.get("brand_name") or "GeoPulse"
+    brand = agency.get("brand_name") or "Centropic"
     lines = [
         f"# Report AIO/GEO — {getattr(site, 'domain', '')}",
         "",

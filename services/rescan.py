@@ -38,7 +38,7 @@ def process_due_rescans(
     daily_limit_for: Callable[[Any], int] | None = None,
     runs_today_for: Callable[[int], int] | None = None,
     measured: bool = False,
-    public_base: str = "https://geopulse.it",
+    public_base: str = "https://centropic.ai",
 ) -> dict[str, int]:
     """Esegue i re-scan scaduti via pipeline completa (suite + alert)."""
     from services.analysis_store import mark_rescan_error

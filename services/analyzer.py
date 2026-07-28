@@ -46,7 +46,7 @@ PROBE_TIMEOUT = 6
 PAGE_TIMEOUT = 10
 # Tetto di sicurezza operativo (anche per crawl “illimitato” Plus).
 ABS_MAX_CRAWL_PAGES = 2000
-USER_AGENT = "GeoPulse/1.0 (+https://geopulse.it; GEO/AIO optimizer)"
+USER_AGENT = "Centropic/1.0 (+https://centropic.ai; GEO/AIO optimizer)"
 _SESSION = requests.Session()
 _SESSION.headers.update(
     {
