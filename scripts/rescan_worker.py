@@ -14,6 +14,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from app import (  # noqa: E402
+    MEASURED_SOV_ON_ANALYZE,
     OPENAI_API_KEY,
     OPENAI_MODEL,
     AnalysisRun,
@@ -53,12 +54,15 @@ def main() -> int:
             limit=args.limit,
             daily_limit_for=lambda u: u.daily_limit,
             runs_today_for=analyses_today,
+            # Plus-only gate is inside pipeline; Free sites are already filtered.
+            measured=bool(MEASURED_SOV_ON_ANALYZE),
         )
         logging.info(
-            "Rescan worker done ok=%s error=%s skipped=%s",
+            "Rescan worker done ok=%s error=%s skipped=%s measured=%s",
             stats["ok"],
             stats["error"],
             stats["skipped"],
+            bool(MEASURED_SOV_ON_ANALYZE),
         )
         print(
             f"ok={stats['ok']} error={stats['error']} skipped={stats['skipped']}",

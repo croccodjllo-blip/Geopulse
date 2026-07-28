@@ -98,7 +98,7 @@ from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.signals import compare_with_previous
-from services.sov_measured import measured_sov_available
+from services.sov_measured import measured_sov_available, should_run_measured, user_can_run_measured
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
 from services.api_auth import find_user_by_api_key, generate_api_key
 from services.agency import build_whitelabel_markdown, dump_agency_brand, parse_agency_brand
@@ -1134,11 +1134,12 @@ def process_pending_analyze_jobs(
                 openai_api_key=api_key,
                 openai_model=model,
                 competitor_urls=job.competitors,
-                run_measured=bool(
-                    MEASURED_SOV_ON_ANALYZE
-                    and user.is_pro
-                    and measured_sov_available()
+                run_measured=should_run_measured(
+                    user=user,
+                    requested=MEASURED_SOV_ON_ANALYZE,
+                    env_enabled=MEASURED_SOV_ON_ANALYZE,
                 ),
+                measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
                 source="job",
                 public_base=PUBLIC_SITE_URL or "https://geopulse.it",
             )
@@ -1398,6 +1399,7 @@ def health():
                 "citation_monitor": citation_monitor_available(),
                 "stripe": stripe_enabled(),
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
+                "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
             }
         )
@@ -2256,11 +2258,12 @@ def dashboard():
                     openai_api_key=OPENAI_API_KEY,
                     openai_model=OPENAI_MODEL,
                     competitor_urls=competitor_urls[:3],
-                    run_measured=bool(
-                        MEASURED_SOV_ON_ANALYZE
-                        and user.is_pro
-                        and measured_sov_available()
+                    run_measured=should_run_measured(
+                        user=user,
+                        requested=MEASURED_SOV_ON_ANALYZE,
+                        env_enabled=MEASURED_SOV_ON_ANALYZE,
                     ),
+                    measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
                     source="manual",
                 )
                 pages_n = int(latest.pages_analyzed or 1)
@@ -2377,7 +2380,8 @@ def dashboard():
             competitors=latest.competitors,
         )
         measured = (latest.signals or {}).get("sov_measured")
-        if isinstance(measured, dict):
+        # Overlay SoV measured solo per Plus: Free resta su proxy.
+        if user.is_pro and isinstance(measured, dict):
             engine_breakdown = apply_measured_sov(engine_breakdown, measured)
         geo_suite = {
             "entity_graph": (latest.signals or {}).get("entity_graph") or {},
@@ -2387,7 +2391,11 @@ def dashboard():
             "publish_verify": (latest.signals or {}).get("publish_verify") or {},
             "llms_lint": (latest.signals or {}).get("llms_lint") or {},
             "local_pack": (latest.signals or {}).get("local_pack") or {},
-            "sov_measured": measured if isinstance(measured, dict) else {},
+            "sov_measured": (
+                measured
+                if user.is_pro and isinstance(measured, dict)
+                else {}
+            ),
         }
 
     edge_ctx: dict[str, Any] | None = None
@@ -2522,6 +2530,12 @@ def dashboard_settings():
             flash("Impostazioni alert salvate.", "success")
             return redirect(url_for("dashboard_settings"))
         if action == "prompts" and prompt_form.validate_on_submit():
+            if not user.is_pro:
+                flash(
+                    "Prompt bank e SoV measured sono riservati al piano Plus.",
+                    "warning",
+                )
+                return redirect(url_for("pricing"))
             lines = [
                 ln.strip()
                 for ln in (prompt_form.prompts.data or "").splitlines()
@@ -2664,7 +2678,12 @@ def api_v1_analyze():
     comps = payload.get("competitors") or []
     if not isinstance(comps, list):
         comps = []
-    want_measured = bool(payload.get("measured")) and measured_sov_available()
+    # Measured SoV: opt-in via {"measured": true}, solo Plus (endpoint già gated).
+    want_measured = should_run_measured(
+        user=user,
+        requested=bool(payload.get("measured")),
+        env_enabled=MEASURED_SOV_ON_ANALYZE,
+    )
     try:
         analysis = run_analysis_pipeline(
             db_session=db.session,
@@ -2676,6 +2695,7 @@ def api_v1_analyze():
             openai_model=OPENAI_MODEL,
             competitor_urls=[str(c) for c in comps[:3]],
             run_measured=want_measured,
+            measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="api",
             public_base=public_base_url(),
         )

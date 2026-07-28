@@ -94,6 +94,12 @@
             {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
 https://rivale2.com", class_="analyze-input") }}
           </div>
+          <p class="analyze-composer__hint">SoV measured (probe LLM) incluso nel piano Plus quando i connector sono attivi.</p>
+          {% else %}
+          <p class="analyze-composer__hint">
+            Free: score AIO/GEO e SoV <em>stimato</em>.
+            <a href="{{ url_for('pricing') }}">Plus</a> sblocca SoV measured / citation monitor.
+          </p>
           {% endif %}
           {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         </div>
@@ -378,8 +384,11 @@ https://rivale2.com", class_="analyze-input") }}
                     {% endif %}
                   </h3>
                   <p class="engine-breakdown__lede">
-                    {% if engine_breakdown.evidence in ('mixed', 'measured') %}
+                    {% if is_pro and engine_breakdown.evidence in ('mixed', 'measured') %}
                     Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine.
+                    {% elif not is_pro %}
+                    Piano Free: SoV stimato da score e robots.
+                    <a href="{{ url_for('pricing') }}">Passa a Plus</a> per SoV measured (citation monitor).
                     {% else %}
                     Stima euristica da score e robots — non è polling live sui modelli.
                     {% endif %}
@@ -510,7 +519,7 @@ https://rivale2.com", class_="analyze-input") }}
                 <strong>Locales</strong>
                 <span>{{ geo_suite.locales.lang or 'n/d' }} · hreflang {{ (geo_suite.locales.hreflang or [])|length }}</span>
               </li>
-              {% if geo_suite.sov_measured %}
+              {% if geo_suite.sov_measured and is_pro %}
               <li>
                 <strong>SoV measured</strong>
                 <span>
@@ -520,6 +529,11 @@ https://rivale2.com", class_="analyze-input") }}
                     {{ geo_suite.sov_measured.label or 'n/d' }}
                   {% endif %}
                 </span>
+              </li>
+              {% elif not is_pro %}
+              <li>
+                <strong>SoV measured</strong>
+                <span>Plus · <a href="{{ url_for('pricing') }}">sblocca</a></span>
               </li>
               {% endif %}
             </ul>

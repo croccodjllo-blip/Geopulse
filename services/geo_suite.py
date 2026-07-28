@@ -16,6 +16,7 @@ from services.local_pack import analyze_local_signals
 from services.publish_verify import verify_published_pack
 from services.schema_validator import validate_schema_quality
 from services.citation_monitor import run_citation_monitor
+from services.sov_measured import user_can_run_measured
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,8 @@ def run_geo_suite(
     findings: list[dict[str, Any]] = list(result.get("findings") or [])
     signals = dict(result.get("signals") or {})
     extras: dict[str, Any] = {}
+    # Defense-in-depth: measured citation monitor only for Plus/admin.
+    allow_measured = bool(run_measured and user_can_run_measured(user))
 
     # --- Always-on analyses (cheap) ---
     try:
@@ -96,8 +99,8 @@ def run_geo_suite(
     except Exception:
         logger.exception("publish_verify failed")
 
-    # --- Measured citation monitor (Plus / when requested) ---
-    if run_measured:
+    # --- Measured citation monitor (Plus only) ---
+    if allow_measured:
         try:
             brand = ""
             domain = scraped.get("domain") or ""
@@ -116,6 +119,8 @@ def run_geo_suite(
             findings.extend(monitored.get("findings") or [])
         except Exception:
             logger.exception("citation_monitor failed")
+    elif run_measured and not user_can_run_measured(user):
+        logger.info("Skip measured SoV: piano Free (richiede Plus)")
 
     signals.update({k: v for k, v in extras.items() if k != "sov_measured" or "sov_measured" not in signals})
     result["findings"] = findings

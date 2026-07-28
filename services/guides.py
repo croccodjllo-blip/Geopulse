@@ -23,7 +23,7 @@ GUIDES: dict[str, dict[str, str]] = {
     <ul class="plain-list">
       <li>Nessuna garanzia di ranking o menzione da parte di modelli di terzi.</li>
       <li>Il pack artifact è una bozza operativa: la pubblicazione resta a carico del cliente.</li>
-      <li>SoV measured (polling LLM) è disponibile solo se configurato e, tipicamente, su piano Plus.</li>
+      <li>SoV measured (polling LLM) è disponibile <strong>solo sul piano Plus</strong> (e Admin), quando i connector API sono configurati.</li>
     </ul>
   </section>
   <section class="page-section">

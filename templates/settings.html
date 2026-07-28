@@ -9,14 +9,21 @@
     <h1 class="h-display page-intro__title">Impostazioni GEO/AIO</h1>
     <p class="lede page-intro__lede">
       Alert outbound, prompt bank per SoV measured, API, white-label agenzia.
-      {% if not is_pro %}<strong>Plus</strong> sblocca crawl intero sito, API, white-label e volumi più alti.{% endif %}
+      {% if not is_pro %}
+      <strong>Plus</strong> sblocca SoV measured / citation monitor, crawl intero sito, API e white-label.
+      {% endif %}
     </p>
   </header>
 
   <section class="page-section">
     <h2 class="page-section__title">Connector</h2>
     <ul class="plain-list">
-      <li>Citation monitor: {% if citation_ready %}attivo{% else %}configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY{% endif %}</li>
+      <li>
+        Citation monitor / SoV measured:
+        {% if not is_pro %}
+        riservato a <a href="{{ url_for('pricing') }}">Plus</a>
+        {% elif citation_ready %}attivo{% else %}configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY{% endif %}
+      </li>
       <li>JS crawl: {% if js_crawl_ready %}Playwright pronto{% else %}disabilitato (JS_CRAWL_ENABLED=1){% endif %}</li>
       <li>Google Search Console: {{ gsc.reason if not gsc.available else gsc.note }}</li>
     </ul>
@@ -42,7 +49,15 @@
 
   <section class="page-section">
     <h2 class="page-section__title">Prompt bank</h2>
-    <p class="lede">Usati dal citation monitor / SoV measured. Lascia vuoto per i default.</p>
+    <p class="lede">
+      Usati dal citation monitor / SoV measured (piano Plus).
+      {% if not is_pro %}
+      <a href="{{ url_for('pricing') }}">Passa a Plus</a> per personalizzare i prompt di misurazione.
+      {% else %}
+      Lascia vuoto per i default.
+      {% endif %}
+    </p>
+    {% if is_pro %}
     <form method="post" class="form-grid panel">
       {{ prompt_form.hidden_tag() }}
       <input type="hidden" name="action" value="prompts" />
@@ -52,6 +67,7 @@
       </div>
       {{ prompt_form.submit(class_="btn btn-primary") }}
     </form>
+    {% endif %}
   </section>
 
   <section class="page-section">

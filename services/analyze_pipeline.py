@@ -14,7 +14,7 @@ from services.geo_suite import run_geo_suite
 from services.prompt_bank import resolve_prompts
 from services.rating import compute_rating
 from services.signals import compare_with_previous
-from services.sov_measured import measured_sov_available
+from services.sov_measured import should_run_measured
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ def run_analysis_pipeline(
     openai_model: str,
     competitor_urls: list[str] | None = None,
     run_measured: bool = False,
+    measured_env_enabled: bool = True,
     source: str = "manual",
     public_base: str = "https://geopulse.it",
 ) -> Any:
@@ -48,23 +49,29 @@ def run_analysis_pipeline(
         competitor_urls=(competitor_urls or [])[:3] if user.is_pro else [],
     )
 
-    prompts = resolve_prompts(
+    measured_ok = should_run_measured(
         user=user,
-        locale="it",
-        domain=str((result.get("scraped") or {}).get("domain") or ""),
-        max_prompts=8 if user.is_pro else 3,
+        requested=run_measured,
+        env_enabled=measured_env_enabled,
+    )
+    prompts = (
+        resolve_prompts(
+            user=user,
+            locale="it",
+            domain=str((result.get("scraped") or {}).get("domain") or ""),
+            max_prompts=8,
+        )
+        if measured_ok
+        else None
     )
 
-    # Suite GEO/AIO (entity, citability, schema, locale, publish verify, measured SoV)
+    # Suite GEO/AIO (entity, citability, schema, locale, publish verify).
+    # SoV measured / citation monitor: solo Plus.
     run_geo_suite(
         result=result,
         user=user,
         previous_run=previous_run,
-        run_measured=bool(
-            run_measured
-            and getattr(user, "is_pro", False)
-            and measured_sov_available()
-        ),
+        run_measured=measured_ok,
         prompts=prompts,
     )
 

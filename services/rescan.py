@@ -73,6 +73,7 @@ def process_due_rescans(
                 openai_model=openai_model,
                 competitor_urls=[],
                 run_measured=bool(measured),
+                measured_env_enabled=True,
                 source="scheduled",
                 public_base=public_base,
             )
