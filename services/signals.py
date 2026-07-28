@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import re
 from typing import Any
-from urllib.parse import urlparse
 
 AI_BOTS = (
     "GPTBot",
@@ -653,8 +652,3 @@ def compare_with_previous(
             previous.created_at.isoformat() if getattr(previous, "created_at", None) else None
         ),
     }
-
-
-def origin_from_url(url: str) -> str:
-    parsed = urlparse(url)
-    return f"{parsed.scheme}://{parsed.netloc}"

@@ -7,7 +7,7 @@ templates and workers do not drift.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Iterable
+from typing import Any
 
 
 CAPABILITIES = (
@@ -132,9 +132,3 @@ def require_capability(ents: PlanEntitlements, capability: str) -> str | None:
         f"{feature.capitalize()} è riservato al piano Plus. "
         "Sul Free restano score, findings e pack sullo stesso dominio."
     )
-
-
-def missing_capabilities(
-    ents: PlanEntitlements, needed: Iterable[str]
-) -> list[str]:
-    return [c for c in needed if not ents.can(c)]

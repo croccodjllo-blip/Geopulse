@@ -8,7 +8,6 @@ robots / llms / JSON-LD / signals.json senza ridistribuire ZIP statici.
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 import secrets
 from datetime import datetime, timezone

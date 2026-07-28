@@ -25,14 +25,12 @@ from services.deep_checks import (
     analyze_crawl_aggregate,
     analyze_geo_discoverability,
     analyze_heading_hierarchy,
-    analyze_monitoring_alerts,
     analyze_technical_page,
     enrich_jsonld_entities,
     same_host,
     summarize_competitor,
 )
 from services.evidence import normalize_finding_evidence
-from services.rating import compute_rating
 from services.signals import (
     analyze_faq_signals,
     analyze_json_ld_types,

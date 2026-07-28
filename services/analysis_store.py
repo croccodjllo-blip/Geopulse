@@ -47,14 +47,6 @@ def clamp_hour(hour: Any, default: int = DEFAULT_RESCAN_HOUR) -> int:
     return max(0, min(23, value))
 
 
-def interval_delta(interval: str) -> timedelta | None:
-    if interval == "daily":
-        return timedelta(days=1)
-    if interval == "weekly":
-        return timedelta(days=7)
-    return None
-
-
 def next_rescan_after(
     interval: str,
     *,

@@ -100,7 +100,7 @@ from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.signals import compare_with_previous
-from services.sov_measured import measured_sov_available, should_run_measured, user_can_run_measured
+from services.sov_measured import should_run_measured
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
 from services.api_auth import find_user_by_api_key, generate_api_key
 from services.agency import build_whitelabel_markdown, dump_agency_brand, parse_agency_brand
@@ -128,8 +128,6 @@ FREE_TOTAL_ANALYSES = max(1, int(os.getenv("FREE_TOTAL_ANALYSES", "2")))
 MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "1")))
 PRO_DAILY_ANALYSES = max(FREE_TOTAL_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
 MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
-# Alias template (Free non ha più quota 24h; nome storico free_daily_analyses).
-FREE_DAILY_ANALYSES = FREE_TOTAL_ANALYSES
 FREE_CRAWL_PAGES = max(1, min(20, int(os.getenv("FREE_CRAWL_PAGES", "8"))))
 # Piano Plus: 0 = crawl intero sito (tetto operativo ABS_MAX_CRAWL_PAGES).
 _PRO_CRAWL_RAW = int(os.getenv("PRO_CRAWL_PAGES", "0"))

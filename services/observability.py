@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import secrets
 import time
-from typing import Any
 
 from flask import Flask, g, request
 
@@ -41,10 +39,3 @@ def configure_app_logging(app: Flask) -> None:
                 dur_ms,
             )
         return response
-
-
-def log_event(logger: logging.Logger, event: str, **fields: Any) -> None:
-    parts = [f"event={event}"]
-    for key, value in fields.items():
-        parts.append(f"{key}={value}")
-    logger.info(" ".join(parts))

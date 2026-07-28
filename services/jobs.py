@@ -7,8 +7,6 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from sqlalchemy import text
-
 logger = logging.getLogger(__name__)
 
 # Job stuck in "running" longer than this are re-queued (worker crash / hang).
@@ -102,38 +100,6 @@ def claim_next_job(db_session, AnalysisJob) -> Any | None:
         # Perso la race: ritenta sul prossimo pending.
         db_session.rollback()
     return None
-
-
-def claim_next_job_sql(db_session, AnalysisJob) -> Any | None:
-    """Variante SQL (SQLite RETURNING) — usata dai test / fallback esplicito."""
-    now = datetime.now(timezone.utc)
-    try:
-        row = db_session.execute(
-            text(
-                """
-                UPDATE analysis_jobs
-                SET status = 'running',
-                    started_at = :now,
-                    error = NULL
-                WHERE id = (
-                    SELECT id FROM analysis_jobs
-                    WHERE status = 'pending'
-                    ORDER BY created_at ASC
-                    LIMIT 1
-                )
-                RETURNING id
-                """
-            ),
-            {"now": now.isoformat()},
-        ).fetchone()
-        db_session.commit()
-    except Exception:
-        db_session.rollback()
-        logger.exception("claim_next_job_sql failed; falling back")
-        return claim_next_job(db_session, AnalysisJob)
-    if not row:
-        return None
-    return db_session.get(AnalysisJob, row[0])
 
 
 def complete_job(db_session, job, *, site_id: int | None = None) -> None:
