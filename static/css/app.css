@@ -893,8 +893,8 @@ body.app-body:not(.body-dash) {
 }
 
 .hero-brand__logo {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: clamp(3.75rem, 6vw, 4.75rem);
+  height: clamp(3.75rem, 6vw, 4.75rem);
   border-radius: 0;
   object-fit: contain;
   flex-shrink: 0;
@@ -905,8 +905,8 @@ body.app-body:not(.body-dash) {
 .hero-brand__mark {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
-  letter-spacing: 0.28em;
+  font-size: clamp(2.1rem, 6.5vw, 3.5rem);
+  letter-spacing: 0.22em;
   line-height: 1;
   color: var(--color-clarity);
 }
