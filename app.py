@@ -206,7 +206,7 @@ configure_app_logging(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
-PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://geopulse.it").rstrip("/")
+PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://centropic.ai").rstrip("/")
 # CORS Edge: vuoto = nessun header ACAO (crawler non ne hanno bisogno).
 # Imposta EDGE_CORS_ORIGIN=* o un origin esatto se serve embed browser.
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
@@ -909,12 +909,15 @@ def ensure_admin_user() -> User | None:
 
 
 def public_base_url() -> str:
-    """Base canonica del sito (preferisce PUBLIC_SITE_URL)."""
-    configured = PUBLIC_SITE_URL
-    if configured and "geopulse.it" in configured:
+    """Base canonica del sito (preferisce PUBLIC_SITE_URL se valorizzata)."""
+    configured = (PUBLIC_SITE_URL or "").rstrip("/")
+    if configured:
         return configured
-    return (request.url_root or configured or "https://geopulse.it").rstrip("/")
-
+    # Fallback al host della richiesta (centropic.ai / geopulse.it).
+    root = (request.url_root or "").rstrip("/")
+    if root:
+        return root
+    return "https://centropic.ai"
 
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
@@ -1141,7 +1144,7 @@ def process_pending_analyze_jobs(
                 ),
                 measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
                 source="job",
-                public_base=PUBLIC_SITE_URL or "https://geopulse.it",
+                public_base=PUBLIC_SITE_URL or "https://centropic.ai",
             )
             complete_job(db.session, job, site_id=getattr(analysis, "id", None))
             stats["ok"] += 1
@@ -1852,6 +1855,20 @@ def guide_score_vs_sov():
 @app.route("/")
 def index():
     return render_template("landing.html")
+
+
+@app.route("/favicon.svg")
+def favicon_svg():
+    return redirect(url_for("static", filename="favicon.svg"), code=302)
+
+
+@app.route("/favicon.ico")
+def favicon_ico():
+    # Prefer ICO if present; otherwise fall back to PNG mark.
+    ico = os.path.join(app.static_folder or "", "favicon.ico")
+    if os.path.isfile(ico):
+        return redirect(url_for("static", filename="favicon.ico"), code=302)
+    return redirect(url_for("static", filename="img/logo.png"), code=302)
 
 
 @app.route("/prodotto")
