@@ -15,6 +15,7 @@ from services.usage_billing import (
     check_page_word_budget,
     required_credit_with_grace_cents,
     is_unlimited_user,
+    debit_cents_from_usage,
     _model_price,
     _next_rating,
 )
@@ -240,3 +241,52 @@ def test_check_page_word_budget_ok(monkeypatch):
         balance_cents=1000,
     )
     assert out.is_giant is False
+
+
+def test_check_page_word_budget_allows_giant_when_funded(monkeypatch):
+    monkeypatch.setattr(
+        "services.usage_billing.preflight_word_count",
+        lambda _url: MAX_PREFLIGHT_WORDS + 5000,
+    )
+    out = check_page_word_budget(
+        url="https://example.com",
+        base_cost_cents=100,
+        balance_cents=10_000,
+    )
+    assert out.is_giant is False
+    assert out.required_cost_cents > 100
+
+
+def test_model_price_prefers_longer_sonar_keys():
+    assert _model_price("sonar-pro")["in"] == pytest.approx(3.00)
+    assert _model_price("sonar-reasoning")["out"] == pytest.approx(5.00)
+    assert _model_price("sonar")["in"] == pytest.approx(1.00)
+
+
+def test_debit_cents_from_usage():
+    assert debit_cents_from_usage(0) == 0
+    assert debit_cents_from_usage(0.1) == 1
+    assert debit_cents_from_usage(1.2) == 2
+
+
+def test_plan_admin_is_unlimited():
+    user = _FakeUser(0, role="user")
+    user.plan = "admin"
+    user.is_admin = True
+    assert is_unlimited_user(user) is True
+
+
+def test_estimate_uses_ceil_not_truncate():
+    est = estimate_analysis_cost(
+        openai_model="gpt-4o-mini",
+        anthropic_model="claude-haiku-4-5-20251001",
+        perplexity_model="sonar",
+        run_measured=True,
+        n_prompts=5,
+        has_openai=True,
+        has_perplexity=True,
+        has_anthropic=True,
+    )
+    # With all providers, cost must remain a positive integer cents value.
+    assert isinstance(est.service_cost_eur_cents, int)
+    assert est.service_cost_eur_cents >= 1

@@ -9,7 +9,8 @@
     <h1 class="page-intro__title">Rivedi e conferma</h1>
     <p class="page-intro__lede">
       Prima di procedere, controlla il costo stimato e il miglioramento atteso.
-      I crediti vengono scalati solo dopo il completamento dell'analisi.
+      I crediti vengono scalati in tempo reale sui token AI consumati durante l'analisi
+      (con margine di sicurezza {{ grace_margin_pct }}% sul saldo richiesto all'avvio).
     </p>
   </div>
 
@@ -105,7 +106,7 @@
   {# ── Credito disponibile ── #}
   <div class="page-section">
     <h2 class="page-section__title">Il tuo credito</h2>
-    {% if current_user.role in ('admin', 'internal') %}
+    {% if current_user.is_admin %}
     <div class="credit-status credit-status--ok">
       <span class="credit-status__balance">
         Disponibile: <strong>∞ Illimitato</strong>
@@ -133,7 +134,7 @@
 
   {# ── Azioni ── #}
   <div class="page-cta">
-    {% if current_user.role in ('admin', 'internal') or balance_cents >= required_cents %}
+    {% if current_user.is_admin or balance_cents >= required_cents %}
     <form method="POST" action="{{ url_for('dashboard_analyze_confirmed') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="url" value="{{ url }}">
@@ -141,7 +142,7 @@
       <input type="hidden" name="competitors" value="{{ competitors_raw }}">
       <input type="hidden" name="cost_cents" value="{{ cost.service_cost_eur_cents }}">
       <button class="btn btn-core" type="submit">
-        {% if current_user.role in ('admin', 'internal') %}
+        {% if current_user.is_admin %}
           Avvia analisi (admin — gratuito)
         {% else %}
           Conferma e avvia analisi (€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }})

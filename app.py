@@ -98,6 +98,7 @@ from services.usage_billing import (
     InsufficientCreditError,
     record_actual_usage,
     is_unlimited_user,
+    debit_cents_from_usage,
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
@@ -163,6 +164,8 @@ ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin Centropic"
 ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
+# Welcome credit granted on signup so the first onboarding diagnosis can run.
+WELCOME_CREDIT_CENTS = max(0, int(os.getenv("WELCOME_CREDIT_CENTS", "200")))
 ANALYZE_BATCH_LIMIT = max(1, int(os.getenv("ANALYZE_BATCH_LIMIT", "5")))
 PASSWORD_RESET_HOURS = max(1, int(os.getenv("PASSWORD_RESET_HOURS", "2")))
 SITE_AUTHOR_NAME = (os.getenv("SITE_AUTHOR_NAME") or "Engineering Factory").strip()
@@ -490,6 +493,8 @@ class AnalysisJob(db.Model):
     url = db.Column(db.String(500), nullable=False)
     max_pages = db.Column(db.Integer, nullable=False, default=8)
     competitors_json = db.Column(db.Text, nullable=False, default="[]")
+    # Persist measured SoV intent from confirm form through the async worker.
+    run_measured = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.String(20), nullable=False, default="pending", index=True)
     error = db.Column(db.String(500))
     created_at = db.Column(
@@ -1165,6 +1170,7 @@ def ensure_schema() -> None:
                 "site_id": "INTEGER",
                 "max_pages": "INTEGER DEFAULT 8",
                 "competitors_json": "TEXT DEFAULT '[]'",
+                "run_measured": "BOOLEAN DEFAULT 0",
                 "status": "TEXT DEFAULT 'pending'",
                 "error": "TEXT",
                 "created_at": "DATETIME",
@@ -1206,7 +1212,7 @@ def process_pending_analyze_jobs(
         try:
             run_measured_job = should_run_measured(
                 user=user,
-                requested=MEASURED_SOV_ON_ANALYZE,
+                requested=bool(getattr(job, "run_measured", False)) or MEASURED_SOV_ON_ANALYZE,
                 env_enabled=MEASURED_SOV_ON_ANALYZE,
             )
             est = estimate_analysis_cost(
@@ -1254,7 +1260,9 @@ def process_pending_analyze_jobs(
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
                 )
-                debit_cents = max(1, int(math.ceil(charged)))
+                debit_cents = debit_cents_from_usage(charged)
+                if debit_cents <= 0:
+                    return
                 deduct_credit(
                     db.session,
                     CreditLedger,
@@ -1283,7 +1291,15 @@ def process_pending_analyze_jobs(
             stats["ok"] += 1
         except Exception as exc:
             app.logger.exception("Analyze job %s failed", job.id)
-            fail_job(db.session, job, format_job_error(exc))
+            # Undo partial realtime usage/credit flushes from a failed run.
+            try:
+                failed_job_id = job.id
+                db.session.rollback()
+                job = db.session.get(AnalysisJob, failed_job_id)
+            except Exception:
+                app.logger.exception("rollback after job failure failed")
+            if job is not None:
+                fail_job(db.session, job, format_job_error(exc))
             stats["error"] += 1
     return stats
 
@@ -1524,6 +1540,48 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return None
+
+    # Prepaid gate: welcome credit should cover basic first diagnosis.
+    if not is_unlimited_user(user):
+        est = estimate_analysis_cost(
+            openai_model=OPENAI_MODEL,
+            anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+            perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+            run_measured=False,
+            has_openai=bool(OPENAI_API_KEY),
+            has_perplexity=False,
+            has_anthropic=False,
+        )
+        if not has_sufficient_credit(user, est):
+            app.logger.info(
+                "Onboarding analyze skipped for user %s: insufficient credit",
+                user.id,
+            )
+            return None
+
+    def _onboarding_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+        charged = record_actual_usage(
+            db.session,
+            UsageEvent,
+            user_id=user.id,
+            analysis_run_id=None,
+            provider=provider,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+        debit_cents = debit_cents_from_usage(charged)
+        if debit_cents <= 0:
+            return
+        deduct_credit(
+            db.session,
+            CreditLedger,
+            user,
+            analysis_run_id=None,
+            cost_eur_cents=debit_cents,
+            description=f"Onboarding usage realtime {provider}:{model}",
+        )
+
     if ASYNC_ANALYZE:
         job = enqueue_analysis(
             db.session,
@@ -1532,6 +1590,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             url=url,
             max_pages=user.crawl_pages,
             competitor_urls=[],
+            run_measured=False,
         )
         kick_analyze_worker()
         return int(job.id)
@@ -1548,9 +1607,14 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             run_measured=False,
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="onboarding",
+            usage_callback=_onboarding_usage_cb,
         )
     except Exception as exc:
         app.logger.exception("Onboarding analyze failed")
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
         flash_analyze_error(exc)
     return None
 
@@ -2256,9 +2320,19 @@ def register():
                 role=role_val,
                 country=(form.country.data or "").strip() or None,
                 plan="free",
+                credit_balance_cents=0,
             )
             user.set_password(form.password.data)
             db.session.add(user)
+            db.session.flush()
+            if WELCOME_CREDIT_CENTS > 0:
+                topup_credit(
+                    db.session,
+                    CreditLedger,
+                    user,
+                    amount_eur_cents=WELCOME_CREDIT_CENTS,
+                    description=f"Credito di benvenuto €{WELCOME_CREDIT_CENTS/100:.2f}",
+                )
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
@@ -2281,14 +2355,26 @@ def register():
         if job_id:
             flash(
                 "Account creato. Prima diagnosi avviata sul sito indicato — "
-                "resti in dashboard mentre elaboriamo score e pack.",
+                "resti in dashboard mentre elaboriamo score e pack."
+                + (
+                    f" Credito di benvenuto: €{WELCOME_CREDIT_CENTS/100:.2f}."
+                    if WELCOME_CREDIT_CENTS > 0
+                    else ""
+                ),
                 "success",
             )
             return redirect(url_for("dashboard", job=job_id))
-        flash(
-            "Account creato. Inserisci l’URL del dominio per avviare la prima diagnosi.",
-            "success",
-        )
+        if website:
+            flash(
+                "Account creato. Per avviare la prima diagnosi ricarica i crediti "
+                "oppure riprova dall'analisi in dashboard.",
+                "warning",
+            )
+        else:
+            flash(
+                "Account creato. Inserisci l’URL del dominio per avviare la prima diagnosi.",
+                "success",
+            )
         return redirect(url_for("dashboard"))
 
     return render_template("register.html", form=form)
@@ -2716,7 +2802,7 @@ def dashboard_analyze_confirmed():
     url_raw = (request.form.get("url") or "").strip()
     run_measured_flag = request.form.get("run_measured") == "1"
     competitors_raw = (request.form.get("competitors") or "").strip()
-    cost_cents = int(request.form.get("cost_cents") or 0)
+    # Ignore client cost_cents — recomputed server-side below.
 
     if not url_raw:
         flash("URL mancante.", "error")
@@ -2733,23 +2819,26 @@ def dashboard_analyze_confirmed():
         flash("Troppe analisi in poco tempo. Attendi qualche minuto e riprova.", "warning")
         return redirect(url_for("dashboard"))
 
-    # Credit check
+    # Recompute cost server-side — never trust client-supplied cost_cents.
+    run_meas = should_run_measured(
+        user=user,
+        requested=run_measured_flag and MEASURED_SOV_ON_ANALYZE,
+        env_enabled=MEASURED_SOV_ON_ANALYZE,
+    )
+    cost = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=run_meas,
+        n_prompts=5,
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+    )
     balance = get_balance_cents(user)
-    required_with_grace = required_credit_with_grace_cents(cost_cents)
-    if (not is_unlimited_user(user)) and balance < required_with_grace:
-        shortage = required_with_grace - balance
-        flash(
-            f"Credito insufficiente: hai €{balance/100:.4f}, "
-            f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
-            f"Ricarica almeno €{shortage/100:.4f}.",
-            "error",
-        )
-        return redirect(url_for("topup_credit_page"))
-
-    # Preventive word-count guard before any AI request
     preflight = check_page_word_budget(
         url=url,
-        base_cost_cents=cost_cents,
+        base_cost_cents=cost.service_cost_eur_cents,
         balance_cents=balance,
         unlimited=is_unlimited_user(user),
     )
@@ -2761,7 +2850,19 @@ def dashboard_analyze_confirmed():
             "warning",
         )
         return redirect(url_for("topup_credit_page"))
-    cost_cents = preflight.required_cost_cents
+    cost.service_cost_eur_cents = preflight.required_cost_cents
+    cost_cents = cost.service_cost_eur_cents
+
+    required_with_grace = required_credit_with_grace_cents(cost_cents)
+    if (not is_unlimited_user(user)) and balance < required_with_grace:
+        shortage = required_with_grace - balance
+        flash(
+            f"Credito insufficiente: hai €{balance/100:.4f}, "
+            f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+            f"Ricarica almeno €{shortage/100:.4f}.",
+            "error",
+        )
+        return redirect(url_for("topup_credit_page"))
 
     competitor_urls: list[str] = []
     if competitors_raw and user.is_pro:
@@ -2781,8 +2882,9 @@ def dashboard_analyze_confirmed():
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )
-        # real-time debit: round up cents to guarantee provider cost coverage
-        debit_cents = max(1, int(math.ceil(charged)))
+        debit_cents = debit_cents_from_usage(charged)
+        if debit_cents <= 0:
+            return
         deduct_credit(
             db.session,
             CreditLedger,
@@ -2805,6 +2907,7 @@ def dashboard_analyze_confirmed():
             url=url,
             max_pages=user.crawl_pages,
             competitor_urls=competitor_urls[:3],
+            run_measured=run_meas,
         )
         db.session.commit()
         kick_analyze_worker()
@@ -2821,11 +2924,7 @@ def dashboard_analyze_confirmed():
             openai_api_key=OPENAI_API_KEY,
             openai_model=OPENAI_MODEL,
             competitor_urls=competitor_urls[:3],
-            run_measured=should_run_measured(
-                user=user,
-                requested=run_measured_flag and MEASURED_SOV_ON_ANALYZE,
-                env_enabled=MEASURED_SOV_ON_ANALYZE,
-            ),
+            run_measured=run_meas,
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="manual",
             usage_callback=_usage_cb,
@@ -2840,10 +2939,18 @@ def dashboard_analyze_confirmed():
             "success",
         )
     except InsufficientCreditError as exc:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
         flash(str(exc), "error")
         return redirect(url_for("topup_credit_page"))
     except Exception as exc:
         app.logger.exception("Confirmed analyze failed")
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
         flash_analyze_error(exc)
 
     return redirect(url_for("dashboard"))
@@ -2960,12 +3067,12 @@ def billing_topup_webhook():
     """Stripe webhook for one-time payment (credit top-up)."""
     payload = request.get_data()
     sig = request.headers.get("Stripe-Signature", "")
-    topup_secret = os.getenv("STRIPE_TOPUP_WEBHOOK_SECRET", "")
+    topup_secret = (os.getenv("STRIPE_TOPUP_WEBHOOK_SECRET") or "").strip()
     if not topup_secret:
         return jsonify({"ok": False, "error": "webhook not configured"}), 503
     try:
         from services.billing import construct_event as _construct
-        event = _construct(payload, sig)
+        event = _construct(payload, sig, webhook_secret=topup_secret)
     except Exception as exc:
         app.logger.warning("topup webhook sig invalid: %s", exc)
         return jsonify({"ok": False, "error": "invalid signature"}), 400
@@ -2976,8 +3083,15 @@ def billing_topup_webhook():
             meta = sess.get("metadata") or {}
             user_id = int(meta.get("centropic_user_id") or 0)
             topup_cents = int(meta.get("topup_cents") or 0)
-            pi = sess.get("payment_intent") or ""
+            pi = (sess.get("payment_intent") or sess.get("id") or "").strip()
             if user_id and topup_cents:
+                # Idempotency: never credit the same Stripe payment twice.
+                if pi:
+                    already = (
+                        CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
+                    )
+                    if already is not None:
+                        return jsonify({"ok": True, "duplicate": True})
                 u = db.session.get(User, user_id)
                 if u:
                     topup_credit(
@@ -2986,7 +3100,7 @@ def billing_topup_webhook():
                         u,
                         amount_eur_cents=topup_cents,
                         description=f"Ricarica €{topup_cents/100:.2f} via Stripe",
-                        stripe_payment_intent=pi,
+                        stripe_payment_intent=pi or None,
                     )
                     db.session.commit()
                     app.logger.info("topup: user %s +%d cent", user_id, topup_cents)
@@ -3343,7 +3457,9 @@ def api_v1_analyze():
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )
-        debit_cents = max(1, int(math.ceil(charged)))
+        debit_cents = debit_cents_from_usage(charged)
+        if debit_cents <= 0:
+            return
         deduct_credit(
             db.session,
             CreditLedger,
@@ -3586,6 +3702,9 @@ def admin_set_plan(user_id: int, plan: str):
     target.plan = plan
     if plan == "admin":
         target.role = "admin"
+    elif (target.role or "").lower() == "admin":
+        # Demotion must revoke admin privileges (is_admin checks role OR plan).
+        target.role = None
     db.session.commit()
     flash(f"Piano di {target.email} aggiornato a {plan}.", "success")
     return redirect(url_for("admin_home"))
@@ -3617,14 +3736,25 @@ def admin_cancel_job(job_id: int):
     if job is None:
         flash("Job non trovato.", "error")
         return redirect(url_for("admin_home"))
-    if job.status not in {"pending", "running"}:
-        flash("Job non cancellabile in questo stato.", "warning")
-        return redirect(url_for("admin_home"))
-    job.status = "error"
-    job.error = "Annullato da admin"
-    job.finished_at = datetime.now(timezone.utc)
+    updated = (
+        AnalysisJob.query.filter(
+            AnalysisJob.id == job_id,
+            AnalysisJob.status.in_(["pending", "running"]),
+        )
+        .update(
+            {
+                "status": "error",
+                "error": "Annullato da admin",
+                "finished_at": datetime.now(timezone.utc),
+            },
+            synchronize_session=False,
+        )
+    )
     db.session.commit()
-    flash(f"Job #{job.id} annullato.", "success")
+    if updated != 1:
+        flash("Job non cancellabile in questo stato.", "warning")
+    else:
+        flash(f"Job #{job_id} annullato.", "success")
     return redirect(url_for("admin_home"))
 
 

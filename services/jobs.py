@@ -21,15 +21,20 @@ def enqueue_analysis(
     url: str,
     max_pages: int,
     competitor_urls: list[str] | None = None,
+    run_measured: bool = False,
 ) -> Any:
-    job = AnalysisJob(
-        user_id=user_id,
-        url=url,
-        max_pages=max_pages,
-        competitors_json=json.dumps(competitor_urls or [], ensure_ascii=False),
-        status="pending",
-        created_at=datetime.now(timezone.utc),
-    )
+    kwargs: dict[str, Any] = {
+        "user_id": user_id,
+        "url": url,
+        "max_pages": max_pages,
+        "competitors_json": json.dumps(competitor_urls or [], ensure_ascii=False),
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc),
+    }
+    # Additive column — tolerate older ORM instances during rolling deploys.
+    if hasattr(AnalysisJob, "run_measured"):
+        kwargs["run_measured"] = bool(run_measured)
+    job = AnalysisJob(**kwargs)
     db_session.add(job)
     db_session.commit()
     return job
@@ -102,12 +107,24 @@ def claim_next_job(db_session, AnalysisJob) -> Any | None:
     return None
 
 
-def complete_job(db_session, job, *, site_id: int | None = None) -> None:
-    job.status = "done"
-    job.finished_at = datetime.now(timezone.utc)
-    job.site_id = site_id
-    job.error = None
+def complete_job(db_session, job, *, site_id: int | None = None) -> bool:
+    """Mark job done only if still running so admin cancel wins the race."""
+    Job = job.__class__
+    now = datetime.now(timezone.utc)
+    updated = (
+        Job.query.filter_by(id=job.id, status="running")
+        .update(
+            {
+                "status": "done",
+                "finished_at": now,
+                "site_id": site_id,
+                "error": None,
+            },
+            synchronize_session=False,
+        )
+    )
     db_session.commit()
+    return updated == 1
 
 
 def fail_job(db_session, job, error: str) -> None:

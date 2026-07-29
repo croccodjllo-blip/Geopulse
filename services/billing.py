@@ -94,11 +94,22 @@ def create_portal_session(*, customer_id: str, return_url: str) -> str:
     return session["url"]
 
 
-def construct_event(payload: bytes, sig_header: str):
+def construct_event(
+    payload: bytes,
+    sig_header: str,
+    *,
+    webhook_secret: str | None = None,
+):
+    """Verify Stripe webhook signature.
+
+    Use ``webhook_secret`` for dedicated endpoints (e.g. credit top-up);
+    otherwise fall back to ``STRIPE_WEBHOOK_SECRET``.
+    """
     stripe = _client()
-    if not STRIPE_WEBHOOK_SECRET:
-        raise RuntimeError("STRIPE_WEBHOOK_SECRET non configurata")
-    return stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    secret = (webhook_secret or STRIPE_WEBHOOK_SECRET or "").strip()
+    if not secret:
+        raise RuntimeError("Stripe webhook secret non configurata")
+    return stripe.Webhook.construct_event(payload, sig_header, secret)
 
 
 def plan_from_subscription_status(status: str | None) -> str:

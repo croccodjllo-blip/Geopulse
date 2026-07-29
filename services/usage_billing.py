@@ -82,10 +82,18 @@ MIN_BALANCE_EUR_CENTS: int = 1  # 0.01 € minimum
 # ─────────────────────────── token estimators ─────────────────────────────────
 
 def _model_price(model: str) -> dict[str, float]:
-    model_lc = (model or "").lower()
-    for key, p in _PRICE_TABLE.items():
+    """Resolve model pricing. Prefer exact match, then longest substring key.
+
+    Order matters: ``sonar`` must not win over ``sonar-pro``.
+    """
+    model_lc = (model or "").lower().strip()
+    if not model_lc:
+        return _DEFAULT_PRICE
+    if model_lc in _PRICE_TABLE:
+        return _PRICE_TABLE[model_lc]
+    for key in sorted(_PRICE_TABLE.keys(), key=len, reverse=True):
         if key in model_lc:
-            return p
+            return _PRICE_TABLE[key]
     return _DEFAULT_PRICE
 
 
@@ -214,7 +222,11 @@ def estimate_analysis_cost(
 
     raw_micro = sum(b.cost_usd_micro() for b in budgets)
     service_micro = raw_micro * (1 + PLATFORM_SPREAD)
-    service_eur_cents = max(1, int(service_micro / 1_000_000 * USD_TO_EUR * 100))
+    # Ceil — never under-estimate vs realtime debit rounding.
+    service_eur_cents = max(
+        1,
+        int(math.ceil(service_micro / 1_000_000 * USD_TO_EUR * 100 - 1e-12)),
+    )
 
     return CostEstimate(
         raw_cost_usd_micro=raw_micro,
@@ -293,19 +305,27 @@ def check_page_word_budget(
     required = giant_page_required_cost_cents(base_cost_cents, words)
     if words > MAX_PREFLIGHT_WORDS:
         shortage = max(0, required - balance_cents)
-        msg = (
-            f"Pagina molto grande ({words} parole). "
-            f"Credito richiesto stimato: €{required/100:.4f}. "
-            f"Ti mancano €{shortage/100:.4f}."
-            if shortage > 0
-            else f"Pagina molto grande ({words} parole). "
-            f"Questa operazione richiede almeno €{required/100:.4f}."
-        )
+        # Hard-block only when credit is insufficient for the scaled cost.
+        if shortage > 0:
+            msg = (
+                f"Pagina molto grande ({words} parole). "
+                f"Credito richiesto stimato: €{required/100:.4f}. "
+                f"Ti mancano €{shortage/100:.4f}."
+            )
+            return PageWordCountCheck(
+                word_count=words,
+                is_giant=True,
+                required_cost_cents=required,
+                message=msg,
+            )
         return PageWordCountCheck(
             word_count=words,
-            is_giant=True,
+            is_giant=False,
             required_cost_cents=required,
-            message=msg,
+            message=(
+                f"Pagina grande ({words} parole): costo scalato a "
+                f"€{required/100:.4f}."
+            ),
         )
     return PageWordCountCheck(
         word_count=words,
@@ -426,8 +446,27 @@ def estimate_improvement(
 # Every transaction is logged in the `credit_ledger` table.
 
 def is_unlimited_user(user: Any) -> bool:
-    """Admin and internal users have unlimited credit — never billed."""
-    return getattr(user, "role", None) in ("admin", "internal")
+    """Admin and internal users have unlimited credit — never billed.
+
+    Aligns with ``User.is_admin`` (plan or role) plus explicit ``internal``.
+    """
+    if bool(getattr(user, "is_admin", False)):
+        return True
+    plan = (getattr(user, "plan", None) or "").lower()
+    if plan == "admin":
+        return True
+    role = (getattr(user, "role", None) or "").lower()
+    return role in {"admin", "internal"}
+
+
+def debit_cents_from_usage(charged_eur_cents: float) -> int:
+    """Convert fractional EUR cents from a single AI call into ledger cents.
+
+    Ceil to avoid under-billing; return 0 when usage cost is empty.
+    """
+    if charged_eur_cents <= 0:
+        return 0
+    return int(math.ceil(charged_eur_cents - 1e-12))
 
 
 def get_balance_cents(user: Any) -> int:
