@@ -1,15 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Prezzi{% endblock %}
-{% block meta_description %}Prezzi Centropic 2026: piano Free senza carta e Plus con crawl intero sito, SoV measured, monitoraggio e export.{% endblock %}
+{% block title %}{{ _('Prezzi') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic 2026: piano Free senza carta e Plus con crawl intero sito, SoV measured, monitoraggio e export.') }}{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Prezzi · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
-    <h1 class="h-display page-intro__title">Semplici. Scalabili.</h1>
+    <p class="eyebrow">{{ _('Prezzi · aggiornato') }} <time datetime="2026-07-27">27/07/2026</time></p>
+    <h1 class="h-display page-intro__title">{{ _('Semplici. Scalabili.') }}</h1>
     <p class="lede page-intro__lede">
-      Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor (SoV measured),
-      alert, re-scan e export. Prodotto di
+      {{ _('Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor (SoV measured), alert, re-scan e export. Prodotto di') }}
       <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
     </p>
   </header>
@@ -17,57 +16,57 @@
   <div class="plan-grid" role="list">
     <section class="plan" role="listitem">
       <p class="plan__name">Free</p>
-      <p class="plan__price">0&nbsp;€<span>/mese</span></p>
-      <p class="plan__desc">Per il primo dominio e le prime ottimizzazioni.</p>
+      <p class="plan__price">0&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="plan__desc">{{ _('Per il primo dominio e le prime ottimizzazioni.') }}</p>
       <ul class="plan__features">
-        <li>Massimo {{ max_sites_free }} sito</li>
-        <li>Crawl fino a {{ free_crawl_pages }} pagine</li>
-        <li>{{ free_total_analyses }} analisi iniziali + ri-analisi del sito</li>
-        <li>Score + findings (Misurato/Stimato)</li>
-        <li>Pack ZIP</li>
+        <li>{{ _('Massimo') }} {{ max_sites_free }} {{ _('sito') }}</li>
+        <li>{{ _('Crawl fino a') }} {{ free_crawl_pages }} {{ _('pagine') }}</li>
+        <li>{{ free_total_analyses }} {{ _('analisi iniziali + ri-analisi del sito') }}</li>
+        <li>{{ _('Score + findings (Misurato/Stimato)') }}</li>
+        <li>{{ _('Pack ZIP') }}</li>
       </ul>
-      <a class="btn btn-primary btn-block" href="{{ url_for('register') }}">Inizia gratis</a>
+      <a class="btn btn-primary btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
     </section>
 
     <section class="plan plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
       {% if stripe_ready %}
-      <p class="plan__price">Abbonamento<span>/mese</span></p>
-      <p class="plan__desc">Prezzo mostrato al checkout. Per team che ottimizzano più brand in continuo.</p>
+      <p class="plan__price">{{ _('Abbonamento') }}<span>{{ _('/mese') }}</span></p>
+      <p class="plan__desc">{{ _('Prezzo mostrato al checkout. Per team che ottimizzano più brand in continuo.') }}</p>
       {% else %}
-      <p class="plan__price">In arrivo</p>
-      <p class="plan__desc">Checkout self-serve in attivazione. Prenota interesse per accesso prioritario.</p>
+      <p class="plan__price">{{ _('In arrivo') }}</p>
+      <p class="plan__desc">{{ _('Checkout self-serve in attivazione. Prenota interesse per accesso prioritario.') }}</p>
       {% endif %}
       <ul class="plan__features">
-        <li>Più siti e analisi</li>
-        <li>Crawl dell’intero sito</li>
-        <li>Citation monitor / SoV measured (LLM probe) — solo Plus</li>
-        <li>Prompt bank + alert email/webhook</li>
-        <li>Re-scan giornaliero/settimanale</li>
-        <li>API + export CSV/ZIP + white-label</li>
-        <li>Storico run avanzato</li>
+        <li>{{ _('Più siti e analisi') }}</li>
+        <li>{{ _('Crawl dell’intero sito') }}</li>
+        <li>{{ _('Citation monitor / SoV measured (LLM probe) — solo Plus') }}</li>
+        <li>{{ _('Prompt bank + alert email/webhook') }}</li>
+        <li>{{ _('Re-scan giornaliero/settimanale') }}</li>
+        <li>{{ _('API + export CSV/ZIP + white-label') }}</li>
+        <li>{{ _('Storico run avanzato') }}</li>
       </ul>
       {% if stripe_ready and current_user %}
       <form method="post" action="{{ url_for('billing_checkout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <button type="submit" class="btn btn-primary btn-block">Passa a Plus</button>
+        <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
       </form>
       {% elif stripe_ready %}
-      <a class="btn btn-primary btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">Accedi e passa a Plus</a>
+      <a class="btn btn-primary btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
       {% else %}
-      <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">Prenota interesse</a>
+      <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
       {% endif %}
     </section>
   </div>
 
   <p class="plan-note">
-    Aggiornato il <time datetime="2026-07-27">27/07/2026</time>.
-    Domande? <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-    · <a href="{{ url_for('faq') }}">FAQ</a>
-    · <a href="{{ url_for('methodology') }}">Metodologia</a>
-    · <a href="{{ url_for('guide_score_vs_sov') }}">Score vs SoV</a>
-    · <a href="{{ url_for('register') }}">Account Free</a>
-    · Owner: <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>
+    {{ _('Aggiornato il') }} <time datetime="2026-07-27">27/07/2026</time>.
+    {{ _('Domande?') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+    · <a href="{{ url_for('faq') }}">{{ _('FAQ') }}</a>
+    · <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
+    · <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>
+    · <a href="{{ url_for('register') }}">{{ _('Account Free') }}</a>
+    · {{ _('Owner:') }} <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>
   </p>
 </article>
 {% endblock %}

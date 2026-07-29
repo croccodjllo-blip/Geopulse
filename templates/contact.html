@@ -1,63 +1,61 @@
 {% extends "base.html" %}
-{% block title %}Contatti{% endblock %}
-{% block meta_description %}Contatti Centropic: supporto, partnership e domande su AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO). Email info@centropic.ai.{% endblock %}
+{% block title %}{{ _('Contatti') }}{% endblock %}
+{% block meta_description %}{{ _('Contatti Centropic: supporto, partnership e domande su AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO). Email info@centropic.ai.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/contatti{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Contatti</p>
-    <h1 class="h-display page-intro__title">Parliamo</h1>
+    <p class="eyebrow">{{ _('Contatti') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Parliamo') }}</h1>
     <p class="lede page-intro__lede">
-      Supporto prodotto, partnership agenzie e domande su score AIO/GEO.
-      Rispondiamo da <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      {{ _('Supporto prodotto, partnership agenzie e domande su score AIO/GEO. Rispondiamo da') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">Canali</h2>
+    <h2 class="page-section__title">{{ _('Canali') }}</h2>
     <ul class="plain-list">
-      <li><strong>Email</strong> — <a href="mailto:info@centropic.ai">info@centropic.ai</a> (supporto e commerciale)</li>
+      <li><strong>{{ _('Email') }}</strong> — <a href="mailto:info@centropic.ai">info@centropic.ai</a> {{ _('(supporto e commerciale)') }}</li>
       <li><strong>Engineering Factory</strong> —
         <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">www.engineeringfactory.app</a>
       </li>
-      <li><strong>Prodotto</strong> — <a href="{{ url_for('product') }}">come funziona Centropic</a></li>
-      <li><strong>Account</strong> — <a href="{{ url_for('register') }}">registrati</a> o <a href="{{ url_for('login') }}">accedi</a></li>
-      <li><strong>Plus</strong> — <a href="{{ url_for('pro_interest') }}">waitlist interesse Plus</a></li>
-      <li><strong>Chi siamo</strong> — <a href="{{ url_for('about') }}">missione e metodo</a></li>
+      <li><strong>{{ _('Prodotto') }}</strong> — <a href="{{ url_for('product') }}">{{ _('come funziona Centropic') }}</a></li>
+      <li><strong>{{ _('Account') }}</strong> — <a href="{{ url_for('register') }}">{{ _('registrati') }}</a> {{ _('o') }} <a href="{{ url_for('login') }}">{{ _('accedi') }}</a></li>
+      <li><strong>Plus</strong> — <a href="{{ url_for('pro_interest') }}">{{ _('waitlist interesse Plus') }}</a></li>
+      <li><strong>{{ _('Chi siamo') }}</strong> — <a href="{{ url_for('about') }}">{{ _('missione e metodo') }}</a></li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Cosa includere nella mail</h2>
+    <h2 class="page-section__title">{{ _('Cosa includere nella mail') }}</h2>
     <p class="lede">
-      URL del sito da analizzare, piano attuale (Free/Plus), e se possibile uno screenshot
-      del report. Per partnership indica agenzia, verticali e volume siti gestiti.
+      {{ _('URL del sito da analizzare, piano attuale (Free/Plus), e se possibile uno screenshot del report. Per partnership indica agenzia, verticali e volume siti gestiti.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Orari e tempi di risposta</h2>
+    <h2 class="page-section__title">{{ _('Orari e tempi di risposta') }}</h2>
     <p class="lede">
-      Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni lavorativi.
-      Per incidenti di accesso account indica l’email di registrazione nell’oggetto.
-      Aggiornato il <time datetime="2026-07-27">27 luglio 2026</time>.
+      {{ _('Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni lavorativi. Per incidenti di accesso account indica l’email di registrazione nell’oggetto. Aggiornato il') }}
+      <time datetime="2026-07-27">{{ _('27 luglio 2026') }}</time>.
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Trasparenza</h2>
+    <h2 class="page-section__title">{{ _('Trasparenza') }}</h2>
     <p class="lede">
-      Policy: <a href="{{ url_for('privacy') }}">Privacy</a> ·
-      <a href="{{ url_for('terms') }}">Termini</a> ·
+      {{ _('Policy:') }} <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
+      <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a> ·
       <a href="{{ url_for('ai_txt') }}">ai.txt</a>.
-      Non vendiamo liste email; usiamo i dati per erogare Centropic.
+      {{ _('Non vendiamo liste email; usiamo i dati per erogare Centropic.') }}
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="mailto:info@centropic.ai">Scrivi a info@centropic.ai</a>
-    <a class="btn btn-ghost" href="{{ url_for('about') }}">Chi siamo</a>
+    <a class="btn btn-primary" href="mailto:info@centropic.ai">{{ _('Scrivi a info@centropic.ai') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('about') }}">{{ _('Chi siamo') }}</a>
   </div>
 </article>
 {% endblock %}

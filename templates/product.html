@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Prodotto{% endblock %}
-{% block meta_description %}Come funziona Centropic: crawl, score AIO/GEO euristici, findings e pack (llms.txt, JSON-LD, robots) per answer engine — non GIS, non All-in-One.{% endblock %}
+{% block title %}{{ _('Prodotto') }}{% endblock %}
+{% block meta_description %}{{ _('Come funziona Centropic: crawl, score AIO/GEO euristici, findings e pack (llms.txt, JSON-LD, robots) per answer engine — non GIS, non All-in-One.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
 {% endblock %}
@@ -8,72 +8,66 @@
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Prodotto · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
-    <h1 class="h-display page-intro__title">Il segnale che le IA leggono</h1>
+    <p class="eyebrow">{{ _('Prodotto · aggiornato') }} <time datetime="2026-07-27">27/07/2026</time></p>
+    <h1 class="h-display page-intro__title">{{ _('Il segnale che le IA leggono') }}</h1>
     <p class="lede page-intro__lede">
-      Centropic valuta i segnali di <strong>AI-Driven Visibility (AIO)</strong> e
-      <strong>Generative Engine Optimization (GEO)</strong> del dominio e genera artifact pronti da pubblicare.
-      Per team che vogliono essere citati, non solo indicizzati.
-      Prodotto di
+      {{ _('Centropic valuta i segnali di') }} <strong>AI-Driven Visibility (AIO)</strong> {{ _('e') }}
+      <strong>Generative Engine Optimization (GEO)</strong> {{ _('del dominio e genera artifact pronti da pubblicare. Per team che vogliono essere citati, non solo indicizzati. Prodotto di') }}
       <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">Analisi AIO + GEO (definiti)</h2>
+    <h2 class="page-section__title">{{ _('Analisi AIO + GEO (definiti)') }}</h2>
     <p class="lede">
-      <strong>AIO</strong> = AI-Driven Visibility: quanto i modelli e i crawler IA comprendono e “vedono” il brand.
-      <strong>GEO</strong> = Generative Engine Optimization: quanto sei strutturato per essere citato nelle risposte generate
-      (ChatGPT, Perplexity, ricerca AI). Non confondere con GIS (mappe geografiche) né con suite All-in-One generiche.
+      <strong>AIO</strong> = {{ _('AI-Driven Visibility: quanto i modelli e i crawler IA comprendono e “vedono” il brand.') }}
+      <strong>GEO</strong> = {{ _('Generative Engine Optimization: quanto sei strutturato per essere citato nelle risposte generate (ChatGPT, Perplexity, ricerca AI). Non confondere con GIS (mappe geografiche) né con suite All-in-One generiche.') }}
     </p>
     <p class="lede">
-      Crawl del dominio, probe di <code>/llms.txt</code>, <code>/robots.txt</code>,
-      <code>/sitemap.xml</code>, <code>/ai.txt</code> e valutazione euristica dei segnali
-      usati dagli answer engine. Di default il SoV in dashboard è
-      <strong>Stimato (proxy)</strong>; su Plus, con API LLM configurata, il
-      <strong>citation monitor</strong> aggiunge menzioni Misurate (OpenAI; Perplexity se presente).
-      Riferimenti: <a href="{{ url_for('methodology') }}">metodologia</a>,
+      {{ _('Crawl del dominio, probe di') }} <code>/llms.txt</code>, <code>/robots.txt</code>,
+      <code>/sitemap.xml</code>, <code>/ai.txt</code> {{ _('e valutazione euristica dei segnali usati dagli answer engine. Di default il SoV in dashboard è') }}
+      <strong>{{ _('Stimato (proxy)') }}</strong>; {{ _('su Plus, con API LLM configurata, il') }}
+      <strong>{{ _('citation monitor') }}</strong> {{ _('aggiunge menzioni Misurate (OpenAI; Perplexity se presente). Riferimenti:') }}
+      <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a>,
       <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>,
       <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llms.txt</a>.
     </p>
     <ul class="plain-list">
-      <li>Indice risultato + score AIO/GEO da probe ed euristiche</li>
-      <li>Findings critici prioritizzati (entity, citability, schema, publish verify)</li>
-      <li>Pagine deboli con problema esplicito</li>
-      <li>Badge <em>Stimato</em> / <em>Misurato</em> su ogni finding</li>
-      <li>Suite Plus: prompt bank, alert email/webhook, API <code>/api/v1</code>, white-label</li>
+      <li>{{ _('Indice risultato + score AIO/GEO da probe ed euristiche') }}</li>
+      <li>{{ _('Findings critici prioritizzati (entity, citability, schema, publish verify)') }}</li>
+      <li>{{ _('Pagine deboli con problema esplicito') }}</li>
+      <li>{{ _('Badge') }} <em>{{ _('Stimato') }}</em> / <em>{{ _('Misurato') }}</em> {{ _('su ogni finding') }}</li>
+      <li>{{ _('Suite Plus: prompt bank, alert email/webhook, API') }} <code>/api/v1</code>, {{ _('white-label') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Pack di ottimizzazione</h2>
+    <h2 class="page-section__title">{{ _('Pack di ottimizzazione') }}</h2>
     <p class="lede">
-      Output operativo: file da copiare o scaricare in ZIP / inviare via email.
-      Guide dedicate:
+      {{ _('Output operativo: file da copiare o scaricare in ZIP / inviare via email. Guide dedicate:') }}
       <a href="{{ url_for('guide_llms_txt') }}">llms.txt</a>,
-      <a href="{{ url_for('guide_schema_ai') }}">Schema AI</a>,
-      <a href="{{ url_for('guide_score_vs_sov') }}">Score vs SoV</a>.
+      <a href="{{ url_for('guide_schema_ai') }}">{{ _('Schema AI') }}</a>,
+      <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>.
     </p>
     <ul class="artifact-list">
-      <li><code>llms.txt</code> — descrizione brand per i modelli</li>
-      <li><code>organization.jsonld.html</code> — entity strutturata</li>
-      <li><code>meta-pack.html</code> — title, description, Open Graph</li>
-      <li><code>robots.txt</code> — bozza allineata a crawl e sitemap</li>
+      <li><code>llms.txt</code> — {{ _('descrizione brand per i modelli') }}</li>
+      <li><code>organization.jsonld.html</code> — {{ _('entity strutturata') }}</li>
+      <li><code>meta-pack.html</code> — {{ _('title, description, Open Graph') }}</li>
+      <li><code>robots.txt</code> — {{ _('bozza allineata a crawl e sitemap') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Per chi è</h2>
+    <h2 class="page-section__title">{{ _('Per chi è') }}</h2>
     <p class="lede">
-      Brand, founder e agenzie che vogliono migliorare i segnali di citabilità per
-      ChatGPT, Perplexity e ricerca generativa — con un flusso ripetibile, non fix one-off.
-      Contatto operativo: <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      {{ _('Brand, founder e agenzie che vogliono migliorare i segnali di citabilità per ChatGPT, Perplexity e ricerca generativa — con un flusso ripetibile, non fix one-off. Contatto operativo:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('register') }}">Prova gratis</a>
-    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Piani</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Prova gratis') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Piani') }}</a>
   </div>
 </article>
 {% endblock %}

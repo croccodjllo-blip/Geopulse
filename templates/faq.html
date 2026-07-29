@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}FAQ{% endblock %}
-{% block meta_description %}FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, pack artifact, limiti Free e contatti info@centropic.ai.{% endblock %}
+{% block title %}{{ _('FAQ') }}{% endblock %}
+{% block meta_description %}{{ _('FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, pack artifact, limiti Free e contatti info@centropic.ai.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_faq.html" %}
 {% endblock %}
@@ -8,110 +8,97 @@
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">FAQ</p>
-    <h1 class="h-display page-intro__title">Domande frequenti</h1>
+    <p class="eyebrow">{{ _('FAQ') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Domande frequenti') }}</h1>
     <p class="lede page-intro__lede">
-      AI-Driven Visibility (AIO), Generative Engine Optimization (GEO), pack e piani — risposte essenziali.
+      {{ _('AI-Driven Visibility (AIO), Generative Engine Optimization (GEO), pack e piani — risposte essenziali.') }}
     </p>
   </header>
 
   <div class="faq-list">
     <details class="faq-item" open>
-      <summary>Cos’è AIO e GEO in Centropic?</summary>
+      <summary>{{ _('Cos’è AIO e GEO in Centropic?') }}</summary>
       <p>
-        <strong>AIO</strong> = <em>AI-Driven Visibility</em>: quanto i modelli e i crawler IA
-        comprendono e “vedono” il tuo brand (entity, struttura, file machine-readable).
-        <strong>GEO</strong> = <em>Generative Engine Optimization</em>: quanto sei ottimizzato
-        per essere citato nelle risposte generate da answer engine (ChatGPT, Perplexity, ricerca AI).
+        <strong>AIO</strong> = <em>AI-Driven Visibility</em>: {{ _('quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand (entity, struttura, file machine-readable).') }}
+        <strong>GEO</strong> = <em>Generative Engine Optimization</em>: {{ _('quanto sei ottimizzato per essere citato nelle risposte generate da answer engine (ChatGPT, Perplexity, ricerca AI).') }}
       </p>
       <p>
-        In questo prodotto <strong>GEO non significa Geographic Information System (GIS)</strong>
-        e <strong>AIO non significa All-in-One</strong>: sono metriche di citabilità e visibilità IA.
+        {{ _('In questo prodotto') }} <strong>{{ _('GEO non significa Geographic Information System (GIS)') }}</strong>
+        {{ _('e') }} <strong>{{ _('AIO non significa All-in-One') }}</strong>: {{ _('sono metriche di citabilità e visibilità IA.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Gli score AIO e GEO sono misurazioni live sulle IA?</summary>
+      <summary>{{ _('Gli score AIO e GEO sono misurazioni live sulle IA?') }}</summary>
       <p>
-        No di default. Score e Share of Voice sono <strong>diagnostici basati su probe ed euristiche</strong>
-        (contenuto, schema, robots, <code>llms.txt</code>).
-        Il badge <em>Stimato (proxy)</em> indica una stima; <em>Misurato</em> è riservato a segnali
-        direttamente osservati sul sito o a polling LLM quando disponibile.
+        {{ _('No di default. Score e Share of Voice sono') }} <strong>{{ _('diagnostici basati su probe ed euristiche') }}</strong>
+        {{ _('(contenuto, schema, robots, llms.txt). Il badge') }} <em>{{ _('Stimato (proxy)') }}</em> {{ _('indica una stima;') }} <em>{{ _('Misurato') }}</em> {{ _('è riservato a segnali direttamente osservati sul sito o a polling LLM quando disponibile.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Cosa ricevo dopo un’analisi?</summary>
+      <summary>{{ _('Cosa ricevo dopo un’analisi?') }}</summary>
       <p>
-        Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization),
-        findings prioritizzati e un pack con
-        <code>llms.txt</code>, JSON-LD, meta pack e bozza <code>robots.txt</code>.
-        Puoi copiare i file o scaricare lo ZIP.
+        {{ _('Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings prioritizzati e un pack con llms.txt, JSON-LD, meta pack e bozza robots.txt. Puoi copiare i file o scaricare lo ZIP.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Devo sapere programmare?</summary>
+      <summary>{{ _('Devo sapere programmare?') }}</summary>
       <p>
-        No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito
-        (o passali al tuo developer / CMS).
+        {{ _('No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito (o passali al tuo developer / CMS).') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Quali sono i limiti del piano Free?</summary>
+      <summary>{{ _('Quali sono i limiti del piano Free?') }}</summary>
       <p>
-        Massimo {{ max_sites_free }} sito, {{ free_crawl_pages }} pagine per crawl,
-        {{ free_total_analyses }} analisi iniziali e ri-analisi illimitata dello stesso dominio.
-        Il piano Plus analizza l’intero sito senza limite pagine e alza gli altri limiti.
+        {{ _('Massimo') }} {{ max_sites_free }} {{ _('sito,') }} {{ free_crawl_pages }} {{ _('pagine per crawl,') }}
+        {{ free_total_analyses }} {{ _('analisi iniziali e ri-analisi illimitata dello stesso dominio. Il piano Plus analizza l’intero sito senza limite pagine e alza gli altri limiti.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Usate OpenAI sui miei contenuti?</summary>
+      <summary>{{ _('Usate OpenAI sui miei contenuti?') }}</summary>
       <p>
-        Se è configurata una chiave OpenAI, può essere usata per raffinare
-        <code>llms.txt</code>. Altrimenti Centropic genera un fallback locale.
-        Non pubblichiamo i tuoi dati su altri siti.
+        {{ _('Se è configurata una chiave OpenAI, può essere usata per raffinare') }}
+        <code>llms.txt</code>. {{ _('Altrimenti Centropic genera un fallback locale. Non pubblichiamo i tuoi dati su altri siti.') }}
       </p>
     </details>
 
     <details class="faq-item" id="edge-signals">
-      <summary>Cos’è Edge Signals (hosting dinamico)?</summary>
+      <summary>{{ _('Cos’è Edge Signals (hosting dinamico)?') }}</summary>
       <p>
-        Invece di scaricare solo uno ZIP statico, puoi attivare endpoint pubblici Centropic
-        (<code>/e/&lt;token&gt;/llms.txt</code>, <code>signals.json</code>, e su Plus
-        <code>robots.txt</code> / JSON-LD) che si aggiornano quando rianalizzi il sito
-        o quando aggiorniamo la lista dei crawler IA.
+        {{ _('Invece di scaricare solo uno ZIP statico, puoi attivare endpoint pubblici Centropic') }}
+        (<code>/e/&lt;token&gt;/llms.txt</code>, <code>signals.json</code>, {{ _('e su Plus') }}
+        <code>robots.txt</code> / JSON-LD) {{ _('che si aggiornano quando rianalizzi il sito o quando aggiorniamo la lista dei crawler IA.') }}
       </p>
       <p>
-        Sul piano Plus ricevi anche snippet Cloudflare Worker e rewrite Vercel per
-        servire gli stessi artifact sul tuo dominio — dipendenza infrastrutturale,
-        non un file da ricopiare a mano.
+        {{ _('Sul piano Plus ricevi anche snippet Cloudflare Worker e rewrite Vercel per servire gli stessi artifact sul tuo dominio — dipendenza infrastrutturale, non un file da ricopiare a mano.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Come inizio?</summary>
+      <summary>{{ _('Come inizio?') }}</summary>
       <p>
-        <a href="{{ url_for('register') }}">Crea un account</a>,
-        apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il primo report.
+        <a href="{{ url_for('register') }}">{{ _('Crea un account') }}</a>,
+        {{ _('apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il primo report.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>Come vi contatto?</summary>
+      <summary>{{ _('Come vi contatto?') }}</summary>
       <p>
-        Scrivi a
+        {{ _('Scrivi a') }}
         <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-        per supporto, partnership o domande sul servizio.
+        {{ _('per supporto, partnership o domande sul servizio.') }}
       </p>
     </details>
   </div>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('register') }}">Inizia gratis</a>
-    <a class="btn btn-ghost" href="{{ url_for('product') }}">Vedi il prodotto</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('product') }}">{{ _('Vedi il prodotto') }}</a>
   </div>
 </article>
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Registrati{% endblock %}
-{% block meta_description %}Crea un account Free Centropic: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito.{% endblock %}
+{% block title %}{{ _('Registrati') }}{% endblock %}
+{% block meta_description %}{{ _('Crea un account Free Centropic: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/register{% endblock %}
 
 {% block content %}
@@ -15,42 +15,41 @@
     />
     <div class="auth-aside__copy">
       <p class="brand">CENTROPIC</p>
-      <p>Analizza i segnali. Chiudi le criticità. Pubblica il pack.</p>
+      <p>{{ _('Analizza i segnali. Chiudi le criticità. Pubblica il pack.') }}</p>
     </div>
   </aside>
 
   <div class="auth-wrap auth-wrap--wide">
-    <p class="eyebrow">Registrazione · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
-    <h1 class="h-display auth-title">Crea account</h1>
+    <p class="eyebrow">{{ _('Registrazione · aggiornato') }} <time datetime="2026-07-27">27/07/2026</time></p>
+    <h1 class="h-display auth-title">{{ _('Crea account') }}</h1>
     <p class="lede auth-lede">
-      Crea l’account e, se indichi il sito, avviamo subito la prima diagnosi.
-      Nome, email e password bastano; azienda e URL sono opzionali ma accelerano l’activation loop.
-      Supporto: <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      {{ _('Crea l’account e, se indichi il sito, avviamo subito la prima diagnosi. Nome, email e password bastano; azienda e URL sono opzionali ma accelerano l’activation loop. Supporto:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
 
     <form method="post" class="form-grid form-grid--2 panel" novalidate>
       {{ form.hidden_tag() }}
 
       <div class="field span-2">
-        <label for="name">Nome e cognome</label>
+        <label for="name">{{ _('Nome e cognome') }}</label>
         {{ form.name(id="name", autocomplete="name") }}
         {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
-        <label for="email">Email</label>
+        <label for="email">{{ _('Email') }}</label>
         {{ form.email(id="email", autocomplete="email") }}
         {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
-        <label for="phone">Telefono <span class="hint">(opzionale)</span></label>
+        <label for="phone">{{ _('Telefono') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.phone(id="phone", autocomplete="tel") }}
         {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
-        <label for="password">Password</label>
+        <label for="password">{{ _('Password') }}</label>
         <div class="password-field">
           {{ form.password(id="password", autocomplete="new-password", class_="password-field__input") }}
           <button
@@ -58,15 +57,15 @@
             class="password-field__toggle"
             data-password-toggle
             aria-controls="password"
-            aria-label="Mostra password"
+            aria-label="{{ _('Mostra password') }}"
             aria-pressed="false"
-          >Mostra</button>
+          >{{ _('Mostra') }}</button>
         </div>
         {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
-        <label for="confirm">Conferma password</label>
+        <label for="confirm">{{ _('Conferma password') }}</label>
         <div class="password-field">
           {{ form.confirm(id="confirm", autocomplete="new-password", class_="password-field__input") }}
           <button
@@ -74,33 +73,33 @@
             class="password-field__toggle"
             data-password-toggle
             aria-controls="confirm"
-            aria-label="Mostra password"
+            aria-label="{{ _('Mostra password') }}"
             aria-pressed="false"
-          >Mostra</button>
+          >{{ _('Mostra') }}</button>
         </div>
         {% for error in form.confirm.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
-        <label for="company">Azienda / Brand <span class="hint">(opzionale)</span></label>
+        <label for="company">{{ _('Azienda / Brand') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.company(id="company", autocomplete="organization") }}
         {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
-        <label for="role">Ruolo <span class="hint">(opzionale)</span></label>
+        <label for="role">{{ _('Ruolo') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.role(id="role") }}
         {% for error in form.role.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field span-2">
-        <label for="website_url">Sito web principale <span class="hint">(opzionale — se lo indichi, la prima diagnosi parte subito)</span></label>
+        <label for="website_url">{{ _('Sito web principale') }} <span class="hint">{{ _('(opzionale — se lo indichi, la prima diagnosi parte subito)') }}</span></label>
         {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
         {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field span-2">
-        <label for="country">Paese <span class="hint">(opzionale)</span></label>
+        <label for="country">{{ _('Paese') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.country(id="country", placeholder="Italia", autocomplete="country-name") }}
         {% for error in form.country.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
@@ -109,11 +108,11 @@
         <label class="checkline">
           {{ form.accept_terms(id="accept_terms") }}
           <span>
-            Accetto i
-            <a href="{{ url_for('terms') }}" target="_blank" rel="noopener">Termini</a>
-            e l’
-            <a href="{{ url_for('privacy') }}" target="_blank" rel="noopener">Informativa privacy</a>
-            di Centropic (centropic.ai).
+            {{ _('Accetto i') }}
+            <a href="{{ url_for('terms') }}" target="_blank" rel="noopener">{{ _('Termini') }}</a>
+            {{ _('e l’') }}
+            <a href="{{ url_for('privacy') }}" target="_blank" rel="noopener">{{ _('Informativa privacy') }}</a>
+            {{ _('di Centropic (centropic.ai).') }}
           </span>
         </label>
         {% for error in form.accept_terms.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
@@ -127,12 +126,12 @@
     {% include "partials/auth_help.html" %}
 
     <p class="switch-line">
-      Hai già un account?
-      <a href="{{ url_for('login') }}">Accedi</a>
+      {{ _('Hai già un account?') }}
+      <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
       ·
-      <a href="{{ url_for('forgot_password') }}">Password dimenticata?</a>
+      <a href="{{ url_for('forgot_password') }}">{{ _('Password dimenticata?') }}</a>
       ·
-      <a href="{{ url_for('pricing') }}">Prezzi</a>
+      <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
     </p>
   </div>
 </section>
