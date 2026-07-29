@@ -9,6 +9,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from openai import OpenAI
+from services.usage_billing import MAX_TOKENS_PER_CALL
 
 from services.security import html_attr
 
@@ -98,6 +99,7 @@ Snippet homepage: {scraped.get('snippet')}
         completion = client.chat.completions.create(
             model=model,
             temperature=0.3,
+            max_tokens=MAX_TOKENS_PER_CALL,
             messages=[
                 {
                     "role": "system",

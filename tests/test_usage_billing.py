@@ -4,11 +4,14 @@ from __future__ import annotations
 import pytest
 
 from services.usage_billing import (
+    MAX_PREFLIGHT_WORDS,
     estimate_analysis_cost,
     estimate_improvement,
     get_balance_cents,
+    giant_page_required_cost_cents,
     has_sufficient_credit,
     PLATFORM_SPREAD,
+    check_page_word_budget,
     _model_price,
     _next_rating,
 )
@@ -178,3 +181,31 @@ def test_next_rating():
     assert _next_rating("AAA") == "AAA"
     assert _next_rating("DDD") == "DD"
     assert _next_rating(None) is None
+
+
+def test_giant_page_required_cost_cents_scales_up():
+    base = 100
+    scaled = giant_page_required_cost_cents(base, MAX_PREFLIGHT_WORDS * 2)
+    assert scaled > base
+
+
+def test_check_page_word_budget_blocks_when_giant(monkeypatch):
+    monkeypatch.setattr("services.usage_billing.preflight_word_count", lambda _url: MAX_PREFLIGHT_WORDS + 5000)
+    out = check_page_word_budget(
+        url="https://example.com",
+        base_cost_cents=100,
+        balance_cents=50,
+    )
+    assert out.is_giant is True
+    assert out.required_cost_cents > 100
+    assert "Pagina molto grande" in out.message
+
+
+def test_check_page_word_budget_ok(monkeypatch):
+    monkeypatch.setattr("services.usage_billing.preflight_word_count", lambda _url: 900)
+    out = check_page_word_budget(
+        url="https://example.com",
+        base_cost_cents=100,
+        balance_cents=1000,
+    )
+    assert out.is_giant is False

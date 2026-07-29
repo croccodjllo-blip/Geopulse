@@ -9,6 +9,7 @@ import hashlib
 import io
 import json
 import logging
+import math
 import os
 import re
 import secrets
@@ -85,6 +86,7 @@ from services.billing import (
     stripe_enabled,
 )
 from services.usage_billing import (
+    check_page_word_budget,
     estimate_analysis_cost,
     estimate_improvement,
     has_sufficient_credit,
@@ -92,6 +94,7 @@ from services.usage_billing import (
     deduct_credit,
     topup_credit,
     InsufficientCreditError,
+    record_actual_usage,
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
@@ -1190,6 +1193,64 @@ def process_pending_analyze_jobs(
             stats["error"] += 1
             continue
         try:
+            run_measured_job = should_run_measured(
+                user=user,
+                requested=MEASURED_SOV_ON_ANALYZE,
+                env_enabled=MEASURED_SOV_ON_ANALYZE,
+            )
+            est = estimate_analysis_cost(
+                openai_model=model,
+                anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+                perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+                run_measured=run_measured_job,
+                n_prompts=5,
+                has_openai=bool(api_key),
+                has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+                has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+            )
+            preflight = check_page_word_budget(
+                url=job.url,
+                base_cost_cents=est.service_cost_eur_cents,
+                balance_cents=get_balance_cents(user),
+            )
+            if preflight.is_giant:
+                fail_job(db.session, job, preflight.message[:500])
+                stats["error"] += 1
+                continue
+            est.service_cost_eur_cents = preflight.required_cost_cents
+            if not has_sufficient_credit(user, est):
+                fail_job(
+                    db.session,
+                    job,
+                    (
+                        f"Credito insufficiente: saldo €{get_balance_cents(user)/100:.4f}, "
+                        f"richiesto €{est.service_cost_eur:.4f}"
+                    )[:500],
+                )
+                stats["error"] += 1
+                continue
+
+            def _job_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+                charged = record_actual_usage(
+                    db.session,
+                    UsageEvent,
+                    user_id=user.id,
+                    analysis_run_id=None,
+                    provider=provider,
+                    model=model,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                )
+                debit_cents = max(1, int(math.ceil(charged)))
+                deduct_credit(
+                    db.session,
+                    CreditLedger,
+                    user,
+                    analysis_run_id=None,
+                    cost_eur_cents=debit_cents,
+                    description=f"JOB usage realtime {provider}:{model}",
+                )
+
             analysis = run_analysis_pipeline(
                 db_session=db.session,
                 SiteAnalysis=SiteAnalysis,
@@ -1199,14 +1260,11 @@ def process_pending_analyze_jobs(
                 openai_api_key=api_key,
                 openai_model=model,
                 competitor_urls=job.competitors,
-                run_measured=should_run_measured(
-                    user=user,
-                    requested=MEASURED_SOV_ON_ANALYZE,
-                    env_enabled=MEASURED_SOV_ON_ANALYZE,
-                ),
+                run_measured=run_measured_job,
                 measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
                 source="job",
                 public_base=PUBLIC_SITE_URL or "https://centropic.ai",
+                usage_callback=_job_usage_cb,
             )
             complete_job(db.session, job, site_id=getattr(analysis, "id", None))
             stats["ok"] += 1
@@ -2428,6 +2486,21 @@ def dashboard():
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
             )
+            # Preventive word-count guard before any AI request
+            preflight = check_page_word_budget(
+                url=url,
+                base_cost_cents=cost.service_cost_eur_cents,
+                balance_cents=get_balance_cents(user),
+            )
+            if preflight.is_giant:
+                flash(
+                    "Richiesta bloccata prima dell'analisi AI. "
+                    + preflight.message
+                    + " Ricarica il credito o riduci la pagina da analizzare.",
+                    "warning",
+                )
+                return redirect(url_for("topup_credit_page"))
+            cost.service_cost_eur_cents = preflight.required_cost_cents
             improvement = estimate_improvement(
                 existing_site=existing,
                 run_measured=run_meas,
@@ -2656,6 +2729,22 @@ def dashboard_analyze_confirmed():
         )
         return redirect(url_for("topup_credit_page"))
 
+    # Preventive word-count guard before any AI request
+    preflight = check_page_word_budget(
+        url=url,
+        base_cost_cents=cost_cents,
+        balance_cents=balance,
+    )
+    if preflight.is_giant:
+        flash(
+            "Richiesta bloccata prima dell'analisi AI. "
+            + preflight.message
+            + " Ricarica il credito o riduci la pagina target.",
+            "warning",
+        )
+        return redirect(url_for("topup_credit_page"))
+    cost_cents = preflight.required_cost_cents
+
     competitor_urls: list[str] = []
     if competitors_raw and user.is_pro:
         for line in re.split(r"[\n,;]+", competitors_raw):
@@ -2663,12 +2752,26 @@ def dashboard_analyze_confirmed():
             if line:
                 competitor_urls.append(line)
 
-    # Build usage_callback to record actual token consumption
-    usage_events_log: list[dict] = []
-
     def _usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
-        usage_events_log.append(
-            dict(provider=provider, model=model, input_tokens=input_tokens, output_tokens=output_tokens)
+        charged = record_actual_usage(
+            db.session,
+            UsageEvent,
+            user_id=user.id,
+            analysis_run_id=None,
+            provider=provider,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+        # real-time debit: round up cents to guarantee provider cost coverage
+        debit_cents = max(1, int(math.ceil(charged)))
+        deduct_credit(
+            db.session,
+            CreditLedger,
+            user,
+            analysis_run_id=None,
+            cost_eur_cents=debit_cents,
+            description=f"AI usage realtime {provider}:{model}",
         )
 
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
@@ -2685,22 +2788,9 @@ def dashboard_analyze_confirmed():
             max_pages=user.crawl_pages,
             competitor_urls=competitor_urls[:3],
         )
-        # Pre-deduct estimated cost when queuing async
-        try:
-            deduct_credit(
-                db.session,
-                CreditLedger,
-                user,
-                analysis_run_id=None,
-                cost_eur_cents=cost_cents,
-                description=f"Analisi (async) {url[:80]}",
-            )
-            db.session.commit()
-        except InsufficientCreditError as exc:
-            flash(str(exc), "error")
-            return redirect(url_for("topup_credit_page"))
+        db.session.commit()
         kick_analyze_worker()
-        flash("Analisi in coda. Crediti riservati. Aggiorniamo lo stato automaticamente…", "success")
+        flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
 
     try:
@@ -2721,26 +2811,7 @@ def dashboard_analyze_confirmed():
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="manual",
             usage_callback=_usage_cb,
-            CreditLedger=CreditLedger,
-            cost_estimate_cents=cost_cents,
         )
-        # Persist actual usage events
-        for ev in usage_events_log:
-            from services.usage_billing import record_actual_usage
-            last_run = (
-                AnalysisRun.query.filter_by(user_id=user.id)
-                .order_by(AnalysisRun.created_at.desc()).first()
-            )
-            try:
-                record_actual_usage(
-                    db.session,
-                    UsageEvent,
-                    user_id=user.id,
-                    analysis_run_id=last_run.id if last_run else None,
-                    **ev,
-                )
-            except Exception:
-                app.logger.exception("usage event persist failed")
         db.session.commit()
 
         pages_n = int(latest.pages_analyzed or 1)
@@ -3212,6 +3283,22 @@ def api_v1_analyze():
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
     )
+    preflight = check_page_word_budget(
+        url=url,
+        base_cost_cents=api_cost.service_cost_eur_cents,
+        balance_cents=get_balance_cents(user),
+    )
+    if preflight.is_giant:
+        return jsonify(
+            {
+                "ok": False,
+                "error": "page_too_large_credit_required",
+                "message": preflight.message,
+                "word_count": preflight.word_count,
+                "required_credit_eur": round(preflight.required_cost_cents / 100, 4),
+            }
+        ), 413
+    api_cost.service_cost_eur_cents = preflight.required_cost_cents
     if not has_sufficient_credit(user, api_cost):
         return jsonify({
             "ok": False,
@@ -3224,11 +3311,25 @@ def api_v1_analyze():
             "cost_estimate": api_cost.as_dict(),
         }), 402
 
-    api_usage_log: list[dict] = []
-
     def _api_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
-        api_usage_log.append(
-            dict(provider=provider, model=model, input_tokens=input_tokens, output_tokens=output_tokens)
+        charged = record_actual_usage(
+            db.session,
+            UsageEvent,
+            user_id=user.id,
+            analysis_run_id=None,
+            provider=provider,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+        debit_cents = max(1, int(math.ceil(charged)))
+        deduct_credit(
+            db.session,
+            CreditLedger,
+            user,
+            analysis_run_id=None,
+            cost_eur_cents=debit_cents,
+            description=f"API usage realtime {provider}:{model}",
         )
 
     try:
@@ -3246,25 +3347,7 @@ def api_v1_analyze():
             source="api",
             public_base=public_base_url(),
             usage_callback=_api_usage_cb,
-            CreditLedger=CreditLedger,
-            cost_estimate_cents=api_cost.service_cost_eur_cents,
         )
-        for ev in api_usage_log:
-            last_run = (
-                AnalysisRun.query.filter_by(user_id=user.id)
-                .order_by(AnalysisRun.created_at.desc()).first()
-            )
-            try:
-                from services.usage_billing import record_actual_usage
-                record_actual_usage(
-                    db.session,
-                    UsageEvent,
-                    user_id=user.id,
-                    analysis_run_id=last_run.id if last_run else None,
-                    **ev,
-                )
-            except Exception:
-                app.logger.exception("api usage event persist failed")
         db.session.commit()
     except InsufficientCreditError as exc:
         return jsonify({"ok": False, "error": "insufficient_credit", "message": str(exc)}), 402

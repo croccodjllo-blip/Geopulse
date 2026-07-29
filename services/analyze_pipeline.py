@@ -35,9 +35,6 @@ def run_analysis_pipeline(
     public_base: str = "https://centropic.ai",
     # Billing: optional callbacks and context
     usage_callback: Any | None = None,
-    UsageEvent: Any | None = None,
-    CreditLedger: Any | None = None,
-    cost_estimate_cents: int | None = None,
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     previous_run = None
@@ -131,23 +128,6 @@ def run_analysis_pipeline(
         pack=pack,
         source=source,
     )
-
-    # Deduct credit based on actual usage (if billing context provided)
-    if CreditLedger is not None and cost_estimate_cents is not None:
-        try:
-            from services.usage_billing import deduct_credit
-            deduct_credit(
-                db_session,
-                CreditLedger,
-                user,
-                analysis_run_id=analysis.runs.order_by(
-                    analysis.runs.property.mapper.class_.created_at.desc()
-                ).first().id if hasattr(analysis, "runs") else None,
-                cost_eur_cents=cost_estimate_cents,
-                description=f"Analisi {url[:80]}",
-            )
-        except Exception:
-            logger.exception("credit deduction failed (non-blocking)")
 
     # Outbound alerts (email / webhook) after persist
     try:

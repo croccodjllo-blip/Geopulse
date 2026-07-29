@@ -34,9 +34,14 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
+
+import requests
+
+from services.ssrf import UnsafeURLError, safe_get
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +70,8 @@ _DEFAULT_PRICE = {"in": 1.00, "out": 4.00}   # fallback for unknown models
 
 PLATFORM_SPREAD = float(os.getenv("PLATFORM_SPREAD", "0.77"))   # 77%
 USD_TO_EUR = float(os.getenv("USD_TO_EUR", "0.92"))
+MAX_TOKENS_PER_CALL = int(os.getenv("MAX_TOKENS_PER_CALL", "1500"))
+MAX_PREFLIGHT_WORDS = int(os.getenv("MAX_PREFLIGHT_WORDS", "12000"))
 
 # minimum balance in EUR cents to allow an analysis
 MIN_BALANCE_EUR_CENTS: int = 1  # 0.01 € minimum
@@ -213,6 +220,86 @@ def estimate_analysis_cost(
         breakdown=breakdown,
         run_measured=run_measured,
         n_prompts=n_prompts,
+    )
+
+
+@dataclass
+class PageWordCountCheck:
+    word_count: int
+    is_giant: bool
+    required_cost_cents: int
+    message: str
+
+
+def preflight_word_count(url: str, *, timeout_seconds: float = 20.0) -> int:
+    """Fetch public page HTML and count visible words before AI calls."""
+    sess = requests.Session()
+    resp = safe_get(sess, url, timeout=timeout_seconds, max_redirects=3)
+    content_type = (resp.headers.get("Content-Type") or "").lower()
+    if "text/html" not in content_type and "text/" not in content_type:
+        return 0
+    html = resp.text or ""
+    # Remove script/style and rough tags; then count token-like words.
+    html = re.sub(r"(?is)<script[^>]*>.*?</script>", " ", html)
+    html = re.sub(r"(?is)<style[^>]*>.*?</style>", " ", html)
+    text = re.sub(r"(?is)<[^>]+>", " ", html)
+    words = re.findall(r"[A-Za-z0-9À-ÿ][A-Za-z0-9À-ÿ'’_-]*", text)
+    return len(words)
+
+
+def giant_page_required_cost_cents(base_cost_cents: int, word_count: int) -> int:
+    """Scale required credit for very large pages; used as upfront guardrail."""
+    if word_count <= MAX_PREFLIGHT_WORDS:
+        return max(1, int(base_cost_cents))
+    # Linear overage multiplier with hard cap to avoid pathological estimates.
+    over = word_count - MAX_PREFLIGHT_WORDS
+    ratio = over / max(1, MAX_PREFLIGHT_WORDS)
+    multiplier = min(4.0, 1.0 + ratio)
+    return max(1, int(base_cost_cents * multiplier))
+
+
+def check_page_word_budget(
+    *,
+    url: str,
+    base_cost_cents: int,
+    balance_cents: int,
+) -> PageWordCountCheck:
+    """
+    Preventive guard:
+    if page is giant, block before AI and tell user required credit.
+    """
+    try:
+        words = preflight_word_count(url)
+    except (requests.RequestException, UnsafeURLError):
+        # If preflight fails due network/SSRF checks, do not hide the main flow.
+        return PageWordCountCheck(
+            word_count=0,
+            is_giant=False,
+            required_cost_cents=max(1, int(base_cost_cents)),
+            message="",
+        )
+    required = giant_page_required_cost_cents(base_cost_cents, words)
+    if words > MAX_PREFLIGHT_WORDS:
+        shortage = max(0, required - balance_cents)
+        msg = (
+            f"Pagina molto grande ({words} parole). "
+            f"Credito richiesto stimato: €{required/100:.4f}. "
+            f"Ti mancano €{shortage/100:.4f}."
+            if shortage > 0
+            else f"Pagina molto grande ({words} parole). "
+            f"Questa operazione richiede almeno €{required/100:.4f}."
+        )
+        return PageWordCountCheck(
+            word_count=words,
+            is_giant=True,
+            required_cost_cents=required,
+            message=msg,
+        )
+    return PageWordCountCheck(
+        word_count=words,
+        is_giant=False,
+        required_cost_cents=required,
+        message="",
     )
 
 
