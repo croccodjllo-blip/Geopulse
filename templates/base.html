@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="{{ ui_lang }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Centropic{% endblock %} · centropic.ai</title>
     <meta
       name="description"
-      content="{% block meta_description %}Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.{% endblock %}"
+      content="{% block meta_description %}{{ _('Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.') }}{% endblock %}"
     />
     {% if google_site_verification %}
     <meta name="google-site-verification" content="{{ google_site_verification }}" />
     {% endif %}
     <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}" />
-    <link rel="alternate" hreflang="it" href="{{ self.canonical() }}" />
+    {% for code in supported_locales %}
+    <link rel="alternate" hreflang="{{ code }}" href="{{ canonical_base }}{{ request.path }}?lang={{ code }}" />
+    {% endfor %}
     <link rel="alternate" hreflang="x-default" href="{{ self.canonical() }}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Centropic" />
-    <meta property="og:locale" content="it_IT" />
+    <meta property="og:locale" content="{{ ui_locale_og }}" />
     <meta property="og:title" content="{% block og_title %}{{ self.title() }} · centropic.ai{% endblock %}" />
     <meta
       property="og:description"
@@ -94,31 +96,55 @@
           />
           <span class="brand-mark__word">CENTROPIC</span>
         </a>
-        <nav class="nav-links" aria-label="Principale">
+        <nav class="nav-links" aria-label="{{ _('Principale') }}">
           {% if current_user %}
-            <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">Dashboard</a>
-            <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">Storico</a>
-            <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">Guida</a>
-            <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">Impostazioni</a>
-            <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">Crediti</a>
+            <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">{{ _('Dashboard') }}</a>
+            <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">{{ _('Storico') }}</a>
+            <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
+            <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">{{ _('Impostazioni') }}</a>
+            <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Crediti') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Plus</a>
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
             <form method="post" action="{{ url_for('logout') }}" style="display:inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-              <button type="submit">Esci</button>
+              <button type="submit">{{ _('Esci') }}</button>
             </form>
           {% else %}
-            <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">Prodotto</a>
-            <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Prezzi</a>
-            <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">Metodologia</a>
+            <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
+            <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
+            <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">{{ _('Metodologia') }}</a>
             <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
-            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">Chi siamo</a>
-            <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">Contatti</a>
-            <a href="{{ url_for('login') }}">Accedi</a>
-            <a class="nav-cta" href="{{ url_for('register') }}">Inizia gratis</a>
+            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">{{ _('Chi siamo') }}</a>
+            <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">{{ _('Contatti') }}</a>
+            <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
+            <a class="nav-cta" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
           {% endif %}
+          <div class="lang-switch" data-lang-switch>
+            <button
+              type="button"
+              class="lang-switch__btn"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-label="{{ _('Seleziona lingua') }}"
+              data-lang-toggle
+            >
+              <span>{{ ui_lang|upper }}</span>
+            </button>
+            <ul class="lang-switch__menu" role="listbox" hidden data-lang-menu>
+              {% for item in ui_languages %}
+              <li role="option" aria-selected="{{ 'true' if item.active else 'false' }}">
+                <a
+                  href="{{ url_for('set_language', code=item.code, next=request.full_path) }}"
+                  class="lang-switch__option {% if item.active %}is-active{% endif %}"
+                  hreflang="{{ item.code }}"
+                  lang="{{ item.code }}"
+                >{{ item.label }}</a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
         </nav>
       </div>
     </header>
@@ -150,31 +176,31 @@
             />
             <span class="brand-mark__word">CENTROPIC</span>
           </a>
-          <p>Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle risposte IA. Prodotto di <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
+          <p>{{ _('Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle risposte IA. Prodotto di') }} <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
         </div>
         <div class="site-footer__col">
-          <p class="site-footer__label">Prodotto</p>
-          <a href="{{ url_for('product') }}">Come funziona</a>
-          <a href="{{ url_for('pricing') }}">Prezzi</a>
-          <a href="{{ url_for('methodology') }}">Metodologia</a>
-          <a href="{{ url_for('guide_llms_txt') }}">Guida llms.txt</a>
+          <p class="site-footer__label">{{ _('Prodotto') }}</p>
+          <a href="{{ url_for('product') }}">{{ _('Come funziona') }}</a>
+          <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
+          <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
+          <a href="{{ url_for('guide_llms_txt') }}">{{ _('Guida llms.txt') }}</a>
           <a href="{{ url_for('faq') }}">FAQ</a>
-          <a href="{{ url_for('about') }}">Chi siamo</a>
+          <a href="{{ url_for('about') }}">{{ _('Chi siamo') }}</a>
         </div>
         <div class="site-footer__col">
-          <p class="site-footer__label">Account</p>
+          <p class="site-footer__label">{{ _('Account') }}</p>
           {% if current_user %}
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('dashboard_history') }}">Storico</a>
-            <a href="{{ url_for('dashboard_guide') }}">Guida</a>
+            <a href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
+            <a href="{{ url_for('dashboard_history') }}">{{ _('Storico') }}</a>
+            <a href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
           {% else %}
-            <a href="{{ url_for('register') }}">Registrati</a>
-            <a href="{{ url_for('login') }}">Accedi</a>
+            <a href="{{ url_for('register') }}">{{ _('Registrati') }}</a>
+            <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
           {% endif %}
         </div>
         <div class="site-footer__col">
-          <p class="site-footer__label">Contatti</p>
-          <a href="{{ url_for('contact') }}">Pagina contatti</a>
+          <p class="site-footer__label">{{ _('Contatti') }}</p>
+          <a href="{{ url_for('contact') }}">{{ _('Pagina contatti') }}</a>
           <a href="mailto:info@centropic.ai">info@centropic.ai</a>
           <a href="{{ url_for('privacy') }}">Privacy</a>
         </div>
@@ -184,7 +210,7 @@
         <span>
           <a href="{{ url_for('privacy') }}">Privacy</a>
           &nbsp;·&nbsp;
-          <a href="{{ url_for('terms') }}">Termini</a>
+          <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a>
           &nbsp;·&nbsp;
           <a href="{{ url_for('ai_txt') }}">ai.txt</a>
           &nbsp;·&nbsp;
@@ -196,15 +222,14 @@
 
     {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
     <aside id="cookie-consent" class="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc" hidden>
-      <p class="cookie-consent__title" id="cookie-consent-title">Cookie e misurazione</p>
+      <p class="cookie-consent__title" id="cookie-consent-title">{{ _('Cookie e misurazione') }}</p>
       <p class="cookie-consent__text" id="cookie-consent-desc">
-        Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o Ads/AdSense)
-        per misurare il traffico e mostrare annunci. Puoi accettare o rifiutare.
-        Dettagli nella <a href="{{ url_for('privacy') }}">Privacy</a>.
+        {{ _('Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o rifiutare. Dettagli nella') }}
+        <a href="{{ url_for('privacy') }}">Privacy</a>.
       </p>
       <div class="cookie-consent__actions">
-        <button type="button" class="btn btn-core" id="cookie-consent-accept">Accetta</button>
-        <button type="button" class="btn btn-ghost" id="cookie-consent-reject">Rifiuta</button>
+        <button type="button" class="btn btn-core" id="cookie-consent-accept">{{ _('Accetta') }}</button>
+        <button type="button" class="btn btn-ghost" id="cookie-consent-reject">{{ _('Rifiuta') }}</button>
       </div>
     </aside>
     <script>
@@ -216,8 +241,9 @@
       };
     </script>
     <script src="{{ url_for('static', filename='js/analytics.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
     {% endif %}
+    <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
 
     <script>
       async function copyFrom(id, btn) {
@@ -227,10 +253,10 @@
         try {
           await navigator.clipboard.writeText(text);
           const prev = btn.textContent;
-          btn.textContent = 'Copiato';
+          btn.textContent = {{ _('Copiato')|tojson }};
           setTimeout(() => { btn.textContent = prev; }, 1400);
         } catch (e) {
-          btn.textContent = 'Errore';
+          btn.textContent = {{ _('Errore')|tojson }};
         }
       }
       document.addEventListener('submit', (ev) => {
@@ -240,7 +266,7 @@
         const btn = form.querySelector('[type="submit"]');
         if (btn) {
           btn.disabled = true;
-          btn.textContent = 'Analisi in corso…';
+          btn.textContent = {{ _('Analisi in corso…')|tojson }};
         }
       });
     </script>

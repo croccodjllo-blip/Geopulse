@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Centropic{% endblock %}
-{% block meta_description %}Centropic — Signal Intelligence per Generative Engine Optimization: diagnosi del dominio, artifact machine-readable e citabilità nelle risposte IA.{% endblock %}
+{% block meta_description %}{{ _('Centropic — Signal Intelligence per Generative Engine Optimization: diagnosi del dominio, artifact machine-readable e citabilità nelle risposte IA.') }}{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -31,175 +31,148 @@
       to Intelligence
     </h1>
     <p class="lede hero-lede">
-      Diagnostichiamo i segnali pubblici del dominio e consegniamo artifact machine-readable
-      per la citabilità nelle risposte di ChatGPT, Claude e Perplexity.
+      {{ _('Diagnostichiamo i segnali pubblici del dominio e consegniamo artifact machine-readable per la citabilità nelle risposte di ChatGPT, Claude e Perplexity.') }}
     </p>
     <div class="cta-row">
-      <a class="btn btn-core" href="{{ url_for('register') }}">Avvia la diagnosi</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">Scopri il metodo</a>
+      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Avvia la diagnosi') }}</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">{{ _('Scopri il metodo') }}</a>
     </div>
   </div>
 </section>
 
 <section class="section-band" id="segnale">
-  <p class="eyebrow">Contesto</p>
-  <h2>I modelli generativi citano ciò che è chiaro, strutturato e machine-readable.</h2>
+  <p class="eyebrow">{{ _('Contesto') }}</p>
+  <h2>{{ _('I modelli generativi citano ciò che è chiaro, strutturato e machine-readable.') }}</h2>
   <p class="lede">
-    Le risposte degli answer engine influenzano confronti e raccomandazioni di brand.
-    Centropic valuta i segnali del sito rispetto a
-    <strong>AI-Driven Visibility (AIO)</strong> e
-    <strong>Generative Engine Optimization (GEO)</strong>,
-    identifica i gap e produce gli artifact da mettere online.
-    Non è un GIS cartografico né una piattaforma All-in-One generica.
+    {{ _('Le risposte degli answer engine influenzano confronti e raccomandazioni di brand. Centropic valuta i segnali del sito rispetto a AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO), identifica i gap e produce gli artifact da mettere online. Non è un GIS cartografico né una piattaforma All-in-One generica.') }}
   </p>
 </section>
 
 <section class="section-band section-band--wide" id="metodo">
-  <p class="eyebrow">Metodo</p>
-  <h2>Tre fasi. Output operativo per marketing e IT.</h2>
+  <p class="eyebrow">{{ _('Metodo') }}</p>
+  <h2>{{ _('Tre fasi. Output operativo per marketing e IT.') }}</h2>
   <p class="lede">
-    Dalla lettura del dominio alla consegna del pack: score, priorità e file pronti all’uso.
-    Piano Free: {{ max_sites_free }} sito · {{ free_total_analyses }} analisi totali per account.
+    {{ _('Dalla lettura del dominio alla consegna del pack: score, priorità e file pronti all’uso.') }}
+    {{ _('Piano Free:') }} {{ max_sites_free }} {{ _('sito') }} · {{ free_total_analyses }} {{ _('analisi totali per account.') }}
   </p>
   <ol class="step-flow">
     <li>
-      <strong>01 · Acquisizione</strong>
-      <span>Inserisci l’URL. Centropic esegue il crawl del dominio e i probe sui segnali pubblici rilevanti per i modelli e i crawler IA.</span>
+      <strong>{{ _('01 · Acquisizione') }}</strong>
+      <span>{{ _('Inserisci l’URL. Centropic esegue il crawl del dominio e i probe sui segnali pubblici rilevanti per i modelli e i crawler IA.') }}</span>
     </li>
     <li>
-      <strong>02 · Valutazione</strong>
-      <span>Ricevi score AIO/GEO e findings classificato per severità, con distinzione tra evidenze osservate e proiezioni etichettate Stimato.</span>
+      <strong>{{ _('02 · Valutazione') }}</strong>
+      <span>{{ _('Ricevi score AIO/GEO e findings classificato per severità, con distinzione tra evidenze osservate e proiezioni etichettate Stimato.') }}</span>
     </li>
     <li>
-      <strong>03 · Consegna</strong>
-      <span>Attivi Edge Signals (hosting dinamico su CDN/Edge) o scarichi il pack (llms.txt, schema, robots) da pubblicare sul sito.</span>
+      <strong>{{ _('03 · Consegna') }}</strong>
+      <span>{{ _('Attivi Edge Signals (hosting dinamico su CDN/Edge) o scarichi il pack (llms.txt, schema, robots) da pubblicare sul sito.') }}</span>
     </li>
   </ol>
 </section>
 
 <section class="section-band section-band--wide" id="piattaforma">
-  <p class="eyebrow">Capacità</p>
-  <h2>Diagnosi, priorità e artifact in un unico flusso.</h2>
+  <p class="eyebrow">{{ _('Capacità') }}</p>
+  <h2>{{ _('Diagnosi, priorità e artifact in un unico flusso.') }}</h2>
   <p class="lede">
-    Pensato per team marketing, digital e agenzie che devono governare la citabilità del brand
-    con criteri condivisi e tracciabili.
+    {{ _('Pensato per team marketing, digital e agenzie che devono governare la citabilità del brand con criteri condivisi e tracciabili.') }}
   </p>
   <div class="feature-grid">
     <div class="feature-cell">
       <span class="feature-cell__icon">AIO</span>
-      <p class="feature-cell__title">Score AIO e GEO</p>
+      <p class="feature-cell__title">{{ _('Score AIO e GEO') }}</p>
       <p class="feature-cell__desc">
-        Indicatori di visibilità e citabilità sul dominio, basati su probe ed euristiche documentate.
-        Non costituiscono una garanzia di ranking o di menzione automatica.
+        {{ _('Indicatori di visibilità e citabilità sul dominio, basati su probe ed euristiche documentate. Non costituiscono una garanzia di ranking o di menzione automatica.') }}
       </p>
     </div>
     <div class="feature-cell">
       <span class="feature-cell__icon">MAP</span>
-      <p class="feature-cell__title">Analisi multi-pagina</p>
+      <p class="feature-cell__title">{{ _('Analisi multi-pagina') }}</p>
       <p class="feature-cell__desc">
-        Copertura del dominio per individuare pagine e aree strutturali deboli rispetto a entity,
-        schema, contenuti citabili e accessibilità ai crawler IA.
+        {{ _('Copertura del dominio per individuare pagine e aree strutturali deboli rispetto a entity, schema, contenuti citabili e accessibilità ai crawler IA.') }}
       </p>
     </div>
     <div class="feature-cell">
       <span class="feature-cell__icon">PRI</span>
-      <p class="feature-cell__title">Findings prioritizzati</p>
+      <p class="feature-cell__title">{{ _('Findings prioritizzati') }}</p>
       <p class="feature-cell__desc">
-        Classificazione critical / warn / ok per ordinare il backlog tra marketing, contenuto e IT
-        senza dispersione in segnalazioni generiche.
+        {{ _('Classificazione critical / warn / ok per ordinare il backlog tra marketing, contenuto e IT senza dispersione in segnalazioni generiche.') }}
       </p>
     </div>
     <div class="feature-cell">
       <span class="feature-cell__icon">ZIP</span>
-      <p class="feature-cell__title">Pack di pubblicazione</p>
+      <p class="feature-cell__title">{{ _('Pack di pubblicazione') }}</p>
       <p class="feature-cell__desc">
-        Artifact operativi (<code>llms.txt</code>, JSON-LD Organization, meta-pack, robots)
-        disponibili in ZIP o via email al team responsabile.
+        {{ _('Artifact operativi (llms.txt, JSON-LD Organization, meta-pack, robots) disponibili in ZIP o via email al team responsabile.') }}
       </p>
     </div>
   </div>
 </section>
 
 <section class="section-band" id="metodo-citabile">
-  <p class="eyebrow">Governance dei dati · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
-  <h2>Distinzione esplicita tra Stimato e Misurato.</h2>
+  <p class="eyebrow">{{ _('Governance dei dati') }}</p>
+  <h2>{{ _('Distinzione esplicita tra Stimato e Misurato.') }}</h2>
   <p class="lede">
-    Ogni finding deriva da un segnale osservato sul sito oppure è etichettato
-    <em>Stimato</em> quando rappresenta una proiezione (ad esempio Share of Voice).
-    Sul piano Plus, e in generale quando le API LLM sono configurate,
-    il citation monitor può integrare menzioni <em>Misurate</em>
-    mediante probe sui modelli.
-    Documentazione:
-    <a href="{{ url_for('methodology') }}">Metodologia</a>,
-    <a href="{{ url_for('guide_score_vs_sov') }}">Score vs Share of Voice</a>.
-    Contatti: <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-    · titolare
+    {{ _('Ogni finding deriva da un segnale osservato sul sito oppure è etichettato Stimato quando rappresenta una proiezione (ad esempio Share of Voice). Sul piano Plus, e in generale quando le API LLM sono configurate, il citation monitor può integrare menzioni Misurate mediante probe sui modelli.') }}
+    {{ _('Documentazione:') }}
+    <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>,
+    <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs Share of Voice') }}</a>.
+    {{ _('Contatti:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+    · {{ _('titolare') }}
     <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
   </p>
 </section>
 
 <section class="section-band" id="prove">
-  <p class="eyebrow">Conformità operativa · self-audit <time datetime="2026-07-27">27/07/2026</time></p>
-  <h2>Gli stessi criteri diagnostici applicati a centropic.ai.</h2>
+  <p class="eyebrow">{{ _('Conformità operativa') }}</p>
+  <h2>{{ _('Gli stessi criteri diagnostici applicati a centropic.ai.') }}</h2>
   <p class="lede">
-    Asset AI pubblici, publish-verify e score diagnostici sul nostro dominio,
-    allineati agli standard che proponiamo ai clienti.
-    Gli score da probe non equivalgono a citazioni live; le menzioni Misurate richiedono citation monitor.
-    Riferimenti:
-    <a href="{{ url_for('methodology') }}">metodologia</a>,
-    <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>,
-    <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llmstxt.org</a>.
+    {{ _('Asset AI pubblici, publish-verify e score diagnostici sul nostro dominio, allineati agli standard che proponiamo ai clienti. Gli score da probe non equivalgono a citazioni live; le menzioni Misurate richiedono citation monitor.') }}
   </p>
 </section>
 
 <section class="section-band" id="output">
-  <p class="eyebrow">Deliverable</p>
-  <h2>Artifact pronti per la pubblicazione.</h2>
+  <p class="eyebrow">{{ _('Deliverable') }}</p>
+  <h2>{{ _('Artifact pronti per la pubblicazione.') }}</h2>
   <p class="lede">
-    L’analisi produce materiali utilizzabili da marketing e IT, non un report destinato solo all’archivio.
+    {{ _('L’analisi produce materiali utilizzabili da marketing e IT, non un report destinato solo all’archivio.') }}
   </p>
-  <ul class="artifact-list" aria-label="Artifact generati">
-    <li><code>llms.txt</code> — descrizione del brand per i modelli</li>
-    <li><code>organization.jsonld</code> — identità strutturata (Schema.org)</li>
-    <li><code>meta-pack.html</code> — title, description e anteprime allineate</li>
-    <li><code>robots.txt</code> — bozza di accesso per crawler IA</li>
+  <ul class="artifact-list" aria-label="{{ _('Artifact generati') }}">
+    <li><code>llms.txt</code> — {{ _('descrizione del brand per i modelli') }}</li>
+    <li><code>organization.jsonld</code> — {{ _('identità strutturata (Schema.org)') }}</li>
+    <li><code>meta-pack.html</code> — {{ _('title, description e anteprime allineate') }}</li>
+    <li><code>robots.txt</code> — {{ _('bozza di accesso per crawler IA') }}</li>
   </ul>
 </section>
 
 <section class="section-band" id="faq-rapide">
   <p class="eyebrow">FAQ</p>
-  <h2>Domande frequenti</h2>
-  <p class="lede">Sintesi; la documentazione completa è nella pagina <a href="{{ url_for('faq') }}">FAQ</a>.</p>
+  <h2>{{ _('Domande frequenti') }}</h2>
+  <p class="lede">{{ _('Sintesi; la documentazione completa è nella pagina FAQ.') }}</p>
   <div class="faq-list">
     <details class="faq-item" open>
-      <summary>Cosa significano AIO e GEO in Centropic?</summary>
+      <summary>{{ _('Cosa significano AIO e GEO in Centropic?') }}</summary>
       <p>
-        <strong>AIO</strong> (AI-Driven Visibility) indica quanto modelli e crawler IA
-        possono interpretare il brand sul dominio.
-        <strong>GEO</strong> (Generative Engine Optimization) indica quanto il sito è strutturato
-        per essere citato nelle risposte generate.
-        Non corrispondono a GIS né a suite All-in-One.
+        {{ _('AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono interpretare il brand sul dominio. GEO (Generative Engine Optimization) indica quanto il sito è strutturato per essere citato nelle risposte generate. Non corrispondono a GIS né a suite All-in-One.') }}
       </p>
     </details>
     <details class="faq-item">
-      <summary>Gli score rappresentano menzioni live sui modelli?</summary>
+      <summary>{{ _('Gli score rappresentano menzioni live sui modelli?') }}</summary>
       <p>
-        No, di default. Sono diagnostici sui segnali del sito e, ove applicabile, etichettati Stimato.
-        Con citation monitor e API LLM configurate, i probe aggiungono menzioni Misurate.
+        {{ _('No, di default. Sono diagnostici sui segnali del sito e, ove applicabile, etichettati Stimato. Con citation monitor e API LLM configurate, i probe aggiungono menzioni Misurate.') }}
       </p>
     </details>
     <details class="faq-item">
-      <summary>Quali sono i limiti del piano Free?</summary>
+      <summary>{{ _('Quali sono i limiti del piano Free?') }}</summary>
       <p>
-        {{ max_sites_free }} sito e {{ free_total_analyses }} analisi totali per account,
-        senza carta di credito. Crawl completo, monitoraggio e volumi superiori sono disponibili su Plus.
+        {{ max_sites_free }} {{ _('sito e') }} {{ free_total_analyses }} {{ _('analisi totali per account, senza carta di credito. Crawl completo, monitoraggio e volumi superiori sono disponibili su Plus.') }}
       </p>
     </details>
     <details class="faq-item">
-      <summary>Come posso contattarvi?</summary>
+      <summary>{{ _('Come posso contattarvi?') }}</summary>
       <p>
-        Scrivi a <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-        oppure usa la pagina <a href="{{ url_for('contact') }}">Contatti</a>.
+        {{ _('Scrivi a') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+        {{ _('oppure usa la pagina') }} <a href="{{ url_for('contact') }}">{{ _('Contatti') }}</a>.
       </p>
     </details>
   </div>
@@ -207,14 +180,14 @@
 
 <section class="section-cta" id="inizia">
   <div class="section-cta__inner">
-    <p class="eyebrow">Avvio</p>
-    <h2>Valuta la citabilità del tuo dominio.</h2>
+    <p class="eyebrow">{{ _('Avvio') }}</p>
+    <h2>{{ _('Valuta la citabilità del tuo dominio.') }}</h2>
     <p class="lede">
-      Piano Free disponibile. Prima analisi in pochi minuti. Nessuna carta richiesta.
+      {{ _('Piano Free disponibile. Prima analisi in pochi minuti. Nessuna carta richiesta.') }}
     </p>
     <div class="cta-row">
-      <a class="btn btn-signal" href="{{ url_for('register') }}">Crea account</a>
-      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Piani e limiti</a>
+      <a class="btn btn-signal" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
+      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Piani e limiti') }}</a>
     </div>
   </div>
 </section>

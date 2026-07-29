@@ -31,6 +31,7 @@ from flask import (
     abort,
     flash,
     jsonify,
+    make_response,
     redirect,
     render_template,
     request,
@@ -39,6 +40,7 @@ from flask import (
     session,
     url_for,
 )
+from flask_babel import Babel, gettext as _
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
@@ -108,6 +110,17 @@ from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_j
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
 from services.security import safe_next_url
+from services.i18n import (
+    DEFAULT_LOCALE,
+    LANG_COOKIE,
+    LANG_COOKIE_MAX_AGE,
+    SUPPORTED_LOCALES,
+    active_ui_locale,
+    language_switcher_items,
+    locale_meta,
+    normalize_locale,
+    select_locale,
+)
 from services.mailer import (
     build_pack_email,
     build_password_reset_email,
@@ -218,11 +231,26 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 app.config["INSTANCE_RELATIVE_CONFIG"] = False
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
+app.config["BABEL_DEFAULT_LOCALE"] = "it"
+app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(BASE_DIR, "translations")
 
 # Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix.
 # Do NOT trust X-Forwarded-Host (x_host=0): forged Host enables
 # password-reset and Stripe return URL phishing.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=0, x_prefix=1)
+
+babel = Babel(app, locale_selector=select_locale)
+
+
+@app.before_request
+def _persist_lang_query() -> None:
+    """Allow ?lang=xx on any page and remember it for the session."""
+    forced = request.args.get("lang")
+    if not forced:
+        return
+    loc = normalize_locale(forced)
+    if loc in SUPPORTED_LOCALES:
+        session["lang"] = loc
 
 if os.getenv("FLASK_DEBUG", "0") != "1":
     logging.getLogger("werkzeug").setLevel(logging.WARNING)
@@ -1080,6 +1108,8 @@ def inject_globals() -> dict[str, Any]:
     base = public_base_url()
     path = request.path or "/"
     canonical = base if path == "/" else f"{base}{path}"
+    ui_lang = active_ui_locale()
+    meta = locale_meta(ui_lang)
     return {
         "current_user": current_user(),
         "csrf_token": generate_csrf,
@@ -1108,6 +1138,11 @@ def inject_globals() -> dict[str, Any]:
         "site_owner_name": SITE_OWNER_NAME,
         "site_owner_url": SITE_OWNER_URL,
         "async_analyze": ASYNC_ANALYZE,
+        "ui_lang": ui_lang,
+        "ui_locale_og": meta["og"],
+        "ui_languages": language_switcher_items(ui_lang),
+        "supported_locales": SUPPORTED_LOCALES,
+        "_": _,
     }
 
 
@@ -2183,6 +2218,33 @@ def guide_score_vs_sov():
 @app.route("/")
 def index():
     return render_template("landing.html")
+
+
+@app.route("/lang/<code>", methods=["GET", "POST"])
+def set_language(code: str):
+    """Persist UI language (cookie + session) and return to the previous page."""
+    loc = normalize_locale(code)
+    if loc not in SUPPORTED_LOCALES:
+        loc = DEFAULT_LOCALE
+    session["lang"] = loc
+    nxt = safe_next_url(request.args.get("next") or request.form.get("next"), fallback="")
+    if not nxt:
+        ref = request.referrer or ""
+        if ref.startswith(public_base_url()) or ref.startswith(request.host_url):
+            nxt = ref
+        else:
+            nxt = url_for("index")
+    resp = make_response(redirect(nxt))
+    resp.set_cookie(
+        LANG_COOKIE,
+        loc,
+        max_age=LANG_COOKIE_MAX_AGE,
+        httponly=False,
+        samesite="Lax",
+        secure=bool(app.config.get("SESSION_COOKIE_SECURE")),
+        path="/",
+    )
+    return resp
 
 
 @app.route("/favicon.svg")
