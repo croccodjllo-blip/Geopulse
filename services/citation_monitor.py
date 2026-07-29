@@ -105,7 +105,11 @@ def _mentioned(text: str, needles: set[str]) -> bool:
     return False
 
 
-def _probe_openai(prompts: list[str], needles: set[str]) -> dict[str, Any]:
+def _probe_openai(
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None = None,
+) -> dict[str, Any]:
     api_key = _openai_key()
     model = _openai_model()
     if not api_key:
@@ -135,6 +139,13 @@ def _probe_openai(prompts: list[str], needles: set[str]) -> dict[str, Any]:
                     {"role": "user", "content": prompt},
                 ],
             )
+            if hasattr(resp, "usage") and resp.usage and usage_callback:
+                usage_callback(
+                    provider="openai",
+                    model=model,
+                    input_tokens=resp.usage.prompt_tokens,
+                    output_tokens=resp.usage.completion_tokens,
+                )
             text = (resp.choices[0].message.content or "").strip()
         except Exception as exc:
             logger.exception("openai citation probe failed")
@@ -166,7 +177,11 @@ def _probe_openai(prompts: list[str], needles: set[str]) -> dict[str, Any]:
     }
 
 
-def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
+def _probe_perplexity(
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None = None,
+) -> dict[str, Any]:
     api_key = _perplexity_key()
     model = _perplexity_model()
     if not api_key:
@@ -211,6 +226,14 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
                 )
                 continue
             data = res.json()
+            usage = data.get("usage") or {}
+            if usage and usage_callback:
+                usage_callback(
+                    provider="perplexity",
+                    model=model,
+                    input_tokens=int(usage.get("prompt_tokens", 0)),
+                    output_tokens=int(usage.get("completion_tokens", 0)),
+                )
             text = (
                 ((data.get("choices") or [{}])[0].get("message") or {}).get("content")
                 or ""
@@ -251,7 +274,11 @@ def _probe_perplexity(prompts: list[str], needles: set[str]) -> dict[str, Any]:
     }
 
 
-def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
+def _probe_anthropic(
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None = None,
+) -> dict[str, Any]:
     """Claude Messages API — SoV measured probe."""
     api_key = _anthropic_key()
     model = _anthropic_model()
@@ -297,6 +324,14 @@ def _probe_anthropic(prompts: list[str], needles: set[str]) -> dict[str, Any]:
                 )
                 continue
             data = res.json()
+            usage = data.get("usage") or {}
+            if usage and usage_callback:
+                usage_callback(
+                    provider="anthropic",
+                    model=model,
+                    input_tokens=int(usage.get("input_tokens", 0)),
+                    output_tokens=int(usage.get("output_tokens", 0)),
+                )
             parts = data.get("content") or []
             text_bits: list[str] = []
             for part in parts:
@@ -361,6 +396,7 @@ def run_citation_monitor(
     domain: str,
     prompts: list[str] | None = None,
     competitors: list[dict[str, Any]] | None = None,
+    usage_callback: Any | None = None,
 ) -> dict[str, Any]:
     prompts = list(prompts or default_prompts(locale="it"))[:8]
     needles = _needles(brand, domain)
@@ -368,7 +404,7 @@ def run_citation_monitor(
     engines_out: list[dict[str, Any]] = []
     all_details: list[dict[str, Any]] = []
 
-    openai = _probe_openai(prompts, needles)
+    openai = _probe_openai(prompts, needles, usage_callback=usage_callback)
     if openai.get("available"):
         engines_out.append(
             {
@@ -396,7 +432,7 @@ def run_citation_monitor(
             }
         )
 
-    pplx = _probe_perplexity(prompts, needles)
+    pplx = _probe_perplexity(prompts, needles, usage_callback=usage_callback)
     if pplx.get("available"):
         engines_out.append(
             {
@@ -425,7 +461,7 @@ def run_citation_monitor(
             }
         )
 
-    anthropic = _probe_anthropic(prompts, needles)
+    anthropic = _probe_anthropic(prompts, needles, usage_callback=usage_callback)
     if anthropic.get("available"):
         engines_out.append(
             {

@@ -84,6 +84,15 @@ from services.billing import (
     plan_from_subscription_status,
     stripe_enabled,
 )
+from services.usage_billing import (
+    estimate_analysis_cost,
+    estimate_improvement,
+    has_sufficient_credit,
+    get_balance_cents,
+    deduct_credit,
+    topup_credit,
+    InsufficientCreditError,
+)
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
 from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_job
@@ -281,6 +290,8 @@ class User(db.Model):
     api_key_prefix = db.Column(db.String(16))
     prompt_bank_json = db.Column(db.Text, nullable=False, default="")
     agency_brand_json = db.Column(db.Text, nullable=False, default="")
+    # Usage-based billing: prepaid credit balance in EUR cents (integer)
+    credit_balance_cents = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -587,6 +598,44 @@ class ProInterest(db.Model):
     source = db.Column(db.String(80), nullable=False, default="pricing")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+
+class CreditLedger(db.Model):
+    """Immutable ledger of every credit transaction (top-up or deduct)."""
+
+    __tablename__ = "credit_ledger"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    analysis_run_id = db.Column(db.Integer, db.ForeignKey("analysis_runs.id"))
+    # positive = top-up; negative = deduction
+    amount_cents = db.Column(db.Integer, nullable=False)
+    balance_after_cents = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(255), nullable=False, default="")
+    stripe_payment_intent = db.Column(db.String(120))
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
+    )
+
+
+class UsageEvent(db.Model):
+    """Token-level log of every AI API call for cost accounting."""
+
+    __tablename__ = "usage_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    analysis_run_id = db.Column(db.Integer, db.ForeignKey("analysis_runs.id"), index=True)
+    provider = db.Column(db.String(40), nullable=False)
+    model = db.Column(db.String(80), nullable=False)
+    input_tokens = db.Column(db.Integer, nullable=False, default=0)
+    output_tokens = db.Column(db.Integer, nullable=False, default=0)
+    # stored as integer µUSD (parts per million of a USD)
+    raw_cost_usd_micro = db.Column(db.Integer, nullable=False, default=0)
+    service_cost_eur_cents = db.Column(db.Float, nullable=False, default=0.0)
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
     )
 
 
@@ -1043,6 +1092,7 @@ def ensure_schema() -> None:
             "api_key_prefix": "TEXT",
             "prompt_bank_json": "TEXT DEFAULT ''",
             "agency_brand_json": "TEXT DEFAULT ''",
+            "credit_balance_cents": "INTEGER DEFAULT 0",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -1114,6 +1164,9 @@ def ensure_schema() -> None:
                     _add_column("analysis_jobs", name, col_type)
 
     backfill_analysis_runs()
+
+    # Usage-based billing tables (additive — never drop)
+    db.create_all()  # creates credit_ledger and usage_events if absent
 
 
 def process_pending_analyze_jobs(
@@ -2358,54 +2411,42 @@ def dashboard():
                     line = line.strip()
                     if line:
                         competitor_urls.append(line)
-            if ASYNC_ANALYZE:
-                job = enqueue_analysis(
-                    db.session,
-                    AnalysisJob,
-                    user_id=user.id,
-                    url=url,
-                    max_pages=user.crawl_pages,
-                    competitor_urls=competitor_urls[:3],
-                )
-                kick_analyze_worker()
-                flash(
-                    "Analisi in coda. Aggiorniamo lo stato automaticamente…",
-                    "success",
-                )
-                return redirect(url_for("dashboard", job=job.id))
-            try:
-                latest = run_analysis_pipeline(
-                    db_session=db.session,
-                    SiteAnalysis=SiteAnalysis,
-                    AnalysisRun=AnalysisRun,
-                    user=user,
-                    url=url,
-                    openai_api_key=OPENAI_API_KEY,
-                    openai_model=OPENAI_MODEL,
-                    competitor_urls=competitor_urls[:3],
-                    run_measured=should_run_measured(
-                        user=user,
-                        requested=MEASURED_SOV_ON_ANALYZE,
-                        env_enabled=MEASURED_SOV_ON_ANALYZE,
-                    ),
-                    measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
-                    source="manual",
-                )
-                pages_n = int(latest.pages_analyzed or 1)
-                flash(
-                    f"Analisi dominio completata su {pages_n} pagine: "
-                    "score, findings e pack pronti.",
-                    "success",
-                )
-            except requests.Timeout as exc:
-                flash_analyze_error(exc)
-            except requests.RequestException as exc:
-                flash_analyze_error(exc)
-            except Exception as exc:
-                app.logger.exception("Dashboard analyze failed")
-                flash_analyze_error(exc)
+
+            # ── Usage billing: stima + pagina conferma ──────────────────────
+            run_meas = should_run_measured(
+                user=user,
+                requested=MEASURED_SOV_ON_ANALYZE,
+                env_enabled=MEASURED_SOV_ON_ANALYZE,
+            )
+            cost = estimate_analysis_cost(
+                openai_model=OPENAI_MODEL,
+                anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+                perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+                run_measured=run_meas,
+                n_prompts=5,
+                has_openai=bool(OPENAI_API_KEY),
+                has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+                has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+            )
+            improvement = estimate_improvement(
+                existing_site=existing,
+                run_measured=run_meas,
+                crawl_pages=user.crawl_pages,
+            )
+            return render_template(
+                "confirm_analyze.html",
+                url=url,
+                cost=cost,
+                improvement=improvement,
+                balance_cents=get_balance_cents(user),
+                run_measured=run_meas,
+                competitors_raw=raw_comp,
+            )
         except ValueError as exc:
             flash(str(exc), "error")
+        except Exception as exc:
+            app.logger.exception("Dashboard estimate failed")
+            flash_analyze_error(exc)
 
     job_id_q = request.args.get("job", type=int)
     if job_id_q and (
@@ -2576,6 +2617,317 @@ def dashboard():
         pending_job=pending_job,
         stripe_ready=stripe_enabled(),
     )
+
+
+@app.route("/dashboard/analyze/confirmed", methods=["POST"])
+@login_required
+def dashboard_analyze_confirmed():
+    """Step 2: user confirmed cost+improvement → check credit → run analysis."""
+    user = current_user()
+    url_raw = (request.form.get("url") or "").strip()
+    run_measured_flag = request.form.get("run_measured") == "1"
+    competitors_raw = (request.form.get("competitors") or "").strip()
+    cost_cents = int(request.form.get("cost_cents") or 0)
+
+    if not url_raw:
+        flash("URL mancante.", "error")
+        return redirect(url_for("dashboard"))
+
+    try:
+        url = normalize_url(url_raw)
+    except ValueError as exc:
+        flash(str(exc), "error")
+        return redirect(url_for("dashboard"))
+
+    # Rate limit (idempotent check)
+    if not limiter.allow(f"analyze:user:{user.id}", limit=20, window_seconds=3600):
+        flash("Troppe analisi in poco tempo. Attendi qualche minuto e riprova.", "warning")
+        return redirect(url_for("dashboard"))
+
+    # Credit check
+    balance = get_balance_cents(user)
+    if balance < cost_cents:
+        shortage = cost_cents - balance
+        flash(
+            f"Credito insufficiente: hai €{balance/100:.4f}, "
+            f"servono €{cost_cents/100:.4f}. "
+            f"Ricarica almeno €{shortage/100:.4f}.",
+            "error",
+        )
+        return redirect(url_for("topup_credit_page"))
+
+    competitor_urls: list[str] = []
+    if competitors_raw and user.is_pro:
+        for line in re.split(r"[\n,;]+", competitors_raw):
+            line = line.strip()
+            if line:
+                competitor_urls.append(line)
+
+    # Build usage_callback to record actual token consumption
+    usage_events_log: list[dict] = []
+
+    def _usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+        usage_events_log.append(
+            dict(provider=provider, model=model, input_tokens=input_tokens, output_tokens=output_tokens)
+        )
+
+    existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    blocked = enforce_analyze_limits(user, url=url, existing=existing)
+    if blocked is not None:
+        return blocked
+
+    if ASYNC_ANALYZE:
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url=url,
+            max_pages=user.crawl_pages,
+            competitor_urls=competitor_urls[:3],
+        )
+        # Pre-deduct estimated cost when queuing async
+        try:
+            deduct_credit(
+                db.session,
+                CreditLedger,
+                user,
+                analysis_run_id=None,
+                cost_eur_cents=cost_cents,
+                description=f"Analisi (async) {url[:80]}",
+            )
+            db.session.commit()
+        except InsufficientCreditError as exc:
+            flash(str(exc), "error")
+            return redirect(url_for("topup_credit_page"))
+        kick_analyze_worker()
+        flash("Analisi in coda. Crediti riservati. Aggiorniamo lo stato automaticamente…", "success")
+        return redirect(url_for("dashboard", job=job.id))
+
+    try:
+        latest = run_analysis_pipeline(
+            db_session=db.session,
+            SiteAnalysis=SiteAnalysis,
+            AnalysisRun=AnalysisRun,
+            user=user,
+            url=url,
+            openai_api_key=OPENAI_API_KEY,
+            openai_model=OPENAI_MODEL,
+            competitor_urls=competitor_urls[:3],
+            run_measured=should_run_measured(
+                user=user,
+                requested=run_measured_flag and MEASURED_SOV_ON_ANALYZE,
+                env_enabled=MEASURED_SOV_ON_ANALYZE,
+            ),
+            measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
+            source="manual",
+            usage_callback=_usage_cb,
+            CreditLedger=CreditLedger,
+            cost_estimate_cents=cost_cents,
+        )
+        # Persist actual usage events
+        for ev in usage_events_log:
+            from services.usage_billing import record_actual_usage
+            last_run = (
+                AnalysisRun.query.filter_by(user_id=user.id)
+                .order_by(AnalysisRun.created_at.desc()).first()
+            )
+            try:
+                record_actual_usage(
+                    db.session,
+                    UsageEvent,
+                    user_id=user.id,
+                    analysis_run_id=last_run.id if last_run else None,
+                    **ev,
+                )
+            except Exception:
+                app.logger.exception("usage event persist failed")
+        db.session.commit()
+
+        pages_n = int(latest.pages_analyzed or 1)
+        new_balance = get_balance_cents(user)
+        flash(
+            f"Analisi completata su {pages_n} pagine — score, findings e pack pronti. "
+            f"Credito residuo: €{new_balance/100:.4f}.",
+            "success",
+        )
+    except InsufficientCreditError as exc:
+        flash(str(exc), "error")
+        return redirect(url_for("topup_credit_page"))
+    except Exception as exc:
+        app.logger.exception("Confirmed analyze failed")
+        flash_analyze_error(exc)
+
+    return redirect(url_for("dashboard"))
+
+
+# ── Top-up pages & Stripe payment ──────────────────────────────────────────
+
+_TOPUP_PACKAGES = [
+    {"cents": 100,   "label": "Starter",    "analyses": "~30"},
+    {"cents": 500,   "label": "Piccolo",    "analyses": "~150"},
+    {"cents": 1000,  "label": "Standard",   "analyses": "~300"},
+    {"cents": 5000,  "label": "Avanzato",   "analyses": "1.500+"},
+    {"cents": 10000, "label": "Pro",        "analyses": "3.000+"},
+]
+
+STRIPE_TOPUP_SUCCESS_URL = os.getenv("STRIPE_TOPUP_SUCCESS_URL", "")
+STRIPE_TOPUP_CANCEL_URL  = os.getenv("STRIPE_TOPUP_CANCEL_URL",  "")
+
+
+@app.route("/crediti", methods=["GET"])
+@login_required
+def topup_credit_page():
+    user = current_user()
+    ledger = (
+        CreditLedger.query.filter_by(user_id=user.id)
+        .order_by(CreditLedger.created_at.desc())
+        .limit(20)
+        .all()
+    )
+    return render_template(
+        "topup.html",
+        balance_cents=get_balance_cents(user),
+        ledger=ledger,
+        packages=_TOPUP_PACKAGES,
+    )
+
+
+@app.route("/crediti/checkout", methods=["POST"])
+@login_required
+def topup_stripe_checkout():
+    """Create a Stripe Payment Intent / Checkout session for a credit top-up."""
+    user = current_user()
+    amount_cents = int(request.form.get("amount_cents") or 0)
+    if amount_cents not in {pkg["cents"] for pkg in _TOPUP_PACKAGES}:
+        flash("Importo non valido.", "error")
+        return redirect(url_for("topup_credit_page"))
+
+    if not stripe_enabled():
+        # Dev fallback: add credits directly (only in DEBUG mode)
+        if app.debug:
+            topup_credit(
+                db.session,
+                CreditLedger,
+                user,
+                amount_eur_cents=amount_cents,
+                description=f"Ricarica test {amount_cents} cent",
+            )
+            db.session.commit()
+            flash(f"[DEBUG] Credito di €{amount_cents/100:.2f} aggiunto.", "success")
+            return redirect(url_for("topup_credit_page"))
+        flash("Pagamenti non ancora attivi. Contattaci a info@centropic.ai.", "warning")
+        return redirect(url_for("topup_credit_page"))
+
+    try:
+        import stripe as _stripe
+        _stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
+        from services.billing import ensure_customer
+        cid = ensure_customer(
+            user_id=user.id,
+            email=user.email,
+            name=user.name or user.email,
+            customer_id=user.stripe_customer_id,
+        )
+        if cid != user.stripe_customer_id:
+            user.stripe_customer_id = cid
+            db.session.commit()
+
+        success_url = STRIPE_TOPUP_SUCCESS_URL or url_for("topup_success", _external=True)
+        cancel_url  = STRIPE_TOPUP_CANCEL_URL  or url_for("topup_credit_page", _external=True)
+
+        session_obj = _stripe.checkout.Session.create(
+            mode="payment",
+            customer=cid,
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": amount_cents,
+                    "product_data": {"name": f"Crediti Centropic — €{amount_cents/100:.2f}"},
+                },
+                "quantity": 1,
+            }],
+            success_url=success_url + "?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=cancel_url,
+            client_reference_id=str(user.id),
+            metadata={"centropic_user_id": str(user.id), "topup_cents": str(amount_cents)},
+        )
+        return redirect(session_obj["url"])
+    except Exception:
+        app.logger.exception("topup checkout failed")
+        flash("Errore durante la creazione del pagamento. Riprova.", "error")
+        return redirect(url_for("topup_credit_page"))
+
+
+@app.route("/crediti/successo")
+@login_required
+def topup_success():
+    flash("Pagamento completato! Il credito sarà disponibile a breve.", "success")
+    return redirect(url_for("topup_credit_page"))
+
+
+@app.route("/billing/topup-webhook", methods=["POST"])
+@csrf.exempt
+def billing_topup_webhook():
+    """Stripe webhook for one-time payment (credit top-up)."""
+    payload = request.get_data()
+    sig = request.headers.get("Stripe-Signature", "")
+    topup_secret = os.getenv("STRIPE_TOPUP_WEBHOOK_SECRET", "")
+    if not topup_secret:
+        return jsonify({"ok": False, "error": "webhook not configured"}), 503
+    try:
+        from services.billing import construct_event as _construct
+        event = _construct(payload, sig)
+    except Exception as exc:
+        app.logger.warning("topup webhook sig invalid: %s", exc)
+        return jsonify({"ok": False, "error": "invalid signature"}), 400
+
+    if event["type"] == "checkout.session.completed":
+        sess = event["data"]["object"]
+        if sess.get("payment_status") == "paid":
+            meta = sess.get("metadata") or {}
+            user_id = int(meta.get("centropic_user_id") or 0)
+            topup_cents = int(meta.get("topup_cents") or 0)
+            pi = sess.get("payment_intent") or ""
+            if user_id and topup_cents:
+                u = db.session.get(User, user_id)
+                if u:
+                    topup_credit(
+                        db.session,
+                        CreditLedger,
+                        u,
+                        amount_eur_cents=topup_cents,
+                        description=f"Ricarica €{topup_cents/100:.2f} via Stripe",
+                        stripe_payment_intent=pi,
+                    )
+                    db.session.commit()
+                    app.logger.info("topup: user %s +%d cent", user_id, topup_cents)
+
+    return jsonify({"ok": True})
+
+
+# ── Admin: top-up crediti manuale ──────────────────────────────────────────
+
+@app.route("/admin/topup/<int:user_id>", methods=["POST"])
+@admin_required
+def admin_topup_user(user_id: int):
+    u = db.session.get(User, user_id)
+    if not u:
+        flash("Utente non trovato.", "error")
+        return redirect(url_for("admin_panel"))
+    amount = int(request.form.get("amount_cents") or 0)
+    if amount <= 0:
+        flash("Importo non valido.", "error")
+        return redirect(url_for("admin_panel"))
+    topup_credit(
+        db.session,
+        CreditLedger,
+        u,
+        amount_eur_cents=amount,
+        description=f"Ricarica admin: {amount} cent",
+    )
+    db.session.commit()
+    flash(f"Aggiunto €{amount/100:.4f} a {u.email}.", "success")
+    return redirect(url_for("admin_panel"))
 
 
 @app.route("/dashboard/jobs/<int:job_id>")
@@ -2837,19 +3189,48 @@ def api_v1_analyze():
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
-        # quota_block_response può essere redirect/JSON HTML — normalizza per API
         if isinstance(blocked, tuple):
             return blocked
         return jsonify({"ok": False, "error": "quota_exceeded"}), 423
     comps = payload.get("competitors") or []
     if not isinstance(comps, list):
         comps = []
-    # Measured SoV: opt-in via {"measured": true}, solo Plus (endpoint già gated).
     want_measured = should_run_measured(
         user=user,
         requested=bool(payload.get("measured")),
         env_enabled=MEASURED_SOV_ON_ANALYZE,
     )
+
+    # Usage billing: cost estimate + credit check for API callers
+    api_cost = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=want_measured,
+        n_prompts=5,
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+    )
+    if not has_sufficient_credit(user, api_cost):
+        return jsonify({
+            "ok": False,
+            "error": "insufficient_credit",
+            "message": (
+                f"Credito insufficiente: hai €{get_balance_cents(user)/100:.4f}, "
+                f"servono €{api_cost.service_cost_eur:.4f}. "
+                "Ricarica su https://centropic.ai/crediti"
+            ),
+            "cost_estimate": api_cost.as_dict(),
+        }), 402
+
+    api_usage_log: list[dict] = []
+
+    def _api_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+        api_usage_log.append(
+            dict(provider=provider, model=model, input_tokens=input_tokens, output_tokens=output_tokens)
+        )
+
     try:
         analysis = run_analysis_pipeline(
             db_session=db.session,
@@ -2864,7 +3245,29 @@ def api_v1_analyze():
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="api",
             public_base=public_base_url(),
+            usage_callback=_api_usage_cb,
+            CreditLedger=CreditLedger,
+            cost_estimate_cents=api_cost.service_cost_eur_cents,
         )
+        for ev in api_usage_log:
+            last_run = (
+                AnalysisRun.query.filter_by(user_id=user.id)
+                .order_by(AnalysisRun.created_at.desc()).first()
+            )
+            try:
+                from services.usage_billing import record_actual_usage
+                record_actual_usage(
+                    db.session,
+                    UsageEvent,
+                    user_id=user.id,
+                    analysis_run_id=last_run.id if last_run else None,
+                    **ev,
+                )
+            except Exception:
+                app.logger.exception("api usage event persist failed")
+        db.session.commit()
+    except InsufficientCreditError as exc:
+        return jsonify({"ok": False, "error": "insufficient_credit", "message": str(exc)}), 402
     except Exception as exc:
         app.logger.exception("api analyze failed")
         info = classify_analyze_error(exc)
@@ -2899,6 +3302,11 @@ def api_v1_analyze():
                     "schema_quality",
                 )
                 if analysis.signals.get(k)
+            },
+            "billing": {
+                "cost_eur_cents": api_cost.service_cost_eur_cents,
+                "cost_eur": round(api_cost.service_cost_eur, 4),
+                "credit_balance_eur": round(get_balance_cents(user) / 100, 4),
             },
         }
     )

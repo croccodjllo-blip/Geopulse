@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% block title %}Conferma analisi — Centropic{% endblock %}
+
+{% block content %}
+<div class="page" style="max-width: 680px; padding: 3rem 0 5rem;">
+
+  <div class="page-intro">
+    <p class="eyebrow">Stima analisi</p>
+    <h1 class="page-intro__title">Rivedi e conferma</h1>
+    <p class="page-intro__lede">
+      Prima di procedere, controlla il costo stimato e il miglioramento atteso.
+      I crediti vengono scalati solo dopo il completamento dell'analisi.
+    </p>
+  </div>
+
+  {# ── URL target ── #}
+  <div class="page-section">
+    <h2 class="page-section__title">Sito analizzato</h2>
+    <p class="lede" style="word-break: break-all;">
+      <strong>{{ url }}</strong>
+    </p>
+  </div>
+
+  {# ── Costo stimato ── #}
+  <div class="page-section">
+    <h2 class="page-section__title">Costo stimato</h2>
+    <div class="cost-card">
+      <div class="cost-card__main">
+        <span class="cost-card__amount">€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }}</span>
+        <span class="cost-card__label">per questa analisi</span>
+      </div>
+      <p class="cost-card__note">
+        Include spread di piattaforma {{ cost.spread_pct }}% sul costo reale dell'API AI.
+        Il costo effettivo viene calcolato sui token realmente consumati.
+      </p>
+
+      {% if cost.breakdown %}
+      <details class="cost-breakdown">
+        <summary>Dettaglio voci di costo</summary>
+        <table class="cost-table">
+          <thead>
+            <tr><th>Voce</th><th>Provider</th><th>Modello</th><th>Input tok.</th><th>Output tok.</th></tr>
+          </thead>
+          <tbody>
+            {% for row in cost.breakdown %}
+            <tr>
+              <td>{{ row.item }}</td>
+              <td>{{ row.provider }}</td>
+              <td><code>{{ row.model }}</code></td>
+              <td>{{ row.input_tokens }}</td>
+              <td>{{ row.output_tokens }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </details>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Miglioramento atteso ── #}
+  <div class="page-section">
+    <h2 class="page-section__title">Miglioramento atteso</h2>
+    <div class="improvement-card">
+      <div class="improvement-card__scores">
+        {% if improvement.current_aio is not none %}
+        <div class="improvement-score">
+          <span class="improvement-score__label">AIO oggi</span>
+          <span class="improvement-score__val">{{ improvement.current_aio }}</span>
+          <span class="improvement-score__arrow">→</span>
+          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_aio_delta }}</span>
+        </div>
+        <div class="improvement-score">
+          <span class="improvement-score__label">GEO oggi</span>
+          <span class="improvement-score__val">{{ improvement.current_geo }}</span>
+          <span class="improvement-score__arrow">→</span>
+          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_geo_delta }}</span>
+        </div>
+        {% else %}
+        <div class="improvement-score">
+          <span class="improvement-score__label">Prima analisi</span>
+          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_aio_delta }} AIO</span>
+          <span class="improvement-score__sep">/</span>
+          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_geo_delta }} GEO</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="improvement-card__label">
+        <strong>{{ improvement.improvement_label }}</strong>
+        {% if improvement.expected_new_rating and improvement.current_rating %}
+          <span class="improvement-card__rating">
+            {{ improvement.current_rating }} → {{ improvement.expected_new_rating }}
+          </span>
+        {% endif %}
+      </div>
+      <p class="improvement-card__detail">{{ improvement.improvement_detail }}</p>
+      <p class="improvement-card__disclaimer">
+        Le stime di miglioramento sono indicative e calcolate sui gap rilevati
+        nei run precedenti o sul profilo del dominio. Non costituiscono garanzia
+        di risultato.
+      </p>
+    </div>
+  </div>
+
+  {# ── Credito disponibile ── #}
+  <div class="page-section">
+    <h2 class="page-section__title">Il tuo credito</h2>
+    <div class="credit-status {% if balance_cents >= cost.service_cost_eur_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
+      <span class="credit-status__balance">
+        Disponibile: <strong>€&nbsp;{{ "%.4f"|format(balance_cents / 100) }}</strong>
+      </span>
+      {% if balance_cents >= cost.service_cost_eur_cents %}
+        <span class="credit-status__badge credit-status__badge--ok">✓ Credito sufficiente</span>
+      {% else %}
+        <span class="credit-status__badge credit-status__badge--low">⚠ Credito insufficiente</span>
+        <p class="credit-status__hint">
+          Ricarica almeno €&nbsp;{{ "%.4f"|format((cost.service_cost_eur_cents - balance_cents) / 100) }} per procedere.
+          <a href="{{ url_for('topup_credit_page') }}">Ricarica credito →</a>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Azioni ── #}
+  <div class="page-cta">
+    {% if balance_cents >= cost.service_cost_eur_cents %}
+    <form method="POST" action="{{ url_for('dashboard_analyze_confirmed') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="url" value="{{ url }}">
+      <input type="hidden" name="run_measured" value="{{ '1' if run_measured else '0' }}">
+      <input type="hidden" name="competitors" value="{{ competitors_raw }}">
+      <input type="hidden" name="cost_cents" value="{{ cost.service_cost_eur_cents }}">
+      <button class="btn btn-core" type="submit">
+        Conferma e avvia analisi (€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }})
+      </button>
+    </form>
+    {% else %}
+    <a class="btn btn-core" href="{{ url_for('topup_credit_page') }}">Ricarica credito</a>
+    {% endif %}
+    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Annulla</a>
+  </div>
+
+</div>
+
+<style>
+/* ── Cost card ── */
+.cost-card {
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  background: var(--surface);
+}
+.cost-card__main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+.cost-card__amount {
+  font-family: var(--font-mono);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+  color: var(--color-core);
+}
+.cost-card__label { color: var(--ink-soft); font-size: 0.9rem; }
+.cost-card__note  { font-size: 0.82rem; color: var(--ink-soft); margin: 0; }
+
+.cost-breakdown { margin-top: 1rem; }
+.cost-breakdown summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  user-select: none;
+}
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin-top: 0.75rem;
+}
+.cost-table th,
+.cost-table td {
+  text-align: left;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+}
+.cost-table th { color: var(--ink-soft); font-weight: 600; }
+
+/* ── Improvement card ── */
+.improvement-card {
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  background: var(--surface);
+}
+.improvement-card__scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+.improvement-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+}
+.improvement-score__label { color: var(--ink-soft); font-size: 0.82rem; margin-right: 0.3rem; }
+.improvement-score__val { font-weight: 700; }
+.improvement-score__val--new { color: var(--color-core); }
+.improvement-score__arrow,
+.improvement-score__sep { color: var(--ink-soft); }
+.improvement-card__label {
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.improvement-card__rating {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--signal-pale);
+  color: var(--signal-deep);
+  padding: 0.15em 0.5em;
+  border-radius: var(--radius-sm);
+}
+.improvement-card__detail {
+  margin: 0.45rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+.improvement-card__disclaimer {
+  margin: 0.65rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+/* ── Credit status ── */
+.credit-status {
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.4rem;
+  border: 1px solid var(--border-mid);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.credit-status--ok  { background: rgba(0,255,157,0.06); border-color: rgba(0,255,157,0.3); }
+.credit-status--low { background: rgba(255,90,80,0.06); border-color: rgba(255,90,80,0.3); }
+.credit-status__balance { font-size: 1rem; }
+.credit-status__badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2em 0.7em;
+  border-radius: 99px;
+}
+.credit-status__badge--ok  { background: rgba(0,255,157,0.18); color: #00c97a; }
+.credit-status__badge--low { background: rgba(255,90,80,0.18); color: #e84040; }
+.credit-status__hint { width: 100%; margin: 0.35rem 0 0; font-size: 0.87rem; color: var(--ink-soft); }
+</style>
+{% endblock %}

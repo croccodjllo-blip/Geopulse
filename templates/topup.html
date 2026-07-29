@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Ricarica crediti — Centropic{% endblock %}
+
+{% block content %}
+<div class="page" style="max-width: 620px; padding: 3rem 0 5rem;">
+  <div class="page-intro">
+    <p class="eyebrow">Crediti prepagati</p>
+    <h1 class="page-intro__title">Ricarica il tuo credito</h1>
+    <p class="page-intro__lede">
+      Ogni analisi consuma crediti proporzionali ai token AI utilizzati.
+      Scegli un pacchetto o inserisci un importo personalizzato.
+    </p>
+  </div>
+
+  <div class="page-section">
+    <h2 class="page-section__title">Credito attuale</h2>
+    <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
+      €&nbsp;{{ "%.4f"|format(balance_cents / 100) }}
+    </p>
+    {% if ledger %}
+    <details style="margin-top: 1rem;">
+      <summary style="cursor: pointer; font-size: 0.85rem; color: var(--ink-soft);">Ultime transazioni</summary>
+      <table style="width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:0.75rem;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Data</th>
+            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Descrizione</th>
+            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Importo</th>
+            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Saldo dopo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in ledger %}
+          <tr>
+            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.created_at.strftime('%d/%m %H:%M') }}</td>
+            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.description[:60] }}</td>
+            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; {% if entry.amount_cents > 0 %}color:#00c97a{% else %}color:#e84040{% endif %}; font-family:var(--font-mono);">
+              {% if entry.amount_cents > 0 %}+{% endif %}€&nbsp;{{ "%.4f"|format(entry.amount_cents / 100) }}
+            </td>
+            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; font-family:var(--font-mono);">
+              €&nbsp;{{ "%.4f"|format(entry.balance_after_cents / 100) }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+    {% endif %}
+  </div>
+
+  <div class="page-section">
+    <h2 class="page-section__title">Scegli un pacchetto</h2>
+    <div class="topup-grid">
+      {% for pkg in packages %}
+      <form method="POST" action="{{ url_for('topup_stripe_checkout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="amount_cents" value="{{ pkg.cents }}">
+        <button class="topup-btn" type="submit">
+          <span class="topup-btn__amount">€&nbsp;{{ "%.2f"|format(pkg.cents / 100) }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }}</span>
+          <span class="topup-btn__approx">≈ {{ pkg.analyses }} analisi</span>
+        </button>
+      </form>
+      {% endfor %}
+    </div>
+    <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
+      Il credito non ha scadenza. Le analisi più semplici costano meno,
+      quelle con SoV Misurato su più engine costano di più.
+    </p>
+  </div>
+
+  <div class="page-cta">
+    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">← Dashboard</a>
+  </div>
+</div>
+
+<style>
+.topup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+.topup-btn {
+  width: 100%;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 0.9rem;
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  transition: border-color 0.18s, background 0.18s;
+}
+.topup-btn:hover {
+  border-color: var(--color-core);
+  background: rgba(0,255,157,0.06);
+}
+.topup-btn__amount {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-core);
+}
+.topup-btn__desc  { font-size: 0.82rem; color: var(--ink-soft); }
+.topup-btn__approx { font-size: 0.75rem; color: var(--ink-soft); }
+</style>
+{% endblock %}

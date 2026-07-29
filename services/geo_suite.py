@@ -28,6 +28,7 @@ def run_geo_suite(
     previous_run: Any | None = None,
     run_measured: bool = False,
     prompts: list[str] | None = None,
+    usage_callback: Any | None = None,
 ) -> dict[str, Any]:
     """Arricchisce result in-place; ritorna anche il blocco signals extras."""
     scraped = result.get("scraped") or {}
@@ -113,6 +114,7 @@ def run_geo_suite(
                 domain=str(domain),
                 prompts=prompts,
                 competitors=competitors,
+                usage_callback=usage_callback,
             )
             extras["sov_measured"] = monitored
             signals["sov_measured"] = monitored

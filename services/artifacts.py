@@ -68,6 +68,7 @@ def generate_llms_txt(
     api_key: str = "",
     model: str = "gpt-4o-mini",
     logger: Any | None = None,
+    usage_callback: Any | None = None,
 ) -> str:
     if not api_key:
         return fallback_llms_txt(url, scraped)
@@ -105,6 +106,14 @@ Snippet homepage: {scraped.get('snippet')}
                 {"role": "user", "content": prompt},
             ],
         )
+        # Capture real token usage for billing
+        if hasattr(completion, "usage") and completion.usage and usage_callback:
+            usage_callback(
+                provider="openai",
+                model=model,
+                input_tokens=completion.usage.prompt_tokens,
+                output_tokens=completion.usage.completion_tokens,
+            )
         content = (completion.choices[0].message.content or "").strip()
         if not content:
             return fallback_llms_txt(url, scraped)
@@ -264,6 +273,7 @@ def build_optimization_pack(
     previous: Any | None = None,
     diff: dict[str, Any] | None = None,
     result: dict[str, Any] | None = None,
+    usage_callback: Any | None = None,
 ) -> dict[str, str]:
     from services.deep_checks import build_before_after_report, build_fix_checklist
 
@@ -274,7 +284,8 @@ def build_optimization_pack(
     }
     return {
         "llms.txt": generate_llms_txt(
-            url, scraped, api_key=api_key, model=model, logger=logger
+            url, scraped, api_key=api_key, model=model, logger=logger,
+            usage_callback=usage_callback,
         ),
         "organization.jsonld.html": build_json_ld(url, scraped),
         "faq.jsonld.html": build_faq_json_ld(url, scraped),
