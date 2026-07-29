@@ -20,7 +20,7 @@
   </aside>
 
   <div class="auth-wrap">
-    <p class="eyebrow">Accesso · aggiornato <time datetime="2026-07-27">27/07/2026</time></p>
+    <p class="eyebrow">Accesso · aggiornato <time datetime="2026-07-29">29/07/2026</time></p>
     <h1 class="h-display auth-title">Bentornato</h1>
     <p class="lede auth-lede">
       Entra in dashboard, analizza il dominio e scarica il pack da pubblicare.
@@ -36,8 +36,24 @@
       </div>
       <div class="field">
         <label for="password">Password</label>
-        {{ form.password(id="password", autocomplete="current-password") }}
+        <div class="password-field">
+          {{ form.password(id="password", autocomplete="current-password", class_="password-field__input") }}
+          <button
+            type="button"
+            class="password-field__toggle"
+            data-password-toggle
+            aria-controls="password"
+            aria-label="Mostra password"
+            aria-pressed="false"
+          >Mostra</button>
+        </div>
         {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="span-1">
+        <label class="checkline">
+          {{ form.remember_me(id="remember_me") }}
+          <span>Resta connesso su questo dispositivo (30 giorni)</span>
+        </label>
       </div>
       <p class="switch-line" style="margin: -0.35rem 0 0.25rem">
         <a href="{{ url_for('forgot_password') }}">Password dimenticata?</a>

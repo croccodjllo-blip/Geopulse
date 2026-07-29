@@ -830,6 +830,7 @@ class LoginForm(FlaskForm):
         ],
     )
     password = PasswordField("Password", validators=[DataRequired()])
+    remember_me = BooleanField("Resta connesso", default=True)
     submit = SubmitField("Accedi")
 
 
@@ -2543,7 +2544,8 @@ def login():
         else:
             session.clear()
             session["user_id"] = user.id
-            session.permanent = True
+            # Persistent cookie only when the user opts into "Resta connesso".
+            session.permanent = bool(form.remember_me.data)
             flash("Accesso effettuato.", "success")
             next_url = safe_next_url(request.args.get("next"), fallback="")
             if next_url:

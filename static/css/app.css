@@ -748,6 +748,37 @@ body.app-body:not(.body-dash) {
 }
 .checkline input { margin-top: 0.15rem; accent-color: var(--signal); flex-shrink: 0; }
 
+.password-field {
+  position: relative;
+  display: grid;
+}
+.password-field__input,
+.password-field input {
+  width: 100%;
+  padding-right: 5.25rem;
+}
+.password-field__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--signal);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  line-height: 1;
+}
+.password-field__toggle:hover,
+.password-field__toggle:focus-visible {
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  outline: none;
+}
+
 .switch-line {
   margin-top: 1.25rem;
   color: var(--slate);

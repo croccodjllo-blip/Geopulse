@@ -51,13 +51,33 @@
 
       <div class="field">
         <label for="password">Password</label>
-        {{ form.password(id="password", autocomplete="new-password") }}
+        <div class="password-field">
+          {{ form.password(id="password", autocomplete="new-password", class_="password-field__input") }}
+          <button
+            type="button"
+            class="password-field__toggle"
+            data-password-toggle
+            aria-controls="password"
+            aria-label="Mostra password"
+            aria-pressed="false"
+          >Mostra</button>
+        </div>
         {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field">
         <label for="confirm">Conferma password</label>
-        {{ form.confirm(id="confirm", autocomplete="new-password") }}
+        <div class="password-field">
+          {{ form.confirm(id="confirm", autocomplete="new-password", class_="password-field__input") }}
+          <button
+            type="button"
+            class="password-field__toggle"
+            data-password-toggle
+            aria-controls="confirm"
+            aria-label="Mostra password"
+            aria-pressed="false"
+          >Mostra</button>
+        </div>
         {% for error in form.confirm.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
