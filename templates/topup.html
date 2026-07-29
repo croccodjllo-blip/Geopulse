@@ -15,7 +15,11 @@
   <div class="page-section">
     <h2 class="page-section__title">Credito attuale</h2>
     <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
-      €&nbsp;{{ "%.4f"|format(balance_cents / 100) }}
+      {% if current_user.role == 'admin' or current_user.role == 'internal' %}
+        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">Credito illimitato (account admin)</span>
+      {% else %}
+        €&nbsp;{{ "%.4f"|format(balance_cents / 100) }}
+      {% endif %}
     </p>
     {% if ledger %}
     <details style="margin-top: 1rem;">

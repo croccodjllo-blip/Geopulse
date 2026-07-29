@@ -95,6 +95,7 @@ from services.usage_billing import (
     topup_credit,
     InsufficientCreditError,
     record_actual_usage,
+    is_unlimited_user,
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
@@ -940,6 +941,11 @@ def ensure_admin_user() -> User | None:
         )
         return User.query.filter_by(email=ADMIN_EMAIL).first()
 
+    # Sentinel value for unlimited credit: max INT4 (~€21 M).
+    # Admin users are never actually charged (see usage_billing.is_unlimited_user),
+    # but we store a large value so the UI shows "credito illimitato".
+    _ADMIN_CREDIT_SENTINEL = 2_147_483_647
+
     user = User.query.filter_by(email=ADMIN_EMAIL).first()
     if user is None:
         user = User(
@@ -950,6 +956,7 @@ def ensure_admin_user() -> User | None:
             role="admin",
             country="Italia",
             plan="admin",
+            credit_balance_cents=_ADMIN_CREDIT_SENTINEL,
         )
         user.set_password(ADMIN_PASSWORD)
         db.session.add(user)
@@ -960,6 +967,8 @@ def ensure_admin_user() -> User | None:
         user.website_url = user.website_url or "https://centropic.ai/"
         user.role = "admin"
         user.plan = "admin"
+        # Always keep admin credit at sentinel value so it never appears depleted.
+        user.credit_balance_cents = _ADMIN_CREDIT_SENTINEL
         if ADMIN_BOOTSTRAP:
             user.set_password(ADMIN_PASSWORD)
             app.logger.warning(
@@ -1212,6 +1221,7 @@ def process_pending_analyze_jobs(
                 url=job.url,
                 base_cost_cents=est.service_cost_eur_cents,
                 balance_cents=get_balance_cents(user),
+                unlimited=is_unlimited_user(user),
             )
             if preflight.is_giant:
                 fail_job(db.session, job, preflight.message[:500])
@@ -2491,6 +2501,7 @@ def dashboard():
                 url=url,
                 base_cost_cents=cost.service_cost_eur_cents,
                 balance_cents=get_balance_cents(user),
+                unlimited=is_unlimited_user(user),
             )
             if preflight.is_giant:
                 flash(
@@ -2734,6 +2745,7 @@ def dashboard_analyze_confirmed():
         url=url,
         base_cost_cents=cost_cents,
         balance_cents=balance,
+        unlimited=is_unlimited_user(user),
     )
     if preflight.is_giant:
         flash(
@@ -3287,6 +3299,7 @@ def api_v1_analyze():
         url=url,
         base_cost_cents=api_cost.service_cost_eur_cents,
         balance_cents=get_balance_cents(user),
+        unlimited=is_unlimited_user(user),
     )
     if preflight.is_giant:
         return jsonify(

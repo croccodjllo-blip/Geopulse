@@ -263,11 +263,20 @@ def check_page_word_budget(
     url: str,
     base_cost_cents: int,
     balance_cents: int,
+    unlimited: bool = False,
 ) -> PageWordCountCheck:
     """
     Preventive guard:
     if page is giant, block before AI and tell user required credit.
+    Admin/unlimited users bypass the giant-page block entirely.
     """
+    if unlimited:
+        return PageWordCountCheck(
+            word_count=0,
+            is_giant=False,
+            required_cost_cents=max(1, int(base_cost_cents)),
+            message="",
+        )
     try:
         words = preflight_word_count(url)
     except (requests.RequestException, UnsafeURLError):
@@ -413,13 +422,24 @@ def estimate_improvement(
 # Negative balance is never allowed; we refuse the analysis instead.
 # Every transaction is logged in the `credit_ledger` table.
 
+def is_unlimited_user(user: Any) -> bool:
+    """Admin and internal users have unlimited credit — never billed."""
+    return getattr(user, "role", None) in ("admin", "internal")
+
+
 def get_balance_cents(user: Any) -> int:
-    """Return credit balance in EUR cents (0 if column missing)."""
+    """Return credit balance in EUR cents (0 if column missing).
+    For admin/unlimited users returns a very large sentinel value."""
+    if is_unlimited_user(user):
+        return 2_147_483_647  # effectively infinite
     return int(getattr(user, "credit_balance_cents", 0) or 0)
 
 
 def has_sufficient_credit(user: Any, cost_estimate: CostEstimate) -> bool:
-    """True if user has enough credit for this analysis."""
+    """True if user has enough credit for this analysis.
+    Admin/unlimited users always pass this check."""
+    if is_unlimited_user(user):
+        return True
     return get_balance_cents(user) >= cost_estimate.service_cost_eur_cents
 
 
@@ -432,7 +452,11 @@ def deduct_credit(
     cost_eur_cents: int,
     description: str = "Analisi Centropic",
 ) -> None:
-    """Atomically deduct credit and log the transaction."""
+    """Atomically deduct credit and log the transaction.
+    Admin/unlimited users are never charged — call is silently skipped."""
+    if is_unlimited_user(user):
+        logger.debug("deduct_credit: admin user %s — skip deduction.", getattr(user, "email", "?"))
+        return
     new_balance = get_balance_cents(user) - cost_eur_cents
     if new_balance < 0:
         raise InsufficientCreditError(
