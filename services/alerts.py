@@ -11,7 +11,7 @@ from typing import Any
 import requests
 
 from services.mailer import mail_configured, send_email
-from services.ssrf import UnsafeURLError, assert_public_http_url
+from services.ssrf import UnsafeURLError, assert_public_http_url, safe_post
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ def deliver_webhook(
     payload: dict[str, Any],
     timeout: int = 12,
 ) -> dict[str, Any]:
-    """POST firmato verso URL pubblico HTTPS (SSRF-safe)."""
+    """POST firmato verso URL pubblico HTTPS (SSRF-safe, DNS-pinned)."""
     try:
         safe_url = assert_public_http_url(url, resolve=True)
     except UnsafeURLError as exc:
@@ -63,18 +63,31 @@ def deliver_webhook(
         body = body[:WEBHOOK_MAX_BODY]
     headers = {
         "Content-Type": "application/json",
-        "User-Agent": "GeoPulse-Webhook/1.0",
+        "User-Agent": "Centropic-Webhook/1.0",
+        "X-Centropic-Event": str(payload.get("event") or "analysis.alert"),
+        # Legacy alias for existing customer integrations
         "X-GeoPulse-Event": str(payload.get("event") or "analysis.alert"),
     }
     if secret:
-        headers["X-GeoPulse-Signature"] = sign_payload(secret, body)
-    res = requests.post(
-        safe_url,
-        data=body,
-        headers=headers,
-        timeout=timeout,
-        allow_redirects=False,
-    )
+        sig = sign_payload(secret, body)
+        headers["X-Centropic-Signature"] = sig
+        headers["X-GeoPulse-Signature"] = sig
+    try:
+        sess = requests.Session()
+        res = safe_post(
+            sess,
+            safe_url,
+            data=body,
+            timeout=timeout,
+            max_redirects=0,
+            headers=headers,
+        )
+    except UnsafeURLError as exc:
+        logger.warning("alert webhook blocked (ssrf post): %s", exc)
+        return {"ok": False, "error": f"ssrf_blocked:{exc}"[:160]}
+    except requests.RequestException as exc:
+        logger.warning("alert webhook transport error: %s", exc)
+        return {"ok": False, "error": f"transport:{exc}"[:160]}
     return {
         "ok": res.status_code < 300,
         "status": res.status_code,

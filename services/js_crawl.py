@@ -25,6 +25,9 @@ def js_crawl_available() -> bool:
 
 
 def _allow_request(url: str) -> bool:
+    scheme = (url or "").split(":", 1)[0].lower()
+    if scheme in {"data", "blob", "file", "ftp", "ws", "wss"}:
+        return False
     try:
         assert_public_http_url(url, resolve=True)
         return True
@@ -70,6 +73,18 @@ def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
 
             page.route("**/*", _on_route)
             page.goto(safe_url, wait_until="domcontentloaded", timeout=timeout_ms)
+            # Re-validate final URL after redirects (DNS rebinding / open redirect).
+            try:
+                assert_public_http_url(page.url, resolve=True)
+            except UnsafeURLError as exc:
+                context.close()
+                browser.close()
+                return {
+                    "ok": False,
+                    "html": "",
+                    "error": f"ssrf_blocked_final:{exc}"[:200],
+                    "mode": "ssrf_blocked",
+                }
             # Cap wait: avoid hanging forever on noisy SPAs.
             try:
                 page.wait_for_load_state("networkidle", timeout=min(8000, timeout_ms))

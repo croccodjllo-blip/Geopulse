@@ -501,17 +501,40 @@ def deduct_credit(
     description: str = "Analisi Centropic",
 ) -> None:
     """Atomically deduct credit and log the transaction.
-    Admin/unlimited users are never charged — call is silently skipped."""
+
+    Uses a conditional UPDATE so concurrent workers cannot drive the balance
+    negative even if they both passed a prior Python-level balance check.
+    Admin/unlimited users are never charged — call is silently skipped.
+    """
     if is_unlimited_user(user):
         logger.debug("deduct_credit: admin user %s — skip deduction.", getattr(user, "email", "?"))
         return
-    new_balance = get_balance_cents(user) - cost_eur_cents
-    if new_balance < 0:
+    if cost_eur_cents <= 0:
+        return
+    UserModel = type(user)
+    updated = (
+        db_session.query(UserModel)
+        .filter(
+            UserModel.id == user.id,
+            UserModel.credit_balance_cents >= cost_eur_cents,
+        )
+        .update(
+            {
+                UserModel.credit_balance_cents: UserModel.credit_balance_cents
+                - cost_eur_cents
+            },
+            synchronize_session=False,
+        )
+    )
+    if updated != 1:
+        # Refresh for accurate error message
+        db_session.refresh(user)
         raise InsufficientCreditError(
             f"Credito insufficiente: {get_balance_cents(user)} cent disponibili, "
             f"{cost_eur_cents} richiesti."
         )
-    user.credit_balance_cents = new_balance
+    db_session.refresh(user)
+    new_balance = int(user.credit_balance_cents or 0)
     entry = CreditLedger(
         user_id=user.id,
         analysis_run_id=analysis_run_id,
@@ -524,6 +547,52 @@ def deduct_credit(
     db_session.flush()
 
 
+def assert_can_start_analysis(
+    db_session: Any,
+    user: Any,
+    *,
+    AnalysisJob: Any | None = None,
+    required_cents: int,
+    max_concurrent_jobs: int = 2,
+) -> None:
+    """Serialize billing decision: lock user row, re-check credit + job concurrency.
+
+    Raises InsufficientCreditError or ConcurrentAnalysisError.
+    """
+    if is_unlimited_user(user):
+        return
+    UserModel = type(user)
+    locked = (
+        db_session.query(UserModel)
+        .filter(UserModel.id == user.id)
+        .with_for_update()
+        .first()
+    )
+    if locked is None:
+        raise InsufficientCreditError("Utente non trovato.")
+    # Keep caller's user object in sync with locked row.
+    if locked is not user:
+        user.credit_balance_cents = locked.credit_balance_cents
+    if AnalysisJob is not None and max_concurrent_jobs > 0:
+        active = (
+            AnalysisJob.query.filter(
+                AnalysisJob.user_id == user.id,
+                AnalysisJob.status.in_(("pending", "running")),
+            ).count()
+        )
+        if active >= max_concurrent_jobs:
+            raise ConcurrentAnalysisError(
+                f"Hai già {active} analisi in coda/esecuzione. "
+                "Attendi il completamento prima di avviarne un'altra."
+            )
+    need = max(1, int(required_cents))
+    if get_balance_cents(user) < need:
+        raise InsufficientCreditError(
+            f"Credito insufficiente: {get_balance_cents(user)} cent disponibili, "
+            f"{need} richiesti."
+        )
+
+
 def topup_credit(
     db_session: Any,
     CreditLedger: Any,
@@ -534,8 +603,22 @@ def topup_credit(
     stripe_payment_intent: str | None = None,
 ) -> None:
     """Add credit to user balance and log the transaction."""
-    new_balance = get_balance_cents(user) + amount_eur_cents
-    user.credit_balance_cents = new_balance
+    if amount_eur_cents <= 0:
+        raise ValueError("amount_eur_cents must be positive")
+    UserModel = type(user)
+    (
+        db_session.query(UserModel)
+        .filter(UserModel.id == user.id)
+        .update(
+            {
+                UserModel.credit_balance_cents: UserModel.credit_balance_cents
+                + amount_eur_cents
+            },
+            synchronize_session=False,
+        )
+    )
+    db_session.refresh(user)
+    new_balance = int(user.credit_balance_cents or 0)
     entry = CreditLedger(
         user_id=user.id,
         analysis_run_id=None,
@@ -551,6 +634,10 @@ def topup_credit(
 
 class InsufficientCreditError(Exception):
     """Raised when a user tries to run an analysis without enough credit."""
+
+
+class ConcurrentAnalysisError(Exception):
+    """Raised when the user already has too many pending/running jobs."""
 
 
 # ─────────────────────────── actual token capture ─────────────────────────────

@@ -96,9 +96,11 @@ from services.usage_billing import (
     deduct_credit,
     topup_credit,
     InsufficientCreditError,
+    ConcurrentAnalysisError,
     record_actual_usage,
     is_unlimited_user,
     debit_cents_from_usage,
+    assert_can_start_analysis,
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
@@ -217,8 +219,10 @@ app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 app.config["INSTANCE_RELATIVE_CONFIG"] = False
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
 
-# Dietro Nginx: rispetta X-Forwarded-*
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+# Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix.
+# Do NOT trust X-Forwarded-Host (x_host=0): forged Host enables
+# password-reset and Stripe return URL phishing.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=0, x_prefix=1)
 
 if os.getenv("FLASK_DEBUG", "0") != "1":
     logging.getLogger("werkzeug").setLevel(logging.WARNING)
@@ -248,6 +252,7 @@ GOOGLE_ADS_TOPUP_LABEL = (os.getenv("GOOGLE_ADS_TOPUP_LABEL") or "").strip()
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
 EDGE_RATE_LIMIT = max(30, int(os.getenv("EDGE_RATE_LIMIT", "120")))
 EDGE_RATE_WINDOW = max(60, int(os.getenv("EDGE_RATE_WINDOW", "60")))
+MAX_CONCURRENT_ANALYZE_JOBS = max(1, int(os.getenv("MAX_CONCURRENT_ANALYZE_JOBS", "2")))
 ALLOW_DROP_ANALYSIS_JOBS = os.getenv("ALLOW_DROP_ANALYSIS_JOBS", "0") == "1"
 
 
@@ -1055,15 +1060,19 @@ def ensure_admin_user() -> User | None:
 
 
 def public_base_url() -> str:
-    """Base canonica del sito (preferisce PUBLIC_SITE_URL se valorizzata)."""
+    """Canonical public origin — never derived from the request Host header."""
     configured = (PUBLIC_SITE_URL or "").rstrip("/")
     if configured:
         return configured
-    # Fallback al host della richiesta (centropic.ai / geopulse.it).
-    root = (request.url_root or "").rstrip("/")
-    if root:
-        return root
     return "https://centropic.ai"
+
+
+def absolute_url(endpoint: str, **values: Any) -> str:
+    """Build an absolute URL under PUBLIC_SITE_URL (host-header safe)."""
+    path = url_for(endpoint, **values)
+    if path.startswith("http://") or path.startswith("https://"):
+        return path
+    return f"{public_base_url()}{path}"
 
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
@@ -1262,6 +1271,21 @@ def ensure_schema() -> None:
     # Usage-based billing tables (additive — never drop)
     db.create_all()  # creates credit_ledger and usage_events if absent
 
+    # Unique Stripe payment intent → prevents double-credit on webhook races.
+    try:
+        with db.engine.begin() as conn:
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_credit_ledger_stripe_pi "
+                    "ON credit_ledger (stripe_payment_intent) "
+                    "WHERE stripe_payment_intent IS NOT NULL "
+                    "AND stripe_payment_intent != ''"
+                )
+            )
+    except Exception:
+        # SQLite versions / dialects without partial indexes: best-effort only.
+        app.logger.exception("credit_ledger stripe unique index skipped")
+
 
 def process_pending_analyze_jobs(
     *,
@@ -1445,7 +1469,13 @@ def backfill_analysis_runs() -> None:
 
 
 def client_ip() -> str:
-    return (request.headers.get("X-Real-IP") or request.remote_addr or "unknown").strip()
+    """Client IP for rate limits.
+
+    Use ProxyFix-adjusted ``remote_addr`` only. Never read ``X-Real-IP`` /
+    first ``X-Forwarded-For`` from the client — those are forgeable when the
+    app is reachable without a stripping reverse proxy.
+    """
+    return (request.remote_addr or "unknown").strip() or "unknown"
 
 
 def analyses_today(user_id: int) -> int:
@@ -1761,8 +1791,12 @@ def _edge_site_or_404(token: str) -> SiteAnalysis:
 
 
 def _edge_client_key() -> str:
-    forwarded = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
-    return forwarded or (request.remote_addr or "unknown")
+    """Trusted client identity for Edge rate limits.
+
+    Prefer ProxyFix ``remote_addr`` (last trusted hop). Never use the first
+    ``X-Forwarded-For`` value — clients can forge it and bypass budgets.
+    """
+    return (request.remote_addr or client_ip() or "unknown").strip() or "unknown"
 
 
 def _edge_rate_limited(token: str) -> bool:
@@ -2178,6 +2212,9 @@ def pricing():
 @login_required
 def billing_checkout():
     user = current_user()
+    if not limiter.allow(f"billing-checkout:{user.id}", limit=10, window_seconds=3600):
+        flash("Troppe richieste di checkout. Riprova tra poco.", "warning")
+        return redirect(url_for("pricing"))
     if not stripe_enabled():
         flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
         return redirect(url_for("pro_interest"))
@@ -2190,9 +2227,9 @@ def billing_checkout():
             email=user.email,
             name=user.name,
             customer_id=user.stripe_customer_id,
-            success_url=url_for("billing_success", _external=True)
+            success_url=absolute_url("billing_success")
             + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=url_for("pricing", _external=True),
+            cancel_url=absolute_url("pricing"),
         )
         if session_data.get("customer_id") and not user.stripe_customer_id:
             user.stripe_customer_id = session_data["customer_id"]
@@ -2214,7 +2251,7 @@ def billing_portal():
     try:
         url = create_portal_session(
             customer_id=user.stripe_customer_id,
-            return_url=url_for("dashboard", _external=True),
+            return_url=absolute_url("dashboard"),
         )
         return redirect(url)
     except Exception:
@@ -2262,17 +2299,30 @@ def billing_webhook():
 
     try:
         if etype == "checkout.session.completed":
-            user = _user_from_meta(data)
-            if user is not None:
-                cust = data.get("customer")
-                sub = data.get("subscription")
-                if cust:
-                    user.stripe_customer_id = str(cust)
-                if sub:
-                    user.stripe_subscription_id = str(sub)
-                if (user.plan or "").lower() != "admin":
-                    user.plan = "plus"
-                db.session.commit()
+            # Subscription checkout only — never upgrade from one-time top-ups
+            # (mode=payment) or unpaid/async sessions.
+            mode = (data.get("mode") or "").strip()
+            pay_status = (data.get("payment_status") or "").strip()
+            if mode != "subscription":
+                app.logger.info(
+                    "billing webhook ignore checkout mode=%s", mode or "?"
+                )
+            elif pay_status not in {"paid", "no_payment_required"}:
+                app.logger.info(
+                    "billing webhook ignore payment_status=%s", pay_status or "?"
+                )
+            else:
+                user = _user_from_meta(data)
+                if user is not None:
+                    cust = data.get("customer")
+                    sub = data.get("subscription")
+                    if cust:
+                        user.stripe_customer_id = str(cust)
+                    if sub:
+                        user.stripe_subscription_id = str(sub)
+                    if (user.plan or "").lower() != "admin":
+                        user.plan = "plus"
+                    db.session.commit()
         elif etype in {
             "customer.subscription.updated",
             "customer.subscription.deleted",
@@ -2538,9 +2588,7 @@ def forgot_password():
         try:
             raw_token = user.issue_reset_token(hours=PASSWORD_RESET_HOURS)
             db.session.commit()
-            reset_url = url_for(
-                "reset_password", token=raw_token, _external=True
-            )
+            reset_url = absolute_url("reset_password", token=raw_token)
             subject, text_body, html_body = build_password_reset_email(
                 user_name=user.name,
                 reset_url=reset_url,
@@ -2949,17 +2997,6 @@ def dashboard_analyze_confirmed():
     cost.service_cost_eur_cents = preflight.required_cost_cents
     cost_cents = cost.service_cost_eur_cents
 
-    required_with_grace = required_credit_with_grace_cents(cost_cents)
-    if (not is_unlimited_user(user)) and balance < required_with_grace:
-        shortage = required_with_grace - balance
-        flash(
-            f"Credito insufficiente: hai €{balance/100:.4f}, "
-            f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
-            f"Ricarica almeno €{shortage/100:.4f}.",
-            "error",
-        )
-        return redirect(url_for("topup_credit_page"))
-
     competitor_urls: list[str] = []
     if competitors_raw and user.is_pro:
         for line in re.split(r"[\n,;]+", competitors_raw):
@@ -2994,6 +3031,30 @@ def dashboard_analyze_confirmed():
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return blocked
+
+    # Atomic lock: re-check credit + concurrent job cap under row lock.
+    try:
+        assert_can_start_analysis(
+            db.session,
+            user,
+            AnalysisJob=AnalysisJob,
+            required_cents=required_credit_with_grace_cents(cost_cents),
+            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+        )
+    except ConcurrentAnalysisError as exc:
+        flash(str(exc), "warning")
+        return redirect(url_for("dashboard"))
+    except InsufficientCreditError:
+        balance = get_balance_cents(user)
+        required_with_grace = required_credit_with_grace_cents(cost_cents)
+        shortage = max(0, required_with_grace - balance)
+        flash(
+            f"Credito insufficiente: hai €{balance/100:.4f}, "
+            f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+            f"Ricarica almeno €{shortage/100:.4f}.",
+            "error",
+        )
+        return redirect(url_for("topup_credit_page"))
 
     if ASYNC_ANALYZE:
         job = enqueue_analysis(
@@ -3114,14 +3175,17 @@ def topup_credit_page():
 def topup_stripe_checkout():
     """Create a Stripe Payment Intent / Checkout session for a credit top-up."""
     user = current_user()
+    if not limiter.allow(f"topup-checkout:{user.id}", limit=10, window_seconds=3600):
+        flash("Troppe richieste di ricarica. Riprova tra poco.", "warning")
+        return redirect(url_for("topup_credit_page"))
     amount_cents = int(request.form.get("amount_cents") or 0)
     if amount_cents not in {pkg["cents"] for pkg in _TOPUP_PACKAGES}:
         flash("Importo non valido.", "error")
         return redirect(url_for("topup_credit_page"))
 
     if not stripe_enabled():
-        # Dev fallback: add credits directly (only in DEBUG mode)
-        if app.debug:
+        # Dev fallback: add credits directly only when FLASK_DEBUG=1
+        if os.getenv("FLASK_DEBUG", "0") == "1":
             topup_credit(
                 db.session,
                 CreditLedger,
@@ -3149,8 +3213,8 @@ def topup_stripe_checkout():
             user.stripe_customer_id = cid
             db.session.commit()
 
-        success_url = STRIPE_TOPUP_SUCCESS_URL or url_for("topup_success", _external=True)
-        cancel_url  = STRIPE_TOPUP_CANCEL_URL  or url_for("topup_credit_page", _external=True)
+        success_url = STRIPE_TOPUP_SUCCESS_URL or absolute_url("topup_success")
+        cancel_url = STRIPE_TOPUP_CANCEL_URL or absolute_url("topup_credit_page")
 
         session_obj = _stripe.checkout.Session.create(
             mode="payment",
@@ -3212,28 +3276,48 @@ def billing_topup_webhook():
         if sess.get("payment_status") == "paid":
             meta = sess.get("metadata") or {}
             user_id = int(meta.get("centropic_user_id") or 0)
-            topup_cents = int(meta.get("topup_cents") or 0)
-            pi = (sess.get("payment_intent") or sess.get("id") or "").strip()
+            # Prefer Stripe-settled amount over client/metadata (anti-tamper).
+            amount_total = int(sess.get("amount_total") or 0)
+            meta_cents = int(meta.get("topup_cents") or 0)
+            allowed = {pkg["cents"] for pkg in _TOPUP_PACKAGES}
+            topup_cents = amount_total if amount_total in allowed else 0
+            if topup_cents == 0 and meta_cents in allowed and amount_total == meta_cents:
+                topup_cents = meta_cents
+            pi = (sess.get("payment_intent") or "").strip()
+            if not pi:
+                # Fallback to session id — still unique per Checkout session.
+                pi = f"cs:{(sess.get('id') or '').strip()}"
+            if not pi or pi == "cs:":
+                app.logger.error("topup webhook missing payment identity")
+                return jsonify({"ok": False, "error": "missing_payment_id"}), 400
             if user_id and topup_cents:
-                # Idempotency: never credit the same Stripe payment twice.
-                if pi:
-                    already = (
-                        CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
-                    )
-                    if already is not None:
-                        return jsonify({"ok": True, "duplicate": True})
+                already = (
+                    CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
+                )
+                if already is not None:
+                    return jsonify({"ok": True, "duplicate": True})
                 u = db.session.get(User, user_id)
                 if u:
-                    topup_credit(
-                        db.session,
-                        CreditLedger,
-                        u,
-                        amount_eur_cents=topup_cents,
-                        description=f"Ricarica €{topup_cents/100:.2f} via Stripe",
-                        stripe_payment_intent=pi or None,
-                    )
-                    db.session.commit()
+                    try:
+                        topup_credit(
+                            db.session,
+                            CreditLedger,
+                            u,
+                            amount_eur_cents=topup_cents,
+                            description=f"Ricarica €{topup_cents/100:.2f} via Stripe",
+                            stripe_payment_intent=pi,
+                        )
+                        db.session.commit()
+                    except IntegrityError:
+                        db.session.rollback()
+                        return jsonify({"ok": True, "duplicate": True})
                     app.logger.info("topup: user %s +%d cent", user_id, topup_cents)
+            elif user_id and amount_total and amount_total not in allowed:
+                app.logger.warning(
+                    "topup webhook rejected amount_total=%s user=%s",
+                    amount_total,
+                    user_id,
+                )
 
     return jsonify({"ok": True})
 
@@ -3562,7 +3646,17 @@ def api_v1_analyze():
             }
         ), 413
     api_cost.service_cost_eur_cents = preflight.required_cost_cents
-    if not has_sufficient_credit(user, api_cost):
+    try:
+        assert_can_start_analysis(
+            db.session,
+            user,
+            AnalysisJob=AnalysisJob,
+            required_cents=required_credit_with_grace_cents(api_cost.service_cost_eur_cents),
+            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+        )
+    except ConcurrentAnalysisError as exc:
+        return jsonify({"ok": False, "error": "too_many_jobs", "message": str(exc)}), 429
+    except InsufficientCreditError:
         required_with_grace = required_credit_with_grace_cents(api_cost.service_cost_eur_cents)
         return jsonify({
             "ok": False,
@@ -4008,10 +4102,11 @@ def set_rescan_schedule():
             "success",
         )
     db.session.commit()
-    next_url = request.form.get("next") or request.args.get("next") or ""
-    if next_url.startswith("/dashboard"):
-        return redirect(next_url)
-    return redirect(url_for("dashboard"))
+    next_url = safe_next_url(
+        request.form.get("next") or request.args.get("next"),
+        fallback=url_for("dashboard"),
+    )
+    return redirect(next_url)
 
 
 @app.route("/dashboard/history/<int:analysis_id>")

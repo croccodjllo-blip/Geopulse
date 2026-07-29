@@ -20,9 +20,18 @@ def test_rejects_metadata_hostname():
         assert_public_http_url("http://metadata.google.internal/")
 
 
-def test_rejects_private_literal():
+def test_rejects_cgnat_literal():
     with pytest.raises(UnsafeURLError):
-        assert_public_http_url("http://10.0.0.5/hook")
+        assert_public_http_url("http://100.64.0.1/hook")
+
+
+def test_rejects_non_global_via_resolve(monkeypatch):
+    def fake_getaddrinfo(host, *args, **kwargs):
+        return [(0, 0, 0, "", ("100.64.1.2", 0))]
+
+    monkeypatch.setattr("services.ssrf.socket.getaddrinfo", fake_getaddrinfo)
+    with pytest.raises(UnsafeURLError, match="non pubblica"):
+        resolve_public_ips("cgnat.example")
 
 
 def test_rejects_credentials_in_url():

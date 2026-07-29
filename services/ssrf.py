@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import ipaddress
 import socket
+from typing import Any
 from urllib.parse import urlparse, urljoin, urlunparse
 
 import requests
@@ -29,6 +30,7 @@ class UnsafeURLError(ValueError):
 
 
 def _is_blocked_ip(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
+    """Block non-public targets including CGNAT / shared address space."""
     if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
         return True
     if ip.is_multicast or ip.is_unspecified:
@@ -36,7 +38,13 @@ def _is_blocked_ip(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
     # IPv4-mapped IPv6
     if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped is not None:
         return _is_blocked_ip(ip.ipv4_mapped)
-    # AWS/GCP/Azure metadata commonly 169.254.169.254 (link-local — already covered)
+    # CGNAT / shared (100.64.0.0/10) and other non-global space.
+    # Prefer is_global=False over an incomplete private checklist.
+    try:
+        if not ip.is_global:
+            return True
+    except Exception:
+        return True
     return False
 
 
@@ -239,3 +247,69 @@ def safe_get(
         return resp
 
     raise UnsafeURLError(f"Troppi redirect (>{max_redirects})")
+
+
+def safe_post(
+    session: requests.Session,
+    url: str,
+    *,
+    data: bytes | None = None,
+    json: Any = None,
+    timeout: float | tuple[float, float],
+    max_redirects: int = 0,
+    **kwargs,
+) -> requests.Response:
+    """POST with SSRF checks and DNS pinning (no private redirect / rebinding).
+
+    Default ``max_redirects=0`` — webhooks must not follow redirects.
+    """
+    current = assert_public_http_url(url, resolve=True)
+
+    pin_session = requests.Session()
+    pin_session.mount("https://", _HostHeaderSSLAdapter())
+    pin_session.headers.update(session.headers)
+    pin_session.cookies.update(session.cookies)
+    if session.proxies:
+        pin_session.proxies.update(session.proxies)
+    if session.verify is not None:
+        pin_session.verify = session.verify
+
+    base_headers = dict(kwargs.pop("headers", {}) or {})
+    hops = 0
+    while True:
+        parsed = urlparse(current)
+        host = (parsed.hostname or "").lower().rstrip(".")
+        try:
+            ipaddress.ip_address(host)
+            request_url = current
+            headers = dict(base_headers)
+        except ValueError:
+            ips = resolve_public_ips(host)
+            request_url, host_header = _pin_url_to_ip(current, ips[0])
+            headers = dict(base_headers)
+            headers["Host"] = host_header
+
+        resp = pin_session.post(
+            request_url,
+            data=data,
+            json=json,
+            timeout=timeout,
+            allow_redirects=False,
+            headers=headers,
+            **kwargs,
+        )
+        resp.url = current  # type: ignore[misc]
+
+        if max_redirects > 0 and (
+            resp.is_redirect or resp.status_code in {301, 302, 303, 307, 308}
+        ):
+            location = resp.headers.get("Location")
+            if not location:
+                return resp
+            hops += 1
+            if hops > max_redirects:
+                raise UnsafeURLError(f"Troppi redirect (>{max_redirects})")
+            nxt = urljoin(current, location)
+            current = assert_public_http_url(nxt, resolve=True)
+            continue
+        return resp
