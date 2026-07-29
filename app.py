@@ -42,7 +42,7 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
-from sqlalchemy import UniqueConstraint, inspect, text
+from sqlalchemy import UniqueConstraint, func, inspect, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -3002,11 +3002,11 @@ def admin_topup_user(user_id: int):
     u = db.session.get(User, user_id)
     if not u:
         flash("Utente non trovato.", "error")
-        return redirect(url_for("admin_panel"))
+        return redirect(url_for("admin_home"))
     amount = int(request.form.get("amount_cents") or 0)
     if amount <= 0:
         flash("Importo non valido.", "error")
-        return redirect(url_for("admin_panel"))
+        return redirect(url_for("admin_home"))
     topup_credit(
         db.session,
         CreditLedger,
@@ -3016,7 +3016,7 @@ def admin_topup_user(user_id: int):
     )
     db.session.commit()
     flash(f"Aggiunto €{amount/100:.4f} a {u.email}.", "success")
-    return redirect(url_for("admin_panel"))
+    return redirect(url_for("admin_home"))
 
 
 @app.route("/dashboard/jobs/<int:job_id>")
@@ -3487,16 +3487,82 @@ def dashboard_history():
 @app.route("/admin")
 @admin_required
 def admin_home():
+    now_utc = datetime.now(timezone.utc)
+    month_ago = now_utc - timedelta(days=30)
+
+    users_total = User.query.count()
+    users_admin = User.query.filter(
+        (User.plan == "admin") | (User.role == "admin")
+    ).count()
+    users_plus = User.query.filter(User.plan.in_(["plus", "pro"])).count()
+    users_free = max(0, users_total - users_plus - users_admin)
+
+    sites_total = SiteAnalysis.query.count()
+    runs_total = AnalysisRun.query.count()
+    runs_30d = AnalysisRun.query.filter(AnalysisRun.created_at >= month_ago).count()
+
+    jobs_pending = AnalysisJob.query.filter_by(status="pending").count()
+    jobs_running = AnalysisJob.query.filter_by(status="running").count()
+    jobs_error = AnalysisJob.query.filter_by(status="error").count()
+
+    topup_30d = int(
+        db.session.query(func.coalesce(func.sum(CreditLedger.amount_cents), 0))
+        .filter(CreditLedger.created_at >= month_ago, CreditLedger.amount_cents > 0)
+        .scalar()
+        or 0
+    )
+    charged_30d = int(
+        db.session.query(func.coalesce(func.sum(CreditLedger.amount_cents), 0))
+        .filter(CreditLedger.created_at >= month_ago, CreditLedger.amount_cents < 0)
+        .scalar()
+        or 0
+    )
+    input_tokens_30d, output_tokens_30d = (
+        db.session.query(
+            func.coalesce(func.sum(UsageEvent.input_tokens), 0),
+            func.coalesce(func.sum(UsageEvent.output_tokens), 0),
+        )
+        .filter(UsageEvent.created_at >= month_ago)
+        .first()
+        or (0, 0)
+    )
+
     leads = (
         ProInterest.query.order_by(ProInterest.created_at.desc()).limit(100).all()
     )
-    users = User.query.order_by(User.created_at.desc()).limit(50).all()
+    users = User.query.order_by(User.created_at.desc()).limit(120).all()
+    recent_runs = AnalysisRun.query.order_by(AnalysisRun.created_at.desc()).limit(50).all()
+    recent_jobs = AnalysisJob.query.order_by(AnalysisJob.created_at.desc()).limit(50).all()
+    recent_ledger = CreditLedger.query.order_by(CreditLedger.created_at.desc()).limit(80).all()
+    recent_sites = SiteAnalysis.query.order_by(SiteAnalysis.created_at.desc()).limit(40).all()
     return render_template(
         "admin.html",
         leads=leads,
         users=users,
+        recent_runs=recent_runs,
+        recent_jobs=recent_jobs,
+        recent_ledger=recent_ledger,
+        recent_sites=recent_sites,
         lead_count=ProInterest.query.count(),
-        user_count=User.query.count(),
+        user_count=users_total,
+        stats={
+            "users_total": users_total,
+            "users_free": users_free,
+            "users_plus": users_plus,
+            "users_admin": users_admin,
+            "sites_total": sites_total,
+            "runs_total": runs_total,
+            "runs_30d": runs_30d,
+            "jobs_pending": jobs_pending,
+            "jobs_running": jobs_running,
+            "jobs_error": jobs_error,
+            "topup_30d_cents": topup_30d,
+            "charged_30d_cents": abs(charged_30d),
+            "input_tokens_30d": int(input_tokens_30d or 0),
+            "output_tokens_30d": int(output_tokens_30d or 0),
+        },
+        grace_margin_pct=round(GRACE_MARGIN * 100, 1),
+        now_utc=now_utc,
     )
 
 
@@ -3522,6 +3588,43 @@ def admin_set_plan(user_id: int, plan: str):
         target.role = "admin"
     db.session.commit()
     flash(f"Piano di {target.email} aggiornato a {plan}.", "success")
+    return redirect(url_for("admin_home"))
+
+
+@app.route("/admin/jobs/<int:job_id>/retry", methods=["POST"])
+@admin_required
+def admin_retry_job(job_id: int):
+    job = db.session.get(AnalysisJob, job_id)
+    if job is None:
+        flash("Job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    if job.status not in {"error", "done"}:
+        flash("Puoi riaccodare solo job completati o in errore.", "warning")
+        return redirect(url_for("admin_home"))
+    job.status = "pending"
+    job.error = None
+    job.started_at = None
+    job.finished_at = None
+    db.session.commit()
+    flash(f"Job #{job.id} rimesso in coda.", "success")
+    return redirect(url_for("admin_home"))
+
+
+@app.route("/admin/jobs/<int:job_id>/cancel", methods=["POST"])
+@admin_required
+def admin_cancel_job(job_id: int):
+    job = db.session.get(AnalysisJob, job_id)
+    if job is None:
+        flash("Job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    if job.status not in {"pending", "running"}:
+        flash("Job non cancellabile in questo stato.", "warning")
+        return redirect(url_for("admin_home"))
+    job.status = "error"
+    job.error = "Annullato da admin"
+    job.finished_at = datetime.now(timezone.utc)
+    db.session.commit()
+    flash(f"Job #{job.id} annullato.", "success")
     return redirect(url_for("admin_home"))
 
 
