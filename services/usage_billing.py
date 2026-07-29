@@ -33,6 +33,7 @@ Spread: 77% applied on top of raw API cost.
 from __future__ import annotations
 
 import logging
+import math
 import os
 import re
 from dataclasses import dataclass, field
@@ -72,6 +73,8 @@ PLATFORM_SPREAD = float(os.getenv("PLATFORM_SPREAD", "0.77"))   # 77%
 USD_TO_EUR = float(os.getenv("USD_TO_EUR", "0.92"))
 MAX_TOKENS_PER_CALL = int(os.getenv("MAX_TOKENS_PER_CALL", "1500"))
 MAX_PREFLIGHT_WORDS = int(os.getenv("MAX_PREFLIGHT_WORDS", "12000"))
+# Extra margin required before starting analysis to reduce mid-run credit stops.
+GRACE_MARGIN = min(0.50, max(0.0, float(os.getenv("CREDIT_GRACE_MARGIN", "0.08"))))
 
 # minimum balance in EUR cents to allow an analysis
 MIN_BALANCE_EUR_CENTS: int = 1  # 0.01 € minimum
@@ -440,7 +443,13 @@ def has_sufficient_credit(user: Any, cost_estimate: CostEstimate) -> bool:
     Admin/unlimited users always pass this check."""
     if is_unlimited_user(user):
         return True
-    return get_balance_cents(user) >= cost_estimate.service_cost_eur_cents
+    required = required_credit_with_grace_cents(cost_estimate.service_cost_eur_cents)
+    return get_balance_cents(user) >= required
+
+
+def required_credit_with_grace_cents(base_cost_cents: int) -> int:
+    """Upfront required credit with safety margin to avoid mid-analysis stops."""
+    return max(MIN_BALANCE_EUR_CENTS, int(math.ceil(max(1, base_cost_cents) * (1 + GRACE_MARGIN))))
 
 
 def deduct_credit(

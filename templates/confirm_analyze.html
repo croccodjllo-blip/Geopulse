@@ -113,16 +113,17 @@
       <span class="credit-status__badge credit-status__badge--ok">✓ Account admin — nessun addebito</span>
     </div>
     {% else %}
-    <div class="credit-status {% if balance_cents >= cost.service_cost_eur_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
+    <div class="credit-status {% if balance_cents >= required_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
       <span class="credit-status__balance">
         Disponibile: <strong>€&nbsp;{{ "%.4f"|format(balance_cents / 100) }}</strong>
       </span>
-      {% if balance_cents >= cost.service_cost_eur_cents %}
-        <span class="credit-status__badge credit-status__badge--ok">✓ Credito sufficiente</span>
+      {% if balance_cents >= required_cents %}
+        <span class="credit-status__badge credit-status__badge--ok">✓ Credito sufficiente (con margine sicurezza {{ grace_margin_pct }}%)</span>
       {% else %}
         <span class="credit-status__badge credit-status__badge--low">⚠ Credito insufficiente</span>
         <p class="credit-status__hint">
-          Ricarica almeno €&nbsp;{{ "%.4f"|format((cost.service_cost_eur_cents - balance_cents) / 100) }} per procedere.
+          Ricarica almeno €&nbsp;{{ "%.4f"|format((required_cents - balance_cents) / 100) }} per procedere
+          (margine sicurezza {{ grace_margin_pct }}% incluso).
           <a href="{{ url_for('topup_credit_page') }}">Ricarica credito →</a>
         </p>
       {% endif %}
@@ -132,7 +133,7 @@
 
   {# ── Azioni ── #}
   <div class="page-cta">
-    {% if current_user.role in ('admin', 'internal') or balance_cents >= cost.service_cost_eur_cents %}
+    {% if current_user.role in ('admin', 'internal') or balance_cents >= required_cents %}
     <form method="POST" action="{{ url_for('dashboard_analyze_confirmed') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="url" value="{{ url }}">

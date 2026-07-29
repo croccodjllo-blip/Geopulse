@@ -4,6 +4,7 @@ from __future__ import annotations
 import pytest
 
 from services.usage_billing import (
+    GRACE_MARGIN,
     MAX_PREFLIGHT_WORDS,
     estimate_analysis_cost,
     estimate_improvement,
@@ -12,6 +13,8 @@ from services.usage_billing import (
     has_sufficient_credit,
     PLATFORM_SPREAD,
     check_page_word_budget,
+    required_credit_with_grace_cents,
+    is_unlimited_user,
     _model_price,
     _next_rating,
 )
@@ -115,8 +118,9 @@ def test_spread_77_pct():
 # ── Credit helpers ───────────────────────────────────────────────────────────
 
 class _FakeUser:
-    def __init__(self, balance: int = 0):
+    def __init__(self, balance: int = 0, role: str = "user"):
         self.credit_balance_cents = balance
+        self.role = role
 
 
 def test_get_balance_cents():
@@ -146,6 +150,33 @@ def test_has_sufficient_credit_insufficient():
     )
     user = _FakeUser(0)
     assert has_sufficient_credit(user, est) is False
+
+
+def test_required_credit_with_grace_is_higher():
+    base = 1_000
+    required = required_credit_with_grace_cents(base)
+    assert required >= base
+    assert required == pytest.approx(int(base * (1 + GRACE_MARGIN)), abs=1)
+
+
+def test_has_sufficient_credit_needs_grace_margin():
+    est = estimate_analysis_cost(
+        openai_model="gpt-4o-mini",
+        anthropic_model="claude-haiku-4-5-20251001",
+        perplexity_model="sonar",
+        run_measured=False,
+        has_openai=True,
+    )
+    # Exactly estimated cost is not enough anymore: grace margin required.
+    user_exact = _FakeUser(est.service_cost_eur_cents)
+    assert has_sufficient_credit(user_exact, est) is False
+    user_grace = _FakeUser(required_credit_with_grace_cents(est.service_cost_eur_cents))
+    assert has_sufficient_credit(user_grace, est) is True
+
+
+def test_admin_is_unlimited():
+    admin = _FakeUser(0, role="admin")
+    assert is_unlimited_user(admin) is True
 
 
 # ── Improvement preview ──────────────────────────────────────────────────────

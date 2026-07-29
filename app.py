@@ -90,6 +90,8 @@ from services.usage_billing import (
     estimate_analysis_cost,
     estimate_improvement,
     has_sufficient_credit,
+    required_credit_with_grace_cents,
+    GRACE_MARGIN,
     get_balance_cents,
     deduct_credit,
     topup_credit,
@@ -1229,12 +1231,13 @@ def process_pending_analyze_jobs(
                 continue
             est.service_cost_eur_cents = preflight.required_cost_cents
             if not has_sufficient_credit(user, est):
+                required_with_grace = required_credit_with_grace_cents(est.service_cost_eur_cents)
                 fail_job(
                     db.session,
                     job,
                     (
                         f"Credito insufficiente: saldo €{get_balance_cents(user)/100:.4f}, "
-                        f"richiesto €{est.service_cost_eur:.4f}"
+                        f"richiesto con margine €{required_with_grace/100:.4f}"
                     )[:500],
                 )
                 stats["error"] += 1
@@ -2523,6 +2526,8 @@ def dashboard():
                 cost=cost,
                 improvement=improvement,
                 balance_cents=get_balance_cents(user),
+                required_cents=required_credit_with_grace_cents(cost.service_cost_eur_cents),
+                grace_margin_pct=round(GRACE_MARGIN * 100, 1),
                 run_measured=run_meas,
                 competitors_raw=raw_comp,
             )
@@ -2730,11 +2735,12 @@ def dashboard_analyze_confirmed():
 
     # Credit check
     balance = get_balance_cents(user)
-    if balance < cost_cents:
-        shortage = cost_cents - balance
+    required_with_grace = required_credit_with_grace_cents(cost_cents)
+    if (not is_unlimited_user(user)) and balance < required_with_grace:
+        shortage = required_with_grace - balance
         flash(
             f"Credito insufficiente: hai €{balance/100:.4f}, "
-            f"servono €{cost_cents/100:.4f}. "
+            f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
             f"Ricarica almeno €{shortage/100:.4f}.",
             "error",
         )
@@ -3313,15 +3319,17 @@ def api_v1_analyze():
         ), 413
     api_cost.service_cost_eur_cents = preflight.required_cost_cents
     if not has_sufficient_credit(user, api_cost):
+        required_with_grace = required_credit_with_grace_cents(api_cost.service_cost_eur_cents)
         return jsonify({
             "ok": False,
             "error": "insufficient_credit",
             "message": (
                 f"Credito insufficiente: hai €{get_balance_cents(user)/100:.4f}, "
-                f"servono €{api_cost.service_cost_eur:.4f}. "
+                f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
                 "Ricarica su https://centropic.ai/crediti"
             ),
             "cost_estimate": api_cost.as_dict(),
+            "required_credit_eur": round(required_with_grace / 100, 4),
         }), 402
 
     def _api_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
