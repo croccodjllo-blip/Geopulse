@@ -159,7 +159,7 @@ PRO_CRAWL_PAGES = (
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 PACK_EMAIL_DAILY_LIMIT = max(1, int(os.getenv("PACK_EMAIL_DAILY_LIMIT", "10")))
-ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@geopulse.it").strip().lower()
+ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "admin@centropic.ai").strip().lower()
 # Nessun default in chiaro: se manca, l’admin non viene (ri)creato automaticamente.
 ADMIN_PASSWORD = (os.getenv("ADMIN_PASSWORD") or "").strip()
 ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin Centropic"
