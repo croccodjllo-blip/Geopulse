@@ -237,12 +237,47 @@ GA4_MEASUREMENT_ID = (os.getenv("GA4_MEASUREMENT_ID") or "").strip()
 GOOGLE_SITE_VERIFICATION = (os.getenv("GOOGLE_SITE_VERIFICATION") or "").strip()
 ADSENSE_CLIENT_ID = (os.getenv("ADSENSE_CLIENT_ID") or "").strip()
 ADS_TXT_CONTENT = (os.getenv("ADS_TXT_CONTENT") or "").strip()
+# Google Ads conversions (optional). Example: AW-123456789
+GOOGLE_ADS_ID = (os.getenv("GOOGLE_ADS_ID") or "").strip()
+# Conversion labels only (suffix after /), e.g. AbCdEfGhIjKlMnOp
+GOOGLE_ADS_SIGNUP_LABEL = (os.getenv("GOOGLE_ADS_SIGNUP_LABEL") or "").strip()
+GOOGLE_ADS_ANALYZE_LABEL = (os.getenv("GOOGLE_ADS_ANALYZE_LABEL") or "").strip()
+GOOGLE_ADS_TOPUP_LABEL = (os.getenv("GOOGLE_ADS_TOPUP_LABEL") or "").strip()
 # CORS Edge: vuoto = nessun header ACAO (crawler non ne hanno bisogno).
 # Imposta EDGE_CORS_ORIGIN=* o un origin esatto se serve embed browser.
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
 EDGE_RATE_LIMIT = max(30, int(os.getenv("EDGE_RATE_LIMIT", "120")))
 EDGE_RATE_WINDOW = max(60, int(os.getenv("EDGE_RATE_WINDOW", "60")))
 ALLOW_DROP_ANALYSIS_JOBS = os.getenv("ALLOW_DROP_ANALYSIS_JOBS", "0") == "1"
+
+
+def _ads_send_to(label: str) -> str | None:
+    if not GOOGLE_ADS_ID or not label:
+        return None
+    if "/" in label:
+        return label  # already full AW-xxx/yyy
+    return f"{GOOGLE_ADS_ID}/{label}"
+
+
+def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> None:
+    """Queue a GA4/Ads event for the next page render (session flash-style)."""
+    if not name:
+        return
+    if not (GA4_MEASUREMENT_ID or GOOGLE_ADS_ID):
+        return
+    events = session.get("analytics_events") or []
+    if not isinstance(events, list):
+        events = []
+    payload = dict(params or {})
+    events.append({"name": name, "params": payload})
+    # Cap to avoid session bloat
+    session["analytics_events"] = events[-20:]
+
+
+def pop_analytics_events() -> list[dict[str, Any]]:
+    events = session.pop("analytics_events", None) or []
+    return events if isinstance(events, list) else []
+
 
 
 @app.after_request
@@ -257,21 +292,39 @@ def set_security_headers(response):
     img_src = ["'self'", "data:"]
     connect_src = ["'self'"]
     frame_src = ["'self'"]
-    if GA4_MEASUREMENT_ID:
+    if GA4_MEASUREMENT_ID or GOOGLE_ADS_ID:
         script_src.extend(["https://www.googletagmanager.com", "https://www.google-analytics.com"])
-        connect_src.extend(["https://www.google-analytics.com", "https://region1.google-analytics.com"])
-    if ADSENSE_CLIENT_ID:
-        script_src.extend(["https://pagead2.googlesyndication.com", "https://partner.googleadservices.com"])
-        img_src.extend(["https://googleads.g.doubleclick.net", "https://pagead2.googlesyndication.com"])
-        frame_src.extend(["https://googleads.g.doubleclick.net", "https://tpc.googlesyndication.com"])
+        connect_src.extend([
+            "https://www.google-analytics.com",
+            "https://region1.google-analytics.com",
+            "https://www.google.com",
+            "https://googleads.g.doubleclick.net",
+        ])
+        img_src.extend(["https://www.google-analytics.com", "https://www.google.com"])
+    if ADSENSE_CLIENT_ID or GOOGLE_ADS_ID:
+        script_src.extend([
+            "https://pagead2.googlesyndication.com",
+            "https://partner.googleadservices.com",
+            "https://www.googleadservices.com",
+        ])
+        img_src.extend([
+            "https://googleads.g.doubleclick.net",
+            "https://pagead2.googlesyndication.com",
+            "https://www.googleadservices.com",
+        ])
+        frame_src.extend([
+            "https://googleads.g.doubleclick.net",
+            "https://tpc.googlesyndication.com",
+            "https://www.google.com",
+        ])
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
-        f"script-src {' '.join(script_src)}; "
+        f"script-src {' '.join(dict.fromkeys(script_src))}; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
-        f"img-src {' '.join(img_src)}; "
-        f"connect-src {' '.join(connect_src)}; "
-        f"frame-src {' '.join(frame_src)}; "
+        f"img-src {' '.join(dict.fromkeys(img_src))}; "
+        f"connect-src {' '.join(dict.fromkeys(connect_src))}; "
+        f"frame-src {' '.join(dict.fromkeys(frame_src))}; "
         "object-src 'none'; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
@@ -1037,6 +1090,8 @@ def inject_globals() -> dict[str, Any]:
         "ga4_measurement_id": GA4_MEASUREMENT_ID,
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
+        "google_ads_id": GOOGLE_ADS_ID,
+        "analytics_events": pop_analytics_events(),
         "site_author_name": SITE_AUTHOR_NAME,
         "site_author_title": SITE_AUTHOR_TITLE,
         "site_author_url": SITE_AUTHOR_URL,
@@ -2384,6 +2439,14 @@ def register():
         session.clear()
         session["user_id"] = user.id
         session.permanent = True
+        signup_params: dict[str, Any] = {
+            "method": "email",
+            "event_category": "auth",
+        }
+        send_to = _ads_send_to(GOOGLE_ADS_SIGNUP_LABEL)
+        if send_to:
+            signup_params["send_to"] = send_to
+        queue_analytics_event("sign_up", signup_params)
         job_id = start_first_analysis_if_needed(user, website)
         if job_id:
             flash(
@@ -2944,6 +3007,17 @@ def dashboard_analyze_confirmed():
         )
         db.session.commit()
         kick_analyze_worker()
+        analyze_params: dict[str, Any] = {
+            "event_category": "analysis",
+            "mode": "async",
+            "measured": bool(run_meas),
+            "value": round(cost_cents / 100, 4),
+            "currency": "EUR",
+        }
+        send_to = _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL)
+        if send_to:
+            analyze_params["send_to"] = send_to
+        queue_analytics_event("analyze_complete", analyze_params)
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
 
@@ -2966,6 +3040,20 @@ def dashboard_analyze_confirmed():
 
         pages_n = int(latest.pages_analyzed or 1)
         new_balance = get_balance_cents(user)
+        analyze_params = {
+            "event_category": "analysis",
+            "mode": "sync",
+            "measured": bool(run_meas),
+            "pages": pages_n,
+            "aio_score": latest.aio_score,
+            "geo_score": latest.geo_score,
+            "value": round(cost_cents / 100, 4),
+            "currency": "EUR",
+        }
+        send_to = _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL)
+        if send_to:
+            analyze_params["send_to"] = send_to
+        queue_analytics_event("analyze_complete", analyze_params)
         flash(
             f"Analisi completata su {pages_n} pagine — score, findings e pack pronti. "
             f"Credito residuo: €{new_balance/100:.4f}.",
@@ -3090,6 +3178,15 @@ def topup_stripe_checkout():
 @app.route("/crediti/successo")
 @login_required
 def topup_success():
+    topup_params: dict[str, Any] = {
+        "event_category": "billing",
+        "currency": "EUR",
+    }
+    send_to = _ads_send_to(GOOGLE_ADS_TOPUP_LABEL)
+    if send_to:
+        topup_params["send_to"] = send_to
+    queue_analytics_event("purchase", topup_params)
+    queue_analytics_event("topup_success", {"event_category": "billing"})
     flash("Pagamento completato! Il credito sarà disponibile a breve.", "success")
     return redirect(url_for("topup_credit_page"))
 

@@ -31,27 +31,50 @@
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}" sizes="any" />
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo.png') }}" />
-    <link rel="preload" as="image" href="{{ url_for('static', filename='img/logo.svg') }}" />    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/logo.svg') }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    {% if adsense_client_id %}
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client_id }}" crossorigin="anonymous"></script>
-    {% endif %}
-    {% if ga4_measurement_id %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
+    {% if ga4_measurement_id or google_ads_id %}
+    {# Consent Mode v2: EU default denied BEFORE any Google tags #}
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+    </script>
+    {% if ga4_measurement_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
+    {% elif google_ads_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_ads_id }}"></script>
+    {% endif %}
+    <script>
       gtag('js', new Date());
+      {% if ga4_measurement_id %}
       gtag('config', '{{ ga4_measurement_id }}', {
         anonymize_ip: true,
-        allow_google_signals: false
+        allow_google_signals: false,
+        send_page_view: true
       });
+      {% endif %}
+      {% if google_ads_id %}
+      gtag('config', '{{ google_ads_id }}');
+      {% endif %}
     </script>
     {% endif %}
+    {# AdSense is loaded only after ad_storage consent (see analytics.js) #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
@@ -170,6 +193,30 @@
       </div>
     </footer>
     {% endblock %}
+
+    {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
+    <aside id="cookie-consent" class="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc" hidden>
+      <p class="cookie-consent__title" id="cookie-consent-title">Cookie e misurazione</p>
+      <p class="cookie-consent__text" id="cookie-consent-desc">
+        Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o Ads/AdSense)
+        per misurare il traffico e mostrare annunci. Puoi accettare o rifiutare.
+        Dettagli nella <a href="{{ url_for('privacy') }}">Privacy</a>.
+      </p>
+      <div class="cookie-consent__actions">
+        <button type="button" class="btn btn-core" id="cookie-consent-accept">Accetta</button>
+        <button type="button" class="btn btn-ghost" id="cookie-consent-reject">Rifiuta</button>
+      </div>
+    </aside>
+    <script>
+      window.__CENTROPIC_ANALYTICS__ = {
+        ga4Id: {{ ga4_measurement_id|tojson }},
+        adsId: {{ google_ads_id|tojson }},
+        adsenseClient: {{ adsense_client_id|tojson }},
+        events: {{ analytics_events|default([])|tojson }}
+      };
+    </script>
+    <script src="{{ url_for('static', filename='js/analytics.js') }}" defer></script>
+    {% endif %}
 
     <script>
       async function copyFrom(id, btn) {
