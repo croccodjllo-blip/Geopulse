@@ -233,6 +233,10 @@ configure_app_logging(app)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://centropic.ai").rstrip("/")
+GA4_MEASUREMENT_ID = (os.getenv("GA4_MEASUREMENT_ID") or "").strip()
+GOOGLE_SITE_VERIFICATION = (os.getenv("GOOGLE_SITE_VERIFICATION") or "").strip()
+ADSENSE_CLIENT_ID = (os.getenv("ADSENSE_CLIENT_ID") or "").strip()
+ADS_TXT_CONTENT = (os.getenv("ADS_TXT_CONTENT") or "").strip()
 # CORS Edge: vuoto = nessun header ACAO (crawler non ne hanno bisogno).
 # Imposta EDGE_CORS_ORIGIN=* o un origin esatto se serve embed browser.
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
@@ -249,13 +253,25 @@ def set_security_headers(response):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["X-XSS-Protection"] = "0"
+    script_src = ["'self'", "'unsafe-inline'"]
+    img_src = ["'self'", "data:"]
+    connect_src = ["'self'"]
+    frame_src = ["'self'"]
+    if GA4_MEASUREMENT_ID:
+        script_src.extend(["https://www.googletagmanager.com", "https://www.google-analytics.com"])
+        connect_src.extend(["https://www.google-analytics.com", "https://region1.google-analytics.com"])
+    if ADSENSE_CLIENT_ID:
+        script_src.extend(["https://pagead2.googlesyndication.com", "https://partner.googleadservices.com"])
+        img_src.extend(["https://googleads.g.doubleclick.net", "https://pagead2.googlesyndication.com"])
+        frame_src.extend(["https://googleads.g.doubleclick.net", "https://tpc.googlesyndication.com"])
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline'; "
+        f"script-src {' '.join(script_src)}; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src 'self' https://fonts.gstatic.com data:; "
-        "img-src 'self' data:; "
-        "connect-src 'self'; "
+        f"img-src {' '.join(img_src)}; "
+        f"connect-src {' '.join(connect_src)}; "
+        f"frame-src {' '.join(frame_src)}; "
         "object-src 'none'; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
@@ -1018,6 +1034,9 @@ def inject_globals() -> dict[str, Any]:
         "canonical_url": canonical,
         "admin_email": ADMIN_EMAIL,
         "stripe_ready": stripe_enabled(),
+        "ga4_measurement_id": GA4_MEASUREMENT_ID,
+        "google_site_verification": GOOGLE_SITE_VERIFICATION,
+        "adsense_client_id": ADSENSE_CLIENT_ID,
         "site_author_name": SITE_AUTHOR_NAME,
         "site_author_title": SITE_AUTHOR_TITLE,
         "site_author_url": SITE_AUTHOR_URL,
@@ -1968,6 +1987,7 @@ def robots_txt():
         "\n"
         f"# AI policy: {base}/ai.txt\n"
         f"# LLMs guide: {base}/llms.txt\n"
+        f"# Ads auth: {base}/ads.txt\n"
         f"# Humans: {base}/humans.txt\n"
         f"# Methodology: {base}/metodologia\n"
         f"Sitemap: {base}/sitemap.xml\n"
@@ -1991,6 +2011,7 @@ def sitemap_xml():
         ("/contatti", "0.7", "monthly"),
         ("/llms.txt", "0.7", "weekly"),
         ("/ai.txt", "0.6", "weekly"),
+        ("/ads.txt", "0.5", "monthly"),
         ("/humans.txt", "0.4", "monthly"),
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
@@ -2015,6 +2036,18 @@ def sitemap_xml():
         + "\n</urlset>\n"
     )
     return Response(body, mimetype="application/xml; charset=utf-8")
+
+
+@app.route("/ads.txt")
+def ads_txt():
+    """AdSense authorization file for crawler validation."""
+    if ADS_TXT_CONTENT:
+        body = ADS_TXT_CONTENT.strip() + "\n"
+        return Response(body, mimetype="text/plain; charset=utf-8")
+    if ADSENSE_CLIENT_ID and ADSENSE_CLIENT_ID.startswith("ca-pub-"):
+        body = f"google.com, {ADSENSE_CLIENT_ID}, DIRECT, f08c47fec0942fa0\n"
+        return Response(body, mimetype="text/plain; charset=utf-8")
+    return Response("# ads.txt not configured\n", mimetype="text/plain; charset=utf-8", status=404)
 
 
 @app.route("/privacy")

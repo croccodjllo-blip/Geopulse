@@ -8,6 +8,9 @@
       name="description"
       content="{% block meta_description %}Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.{% endblock %}"
     />
+    {% if google_site_verification %}
+    <meta name="google-site-verification" content="{{ google_site_verification }}" />
+    {% endif %}
     <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}" />
     <link rel="alternate" hreflang="it" href="{{ self.canonical() }}" />
     <link rel="alternate" hreflang="x-default" href="{{ self.canonical() }}" />
@@ -34,6 +37,21 @@
       href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    {% if adsense_client_id %}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client_id }}" crossorigin="anonymous"></script>
+    {% endif %}
+    {% if ga4_measurement_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ ga4_measurement_id }}', {
+        anonymize_ip: true,
+        allow_google_signals: false
+      });
+    </script>
+    {% endif %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
