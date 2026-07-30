@@ -24,11 +24,12 @@ def payments_provider() -> str:
     """Active checkout provider: paddle | stripe | none.
 
     Paddle is preferred when configured (merchant-of-record for EU SaaS).
+    Ready if Plus and/or credit top-up prices are configured.
     """
     try:
-        from services.paddle_billing import paddle_enabled
+        from services.paddle_billing import paddle_enabled, paddle_topups_enabled
 
-        if paddle_enabled():
+        if paddle_enabled() or paddle_topups_enabled():
             return "paddle"
     except Exception:
         logger.debug("paddle_enabled check failed", exc_info=True)

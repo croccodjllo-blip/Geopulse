@@ -30,12 +30,12 @@
 
     <section class="plan plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
-      {% if payments_ready or stripe_ready %}
+      {% if paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
       <p class="plan__price">{{ _('Abbonamento') }}<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Prezzo mostrato al checkout. Per team che ottimizzano più brand in continuo.') }}</p>
       {% else %}
       <p class="plan__price">{{ _('In arrivo') }}</p>
-      <p class="plan__desc">{{ _('Checkout self-serve in attivazione. Prenota interesse per accesso prioritario.') }}</p>
+      <p class="plan__desc">{{ _('Checkout Plus in attivazione. Nel frattempo puoi ricaricare crediti. Prenota interesse per accesso prioritario.') }}</p>
       {% endif %}
       <ul class="plan__features">
         <li>{{ _('Più siti e analisi') }}</li>
@@ -46,8 +46,8 @@
         <li>{{ _('API + export CSV/ZIP + white-label') }}</li>
         <li>{{ _('Storico run avanzato') }}</li>
       </ul>
-      {% if (payments_ready or stripe_ready) and current_user %}
-        {% if paddle_overlay %}
+      {% if (paddle_ready or (payments_provider == 'stripe' and stripe_ready)) and current_user %}
+        {% if paddle_overlay and paddle_ready %}
         <button type="button" class="btn btn-primary btn-block" data-paddle-checkout="plus">
           {{ _('Passa a Plus') }}
         </button>
@@ -63,10 +63,11 @@
           <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
         </form>
         {% endif %}
-      {% elif payments_ready or stripe_ready %}
+      {% elif paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
       <a class="btn btn-primary btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
       {% else %}
       <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
+      <a class="btn btn-primary btn-block" href="{{ url_for('topup_credit_page') }}" style="margin-top:0.5rem">{{ _('Ricarica crediti') }}</a>
       {% endif %}
     </section>
   </div>

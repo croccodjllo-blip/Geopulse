@@ -46,7 +46,10 @@ def paddle_enabled() -> bool:
 
 
 def paddle_overlay_ready() -> bool:
-    return bool(PADDLE_CLIENT_TOKEN and PADDLE_PRICE_PLUS)
+    """Paddle.js overlay usable for Plus and/or configured top-up prices."""
+    if not PADDLE_CLIENT_TOKEN:
+        return False
+    return bool(PADDLE_PRICE_PLUS or topup_price_map())
 
 
 def paddle_topup_price_id(amount_cents: int) -> str | None:
@@ -73,11 +76,13 @@ def topup_price_map() -> dict[int, str]:
 
 def client_config() -> dict[str, Any]:
     """Public config for Paddle.js (safe to embed in HTML)."""
+    overlay = paddle_overlay_ready()
     return {
-        "enabled": paddle_enabled(),
-        "overlay": paddle_overlay_ready(),
+        "enabled": paddle_enabled() or paddle_topups_enabled(),
+        "overlay": overlay,
+        "plusReady": paddle_enabled(),
         "environment": paddle_environment(),
-        "clientToken": PADDLE_CLIENT_TOKEN if paddle_overlay_ready() else "",
+        "clientToken": PADDLE_CLIENT_TOKEN if overlay else "",
         "pricePlus": PADDLE_PRICE_PLUS,
         "topupPrices": {str(k): v for k, v in topup_price_map().items()},
     }
