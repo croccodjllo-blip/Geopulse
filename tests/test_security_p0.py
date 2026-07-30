@@ -88,3 +88,4 @@ def test_safe_next_url_still_blocks_open_redirects():
     assert safe_next_url("//evil.test") == "/"
     assert safe_next_url("https://evil.test/phish") == "/"
     assert safe_next_url("/dashboard?job=1") == "/dashboard?job=1"
+    assert safe_next_url("/%2f%2fevil.test") == "/"

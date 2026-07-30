@@ -14,6 +14,8 @@ def test_safe_next_url_blocks_open_redirects():
     assert safe_next_url("dashboard") == "/"
     assert safe_next_url("/dashboard") == "/dashboard"
     assert safe_next_url("/dashboard?job=1") == "/dashboard?job=1"
+    assert safe_next_url("/%2f%2fevil.test") == "/"
+    assert safe_next_url("/%252f%252fevil.test") == "/"
     assert safe_next_url(None, fallback="/home") == "/home"
 
 

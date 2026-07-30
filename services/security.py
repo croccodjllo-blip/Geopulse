@@ -1,32 +1,75 @@
-"""Security helpers: safe redirects and output sanitization."""
+"""Security helpers: safe redirects, password policy, output sanitization."""
 
 from __future__ import annotations
 
 import os
+import re
 from html import escape
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 from flask import Request
+
+# Password policy: length + complexity (letter + digit). Shared by register/reset/settings.
+PASSWORD_MIN_LEN = 10
+PASSWORD_MAX_LEN = 128
+_PASSWORD_HAS_LETTER = re.compile(r"[A-Za-z]")
+_PASSWORD_HAS_DIGIT = re.compile(r"\d")
+
+
+def password_policy_error(password: str | None) -> str | None:
+    """Return an Italian error message if *password* fails policy, else None."""
+    value = password or ""
+    if len(value) < PASSWORD_MIN_LEN:
+        return f"La password deve avere almeno {PASSWORD_MIN_LEN} caratteri."
+    if len(value) > PASSWORD_MAX_LEN:
+        return f"La password non può superare {PASSWORD_MAX_LEN} caratteri."
+    if not _PASSWORD_HAS_LETTER.search(value):
+        return "La password deve contenere almeno una lettera."
+    if not _PASSWORD_HAS_DIGIT.search(value):
+        return "La password deve contenere almeno un numero."
+    return None
+
+
+def _fully_unquote(value: str, *, rounds: int = 4) -> str:
+    """Decode percent-encoding repeatedly to catch nested open-redirect tricks."""
+    prev = value
+    for _ in range(max(1, rounds)):
+        cur = unquote(prev)
+        if cur == prev:
+            break
+        prev = cur
+    return prev
 
 
 def safe_next_url(candidate: str | None, *, fallback: str = "/") -> str:
     """
     Allow only same-origin relative paths.
 
-    Rejects scheme-relative open redirects like //evil.test and absolute URLs.
+    Rejects scheme-relative open redirects like //evil.test, absolute URLs,
+    and encoded variants such as /%2f%2fevil.test.
     """
     if not candidate:
         return fallback
-    value = candidate.strip()
-    if not value.startswith("/") or value.startswith("//"):
+    raw = candidate.strip()
+    if not raw:
         return fallback
-    if "\\" in value or "\n" in value or "\r" in value:
+    # Inspect both raw and fully-decoded forms so %2f tricks cannot slip through.
+    for value in (raw, _fully_unquote(raw)):
+        if not value.startswith("/") or value.startswith("//"):
+            return fallback
+        if "\\" in value or "\n" in value or "\r" in value or "\x00" in value:
+            return fallback
+        # Collapse accidental multi-slash after decoding (///evil → netloc).
+        parsed = urlparse(value)
+        if parsed.scheme or parsed.netloc:
+            return fallback
+        # Extra guard: path must stay relative (no authority via "///host").
+        if value.startswith("///"):
+            return fallback
+    # Return the original relative path (keep query/fragment as submitted).
+    if not raw.startswith("/") or raw.startswith("//"):
         return fallback
-    parsed = urlparse(value)
-    if parsed.scheme or parsed.netloc:
-        return fallback
-    # Keep query/fragment for local paths only.
-    return value
+    return raw
 
 
 def safe_same_origin_url(candidate: str | None, request: Request) -> str | None:
@@ -44,14 +87,10 @@ def safe_same_origin_url(candidate: str | None, request: Request) -> str | None:
     if candidate.startswith("//"):
         return None
 
-    # Relative path — same rules as safe_next_url.
+    # Relative path — same rules as safe_next_url (including encoded // tricks).
     if candidate.startswith("/") and not candidate.startswith("//"):
-        if "\\" in candidate or "://" in candidate:
-            return None
-        parsed_rel = urlparse(candidate)
-        if parsed_rel.scheme or parsed_rel.netloc:
-            return None
-        return candidate
+        rel = safe_next_url(candidate, fallback="")
+        return rel or None
 
     try:
         parsed = urlparse(candidate)

@@ -517,6 +517,67 @@ def required_credit_with_grace_cents(base_cost_cents: int) -> int:
     return max(MIN_BALANCE_EUR_CENTS, int(math.ceil(max(1, base_cost_cents) * (1 + GRACE_MARGIN))))
 
 
+def debit_leased_job_usage(
+    db_session: Any,
+    CreditLedger: Any,
+    AnalysisJob: Any,
+    user: Any,
+    job: Any,
+    *,
+    lease_token: str,
+    cost_eur_cents: int,
+    description: str,
+) -> int:
+    """Atomically verify job lease ownership then deduct credit (H1).
+
+    Takes a reserved write lock (SQLite BEGIN IMMEDIATE) and ``FOR UPDATE`` on
+    the job row so a reclaim cannot race between the lease check and the debit.
+    Updates ``job.held_cents`` / ``job.billed_cents`` in the same transaction.
+
+    Returns cents actually debited (0 for unlimited users or non-positive cost).
+    Raises ``RuntimeError`` if the lease was lost.
+    """
+    if cost_eur_cents <= 0:
+        return 0
+    try:
+        _begin_immediate(db_session)
+    except Exception:
+        pass
+    locked = (
+        db_session.query(AnalysisJob)
+        .filter(AnalysisJob.id == job.id)
+        .with_for_update()
+        .first()
+    )
+    if (
+        locked is None
+        or getattr(locked, "status", None) != "running"
+        or getattr(locked, "lease_token", None) != lease_token
+    ):
+        raise RuntimeError("job lease lost — stop billing")
+
+    held_now = int(getattr(locked, "held_cents", 0) or 0)
+    deduct_credit(
+        db_session,
+        CreditLedger,
+        user,
+        analysis_run_id=None,
+        cost_eur_cents=cost_eur_cents,
+        description=description,
+        reserved_cents=held_now,
+    )
+    if held_now > 0 and not is_unlimited_user(user):
+        consumed = consume_hold(
+            db_session, user, amount_cents=min(cost_eur_cents, held_now)
+        )
+        locked.held_cents = max(0, held_now - int(consumed or 0))
+        job.held_cents = locked.held_cents
+    locked.billed_cents = int(getattr(locked, "billed_cents", 0) or 0) + cost_eur_cents
+    job.billed_cents = locked.billed_cents
+    db_session.flush()
+    return cost_eur_cents
+
+
 def deduct_credit(
     db_session: Any,
     CreditLedger: Any,

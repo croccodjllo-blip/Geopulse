@@ -97,6 +97,7 @@ from services.usage_billing import (
     GRACE_MARGIN,
     get_balance_cents,
     deduct_credit,
+    debit_leased_job_usage,
     topup_credit,
     hold_credit,
     release_hold,
@@ -120,7 +121,13 @@ from services.jobs import (
 )
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
-from services.security import safe_next_url, safe_same_origin_url
+from services.security import (
+    PASSWORD_MAX_LEN,
+    PASSWORD_MIN_LEN,
+    password_policy_error,
+    safe_next_url,
+    safe_same_origin_url,
+)
 from services.i18n import (
     DEFAULT_LOCALE,
     LANG_COOKIE,
@@ -133,6 +140,7 @@ from services.i18n import (
     select_locale,
 )
 from services.mailer import (
+    build_email_verify_email,
     build_pack_email,
     build_password_reset_email,
     mail_configured,
@@ -190,8 +198,9 @@ ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin Centropic"
 ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
-# Welcome credit granted on signup so the first onboarding diagnosis can run.
+# Welcome credit granted only after email verification (anti-farming).
 WELCOME_CREDIT_CENTS = max(0, int(os.getenv("WELCOME_CREDIT_CENTS", "200")))
+EMAIL_VERIFY_HOURS = max(1, int(os.getenv("EMAIL_VERIFY_HOURS", "48")))
 ANALYZE_BATCH_LIMIT = max(1, int(os.getenv("ANALYZE_BATCH_LIMIT", "5")))
 PASSWORD_RESET_HOURS = max(1, int(os.getenv("PASSWORD_RESET_HOURS", "2")))
 SITE_AUTHOR_NAME = (os.getenv("SITE_AUTHOR_NAME") or "Engineering Factory").strip()
@@ -420,6 +429,11 @@ class User(db.Model):
     credit_held_cents = db.Column(db.Integer, nullable=False, default=0)
     # Bumped on password change / reset to invalidate other browser sessions.
     session_version = db.Column(db.Integer, nullable=False, default=0)
+    # Email verification (welcome credit gated on verify).
+    email_verified_at = db.Column(db.DateTime)
+    verify_token_hash = db.Column(db.String(64))
+    verify_token_expires = db.Column(db.DateTime)
+    welcome_credit_granted = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -433,6 +447,10 @@ class User(db.Model):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+
+    def bump_session_version(self) -> None:
+        """Invalidate all other sessions (keeps caller responsible for re-bind)."""
+        self.session_version = int(getattr(self, "session_version", 0) or 0) + 1
 
     def clear_reset_token(self) -> None:
         self.reset_token_hash = None
@@ -454,6 +472,31 @@ class User(db.Model):
             return False
         digest = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
         return secrets.compare_digest(digest, self.reset_token_hash)
+
+    @property
+    def email_verified(self) -> bool:
+        return getattr(self, "email_verified_at", None) is not None
+
+    def clear_verify_token(self) -> None:
+        self.verify_token_hash = None
+        self.verify_token_expires = None
+
+    def issue_verify_token(self, *, hours: int = EMAIL_VERIFY_HOURS) -> str:
+        raw = secrets.token_urlsafe(32)
+        self.verify_token_hash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        self.verify_token_expires = datetime.now(timezone.utc) + timedelta(hours=hours)
+        return raw
+
+    def matches_verify_token(self, raw_token: str) -> bool:
+        if not raw_token or not self.verify_token_hash or not self.verify_token_expires:
+            return False
+        expires = self.verify_token_expires
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        if expires < datetime.now(timezone.utc):
+            return False
+        digest = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+        return secrets.compare_digest(digest, self.verify_token_hash)
 
     @property
     def is_admin(self) -> bool:
@@ -838,7 +881,7 @@ class RegisterForm(FlaskForm):
     )
     password = PasswordField(
         "Password",
-        validators=[DataRequired(), Length(min=8, max=128)],
+        validators=[DataRequired(), Length(min=PASSWORD_MIN_LEN, max=PASSWORD_MAX_LEN)],
     )
     confirm = PasswordField(
         "Conferma password",
@@ -853,15 +896,15 @@ class RegisterForm(FlaskForm):
     )
     submit = SubmitField("Crea account")
 
+    def validate_password(self, field: PasswordField) -> None:
+        err = password_policy_error(field.data)
+        if err:
+            raise ValidationError(err)
+
     def validate_email(self, field: StringField) -> None:
-        email = (field.data or "").strip().lower()
-        if not email:
-            return
-        existing = User.query.filter_by(email=email).first()
-        if existing is not None:
-            raise ValidationError(
-                "Questa email è già registrata. Accedi o recupera la password."
-            )
+        # Intentionally no existence check here (anti-enumeration).
+        # Duplicate emails are rejected at commit with a generic flash.
+        return
 
     def validate_role(self, field: SelectField) -> None:
         raw = (field.data or "").strip()
@@ -902,7 +945,7 @@ class ForgotPasswordForm(FlaskForm):
 class ResetPasswordForm(FlaskForm):
     password = PasswordField(
         "Nuova password",
-        validators=[DataRequired(), Length(min=8, max=128)],
+        validators=[DataRequired(), Length(min=PASSWORD_MIN_LEN, max=PASSWORD_MAX_LEN)],
     )
     confirm = PasswordField(
         "Conferma password",
@@ -912,6 +955,35 @@ class ResetPasswordForm(FlaskForm):
         ],
     )
     submit = SubmitField("Salva nuova password")
+
+    def validate_password(self, field: PasswordField) -> None:
+        err = password_policy_error(field.data)
+        if err:
+            raise ValidationError(err)
+
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField(
+        "Password attuale",
+        validators=[DataRequired()],
+    )
+    password = PasswordField(
+        "Nuova password",
+        validators=[DataRequired(), Length(min=PASSWORD_MIN_LEN, max=PASSWORD_MAX_LEN)],
+    )
+    confirm = PasswordField(
+        "Conferma nuova password",
+        validators=[
+            DataRequired(),
+            EqualTo("password", message="Le password non coincidono."),
+        ],
+    )
+    submit = SubmitField("Aggiorna password")
+
+    def validate_password(self, field: PasswordField) -> None:
+        err = password_policy_error(field.data)
+        if err:
+            raise ValidationError(err)
 
 
 class AnalyzeForm(FlaskForm):
@@ -1277,6 +1349,10 @@ def ensure_schema() -> None:
             "credit_balance_cents": "INTEGER DEFAULT 0",
             "credit_held_cents": "INTEGER DEFAULT 0",
             "session_version": "INTEGER DEFAULT 0",
+            "email_verified_at": "DATETIME",
+            "verify_token_hash": "TEXT",
+            "verify_token_expires": "DATETIME",
+            "welcome_credit_granted": "BOOLEAN DEFAULT 0",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -1469,14 +1545,8 @@ def process_pending_analyze_jobs(
                 return ok
 
             def _job_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
-                # Refuse to bill if another worker stole the lease.
-                fresh = db.session.get(AnalysisJob, job.id)
-                if (
-                    fresh is None
-                    or fresh.status != "running"
-                    or fresh.lease_token != lease_token
-                ):
-                    raise RuntimeError("job lease lost — stop billing")
+                # Persist usage then debit only while this worker still owns the lease
+                # (BEGIN IMMEDIATE + FOR UPDATE inside debit_leased_job_usage).
                 charged = record_actual_usage(
                     db.session,
                     UsageEvent,
@@ -1490,23 +1560,16 @@ def process_pending_analyze_jobs(
                 debit_cents = debit_cents_from_usage(charged)
                 if debit_cents <= 0:
                     return
-                held_now = int(getattr(job, "held_cents", 0) or 0)
-                deduct_credit(
+                debit_leased_job_usage(
                     db.session,
                     CreditLedger,
+                    AnalysisJob,
                     user,
-                    analysis_run_id=None,
+                    job,
+                    lease_token=lease_token,
                     cost_eur_cents=debit_cents,
                     description=f"JOB usage realtime {provider}:{model}",
-                    reserved_cents=held_now,
                 )
-                if held_now > 0:
-                    consumed = consume_hold(
-                        db.session, user, amount_cents=min(debit_cents, held_now)
-                    )
-                    job.held_cents = max(0, held_now - int(consumed or 0))
-                # Persist billed total so soft reclaim cannot re-run & re-bill.
-                job.billed_cents = int(getattr(job, "billed_cents", 0) or 0) + debit_cents
                 db.session.commit()
 
             analysis = run_analysis_pipeline(
@@ -2631,21 +2694,27 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
+        # Stricter anti-farming limits (H3).
         if not limiter.allow(
-            f"register:{client_ip()}", limit=5, window_seconds=3600
+            f"register:{client_ip()}", limit=3, window_seconds=3600
+        ):
+            flash("Troppe registrazioni da questo IP. Riprova più tardi.", "error")
+            return render_template("register.html", form=form)
+        if not limiter.allow(
+            f"register-day:{client_ip()}", limit=8, window_seconds=86400
         ):
             flash("Troppe registrazioni da questo IP. Riprova più tardi.", "error")
             return render_template("register.html", form=form)
         email = form.email.data.strip().lower()
+        # Anti-enumeration (M1): never reveal whether the email already exists.
+        generic_ok = (
+            "Se l’indirizzo non era già registrato, l’account è stato creato. "
+            "Controlla la casella email per confermare l’indirizzo "
+            "(richiesto per il credito di benvenuto)."
+        )
         if User.query.filter_by(email=email).first():
-            form.email.errors.append(
-                "Questa email è già registrata. Accedi o recupera la password."
-            )
-            flash(
-                "Questa email è già registrata. Accedi oppure usa il recupero password.",
-                "error",
-            )
-            return render_template("register.html", form=form)
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
         try:
             website = None
             if (form.website_url.data or "").strip():
@@ -2661,32 +2730,45 @@ def register():
                 country=(form.country.data or "").strip() or None,
                 plan="free",
                 credit_balance_cents=0,
+                welcome_credit_granted=False,
             )
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.flush()
-            if WELCOME_CREDIT_CENTS > 0:
-                topup_credit(
-                    db.session,
-                    CreditLedger,
-                    user,
-                    amount_eur_cents=WELCOME_CREDIT_CENTS,
-                    description=f"Credito di benvenuto €{WELCOME_CREDIT_CENTS/100:.2f}",
-                )
+            # H3: never grant welcome credit at register — only after email verify,
+            # and only when outbound mail is configured (otherwise farming is free).
+            verify_raw = None
+            if mail_configured():
+                verify_raw = user.issue_verify_token(hours=EMAIL_VERIFY_HOURS)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            form.email.errors.append(
-                "Questa email è già registrata. Accedi o recupera la password."
-            )
-            flash(
-                "Questa email è già registrata. Accedi oppure usa il recupero password.",
-                "error",
-            )
-            return render_template("register.html", form=form)
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
         except ValueError as exc:
             flash(str(exc), "error")
             return render_template("register.html", form=form)
+
+        if verify_raw and mail_configured():
+            try:
+                verify_url = absolute_url("verify_email", token=verify_raw)
+                welcome_eur = (
+                    WELCOME_CREDIT_CENTS / 100.0 if WELCOME_CREDIT_CENTS > 0 else None
+                )
+                subject, text_body, html_body = build_email_verify_email(
+                    user_name=user.name,
+                    verify_url=verify_url,
+                    expires_hours=EMAIL_VERIFY_HOURS,
+                    welcome_eur=welcome_eur,
+                )
+                send_email(
+                    to_email=user.email,
+                    subject=subject,
+                    text_body=text_body,
+                    html_body=html_body,
+                )
+            except Exception:
+                app.logger.exception("Verify email failed for %s", email)
 
         _establish_session(user, permanent=False)
         signup_params: dict[str, Any] = {
@@ -2697,33 +2779,86 @@ def register():
         if send_to:
             signup_params["send_to"] = send_to
         queue_analytics_event("sign_up", signup_params)
-        job_id = start_first_analysis_if_needed(user, website)
-        if job_id:
+
+        if mail_configured():
             flash(
-                "Account creato. Prima diagnosi avviata sul sito indicato — "
-                "resti in dashboard mentre elaboriamo score e pack."
+                "Account creato. Conferma l’email per sbloccare il credito di benvenuto "
+                "e avviare la prima diagnosi."
                 + (
-                    f" Credito di benvenuto: €{WELCOME_CREDIT_CENTS/100:.2f}."
+                    f" (fino a €{WELCOME_CREDIT_CENTS/100:.2f})"
                     if WELCOME_CREDIT_CENTS > 0
                     else ""
                 ),
                 "success",
             )
-            return redirect(url_for("dashboard", job=job_id))
-        if website:
-            flash(
-                "Account creato. Per avviare la prima diagnosi ricarica i crediti "
-                "oppure riprova dall'analisi in dashboard.",
-                "warning",
-            )
         else:
             flash(
-                "Account creato. Inserisci l’URL del dominio per avviare la prima diagnosi.",
-                "success",
+                "Account creato. Il credito di benvenuto richiede conferma email "
+                "(invio mail non attivo su questo server).",
+                "warning",
             )
+        # Defer first analysis until welcome credit is granted via verify.
         return redirect(url_for("dashboard"))
 
     return render_template("register.html", form=form)
+
+
+@app.route("/verify-email/<token>", methods=["GET"])
+def verify_email(token: str):
+    token = (token or "").strip()
+    user = None
+    if token:
+        digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        candidate = User.query.filter_by(verify_token_hash=digest).first()
+        if candidate is not None and candidate.matches_verify_token(token):
+            user = candidate
+
+    if user is None:
+        flash(
+            "Link di conferma non valido o scaduto. Accedi e richiedi un nuovo invio "
+            "dalle impostazioni, oppure registrati di nuovo.",
+            "error",
+        )
+        return redirect(url_for("login"))
+
+    already = user.email_verified
+    user.email_verified_at = datetime.now(timezone.utc)
+    user.clear_verify_token()
+
+    granted_now = False
+    if (
+        WELCOME_CREDIT_CENTS > 0
+        and not bool(getattr(user, "welcome_credit_granted", False))
+        and mail_configured()
+    ):
+        topup_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_eur_cents=WELCOME_CREDIT_CENTS,
+            description=f"Credito di benvenuto €{WELCOME_CREDIT_CENTS/100:.2f}",
+        )
+        user.welcome_credit_granted = True
+        granted_now = True
+
+    db.session.commit()
+    _establish_session(user, permanent=False)
+
+    website = getattr(user, "website_url", None)
+    job_id = None
+    if granted_now or already:
+        job_id = start_first_analysis_if_needed(user, website)
+
+    if granted_now:
+        msg = f"Email confermata. Credito di benvenuto: €{WELCOME_CREDIT_CENTS/100:.2f}."
+        if job_id:
+            msg += " Prima diagnosi avviata."
+        flash(msg, "success")
+    else:
+        flash("Email confermata.", "success")
+    if job_id:
+        return redirect(url_for("dashboard", job=job_id))
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -2770,6 +2905,7 @@ def forgot_password():
 
         email = form.email.data.strip().lower()
         user = User.query.filter_by(email=email).first()
+        # M1: always the same success message — never reveal existence or mail status.
         generic_ok = (
             "Se l’email è registrata e l’invio mail è attivo, "
             "riceverai un link per reimpostare la password."
@@ -2780,12 +2916,11 @@ def forgot_password():
             return redirect(url_for("login"))
 
         if not mail_configured():
-            flash(
-                "Invio email non ancora attivo su questo server. "
-                "Contatta info@centropic.ai per il reset password.",
-                "warning",
+            app.logger.warning(
+                "Password reset requested but mail not configured (email=%s)", email
             )
-            return render_template("forgot_password.html", form=form)
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
 
         try:
             raw_token = user.issue_reset_token(hours=PASSWORD_RESET_HOURS)
@@ -2805,11 +2940,9 @@ def forgot_password():
         except Exception:
             db.session.rollback()
             app.logger.exception("Password reset email failed for %s", email)
-            flash(
-                "Non siamo riusciti a inviare l’email di recupero. Riprova tra poco.",
-                "error",
-            )
-            return render_template("forgot_password.html", form=form)
+            # Still generic — do not reveal send failure tied to a known account.
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
 
         flash(generic_ok, "success")
         return redirect(url_for("login"))
@@ -3617,9 +3750,62 @@ def dashboard_settings():
         primary_color=agency.get("primary_color") or "",
         footer_note=agency.get("footer_note") or "",
     )
+    password_form = ChangePasswordForm()
 
     if request.method == "POST":
         action = (request.form.get("action") or "").strip()
+        if action == "password" and password_form.validate_on_submit():
+            if not user.check_password(password_form.current_password.data or ""):
+                flash("Password attuale non corretta.", "error")
+                return redirect(url_for("dashboard_settings"))
+            user.set_password(password_form.password.data)
+            db.session.commit()
+            _establish_session(user, permanent=bool(session.permanent))
+            flash("Password aggiornata. Le altre sessioni sono state chiuse.", "success")
+            return redirect(url_for("dashboard_settings"))
+        if action == "logout_all":
+            user.bump_session_version()
+            db.session.commit()
+            _establish_session(user, permanent=bool(session.permanent))
+            flash("Tutte le altre sessioni sono state invalidate.", "success")
+            return redirect(url_for("dashboard_settings"))
+        if action == "resend_verify":
+            if user.email_verified:
+                flash("Email già confermata.", "success")
+                return redirect(url_for("dashboard_settings"))
+            if not mail_configured():
+                flash("Invio email non attivo su questo server.", "warning")
+                return redirect(url_for("dashboard_settings"))
+            if not limiter.allow(
+                f"verify-resend:{user.id}", limit=3, window_seconds=3600
+            ):
+                flash("Troppe richieste. Riprova più tardi.", "error")
+                return redirect(url_for("dashboard_settings"))
+            try:
+                raw = user.issue_verify_token(hours=EMAIL_VERIFY_HOURS)
+                db.session.commit()
+                verify_url = absolute_url("verify_email", token=raw)
+                welcome_eur = (
+                    WELCOME_CREDIT_CENTS / 100.0 if WELCOME_CREDIT_CENTS > 0 else None
+                )
+                subject, text_body, html_body = build_email_verify_email(
+                    user_name=user.name,
+                    verify_url=verify_url,
+                    expires_hours=EMAIL_VERIFY_HOURS,
+                    welcome_eur=welcome_eur,
+                )
+                send_email(
+                    to_email=user.email,
+                    subject=subject,
+                    text_body=text_body,
+                    html_body=html_body,
+                )
+                flash("Email di conferma reinviata.", "success")
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Resend verify failed for user %s", user.id)
+                flash("Invio non riuscito. Riprova tra poco.", "error")
+            return redirect(url_for("dashboard_settings"))
         if action == "alerts" and alert_form.validate_on_submit():
             user.alert_email_enabled = bool(alert_form.alert_email_enabled.data)
             raw_hook = (alert_form.webhook_url.data or "").strip() or None
@@ -3694,6 +3880,8 @@ def dashboard_settings():
                 alert_form=alert_form,
                 prompt_form=prompt_form,
                 agency_form=agency_form,
+                password_form=password_form,
+                email_verified=user.email_verified,
                 api_key_prefix=prefix,
                 api_key_once=raw,
                 citation_ready=citation_monitor_available(),
@@ -3712,6 +3900,8 @@ def dashboard_settings():
         alert_form=alert_form,
         prompt_form=prompt_form,
         agency_form=agency_form,
+        password_form=password_form,
+        email_verified=user.email_verified,
         api_key_prefix=getattr(user, "api_key_prefix", None),
         api_key_once=None,
         citation_ready=citation_monitor_available(),
@@ -3933,6 +4123,7 @@ def api_v1_analyze():
         debit_cents = debit_cents_from_usage(charged)
         if debit_cents <= 0:
             return
+        held_now = int(hold_state["remaining"] or 0)
         deduct_credit(
             db.session,
             CreditLedger,
@@ -3940,8 +4131,8 @@ def api_v1_analyze():
             analysis_run_id=None,
             cost_eur_cents=debit_cents,
             description=f"API usage realtime {provider}:{model}",
+            reserved_cents=held_now,
         )
-        held_now = int(hold_state["remaining"] or 0)
         if held_now > 0:
             consumed = consume_hold(
                 db.session, user, amount_cents=min(debit_cents, held_now)

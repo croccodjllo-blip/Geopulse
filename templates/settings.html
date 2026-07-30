@@ -99,6 +99,44 @@
   </section>
 
   <section class="page-section">
+    <h2 class="page-section__title">{{ _('Sicurezza account') }}</h2>
+    {% if not email_verified %}
+    <p class="lede">
+      {{ _('Email non ancora confermata.') }}
+      {{ _('Senza conferma non ricevi il credito di benvenuto.') }}
+    </p>
+    <form method="post" class="form-grid panel" style="margin-bottom:1.25rem">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="hidden" name="action" value="resend_verify" />
+      <button class="btn btn-ghost" type="submit">{{ _('Reinvia email di conferma') }}</button>
+    </form>
+    {% endif %}
+    <form method="post" class="form-grid panel">
+      {{ password_form.hidden_tag() }}
+      <input type="hidden" name="action" value="password" />
+      <div class="field">
+        <label for="current_password">{{ _('Password attuale') }}</label>
+        {{ password_form.current_password(id="current_password", autocomplete="current-password") }}
+      </div>
+      <div class="field">
+        <label for="new_password">{{ _('Nuova password') }}</label>
+        {{ password_form.password(id="new_password", autocomplete="new-password") }}
+      </div>
+      <div class="field">
+        <label for="confirm_password">{{ _('Conferma nuova password') }}</label>
+        {{ password_form.confirm(id="confirm_password", autocomplete="new-password") }}
+      </div>
+      {{ password_form.submit(class_="btn btn-primary") }}
+    </form>
+    <form method="post" class="form-grid panel" style="margin-top:1rem">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="hidden" name="action" value="logout_all" />
+      <p class="lede">{{ _('Chiudi tutte le altre sessioni (altri browser / dispositivi).') }}</p>
+      <button class="btn btn-ghost" type="submit">{{ _('Esci ovunque') }}</button>
+    </form>
+  </section>
+
+  <section class="page-section">
     <h2 class="page-section__title">{{ _('White-label agenzia') }}</h2>
     {% if can_agency %}
     <form method="post" class="form-grid panel">
