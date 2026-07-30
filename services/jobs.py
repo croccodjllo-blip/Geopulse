@@ -188,19 +188,21 @@ def claim_next_job(
         if job is None:
             return None
         attempts = int(getattr(job, "attempt_count", 0) or 0) + 1
+        claim_fields = {
+            "status": "running",
+            "started_at": now,
+            "heartbeat_at": now,
+            "lease_token": lease,
+            "attempt_count": attempts,
+            "error": None,
+        }
+        if hasattr(job, "progress_done"):
+            claim_fields["progress_done"] = 0
+            claim_fields["progress_total"] = 0
+            claim_fields["progress_phase"] = "crawl"
         updated = (
             AnalysisJob.query.filter_by(id=job.id, status="pending")
-            .update(
-                {
-                    "status": "running",
-                    "started_at": now,
-                    "heartbeat_at": now,
-                    "lease_token": lease,
-                    "attempt_count": attempts,
-                    "error": None,
-                },
-                synchronize_session=False,
-            )
+            .update(claim_fields, synchronize_session=False)
         )
         db_session.commit()
         if updated == 1:
@@ -210,20 +212,43 @@ def claim_next_job(
     return None
 
 
-def heartbeat_job(db_session, job) -> bool:
-    """Refresh lease heartbeat for a running job owned by this worker."""
+def heartbeat_job(
+    db_session,
+    job,
+    *,
+    progress_done: int | None = None,
+    progress_total: int | None = None,
+    progress_phase: str | None = None,
+) -> bool:
+    """Refresh lease heartbeat for a running job owned by this worker.
+
+    Optional crawl/stage progress fields power the overlay ETA.
+    """
     Job = job.__class__
     token = getattr(job, "lease_token", None)
     if not token:
         return False
     now = datetime.now(timezone.utc)
+    fields: dict[str, Any] = {"heartbeat_at": now}
+    if progress_done is not None and hasattr(job, "progress_done"):
+        fields["progress_done"] = max(0, int(progress_done))
+    if progress_total is not None and hasattr(job, "progress_total"):
+        fields["progress_total"] = max(0, int(progress_total))
+    if progress_phase is not None and hasattr(job, "progress_phase"):
+        fields["progress_phase"] = str(progress_phase)[:20]
     updated = (
         Job.query.filter_by(id=job.id, status="running", lease_token=token)
-        .update({"heartbeat_at": now}, synchronize_session=False)
+        .update(fields, synchronize_session=False)
     )
     if updated == 1:
         db_session.commit()
         job.heartbeat_at = now
+        if "progress_done" in fields:
+            job.progress_done = fields["progress_done"]
+        if "progress_total" in fields:
+            job.progress_total = fields["progress_total"]
+        if "progress_phase" in fields:
+            job.progress_phase = fields["progress_phase"]
         return True
     db_session.rollback()
     return False

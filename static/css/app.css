@@ -2068,6 +2068,14 @@ body.app-body:not(.body-dash) {
   color: var(--signal, #00ff9d);
   word-break: break-all;
 }
+.analyze-overlay__eta {
+  margin: 0.85rem 0 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #e2e8f0;
+}
 .analyze-overlay__steps {
   list-style: none;
   margin: 1.1rem 0 0;
@@ -2122,6 +2130,14 @@ body.app-body:not(.body-dash) {
   border-radius: inherit;
   background: linear-gradient(90deg, #00d2ff, #00ff9d);
   transition: width 0.45s ease;
+}
+.analyze-overlay__eta {
+  margin: 0.85rem 0 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #e2e8f0;
 }
 .analyze-overlay__hint {
   margin: 0.75rem 0 0;

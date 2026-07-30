@@ -75,6 +75,7 @@ from services.analysis_store import (
     next_rescan_after,
 )
 from services.analyze_pipeline import run_analysis_pipeline
+from services.analyze_eta import compute_analyze_eta
 from services.analyzer import (
     ABS_MAX_CRAWL_PAGES,
     critical_crawl_pages,
@@ -658,6 +659,10 @@ class AnalysisJob(db.Model):
     competitors_json = db.Column(db.Text, nullable=False, default="[]")
     # Persist measured SoV intent from confirm form through the async worker.
     run_measured = db.Column(db.Boolean, nullable=False, default=False)
+    # Live progress for overlay ETA (updated during crawl / geo / pack).
+    progress_done = db.Column(db.Integer, nullable=False, default=0)
+    progress_total = db.Column(db.Integer, nullable=False, default=0)
+    progress_phase = db.Column(db.String(20), nullable=False, default="")
     held_cents = db.Column(db.Integer, nullable=False, default=0)
     # Cumulative EUR cents already debited for this job (prevents soft-reclaim re-bill).
     billed_cents = db.Column(db.Integer, nullable=False, default=0)
@@ -1412,6 +1417,9 @@ def ensure_schema() -> None:
                 "max_pages": "INTEGER DEFAULT 8",
                 "competitors_json": "TEXT DEFAULT '[]'",
                 "run_measured": "BOOLEAN DEFAULT 0",
+                "progress_done": "INTEGER DEFAULT 0",
+                "progress_total": "INTEGER DEFAULT 0",
+                "progress_phase": "TEXT DEFAULT ''",
                 "held_cents": "INTEGER DEFAULT 0",
                 "billed_cents": "INTEGER DEFAULT 0",
                 "heartbeat_at": "DATETIME",
@@ -1538,8 +1546,14 @@ def process_pending_analyze_jobs(
                 stats["error"] += 1
                 continue
 
-            def _hb():
-                ok = heartbeat_job(db.session, job)
+            def _hb(phase=None, done=None, total=None):
+                ok = heartbeat_job(
+                    db.session,
+                    job,
+                    progress_phase=phase,
+                    progress_done=done,
+                    progress_total=total,
+                )
                 if not ok:
                     raise RuntimeError("job lease lost during heartbeat")
                 return ok
@@ -3695,6 +3709,17 @@ def dashboard_job_status(job_id: int):
     job = AnalysisJob.query.filter_by(id=job_id, user_id=user.id).first()
     if job is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    eta = compute_analyze_eta(
+        status=job.status,
+        max_pages=getattr(job, "max_pages", None),
+        run_measured=bool(getattr(job, "run_measured", False)),
+        competitor_count=len(job.competitors or []),
+        progress_done=getattr(job, "progress_done", 0),
+        progress_total=getattr(job, "progress_total", 0),
+        progress_phase=getattr(job, "progress_phase", None) or None,
+        started_at=job.started_at,
+        created_at=job.created_at,
+    )
     payload: dict[str, Any] = {
         "ok": True,
         "id": job.id,
@@ -3703,23 +3728,26 @@ def dashboard_job_status(job_id: int):
         "error": job.error,
         "error_info": classify_analyze_error(job.error) if job.error else None,
         "site_id": job.site_id,
+        "max_pages": getattr(job, "max_pages", None),
+        "run_measured": bool(getattr(job, "run_measured", False)),
         "phase": (
             "in_coda"
             if job.status == "pending"
-            else "in_esecuzione"
-            if job.status == "running"
-            else job.status
-        ),
-            "hint": (
-                "In coda: il worker sta per partire."
-                if job.status == "pending"
-                else (
-                    "Crawl, probe e scoring in corso — siti grandi o SoV measured "
-                    "possono richiedere alcuni minuti."
+            else (
+                eta.get("progress", {}).get("phase")
+                or (
+                    "in_esecuzione"
                     if job.status == "running"
-                    else None
+                    else job.status
                 )
-            ),
+            )
+        ),
+        "hint": eta.get("hint"),
+        "eta_seconds": eta.get("eta_seconds"),
+        "eta_label": eta.get("eta_label"),
+        "eta_total_seconds": eta.get("eta_total_seconds"),
+        "elapsed_seconds": eta.get("elapsed_seconds"),
+        "progress": eta.get("progress"),
         "created_at": job.created_at.isoformat() if job.created_at else None,
         "started_at": job.started_at.isoformat() if job.started_at else None,
         "finished_at": job.finished_at.isoformat() if job.finished_at else None,

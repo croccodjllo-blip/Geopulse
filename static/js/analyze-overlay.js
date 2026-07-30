@@ -9,7 +9,18 @@
  */
 (function () {
   var PHASES = ["queue", "crawl", "probe", "score", "pack"];
-  var PHASE_INDEX = { pending: 0, queue: 0, running: 1, crawl: 1, probe: 2, score: 3, pack: 4 };
+  var PHASE_INDEX = {
+    pending: 0,
+    queue: 0,
+    in_coda: 0,
+    running: 1,
+    crawl: 1,
+    in_esecuzione: 1,
+    probe: 2,
+    geo: 3,
+    score: 3,
+    pack: 4,
+  };
 
   function el(root, sel) {
     return root.querySelector(sel);
@@ -20,6 +31,7 @@
     this.title = el(root, "[data-overlay-title]");
     this.desc = el(root, "[data-overlay-desc]");
     this.urlEl = el(root, "[data-overlay-url]");
+    this.eta = el(root, "[data-overlay-eta]");
     this.hint = el(root, "[data-overlay-hint]");
     this.bar = el(root, "[data-overlay-bar]");
     this.steps = root.querySelectorAll("[data-overlay-steps] [data-step]");
@@ -30,6 +42,7 @@
     this._poll = null;
     this._stepIdx = 0;
     this._progress = 8;
+    this._etaSeconds = null;
     this._doneUrl = "/dashboard";
     var self = this;
     if (this.closeBtn) {
@@ -88,6 +101,20 @@
     }
   };
 
+  Overlay.prototype.setEta = function (label, seconds) {
+    if (typeof seconds === "number" && !isNaN(seconds)) {
+      this._etaSeconds = seconds;
+    }
+    if (!this.eta) return;
+    if (label) {
+      this.eta.hidden = false;
+      this.eta.textContent =
+        label.indexOf("Stima") === 0 || label.indexOf("About") === 0 || label.indexOf("Complet") === 0
+          ? label
+          : "Stima: " + label;
+    }
+  };
+
   Overlay.prototype.setPhase = function (phase, hint) {
     var idx = PHASE_INDEX[phase];
     if (typeof idx !== "number") idx = this._stepIdx;
@@ -116,6 +143,10 @@
       this._progress += Math.max(0.15, (92 - this._progress) * 0.02);
       this._paintBar();
     }
+    // Local countdown softens stale server ETA between polls
+    if (typeof this._etaSeconds === "number" && this._etaSeconds > 5) {
+      this._etaSeconds = Math.max(5, this._etaSeconds - 0.4);
+    }
   };
 
   Overlay.prototype._cycleLocalSteps = function () {
@@ -136,6 +167,7 @@
       this.errorText.textContent = message || "Analisi non riuscita.";
     }
     if (this.title) this.title.textContent = "Analisi interrotta";
+    if (this.eta) this.eta.textContent = "";
     if (this.bar) this.bar.style.width = "100%";
   };
 
@@ -156,6 +188,8 @@
     }
     this._stepIdx = 0;
     this._progress = 8;
+    this._etaSeconds = null;
+    this.setEta(opts.etaLabel || "Stima: 30–90 secondi");
     this.setPhase(opts.phase || "pending", opts.hint || "Di solito 30–90 secondi.");
     this.openDialog();
     this._stopTimers();
@@ -183,23 +217,31 @@
         if (data && data.ok) {
           if (data.url) self.setUrl(data.url);
           var phase = data.phase || data.status;
+          if (data.progress && data.progress.phase) phase = data.progress.phase;
           self.setPhase(
-            data.status === "pending" ? "pending" : data.status === "running" ? "running" : phase,
+            data.status === "pending"
+              ? "pending"
+              : data.status === "running"
+                ? phase || "running"
+                : phase,
             data.hint
           );
+          if (data.eta_label) self.setEta(data.eta_label, data.eta_seconds);
+          if (data.progress && typeof data.progress.fraction === "number") {
+            var pct = Math.round(8 + data.progress.fraction * 84);
+            self._progress = Math.max(self._progress, Math.min(pct, 92));
+            self._paintBar();
+          }
           if (data.status === "running" && self._stepIdx < 1) self.setPhase("crawl", data.hint);
           if (data.status === "running") {
             // Keep pack step reserved for completion; nudge toward score only.
             if (self._stepIdx >= 4) self._stepIdx = 3;
             if (tries > 45 && self._stepIdx < 3) self.setPhase("score", data.hint);
-            if (tries > 90 && self.hint) {
-              self.hint.textContent =
-                "Analisi ancora in corso su sito grande o SoV measured — attendi, non chiudere la pagina.";
-            }
           }
           if (data.status === "done") {
             self._stepIdx = 4;
             self.setPhase("pack", "Completamento pack…");
+            self.setEta("Completato", 0);
             self._progress = 100;
             self._paintBar();
             self._stopTimers();
@@ -229,7 +271,7 @@
       // Keep polling until terminal status (long Plus crawls may exceed 4 minutes).
       // Back off slightly after 3 minutes to reduce load.
       var delay = tries < 90 ? 2000 : tries < 180 ? 4000 : 8000;
-      if (tries === 90 && self.hint) {
+      if (tries === 90 && self.hint && !(typeof self._etaSeconds === "number")) {
         self.hint.textContent = "Analisi ancora in corso — puoi lasciare questa pagina aperta.";
       }
       self._poll = setTimeout(tick, delay);
@@ -269,6 +311,7 @@
         url: url,
         phase: "pending",
         hint: "Invio richiesta… il worker partirà a breve.",
+        etaLabel: "Stima in preparazione…",
       });
     });
   }

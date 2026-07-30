@@ -51,19 +51,30 @@ def run_analysis_pipeline(
     if pages <= 0:
         pages = int(getattr(user, "crawl_pages", 8) or 8)
 
-    def _hb() -> None:
+    def _hb(
+        phase: str | None = None,
+        done: int | None = None,
+        total: int | None = None,
+    ) -> None:
         if not callable(heartbeat_callback):
             return
         try:
-            heartbeat_callback()
+            heartbeat_callback(phase=phase, done=done, total=total)
+        except TypeError:
+            # Older callers that only accept zero-arg heartbeats.
+            try:
+                heartbeat_callback()
+            except Exception:
+                logger.debug("heartbeat failed", exc_info=True)
+                raise
         except Exception:
             logger.debug("heartbeat failed", exc_info=True)
             raise
 
-    _hb()
+    _hb(phase="crawl", done=0, total=pages)
 
-    def _crawl_progress(_done: int, _total: int) -> None:
-        _hb()
+    def _crawl_progress(done: int, total: int) -> None:
+        _hb(phase="crawl", done=int(done), total=int(total))
 
     result = analyze_site(
         url,
@@ -72,7 +83,8 @@ def run_analysis_pipeline(
         progress_callback=_crawl_progress,
     )
 
-    _hb()
+    crawled = len(result.get("pages") or result.get("page_reports") or []) or pages
+    _hb(phase="geo", done=crawled, total=max(crawled, pages))
 
     measured_ok = should_run_measured(
         user=user,
@@ -101,7 +113,7 @@ def run_analysis_pipeline(
         usage_callback=usage_callback,
     )
 
-    _hb()
+    _hb(phase="score", done=crawled, total=max(crawled, pages))
 
     run_diff = compare_with_previous(
         aio_score=result.get("aio_score"),
@@ -130,7 +142,7 @@ def run_analysis_pipeline(
             alerts["findings"]
         )
 
-    _hb()
+    _hb(phase="pack", done=crawled, total=max(crawled, pages))
 
     pack = build_optimization_pack(
         url,
@@ -145,7 +157,7 @@ def run_analysis_pipeline(
         usage_callback=usage_callback,
     )
 
-    _hb()
+    _hb(phase="pack", done=crawled, total=max(crawled, pages))
 
     analysis = persist_analysis(
         db_session,

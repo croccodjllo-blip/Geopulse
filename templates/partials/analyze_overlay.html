@@ -44,6 +44,10 @@
     </p>
     <p class="analyze-overlay__url" data-overlay-url hidden></p>
 
+    <p class="analyze-overlay__eta" data-overlay-eta aria-live="polite">
+      {{ _('Stima: 30–90 secondi') }}
+    </p>
+
     <ol class="analyze-overlay__steps" data-overlay-steps aria-hidden="true">
       <li data-step="queue">{{ _('In coda') }}</li>
       <li data-step="crawl">{{ _('Crawl del dominio') }}</li>

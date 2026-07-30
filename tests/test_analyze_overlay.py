@@ -14,6 +14,7 @@ def test_analyze_overlay_partial_renders_on_dashboard(monkeypatch):
     assert 'data-analyze-overlay' in html
     assert 'analyze-orbit' in html
     assert 'Elaborazione in corso' in html
+    assert 'data-overlay-eta' in html
 
 
 def test_analyze_overlay_auto_open_attrs_when_job():
