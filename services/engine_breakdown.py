@@ -45,6 +45,14 @@ ENGINES: tuple[dict[str, Any], ...] = (
         "weight": 1.0,
     },
     {
+        "id": "xai",
+        "label": "Grok",
+        "vendor": "xAI",
+        "bot": None,
+        "accent": "#E8E8E8",
+        "weight": 0.9,
+    },
+    {
         "id": "bing",
         "label": "Copilot",
         "vendor": "Microsoft",

@@ -1,8 +1,8 @@
 """Multi-engine citation / measured SoV monitor.
 
-OpenAI / Perplexity / Anthropic (Claude) / Google AI (Gemini) = measured when the
-matching API key is set. Other engines remain proxy placeholders with explicit
-evidence labels.
+OpenAI / Perplexity / Anthropic (Claude) / Google AI (Gemini) / xAI (Grok) =
+measured when the matching API key is set. Other engines remain proxy
+placeholders with explicit evidence labels.
 
 Keys are read at call-time (not only at import) so load_dotenv / systemd env stay in sync.
 """
@@ -69,6 +69,17 @@ def _gemini_model() -> str:
     )
 
 
+def _xai_key() -> str:
+    return _env("XAI_API_KEY", "GROK_API_KEY")
+
+
+def _xai_model() -> str:
+    return (
+        _env("XAI_MODEL", "GROK_MODEL", default="grok-4-1-fast-non-reasoning")
+        or "grok-4-1-fast-non-reasoning"
+    )
+
+
 # Back-compat aliases (may be empty if read before load_dotenv in odd import orders).
 OPENAI_API_KEY = _openai_key()
 OPENAI_MODEL = _openai_model()
@@ -79,11 +90,17 @@ ANTHROPIC_MODEL = _anthropic_model()
 ANTHROPIC_API_VERSION = _anthropic_version()
 GEMINI_API_KEY = _gemini_key()
 GEMINI_MODEL = _gemini_model()
+XAI_API_KEY = _xai_key()
+XAI_MODEL = _xai_model()
 
 
 def citation_monitor_available() -> bool:
     return bool(
-        _openai_key() or _perplexity_key() or _anthropic_key() or _gemini_key()
+        _openai_key()
+        or _perplexity_key()
+        or _anthropic_key()
+        or _gemini_key()
+        or _xai_key()
     )
 
 
@@ -498,6 +515,108 @@ def _probe_gemini(
     }
 
 
+def _probe_xai(
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None = None,
+) -> dict[str, Any]:
+    """xAI Grok chat/completions — SoV measured probe (OpenAI-compatible API)."""
+    api_key = _xai_key()
+    model = _xai_model()
+    if not api_key:
+        return {
+            "available": False,
+            "reason": "XAI_API_KEY / GROK_API_KEY assente",
+            "details": [],
+        }
+    try:
+        import requests
+    except Exception as exc:  # pragma: no cover
+        return {"available": False, "reason": str(exc), "details": []}
+
+    hits = 0
+    details: list[dict[str, Any]] = []
+    system = (
+        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
+        "non inventare URL o menzioni."
+    )
+    for prompt in prompts[:3]:
+        try:
+            res = requests.post(
+                "https://api.x.ai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": model,
+                    "temperature": 0.2,
+                    "max_tokens": 350,
+                    "messages": [
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": prompt},
+                    ],
+                },
+                timeout=45,
+            )
+            if not res.ok:
+                details.append(
+                    {
+                        "prompt": prompt,
+                        "error": f"HTTP {res.status_code}: {(res.text or '')[:180]}",
+                        "engine": "xai",
+                    }
+                )
+                continue
+            data = res.json()
+            usage = data.get("usage") or {}
+            if usage and usage_callback:
+                usage_callback(
+                    provider="xai",
+                    model=model,
+                    input_tokens=int(usage.get("prompt_tokens", 0)),
+                    output_tokens=int(usage.get("completion_tokens", 0)),
+                )
+            text = (
+                ((data.get("choices") or [{}])[0].get("message") or {}).get("content")
+                or ""
+            ).strip()
+        except Exception as exc:
+            logger.exception("xai/grok citation probe failed")
+            details.append(
+                {"prompt": prompt, "error": str(exc)[:160], "engine": "xai"}
+            )
+            continue
+        ok = _mentioned(text, needles)
+        if ok:
+            hits += 1
+        details.append(
+            {
+                "prompt": prompt,
+                "mentioned": ok,
+                "excerpt": text[:280],
+                "engine": "xai",
+            }
+        )
+    ok_details = [d for d in details if "error" not in d]
+    if not ok_details:
+        reason = "Grok probe fallito su tutti i prompt"
+        if details and details[0].get("error"):
+            reason = str(details[0]["error"])[:160]
+        return {"available": False, "reason": reason, "details": details}
+    total = max(1, len(ok_details))
+    rate = round(100.0 * hits / total)
+    return {
+        "available": True,
+        "mention_rate": rate,
+        "hits": hits,
+        "samples": total,
+        "details": details,
+        "evidence": "measured",
+        "model": model,
+    }
+
+
 def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
     if not competitors:
         return 0.0
@@ -644,6 +763,36 @@ def run_citation_monitor(
             }
         )
 
+    xai = _probe_xai(prompts, needles, usage_callback=usage_callback)
+    if xai.get("available"):
+        engines_out.append(
+            {
+                "id": "xai",
+                "label": "Grok",
+                "vendor": "xAI",
+                "mention_rate": xai["mention_rate"],
+                "hits": xai["hits"],
+                "samples": xai["samples"],
+                "evidence": "measured",
+                "accent": "#E8E8E8",
+                "model": xai.get("model") or _xai_model(),
+            }
+        )
+        all_details.extend(xai.get("details") or [])
+    else:
+        engines_out.append(
+            {
+                "id": "xai",
+                "label": "Grok",
+                "vendor": "xAI",
+                "mention_rate": None,
+                "evidence": "unavailable" if _xai_key() else "pending",
+                "reason": xai.get("reason")
+                or "Imposta XAI_API_KEY (console.x.ai) per SoV measured.",
+                "accent": "#E8E8E8",
+            }
+        )
+
     engines_out.append(
         {
             "id": "bing",
@@ -713,8 +862,8 @@ def run_citation_monitor(
                 "severity": "warn",
                 "title": "Citation monitor non configurato",
                 "detail": (
-                    "Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY "
-                    "e/o GEMINI_API_KEY per SoV measured."
+                    "Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
+                    "GEMINI_API_KEY e/o XAI_API_KEY per SoV measured."
                 ),
                 "evidence": "estimated",
             }
@@ -733,7 +882,7 @@ def run_citation_monitor(
         "competitor_pressure": round(pressure, 1),
         "findings": findings,
         "note": (
-            "ChatGPT / Perplexity / Claude / Gemini: mention rate da prompt pack. "
+            "ChatGPT / Perplexity / Claude / Gemini / Grok: mention rate da prompt pack. "
             "Copilot: pending connector. "
             "Non equivale a ranking garantito nelle risposte live."
         ),

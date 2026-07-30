@@ -71,6 +71,13 @@ _PRICE_TABLE: dict[str, dict[str, float]] = {
     "gemini-2.0-flash-lite":  {"in": 0.075, "out": 0.30},
     "gemini-1.5-flash":       {"in": 0.075, "out": 0.30},
     "gemini-2.5-flash":       {"in": 0.15, "out": 0.60},
+    "gemini-flash-latest":    {"in": 0.10, "out": 0.40},
+    # xAI Grok (approx. list prices)
+    "grok-4-1-fast-non-reasoning": {"in": 0.20, "out": 0.50},
+    "grok-4-1-fast":               {"in": 0.20, "out": 0.50},
+    "grok-3-mini":                 {"in": 0.30, "out": 0.50},
+    "grok-3":                      {"in": 3.00, "out": 15.00},
+    "grok-4.5":                    {"in": 2.00, "out": 6.00},
 }
 
 _DEFAULT_PRICE = {"in": 1.00, "out": 4.00}   # fallback for unknown models
@@ -142,6 +149,11 @@ def _estimate_gemini_sov(model: str, n_prompts: int) -> TokenBudget:
     return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
 
 
+def _estimate_xai_sov(model: str, n_prompts: int) -> TokenBudget:
+    n = min(n_prompts, 3)
+    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+
+
 # ─────────────────────────── estimate API ────────────────────────────────────
 
 @dataclass
@@ -181,8 +193,10 @@ def estimate_analysis_cost(
     has_openai: bool = True,
     has_perplexity: bool = False,
     has_anthropic: bool = False,
-    gemini_model: str = "gemini-2.0-flash",
+    gemini_model: str = "gemini-flash-latest",
     has_gemini: bool = False,
+    xai_model: str = "grok-4-1-fast-non-reasoning",
+    has_xai: bool = False,
 ) -> CostEstimate:
     """Estimate the total cost of one analysis run (before it runs)."""
     budgets: list[TokenBudget] = []
@@ -238,6 +252,16 @@ def estimate_analysis_cost(
             breakdown.append({
                 "item": f"Citation probe Gemini ({min(n_prompts,3)} prompt)",
                 "provider": "google",
+                "model": b.model,
+                "input_tokens": b.input_tokens,
+                "output_tokens": b.output_tokens,
+            })
+        if has_xai:
+            b = _estimate_xai_sov(xai_model, n_prompts)
+            budgets.append(b)
+            breakdown.append({
+                "item": f"Citation probe Grok ({min(n_prompts,3)} prompt)",
+                "provider": "xai",
                 "model": b.model,
                 "input_tokens": b.input_tokens,
                 "output_tokens": b.output_tokens,

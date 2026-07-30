@@ -1540,6 +1540,14 @@ def process_pending_analyze_jobs(
                 has_openai=bool(api_key),
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+                has_gemini=bool(
+                    os.getenv("GEMINI_API_KEY")
+                    or os.getenv("GOOGLE_AI_API_KEY")
+                    or os.getenv("GOOGLE_API_KEY")
+                ),
+                gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
+                has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
+                xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
             )
             preflight = check_page_word_budget(
                 url=job.url,
@@ -2052,6 +2060,13 @@ def health():
                         os.getenv("GEMINI_API_KEY")
                         or os.getenv("GOOGLE_AI_API_KEY")
                         or os.getenv("GOOGLE_API_KEY")
+                        or ""
+                    ).strip()
+                ),
+                "xai": bool(
+                    (
+                        os.getenv("XAI_API_KEY")
+                        or os.getenv("GROK_API_KEY")
                         or ""
                     ).strip()
                 ),
@@ -3298,6 +3313,14 @@ def dashboard():
                 has_openai=bool(OPENAI_API_KEY),
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+                has_gemini=bool(
+                    os.getenv("GEMINI_API_KEY")
+                    or os.getenv("GOOGLE_AI_API_KEY")
+                    or os.getenv("GOOGLE_API_KEY")
+                ),
+                gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
+                has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
+                xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
             )
             # Preventive word-count guard before any AI request
             preflight = check_page_word_budget(
@@ -3550,6 +3573,14 @@ def dashboard_analyze_confirmed():
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+        has_gemini=bool(
+            os.getenv("GEMINI_API_KEY")
+            or os.getenv("GOOGLE_AI_API_KEY")
+            or os.getenv("GOOGLE_API_KEY")
+        ),
+        gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
+        has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
+        xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
     )
     balance = get_balance_cents(user)
     preflight = check_page_word_budget(
@@ -4315,6 +4346,14 @@ def api_v1_analyze():
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+        has_gemini=bool(
+            os.getenv("GEMINI_API_KEY")
+            or os.getenv("GOOGLE_AI_API_KEY")
+            or os.getenv("GOOGLE_API_KEY")
+        ),
+        gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
+        has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
+        xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
     )
     preflight = check_page_word_budget(
         url=url,
