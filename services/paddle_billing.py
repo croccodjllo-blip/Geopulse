@@ -270,18 +270,64 @@ def transaction_is_subscription(data: dict[str, Any]) -> bool:
     return False
 
 
+def transaction_price_ids(data: dict[str, Any]) -> list[str]:
+    """Collect price_id values from a Paddle transaction payload."""
+    out: list[str] = []
+    for item in data.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        price = item.get("price") if isinstance(item.get("price"), dict) else {}
+        pid = (
+            item.get("price_id")
+            or (price or {}).get("id")
+            or (price or {}).get("price_id")
+        )
+        if pid:
+            text = str(pid).strip()
+            if text and text not in out:
+                out.append(text)
+    return out
+
+
+def plus_price_id() -> str:
+    """Configured Plus monthly price id (re-read env for tests / runtime)."""
+    return (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or PADDLE_PRICE_PLUS or "").strip()
+
+
+def transaction_grants_plus(data: dict[str, Any]) -> bool:
+    """Grant Plus only when the settled line items include the Plus price.
+
+    Never trust client ``custom_data.product`` — overlay checkout can set it.
+    """
+    plus = plus_price_id()
+    if not plus:
+        return False
+    return plus in transaction_price_ids(data)
+
+
+def topup_cents_for_transaction(data: dict[str, Any]) -> int | None:
+    """Map settled price_id → EUR cents via server catalog. Ignore custom_data."""
+    inverse = {pid: cents for cents, pid in topup_price_map().items()}
+    if not inverse:
+        return None
+    for pid in transaction_price_ids(data):
+        if pid in inverse:
+            return int(inverse[pid])
+    return None
+
+
 def transaction_gross_cents(data: dict[str, Any]) -> int | None:
-    """Best-effort paid amount in minor units (EUR cents)."""
+    """Best-effort paid amount in minor units (EUR cents).
+
+    Uses Paddle totals only — never falls back to client custom_data.
+    """
     details = data.get("details") or {}
-    totals = details.get("totals") or data.get("details", {}).get("totals") or {}
-    # Paddle totals are usually strings in major currency units? Actually Billing
-    # API uses lowest denomination as strings for money fields in some payloads.
+    totals = details.get("totals") or {}
     for key in ("grand_total", "total", "subtotal"):
         raw = totals.get(key)
         if raw is None:
             continue
         try:
-            # Prefer integer minor units when numeric string without decimal.
             if isinstance(raw, (int, float)):
                 return int(round(float(raw)))
             text = str(raw).strip()
@@ -290,8 +336,4 @@ def transaction_gross_cents(data: dict[str, Any]) -> int | None:
             return int(text)
         except (TypeError, ValueError):
             continue
-    custom = data.get("custom_data") or {}
-    try:
-        return int(custom.get("topup_cents")) if custom.get("topup_cents") else None
-    except (TypeError, ValueError):
-        return None
+    return None

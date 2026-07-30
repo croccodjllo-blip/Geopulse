@@ -101,6 +101,8 @@ from services.paddle_billing import (
     paddle_topups_enabled,
     parse_webhook_event as paddle_parse_webhook_event,
     plan_from_paddle_subscription_status,
+    topup_cents_for_transaction,
+    transaction_grants_plus,
     transaction_gross_cents,
     transaction_is_subscription,
     verify_webhook_signature as paddle_verify_webhook_signature,
@@ -2729,12 +2731,11 @@ def billing_paddle_webhook():
             if status and status not in {"completed", "paid", "billed"}:
                 return jsonify({"ok": True, "ignored": status})
 
-            custom = data.get("custom_data") or {}
-            product = str(custom.get("product") or "").lower()
-            is_sub = transaction_is_subscription(data) or product == "plus"
+            # Trust only settled price_id from Paddle — never custom_data.product /
+            # topup_cents (overlay checkout is client-controlled).
             user = _user_from_paddle(data)
 
-            if is_sub and product != "topup":
+            if transaction_grants_plus(data):
                 if user is not None and (user.plan or "").lower() != "admin":
                     if data.get("customer_id"):
                         user.paddle_customer_id = str(data.get("customer_id"))
@@ -2745,26 +2746,19 @@ def billing_paddle_webhook():
                     db.session.commit()
                 return jsonify({"ok": True})
 
-            # One-time credit top-up
-            if product != "topup" and not custom.get("topup_cents"):
+            topup_cents = topup_cents_for_transaction(data)
+            if not topup_cents:
                 return jsonify({"ok": True, "ignored": "not_topup"})
 
-            allowed = {pkg["cents"] for pkg in _TOPUP_PACKAGES}
-            meta_cents = 0
-            try:
-                meta_cents = int(custom.get("topup_cents") or 0)
-            except (TypeError, ValueError):
-                meta_cents = 0
             gross = transaction_gross_cents(data)
-            topup_cents = meta_cents if meta_cents in allowed else 0
-            if topup_cents == 0 and gross in allowed:
-                topup_cents = int(gross)
-            # Prefer matching settled amount when both present.
-            if meta_cents in allowed and gross in allowed and meta_cents != gross:
+            if gross is not None and int(gross) != int(topup_cents):
                 app.logger.warning(
-                    "Paddle top-up amount mismatch meta=%s gross=%s", meta_cents, gross
+                    "Paddle top-up catalog/gross mismatch catalog=%s gross=%s txn=%s",
+                    topup_cents,
+                    gross,
+                    data.get("id"),
                 )
-                topup_cents = int(gross)
+                return jsonify({"ok": False, "error": "amount_mismatch"}), 400
 
             txn_id = str(data.get("id") or "").strip()
             if not txn_id:
@@ -2772,8 +2766,6 @@ def billing_paddle_webhook():
             pi = f"paddle:{txn_id}"
             if not user:
                 return jsonify({"ok": True, "ignored": "no_user"})
-            if topup_cents <= 0:
-                return jsonify({"ok": True, "ignored": "bad_amount"})
             already = CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
             if already is not None:
                 return jsonify({"ok": True, "duplicate": True})
@@ -2782,7 +2774,7 @@ def billing_paddle_webhook():
                     db.session,
                     CreditLedger,
                     user,
-                    amount_eur_cents=topup_cents,
+                    amount_eur_cents=int(topup_cents),
                     description=f"Ricarica €{topup_cents/100:.2f} via Paddle",
                     stripe_payment_intent=pi,
                 )
