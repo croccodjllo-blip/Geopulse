@@ -41,6 +41,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import requests
+from sqlalchemy import text
 
 from services.ssrf import UnsafeURLError, safe_get
 
@@ -469,12 +470,19 @@ def debit_cents_from_usage(charged_eur_cents: float) -> int:
     return int(math.ceil(charged_eur_cents - 1e-12))
 
 
+def get_held_cents(user: Any) -> int:
+    return max(0, int(getattr(user, "credit_held_cents", 0) or 0))
+
+
 def get_balance_cents(user: Any) -> int:
-    """Return credit balance in EUR cents (0 if column missing).
-    For admin/unlimited users returns a very large sentinel value."""
+    """Spendable credit in EUR cents (balance minus active holds).
+
+    Admin/unlimited users return a very large sentinel value.
+    """
     if is_unlimited_user(user):
         return 2_147_483_647  # effectively infinite
-    return int(getattr(user, "credit_balance_cents", 0) or 0)
+    raw = int(getattr(user, "credit_balance_cents", 0) or 0)
+    return max(0, raw - get_held_cents(user))
 
 
 def has_sufficient_credit(user: Any, cost_estimate: CostEstimate) -> bool:
@@ -547,6 +555,14 @@ def deduct_credit(
     db_session.flush()
 
 
+def _begin_immediate(db_session: Any) -> None:
+    """Take a reserved write lock early (critical on SQLite under concurrency)."""
+    bind = db_session.get_bind()
+    dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
+    if dialect == "sqlite":
+        db_session.execute(text("BEGIN IMMEDIATE"))
+
+
 def assert_can_start_analysis(
     db_session: Any,
     user: Any,
@@ -562,6 +578,11 @@ def assert_can_start_analysis(
     if is_unlimited_user(user):
         return
     UserModel = type(user)
+    try:
+        _begin_immediate(db_session)
+    except Exception:
+        # Non-SQLite / already in a transaction: fall through to FOR UPDATE.
+        pass
     locked = (
         db_session.query(UserModel)
         .filter(UserModel.id == user.id)
@@ -573,6 +594,8 @@ def assert_can_start_analysis(
     # Keep caller's user object in sync with locked row.
     if locked is not user:
         user.credit_balance_cents = locked.credit_balance_cents
+        if hasattr(locked, "credit_held_cents"):
+            user.credit_held_cents = locked.credit_held_cents
     if AnalysisJob is not None and max_concurrent_jobs > 0:
         active = (
             AnalysisJob.query.filter(
@@ -591,6 +614,103 @@ def assert_can_start_analysis(
             f"Credito insufficiente: {get_balance_cents(user)} cent disponibili, "
             f"{need} richiesti."
         )
+
+
+def hold_credit(
+    db_session: Any,
+    CreditLedger: Any,
+    user: Any,
+    *,
+    amount_cents: int,
+    job_id: int | None = None,
+    description: str = "Riserva analisi",
+) -> int:
+    """Reserve spendable credit for a queued job (increases credit_held_cents).
+
+    Returns the held amount (0 for unlimited users).
+    """
+    if is_unlimited_user(user) or amount_cents <= 0:
+        return 0
+    amount = int(amount_cents)
+    UserModel = type(user)
+    # Conditional: spendable (balance - held) must cover amount.
+    raw_balance = int(getattr(user, "credit_balance_cents", 0) or 0)
+    held_now = get_held_cents(user)
+    if raw_balance - held_now < amount:
+        raise InsufficientCreditError(
+            f"Credito insufficiente per la riserva: {raw_balance - held_now} "
+            f"cent disponibili, {amount} richiesti."
+        )
+    updated = (
+        db_session.query(UserModel)
+        .filter(UserModel.id == user.id)
+        .update(
+            {
+                UserModel.credit_held_cents: UserModel.credit_held_cents + amount
+            },
+            synchronize_session=False,
+        )
+    )
+    if updated != 1:
+        # Column may be missing on very old schemas — fall back to attribute.
+        user.credit_held_cents = held_now + amount
+    else:
+        db_session.refresh(user)
+    entry = CreditLedger(
+        user_id=user.id,
+        analysis_run_id=None,
+        amount_cents=0,
+        balance_after_cents=get_balance_cents(user),
+        description=f"{description}" + (f" job#{job_id}" if job_id else ""),
+        created_at=datetime.now(timezone.utc),
+    )
+    db_session.add(entry)
+    db_session.flush()
+    return amount
+
+
+def release_hold(
+    db_session: Any,
+    user: Any,
+    *,
+    amount_cents: int,
+) -> int:
+    """Release remaining job hold back to spendable balance."""
+    if is_unlimited_user(user) or amount_cents <= 0:
+        return 0
+    amount = min(int(amount_cents), get_held_cents(user))
+    if amount <= 0:
+        return 0
+    UserModel = type(user)
+    db_session.query(UserModel).filter(UserModel.id == user.id).update(
+        {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
+        synchronize_session=False,
+    )
+    db_session.refresh(user)
+    if int(getattr(user, "credit_held_cents", 0) or 0) < 0:
+        user.credit_held_cents = 0
+    return amount
+
+
+def consume_hold(
+    db_session: Any,
+    user: Any,
+    *,
+    amount_cents: int,
+) -> int:
+    """Reduce hold after real usage was deducted from balance (avoid double-reserve)."""
+    if is_unlimited_user(user) or amount_cents <= 0:
+        return 0
+    amount = min(int(amount_cents), get_held_cents(user))
+    if amount <= 0:
+        return 0
+    UserModel = type(user)
+    db_session.query(UserModel).filter(UserModel.id == user.id).update(
+        {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
+        synchronize_session=False,
+    )
+    db_session.refresh(user)
+    return amount
 
 
 def topup_credit(

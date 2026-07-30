@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-29 19:54+0000\n"
+"POT-Creation-Date: 2026-07-30 06:42+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -63,8 +63,9 @@ msgstr ""
 "판독 파일을 우선시합니다. 우리는 창립자, 브랜드 및 에이전시가 점수로 그 격차를 해소하도록 돕습니다."
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/faq.html:27 templates/partials/auth_help.html:7
-#: templates/partials/auth_help.html:19 templates/product.html:14
+#: templates/dashboard.html:741 templates/faq.html:27
+#: templates/partials/auth_help.html:7 templates/partials/auth_help.html:19
+#: templates/product.html:14
 msgid "e"
 msgstr "그리고"
 
@@ -203,19 +204,24 @@ msgstr ""
 msgid "Principale"
 msgstr "주요"
 
-#: templates/base.html:101 templates/base.html:193
+#: templates/base.html:101 templates/base.html:193 templates/dashboard.html:2
+#: templates/history.html:21 templates/site_history.html:13
+#: templates/topup.html:76 templates/verify.html:38
 msgid "Dashboard"
 msgstr "대시보드"
 
-#: templates/base.html:102 templates/base.html:194
+#: templates/base.html:102 templates/base.html:194 templates/dashboard.html:177
+#: templates/dashboard.html:685 templates/history.html:2
+#: templates/site_history.html:2
 msgid "Storico"
 msgstr "기록"
 
-#: templates/base.html:103 templates/base.html:195
+#: templates/base.html:103 templates/base.html:195 templates/dashboard.html:29
+#: templates/guide.html:2 templates/guide.html:9
 msgid "Guida"
 msgstr "가이드"
 
-#: templates/base.html:104
+#: templates/base.html:104 templates/dashboard.html:501
 msgid "Impostazioni"
 msgstr "설정"
 
@@ -260,7 +266,8 @@ msgstr "작동 방식"
 msgid "Guida llms.txt"
 msgstr "llms.txt 가이드"
 
-#: templates/base.html:191 templates/contact.html:25
+#: templates/base.html:191 templates/contact.html:25 templates/history.html:9
+#: templates/settings.html:8
 msgid "Account"
 msgstr "계정"
 
@@ -309,6 +316,170 @@ msgstr "오류"
 #: templates/base.html:269
 msgid "Analisi in corso…"
 msgstr "분석 중…"
+
+#: templates/confirm_analyze.html:2
+#, fuzzy
+msgid "Conferma analisi"
+msgstr "비밀번호 확인"
+
+#: templates/confirm_analyze.html:8
+#, fuzzy
+msgid "Stima analisi"
+msgstr "더 많은 사이트 및 분석"
+
+#: templates/confirm_analyze.html:9
+msgid "Rivedi e conferma"
+msgstr "검토 및 확인"
+
+#: templates/confirm_analyze.html:11
+msgid "Prima di procedere, controlla il costo stimato e il miglioramento atteso."
+msgstr "진행하기 전에 예상 비용과 기대되는 개선 사항을 확인하세요."
+
+#: templates/confirm_analyze.html:12
+msgid ""
+"I crediti vengono scalati in tempo reale sui token AI consumati durante "
+"l'analisi"
+msgstr "크레딧은 분석 중 소비된 AI 토큰에 대해 실시간으로 차감됩니다."
+
+#: templates/confirm_analyze.html:13
+msgid "(con margine di sicurezza"
+msgstr "(안전 마진 포함"
+
+#: templates/confirm_analyze.html:13
+msgid "sul saldo richiesto all'avvio)."
+msgstr "시작 시 요구되는 잔액에 대해)."
+
+#: templates/confirm_analyze.html:19
+msgid "Sito analizzato"
+msgstr "분석된 사이트"
+
+#: templates/confirm_analyze.html:27
+#, fuzzy
+msgid "Costo stimato"
+msgstr "추정됨"
+
+#: templates/confirm_analyze.html:31
+#, fuzzy
+msgid "per questa analisi"
+msgstr "더 많은 사이트 및 분석"
+
+#: templates/confirm_analyze.html:34
+msgid "Include spread di piattaforma"
+msgstr "플랫폼 스프레드 포함"
+
+#: templates/confirm_analyze.html:34
+msgid "sul costo reale dell'API AI."
+msgstr "AI API의 실제 비용에 대해."
+
+#: templates/confirm_analyze.html:35
+msgid "Il costo effettivo viene calcolato sui token realmente consumati."
+msgstr "실제 비용은 실제로 소비된 토큰을 기준으로 계산됩니다."
+
+#: templates/confirm_analyze.html:40
+msgid "Dettaglio voci di costo"
+msgstr "비용 항목 세부정보"
+
+#: templates/confirm_analyze.html:43
+msgid "Voce"
+msgstr "항목"
+
+#: templates/confirm_analyze.html:43
+msgid "Provider"
+msgstr "제공자"
+
+#: templates/confirm_analyze.html:43
+#, fuzzy
+msgid "Modello"
+msgstr "방법"
+
+#: templates/confirm_analyze.html:43
+msgid "Input tok."
+msgstr "입력 토큰"
+
+#: templates/confirm_analyze.html:43
+msgid "Output tok."
+msgstr "출력 토큰"
+
+#: templates/confirm_analyze.html:64
+msgid "Miglioramento atteso"
+msgstr "기대되는 개선"
+
+#: templates/confirm_analyze.html:69
+msgid "AIO oggi"
+msgstr "오늘의 AIO"
+
+#: templates/confirm_analyze.html:75
+msgid "GEO oggi"
+msgstr "오늘의 GEO"
+
+#: templates/confirm_analyze.html:82
+#, fuzzy
+msgid "Prima analisi"
+msgstr "더 많은 사이트 및 분석"
+
+#: templates/confirm_analyze.html:99
+msgid ""
+"Le stime di miglioramento sono indicative e calcolate sui gap rilevati "
+"nei run precedenti o sul profilo del dominio. Non costituiscono garanzia "
+"di risultato."
+msgstr "개선 추정치는 지표로 사용되며 이전 실행에서 발견된 격차 또는 도메인 프로필을 기반으로 계산됩니다. 결과를 보장하지 않습니다."
+
+#: templates/confirm_analyze.html:106
+msgid "Il tuo credito"
+msgstr "당신의 크레딧"
+
+#: templates/confirm_analyze.html:110 templates/confirm_analyze.html:117
+msgid "Disponibile:"
+msgstr "사용 가능:"
+
+#: templates/confirm_analyze.html:110
+msgid "Illimitato"
+msgstr "무제한"
+
+#: templates/confirm_analyze.html:112
+msgid "Account admin — nessun addebito"
+msgstr "관리자 계정 — 요금 없음"
+
+#: templates/confirm_analyze.html:120
+msgid "Credito sufficiente (con margine sicurezza"
+msgstr "충분한 크레딧 (안전 마진 포함"
+
+#: templates/confirm_analyze.html:122
+msgid "Credito insufficiente"
+msgstr "불충분한 크레딧"
+
+#: templates/confirm_analyze.html:124
+msgid "Ricarica almeno"
+msgstr "최소 충전"
+
+#: templates/confirm_analyze.html:124
+#, fuzzy
+msgid "per procedere"
+msgstr "오류"
+
+#: templates/confirm_analyze.html:125
+msgid "margine sicurezza"
+msgstr "안전 마진"
+
+#: templates/confirm_analyze.html:125
+msgid "incluso"
+msgstr "포함"
+
+#: templates/confirm_analyze.html:126 templates/confirm_analyze.html:151
+msgid "Ricarica credito"
+msgstr "크레딧 충전"
+
+#: templates/confirm_analyze.html:144
+msgid "Avvia analisi (admin — gratuito)"
+msgstr "분석 시작 (관리자 — 무료)"
+
+#: templates/confirm_analyze.html:146
+msgid "Conferma e avvia analisi"
+msgstr "확인 및 분석 시작"
+
+#: templates/confirm_analyze.html:153
+msgid "Annulla"
+msgstr "취소"
 
 #: templates/contact.html:3
 msgid ""
@@ -412,6 +583,693 @@ msgstr "우리는 이메일 목록을 판매하지 않으며, Centropic을 제�
 msgid "Scrivi a info@centropic.ai"
 msgstr "info@centropic.ai로 작성하세요"
 
+#: templates/dashboard.html:22
+#, fuzzy
+msgid "Ciao"
+msgstr "복사됨"
+
+#: templates/dashboard.html:25
+#, fuzzy
+msgid "Analizza, chiudi i gap, pubblica il pack."
+msgstr "신호를 분석하세요. 문제를 해결하세요. 팩을 게시하세요."
+
+#: templates/dashboard.html:28
+msgid "Workspace"
+msgstr "작업 공간"
+
+#: templates/dashboard.html:32
+#, fuzzy
+msgid "Stato account"
+msgstr "계정 생성"
+
+#: templates/dashboard.html:34
+#, fuzzy
+msgid "Piano"
+msgstr "요금제"
+
+#: templates/dashboard.html:38
+#, fuzzy
+msgid "Siti"
+msgstr "사이트"
+
+#: templates/dashboard.html:42
+msgid "Crawl"
+msgstr "크롤링"
+
+#: templates/dashboard.html:43
+#, fuzzy
+msgid "Intero sito"
+msgstr "전체 사이트 크롤링"
+
+#: templates/dashboard.html:43
+#, fuzzy
+msgid "pag."
+msgstr "페이지"
+
+#: templates/dashboard.html:46
+#, fuzzy
+msgid "Analisi totali"
+msgstr "계정당 총 분석."
+
+#: templates/dashboard.html:46
+msgid "Quote 24h"
+msgstr "24시간 견적"
+
+#: templates/dashboard.html:58 templates/settings.html:117
+#, fuzzy
+msgid "Vedi piano Plus"
+msgstr "로그인하고 Plus로 전환"
+
+#: templates/dashboard.html:60 templates/dashboard.html:698
+#, fuzzy
+msgid "Prenota Plus"
+msgstr "관심 예약"
+
+#: templates/dashboard.html:71
+msgid "Nuova analisi"
+msgstr "새 분석"
+
+#: templates/dashboard.html:74
+msgid "Quote Free esaurite · passa a Plus per continuare"
+msgstr "Quote Free가 소진되었습니다 · 계속하려면 Plus로 전환하세요"
+
+#: templates/dashboard.html:76
+msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
+msgstr "이미 등록된 사이트를 다시 분석할 수 있습니다 · 더 많은 브랜드를 위해 Plus"
+
+#: templates/dashboard.html:78
+#, fuzzy
+msgid "Crawl BFS · intero sito"
+msgstr "전체 사이트 크롤링"
+
+#: templates/dashboard.html:80
+#, fuzzy
+msgid "Crawl stesso dominio · max"
+msgstr "동일 도메인 크롤링, 프로브"
+
+#: templates/dashboard.html:80 templates/dashboard.html:162
+#: templates/dashboard.html:626 templates/pricing.html:23
+msgid "pagine"
+msgstr "페이지"
+
+#: templates/dashboard.html:86
+#, fuzzy
+msgid "URL del dominio"
+msgstr "도메인 크롤링, 프로브"
+
+#: templates/dashboard.html:93
+msgid "Competitor snapshot (Plus, max 3)"
+msgstr "경쟁자 스냅샷 (Plus, 최대 3개)"
+
+#: templates/dashboard.html:97
+msgid ""
+"SoV measured (probe LLM) incluso nel piano Plus quando i connector sono "
+"attivi."
+msgstr "SoV 측정 (프로브 LLM)은 커넥터가 활성화된 경우 Plus 요금제에 포함됩니다."
+
+#: templates/dashboard.html:100
+#, fuzzy
+msgid "Free: score AIO/GEO e SoV"
+msgstr "AIO 및 GEO 점수"
+
+#: templates/dashboard.html:100
+#, fuzzy
+msgid "stimato"
+msgstr "추정됨"
+
+#: templates/dashboard.html:101
+msgid "sblocca SoV measured / citation monitor."
+msgstr "SoV 측정 / 인용 모니터를 잠금 해제하세요."
+
+#: templates/dashboard.html:119 templates/partials/analyze_overlay.html:48
+msgid "In coda"
+msgstr "대기 중"
+
+#: templates/dashboard.html:119
+#, fuzzy
+msgid "In esecuzione"
+msgstr "쿠키 및 측정"
+
+#: templates/dashboard.html:124
+msgid "Worker in avvio — di solito parte entro pochi secondi."
+msgstr "작업자가 시작 중입니다 — 일반적으로 몇 초 이내에 시작됩니다."
+
+#: templates/dashboard.html:126
+msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
+msgstr "크롤링, 프로브 및 점수가 진행 중입니다 (일반적으로 30–90초)."
+
+#: templates/dashboard.html:132
+#, fuzzy
+msgid "Analisi fallita"
+msgstr "다중 페이지 분석"
+
+#: templates/dashboard.html:133
+msgid "Errore sconosciuto"
+msgstr "알 수 없는 오류"
+
+#: templates/dashboard.html:135
+msgid "Controlla l’URL e riprova. Supporto:"
+msgstr "URL을 확인하고 다시 시도하세요. 지원:"
+
+#: templates/dashboard.html:154
+msgid "Ultimo report"
+msgstr "최신 보고서"
+
+#: templates/dashboard.html:161 templates/site_history.html:12
+#, fuzzy
+msgid "Apri sito"
+msgstr "사이트"
+
+#: templates/dashboard.html:169
+#, fuzzy
+msgid "Scarica ZIP"
+msgstr "ZIP 패키지"
+
+#: templates/dashboard.html:172
+msgid "Email non configurata sul server"
+msgstr "서버에 구성되지 않은 이메일"
+
+#: templates/dashboard.html:173
+#, fuzzy
+msgid "Invia email"
+msgstr "이메일"
+
+#: templates/dashboard.html:188
+msgid "Segnali AIO molto forti"
+msgstr "매우 강력한 AIO 신호"
+
+#: templates/dashboard.html:189
+msgid ""
+"Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. "
+"Non è una garanzia di citazione live."
+msgstr "프로브 진단: AI 기반 가시성 신호의 높은 완전성. 라이브 인용을 보장하지 않습니다."
+
+#: templates/dashboard.html:192
+msgid "Segnali AIO solidi"
+msgstr "견고한 AIO 신호"
+
+#: templates/dashboard.html:193
+msgid ""
+"Buona base machine-readable. Chiudi i gap rimanenti per salire. Score "
+"euristico (Stimato), non polling LLM."
+msgstr "좋은 기계 판독 가능 기반. 남은 격차를 메워서 상승하세요. 휴리스틱 점수 (추정), LLM 폴링 아님."
+
+#: templates/dashboard.html:196
+msgid "Segnali AIO moderati"
+msgstr "보통 AIO 신호"
+
+#: templates/dashboard.html:197
+msgid ""
+"Alcuni asset presenti, diversi gap aperti. Prioritizza findings "
+"critical/warn."
+msgstr "일부 자산이 존재하며, 여러 개의 열린 격차가 있습니다. 중요/경고 발견 사항을 우선시하세요."
+
+#: templates/dashboard.html:200
+msgid "Segnali AIO emergenti"
+msgstr "신흥 AIO 신호"
+
+#: templates/dashboard.html:201
+msgid ""
+"Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e "
+"file AI."
+msgstr "크롤링에서 약한 신호: 엔티티, 스키마 및 AI 파일에 대한 구조적 작업이 필요합니다."
+
+#: templates/dashboard.html:204
+msgid "Segnali AIO critici"
+msgstr "중요한 AIO 신호"
+
+#: templates/dashboard.html:205
+msgid ""
+"Base insufficiente: intervento prioritario su title, schema, robots/llms "
+"e contenuti citabili."
+msgstr "불충분한 기반: 제목, 스키마, robots/llms 및 인용 가능한 콘텐츠에 대한 우선 개입."
+
+#: templates/dashboard.html:213
+msgid "Vista report"
+msgstr "보고서 보기"
+
+#: templates/dashboard.html:214
+msgid "Score"
+msgstr "점수"
+
+#: templates/dashboard.html:215 templates/dashboard.html:947
+msgid "SoV"
+msgstr "SoV"
+
+#: templates/dashboard.html:307 templates/dashboard.html:316
+#: templates/dashboard.html:326 templates/dashboard.html:657
+#: templates/product.html:39
+msgid "Stimato"
+msgstr "추정됨"
+
+#: templates/dashboard.html:316
+#, fuzzy
+msgid "Signal diagnostics"
+msgstr "진단 시작"
+
+#: templates/dashboard.html:317
+msgid "Quanto sono solidi i segnali AIO/GEO"
+msgstr "AIO/GEO 신호는 얼마나 견고한가요"
+
+#: templates/dashboard.html:320
+#, fuzzy
+msgid ""
+"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score "
+"da probe/euristiche, non citazioni live garantite."
+msgstr "AI 기반 가시성 (AIO) 및 생성 엔진 최적화 (GEO). 결과. 게시할 패키지."
+
+#: templates/dashboard.html:343 templates/dashboard.html:924
+msgid "Indice"
+msgstr "지수"
+
+#: templates/dashboard.html:355
+msgid "Interferenze"
+msgstr "간섭"
+
+#: templates/dashboard.html:360
+msgid "Nessuna criticità aperta"
+msgstr "열린 문제 없음"
+
+#: templates/dashboard.html:374
+msgid "Scala da DDD a AAA"
+msgstr "DDD에서 AAA로의 스케일"
+
+#: templates/dashboard.html:388
+msgid "AI Engine Breakdown"
+msgstr "AI 엔진 분석"
+
+#: templates/dashboard.html:391
+#, fuzzy
+msgid "Share of Voice"
+msgstr "점수 vs 음성 점유율"
+
+#: templates/dashboard.html:393
+#, fuzzy
+msgid "Share of Voice stimato"
+msgstr "점수 vs 음성 점유율"
+
+#: templates/dashboard.html:398
+msgid "Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine."
+msgstr "엔진에 대한 프로브 LLM (측정됨)과 휴리스틱 추정 (추정)의 혼합."
+
+#: templates/dashboard.html:400
+msgid "Piano Free: SoV stimato da score e robots."
+msgstr "무료 요금제: 점수와 로봇에 의해 추정된 SoV."
+
+#: templates/dashboard.html:401 templates/pricing.html:52
+#: templates/settings.html:55
+msgid "Passa a Plus"
+msgstr "Plus로 전환"
+
+#: templates/dashboard.html:401
+#, fuzzy
+msgid "per SoV measured (citation monitor)."
+msgstr "인용 모니터"
+
+#: templates/dashboard.html:403
+msgid "Stima euristica da score e robots — non è polling live sui modelli."
+msgstr "점수와 로봇에 의한 휴리스틱 추정 — 모델에 대한 실시간 폴링이 아닙니다."
+
+#: templates/dashboard.html:408
+msgid "Brand SoV"
+msgstr "브랜드 SoV"
+
+#: templates/dashboard.html:417
+msgid "Composizione SoV per engine"
+msgstr "엔진에 대한 SoV 구성"
+
+#: templates/dashboard.html:445
+msgid "bot blocked"
+msgstr "봇 차단됨"
+
+#: templates/dashboard.html:447
+msgid "bot allow"
+msgstr "봇 허용"
+
+#: templates/dashboard.html:450 templates/dashboard.html:657
+#: templates/faq.html:35 templates/product.html:39
+msgid "Misurato"
+msgstr "측정됨"
+
+#: templates/dashboard.html:452
+msgid "Non disponibile"
+msgstr "사용할 수 없음"
+
+#: templates/dashboard.html:454 templates/pricing.html:37
+msgid "In arrivo"
+msgstr "곧 출시 예정"
+
+#: templates/dashboard.html:472
+msgid "Campo competitivo"
+msgstr "경쟁 분야"
+
+#: templates/dashboard.html:479 templates/settings.html:107
+#, fuzzy
+msgid "Brand"
+msgstr "배지"
+
+#: templates/dashboard.html:480
+#, fuzzy
+msgid "Rivali"
+msgstr "개인정보 보호"
+
+#: templates/dashboard.html:481
+msgid "Altro"
+msgstr "기타"
+
+#: templates/dashboard.html:489
+msgid "Nessun breakdown disponibile."
+msgstr "사용 가능한 세분화 없음."
+
+#: templates/dashboard.html:494
+msgid "GEO suite"
+msgstr "GEO 스위트"
+
+#: templates/dashboard.html:497
+#, fuzzy
+msgid "Suite"
+msgstr "사이트 및"
+
+#: templates/dashboard.html:498
+msgid "GEO / AIO avanzato"
+msgstr "고급 GEO / AIO"
+
+#: templates/dashboard.html:503 templates/dashboard.html:521
+#: templates/dashboard.html:973 templates/verify.html:2 templates/verify.html:7
+msgid "Publish verify"
+msgstr "게시 확인"
+
+#: templates/dashboard.html:509
+#, fuzzy
+msgid "Entity graph"
+msgstr "구조화된 엔티티"
+
+#: templates/dashboard.html:510
+msgid "nodi"
+msgstr "노드"
+
+#: templates/dashboard.html:513
+msgid "Citability"
+msgstr "인용 가능성"
+
+#: templates/dashboard.html:517
+#, fuzzy
+msgid "Schema quality"
+msgstr "AI 스키마"
+
+#: templates/dashboard.html:525
+msgid "llms lint"
+msgstr "llms 린트"
+
+#: templates/dashboard.html:529
+msgid "Locales"
+msgstr "로케일"
+
+#: templates/dashboard.html:534 templates/dashboard.html:545
+msgid "SoV measured"
+msgstr "측정된 SoV"
+
+#: templates/dashboard.html:546
+msgid "sblocca"
+msgstr "잠금 해제"
+
+#: templates/dashboard.html:554
+msgid "Confronto con run precedente"
+msgstr "이전 실행과 비교"
+
+#: templates/dashboard.html:556
+msgid "Vs run precedente"
+msgstr "이전 실행 대비"
+
+#: templates/dashboard.html:583 templates/dashboard.html:633
+msgid "Priorità"
+msgstr "우선 순위"
+
+#: templates/dashboard.html:584
+#, fuzzy
+msgid "Pagine critiche"
+msgstr "연락처 페이지"
+
+#: templates/dashboard.html:589 templates/dashboard.html:592
+#, fuzzy
+msgid "critiche"
+msgstr "크레딧"
+
+#: templates/dashboard.html:589
+#, fuzzy
+msgid "critica"
+msgstr "크레딧"
+
+#: templates/dashboard.html:590 templates/dashboard.html:594
+msgid "attenzione"
+msgstr "주의"
+
+#: templates/dashboard.html:621
+msgid "Prime 24 criticità · elenco completo nello ZIP"
+msgstr "주요 24개 문제 · ZIP 파일에 전체 목록"
+
+#: templates/dashboard.html:624
+msgid "Nessuna pagina critica su"
+msgstr "비판적인 페이지 없음"
+
+#: templates/dashboard.html:624
+msgid "analizzate."
+msgstr "분석됨."
+
+#: templates/dashboard.html:626
+#, fuzzy
+msgid "Analizzate"
+msgstr "채널"
+
+#: templates/dashboard.html:634 templates/dashboard.html:964
+#, fuzzy
+msgid "Findings critici"
+msgstr "우선 순위가 지정된 결과"
+
+#: templates/dashboard.html:665
+msgid "Nessuna criticità."
+msgstr "문제 없음."
+
+#: templates/dashboard.html:665
+msgid "check ok nascosti."
+msgstr "숨겨진 확인 ok."
+
+#: templates/dashboard.html:670
+msgid "Solo critical/warn ·"
+msgstr "오직 중요/경고 ·"
+
+#: templates/dashboard.html:670
+msgid "totali"
+msgstr "총계"
+
+#: templates/dashboard.html:680 templates/site_history.html:21
+msgid "Monitoraggio"
+msgstr "모니터링"
+
+#: templates/dashboard.html:694
+msgid "Piano Free: 1 sito, ri-analisi del dominio consentita."
+msgstr "무료 플랜: 1개 사이트, 도메인 재분석 허용."
+
+#: templates/dashboard.html:696
+msgid "sblocca crawl intero sito, re-scan, export e storico run."
+msgstr "전체 사이트 크롤링 잠금 해제, 재스캔, 내보내기 및 실행 기록."
+
+#: templates/dashboard.html:698
+msgid "per crawl intero sito, re-scan, export e storico."
+msgstr "전체 사이트 크롤링, 재스캔, 내보내기 및 기록."
+
+#: templates/dashboard.html:707
+msgid "Confronto"
+msgstr "비교"
+
+#: templates/dashboard.html:708
+msgid "Competitor snapshot"
+msgstr "경쟁사 스냅샷"
+
+#: templates/dashboard.html:730
+#, fuzzy
+msgid "Infrastruttura"
+msgstr "구조화된 엔티티"
+
+#: templates/dashboard.html:731 templates/dashboard.html:960
+msgid "Edge Signals"
+msgstr "Edge Signals"
+
+#: templates/dashboard.html:734
+msgid "Attivo"
+msgstr "활성"
+
+#: templates/dashboard.html:736
+msgid "ZIP only"
+msgstr "ZIP만"
+
+#: templates/dashboard.html:740
+msgid "Invece di ridistribuire un pack statico, ospita"
+msgstr "정적 패키지를 재배포하는 대신 호스팅합니다."
+
+#: templates/dashboard.html:741
+msgid ""
+"su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
+" tuo dominio con Cloudflare Worker o rewrite Vercel."
+msgstr ""
+"IA 크롤러가 변경될 때 Centropic의 업데이트된 엔드포인트에서. Cloudflare Worker 또는 Vercel 리라이트로"
+" 도메인을 연결하세요."
+
+#: templates/dashboard.html:746
+msgid "Attiva hosting dinamico"
+msgstr "동적 호스팅 활성화"
+
+#: templates/dashboard.html:749
+#, fuzzy
+msgid "Free:"
+msgstr "무료 플랜:"
+
+#: templates/dashboard.html:750
+msgid "Plus: robots live, JSON-LD e snippet Worker/Vercel."
+msgstr "Plus: 라이브 로봇, JSON-LD 및 Worker/Vercel 스니펫."
+
+#: templates/dashboard.html:757 templates/dashboard.html:762
+#: templates/dashboard.html:768 templates/dashboard.html:773
+#: templates/dashboard.html:797 templates/dashboard.html:804
+#: templates/dashboard.html:811 templates/dashboard.html:843
+#: templates/dashboard.html:852 templates/dashboard.html:860
+#: templates/dashboard.html:867 templates/dashboard.html:875
+#: templates/dashboard.html:883 templates/dashboard.html:890
+#, fuzzy
+msgid "Copia"
+msgstr "복사됨"
+
+#: templates/dashboard.html:778
+msgid "Piano Plus — lista crawler IA live sul tuo dominio"
+msgstr "Plus 플랜 — 도메인에서 라이브 IA 크롤러 목록"
+
+#: templates/dashboard.html:785
+msgid "Rigenera token"
+msgstr "토큰 재생성"
+
+#: templates/dashboard.html:789
+msgid "Disattiva"
+msgstr "비활성화"
+
+#: templates/dashboard.html:818
+msgid ""
+"Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati "
+"automaticamente alla lista crawler Centropic."
+msgstr "도메인에서 Worker 프록시를 위해 Plus로 전환하고 Centropic 크롤러 목록에 자동으로 업데이트되는 로봇을 사용하세요."
+
+#: templates/dashboard.html:819
+#, fuzzy
+msgid "Vedi piani"
+msgstr "요금제"
+
+#: templates/dashboard.html:828 templates/landing.html:135
+msgid "Deliverable"
+msgstr "산출물"
+
+#: templates/dashboard.html:829
+#, fuzzy
+msgid "Pack ottimizzazione"
+msgstr "최적화 팩"
+
+#: templates/dashboard.html:834
+#, fuzzy
+msgid "Invia a"
+msgstr "다음으로 작성하십시오:"
+
+#: templates/dashboard.html:899
+#, fuzzy
+msgid "Activation loop"
+msgstr "인용 모니터"
+
+#: templates/dashboard.html:900
+msgid "Prima diagnosi in un passo"
+msgstr "첫 번째 진단 한 단계에서"
+
+#: templates/dashboard.html:903
+msgid "Stiamo già elaborando"
+msgstr "이미 처리 중입니다."
+
+#: templates/dashboard.html:904
+msgid "Resta su questa pagina: al termine vedrai score, findings e pack."
+msgstr "이 페이지에 머물러 주세요: 완료되면 점수, 발견 사항 및 패키지를 볼 수 있습니다."
+
+#: templates/dashboard.html:908
+msgid "Incolla l’URL pubblico del brand nella barra sopra (https://…)"
+msgstr "상단 바에 브랜드의 공개 URL을 붙여넣으세요 (https://…)"
+
+#: templates/dashboard.html:909
+#, fuzzy
+msgid "Avvia: crawl, score AIO/GEO, findings prioritizzati"
+msgstr "우선 순위가 지정된 결과"
+
+#: templates/dashboard.html:910
+msgid "Attiva Edge Signals o scarica il pack da pubblicare"
+msgstr "Edge Signals를 활성화하거나 게시할 패키지를 다운로드하세요."
+
+#: templates/dashboard.html:913 templates/landing.html:56
+msgid "Piano Free:"
+msgstr "무료 플랜:"
+
+#: templates/dashboard.html:913 templates/landing.html:56
+#: templates/pricing.html:22
+msgid "sito"
+msgstr "사이트"
+
+#: templates/dashboard.html:913
+msgid "analisi iniziali, poi puoi ri-misurare lo stesso dominio."
+msgstr "초기 분석 후 동일한 도메인을 다시 측정할 수 있습니다."
+
+#: templates/dashboard.html:914
+msgid ""
+"Nessuna carta. In registrazione, se indichi il sito, la prima analisi "
+"parte da sola."
+msgstr "카드 없음. 등록 시 사이트를 지정하면 첫 번째 분석이 자동으로 시작됩니다."
+
+#: templates/dashboard.html:922
+#, fuzzy
+msgid "Contesto report"
+msgstr "맥락"
+
+#: templates/dashboard.html:929
+msgid "Signal"
+msgstr "신호"
+
+#: templates/dashboard.html:940
+msgid "Gap"
+msgstr "차이"
+
+#: templates/dashboard.html:950
+msgid "Brand share"
+msgstr "브랜드 점유율"
+
+#: templates/dashboard.html:957 templates/dashboard.html:971
+#, fuzzy
+msgid "Azioni"
+msgstr "설정"
+
+#: templates/dashboard.html:958
+#, fuzzy
+msgid "Scarica pack"
+msgstr "다음으로 작성하십시오:"
+
+#: templates/dashboard.html:962
+msgid "Attiva Edge"
+msgstr "Edge 활성화"
+
+#: templates/dashboard.html:966 templates/history.html:11
+#, fuzzy
+msgid "Storico run"
+msgstr "기록"
+
+#: templates/dashboard.html:974
+#, fuzzy
+msgid "White-label MD"
+msgstr "화이트 라벨"
+
+#: templates/dashboard.html:975
+msgid "GEO suite settings"
+msgstr "GEO 스위트 설정"
+
 #: templates/faq.html:3
 msgid ""
 "FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, "
@@ -485,10 +1343,6 @@ msgstr "추정(프록시)"
 #: templates/faq.html:35
 msgid "indica una stima;"
 msgstr "추정을 나타냅니다;"
-
-#: templates/faq.html:35 templates/product.html:39
-msgid "Misurato"
-msgstr "측정됨"
 
 #: templates/faq.html:35
 msgid ""
@@ -687,6 +1541,146 @@ msgstr "로그인으로 돌아가기"
 msgid "Crea account"
 msgstr "계정 생성"
 
+#: templates/guide.html:2 templates/guide.html:10
+msgid "Dopo l'analisi"
+msgstr "분석 후"
+
+#: templates/guide.html:12
+#, fuzzy
+msgid ""
+"Ordine consigliato per chiudere i gap di AI-Driven Visibility (AIO) e "
+"Generative Engine Optimization (GEO) e pubblicare il pack."
+msgstr "AI 기반 가시성 (AIO) 및 생성 엔진 최적화 (GEO). 결과. 게시할 패키지."
+
+#: templates/guide.html:15 templates/settings.html:122
+#, fuzzy
+msgid "Torna alla dashboard"
+msgstr "로그인으로 돌아가기"
+
+#: templates/guide.html:21
+msgid "Indice DDD→AAA"
+msgstr "지수 DDD→AAA"
+
+#: templates/guide.html:22
+msgid ""
+"Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un "
+"grado."
+msgstr "편지를 읽으세요: DDD는 중요하고, AAA는 최고입니다. 최소한 한 단계 상승하는 것을 목표로 하세요."
+
+#: templates/guide.html:25
+#, fuzzy
+msgid "Score AIO / GEO"
+msgstr "AIO 및 GEO 점수"
+
+#: templates/guide.html:26
+#, fuzzy
+msgid ""
+"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Sotto "
+"60 = intervento prioritario."
+msgstr "AI 기반 가시성 (AIO) 및 생성 엔진 최적화 (GEO). 결과. 게시할 패키지."
+
+#: templates/guide.html:29 templates/verify.html:29
+#, fuzzy
+msgid "Findings"
+msgstr "발견 및 패키지"
+
+#: templates/guide.html:30
+msgid "Chiudi prima critical e warn; usa anche"
+msgstr "먼저 critical 및 warn을 닫으세요; 또한 사용하세요"
+
+#: templates/guide.html:30
+msgid "nel pack."
+msgstr "패키지에."
+
+#: templates/guide.html:34
+msgid "Pubblica in root:"
+msgstr "루트에 게시:"
+
+#: templates/guide.html:38
+msgid "Incolla nel"
+msgstr "붙여넣기"
+
+#: templates/guide.html:38
+msgid "delle pagine chiave."
+msgstr "핵심 페이지에."
+
+#: templates/guide.html:42
+msgid "Unisci la bozza al file esistente e lascia aperti i bot AI utili."
+msgstr "초안을 기존 파일에 병합하고 유용한 AI 봇을 열어 두세요."
+
+#: templates/guide.html:45
+msgid "Re-scan"
+msgstr "재스캔"
+
+#: templates/guide.html:46
+msgid "Su Plus imposta frequenza e orario UTC, poi confronta before/after."
+msgstr "Plus에서 빈도와 UTC 시간을 설정한 후, before/after를 비교하세요."
+
+#: templates/guide.html:51
+msgid "Dove vanno i file"
+msgstr "파일이 어디로 가나요"
+
+#: templates/guide.html:53 templates/guide.html:57
+msgid "root del sito"
+msgstr "사이트의 루트"
+
+#: templates/guide.html:58
+#, fuzzy
+msgid "checklist operativa"
+msgstr "운영 준수"
+
+#: templates/guide.html:59
+msgid "confronto tra run"
+msgstr "실행 간 비교"
+
+#: templates/history.html:11
+#, fuzzy
+msgid "Ultime analisi"
+msgstr "더 많은 사이트 및 분석"
+
+#: templates/history.html:15
+msgid "Run manuali e schedulate (max"
+msgstr "수동 및 예약 실행 (최대"
+
+#: templates/history.html:17
+msgid "Ultimi siti analizzati (max"
+msgstr "최근 분석된 사이트 (최대"
+
+#: templates/history.html:17
+msgid "Passa a Plus per lo storico run completo."
+msgstr "전체 실행 기록을 보려면 Plus로 업그레이드하세요."
+
+#: templates/history.html:23
+msgid "Export CSV"
+msgstr "CSV 내보내기"
+
+#: templates/history.html:38 templates/site_history.html:42
+msgid "Schedulato"
+msgstr "예약됨"
+
+#: templates/history.html:38 templates/site_history.html:42
+#, fuzzy
+msgid "Manuale"
+msgstr "채널"
+
+#: templates/history.html:47
+msgid "Dettaglio"
+msgstr "상세"
+
+#: templates/history.html:58
+#, fuzzy
+msgid "Nessuna analisi ancora"
+msgstr "분석 중…"
+
+#: templates/history.html:59
+msgid "Lancia la prima analisi dalla"
+msgstr "다음에서 첫 번째 분석 시작:"
+
+#: templates/history.html:59
+#, fuzzy
+msgid "dashboard"
+msgstr "대시보드"
+
 #: templates/landing.html:3
 msgid ""
 "Centropic — Signal Intelligence per Generative Engine Optimization: "
@@ -746,14 +1740,6 @@ msgid ""
 "Dalla lettura del dominio alla consegna del pack: score, priorità e file "
 "pronti all’uso."
 msgstr "도메인 읽기에서 패키지 전달까지: 점수, 우선 순위 및 사용 준비 완료 파일."
-
-#: templates/landing.html:56
-msgid "Piano Free:"
-msgstr "무료 플랜:"
-
-#: templates/landing.html:56 templates/pricing.html:22
-msgid "sito"
-msgstr "사이트"
 
 #: templates/landing.html:56
 msgid "analisi totali per account."
@@ -904,10 +1890,6 @@ msgid ""
 msgstr ""
 "공개 AI 자산, 게시-검증 및 우리 도메인에 대한 진단 점수는 고객에게 제안하는 표준에 맞춰져 있습니다. 프로브 점수는 라이브 "
 "인용과 동일하지 않으며, 측정된 언급은 인용 모니터가 필요합니다."
-
-#: templates/landing.html:135
-msgid "Deliverable"
-msgstr "산출물"
 
 #: templates/landing.html:136
 msgid "Artifact pronti per la pubblicazione."
@@ -1118,10 +2100,6 @@ msgstr "첫 번째 도메인 및 첫 번째 최적화를 위한 것입니다."
 msgid "Crawl fino a"
 msgstr "최대 크롤링:"
 
-#: templates/pricing.html:23
-msgid "pagine"
-msgstr "페이지"
-
 #: templates/pricing.html:24
 msgid "analisi iniziali + ri-analisi del sito"
 msgstr "초기 분석 + 사이트 재분석"
@@ -1143,10 +2121,6 @@ msgid ""
 "Prezzo mostrato al checkout. Per team che ottimizzano più brand in "
 "continuo."
 msgstr "체크아웃 시 표시되는 가격. 여러 브랜드를 지속적으로 최적화하는 팀을 위한 것입니다."
-
-#: templates/pricing.html:37
-msgid "In arrivo"
-msgstr "곧 출시 예정"
 
 #: templates/pricing.html:38
 msgid ""
@@ -1181,10 +2155,6 @@ msgstr "API + CSV/ZIP 내보내기 + 화이트 라벨"
 #: templates/pricing.html:47
 msgid "Storico run avanzato"
 msgstr "고급 실행 기록"
-
-#: templates/pricing.html:52
-msgid "Passa a Plus"
-msgstr "Plus로 전환"
 
 #: templates/pricing.html:55
 msgid "Accedi e passa a Plus"
@@ -1298,10 +2268,6 @@ msgstr "명시적인 문제가 있는 약한 페이지"
 #: templates/product.html:39
 msgid "Badge"
 msgstr "배지"
-
-#: templates/product.html:39
-msgid "Stimato"
-msgstr "추정됨"
 
 #: templates/product.html:39
 msgid "su ogni finding"
@@ -1475,6 +2441,324 @@ msgstr ""
 #: templates/reset_password.html:68
 msgid "Richiedi un nuovo link"
 msgstr "새 링크 요청"
+
+#: templates/settings.html:2
+#, fuzzy
+msgid "Impostazioni GEO"
+msgstr "설정"
+
+#: templates/settings.html:3
+msgid ""
+"Impostazioni Centropic: alert, prompt bank, API key, white-label e "
+"connector SoV."
+msgstr "Centropic 설정: 알림, 프롬프트 뱅크, API 키, 화이트 라벨 및 SoV 커넥터."
+
+#: templates/settings.html:9
+#, fuzzy
+msgid "Impostazioni GEO/AIO"
+msgstr "설정"
+
+#: templates/settings.html:11
+msgid "Alert outbound, prompt bank per SoV measured, API, white-label agenzia."
+msgstr "아웃바운드 알림, SoV 측정을 위한 프롬프트 뱅크, API, 에이전시 화이트 라벨."
+
+#: templates/settings.html:13
+msgid ""
+"sblocca SoV measured / citation monitor, crawl intero sito, API e white-"
+"label."
+msgstr "SoV 측정 / 인용 모니터 해제, 전체 사이트 크롤링, API 및 화이트 라벨."
+
+#: templates/settings.html:19
+#, fuzzy
+msgid "Connector"
+msgstr "맥락"
+
+#: templates/settings.html:22
+#, fuzzy
+msgid "Citation monitor / SoV measured:"
+msgstr "인용 모니터 / SoV 측정 (LLM 프로브) — Plus 전용"
+
+#: templates/settings.html:24
+#, fuzzy
+msgid "riservato a"
+msgstr "측정됨"
+
+#: templates/settings.html:25
+msgid "attivo"
+msgstr "활성"
+
+#: templates/settings.html:25
+msgid "configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY"
+msgstr "OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY 설정"
+
+#: templates/settings.html:27
+msgid "JS crawl:"
+msgstr "JS 크롤링:"
+
+#: templates/settings.html:27
+msgid "Playwright pronto"
+msgstr "Playwright 준비 완료"
+
+#: templates/settings.html:27
+msgid "disabilitato (JS_CRAWL_ENABLED=1)"
+msgstr "비활성화됨 (JS_CRAWL_ENABLED=1)"
+
+#: templates/settings.html:28
+msgid "Google Search Console:"
+msgstr "Google Search Console:"
+
+#: templates/settings.html:33
+msgid "Alert outbound"
+msgstr "아웃바운드 알림"
+
+#: templates/settings.html:37
+msgid "Email su regressioni / llms sparito / pack verify"
+msgstr "회귀 / llms 사라짐 / 패키지 검증에 대한 이메일"
+
+#: templates/settings.html:39
+msgid "Webhook URL"
+msgstr "웹훅 URL"
+
+#: templates/settings.html:43
+msgid "Webhook secret (HMAC SHA-256)"
+msgstr "웹훅 비밀 (HMAC SHA-256)"
+
+#: templates/settings.html:51
+msgid "Prompt bank"
+msgstr "프롬프트 뱅크"
+
+#: templates/settings.html:53
+#, fuzzy
+msgid "Usati dal citation monitor / SoV measured (piano Plus)."
+msgstr "인용 모니터 / SoV 측정 (LLM 프로브) — Plus 전용"
+
+#: templates/settings.html:55
+msgid "per personalizzare i prompt di misurazione."
+msgstr "측정 프롬프트를 사용자 정의하기 위해."
+
+#: templates/settings.html:57
+msgid "Lascia vuoto per i default."
+msgstr "기본값을 위해 비워 두세요."
+
+#: templates/settings.html:65
+msgid "Prompt (uno per riga)"
+msgstr "프롬프트 (한 줄에 하나)"
+
+#: templates/settings.html:74
+msgid "API key"
+msgstr "API 키"
+
+#: templates/settings.html:76
+msgid "Endpoints:"
+msgstr "엔드포인트:"
+
+#: templates/settings.html:79
+msgid "Prefisso attivo:"
+msgstr "활성 접두사:"
+
+#: templates/settings.html:79
+msgid "Nessuna key."
+msgstr "키가 없습니다."
+
+#: templates/settings.html:81
+#, fuzzy
+msgid "Riservato a"
+msgstr "측정됨"
+
+#: templates/settings.html:81
+msgid "genera e usa le key solo sul piano a pagamento."
+msgstr "유료 요금제에서만 키를 생성하고 사용하세요."
+
+#: templates/settings.html:87
+msgid "API key (una sola volta)"
+msgstr "API 키 (한 번만)"
+
+#: templates/settings.html:87
+msgid "copiala e conservala in un secret store. Non la rimostreremo per intero."
+msgstr "복사하여 비밀 저장소에 보관하세요. 전체를 다시 표시하지 않습니다."
+
+#: templates/settings.html:94
+msgid "Genera nuova API key"
+msgstr "새 API 키 생성"
+
+#: templates/settings.html:97
+msgid "Sblocca API con Plus"
+msgstr "Plus로 API 해제"
+
+#: templates/settings.html:102
+#, fuzzy
+msgid "White-label agenzia"
+msgstr "화이트 라벨"
+
+#: templates/settings.html:108
+msgid "Logo URL"
+msgstr "로고 URL"
+
+#: templates/settings.html:109
+msgid "Colore"
+msgstr "색상"
+
+#: templates/settings.html:110
+#, fuzzy
+msgid "Nota"
+msgstr "표시"
+
+#: templates/settings.html:115
+msgid "Export white-label per agenzie riservato a"
+msgstr "에이전시 전용 화이트 라벨 내보내기"
+
+#: templates/site_history.html:9
+#, fuzzy
+msgid "Storico avanzato"
+msgstr "고급 실행 기록"
+
+#: templates/site_history.html:14
+msgid "ZIP corrente"
+msgstr "현재 ZIP"
+
+#: templates/site_history.html:30
+msgid "Run"
+msgstr "실행"
+
+#: templates/site_history.html:30
+msgid "max"
+msgstr "최대"
+
+#: templates/site_history.html:46
+msgid "ZIP run"
+msgstr "ZIP 실행"
+
+#: templates/site_history.html:50
+msgid "Nessuna run ancora."
+msgstr "아직 실행된 것이 없습니다."
+
+#: templates/topup.html:2
+#, fuzzy
+msgid "Ricarica crediti"
+msgstr "크레딧"
+
+#: templates/topup.html:7
+msgid "Crediti prepagati"
+msgstr "선불 크레딧"
+
+#: templates/topup.html:8
+msgid "Ricarica il tuo credito"
+msgstr "크레딧을 충전하세요"
+
+#: templates/topup.html:10
+msgid "Ogni analisi consuma crediti proporzionali ai token AI utilizzati."
+msgstr "각 분석은 사용된 AI 토큰에 비례하여 크레딧을 소모합니다."
+
+#: templates/topup.html:11
+msgid "Scegli un pacchetto o inserisci un importo personalizzato."
+msgstr "패키지를 선택하거나 사용자 정의 금액을 입력하세요."
+
+#: templates/topup.html:16
+msgid "Credito attuale"
+msgstr "현재 크레딧"
+
+#: templates/topup.html:19
+msgid "Credito illimitato (account admin)"
+msgstr "무제한 크레딧 (관리자 계정)"
+
+#: templates/topup.html:26
+#, fuzzy
+msgid "Ultime transazioni"
+msgstr "설정"
+
+#: templates/topup.html:30
+msgid "Data"
+msgstr "날짜"
+
+#: templates/topup.html:31
+msgid "Descrizione"
+msgstr "설명"
+
+#: templates/topup.html:32
+#, fuzzy
+msgid "Importo"
+msgstr "설정"
+
+#: templates/topup.html:33
+msgid "Saldo dopo"
+msgstr "잔액 후"
+
+#: templates/topup.html:56
+msgid "Scegli un pacchetto"
+msgstr "패키지를 선택하세요"
+
+#: templates/topup.html:65
+#, fuzzy
+msgid "analisi"
+msgstr "채널"
+
+#: templates/topup.html:71
+msgid ""
+"Il credito non ha scadenza. Le analisi più semplici costano meno, quelle "
+"con SoV Misurato su più engine costano di più."
+msgstr "크레딧은 만료되지 않습니다. 더 간단한 분석은 비용이 적고, 여러 엔진에서 측정된 SoV가 있는 분석은 더 비쌉니다."
+
+#: templates/verify.html:10
+msgid ""
+"Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul "
+"dominio."
+msgstr "실시간 검사: llms.txt / robots / ai.txt / sitemap / JSON-LD 도메인에서."
+
+#: templates/verify.html:11
+msgid "Score verify:"
+msgstr "점수 확인:"
+
+#: templates/verify.html:12
+msgid "probe live"
+msgstr "실시간 프로브"
+
+#: templates/verify.html:17
+msgid "Checks"
+msgstr "검사"
+
+#: templates/verify.html:24
+#, fuzzy
+msgid "Errore probe:"
+msgstr "오류"
+
+#: templates/verify.html:40
+#, fuzzy
+msgid "Export white-label MD"
+msgstr "화이트 라벨"
+
+#: templates/partials/analyze_overlay.html:40
+msgid "Elaborazione in corso"
+msgstr "처리 중"
+
+#: templates/partials/analyze_overlay.html:43
+msgid "Stiamo analizzando i segnali del dominio. Resta su questa pagina."
+msgstr "도메인 신호를 분석하고 있습니다. 이 페이지에 머물러 주세요."
+
+#: templates/partials/analyze_overlay.html:49
+#, fuzzy
+msgid "Crawl del dominio"
+msgstr "도메인 크롤링, 프로브"
+
+#: templates/partials/analyze_overlay.html:50
+msgid "Probe segnali"
+msgstr "신호 프로브"
+
+#: templates/partials/analyze_overlay.html:51
+#, fuzzy
+msgid "Scoring AIO / GEO"
+msgstr "AIO 및 GEO 점수"
+
+#: templates/partials/analyze_overlay.html:52
+msgid "Pack artifact"
+msgstr "패키지 아티팩트"
+
+#: templates/partials/analyze_overlay.html:60
+msgid "Di solito 30–90 secondi."
+msgstr "보통 30–90초입니다."
+
+#: templates/partials/analyze_overlay.html:66
+msgid "Chiudi"
+msgstr "닫기"
 
 #: templates/partials/auth_help.html:2
 msgid "Informazioni account Centropic"

@@ -268,14 +268,7 @@
           btn.disabled = true;
           btn.textContent = {{ _('Analisi in corso…')|tojson }};
         }
-        if (window.CentropicAnalyzeOverlay) {
-          const urlInput = form.querySelector('[name="url"]');
-          window.CentropicAnalyzeOverlay.show({
-            url: urlInput && urlInput.value ? urlInput.value : '',
-            phase: 'pending',
-            hint: {{ _('Invio richiesta… il worker partirà a breve.')|tojson }},
-          });
-        }
+        // Overlay open is handled by analyze-overlay.js when present.
       });
     </script>
   </body>

@@ -35,6 +35,8 @@ def run_analysis_pipeline(
     public_base: str = "https://centropic.ai",
     # Billing: optional callbacks and context
     usage_callback: Any | None = None,
+    max_pages: int | None = None,
+    heartbeat_callback: Any | None = None,
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     previous_run = None
@@ -45,11 +47,27 @@ def run_analysis_pipeline(
             .first()
         )
 
+    pages = int(max_pages) if max_pages is not None else int(user.crawl_pages)
+    if pages <= 0:
+        pages = int(getattr(user, "crawl_pages", 8) or 8)
+
+    if callable(heartbeat_callback):
+        try:
+            heartbeat_callback()
+        except Exception:
+            logger.debug("heartbeat before crawl failed", exc_info=True)
+
     result = analyze_site(
         url,
-        max_pages=user.crawl_pages,
+        max_pages=pages,
         competitor_urls=(competitor_urls or [])[:3] if user.is_pro else [],
     )
+
+    if callable(heartbeat_callback):
+        try:
+            heartbeat_callback()
+        except Exception:
+            logger.debug("heartbeat after crawl failed", exc_info=True)
 
     measured_ok = should_run_measured(
         user=user,

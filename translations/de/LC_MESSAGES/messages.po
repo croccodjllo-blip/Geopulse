@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-29 19:54+0000\n"
+"POT-Creation-Date: 2026-07-30 06:42+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -67,8 +67,9 @@ msgstr ""
 " diese Lücke mit Scores zu schließen."
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/faq.html:27 templates/partials/auth_help.html:7
-#: templates/partials/auth_help.html:19 templates/product.html:14
+#: templates/dashboard.html:741 templates/faq.html:27
+#: templates/partials/auth_help.html:7 templates/partials/auth_help.html:19
+#: templates/product.html:14
 msgid "e"
 msgstr "und"
 
@@ -217,19 +218,24 @@ msgstr ""
 msgid "Principale"
 msgstr "Hauptseite"
 
-#: templates/base.html:101 templates/base.html:193
+#: templates/base.html:101 templates/base.html:193 templates/dashboard.html:2
+#: templates/history.html:21 templates/site_history.html:13
+#: templates/topup.html:76 templates/verify.html:38
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: templates/base.html:102 templates/base.html:194
+#: templates/base.html:102 templates/base.html:194 templates/dashboard.html:177
+#: templates/dashboard.html:685 templates/history.html:2
+#: templates/site_history.html:2
 msgid "Storico"
 msgstr "Historie"
 
-#: templates/base.html:103 templates/base.html:195
+#: templates/base.html:103 templates/base.html:195 templates/dashboard.html:29
+#: templates/guide.html:2 templates/guide.html:9
 msgid "Guida"
 msgstr "Hilfe"
 
-#: templates/base.html:104
+#: templates/base.html:104 templates/dashboard.html:501
 msgid "Impostazioni"
 msgstr "Einstellungen"
 
@@ -276,7 +282,8 @@ msgstr "Wie es funktioniert"
 msgid "Guida llms.txt"
 msgstr "Hilfe llms.txt"
 
-#: templates/base.html:191 templates/contact.html:25
+#: templates/base.html:191 templates/contact.html:25 templates/history.html:9
+#: templates/settings.html:8
 msgid "Account"
 msgstr "Konto"
 
@@ -326,6 +333,179 @@ msgstr "Fehler"
 #: templates/base.html:269
 msgid "Analisi in corso…"
 msgstr "Analyse läuft…"
+
+#: templates/confirm_analyze.html:2
+#, fuzzy
+msgid "Conferma analisi"
+msgstr "Passwort bestätigen"
+
+#: templates/confirm_analyze.html:8
+#, fuzzy
+msgid "Stima analisi"
+msgstr "Mehr Websites und Analysen"
+
+#: templates/confirm_analyze.html:9
+msgid "Rivedi e conferma"
+msgstr "Überprüfen und bestätigen"
+
+#: templates/confirm_analyze.html:11
+msgid "Prima di procedere, controlla il costo stimato e il miglioramento atteso."
+msgstr ""
+"Bevor Sie fortfahren, überprüfen Sie die geschätzten Kosten und die "
+"erwartete Verbesserung."
+
+#: templates/confirm_analyze.html:12
+msgid ""
+"I crediti vengono scalati in tempo reale sui token AI consumati durante "
+"l'analisi"
+msgstr ""
+"Die Credits werden in Echtzeit auf die während der Analyse verbrauchten "
+"AI-Token angerechnet."
+
+#: templates/confirm_analyze.html:13
+msgid "(con margine di sicurezza"
+msgstr "(mit Sicherheitsmarge"
+
+#: templates/confirm_analyze.html:13
+msgid "sul saldo richiesto all'avvio)."
+msgstr "auf dem zu Beginn benötigten Guthaben)."
+
+#: templates/confirm_analyze.html:19
+msgid "Sito analizzato"
+msgstr "Analysierte Website"
+
+#: templates/confirm_analyze.html:27
+#, fuzzy
+msgid "Costo stimato"
+msgstr "Geschätzt"
+
+#: templates/confirm_analyze.html:31
+#, fuzzy
+msgid "per questa analisi"
+msgstr "Mehr Websites und Analysen"
+
+#: templates/confirm_analyze.html:34
+msgid "Include spread di piattaforma"
+msgstr "Beinhaltet Plattform-Spreads"
+
+#: templates/confirm_analyze.html:34
+msgid "sul costo reale dell'API AI."
+msgstr "auf die tatsächlichen Kosten der AI-API."
+
+#: templates/confirm_analyze.html:35
+msgid "Il costo effettivo viene calcolato sui token realmente consumati."
+msgstr ""
+"Die tatsächlichen Kosten werden auf der Grundlage der tatsächlich "
+"verbrauchten Token berechnet."
+
+#: templates/confirm_analyze.html:40
+msgid "Dettaglio voci di costo"
+msgstr "Kostenaufstellung"
+
+#: templates/confirm_analyze.html:43
+msgid "Voce"
+msgstr "Posten"
+
+#: templates/confirm_analyze.html:43
+msgid "Provider"
+msgstr "Anbieter"
+
+#: templates/confirm_analyze.html:43
+#, fuzzy
+msgid "Modello"
+msgstr "Methode"
+
+#: templates/confirm_analyze.html:43
+msgid "Input tok."
+msgstr "Eingabe-Token."
+
+#: templates/confirm_analyze.html:43
+msgid "Output tok."
+msgstr "Ausgabe-Token."
+
+#: templates/confirm_analyze.html:64
+msgid "Miglioramento atteso"
+msgstr "Erwartete Verbesserung"
+
+#: templates/confirm_analyze.html:69
+msgid "AIO oggi"
+msgstr "AIO heute"
+
+#: templates/confirm_analyze.html:75
+msgid "GEO oggi"
+msgstr "GEO heute"
+
+#: templates/confirm_analyze.html:82
+#, fuzzy
+msgid "Prima analisi"
+msgstr "Mehr Websites und Analysen"
+
+#: templates/confirm_analyze.html:99
+msgid ""
+"Le stime di miglioramento sono indicative e calcolate sui gap rilevati "
+"nei run precedenti o sul profilo del dominio. Non costituiscono garanzia "
+"di risultato."
+msgstr ""
+"Die Verbesserungsschätzungen sind indikativ und basieren auf den in den "
+"vorherigen Durchläufen ermittelten Lücken oder dem Profil der Domain. Sie"
+" stellen keine Garantie für Ergebnisse dar."
+
+#: templates/confirm_analyze.html:106
+msgid "Il tuo credito"
+msgstr "Ihr Guthaben"
+
+#: templates/confirm_analyze.html:110 templates/confirm_analyze.html:117
+msgid "Disponibile:"
+msgstr "Verfügbar:"
+
+#: templates/confirm_analyze.html:110
+msgid "Illimitato"
+msgstr "Unbegrenzt"
+
+#: templates/confirm_analyze.html:112
+msgid "Account admin — nessun addebito"
+msgstr "Admin-Konto — keine Gebühren"
+
+#: templates/confirm_analyze.html:120
+msgid "Credito sufficiente (con margine sicurezza"
+msgstr "Ausreichendes Guthaben (mit Sicherheitsmarge"
+
+#: templates/confirm_analyze.html:122
+msgid "Credito insufficiente"
+msgstr "Unzureichendes Guthaben"
+
+#: templates/confirm_analyze.html:124
+msgid "Ricarica almeno"
+msgstr "Laden Sie mindestens"
+
+#: templates/confirm_analyze.html:124
+#, fuzzy
+msgid "per procedere"
+msgstr "Fehler"
+
+#: templates/confirm_analyze.html:125
+msgid "margine sicurezza"
+msgstr "Sicherheitsmarge"
+
+#: templates/confirm_analyze.html:125
+msgid "incluso"
+msgstr "inklusive"
+
+#: templates/confirm_analyze.html:126 templates/confirm_analyze.html:151
+msgid "Ricarica credito"
+msgstr "Guthaben aufladen"
+
+#: templates/confirm_analyze.html:144
+msgid "Avvia analisi (admin — gratuito)"
+msgstr "Analyse starten (Admin — kostenlos)"
+
+#: templates/confirm_analyze.html:146
+msgid "Conferma e avvia analisi"
+msgstr "Bestätigen und Analyse starten"
+
+#: templates/confirm_analyze.html:153
+msgid "Annulla"
+msgstr "Abbrechen"
 
 #: templates/contact.html:3
 msgid ""
@@ -436,6 +616,724 @@ msgstr ""
 msgid "Scrivi a info@centropic.ai"
 msgstr "Schreibe an info@centropic.ai"
 
+#: templates/dashboard.html:22
+#, fuzzy
+msgid "Ciao"
+msgstr "Kopiert"
+
+#: templates/dashboard.html:25
+#, fuzzy
+msgid "Analizza, chiudi i gap, pubblica il pack."
+msgstr ""
+"Analysiere die Signale. Schließe die Kritikalitäten. Veröffentliche das "
+"Paket."
+
+#: templates/dashboard.html:28
+msgid "Workspace"
+msgstr "Arbeitsbereich"
+
+#: templates/dashboard.html:32
+#, fuzzy
+msgid "Stato account"
+msgstr "Konto erstellen"
+
+#: templates/dashboard.html:34
+#, fuzzy
+msgid "Piano"
+msgstr "Pläne"
+
+#: templates/dashboard.html:38
+#, fuzzy
+msgid "Siti"
+msgstr "Website"
+
+#: templates/dashboard.html:42
+msgid "Crawl"
+msgstr "Crawl"
+
+#: templates/dashboard.html:43
+#, fuzzy
+msgid "Intero sito"
+msgstr "Crawl der gesamten Website"
+
+#: templates/dashboard.html:43
+#, fuzzy
+msgid "pag."
+msgstr "Seiten"
+
+#: templates/dashboard.html:46
+#, fuzzy
+msgid "Analisi totali"
+msgstr "Gesamtanalysen pro Konto."
+
+#: templates/dashboard.html:46
+msgid "Quote 24h"
+msgstr "24h-Zitate"
+
+#: templates/dashboard.html:58 templates/settings.html:117
+#, fuzzy
+msgid "Vedi piano Plus"
+msgstr "Anmelden und zu Plus wechseln"
+
+#: templates/dashboard.html:60 templates/dashboard.html:698
+#, fuzzy
+msgid "Prenota Plus"
+msgstr "Interesse reservieren"
+
+#: templates/dashboard.html:71
+msgid "Nuova analisi"
+msgstr "Neue Analyse"
+
+#: templates/dashboard.html:74
+msgid "Quote Free esaurite · passa a Plus per continuare"
+msgstr "Quote Free erschöpft · wechsle zu Plus, um fortzufahren"
+
+#: templates/dashboard.html:76
+msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
+msgstr ""
+"Du kannst die bereits registrierte Website erneut analysieren · Plus für "
+"mehr Marken"
+
+#: templates/dashboard.html:78
+#, fuzzy
+msgid "Crawl BFS · intero sito"
+msgstr "Crawl der gesamten Website"
+
+#: templates/dashboard.html:80
+#, fuzzy
+msgid "Crawl stesso dominio · max"
+msgstr "Crawl der gleichen Domain, Probe von"
+
+#: templates/dashboard.html:80 templates/dashboard.html:162
+#: templates/dashboard.html:626 templates/pricing.html:23
+msgid "pagine"
+msgstr "Seiten"
+
+#: templates/dashboard.html:86
+#, fuzzy
+msgid "URL del dominio"
+msgstr "Crawl der Domain, Proben von"
+
+#: templates/dashboard.html:93
+msgid "Competitor snapshot (Plus, max 3)"
+msgstr "Wettbewerber-Snapshot (Plus, max 3)"
+
+#: templates/dashboard.html:97
+msgid ""
+"SoV measured (probe LLM) incluso nel piano Plus quando i connector sono "
+"attivi."
+msgstr ""
+"SoV gemessen (Probe LLM) im Plus-Plan enthalten, wenn die Connectoren "
+"aktiv sind."
+
+#: templates/dashboard.html:100
+#, fuzzy
+msgid "Free: score AIO/GEO e SoV"
+msgstr "AIO- und GEO-Scores"
+
+#: templates/dashboard.html:100
+#, fuzzy
+msgid "stimato"
+msgstr "Geschätzt"
+
+#: templates/dashboard.html:101
+msgid "sblocca SoV measured / citation monitor."
+msgstr "entsperre SoV gemessen / Zitationsmonitor."
+
+#: templates/dashboard.html:119 templates/partials/analyze_overlay.html:48
+msgid "In coda"
+msgstr "In Warteschlange"
+
+#: templates/dashboard.html:119
+#, fuzzy
+msgid "In esecuzione"
+msgstr "Cookies und Messung"
+
+#: templates/dashboard.html:124
+msgid "Worker in avvio — di solito parte entro pochi secondi."
+msgstr "Worker wird gestartet — normalerweise innerhalb weniger Sekunden."
+
+#: templates/dashboard.html:126
+msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
+msgstr "Crawl, Probe und Scoring laufen (typischerweise 30–90 Sekunden)."
+
+#: templates/dashboard.html:132
+#, fuzzy
+msgid "Analisi fallita"
+msgstr "Mehrseitenanalyse"
+
+#: templates/dashboard.html:133
+msgid "Errore sconosciuto"
+msgstr "Unbekannter Fehler"
+
+#: templates/dashboard.html:135
+msgid "Controlla l’URL e riprova. Supporto:"
+msgstr "Überprüfe die URL und versuche es erneut. Unterstützung:"
+
+#: templates/dashboard.html:154
+msgid "Ultimo report"
+msgstr "Letzter Bericht"
+
+#: templates/dashboard.html:161 templates/site_history.html:12
+#, fuzzy
+msgid "Apri sito"
+msgstr "Website"
+
+#: templates/dashboard.html:169
+#, fuzzy
+msgid "Scarica ZIP"
+msgstr "ZIP-Paket"
+
+#: templates/dashboard.html:172
+msgid "Email non configurata sul server"
+msgstr "E-Mail nicht auf dem Server konfiguriert"
+
+#: templates/dashboard.html:173
+#, fuzzy
+msgid "Invia email"
+msgstr "E-Mail"
+
+#: templates/dashboard.html:188
+msgid "Segnali AIO molto forti"
+msgstr "Sehr starke AIO-Signale"
+
+#: templates/dashboard.html:189
+msgid ""
+"Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. "
+"Non è una garanzia di citazione live."
+msgstr ""
+"Probe-Diagnose: hohe Vollständigkeit der AI-Driven Visibility-Signale. "
+"Keine Garantie für Live-Zitation."
+
+#: templates/dashboard.html:192
+msgid "Segnali AIO solidi"
+msgstr "Solide AIO-Signale"
+
+#: templates/dashboard.html:193
+msgid ""
+"Buona base machine-readable. Chiudi i gap rimanenti per salire. Score "
+"euristico (Stimato), non polling LLM."
+msgstr ""
+"Gute maschinenlesbare Basis. Schließe die verbleibenden Lücken, um "
+"aufzusteigen. Heuristisches Score (geschätzt), kein LLM-Polling."
+
+#: templates/dashboard.html:196
+msgid "Segnali AIO moderati"
+msgstr "Mäßige AIO-Signale"
+
+#: templates/dashboard.html:197
+msgid ""
+"Alcuni asset presenti, diversi gap aperti. Prioritizza findings "
+"critical/warn."
+msgstr ""
+"Einige Assets vorhanden, verschiedene offene Lücken. Priorisiere "
+"kritische/warnende Erkenntnisse."
+
+#: templates/dashboard.html:200
+msgid "Segnali AIO emergenti"
+msgstr "Aufkommende AIO-Signale"
+
+#: templates/dashboard.html:201
+msgid ""
+"Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e "
+"file AI."
+msgstr ""
+"Schwache Signale beim Crawlen: strukturelle Arbeit an Entitäten, Schema "
+"und AI-Dateien erforderlich."
+
+#: templates/dashboard.html:204
+msgid "Segnali AIO critici"
+msgstr "Kritische AIO-Signale"
+
+#: templates/dashboard.html:205
+msgid ""
+"Base insufficiente: intervento prioritario su title, schema, robots/llms "
+"e contenuti citabili."
+msgstr ""
+"Unzureichende Basis: prioritärer Eingriff bei Titel, Schema, Robots/llms "
+"und zitierbaren Inhalten."
+
+#: templates/dashboard.html:213
+msgid "Vista report"
+msgstr "Bericht anzeigen"
+
+#: templates/dashboard.html:214
+msgid "Score"
+msgstr "Punktzahl"
+
+#: templates/dashboard.html:215 templates/dashboard.html:947
+msgid "SoV"
+msgstr "SoV"
+
+#: templates/dashboard.html:307 templates/dashboard.html:316
+#: templates/dashboard.html:326 templates/dashboard.html:657
+#: templates/product.html:39
+msgid "Stimato"
+msgstr "Geschätzt"
+
+#: templates/dashboard.html:316
+#, fuzzy
+msgid "Signal diagnostics"
+msgstr "Diagnose starten"
+
+#: templates/dashboard.html:317
+msgid "Quanto sono solidi i segnali AIO/GEO"
+msgstr "Wie solide sind die AIO/GEO-Signale"
+
+#: templates/dashboard.html:320
+#, fuzzy
+msgid ""
+"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score "
+"da probe/euristiche, non citazioni live garantite."
+msgstr ""
+"AI-Driven Visibility (AIO) und Generative Engine Optimization (GEO). "
+"Ergebnisse. Zu veröffentlichendes Paket."
+
+#: templates/dashboard.html:343 templates/dashboard.html:924
+msgid "Indice"
+msgstr "Index"
+
+#: templates/dashboard.html:355
+msgid "Interferenze"
+msgstr "Interferenzen"
+
+#: templates/dashboard.html:360
+msgid "Nessuna criticità aperta"
+msgstr "Keine offenen Kritikalitäten"
+
+#: templates/dashboard.html:374
+msgid "Scala da DDD a AAA"
+msgstr "Skala von DDD zu AAA"
+
+#: templates/dashboard.html:388
+msgid "AI Engine Breakdown"
+msgstr "AI-Engine-Analyse"
+
+#: templates/dashboard.html:391
+#, fuzzy
+msgid "Share of Voice"
+msgstr "Score vs Share of Voice"
+
+#: templates/dashboard.html:393
+#, fuzzy
+msgid "Share of Voice stimato"
+msgstr "Score vs Share of Voice"
+
+#: templates/dashboard.html:398
+msgid "Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine."
+msgstr ""
+"Mix aus LLM-Proben (gemessen) und heuristischen Schätzungen (geschätzt) "
+"für Engine."
+
+#: templates/dashboard.html:400
+msgid "Piano Free: SoV stimato da score e robots."
+msgstr "Kostenloser Plan: Geschätztes SoV aus Punktzahl und Robots."
+
+#: templates/dashboard.html:401 templates/pricing.html:52
+#: templates/settings.html:55
+msgid "Passa a Plus"
+msgstr "Wechsel zu Plus"
+
+#: templates/dashboard.html:401
+#, fuzzy
+msgid "per SoV measured (citation monitor)."
+msgstr "Zitationsmonitor"
+
+#: templates/dashboard.html:403
+msgid "Stima euristica da score e robots — non è polling live sui modelli."
+msgstr ""
+"Heuristische Schätzung aus Punktzahl und Robots — kein Live-Polling auf "
+"den Modellen."
+
+#: templates/dashboard.html:408
+msgid "Brand SoV"
+msgstr "Marken SoV"
+
+#: templates/dashboard.html:417
+msgid "Composizione SoV per engine"
+msgstr "SoV-Zusammensetzung für Engine"
+
+#: templates/dashboard.html:445
+msgid "bot blocked"
+msgstr "Bot blockiert"
+
+#: templates/dashboard.html:447
+msgid "bot allow"
+msgstr "Bot erlauben"
+
+#: templates/dashboard.html:450 templates/dashboard.html:657
+#: templates/faq.html:35 templates/product.html:39
+msgid "Misurato"
+msgstr "Gemessen"
+
+#: templates/dashboard.html:452
+msgid "Non disponibile"
+msgstr "Nicht verfügbar"
+
+#: templates/dashboard.html:454 templates/pricing.html:37
+msgid "In arrivo"
+msgstr "In Kürze"
+
+#: templates/dashboard.html:472
+msgid "Campo competitivo"
+msgstr "Wettbewerbsfeld"
+
+#: templates/dashboard.html:479 templates/settings.html:107
+#, fuzzy
+msgid "Brand"
+msgstr "Badge"
+
+#: templates/dashboard.html:480
+#, fuzzy
+msgid "Rivali"
+msgstr "Datenschutz"
+
+#: templates/dashboard.html:481
+msgid "Altro"
+msgstr "Sonstiges"
+
+#: templates/dashboard.html:489
+msgid "Nessun breakdown disponibile."
+msgstr "Keine Aufschlüsselung verfügbar."
+
+#: templates/dashboard.html:494
+msgid "GEO suite"
+msgstr "GEO Suite"
+
+#: templates/dashboard.html:497
+#, fuzzy
+msgid "Suite"
+msgstr "Website und"
+
+#: templates/dashboard.html:498
+msgid "GEO / AIO avanzato"
+msgstr "GEO / AIO erweitert"
+
+#: templates/dashboard.html:503 templates/dashboard.html:521
+#: templates/dashboard.html:973 templates/verify.html:2 templates/verify.html:7
+msgid "Publish verify"
+msgstr "Veröffentlichen überprüfen"
+
+#: templates/dashboard.html:509
+#, fuzzy
+msgid "Entity graph"
+msgstr "strukturierte Entität"
+
+#: templates/dashboard.html:510
+msgid "nodi"
+msgstr "Knoten"
+
+#: templates/dashboard.html:513
+msgid "Citability"
+msgstr "Zitierbarkeit"
+
+#: templates/dashboard.html:517
+#, fuzzy
+msgid "Schema quality"
+msgstr "Schema AI"
+
+#: templates/dashboard.html:525
+msgid "llms lint"
+msgstr "llms lint"
+
+#: templates/dashboard.html:529
+msgid "Locales"
+msgstr "Lokalisierungen"
+
+#: templates/dashboard.html:534 templates/dashboard.html:545
+msgid "SoV measured"
+msgstr "SoV gemessen"
+
+#: templates/dashboard.html:546
+msgid "sblocca"
+msgstr "entsperren"
+
+#: templates/dashboard.html:554
+msgid "Confronto con run precedente"
+msgstr "Vergleich mit vorherigem Lauf"
+
+#: templates/dashboard.html:556
+msgid "Vs run precedente"
+msgstr "Vs vorherigem Lauf"
+
+#: templates/dashboard.html:583 templates/dashboard.html:633
+msgid "Priorità"
+msgstr "Priorität"
+
+#: templates/dashboard.html:584
+#, fuzzy
+msgid "Pagine critiche"
+msgstr "Kontaktseite"
+
+#: templates/dashboard.html:589 templates/dashboard.html:592
+#, fuzzy
+msgid "critiche"
+msgstr "Guthaben"
+
+#: templates/dashboard.html:589
+#, fuzzy
+msgid "critica"
+msgstr "Guthaben"
+
+#: templates/dashboard.html:590 templates/dashboard.html:594
+msgid "attenzione"
+msgstr "Aufmerksamkeit"
+
+#: templates/dashboard.html:621
+msgid "Prime 24 criticità · elenco completo nello ZIP"
+msgstr "Top 24 Kritikalitäten · vollständige Liste im ZIP"
+
+#: templates/dashboard.html:624
+msgid "Nessuna pagina critica su"
+msgstr "Keine kritische Seite auf"
+
+#: templates/dashboard.html:624
+msgid "analizzate."
+msgstr "analysiert."
+
+#: templates/dashboard.html:626
+#, fuzzy
+msgid "Analizzate"
+msgstr "Kanäle"
+
+#: templates/dashboard.html:634 templates/dashboard.html:964
+#, fuzzy
+msgid "Findings critici"
+msgstr "Priorisierte Ergebnisse"
+
+#: templates/dashboard.html:665
+msgid "Nessuna criticità."
+msgstr "Keine Kritikalitäten."
+
+#: templates/dashboard.html:665
+msgid "check ok nascosti."
+msgstr "Überprüfung ok versteckt."
+
+#: templates/dashboard.html:670
+msgid "Solo critical/warn ·"
+msgstr "Nur kritisch/warn ·"
+
+#: templates/dashboard.html:670
+msgid "totali"
+msgstr "gesamt"
+
+#: templates/dashboard.html:680 templates/site_history.html:21
+msgid "Monitoraggio"
+msgstr "Überwachung"
+
+#: templates/dashboard.html:694
+msgid "Piano Free: 1 sito, ri-analisi del dominio consentita."
+msgstr "Kostenloser Plan: 1 Website, erneute Analyse der Domain erlaubt."
+
+#: templates/dashboard.html:696
+msgid "sblocca crawl intero sito, re-scan, export e storico run."
+msgstr ""
+"entsperren Sie das Crawlen der gesamten Website, erneutes Scannen, Export"
+" und Verlauf."
+
+#: templates/dashboard.html:698
+msgid "per crawl intero sito, re-scan, export e storico."
+msgstr ""
+"für das Crawlen der gesamten Website, erneutes Scannen, Export und "
+"Verlauf."
+
+#: templates/dashboard.html:707
+msgid "Confronto"
+msgstr "Vergleich"
+
+#: templates/dashboard.html:708
+msgid "Competitor snapshot"
+msgstr "Wettbewerber-Snapshot"
+
+#: templates/dashboard.html:730
+#, fuzzy
+msgid "Infrastruttura"
+msgstr "strukturierte Entität"
+
+#: templates/dashboard.html:731 templates/dashboard.html:960
+msgid "Edge Signals"
+msgstr "Edge Signals"
+
+#: templates/dashboard.html:734
+msgid "Attivo"
+msgstr "Aktiv"
+
+#: templates/dashboard.html:736
+msgid "ZIP only"
+msgstr "Nur ZIP"
+
+#: templates/dashboard.html:740
+msgid "Invece di ridistribuire un pack statico, ospita"
+msgstr "Anstatt ein statisches Paket neu zu verteilen, hoste"
+
+#: templates/dashboard.html:741
+msgid ""
+"su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
+" tuo dominio con Cloudflare Worker o rewrite Vercel."
+msgstr ""
+"auf Centropic-Endpunkten, die aktualisiert werden, wenn sich die IA-"
+"Crawler ändern. Verbinde deine Domain mit Cloudflare Worker oder Vercel "
+"Rewrite."
+
+#: templates/dashboard.html:746
+msgid "Attiva hosting dinamico"
+msgstr "Aktiviere dynamisches Hosting"
+
+#: templates/dashboard.html:749
+#, fuzzy
+msgid "Free:"
+msgstr "Kostenloser Plan:"
+
+#: templates/dashboard.html:750
+msgid "Plus: robots live, JSON-LD e snippet Worker/Vercel."
+msgstr "Plus: Live-Roboter, JSON-LD und Snippet Worker/Vercel."
+
+#: templates/dashboard.html:757 templates/dashboard.html:762
+#: templates/dashboard.html:768 templates/dashboard.html:773
+#: templates/dashboard.html:797 templates/dashboard.html:804
+#: templates/dashboard.html:811 templates/dashboard.html:843
+#: templates/dashboard.html:852 templates/dashboard.html:860
+#: templates/dashboard.html:867 templates/dashboard.html:875
+#: templates/dashboard.html:883 templates/dashboard.html:890
+#, fuzzy
+msgid "Copia"
+msgstr "Kopiert"
+
+#: templates/dashboard.html:778
+msgid "Piano Plus — lista crawler IA live sul tuo dominio"
+msgstr "Plus-Plan — Live-Liste der IA-Crawler auf deiner Domain"
+
+#: templates/dashboard.html:785
+msgid "Rigenera token"
+msgstr "Token regenerieren"
+
+#: templates/dashboard.html:789
+msgid "Disattiva"
+msgstr "Deaktivieren"
+
+#: templates/dashboard.html:818
+msgid ""
+"Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati "
+"automaticamente alla lista crawler Centropic."
+msgstr ""
+"Wechsle zu Plus für Proxy Worker auf deiner Domain und Roboter, die "
+"automatisch zur Centropic-Crawler-Liste aktualisiert werden."
+
+#: templates/dashboard.html:819
+#, fuzzy
+msgid "Vedi piani"
+msgstr "Pläne"
+
+#: templates/dashboard.html:828 templates/landing.html:135
+msgid "Deliverable"
+msgstr "Liefergegenstand"
+
+#: templates/dashboard.html:829
+#, fuzzy
+msgid "Pack ottimizzazione"
+msgstr "Optimierungspaket"
+
+#: templates/dashboard.html:834
+#, fuzzy
+msgid "Invia a"
+msgstr "Schreiben Sie an"
+
+#: templates/dashboard.html:899
+#, fuzzy
+msgid "Activation loop"
+msgstr "Zitationsmonitor"
+
+#: templates/dashboard.html:900
+msgid "Prima diagnosi in un passo"
+msgstr "Erste Diagnose in einem Schritt"
+
+#: templates/dashboard.html:903
+msgid "Stiamo già elaborando"
+msgstr "Wir verarbeiten bereits"
+
+#: templates/dashboard.html:904
+msgid "Resta su questa pagina: al termine vedrai score, findings e pack."
+msgstr "Bleib auf dieser Seite: Am Ende siehst du Score, Findings und Paket."
+
+#: templates/dashboard.html:908
+msgid "Incolla l’URL pubblico del brand nella barra sopra (https://…)"
+msgstr "Füge die öffentliche URL der Marke in die obere Leiste ein (https://…)"
+
+#: templates/dashboard.html:909
+#, fuzzy
+msgid "Avvia: crawl, score AIO/GEO, findings prioritizzati"
+msgstr "Priorisierte Ergebnisse"
+
+#: templates/dashboard.html:910
+msgid "Attiva Edge Signals o scarica il pack da pubblicare"
+msgstr "Aktiviere Edge Signals oder lade das zu veröffentlichende Paket herunter"
+
+#: templates/dashboard.html:913 templates/landing.html:56
+msgid "Piano Free:"
+msgstr "Kostenloser Plan:"
+
+#: templates/dashboard.html:913 templates/landing.html:56
+#: templates/pricing.html:22
+msgid "sito"
+msgstr "Website"
+
+#: templates/dashboard.html:913
+msgid "analisi iniziali, poi puoi ri-misurare lo stesso dominio."
+msgstr "erste Analysen, dann kannst du die gleiche Domain erneut messen."
+
+#: templates/dashboard.html:914
+msgid ""
+"Nessuna carta. In registrazione, se indichi il sito, la prima analisi "
+"parte da sola."
+msgstr ""
+"Keine Karte. Bei der Registrierung, wenn du die Seite angibst, beginnt "
+"die erste Analyse automatisch."
+
+#: templates/dashboard.html:922
+#, fuzzy
+msgid "Contesto report"
+msgstr "Kontext"
+
+#: templates/dashboard.html:929
+msgid "Signal"
+msgstr "Signal"
+
+#: templates/dashboard.html:940
+msgid "Gap"
+msgstr "Lücke"
+
+#: templates/dashboard.html:950
+msgid "Brand share"
+msgstr "Markenanteil"
+
+#: templates/dashboard.html:957 templates/dashboard.html:971
+#, fuzzy
+msgid "Azioni"
+msgstr "Einstellungen"
+
+#: templates/dashboard.html:958
+#, fuzzy
+msgid "Scarica pack"
+msgstr "Schreiben Sie an"
+
+#: templates/dashboard.html:962
+msgid "Attiva Edge"
+msgstr "Aktiviere Edge"
+
+#: templates/dashboard.html:966 templates/history.html:11
+#, fuzzy
+msgid "Storico run"
+msgstr "Historie"
+
+#: templates/dashboard.html:974
+#, fuzzy
+msgid "White-label MD"
+msgstr "White-Label"
+
+#: templates/dashboard.html:975
+msgid "GEO suite settings"
+msgstr "GEO-Suite-Einstellungen"
+
 #: templates/faq.html:3
 msgid ""
 "FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, "
@@ -515,10 +1413,6 @@ msgstr "Geschätzt (Proxy)"
 #: templates/faq.html:35
 msgid "indica una stima;"
 msgstr "zeigt eine Schätzung an;"
-
-#: templates/faq.html:35 templates/product.html:39
-msgid "Misurato"
-msgstr "Gemessen"
 
 #: templates/faq.html:35
 msgid ""
@@ -743,6 +1637,154 @@ msgstr "Zurück zur Anmeldung"
 msgid "Crea account"
 msgstr "Konto erstellen"
 
+#: templates/guide.html:2 templates/guide.html:10
+msgid "Dopo l'analisi"
+msgstr "Nach der Analyse"
+
+#: templates/guide.html:12
+#, fuzzy
+msgid ""
+"Ordine consigliato per chiudere i gap di AI-Driven Visibility (AIO) e "
+"Generative Engine Optimization (GEO) e pubblicare il pack."
+msgstr ""
+"AI-Driven Visibility (AIO) und Generative Engine Optimization (GEO). "
+"Ergebnisse. Zu veröffentlichendes Paket."
+
+#: templates/guide.html:15 templates/settings.html:122
+#, fuzzy
+msgid "Torna alla dashboard"
+msgstr "Zurück zur Anmeldung"
+
+#: templates/guide.html:21
+msgid "Indice DDD→AAA"
+msgstr "Index DDD→AAA"
+
+#: templates/guide.html:22
+msgid ""
+"Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un "
+"grado."
+msgstr ""
+"Lies den Brief: DDD ist kritisch, AAA ist top. Strebe an, mindestens um "
+"einen Grad zu steigen."
+
+#: templates/guide.html:25
+#, fuzzy
+msgid "Score AIO / GEO"
+msgstr "AIO- und GEO-Scores"
+
+#: templates/guide.html:26
+#, fuzzy
+msgid ""
+"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Sotto "
+"60 = intervento prioritario."
+msgstr ""
+"AI-Driven Visibility (AIO) und Generative Engine Optimization (GEO). "
+"Ergebnisse. Zu veröffentlichendes Paket."
+
+#: templates/guide.html:29 templates/verify.html:29
+#, fuzzy
+msgid "Findings"
+msgstr "Ergebnisse und Pakete"
+
+#: templates/guide.html:30
+msgid "Chiudi prima critical e warn; usa anche"
+msgstr "Schließe zuerst kritisch und warn; verwende auch"
+
+#: templates/guide.html:30
+msgid "nel pack."
+msgstr "im Paket."
+
+#: templates/guide.html:34
+msgid "Pubblica in root:"
+msgstr "Veröffentliche im Root:"
+
+#: templates/guide.html:38
+msgid "Incolla nel"
+msgstr "Füge in die"
+
+#: templates/guide.html:38
+msgid "delle pagine chiave."
+msgstr "der Schlüsselseiten ein."
+
+#: templates/guide.html:42
+msgid "Unisci la bozza al file esistente e lascia aperti i bot AI utili."
+msgstr ""
+"Füge den Entwurf zur bestehenden Datei hinzu und lasse nützliche AI-Bots "
+"offen."
+
+#: templates/guide.html:45
+msgid "Re-scan"
+msgstr "Erneut scannen"
+
+#: templates/guide.html:46
+msgid "Su Plus imposta frequenza e orario UTC, poi confronta before/after."
+msgstr "Stelle bei Plus Frequenz und UTC-Zeit ein, dann vergleiche vor/nach."
+
+#: templates/guide.html:51
+msgid "Dove vanno i file"
+msgstr "Wo die Dateien hingehen"
+
+#: templates/guide.html:53 templates/guide.html:57
+msgid "root del sito"
+msgstr "Root der Seite"
+
+#: templates/guide.html:58
+#, fuzzy
+msgid "checklist operativa"
+msgstr "Betriebliche Konformität"
+
+#: templates/guide.html:59
+msgid "confronto tra run"
+msgstr "Vergleich zwischen Ausführungen"
+
+#: templates/history.html:11
+#, fuzzy
+msgid "Ultime analisi"
+msgstr "Mehr Websites und Analysen"
+
+#: templates/history.html:15
+msgid "Run manuali e schedulate (max"
+msgstr "Manuelle und geplante Ausführungen (max"
+
+#: templates/history.html:17
+msgid "Ultimi siti analizzati (max"
+msgstr "Letzte analysierte Seiten (max"
+
+#: templates/history.html:17
+msgid "Passa a Plus per lo storico run completo."
+msgstr "Wechseln Sie zu Plus für die vollständige Ausführungshistorie."
+
+#: templates/history.html:23
+msgid "Export CSV"
+msgstr "CSV exportieren"
+
+#: templates/history.html:38 templates/site_history.html:42
+msgid "Schedulato"
+msgstr "Geplant"
+
+#: templates/history.html:38 templates/site_history.html:42
+#, fuzzy
+msgid "Manuale"
+msgstr "Kanäle"
+
+#: templates/history.html:47
+msgid "Dettaglio"
+msgstr "Detail"
+
+#: templates/history.html:58
+#, fuzzy
+msgid "Nessuna analisi ancora"
+msgstr "Analyse läuft…"
+
+#: templates/history.html:59
+msgid "Lancia la prima analisi dalla"
+msgstr "Starten Sie die erste Analyse von"
+
+#: templates/history.html:59
+#, fuzzy
+msgid "dashboard"
+msgstr "Dashboard"
+
 #: templates/landing.html:3
 msgid ""
 "Centropic — Signal Intelligence per Generative Engine Optimization: "
@@ -813,14 +1855,6 @@ msgid ""
 msgstr ""
 "Von der Analyse der Domain bis zur Lieferung des Pakets: Score, "
 "Prioritäten und einsatzbereite Dateien."
-
-#: templates/landing.html:56
-msgid "Piano Free:"
-msgstr "Kostenloser Plan:"
-
-#: templates/landing.html:56 templates/pricing.html:22
-msgid "sito"
-msgstr "Website"
 
 #: templates/landing.html:56
 msgid "analisi totali per account."
@@ -993,10 +2027,6 @@ msgstr ""
 "unserer Domain, die den Standards entsprechen, die wir unseren Kunden "
 "anbieten. Die Scores von Proben entsprechen nicht Live-Zitationen; die "
 "gemessenen Erwähnungen erfordern ein Citation Monitoring."
-
-#: templates/landing.html:135
-msgid "Deliverable"
-msgstr "Liefergegenstand"
 
 #: templates/landing.html:136
 msgid "Artifact pronti per la pubblicazione."
@@ -1230,10 +2260,6 @@ msgstr "Für die erste Domain und die ersten Optimierungen."
 msgid "Crawl fino a"
 msgstr "Crawl bis zu"
 
-#: templates/pricing.html:23
-msgid "pagine"
-msgstr "Seiten"
-
 #: templates/pricing.html:24
 msgid "analisi iniziali + ri-analisi del sito"
 msgstr "Erstanalysen + Wiederanalysen der Website"
@@ -1257,10 +2283,6 @@ msgid ""
 msgstr ""
 "Preis, der an der Kasse angezeigt wird. Für Teams, die kontinuierlich "
 "mehrere Marken optimieren."
-
-#: templates/pricing.html:37
-msgid "In arrivo"
-msgstr "In Kürze"
 
 #: templates/pricing.html:38
 msgid ""
@@ -1297,10 +2319,6 @@ msgstr "API + Export CSV/ZIP + White-Label"
 #: templates/pricing.html:47
 msgid "Storico run avanzato"
 msgstr "Erweiterte Laufhistorie"
-
-#: templates/pricing.html:52
-msgid "Passa a Plus"
-msgstr "Wechsel zu Plus"
 
 #: templates/pricing.html:55
 msgid "Accedi e passa a Plus"
@@ -1427,10 +2445,6 @@ msgstr "Schwache Seiten mit explizitem Problem"
 #: templates/product.html:39
 msgid "Badge"
 msgstr "Badge"
-
-#: templates/product.html:39
-msgid "Stimato"
-msgstr "Geschätzt"
 
 #: templates/product.html:39
 msgid "su ogni finding"
@@ -1616,6 +2630,336 @@ msgstr ""
 #: templates/reset_password.html:68
 msgid "Richiedi un nuovo link"
 msgstr "Fordere einen neuen Link an"
+
+#: templates/settings.html:2
+#, fuzzy
+msgid "Impostazioni GEO"
+msgstr "Einstellungen"
+
+#: templates/settings.html:3
+msgid ""
+"Impostazioni Centropic: alert, prompt bank, API key, white-label e "
+"connector SoV."
+msgstr ""
+"Centropic-Einstellungen: Benachrichtigungen, Prompt-Bank, API-Schlüssel, "
+"White-Label und SoV-Connector."
+
+#: templates/settings.html:9
+#, fuzzy
+msgid "Impostazioni GEO/AIO"
+msgstr "Einstellungen"
+
+#: templates/settings.html:11
+msgid "Alert outbound, prompt bank per SoV measured, API, white-label agenzia."
+msgstr ""
+"Outbound-Benachrichtigung, Prompt-Bank für SoV gemessen, API, White-"
+"Label-Agentur."
+
+#: templates/settings.html:13
+msgid ""
+"sblocca SoV measured / citation monitor, crawl intero sito, API e white-"
+"label."
+msgstr ""
+"entsperren Sie SoV gemessen / Zitationsmonitor, crawlen Sie die gesamte "
+"Website, API und White-Label."
+
+#: templates/settings.html:19
+#, fuzzy
+msgid "Connector"
+msgstr "Kontext"
+
+#: templates/settings.html:22
+#, fuzzy
+msgid "Citation monitor / SoV measured:"
+msgstr "Citation Monitor / SoV gemessen (LLM Probe) — nur Plus"
+
+#: templates/settings.html:24
+#, fuzzy
+msgid "riservato a"
+msgstr "Gemessen"
+
+#: templates/settings.html:25
+msgid "attivo"
+msgstr "aktiv"
+
+#: templates/settings.html:25
+msgid "configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY"
+msgstr "konfigurieren Sie OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY"
+
+#: templates/settings.html:27
+msgid "JS crawl:"
+msgstr "JS-Crawl:"
+
+#: templates/settings.html:27
+msgid "Playwright pronto"
+msgstr "Playwright bereit"
+
+#: templates/settings.html:27
+msgid "disabilitato (JS_CRAWL_ENABLED=1)"
+msgstr "deaktiviert (JS_CRAWL_ENABLED=1)"
+
+#: templates/settings.html:28
+msgid "Google Search Console:"
+msgstr "Google Search Console:"
+
+#: templates/settings.html:33
+msgid "Alert outbound"
+msgstr "Outbound-Benachrichtigung"
+
+#: templates/settings.html:37
+msgid "Email su regressioni / llms sparito / pack verify"
+msgstr "E-Mail zu Regressionen / llms verschwunden / Paket überprüfen"
+
+#: templates/settings.html:39
+msgid "Webhook URL"
+msgstr "Webhook-URL"
+
+#: templates/settings.html:43
+msgid "Webhook secret (HMAC SHA-256)"
+msgstr "Webhook-Geheimnis (HMAC SHA-256)"
+
+#: templates/settings.html:51
+msgid "Prompt bank"
+msgstr "Prompt-Bank"
+
+#: templates/settings.html:53
+#, fuzzy
+msgid "Usati dal citation monitor / SoV measured (piano Plus)."
+msgstr "Citation Monitor / SoV gemessen (LLM Probe) — nur Plus"
+
+#: templates/settings.html:55
+msgid "per personalizzare i prompt di misurazione."
+msgstr "um die Mess-Prompts anzupassen."
+
+#: templates/settings.html:57
+msgid "Lascia vuoto per i default."
+msgstr "Leer lassen für die Standardwerte."
+
+#: templates/settings.html:65
+msgid "Prompt (uno per riga)"
+msgstr "Prompt (eines pro Zeile)"
+
+#: templates/settings.html:74
+msgid "API key"
+msgstr "API-Schlüssel"
+
+#: templates/settings.html:76
+msgid "Endpoints:"
+msgstr "Endpunkte:"
+
+#: templates/settings.html:79
+msgid "Prefisso attivo:"
+msgstr "Aktives Präfix:"
+
+#: templates/settings.html:79
+msgid "Nessuna key."
+msgstr "Kein Schlüssel."
+
+#: templates/settings.html:81
+#, fuzzy
+msgid "Riservato a"
+msgstr "Gemessen"
+
+#: templates/settings.html:81
+msgid "genera e usa le key solo sul piano a pagamento."
+msgstr "generieren und verwenden Sie die Schlüssel nur im kostenpflichtigen Plan."
+
+#: templates/settings.html:87
+msgid "API key (una sola volta)"
+msgstr "API-Schlüssel (einmalig)"
+
+#: templates/settings.html:87
+msgid "copiala e conservala in un secret store. Non la rimostreremo per intero."
+msgstr ""
+"kopieren Sie sie und bewahren Sie sie in einem geheimen Speicher auf. Wir"
+" werden sie nicht vollständig anzeigen."
+
+#: templates/settings.html:94
+msgid "Genera nuova API key"
+msgstr "Neuen API-Schlüssel generieren"
+
+#: templates/settings.html:97
+msgid "Sblocca API con Plus"
+msgstr "API mit Plus freischalten"
+
+#: templates/settings.html:102
+#, fuzzy
+msgid "White-label agenzia"
+msgstr "White-Label"
+
+#: templates/settings.html:108
+msgid "Logo URL"
+msgstr "Logo-URL"
+
+#: templates/settings.html:109
+msgid "Colore"
+msgstr "Farbe"
+
+#: templates/settings.html:110
+#, fuzzy
+msgid "Nota"
+msgstr "Anzeigen"
+
+#: templates/settings.html:115
+msgid "Export white-label per agenzie riservato a"
+msgstr "Export-White-Label für Agenturen reserviert für"
+
+#: templates/site_history.html:9
+#, fuzzy
+msgid "Storico avanzato"
+msgstr "Erweiterte Laufhistorie"
+
+#: templates/site_history.html:14
+msgid "ZIP corrente"
+msgstr "Aktueller ZIP"
+
+#: templates/site_history.html:30
+msgid "Run"
+msgstr "Ausführen"
+
+#: templates/site_history.html:30
+msgid "max"
+msgstr "max"
+
+#: templates/site_history.html:46
+msgid "ZIP run"
+msgstr "ZIP-Ausführung"
+
+#: templates/site_history.html:50
+msgid "Nessuna run ancora."
+msgstr "Noch keine Ausführung."
+
+#: templates/topup.html:2
+#, fuzzy
+msgid "Ricarica crediti"
+msgstr "Guthaben"
+
+#: templates/topup.html:7
+msgid "Crediti prepagati"
+msgstr "Prepaid-Credits"
+
+#: templates/topup.html:8
+msgid "Ricarica il tuo credito"
+msgstr "Lade dein Guthaben auf"
+
+#: templates/topup.html:10
+msgid "Ogni analisi consuma crediti proporzionali ai token AI utilizzati."
+msgstr "Jede Analyse verbraucht Credits proportional zu den verwendeten AI-Token."
+
+#: templates/topup.html:11
+msgid "Scegli un pacchetto o inserisci un importo personalizzato."
+msgstr "Wähle ein Paket oder gib einen benutzerdefinierten Betrag ein."
+
+#: templates/topup.html:16
+msgid "Credito attuale"
+msgstr "Aktuelles Guthaben"
+
+#: templates/topup.html:19
+msgid "Credito illimitato (account admin)"
+msgstr "Unbegrenztes Guthaben (Admin-Konto)"
+
+#: templates/topup.html:26
+#, fuzzy
+msgid "Ultime transazioni"
+msgstr "Einstellungen"
+
+#: templates/topup.html:30
+msgid "Data"
+msgstr "Datum"
+
+#: templates/topup.html:31
+msgid "Descrizione"
+msgstr "Beschreibung"
+
+#: templates/topup.html:32
+#, fuzzy
+msgid "Importo"
+msgstr "Einstellungen"
+
+#: templates/topup.html:33
+msgid "Saldo dopo"
+msgstr "Saldo nach"
+
+#: templates/topup.html:56
+msgid "Scegli un pacchetto"
+msgstr "Wähle ein Paket"
+
+#: templates/topup.html:65
+#, fuzzy
+msgid "analisi"
+msgstr "Kanäle"
+
+#: templates/topup.html:71
+msgid ""
+"Il credito non ha scadenza. Le analisi più semplici costano meno, quelle "
+"con SoV Misurato su più engine costano di più."
+msgstr ""
+"Das Guthaben hat kein Ablaufdatum. Einfachere Analysen kosten weniger, "
+"solche mit SoV, die auf mehreren Engines gemessen werden, kosten mehr."
+
+#: templates/verify.html:10
+msgid ""
+"Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul "
+"dominio."
+msgstr ""
+"Live-Überprüfung: llms.txt / robots / ai.txt / sitemap / JSON-LD auf der "
+"Domain."
+
+#: templates/verify.html:11
+msgid "Score verify:"
+msgstr "Score überprüfen:"
+
+#: templates/verify.html:12
+msgid "probe live"
+msgstr "Probe live"
+
+#: templates/verify.html:17
+msgid "Checks"
+msgstr "Überprüfungen"
+
+#: templates/verify.html:24
+#, fuzzy
+msgid "Errore probe:"
+msgstr "Fehler"
+
+#: templates/verify.html:40
+#, fuzzy
+msgid "Export white-label MD"
+msgstr "White-Label"
+
+#: templates/partials/analyze_overlay.html:40
+msgid "Elaborazione in corso"
+msgstr "Verarbeitung läuft"
+
+#: templates/partials/analyze_overlay.html:43
+msgid "Stiamo analizzando i segnali del dominio. Resta su questa pagina."
+msgstr "Wir analysieren die Signale der Domain. Bleib auf dieser Seite."
+
+#: templates/partials/analyze_overlay.html:49
+#, fuzzy
+msgid "Crawl del dominio"
+msgstr "Crawl der Domain, Proben von"
+
+#: templates/partials/analyze_overlay.html:50
+msgid "Probe segnali"
+msgstr "Probe-Signale"
+
+#: templates/partials/analyze_overlay.html:51
+#, fuzzy
+msgid "Scoring AIO / GEO"
+msgstr "AIO- und GEO-Scores"
+
+#: templates/partials/analyze_overlay.html:52
+msgid "Pack artifact"
+msgstr "Paketartefakt"
+
+#: templates/partials/analyze_overlay.html:60
+msgid "Di solito 30–90 secondi."
+msgstr "Normalerweise 30–90 Sekunden."
+
+#: templates/partials/analyze_overlay.html:66
+msgid "Chiudi"
+msgstr "Schließen"
 
 #: templates/partials/auth_help.html:2
 msgid "Informazioni account Centropic"

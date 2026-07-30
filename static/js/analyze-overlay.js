@@ -190,6 +190,14 @@
             self._progress = 100;
             self._paintBar();
             self._stopTimers();
+            if (data.emit_analyze_complete && typeof window.gtag === "function") {
+              try {
+                window.gtag("event", "analyze_complete", {
+                  event_category: "analyze",
+                  job_id: data.id || undefined,
+                });
+              } catch (e) { /* ignore */ }
+            }
             window.location.href = self._doneUrl;
             return;
           }
@@ -205,7 +213,13 @@
       } catch (e) {
         /* ignore transient */
       }
-      if (tries < 120) self._poll = setTimeout(tick, 2000);
+      // Keep polling until terminal status (long Plus crawls may exceed 4 minutes).
+      // Back off slightly after 3 minutes to reduce load.
+      var delay = tries < 90 ? 2000 : tries < 180 ? 4000 : 8000;
+      if (tries === 90 && self.hint) {
+        self.hint.textContent = "Analisi ancora in corso — puoi lasciare questa pagina aperta.";
+      }
+      self._poll = setTimeout(tick, delay);
     };
     self._poll = setTimeout(tick, 1200);
   };
@@ -213,7 +227,6 @@
   function init() {
     var root = document.querySelector("[data-analyze-overlay]");
     if (!root) return;
-    // Replace placeholder done URL if templated incorrectly in external file — set from data attrs
     var api = new Overlay(root);
     window.CentropicAnalyzeOverlay = api;
 
@@ -226,7 +239,8 @@
       });
     }
 
-    // Show overlay immediately when analyze forms are submitted
+    // Interim overlay on submit (no statusUrl until redirect with ?job=).
+    // Skip if another handler already opened with statusUrl.
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
       if (!(form instanceof HTMLFormElement)) return;
@@ -235,6 +249,7 @@
         form.classList.contains("js-analyze-confirm") ||
         form.getAttribute("data-analyze-overlay-trigger") === "1";
       if (!trigger) return;
+      if (root.open) return;
       var urlInput = form.querySelector('[name="url"]');
       var url = urlInput && urlInput.value ? urlInput.value : "";
       api.show({
