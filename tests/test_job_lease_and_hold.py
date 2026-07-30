@@ -119,6 +119,33 @@ def test_heartbeat_prevents_reclaim():
         assert claimed.status == "running"
 
 
+def test_reclaim_running_job_without_lease_immediately():
+    """Zombie running rows with no lease_token must not block the queue forever."""
+    with app.app_context():
+        ensure_schema()
+        u = _user("nolease@example.com")
+        from services.jobs import enqueue_analysis
+
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=u.id,
+            url="https://example.com/nolease",
+            max_pages=2,
+        )
+        job.status = "running"
+        job.lease_token = None
+        job.started_at = datetime.now(timezone.utc)
+        job.heartbeat_at = datetime.now(timezone.utc)
+        job.attempt_count = 1
+        db.session.commit()
+        n = reclaim_stale_jobs(db.session, AnalysisJob, older_than_minutes=12)
+        assert n == 1
+        db.session.refresh(job)
+        assert job.status == "pending"
+        assert job.lease_token is None
+
+
 def test_abandon_releases_hold_via_callback():
     with app.app_context():
         ensure_schema()

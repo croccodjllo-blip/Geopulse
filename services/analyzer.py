@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -10,6 +11,8 @@ from urllib.parse import urldefrag, urljoin, urlparse, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 from services.deep_checks import (
     ADDRESS_RE,
@@ -509,6 +512,7 @@ def crawl_domain_bfs(
     *,
     max_pages: int,
     max_workers: int = 6,
+    progress_callback: Any | None = None,
 ) -> list[dict[str, Any]]:
     """
     Crawl BFS stesso dominio: sitemap + link interni fino a max_pages
@@ -558,6 +562,11 @@ def crawl_domain_bfs(
                 scraped=report.get("scraped"),
                 max_pages=max_pages,
             )
+        if callable(progress_callback):
+            try:
+                progress_callback(len(reports), max_pages)
+            except Exception:
+                logger.debug("crawl progress_callback failed", exc_info=True)
 
     return reports
 
@@ -1128,6 +1137,7 @@ def analyze_site(
     *,
     max_pages: int = 1,
     competitor_urls: list[str] | None = None,
+    progress_callback: Any | None = None,
 ) -> dict[str, Any]:
     """
     Analizza il dominio a partire da `url`.
@@ -1172,7 +1182,11 @@ def analyze_site(
         page_reports = [seed_report]
     else:
         page_reports = crawl_domain_bfs(
-            base, scraped, probes, max_pages=max_pages
+            base,
+            scraped,
+            probes,
+            max_pages=max_pages,
+            progress_callback=progress_callback,
         )
 
     scored = score_site(url, scraped, probes, page_reports=page_reports)

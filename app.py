@@ -1617,7 +1617,10 @@ def process_pending_analyze_jobs(
             except Exception:
                 app.logger.exception("rollback after job failure failed")
             if job is not None:
-                if fail_job(db.session, job, format_job_error(exc)):
+                # Force-fail even if lease was cleared mid-run (zombie worker).
+                if fail_job(
+                    db.session, job, format_job_error(exc), require_lease=False
+                ):
                     if user is not None:
                         release_job_hold(db.session, user, job)
                         db.session.commit()
@@ -3707,13 +3710,16 @@ def dashboard_job_status(job_id: int):
             if job.status == "running"
             else job.status
         ),
-        "hint": (
-            "In coda: il worker sta per partire."
-            if job.status == "pending"
-            else "Crawl e scoring in corso — di solito 30–90 secondi."
-            if job.status == "running"
-            else None
-        ),
+            "hint": (
+                "In coda: il worker sta per partire."
+                if job.status == "pending"
+                else (
+                    "Crawl, probe e scoring in corso — siti grandi o SoV measured "
+                    "possono richiedere alcuni minuti."
+                    if job.status == "running"
+                    else None
+                )
+            ),
         "created_at": job.created_at.isoformat() if job.created_at else None,
         "started_at": job.started_at.isoformat() if job.started_at else None,
         "finished_at": job.finished_at.isoformat() if job.finished_at else None,

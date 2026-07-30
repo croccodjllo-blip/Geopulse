@@ -51,23 +51,28 @@ def run_analysis_pipeline(
     if pages <= 0:
         pages = int(getattr(user, "crawl_pages", 8) or 8)
 
-    if callable(heartbeat_callback):
+    def _hb() -> None:
+        if not callable(heartbeat_callback):
+            return
         try:
             heartbeat_callback()
         except Exception:
-            logger.debug("heartbeat before crawl failed", exc_info=True)
+            logger.debug("heartbeat failed", exc_info=True)
+            raise
+
+    _hb()
+
+    def _crawl_progress(_done: int, _total: int) -> None:
+        _hb()
 
     result = analyze_site(
         url,
         max_pages=pages,
         competitor_urls=(competitor_urls or [])[:3] if user.is_pro else [],
+        progress_callback=_crawl_progress,
     )
 
-    if callable(heartbeat_callback):
-        try:
-            heartbeat_callback()
-        except Exception:
-            logger.debug("heartbeat after crawl failed", exc_info=True)
+    _hb()
 
     measured_ok = should_run_measured(
         user=user,
@@ -96,6 +101,8 @@ def run_analysis_pipeline(
         usage_callback=usage_callback,
     )
 
+    _hb()
+
     run_diff = compare_with_previous(
         aio_score=result.get("aio_score"),
         geo_score=result.get("geo_score"),
@@ -123,6 +130,8 @@ def run_analysis_pipeline(
             alerts["findings"]
         )
 
+    _hb()
+
     pack = build_optimization_pack(
         url,
         result["scraped"],
@@ -135,6 +144,9 @@ def run_analysis_pipeline(
         result=result,
         usage_callback=usage_callback,
     )
+
+    _hb()
+
     analysis = persist_analysis(
         db_session,
         SiteAnalysis=SiteAnalysis,

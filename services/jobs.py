@@ -89,9 +89,15 @@ def reclaim_stale_jobs(
     )
     n = 0
     for job in stale:
+        # Running without a lease is always reclaimable (zombie / legacy claim).
+        token = getattr(job, "lease_token", None)
         beat = _as_utc(getattr(job, "heartbeat_at", None) or job.started_at)
-        if beat is None or beat >= cutoff:
+        if token and (beat is None or beat >= cutoff):
             continue
+        if not token:
+            logger.warning(
+                "Reclaiming running job %s with missing lease_token", job.id
+            )
         attempts = int(getattr(job, "attempt_count", 0) or 0)
         billed = int(getattr(job, "billed_cents", 0) or 0)
         # Soft reclaim after partial billing would re-run the pipeline and

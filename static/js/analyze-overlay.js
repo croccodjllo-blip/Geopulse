@@ -119,8 +119,10 @@
   };
 
   Overlay.prototype._cycleLocalSteps = function () {
-    // Soft advance through visual steps while job is "running"
-    if (this._stepIdx < 4) {
+    // While the job is still "running", never jump to Pack — that stage only
+    // happens at the end and confused users when crawls/SoV took longer.
+    // Cap visual progress at "score" until the server reports done.
+    if (this._stepIdx < 3) {
       this._stepIdx += 1;
       this.setPhase(PHASES[this._stepIdx]);
     }
@@ -161,10 +163,10 @@
     this._timer = setInterval(function () {
       self._tickProgress();
     }, 400);
-    // Local step animation every ~12s while running
+    // Local step animation every ~18s while running (stops before Pack)
     this._stepClock = setInterval(function () {
       if (!self.root.classList.contains("is-error")) self._cycleLocalSteps();
-    }, 12000);
+    }, 18000);
 
     var statusUrl = opts.statusUrl || this.root.getAttribute("data-status-url");
     if (statusUrl) this._startPoll(statusUrl);
@@ -186,7 +188,18 @@
             data.hint
           );
           if (data.status === "running" && self._stepIdx < 1) self.setPhase("crawl", data.hint);
+          if (data.status === "running") {
+            // Keep pack step reserved for completion; nudge toward score only.
+            if (self._stepIdx >= 4) self._stepIdx = 3;
+            if (tries > 45 && self._stepIdx < 3) self.setPhase("score", data.hint);
+            if (tries > 90 && self.hint) {
+              self.hint.textContent =
+                "Analisi ancora in corso su sito grande o SoV measured — attendi, non chiudere la pagina.";
+            }
+          }
           if (data.status === "done") {
+            self._stepIdx = 4;
+            self.setPhase("pack", "Completamento pack…");
             self._progress = 100;
             self._paintBar();
             self._stopTimers();

@@ -119,7 +119,7 @@ def _probe_openai(
     except Exception as exc:  # pragma: no cover
         return {"available": False, "reason": str(exc), "details": []}
 
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(api_key=api_key, timeout=45.0)
     hits = 0
     details: list[dict[str, Any]] = []
     for prompt in prompts:
