@@ -1,7 +1,8 @@
 """Multi-engine citation / measured SoV monitor.
 
-OpenAI / Perplexity / Anthropic (Claude) = measured when the matching API key is set.
-Other engines remain proxy placeholders with explicit evidence labels.
+OpenAI / Perplexity / Anthropic (Claude) / Google AI (Gemini) = measured when the
+matching API key is set. Other engines remain proxy placeholders with explicit
+evidence labels.
 
 Keys are read at call-time (not only at import) so load_dotenv / systemd env stay in sync.
 """
@@ -57,6 +58,17 @@ def _anthropic_version() -> str:
     return _env("ANTHROPIC_API_VERSION", default="2023-06-01") or "2023-06-01"
 
 
+def _gemini_key() -> str:
+    return _env("GEMINI_API_KEY", "GOOGLE_AI_API_KEY", "GOOGLE_API_KEY")
+
+
+def _gemini_model() -> str:
+    return (
+        _env("GEMINI_MODEL", "GOOGLE_AI_MODEL", default="gemini-2.0-flash")
+        or "gemini-2.0-flash"
+    )
+
+
 # Back-compat aliases (may be empty if read before load_dotenv in odd import orders).
 OPENAI_API_KEY = _openai_key()
 OPENAI_MODEL = _openai_model()
@@ -65,10 +77,14 @@ PERPLEXITY_MODEL = _perplexity_model()
 ANTHROPIC_API_KEY = _anthropic_key()
 ANTHROPIC_MODEL = _anthropic_model()
 ANTHROPIC_API_VERSION = _anthropic_version()
+GEMINI_API_KEY = _gemini_key()
+GEMINI_MODEL = _gemini_model()
 
 
 def citation_monitor_available() -> bool:
-    return bool(_openai_key() or _perplexity_key() or _anthropic_key())
+    return bool(
+        _openai_key() or _perplexity_key() or _anthropic_key() or _gemini_key()
+    )
 
 
 def _normalize_needle(text: str) -> str:
@@ -374,6 +390,114 @@ def _probe_anthropic(
     }
 
 
+def _probe_gemini(
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None = None,
+) -> dict[str, Any]:
+    """Google AI Gemini generateContent — SoV measured probe for AI Overview slot."""
+    api_key = _gemini_key()
+    model = _gemini_model()
+    if not api_key:
+        return {
+            "available": False,
+            "reason": "GEMINI_API_KEY / GOOGLE_AI_API_KEY assente",
+            "details": [],
+        }
+    try:
+        import requests
+    except Exception as exc:  # pragma: no cover
+        return {"available": False, "reason": str(exc), "details": []}
+
+    hits = 0
+    details: list[dict[str, Any]] = []
+    system = (
+        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
+        "non inventare URL o menzioni."
+    )
+    for prompt in prompts[:3]:
+        try:
+            url = (
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model}:generateContent"
+            )
+            res = requests.post(
+                url,
+                headers={
+                    "x-goog-api-key": api_key,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "systemInstruction": {"parts": [{"text": system}]},
+                    "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                    "generationConfig": {
+                        "temperature": 0.2,
+                        "maxOutputTokens": 350,
+                    },
+                },
+                timeout=45,
+            )
+            if not res.ok:
+                details.append(
+                    {
+                        "prompt": prompt,
+                        "error": f"HTTP {res.status_code}: {(res.text or '')[:180]}",
+                        "engine": "google",
+                    }
+                )
+                continue
+            data = res.json()
+            usage = data.get("usageMetadata") or {}
+            if usage and usage_callback:
+                usage_callback(
+                    provider="google",
+                    model=model,
+                    input_tokens=int(usage.get("promptTokenCount", 0)),
+                    output_tokens=int(usage.get("candidatesTokenCount", 0)),
+                )
+            text_bits: list[str] = []
+            for cand in data.get("candidates") or []:
+                content = (cand or {}).get("content") or {}
+                for part in content.get("parts") or []:
+                    if isinstance(part, dict) and part.get("text"):
+                        text_bits.append(str(part.get("text") or ""))
+            text = "\n".join(text_bits).strip()
+        except Exception as exc:
+            logger.exception("gemini citation probe failed")
+            details.append(
+                {"prompt": prompt, "error": str(exc)[:160], "engine": "google"}
+            )
+            continue
+        ok = _mentioned(text, needles)
+        if ok:
+            hits += 1
+        details.append(
+            {
+                "prompt": prompt,
+                "mentioned": ok,
+                "excerpt": text[:280],
+                "engine": "google",
+            }
+        )
+    ok_details = [d for d in details if "error" not in d]
+    if not ok_details:
+        reason = "Gemini probe fallito su tutti i prompt"
+        if details and details[0].get("error"):
+            reason = str(details[0]["error"])[:160]
+        return {"available": False, "reason": reason, "details": details}
+    total = max(1, len(ok_details))
+    rate = round(100.0 * hits / total)
+    return {
+        "available": True,
+        "mention_rate": rate,
+        "hits": hits,
+        "samples": total,
+        "details": details,
+        "evidence": "measured",
+        "model": model,
+    }
+
+
 def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
     if not competitors:
         return 0.0
@@ -490,18 +614,47 @@ def run_citation_monitor(
             }
         )
 
-    for eng in (
-        {"id": "google", "label": "AI Overview", "vendor": "Google", "accent": "#4285F4"},
-        {"id": "bing", "label": "Copilot", "vendor": "Microsoft", "accent": "#7B83EB"},
-    ):
+    gemini = _probe_gemini(prompts, needles, usage_callback=usage_callback)
+    if gemini.get("available"):
         engines_out.append(
             {
-                **eng,
-                "mention_rate": None,
-                "evidence": "pending",
-                "reason": "Connector non ancora abilitato (API/browser probe).",
+                "id": "google",
+                "label": "AI Overview",
+                "vendor": "Google",
+                "mention_rate": gemini["mention_rate"],
+                "hits": gemini["hits"],
+                "samples": gemini["samples"],
+                "evidence": "measured",
+                "accent": "#4285F4",
+                "model": gemini.get("model") or _gemini_model(),
             }
         )
+        all_details.extend(gemini.get("details") or [])
+    else:
+        engines_out.append(
+            {
+                "id": "google",
+                "label": "AI Overview",
+                "vendor": "Google",
+                "mention_rate": None,
+                "evidence": "unavailable" if _gemini_key() else "pending",
+                "reason": gemini.get("reason")
+                or "Connector non ancora abilitato (API/browser probe).",
+                "accent": "#4285F4",
+            }
+        )
+
+    engines_out.append(
+        {
+            "id": "bing",
+            "label": "Copilot",
+            "vendor": "Microsoft",
+            "accent": "#7B83EB",
+            "mention_rate": None,
+            "evidence": "pending",
+            "reason": "Connector non ancora abilitato (API/browser probe).",
+        }
+    )
 
     measured_rates = [
         float(e["mention_rate"])
@@ -560,8 +713,8 @@ def run_citation_monitor(
                 "severity": "warn",
                 "title": "Citation monitor non configurato",
                 "detail": (
-                    "Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY e/o ANTHROPIC_API_KEY "
-                    "per SoV measured."
+                    "Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY "
+                    "e/o GEMINI_API_KEY per SoV measured."
                 ),
                 "evidence": "estimated",
             }
@@ -580,8 +733,8 @@ def run_citation_monitor(
         "competitor_pressure": round(pressure, 1),
         "findings": findings,
         "note": (
-            "ChatGPT / Perplexity / Claude: mention rate da prompt pack. "
-            "AI Overview / Copilot: pending connector. "
+            "ChatGPT / Perplexity / Claude / Gemini: mention rate da prompt pack. "
+            "Copilot: pending connector. "
             "Non equivale a ranking garantito nelle risposte live."
         ),
     }

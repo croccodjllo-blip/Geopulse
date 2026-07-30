@@ -2047,6 +2047,14 @@ def health():
                         or ""
                     ).strip()
                 ),
+                "gemini": bool(
+                    (
+                        os.getenv("GEMINI_API_KEY")
+                        or os.getenv("GOOGLE_AI_API_KEY")
+                        or os.getenv("GOOGLE_API_KEY")
+                        or ""
+                    ).strip()
+                ),
                 "citation_monitor": citation_monitor_available(),
                 "stripe": stripe_enabled(),
                 "paddle": paddle_enabled(),
