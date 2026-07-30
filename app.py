@@ -1548,6 +1548,13 @@ def process_pending_analyze_jobs(
                 gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
                 has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
                 xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
+                has_azure=bool(
+                    os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+                    or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+                ),
+                azure_model=os.getenv("AZURE_AI_MODEL")
+                or os.getenv("FOUNDRY_MODEL_NAME")
+                or "gpt-4o-mini",
             )
             preflight = check_page_word_budget(
                 url=job.url,
@@ -2067,6 +2074,13 @@ def health():
                     (
                         os.getenv("XAI_API_KEY")
                         or os.getenv("GROK_API_KEY")
+                        or ""
+                    ).strip()
+                ),
+                "azure_copilot": bool(
+                    (
+                        os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+                        or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
                         or ""
                     ).strip()
                 ),
@@ -3321,6 +3335,13 @@ def dashboard():
                 gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
                 has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
                 xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
+                has_azure=bool(
+                    os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+                    or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+                ),
+                azure_model=os.getenv("AZURE_AI_MODEL")
+                or os.getenv("FOUNDRY_MODEL_NAME")
+                or "gpt-4o-mini",
             )
             # Preventive word-count guard before any AI request
             preflight = check_page_word_budget(
@@ -3581,6 +3602,13 @@ def dashboard_analyze_confirmed():
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
         has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
         xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
+        has_azure=bool(
+            os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+            or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+        ),
+        azure_model=os.getenv("AZURE_AI_MODEL")
+        or os.getenv("FOUNDRY_MODEL_NAME")
+        or "gpt-4o-mini",
     )
     balance = get_balance_cents(user)
     preflight = check_page_word_budget(
@@ -4354,6 +4382,13 @@ def api_v1_analyze():
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
         has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
         xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
+        has_azure=bool(
+            os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+            or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+        ),
+        azure_model=os.getenv("AZURE_AI_MODEL")
+        or os.getenv("FOUNDRY_MODEL_NAME")
+        or "gpt-4o-mini",
     )
     preflight = check_page_word_budget(
         url=url,

@@ -154,6 +154,11 @@ def _estimate_xai_sov(model: str, n_prompts: int) -> TokenBudget:
     return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
 
 
+def _estimate_azure_sov(model: str, n_prompts: int) -> TokenBudget:
+    n = min(n_prompts, 3)
+    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+
+
 # ─────────────────────────── estimate API ────────────────────────────────────
 
 @dataclass
@@ -197,6 +202,8 @@ def estimate_analysis_cost(
     has_gemini: bool = False,
     xai_model: str = "grok-4-1-fast-non-reasoning",
     has_xai: bool = False,
+    azure_model: str = "gpt-4o-mini",
+    has_azure: bool = False,
 ) -> CostEstimate:
     """Estimate the total cost of one analysis run (before it runs)."""
     budgets: list[TokenBudget] = []
@@ -262,6 +269,16 @@ def estimate_analysis_cost(
             breakdown.append({
                 "item": f"Citation probe Grok ({min(n_prompts,3)} prompt)",
                 "provider": "xai",
+                "model": b.model,
+                "input_tokens": b.input_tokens,
+                "output_tokens": b.output_tokens,
+            })
+        if has_azure:
+            b = _estimate_azure_sov(azure_model, n_prompts)
+            budgets.append(b)
+            breakdown.append({
+                "item": f"Citation probe Copilot/Azure ({min(n_prompts,3)} prompt)",
+                "provider": "azure",
                 "model": b.model,
                 "input_tokens": b.input_tokens,
                 "output_tokens": b.output_tokens,

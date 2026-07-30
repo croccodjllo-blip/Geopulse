@@ -49,6 +49,7 @@ def test_run_citation_monitor_uses_grok_engine(monkeypatch):
     monkeypatch.setattr(cm, "_probe_anthropic", lambda *a, **k: {"available": False, "details": []})
     monkeypatch.setattr(cm, "_probe_gemini", lambda *a, **k: {"available": False, "details": []})
     monkeypatch.setattr(cm, "_probe_xai", _fake)
+    monkeypatch.setattr(cm, "_probe_copilot", lambda *a, **k: {"available": False, "details": []})
 
     out = cm.run_citation_monitor(brand="Centropic", domain="centropic.ai", prompts=["x"])
     grok = next(e for e in out["engines"] if e["id"] == "xai")

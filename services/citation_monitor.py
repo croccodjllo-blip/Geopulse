@@ -1,8 +1,7 @@
 """Multi-engine citation / measured SoV monitor.
 
-OpenAI / Perplexity / Anthropic (Claude) / Google AI (Gemini) / xAI (Grok) =
-measured when the matching API key is set. Other engines remain proxy
-placeholders with explicit evidence labels.
+OpenAI / Perplexity / Anthropic (Claude) / Google AI (Gemini) / xAI (Grok) /
+Microsoft Copilot (Azure AI Foundry project) = measured when credentials are set.
 
 Keys are read at call-time (not only at import) so load_dotenv / systemd env stay in sync.
 """
@@ -80,6 +79,58 @@ def _xai_model() -> str:
     )
 
 
+def _azure_project_endpoint() -> str:
+    """Foundry project endpoint (includes project path). No separate project_name in SDK v2."""
+    return _env(
+        "AZURE_AI_PROJECT_ENDPOINT",
+        "FOUNDRY_PROJECT_ENDPOINT",
+        "AZURE_AI_ENDPOINT",
+    )
+
+
+def _azure_ai_model() -> str:
+    return (
+        _env(
+            "AZURE_AI_MODEL",
+            "FOUNDRY_MODEL_NAME",
+            "AZURE_OPENAI_DEPLOYMENT",
+            default="gpt-4o-mini",
+        )
+        or "gpt-4o-mini"
+    )
+
+
+def _azure_ai_agent_name() -> str:
+    """Optional Foundry Agent with Bing grounding — prefer for Copilot-like answers."""
+    return _env("AZURE_AI_AGENT_NAME", "FOUNDRY_AGENT_NAME")
+
+
+def _azure_configured() -> bool:
+    """Endpoint present; Entra ID via SP env or DefaultAzureCredential at call time."""
+    if not _azure_project_endpoint():
+        return False
+    # Explicit service principal is enough to treat as configured on a VPS.
+    if _env("AZURE_CLIENT_ID") and _env("AZURE_TENANT_ID") and _env("AZURE_CLIENT_SECRET"):
+        return True
+    # Allow DefaultAzureCredential (managed identity / az login / workload identity).
+    return _env("AZURE_AI_USE_DEFAULT_CREDENTIAL", default="1") == "1"
+
+
+def _azure_credential():
+    tenant = _env("AZURE_TENANT_ID")
+    client_id = _env("AZURE_CLIENT_ID")
+    secret = _env("AZURE_CLIENT_SECRET")
+    if tenant and client_id and secret:
+        from azure.identity import ClientSecretCredential
+
+        return ClientSecretCredential(
+            tenant_id=tenant, client_id=client_id, client_secret=secret
+        )
+    from azure.identity import DefaultAzureCredential
+
+    return DefaultAzureCredential(exclude_interactive_browser_credential=True)
+
+
 # Back-compat aliases (may be empty if read before load_dotenv in odd import orders).
 OPENAI_API_KEY = _openai_key()
 OPENAI_MODEL = _openai_model()
@@ -92,6 +143,8 @@ GEMINI_API_KEY = _gemini_key()
 GEMINI_MODEL = _gemini_model()
 XAI_API_KEY = _xai_key()
 XAI_MODEL = _xai_model()
+AZURE_AI_PROJECT_ENDPOINT = _azure_project_endpoint()
+AZURE_AI_MODEL = _azure_ai_model()
 
 
 def citation_monitor_available() -> bool:
@@ -101,6 +154,7 @@ def citation_monitor_available() -> bool:
         or _anthropic_key()
         or _gemini_key()
         or _xai_key()
+        or _azure_configured()
     )
 
 
@@ -617,6 +671,163 @@ def _probe_xai(
     }
 
 
+def _probe_copilot(
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None = None,
+) -> dict[str, Any]:
+    """Microsoft Copilot-like probe via Azure AI Foundry project (AIProjectClient).
+
+    Uses the OpenAI-compatible client from the project. Prefer an Agent with
+    Grounding with Bing Search (`AZURE_AI_AGENT_NAME`) when available.
+    Auth: Entra ID (service principal env or DefaultAzureCredential).
+    """
+    endpoint = _azure_project_endpoint()
+    model = _azure_ai_model()
+    agent_name = _azure_ai_agent_name() or None
+    if not endpoint:
+        return {
+            "available": False,
+            "reason": (
+                "AZURE_AI_PROJECT_ENDPOINT / FOUNDRY_PROJECT_ENDPOINT assente "
+                "(endpoint progetto Foundry, non solo resource)."
+            ),
+            "details": [],
+        }
+    try:
+        from azure.ai.projects import AIProjectClient
+    except Exception as exc:  # pragma: no cover
+        return {
+            "available": False,
+            "reason": f"azure-ai-projects non installato: {exc}",
+            "details": [],
+        }
+
+    hits = 0
+    details: list[dict[str, Any]] = []
+    system = (
+        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
+        "non inventare URL o menzioni."
+    )
+    try:
+        credential = _azure_credential()
+    except Exception as exc:
+        return {
+            "available": False,
+            "reason": f"Azure credential error: {exc}"[:160],
+            "details": [],
+        }
+
+    try:
+        with AIProjectClient(
+            endpoint=endpoint,
+            credential=credential,
+            allow_preview=bool(agent_name),
+        ) as project_client:
+            with project_client.get_openai_client(
+                agent_name=agent_name
+            ) as openai_client:
+                for prompt in prompts[:3]:
+                    try:
+                        text = ""
+                        # Prefer Responses API (Foundry / agent path).
+                        try:
+                            resp = openai_client.responses.create(
+                                model=model,
+                                input=f"{system}\n\n{prompt}",
+                            )
+                            text = (getattr(resp, "output_text", None) or "").strip()
+                            usage = getattr(resp, "usage", None)
+                            if usage and usage_callback:
+                                usage_callback(
+                                    provider="azure",
+                                    model=model,
+                                    input_tokens=int(
+                                        getattr(usage, "input_tokens", 0)
+                                        or getattr(usage, "prompt_tokens", 0)
+                                        or 0
+                                    ),
+                                    output_tokens=int(
+                                        getattr(usage, "output_tokens", 0)
+                                        or getattr(usage, "completion_tokens", 0)
+                                        or 0
+                                    ),
+                                )
+                        except Exception:
+                            # Fallback chat.completions for older deployments.
+                            resp = openai_client.chat.completions.create(
+                                model=model,
+                                temperature=0.2,
+                                max_tokens=350,
+                                messages=[
+                                    {"role": "system", "content": system},
+                                    {"role": "user", "content": prompt},
+                                ],
+                            )
+                            text = (
+                                (resp.choices[0].message.content or "")
+                                if resp.choices
+                                else ""
+                            ).strip()
+                            if hasattr(resp, "usage") and resp.usage and usage_callback:
+                                usage_callback(
+                                    provider="azure",
+                                    model=model,
+                                    input_tokens=int(
+                                        getattr(resp.usage, "prompt_tokens", 0) or 0
+                                    ),
+                                    output_tokens=int(
+                                        getattr(resp.usage, "completion_tokens", 0) or 0
+                                    ),
+                                )
+                    except Exception as exc:
+                        logger.exception("azure/copilot citation probe failed")
+                        details.append(
+                            {
+                                "prompt": prompt,
+                                "error": str(exc)[:160],
+                                "engine": "bing",
+                            }
+                        )
+                        continue
+                    ok = _mentioned(text, needles)
+                    if ok:
+                        hits += 1
+                    details.append(
+                        {
+                            "prompt": prompt,
+                            "mentioned": ok,
+                            "excerpt": text[:280],
+                            "engine": "bing",
+                        }
+                    )
+    except Exception as exc:
+        logger.exception("azure AIProjectClient init/probe failed")
+        return {
+            "available": False,
+            "reason": str(exc)[:160],
+            "details": details,
+        }
+
+    ok_details = [d for d in details if "error" not in d]
+    if not ok_details:
+        reason = "Copilot (Azure AI) probe fallito su tutti i prompt"
+        if details and details[0].get("error"):
+            reason = str(details[0]["error"])[:160]
+        return {"available": False, "reason": reason, "details": details}
+    total = max(1, len(ok_details))
+    rate = round(100.0 * hits / total)
+    return {
+        "available": True,
+        "mention_rate": rate,
+        "hits": hits,
+        "samples": total,
+        "details": details,
+        "evidence": "measured",
+        "model": agent_name or model,
+    }
+
+
 def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
     if not competitors:
         return 0.0
@@ -793,17 +1004,38 @@ def run_citation_monitor(
             }
         )
 
-    engines_out.append(
-        {
-            "id": "bing",
-            "label": "Copilot",
-            "vendor": "Microsoft",
-            "accent": "#7B83EB",
-            "mention_rate": None,
-            "evidence": "pending",
-            "reason": "Connector non ancora abilitato (API/browser probe).",
-        }
-    )
+    copilot = _probe_copilot(prompts, needles, usage_callback=usage_callback)
+    if copilot.get("available"):
+        engines_out.append(
+            {
+                "id": "bing",
+                "label": "Copilot",
+                "vendor": "Microsoft",
+                "mention_rate": copilot["mention_rate"],
+                "hits": copilot["hits"],
+                "samples": copilot["samples"],
+                "evidence": "measured",
+                "accent": "#7B83EB",
+                "model": copilot.get("model") or _azure_ai_model(),
+            }
+        )
+        all_details.extend(copilot.get("details") or [])
+    else:
+        engines_out.append(
+            {
+                "id": "bing",
+                "label": "Copilot",
+                "vendor": "Microsoft",
+                "accent": "#7B83EB",
+                "mention_rate": None,
+                "evidence": "unavailable" if _azure_project_endpoint() else "pending",
+                "reason": copilot.get("reason")
+                or (
+                    "Imposta AZURE_AI_PROJECT_ENDPOINT + Entra ID "
+                    "(AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET)."
+                ),
+            }
+        )
 
     measured_rates = [
         float(e["mention_rate"])
@@ -863,7 +1095,8 @@ def run_citation_monitor(
                 "title": "Citation monitor non configurato",
                 "detail": (
                     "Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
-                    "GEMINI_API_KEY e/o XAI_API_KEY per SoV measured."
+                    "GEMINI_API_KEY, XAI_API_KEY e/o AZURE_AI_PROJECT_ENDPOINT "
+                    "per SoV measured."
                 ),
                 "evidence": "estimated",
             }
@@ -882,8 +1115,8 @@ def run_citation_monitor(
         "competitor_pressure": round(pressure, 1),
         "findings": findings,
         "note": (
-            "ChatGPT / Perplexity / Claude / Gemini / Grok: mention rate da prompt pack. "
-            "Copilot: pending connector. "
+            "ChatGPT / Perplexity / Claude / Gemini / Grok / Copilot (Azure AI): "
+            "mention rate da prompt pack. "
             "Non equivale a ranking garantito nelle risposte live."
         ),
     }
