@@ -108,7 +108,7 @@ https://rivale2.com", class_="analyze-input") }}
 
     {% if pending_job and pending_job.status in ('pending', 'running') %}
     <div
-      class="job-status"
+      class="job-status job-status--fallback"
       id="job-status"
       data-job-id="{{ pending_job.id }}"
       data-status-url="{{ url_for('dashboard_job_status', job_id=pending_job.id) }}"
@@ -984,6 +984,9 @@ https://rivale2.com", class_="analyze-input") }}
     </div>
   </div>
 </section>
+
+{% include "partials/analyze_overlay.html" %}
+<script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
 <script>
 (() => {
   const el = document.querySelector('.pulse-core__value[data-count-to]');
@@ -1030,8 +1033,10 @@ https://rivale2.com", class_="analyze-input") }}
     });
   });
 
+  // Fallback poll only if the processing overlay is not present.
   const jobEl = document.getElementById('job-status');
-  if (jobEl) {
+  const hasOverlay = document.querySelector('[data-analyze-overlay][data-auto-open]');
+  if (jobEl && !hasOverlay) {
     const statusUrl = jobEl.getAttribute('data-status-url');
     let tries = 0;
     const poll = async () => {
@@ -1040,30 +1045,15 @@ https://rivale2.com", class_="analyze-input") }}
         const res = await fetch(statusUrl, { headers: { Accept: 'application/json' } });
         const data = await res.json();
         if (!data.ok) return;
-        const label = jobEl.querySelector('.job-status__label');
-        const hint = jobEl.querySelector('.job-status__hint');
-        if (label) {
-          const phase = data.phase || data.status;
-          label.textContent = `${phase} · ${data.url || ''}`;
-        }
-        if (hint && data.hint && data.status !== 'error') {
-          hint.textContent = data.hint;
-        }
         if (data.status === 'done') {
           window.location.href = '{{ url_for("dashboard") }}';
           return;
         }
         if (data.status === 'error') {
           jobEl.classList.add('job-status--error');
-          if (hint) {
-            const info = data.error_info;
-            hint.textContent = info
-              ? `${info.title}. ${info.message} ${info.hint || ''}`
-              : (data.error || 'Errore durante l’analisi');
-          }
           return;
         }
-      } catch (e) { /* ignore transient */ }
+      } catch (e) { /* ignore */ }
       if (tries < 90) setTimeout(poll, 2000);
     };
     setTimeout(poll, 1500);

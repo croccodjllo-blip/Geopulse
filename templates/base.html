@@ -262,11 +262,19 @@
       document.addEventListener('submit', (ev) => {
         const form = ev.target;
         if (!(form instanceof HTMLFormElement)) return;
-        if (!form.classList.contains('js-analyze-form')) return;
+        if (!form.classList.contains('js-analyze-form') && !form.classList.contains('js-analyze-confirm')) return;
         const btn = form.querySelector('[type="submit"]');
         if (btn) {
           btn.disabled = true;
           btn.textContent = {{ _('Analisi in corso…')|tojson }};
+        }
+        if (window.CentropicAnalyzeOverlay) {
+          const urlInput = form.querySelector('[name="url"]');
+          window.CentropicAnalyzeOverlay.show({
+            url: urlInput && urlInput.value ? urlInput.value : '',
+            phase: 'pending',
+            hint: {{ _('Invio richiesta… il worker partirà a breve.')|tojson }},
+          });
         }
       });
     </script>

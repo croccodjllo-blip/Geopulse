@@ -135,7 +135,7 @@
   {# ── Azioni ── #}
   <div class="page-cta">
     {% if current_user.is_admin or balance_cents >= required_cents %}
-    <form method="POST" action="{{ url_for('dashboard_analyze_confirmed') }}">
+    <form method="POST" action="{{ url_for('dashboard_analyze_confirmed') }}" class="js-analyze-confirm">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="url" value="{{ url }}">
       <input type="hidden" name="run_measured" value="{{ '1' if run_measured else '0' }}">
@@ -276,4 +276,7 @@
 .credit-status__badge--low { background: rgba(255,90,80,0.18); color: #e84040; }
 .credit-status__hint { width: 100%; margin: 0.35rem 0 0; font-size: 0.87rem; color: var(--ink-soft); }
 </style>
+
+{% include "partials/analyze_overlay.html" %}
+<script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
 {% endblock %}

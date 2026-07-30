@@ -1,0 +1,70 @@
+{# Full-screen processing overlay shown while an analysis job runs. #}
+<dialog
+  class="analyze-overlay"
+  id="analyze-overlay"
+  aria-labelledby="analyze-overlay-title"
+  aria-describedby="analyze-overlay-desc"
+  data-analyze-overlay
+  {% if pending_job and pending_job.status in ('pending', 'running') %}
+  data-auto-open="1"
+  data-status-url="{{ url_for('dashboard_job_status', job_id=pending_job.id) }}"
+  data-done-url="{{ url_for('dashboard') }}"
+  data-url="{{ pending_job.url }}"
+  data-phase="{{ 'pending' if pending_job.status == 'pending' else 'running' }}"
+  {% endif %}
+>
+  <div class="analyze-overlay__panel">
+    <div class="analyze-overlay__viz" aria-hidden="true">
+      <div class="analyze-orbit">
+        <span class="analyze-orbit__ring analyze-orbit__ring--a"></span>
+        <span class="analyze-orbit__ring analyze-orbit__ring--b"></span>
+        <span class="analyze-orbit__ring analyze-orbit__ring--c"></span>
+        <span class="analyze-orbit__core">
+          <img
+            src="{{ url_for('static', filename='img/logo.svg') }}"
+            alt=""
+            width="56"
+            height="56"
+            decoding="async"
+          />
+        </span>
+        <span class="analyze-orbit__dot analyze-orbit__dot--1"></span>
+        <span class="analyze-orbit__dot analyze-orbit__dot--2"></span>
+        <span class="analyze-orbit__dot analyze-orbit__dot--3"></span>
+      </div>
+      <div class="analyze-overlay__scan"></div>
+    </div>
+
+    <p class="analyze-overlay__brand">CENTROPIC</p>
+    <h2 class="analyze-overlay__title" id="analyze-overlay-title" data-overlay-title>
+      {{ _('Elaborazione in corso') }}
+    </h2>
+    <p class="analyze-overlay__desc" id="analyze-overlay-desc" data-overlay-desc>
+      {{ _('Stiamo analizzando i segnali del dominio. Resta su questa pagina.') }}
+    </p>
+    <p class="analyze-overlay__url" data-overlay-url hidden></p>
+
+    <ol class="analyze-overlay__steps" data-overlay-steps aria-hidden="true">
+      <li data-step="queue">{{ _('In coda') }}</li>
+      <li data-step="crawl">{{ _('Crawl del dominio') }}</li>
+      <li data-step="probe">{{ _('Probe segnali') }}</li>
+      <li data-step="score">{{ _('Scoring AIO / GEO') }}</li>
+      <li data-step="pack">{{ _('Pack artifact') }}</li>
+    </ol>
+
+    <div class="analyze-overlay__bar" aria-hidden="true">
+      <span class="analyze-overlay__bar-fill" data-overlay-bar></span>
+    </div>
+
+    <p class="analyze-overlay__hint" data-overlay-hint>
+      {{ _('Di solito 30–90 secondi.') }}
+    </p>
+
+    <div class="analyze-overlay__error" data-overlay-error hidden>
+      <p data-overlay-error-text></p>
+      <button type="button" class="btn btn-ghost" data-overlay-close>
+        {{ _('Chiudi') }}
+      </button>
+    </div>
+  </div>
+</dialog>

@@ -1,0 +1,253 @@
+/**
+ * Analysis processing overlay: show while crawl/scoring jobs run.
+ *
+ * API:
+ *   window.CentropicAnalyzeOverlay.show({ url, statusUrl, doneUrl, phase })
+ *   window.CentropicAnalyzeOverlay.hide()
+ *   window.CentropicAnalyzeOverlay.setPhase(phase, hint)
+ *   window.CentropicAnalyzeOverlay.fail(message)
+ */
+(function () {
+  var PHASES = ["queue", "crawl", "probe", "score", "pack"];
+  var PHASE_INDEX = { pending: 0, queue: 0, running: 1, crawl: 1, probe: 2, score: 3, pack: 4 };
+
+  function el(root, sel) {
+    return root.querySelector(sel);
+  }
+
+  function Overlay(root) {
+    this.root = root;
+    this.title = el(root, "[data-overlay-title]");
+    this.desc = el(root, "[data-overlay-desc]");
+    this.urlEl = el(root, "[data-overlay-url]");
+    this.hint = el(root, "[data-overlay-hint]");
+    this.bar = el(root, "[data-overlay-bar]");
+    this.steps = root.querySelectorAll("[data-overlay-steps] [data-step]");
+    this.errorBox = el(root, "[data-overlay-error]");
+    this.errorText = el(root, "[data-overlay-error-text]");
+    this.closeBtn = el(root, "[data-overlay-close]");
+    this._timer = null;
+    this._poll = null;
+    this._stepIdx = 0;
+    this._progress = 8;
+    this._doneUrl = "/dashboard";
+    var self = this;
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener("click", function () {
+        self.hide();
+      });
+    }
+    // Block Escape dismiss while running (dialog cancel)
+    root.addEventListener("cancel", function (ev) {
+      if (!root.classList.contains("is-error")) ev.preventDefault();
+    });
+  }
+
+  Overlay.prototype.openDialog = function () {
+    if (typeof this.root.showModal === "function") {
+      if (!this.root.open) this.root.showModal();
+    } else {
+      this.root.setAttribute("open", "");
+    }
+    document.documentElement.classList.add("analyze-busy");
+  };
+
+  Overlay.prototype.hide = function () {
+    this._stopTimers();
+    if (typeof this.root.close === "function" && this.root.open) {
+      this.root.close();
+    } else {
+      this.root.removeAttribute("open");
+    }
+    document.documentElement.classList.remove("analyze-busy");
+  };
+
+  Overlay.prototype._stopTimers = function () {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = null;
+    }
+    if (this._stepClock) {
+      clearInterval(this._stepClock);
+      this._stepClock = null;
+    }
+    if (this._poll) {
+      clearTimeout(this._poll);
+      this._poll = null;
+    }
+  };
+
+  Overlay.prototype.setUrl = function (url) {
+    if (!this.urlEl) return;
+    if (url) {
+      this.urlEl.hidden = false;
+      this.urlEl.textContent = url;
+    } else {
+      this.urlEl.hidden = true;
+      this.urlEl.textContent = "";
+    }
+  };
+
+  Overlay.prototype.setPhase = function (phase, hint) {
+    var idx = PHASE_INDEX[phase];
+    if (typeof idx !== "number") idx = this._stepIdx;
+    this._stepIdx = Math.max(this._stepIdx, idx);
+    var active = PHASES[Math.min(this._stepIdx, PHASES.length - 1)];
+    this.steps.forEach(function (li) {
+      var key = li.getAttribute("data-step");
+      var i = PHASES.indexOf(key);
+      li.classList.toggle("is-done", i < PHASES.indexOf(active));
+      li.classList.toggle("is-active", key === active);
+    });
+    if (hint && this.hint) this.hint.textContent = hint;
+    // Nudge progress bar toward phase target
+    var target = 12 + this._stepIdx * 18;
+    this._progress = Math.max(this._progress, Math.min(target, 88));
+    this._paintBar();
+  };
+
+  Overlay.prototype._paintBar = function () {
+    if (this.bar) this.bar.style.width = this._progress + "%";
+  };
+
+  Overlay.prototype._tickProgress = function () {
+    // Slow asymptotic crawl toward 92% while waiting
+    if (this._progress < 92) {
+      this._progress += Math.max(0.15, (92 - this._progress) * 0.02);
+      this._paintBar();
+    }
+  };
+
+  Overlay.prototype._cycleLocalSteps = function () {
+    // Soft advance through visual steps while job is "running"
+    if (this._stepIdx < 4) {
+      this._stepIdx += 1;
+      this.setPhase(PHASES[this._stepIdx]);
+    }
+  };
+
+  Overlay.prototype.fail = function (message) {
+    this._stopTimers();
+    this.root.classList.add("is-error");
+    if (this.errorBox) this.errorBox.hidden = false;
+    if (this.errorText) {
+      this.errorText.textContent = message || "Analisi non riuscita.";
+    }
+    if (this.title) this.title.textContent = "Analisi interrotta";
+    if (this.bar) this.bar.style.width = "100%";
+  };
+
+  Overlay.prototype.show = function (opts) {
+    opts = opts || {};
+    this.root.classList.remove("is-error");
+    if (this.errorBox) this.errorBox.hidden = true;
+    this._doneUrl = opts.doneUrl || this.root.getAttribute("data-done-url") || "/dashboard";
+    this.setUrl(opts.url || this.root.getAttribute("data-url") || "");
+    if (this.title) {
+      this.title.textContent =
+        opts.title || this.root.getAttribute("data-title") || "Elaborazione in corso";
+    }
+    if (this.desc) {
+      this.desc.textContent =
+        opts.desc ||
+        "Stiamo analizzando i segnali del dominio. Resta su questa pagina.";
+    }
+    this._stepIdx = 0;
+    this._progress = 8;
+    this.setPhase(opts.phase || "pending", opts.hint || "Di solito 30–90 secondi.");
+    this.openDialog();
+    this._stopTimers();
+    var self = this;
+    this._timer = setInterval(function () {
+      self._tickProgress();
+    }, 400);
+    // Local step animation every ~12s while running
+    this._stepClock = setInterval(function () {
+      if (!self.root.classList.contains("is-error")) self._cycleLocalSteps();
+    }, 12000);
+
+    var statusUrl = opts.statusUrl || this.root.getAttribute("data-status-url");
+    if (statusUrl) this._startPoll(statusUrl);
+  };
+
+  Overlay.prototype._startPoll = function (statusUrl) {
+    var self = this;
+    var tries = 0;
+    var tick = async function () {
+      tries += 1;
+      try {
+        var res = await fetch(statusUrl, { headers: { Accept: "application/json" } });
+        var data = await res.json();
+        if (data && data.ok) {
+          if (data.url) self.setUrl(data.url);
+          var phase = data.phase || data.status;
+          self.setPhase(
+            data.status === "pending" ? "pending" : data.status === "running" ? "running" : phase,
+            data.hint
+          );
+          if (data.status === "running" && self._stepIdx < 1) self.setPhase("crawl", data.hint);
+          if (data.status === "done") {
+            self._progress = 100;
+            self._paintBar();
+            self._stopTimers();
+            window.location.href = self._doneUrl;
+            return;
+          }
+          if (data.status === "error") {
+            var info = data.error_info;
+            var msg = info
+              ? [info.title, info.message, info.hint].filter(Boolean).join(". ")
+              : data.error || "Errore durante l’analisi";
+            self.fail(msg);
+            return;
+          }
+        }
+      } catch (e) {
+        /* ignore transient */
+      }
+      if (tries < 120) self._poll = setTimeout(tick, 2000);
+    };
+    self._poll = setTimeout(tick, 1200);
+  };
+
+  function init() {
+    var root = document.querySelector("[data-analyze-overlay]");
+    if (!root) return;
+    // Replace placeholder done URL if templated incorrectly in external file — set from data attrs
+    var api = new Overlay(root);
+    window.CentropicAnalyzeOverlay = api;
+
+    if (root.getAttribute("data-auto-open") === "1") {
+      api.show({
+        url: root.getAttribute("data-url"),
+        statusUrl: root.getAttribute("data-status-url"),
+        doneUrl: root.getAttribute("data-done-url"),
+        phase: root.getAttribute("data-phase") || "pending",
+      });
+    }
+
+    // Show overlay immediately when analyze forms are submitted
+    document.addEventListener("submit", function (ev) {
+      var form = ev.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      var trigger =
+        form.classList.contains("js-analyze-form") ||
+        form.classList.contains("js-analyze-confirm") ||
+        form.getAttribute("data-analyze-overlay-trigger") === "1";
+      if (!trigger) return;
+      var urlInput = form.querySelector('[name="url"]');
+      var url = urlInput && urlInput.value ? urlInput.value : "";
+      api.show({
+        url: url,
+        phase: "pending",
+        hint: "Invio richiesta… il worker partirà a breve.",
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
