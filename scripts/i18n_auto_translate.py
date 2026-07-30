@@ -7,6 +7,7 @@ Run after editing templates / wrapped Python strings:
 
 Options:
   --force          retranslate all strings (not only empty msgstr)
+  --fuzzy          also retranslate fuzzy msgstr (recommended after babel update)
   --skip-extract   only fill/compile existing .po files
   --model NAME     OpenAI model (default gpt-4o-mini or I18N_MODEL)
 """
@@ -143,7 +144,9 @@ def translate_batch(texts: list[str], target: str, model: str) -> dict[str, str]
     return result
 
 
-def fill_locale(short: str, babel_loc: str, *, force: bool, model: str) -> int:
+def fill_locale(
+    short: str, babel_loc: str, *, force: bool, fuzzy: bool, model: str
+) -> int:
     po_path = ROOT / "translations" / babel_loc / "LC_MESSAGES" / "messages.po"
     with po_path.open("r", encoding="utf-8") as fh:
         catalog: Catalog = read_po(fh)
@@ -153,7 +156,8 @@ def fill_locale(short: str, babel_loc: str, *, force: bool, model: str) -> int:
             continue
         if isinstance(msg.id, tuple):
             continue
-        if force or not (msg.string or "").strip():
+        empty = not (msg.string or "").strip()
+        if force or empty or (fuzzy and msg.fuzzy):
             targets.append(str(msg.id))
     # dedupe preserve order
     seen: set[str] = set()
@@ -175,6 +179,8 @@ def fill_locale(short: str, babel_loc: str, *, force: bool, model: str) -> int:
         new = mapping.get(str(msg.id))
         if new:
             msg.string = new
+            if msg.fuzzy and "fuzzy" in msg.flags:
+                msg.flags.discard("fuzzy")
             updated += 1
     with po_path.open("wb") as fh:
         write_po(fh, catalog, ignore_obsolete=True)
@@ -198,6 +204,11 @@ def compile_all() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true")
+    parser.add_argument(
+        "--fuzzy",
+        action="store_true",
+        help="Retranslate fuzzy entries (wrong fuzzy matches after update)",
+    )
     parser.add_argument("--skip-extract", action="store_true")
     parser.add_argument("--model", default=os.getenv("I18N_MODEL", "gpt-4o-mini"))
     args = parser.parse_args()
@@ -205,7 +216,13 @@ def main() -> None:
         extract_and_update()
     total = 0
     for short, babel_loc in LOCALES.items():
-        total += fill_locale(short, babel_loc, force=args.force, model=args.model)
+        total += fill_locale(
+            short,
+            babel_loc,
+            force=args.force,
+            fuzzy=args.fuzzy,
+            model=args.model,
+        )
     compile_all()
     print(f"Done. Filled {total} msgstr entries across {len(LOCALES)} locales.")
     print("Re-run this script whenever you edit wrapped UI strings.")

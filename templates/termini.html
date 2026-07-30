@@ -1,90 +1,85 @@
 {% extends "base.html" %}
-{% block title %}Termini di servizio{% endblock %}
-{% block meta_description %}Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO), limiti e responsabilità.{% endblock %}
+{% block title %}{{ _('Termini di servizio') }}{% endblock %}
+{% block meta_description %}{{ _('Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO), limiti e responsabilità.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/termini{% endblock %}
 
 {% block content %}
 <article class="page page--legal">
   <header class="page-intro">
-    <p class="eyebrow">Legale</p>
-    <h1 class="h-display page-intro__title">Termini di servizio</h1>
+    <p class="eyebrow">{{ _('Legale') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Termini di servizio') }}</h1>
     <p class="lede page-intro__lede">
-      Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti questi termini.
-      Contatti: <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      {{ _('Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti questi termini. Contatti:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">1. Servizio</h2>
+    <h2 class="page-section__title">{{ _('1. Servizio') }}</h2>
     <p class="lede">
-      Centropic è un software-as-a-service che analizza siti web pubblici e genera score
-      <strong>AIO</strong> (AI-Driven Visibility) e <strong>GEO</strong> (Generative Engine Optimization),
-      findings e artifact (es. <code>llms.txt</code>, JSON-LD, meta, bozza <code>robots.txt</code>).
-      Non è un Geographic Information System (GIS) né una suite All-in-One generica.
+      {{ _('Centropic è un software-as-a-service che analizza siti web pubblici e genera score') }}
+      <strong>AIO</strong> (AI-Driven Visibility) {{ _('e') }} <strong>GEO</strong>
+      (Generative Engine Optimization),
+      {{ _('findings e artifact (es.') }} <code>llms.txt</code>, JSON-LD, meta, {{ _('bozza') }} <code>robots.txt</code>).
+      {{ _('Non è un Geographic Information System (GIS) né una suite All-in-One generica.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">2. Natura degli score</h2>
+    <h2 class="page-section__title">{{ _('2. Natura degli score') }}</h2>
     <p class="lede">
-      Gli score e il Share of Voice (SoV) derivano da <strong>segnali probe ed euristiche</strong>
-      (contenuto, schema, robots, llms, struttura).
-      Non costituiscono polling live garantito su ChatGPT, Perplexity, Claude o altri answer engine,
-      salvo diversa indicazione esplicita in prodotto con badge <em>Misurato</em>.
-      I risultati sono strumenti di diagnosi, non garanzia di citazione da parte di terzi.
+      {{ _('Gli score e il Share of Voice (SoV) derivano da') }}
+      <strong>{{ _('segnali probe ed euristiche') }}</strong>
+      {{ _('(contenuto, schema, robots, llms, struttura). Non costituiscono polling live garantito su ChatGPT, Perplexity, Claude o altri answer engine, salvo diversa indicazione esplicita in prodotto con badge') }}
+      <em>{{ _('Misurato') }}</em>.
+      {{ _('I risultati sono strumenti di diagnosi, non garanzia di citazione da parte di terzi.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">3. Account e uso corretto</h2>
+    <h2 class="page-section__title">{{ _('3. Account e uso corretto') }}</h2>
     <ul class="plain-list">
-      <li>Fornisci dati veritieri e custodisci le credenziali.</li>
-      <li>Analizza solo siti per cui hai diritto di richiedere un audit tecnico.</li>
-      <li>Non usare il servizio per scansioni abusive, attacchi o accesso a reti private.</li>
-      <li>Rispetta i rate limit e i piani (Free / Plus quando attivo).</li>
+      <li>{{ _('Fornisci dati veritieri e custodisci le credenziali.') }}</li>
+      <li>{{ _('Analizza solo siti per cui hai diritto di richiedere un audit tecnico.') }}</li>
+      <li>{{ _('Non usare il servizio per scansioni abusive, attacchi o accesso a reti private.') }}</li>
+      <li>{{ _('Rispetta i rate limit e i piani (Free / Plus quando attivo).') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">4. Artifact e responsabilità</h2>
+    <h2 class="page-section__title">{{ _('4. Artifact e responsabilità') }}</h2>
     <p class="lede">
-      Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la conformità
-      legale/SEO e l’impatto sulle performance restano a tuo carico.
-      Centropic non risponde di decisioni di crawler o modelli di terzi.
+      {{ _('Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la conformità legale/SEO e l’impatto sulle performance restano a tuo carico. Centropic non risponde di decisioni di crawler o modelli di terzi.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">5. Piani e disponibilità</h2>
+    <h2 class="page-section__title">{{ _('5. Piani e disponibilità') }}</h2>
     <p class="lede">
-      Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza reset).
-      Funzionalità Plus possono essere in waitlist o abilitate manualmente finché non è attivo
-      un checkout self-serve. Il servizio è fornito “as is”; possiamo sospendere account
-      in caso di abuso o rischio sicurezza.
+      {{ _('Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza reset). Funzionalità Plus possono essere in waitlist o abilitate manualmente finché non è attivo un checkout self-serve. Il servizio è fornito “as is”; possiamo sospendere account in caso di abuso o rischio sicurezza.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">6. Pagamenti e rimborsi</h2>
+    <h2 class="page-section__title">{{ _('6. Pagamenti e rimborsi') }}</h2>
     <p class="lede">
-      Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla
-      <a href="{{ url_for('refunds') }}">Politica di rimborso</a>.
-      I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle).
+      {{ _('Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla') }}
+      <a href="{{ url_for('refunds') }}">{{ _('Politica di rimborso') }}</a>.
+      {{ _('I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle).') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">7. Legge applicabile</h2>
+    <h2 class="page-section__title">{{ _('7. Legge applicabile') }}</h2>
     <p class="lede">
-      Salvo norme imperative diverse, si applica la legge italiana.
-      Per controversie è competente il foro del titolare, fatti salvi i diritti del consumatore.
+      {{ _('Salvo norme imperative diverse, si applica la legge italiana. Per controversie è competente il foro del titolare, fatti salvi i diritti del consumatore.') }}
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-ghost" href="{{ url_for('privacy') }}">Privacy</a>
-    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">Rimborsi</a>
-    <a class="btn btn-primary" href="{{ url_for('register') }}">Crea account</a>
+    <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
   </div>
 </article>
 {% endblock %}

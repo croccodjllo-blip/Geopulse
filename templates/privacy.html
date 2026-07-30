@@ -1,90 +1,80 @@
 {% extends "base.html" %}
-{% block title %}Privacy{% endblock %}
-{% block meta_description %}Informativa privacy di Centropic (centropic.ai): dati trattati per account, analisi siti e contatti. Titolare e diritti dell’interessato.{% endblock %}
+{% block title %}{{ _('Privacy') }}{% endblock %}
+{% block meta_description %}{{ _('Informativa privacy di Centropic (centropic.ai): dati trattati per account, analisi siti e contatti. Titolare e diritti dell’interessato.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/privacy{% endblock %}
 
 {% block content %}
 <article class="page page--legal">
   <header class="page-intro">
-    <p class="eyebrow">Legale</p>
-    <h1 class="h-display page-intro__title">Informativa privacy</h1>
+    <p class="eyebrow">{{ _('Legale') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Informativa privacy') }}</h1>
     <p class="lede page-intro__lede">
-      Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) ·
-      Contatti: <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      {{ _('Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · Contatti:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">1. Cosa trattiamo</h2>
+    <h2 class="page-section__title">{{ _('1. Cosa trattiamo') }}</h2>
     <p class="lede">
-      Per erogare il servizio SaaS trattiamo: dati di account (nome, email, password hashata,
-      azienda/ruolo opzionali, telefono e paese se forniti), URL dei siti analizzati,
-      risultati di analisi (score, findings, artifact generati), log tecnici di sicurezza
-      (IP, timestamp) e messaggi inviati volontariamente (es. waitlist Plus).
+      {{ _('Per erogare il servizio SaaS trattiamo: dati di account (nome, email, password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL dei siti analizzati, risultati di analisi (score, findings, artifact generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati volontariamente (es. waitlist Plus).') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">2. Finalità e basi giuridiche</h2>
+    <h2 class="page-section__title">{{ _('2. Finalità e basi giuridiche') }}</h2>
     <ul class="plain-list">
-      <li><strong>Esecuzione del contratto</strong> — account, analisi, pack, supporto.</li>
-      <li><strong>Legittimo interesse</strong> — sicurezza, prevenzione abusi, miglioramento prodotto.</li>
-      <li><strong>Obblighi di legge</strong> — ove applicabili (es. richieste autorità).</li>
-      <li><strong>Consenso</strong> — solo per comunicazioni non essenziali, se richieste in futuro.</li>
+      <li><strong>{{ _('Esecuzione del contratto') }}</strong> — {{ _('account, analisi, pack, supporto.') }}</li>
+      <li><strong>{{ _('Legittimo interesse') }}</strong> — {{ _('sicurezza, prevenzione abusi, miglioramento prodotto.') }}</li>
+      <li><strong>{{ _('Obblighi di legge') }}</strong> — {{ _('ove applicabili (es. richieste autorità).') }}</li>
+      <li><strong>{{ _('Consenso') }}</strong> — {{ _('solo per comunicazioni non essenziali, se richieste in futuro.') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">3. Analisi dei siti</h2>
+    <h2 class="page-section__title">{{ _('3. Analisi dei siti') }}</h2>
     <p class="lede">
-      Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato (pagine pubbliche
-      raggiungibili) e probe di file come <code>/robots.txt</code>, <code>/llms.txt</code>,
-      <code>/sitemap.xml</code>. Non dobbiamo accedere ad aree autenticate del tuo sito.
-      Gli artifact generati restano nel tuo account finché non li elimini o chiudi l’account.
+      {{ _('Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato (pagine pubbliche raggiungibili) e probe di file come') }}
+      <code>/robots.txt</code>, <code>/llms.txt</code>, <code>/sitemap.xml</code>.
+      {{ _('Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati restano nel tuo account finché non li elimini o chiudi l’account.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">4. Conservazione e trasferimenti</h2>
+    <h2 class="page-section__title">{{ _('4. Conservazione e trasferimenti') }}</h2>
     <p class="lede">
-      I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura
-      (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori
-      (hosting, email transazionale, OpenAI se configurata per raffinare <code>llms.txt</code>)
-      trattano dati solo per conto del servizio.
+      {{ _('I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, OpenAI se configurata per raffinare') }}
+      <code>llms.txt</code>) {{ _('trattano dati solo per conto del servizio.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">5. Diritti</h2>
+    <h2 class="page-section__title">{{ _('5. Diritti') }}</h2>
     <p class="lede">
-      Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione
-      scrivendo a <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
-      Hai anche diritto di reclamare presso l’autorità di controllo competente.
+      {{ _('Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo a') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      {{ _('Hai anche diritto di reclamare presso l’autorità di controllo competente.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">6. Cookie</h2>
+    <h2 class="page-section__title">{{ _('6. Cookie') }}</h2>
     <p class="lede">
-      Usiamo cookie tecnici necessari al funzionamento del sito
-      (sessione, protezione CSRF, preferenza lingua).
+      {{ _('Usiamo cookie tecnici necessari al funzionamento del sito (sessione, protezione CSRF, preferenza lingua).') }}
       {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
-      Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e,
-      se configurati, Google Ads / AdSense per misurazione e annunci.
-      Il consenso è gestito con <strong>Google Consent Mode v2</strong>:
-      di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in qualsiasi momento
-      cancellando i dati del sito e ricaricando la pagina.
-      Non attiviamo AdSense senza consenso pubblicitario.
+      {{ _('Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è gestito con') }}
+      <strong>Google Consent Mode v2</strong>:
+      {{ _('di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non attiviamo AdSense senza consenso pubblicitario.') }}
       {% else %}
-      Attualmente non sono attivi cookie di misurazione o pubblicitari di terze parti su questo sito.
+      {{ _('Attualmente non sono attivi cookie di misurazione o pubblicitari di terze parti su questo sito.') }}
       {% endif %}
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-ghost" href="{{ url_for('terms') }}">Termini di servizio</a>
-    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">Rimborsi</a>
-    <a class="btn btn-primary" href="{{ url_for('register') }}">Crea account</a>
+    <a class="btn btn-ghost" href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
   </div>
 </article>
 {% endblock %}

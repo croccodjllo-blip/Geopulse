@@ -1,65 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Interesse Plus{% endblock %}
-{% block meta_description %}Prenota l’interesse per Centropic Plus: crawl intero sito, più siti, re-scan e limiti agenzia. Waitlist ufficiale su centropic.ai — info@centropic.ai.{% endblock %}
+{% block title %}{{ _('Interesse Plus') }}{% endblock %}
+{% block meta_description %}{{ _('Prenota l’interesse per Centropic Plus: crawl intero sito, più siti, re-scan e limiti agenzia. Waitlist ufficiale su centropic.ai — info@centropic.ai.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/interesse-pro{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Piano Plus · aggiornato <time datetime="2026-07-27">27 luglio 2026</time></p>
-    <h1 class="h-display page-intro__title">Prenota l’interesse Plus</h1>
+    <p class="eyebrow">{{ _('Piano Plus · aggiornato') }} <time datetime="2026-07-27">{{ _('27 luglio 2026') }}</time></p>
+    <h1 class="h-display page-intro__title">{{ _('Prenota l’interesse Plus') }}</h1>
     <p class="lede page-intro__lede">
-      Centropic Free analizza con budget pagine e 2 analisi totali per account.
-      Plus è pensato per team e agenzie che servono più domini e vogliono crawl completo,
-      re-scan e limiti più alti. Entra in waitlist: ti aggiorniamo quando il piano è live.
-      Prodotto di
+      {{ _('Centropic Free analizza con budget pagine e 2 analisi totali per account. Plus è pensato per team e agenzie che servono più domini e vogliono crawl completo, re-scan e limiti più alti. Entra in waitlist: ti aggiorniamo quando il piano è live. Prodotto di') }}
       <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">Cosa chiedono i team Plus</h2>
+    <h2 class="page-section__title">{{ _('Cosa chiedono i team Plus') }}</h2>
     <ul class="plain-list">
-      <li>Crawl dell’intero sito (oltre il budget Free)</li>
-      <li>Più siti gestiti nello stesso account</li>
-      <li>Re-scan e storico analisi per confronto nel tempo</li>
-      <li>Pack AIO/GEO ripetibile per clienti agenzia</li>
+      <li>{{ _('Crawl dell’intero sito (oltre il budget Free)') }}</li>
+      <li>{{ _('Più siti gestiti nello stesso account') }}</li>
+      <li>{{ _('Re-scan e storico analisi per confronto nel tempo') }}</li>
+      <li>{{ _('Pack AIO/GEO ripetibile per clienti agenzia') }}</li>
     </ul>
     <p class="lede">
-      Gli score restano diagnostici (probe/euristiche) con badge Stimato/Misurato —
-      vedi <a href="{{ url_for('methodology') }}">metodologia</a> e
-      <a href="{{ url_for('guide_score_vs_sov') }}">Score vs SoV</a>.
-      Urgenze: <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      {{ _('Gli score restano diagnostici (probe/euristiche) con badge Stimato/Misurato — vedi') }}
+      <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a> {{ _('e') }}
+      <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>.
+      {{ _('Urgenze:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Modulo waitlist</h2>
+    <h2 class="page-section__title">{{ _('Modulo waitlist') }}</h2>
     <form method="post" class="form-grid panel" novalidate>
       {{ form.hidden_tag() }}
       <div class="field">
-        <label for="name">Nome e cognome</label>
+        <label for="name">{{ _('Nome e cognome') }}</label>
         {{ form.name(id="name", autocomplete="name") }}
         {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
-        <label for="email">Email</label>
+        <label for="email">{{ _('Email') }}</label>
         {{ form.email(id="email", autocomplete="email") }}
         {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
-        <label for="company">Azienda / Brand <span class="hint">(opzionale)</span></label>
+        <label for="company">{{ _('Azienda / Brand') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.company(id="company", autocomplete="organization") }}
         {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
-        <label for="website_url">Sito web <span class="hint">(opzionale)</span></label>
+        <label for="website_url">{{ _('Sito web') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
         {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
-        <label for="note">Cosa ti serve da Plus <span class="hint">(opzionale)</span></label>
-        {{ form.note(id="note", placeholder="Es. crawl intero sito, più siti, re-scan, team agency…") }}
+        <label for="note">{{ _('Cosa ti serve da Plus') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
+        {{ form.note(id="note", placeholder=_('Es. crawl intero sito, più siti, re-scan, team agency…')) }}
         {% for error in form.note.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       {{ form.submit(class_="btn btn-signal btn-block") }}
@@ -67,8 +64,8 @@
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('register') }}">Inizia gratis ora</a>
-    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">Torna ai prezzi</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Inizia gratis ora') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Torna ai prezzi') }}</a>
   </div>
 </article>
 {% endblock %}
