@@ -143,9 +143,19 @@ def _azure_credential():
 
 
 def _azure_openai_base_url(endpoint: str) -> str:
+    """OpenAI-compatible base URL for Foundry / Azure AI resources.
+
+    Project endpoints look like
+    ``https://{resource}.services.ai.azure.com/api/projects/{project}``.
+    Chat/completions with API key typically use the resource root
+    ``…/openai/v1`` (not under ``/api/projects/…``).
+    """
     base = endpoint.rstrip("/")
     if base.endswith("/openai/v1"):
         return base
+    if "/api/projects/" in base:
+        resource = base.split("/api/projects/", 1)[0].rstrip("/")
+        return f"{resource}/openai/v1"
     return f"{base}/openai/v1"
 
 
