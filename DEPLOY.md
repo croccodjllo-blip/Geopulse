@@ -30,9 +30,16 @@ SQLite è supportato (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici)
 # Codice su GitHub
 git push -u origin HEAD
 
-# Produzione: remote `vps` → hook post-receive → checkout + restart
+# Produzione: remote `vps` → hook post-receive → checkout + pip + restart
 git push vps HEAD:main
 ```
+
+Lo hook deve:
+1. `git checkout -f` sul work tree (`/opt/aio-bot`)
+2. **`pip install -r requirements.txt`** nel venv (obbligatorio dopo dipendenze nuove)
+3. `systemctl restart aio-bot`
+
+Sample: `deploy/post-receive.sample`. Senza lo step pip, import nuovi falliscono in silenzio fino al restart con moduli mancanti.
 
 Non pubblicare host IP, path interni o credenziali in questa guida. Usare inventory/ops privato per indirizzi e chiavi SSH.
 

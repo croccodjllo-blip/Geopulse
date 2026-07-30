@@ -918,6 +918,7 @@ def run_citation_monitor(
     prompts: list[str] | None = None,
     competitors: list[dict[str, Any]] | None = None,
     usage_callback: Any | None = None,
+    heartbeat_callback: Any | None = None,
 ) -> dict[str, Any]:
     prompts = list(prompts or default_prompts(locale="it"))[:8]
     needles = _needles(brand, domain)
@@ -925,7 +926,17 @@ def run_citation_monitor(
     engines_out: list[dict[str, Any]] = []
     all_details: list[dict[str, Any]] = []
 
+    def _beat() -> None:
+        if not callable(heartbeat_callback):
+            return
+        try:
+            heartbeat_callback()
+        except Exception:
+            # Propagate lease-loss / cancel so the worker can stop cleanly.
+            raise
+
     openai = _probe_openai(prompts, needles, usage_callback=usage_callback)
+    _beat()
     if openai.get("available"):
         engines_out.append(
             {
@@ -954,6 +965,7 @@ def run_citation_monitor(
         )
 
     pplx = _probe_perplexity(prompts, needles, usage_callback=usage_callback)
+    _beat()
     if pplx.get("available"):
         engines_out.append(
             {
@@ -983,6 +995,7 @@ def run_citation_monitor(
         )
 
     anthropic = _probe_anthropic(prompts, needles, usage_callback=usage_callback)
+    _beat()
     if anthropic.get("available"):
         engines_out.append(
             {
@@ -1012,12 +1025,13 @@ def run_citation_monitor(
         )
 
     gemini = _probe_gemini(prompts, needles, usage_callback=usage_callback)
+    _beat()
     if gemini.get("available"):
         engines_out.append(
             {
                 "id": "google",
-                "label": "AI Overview",
-                "vendor": "Google",
+                "label": "Gemini",
+                "vendor": "Google (proxy AI Overview)",
                 "mention_rate": gemini["mention_rate"],
                 "hits": gemini["hits"],
                 "samples": gemini["samples"],
@@ -1031,17 +1045,21 @@ def run_citation_monitor(
         engines_out.append(
             {
                 "id": "google",
-                "label": "AI Overview",
-                "vendor": "Google",
+                "label": "Gemini",
+                "vendor": "Google (proxy AI Overview)",
                 "mention_rate": None,
                 "evidence": "unavailable" if _gemini_key() else "pending",
                 "reason": gemini.get("reason")
-                or "Connector non ancora abilitato (API/browser probe).",
+                or (
+                    "Probe via Gemini API (non è Google AI Overview nativo). "
+                    "Imposta GEMINI_API_KEY."
+                ),
                 "accent": "#4285F4",
             }
         )
 
     xai = _probe_xai(prompts, needles, usage_callback=usage_callback)
+    _beat()
     if xai.get("available"):
         engines_out.append(
             {
@@ -1072,12 +1090,13 @@ def run_citation_monitor(
         )
 
     copilot = _probe_copilot(prompts, needles, usage_callback=usage_callback)
+    _beat()
     if copilot.get("available"):
         engines_out.append(
             {
                 "id": "bing",
-                "label": "Copilot",
-                "vendor": "Microsoft",
+                "label": "Azure AI",
+                "vendor": "Microsoft Azure",
                 "mention_rate": copilot["mention_rate"],
                 "hits": copilot["hits"],
                 "samples": copilot["samples"],
@@ -1091,13 +1110,14 @@ def run_citation_monitor(
         engines_out.append(
             {
                 "id": "bing",
-                "label": "Copilot",
-                "vendor": "Microsoft",
+                "label": "Azure AI",
+                "vendor": "Microsoft Azure",
                 "accent": "#7B83EB",
                 "mention_rate": None,
                 "evidence": "unavailable" if _azure_project_endpoint() else "pending",
                 "reason": copilot.get("reason")
                 or (
+                    "Probe via Azure AI Foundry (proxy Copilot). "
                     "Imposta AZURE_AI_PROJECT_ENDPOINT + AZURE_AI_API_KEY "
                     "(oppure Entra ID: AZURE_TENANT_ID / CLIENT_ID / CLIENT_SECRET)."
                 ),
@@ -1182,8 +1202,8 @@ def run_citation_monitor(
         "competitor_pressure": round(pressure, 1),
         "findings": findings,
         "note": (
-            "ChatGPT / Perplexity / Claude / Gemini / Grok / Copilot (Azure AI): "
-            "mention rate da prompt pack. "
+            "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / "
+            "Azure AI (proxy Copilot): mention rate da prompt pack. "
             "Non equivale a ranking garantito nelle risposte live."
         ),
     }

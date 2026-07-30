@@ -54,4 +54,5 @@ def test_run_citation_monitor_uses_gemini_engine(monkeypatch):
     google = next(e for e in out["engines"] if e["id"] == "google")
     assert google["evidence"] == "measured"
     assert google["mention_rate"] == 50
+    assert google["label"] == "Gemini"
     assert out["available"] is True

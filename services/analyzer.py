@@ -401,19 +401,37 @@ def parse_sitemap_urls(xml_text: str, *, seed: str, limit: int = 100) -> tuple[l
     return pages, children
 
 
+def canonicalize_sitemap_url(url: str, *, seed: str) -> str | None:
+    """Same-host sitemap URL (allows .xml; page canonicalize would skip it)."""
+    if not url:
+        return None
+    absolute = urljoin(seed, url.strip())
+    absolute, _frag = urldefrag(absolute)
+    parsed = urlparse(absolute)
+    if parsed.scheme not in {"http", "https"}:
+        return None
+    if not same_domain(absolute, seed):
+        return None
+    path = parsed.path or "/"
+    return urlunparse((parsed.scheme, parsed.netloc.lower(), path, "", "", ""))
+
+
 def collect_sitemap_urls(seed: str, sitemap_probe: dict[str, Any], *, limit: int) -> list[str]:
     if not sitemap_probe.get("ok"):
         return []
     xml_text = sitemap_probe.get("snippet") or ""
     pages, children = parse_sitemap_urls(xml_text, seed=seed, limit=limit)
-    # Segui fino a 3 sitemap figlie
+    # Segui fino a 3 sitemap figlie (solo stesso host — anti-SSRF).
     for child in children[:3]:
         if len(pages) >= limit:
             break
+        child_url = canonicalize_sitemap_url(child, seed=seed)
+        if not child_url:
+            continue
         try:
             res = safe_get(
                 _SESSION,
-                child,
+                child_url,
                 timeout=PROBE_TIMEOUT,
                 max_redirects=5,
             )

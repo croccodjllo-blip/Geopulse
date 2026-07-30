@@ -37,8 +37,25 @@ def test_extract_user_id():
 
 
 def test_plan_from_paddle_status():
+    from datetime import datetime, timedelta, timezone
+
     assert pb.plan_from_paddle_subscription_status("active") == "plus"
     assert pb.plan_from_paddle_subscription_status("canceled") == "free"
+    # past_due without timestamp → fail closed
+    assert pb.plan_from_paddle_subscription_status("past_due") == "free"
+    now = datetime(2026, 7, 30, tzinfo=timezone.utc)
+    assert (
+        pb.plan_from_paddle_subscription_status(
+            "past_due", past_due_at=now - timedelta(days=1), now=now
+        )
+        == "plus"
+    )
+    assert (
+        pb.plan_from_paddle_subscription_status(
+            "past_due", past_due_at=now - timedelta(days=10), now=now
+        )
+        == "free"
+    )
 
 
 def test_payments_provider_prefers_paddle(monkeypatch):

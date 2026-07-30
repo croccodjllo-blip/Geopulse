@@ -41,14 +41,21 @@
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('4. Conservazione e trasferimenti') }}</h2>
+    <h2 class="page-section__title">{{ _('4. Pagamenti') }}</h2>
     <p class="lede">
-      {{ _('I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, OpenAI se configurata per raffinare llms.txt) trattano dati solo per conto del servizio.') }}
+      {{ _('I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da Paddle.com Market Limited in qualità di merchant of record. Centropic non memorizza i dati completi della carta. Paddle tratta i dati di fatturazione necessari all’incasso e alla fiscalità secondo la propria informativa; riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e importi per attivare il piano e accreditare il saldo.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('5. Diritti') }}</h2>
+    <h2 class="page-section__title">{{ _('5. Conservazione e trasferimenti') }}</h2>
+    <p class="lede">
+      {{ _('I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati solo per conto del servizio o come autonomi titolari ove indicato (es. Paddle).') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('6. Diritti') }}</h2>
     <p class="lede">
       {{ _('Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo a') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
@@ -57,7 +64,7 @@
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('6. Cookie') }}</h2>
+    <h2 class="page-section__title">{{ _('7. Cookie') }}</h2>
     <p class="lede">
       {{ _('Usiamo cookie tecnici necessari al funzionamento del sito (sessione, protezione CSRF, preferenza lingua).') }}
       {% if ga4_measurement_id or google_ads_id or adsense_client_id %}

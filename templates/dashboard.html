@@ -447,7 +447,7 @@ https://rivale2.com", class_="analyze-input") }}
                     <span class="engine-bar__access" data-access="allow">{{ _('bot allow') }}</span>
                     {% endif %}
                     {% if e.evidence == 'measured' %}
-                    <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}</span>
+                    <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}{% if e.samples is not none %} · {{ e.samples }} {{ _('campioni') }}{% endif %}</span>
                     {% elif e.evidence == 'unavailable' %}
                     <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('Non disponibile') }}</span>
                     {% elif e.evidence == 'pending' %}

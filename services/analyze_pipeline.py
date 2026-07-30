@@ -91,10 +91,21 @@ def run_analysis_pipeline(
         requested=run_measured,
         env_enabled=measured_env_enabled,
     )
+    prompt_locale = "it"
+    try:
+        from flask import has_request_context
+
+        if has_request_context():
+            from services.i18n import active_ui_locale
+
+            prompt_locale = active_ui_locale() or "it"
+    except Exception:
+        prompt_locale = "it"
+
     prompts = (
         resolve_prompts(
             user=user,
-            locale="it",
+            locale=prompt_locale,
             domain=str((result.get("scraped") or {}).get("domain") or ""),
             max_prompts=8,
         )
@@ -104,6 +115,9 @@ def run_analysis_pipeline(
 
     # Suite GEO/AIO (entity, citability, schema, locale, publish verify).
     # SoV measured / citation monitor: solo Plus.
+    def _geo_hb() -> None:
+        _hb(phase="geo", done=crawled, total=max(crawled, pages))
+
     run_geo_suite(
         result=result,
         user=user,
@@ -111,6 +125,7 @@ def run_analysis_pipeline(
         run_measured=measured_ok,
         prompts=prompts,
         usage_callback=usage_callback,
+        heartbeat_callback=_geo_hb,
     )
 
     _hb(phase="score", done=crawled, total=max(crawled, pages))
@@ -157,7 +172,9 @@ def run_analysis_pipeline(
         usage_callback=usage_callback,
     )
 
-    _hb(phase="pack", done=crawled, total=max(crawled, pages))
+    # Lease check before persist: avoid writing analysis if another worker
+    # already reclaimed this job.
+    _hb(phase="persist", done=crawled, total=max(crawled, pages))
 
     analysis = persist_analysis(
         db_session,

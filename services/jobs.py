@@ -305,17 +305,19 @@ def fail_job(
     error: str,
     *,
     require_lease: bool = True,
+    lease_token: str | None = None,
 ) -> bool:
     """Mark job error from pending/running.
 
     When ``require_lease`` is True (worker path), a running job must still
-    own ``lease_token``. Pending jobs without a lease are allowed so system
-    paths can fail unclaimed work. Admin cancel should use ``require_lease=False``
-    or its own update.
+    own ``lease_token``. Pass ``lease_token=`` explicitly so a zombie worker
+    does not autoflush a stale token onto a reclaimed row. Pending jobs
+    without a lease are allowed so system paths can fail unclaimed work.
+    Admin cancel should use ``require_lease=False`` or its own update.
     """
     Job = job.__class__
     now = datetime.now(timezone.utc)
-    token = getattr(job, "lease_token", None)
+    token = lease_token if lease_token is not None else getattr(job, "lease_token", None)
     q = Job.query.filter(
         Job.id == job.id,
         Job.status.in_(("pending", "running")),
@@ -326,15 +328,17 @@ def fail_job(
         else:
             # Only unclaimed pending jobs may fail without a lease.
             q = q.filter(Job.status == "pending")
-    updated = q.update(
-        {
-            "status": "error",
-            "finished_at": now,
-            "error": (error or "errore")[:500],
-            "lease_token": None,
-        },
-        synchronize_session=False,
-    )
+    # Avoid autoflush of a dirty in-memory lease_token overwriting a reclaim.
+    with db_session.no_autoflush:
+        updated = q.update(
+            {
+                "status": "error",
+                "finished_at": now,
+                "error": (error or "errore")[:500],
+                "lease_token": None,
+            },
+            synchronize_session=False,
+        )
     db_session.commit()
     if updated == 1:
         job.status = "error"

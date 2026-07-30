@@ -172,7 +172,7 @@ def persist_analysis(
         before_after_artifact=pack.get("before-after.md") or "",
         pages_analyzed=pages_analyzed,
         crawl_pages_json=analysis.crawl_pages_json,
-        source=source if source in {"manual", "scheduled"} else "manual",
+        source=source if source in {"manual", "scheduled", "job"} else "manual",
         created_at=now,
     )
     db_session.add(run)

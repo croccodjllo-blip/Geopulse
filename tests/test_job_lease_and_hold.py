@@ -53,6 +53,43 @@ def test_fail_job_does_not_overwrite_done():
         assert claimed.status == "done"
 
 
+def test_fail_job_requires_lease_when_running():
+    """Zombie worker must not fail a job reclaimed by another worker."""
+    with app.app_context():
+        ensure_schema()
+        u = _user("fail-lease@example.com")
+        from services.jobs import enqueue_analysis
+
+        enqueue_analysis(
+            db.session, AnalysisJob, user_id=u.id, url="https://example.com/z", max_pages=2
+        )
+        claimed = claim_next_job(db.session, AnalysisJob)
+        assert claimed is not None
+        job_id = claimed.id
+        stale = claimed.lease_token
+        AnalysisJob.query.filter_by(id=job_id).update(
+            {"lease_token": "other-worker-lease"},
+            synchronize_session=False,
+        )
+        db.session.commit()
+        db.session.expire_all()
+        zombie = db.session.get(AnalysisJob, job_id)
+        assert zombie is not None
+        assert (
+            fail_job(
+                db.session,
+                zombie,
+                "zombie boom",
+                require_lease=True,
+                lease_token=stale,
+            )
+            is False
+        )
+        row = db.session.get(AnalysisJob, job_id)
+        assert row.status == "running"
+        assert row.lease_token == "other-worker-lease"
+
+
 def test_complete_job_requires_lease():
     with app.app_context():
         ensure_schema()

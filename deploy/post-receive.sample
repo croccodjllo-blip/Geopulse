@@ -1,0 +1,37 @@
+#!/bin/bash
+# Sample bare-repo post-receive hook for Centropic/GeoPulse.
+# Install on the VPS as: /opt/git/geopulse.git/hooks/post-receive
+# (adjust TARGET / SERVICE to match inventory).
+set -euo pipefail
+
+TARGET="${DEPLOY_TARGET:-/opt/aio-bot}"
+SERVICE="${DEPLOY_SERVICE:-aio-bot}"
+BRANCH_REF="refs/heads/main"
+
+while read -r oldrev newrev refname; do
+  if [ "$refname" != "$BRANCH_REF" ]; then
+    echo "Ignoring $refname (only $BRANCH_REF is deployed)"
+    continue
+  fi
+
+  echo "Deploying $newrev to $TARGET"
+  git --work-tree="$TARGET" --git-dir="$(pwd)" checkout -f main
+
+  cd "$TARGET"
+  if [ -x .venv/bin/pip ]; then
+    echo "Installing Python dependencies…"
+    sudo -u aio-bot .venv/bin/pip install -q -r requirements.txt
+  elif [ -x .venv/bin/python ]; then
+    echo "Installing Python dependencies…"
+    sudo -u aio-bot .venv/bin/python -m pip install -q -r requirements.txt
+  else
+    echo "WARN: .venv not found; skip pip install" >&2
+  fi
+
+  echo "Restarting $SERVICE…"
+  sudo systemctl restart "$SERVICE"
+  # Optional workers/timers pick up code on next tick; restart if desired:
+  # sudo systemctl restart aio-bot-analyze.service || true
+
+  echo "Deploy OK: $(git --git-dir="$(pwd)/.git" rev-parse --short HEAD 2>/dev/null || echo "$newrev")"
+done

@@ -368,6 +368,23 @@ def set_security_headers(response):
     img_src = ["'self'", "data:"]
     connect_src = ["'self'"]
     frame_src = ["'self'"]
+    if paddle_enabled():
+        script_src.append("https://cdn.paddle.com")
+        connect_src.extend([
+            "https://api.paddle.com",
+            "https://sandbox-api.paddle.com",
+            "https://checkout.paddle.com",
+            "https://sandbox-checkout.paddle.com",
+            "https://buy.paddle.com",
+            "https://sandbox-buy.paddle.com",
+        ])
+        frame_src.extend([
+            "https://checkout.paddle.com",
+            "https://sandbox-checkout.paddle.com",
+            "https://buy.paddle.com",
+            "https://sandbox-buy.paddle.com",
+            "https://cdn.paddle.com",
+        ])
     if GA4_MEASUREMENT_ID or GOOGLE_ADS_ID:
         script_src.extend(["https://www.googletagmanager.com", "https://www.google-analytics.com"])
         connect_src.extend([
@@ -1674,9 +1691,13 @@ def process_pending_analyze_jobs(
             except Exception:
                 app.logger.exception("rollback after job failure failed")
             if job is not None:
-                # Force-fail even if lease was cleared mid-run (zombie worker).
+                # Pass the original lease explicitly — never write it back onto
+                # the ORM row (autoflush could overwrite a reclaimed lease).
                 if fail_job(
-                    db.session, job, format_job_error(exc), require_lease=False
+                    db.session,
+                    job,
+                    format_job_error(exc),
+                    lease_token=lease_token,
                 ):
                     if user is not None:
                         release_job_hold(db.session, user, job)
@@ -2723,7 +2744,26 @@ def billing_paddle_webhook():
                 sub_id = data.get("id")
                 if sub_id:
                     user.paddle_subscription_id = str(sub_id)
-                user.plan = plan_from_paddle_subscription_status(data.get("status"))
+                status = data.get("status")
+                past_due_at = None
+                if (status or "").lower() == "past_due":
+                    raw_ts = (
+                        event.get("occurred_at")
+                        or data.get("updated_at")
+                        or data.get("status_changed_at")
+                    )
+                    if raw_ts:
+                        try:
+                            past_due_at = datetime.fromisoformat(
+                                str(raw_ts).replace("Z", "+00:00")
+                            )
+                        except ValueError:
+                            past_due_at = datetime.now(timezone.utc)
+                    else:
+                        past_due_at = datetime.now(timezone.utc)
+                user.plan = plan_from_paddle_subscription_status(
+                    status, past_due_at=past_due_at
+                )
                 db.session.commit()
 
         elif etype in {"transaction.completed", "transaction.paid"}:
@@ -3082,20 +3122,36 @@ def verify_email(token: str):
     user.clear_verify_token()
 
     granted_now = False
-    if (
-        WELCOME_CREDIT_CENTS > 0
-        and not bool(getattr(user, "welcome_credit_granted", False))
-        and mail_configured()
-    ):
-        topup_credit(
-            db.session,
-            CreditLedger,
-            user,
-            amount_eur_cents=WELCOME_CREDIT_CENTS,
-            description=f"Credito di benvenuto €{WELCOME_CREDIT_CENTS/100:.2f}",
-        )
-        user.welcome_credit_granted = True
-        granted_now = True
+    if WELCOME_CREDIT_CENTS > 0 and mail_configured():
+        # Atomic grant: conditional flag + unique ledger key (welcome:{user_id}).
+        pi = f"welcome:{user.id}"
+        already = CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
+        if already is None and not bool(getattr(user, "welcome_credit_granted", False)):
+            claimed = (
+                User.query.filter_by(id=user.id, welcome_credit_granted=False)
+                .update({"welcome_credit_granted": True}, synchronize_session=False)
+            )
+            if claimed == 1:
+                try:
+                    topup_credit(
+                        db.session,
+                        CreditLedger,
+                        user,
+                        amount_eur_cents=WELCOME_CREDIT_CENTS,
+                        description=(
+                            f"Credito di benvenuto €{WELCOME_CREDIT_CENTS/100:.2f}"
+                        ),
+                        stripe_payment_intent=pi,
+                    )
+                    user.welcome_credit_granted = True
+                    granted_now = True
+                except IntegrityError:
+                    db.session.rollback()
+                    user = db.session.get(User, user.id)
+                    if user is not None:
+                        user.email_verified_at = datetime.now(timezone.utc)
+                        user.clear_verify_token()
+                        user.welcome_credit_granted = True
 
     db.session.commit()
     _establish_session(user, permanent=False)

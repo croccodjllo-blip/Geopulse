@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import time
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import requests
@@ -232,11 +233,35 @@ def parse_webhook_event(raw_body: bytes | str) -> dict[str, Any]:
     return data
 
 
-def plan_from_paddle_subscription_status(status: str | None) -> str:
+def plan_from_paddle_subscription_status(
+    status: str | None,
+    *,
+    past_due_at: datetime | None = None,
+    now: datetime | None = None,
+    past_due_grace_days: int = 3,
+) -> str:
+    """Map Paddle subscription status → Centropic plan.
+
+    ``past_due`` keeps Plus only within ``past_due_grace_days`` from
+    ``past_due_at`` (webhook event time). Without a timestamp, past_due
+    does not grant Plus (fail closed).
+    """
     status = (status or "").lower()
-    if status in {"active", "trialing", "past_due"}:
-        # past_due: keep Plus briefly while Paddle retries payment
+    if status in {"active", "trialing"}:
         return "plus"
+    if status == "past_due":
+        if past_due_at is None:
+            return "free"
+        ref = now or datetime.now(timezone.utc)
+        started = past_due_at
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+        if ref.tzinfo is None:
+            ref = ref.replace(tzinfo=timezone.utc)
+        grace = timedelta(days=max(0, int(past_due_grace_days)))
+        if ref <= started + grace:
+            return "plus"
+        return "free"
     return "free"
 
 

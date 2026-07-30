@@ -6,9 +6,13 @@ from services import citation_monitor as cm
 
 
 def test_azure_configured_requires_endpoint(monkeypatch):
-    monkeypatch.delenv("AZURE_AI_PROJECT_ENDPOINT", raising=False)
-    monkeypatch.delenv("FOUNDRY_PROJECT_ENDPOINT", raising=False)
-    monkeypatch.delenv("AZURE_AI_ENDPOINT", raising=False)
+    for key in (
+        "AZURE_AI_PROJECT_ENDPOINT",
+        "FOUNDRY_PROJECT_ENDPOINT",
+        "AZURE_AI_ENDPOINT",
+        "AZURE_OPENAI_ENDPOINT",
+    ):
+        monkeypatch.delenv(key, raising=False)
     assert cm._azure_configured() is False
 
 
@@ -38,9 +42,13 @@ def test_azure_configured_with_api_key(monkeypatch):
 
 
 def test_probe_copilot_missing_endpoint(monkeypatch):
-    monkeypatch.delenv("AZURE_AI_PROJECT_ENDPOINT", raising=False)
-    monkeypatch.delenv("FOUNDRY_PROJECT_ENDPOINT", raising=False)
-    monkeypatch.delenv("AZURE_AI_ENDPOINT", raising=False)
+    for key in (
+        "AZURE_AI_PROJECT_ENDPOINT",
+        "FOUNDRY_PROJECT_ENDPOINT",
+        "AZURE_AI_ENDPOINT",
+        "AZURE_OPENAI_ENDPOINT",
+    ):
+        monkeypatch.delenv(key, raising=False)
     out = cm._probe_copilot(["chi è centropic?"], {"centropic"})
     assert out["available"] is False
     assert "ENDPOINT" in out["reason"].upper() or "endpoint" in out["reason"].lower()
@@ -75,6 +83,6 @@ def test_run_citation_monitor_uses_copilot_engine(monkeypatch):
 
     out = cm.run_citation_monitor(brand="Centropic", domain="centropic.ai", prompts=["x"])
     bing = next(e for e in out["engines"] if e["id"] == "bing")
-    assert bing["label"] == "Copilot"
+    assert bing["label"] == "Azure AI"
     assert bing["evidence"] == "measured"
     assert bing["mention_rate"] == 33

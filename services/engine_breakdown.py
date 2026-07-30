@@ -22,8 +22,8 @@ ENGINES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "google",
-        "label": "AI Overview",
-        "vendor": "Google",
+        "label": "Gemini",
+        "vendor": "Google (proxy AI Overview)",
         "bot": "Google-Extended",
         "accent": "#4285F4",
         "weight": 1.05,
@@ -54,8 +54,8 @@ ENGINES: tuple[dict[str, Any], ...] = (
     },
     {
         "id": "bing",
-        "label": "Copilot",
-        "vendor": "Microsoft",
+        "label": "Azure AI",
+        "vendor": "Microsoft Azure",
         "bot": None,
         "accent": "#7B83EB",
         "weight": 0.85,
@@ -273,6 +273,12 @@ def apply_measured_sov(
         eng["propensity"] = _clamp(float(rate))
         eng["evidence"] = "measured"
         eng["mention_rate"] = eng["propensity"]
+        if m.get("samples") is not None:
+            eng["samples"] = m.get("samples")
+        if m.get("label"):
+            eng["label"] = m.get("label")
+        if m.get("vendor"):
+            eng["vendor"] = m.get("vendor")
         eng["band"] = (
             "high"
             if eng["propensity"] >= 70
