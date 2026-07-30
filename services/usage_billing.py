@@ -625,25 +625,21 @@ def hold_credit(
     job_id: int | None = None,
     description: str = "Riserva analisi",
 ) -> int:
-    """Reserve spendable credit for a queued job (increases credit_held_cents).
+    """Atomically reserve spendable credit (balance − held ≥ amount).
 
+    Uses a conditional UPDATE so concurrent holds cannot over-reserve.
     Returns the held amount (0 for unlimited users).
     """
     if is_unlimited_user(user) or amount_cents <= 0:
         return 0
     amount = int(amount_cents)
     UserModel = type(user)
-    # Conditional: spendable (balance - held) must cover amount.
-    raw_balance = int(getattr(user, "credit_balance_cents", 0) or 0)
-    held_now = get_held_cents(user)
-    if raw_balance - held_now < amount:
-        raise InsufficientCreditError(
-            f"Credito insufficiente per la riserva: {raw_balance - held_now} "
-            f"cent disponibili, {amount} richiesti."
-        )
     updated = (
         db_session.query(UserModel)
-        .filter(UserModel.id == user.id)
+        .filter(
+            UserModel.id == user.id,
+            (UserModel.credit_balance_cents - UserModel.credit_held_cents) >= amount,
+        )
         .update(
             {
                 UserModel.credit_held_cents: UserModel.credit_held_cents + amount
@@ -652,10 +648,13 @@ def hold_credit(
         )
     )
     if updated != 1:
-        # Column may be missing on very old schemas — fall back to attribute.
-        user.credit_held_cents = held_now + amount
-    else:
         db_session.refresh(user)
+        spendable = get_balance_cents(user)
+        raise InsufficientCreditError(
+            f"Credito insufficiente per la riserva: {spendable} "
+            f"cent disponibili, {amount} richiesti."
+        )
+    db_session.refresh(user)
     entry = CreditLedger(
         user_id=user.id,
         analysis_run_id=None,
@@ -675,17 +674,30 @@ def release_hold(
     *,
     amount_cents: int,
 ) -> int:
-    """Release remaining job hold back to spendable balance."""
+    """Release remaining job hold back to spendable balance (floored at 0)."""
     if is_unlimited_user(user) or amount_cents <= 0:
         return 0
     amount = min(int(amount_cents), get_held_cents(user))
     if amount <= 0:
         return 0
     UserModel = type(user)
-    db_session.query(UserModel).filter(UserModel.id == user.id).update(
-        {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
-        synchronize_session=False,
+    updated = (
+        db_session.query(UserModel)
+        .filter(
+            UserModel.id == user.id,
+            UserModel.credit_held_cents >= amount,
+        )
+        .update(
+            {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
+            synchronize_session=False,
+        )
     )
+    if updated != 1:
+        # Clamp to zero if concurrent release raced.
+        db_session.query(UserModel).filter(UserModel.id == user.id).update(
+            {UserModel.credit_held_cents: 0},
+            synchronize_session=False,
+        )
     db_session.refresh(user)
     if int(getattr(user, "credit_held_cents", 0) or 0) < 0:
         user.credit_held_cents = 0
@@ -705,12 +717,33 @@ def consume_hold(
     if amount <= 0:
         return 0
     UserModel = type(user)
-    db_session.query(UserModel).filter(UserModel.id == user.id).update(
+    db_session.query(UserModel).filter(
+        UserModel.id == user.id,
+        UserModel.credit_held_cents >= amount,
+    ).update(
         {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
         synchronize_session=False,
     )
     db_session.refresh(user)
     return amount
+
+
+def release_job_hold(
+    db_session: Any,
+    user: Any | None,
+    job: Any,
+) -> int:
+    """Release ``job.held_cents`` back to the user and clear the job marker."""
+    held = int(getattr(job, "held_cents", 0) or 0)
+    if held <= 0:
+        if hasattr(job, "held_cents"):
+            job.held_cents = 0
+        return 0
+    released = 0
+    if user is not None:
+        released = release_hold(db_session, user, amount_cents=held)
+    job.held_cents = 0
+    return released
 
 
 def topup_credit(

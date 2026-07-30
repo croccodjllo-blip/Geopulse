@@ -7,7 +7,7 @@ import logging
 import os
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -54,17 +54,32 @@ def _as_utc(dt: datetime | None) -> datetime | None:
     return dt.astimezone(timezone.utc)
 
 
+def job_lease_owns(job: Any, *, token: str | None = None) -> bool:
+    """True if ``job`` is still running under the given (or current) lease."""
+    expected = token if token is not None else getattr(job, "lease_token", None)
+    if not expected:
+        return False
+    return (
+        getattr(job, "status", None) == "running"
+        and getattr(job, "lease_token", None) == expected
+    )
+
+
 def reclaim_stale_jobs(
     db_session,
     AnalysisJob,
     *,
     older_than_minutes: int = STALE_HEARTBEAT_MINUTES,
+    on_abandon: Callable[[Any], None] | None = None,
 ) -> int:
     """Re-queue jobs whose lease heartbeat expired (lost worker).
 
     Live workers must call ``heartbeat_job``; without heartbeats a job is
     treated as abandoned. After ``MAX_JOB_ATTEMPTS`` the job fails permanently
     instead of looping forever.
+
+    ``on_abandon(job)`` is invoked for permanent failures (e.g. release credit
+    holds) before the reclaim commit.
     """
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(5, older_than_minutes))
     stale = (
@@ -86,7 +101,18 @@ def reclaim_stale_jobs(
                 f"Job abbandonato dopo {attempts} tentativi "
                 "(worker perso / timeout heartbeat)."
             )[:500]
-            logger.error("Permanently failed stale job %s after %s attempts", job.id, attempts)
+            if on_abandon is not None:
+                try:
+                    on_abandon(job)
+                except Exception:
+                    logger.exception("on_abandon failed for job %s", job.id)
+            else:
+                # Ensure hold marker is cleared even without a release callback.
+                if hasattr(job, "held_cents"):
+                    job.held_cents = 0
+            logger.error(
+                "Permanently failed stale job %s after %s attempts", job.id, attempts
+            )
             n += 1
             continue
         job.status = "pending"
@@ -106,10 +132,15 @@ def reclaim_stale_jobs(
     return n
 
 
-def claim_next_job(db_session, AnalysisJob) -> Any | None:
+def claim_next_job(
+    db_session,
+    AnalysisJob,
+    *,
+    on_abandon: Callable[[Any], None] | None = None,
+) -> Any | None:
     """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending."""
     try:
-        reclaim_stale_jobs(db_session, AnalysisJob)
+        reclaim_stale_jobs(db_session, AnalysisJob, on_abandon=on_abandon)
     except Exception:
         logger.exception("reclaim_stale_jobs failed")
         db_session.rollback()
@@ -166,12 +197,26 @@ def heartbeat_job(db_session, job) -> bool:
     return False
 
 
-def complete_job(db_session, job, *, site_id: int | None = None) -> bool:
-    """Mark job done only if still running so admin cancel wins the race."""
+def complete_job(
+    db_session,
+    job,
+    *,
+    site_id: int | None = None,
+    lease_token: str | None = None,
+) -> bool:
+    """Mark job done only if this worker still owns the lease.
+
+    Prevents a zombie worker (lease reclaimed) from finishing after a new
+    worker already claimed the same job.
+    """
     Job = job.__class__
+    token = lease_token if lease_token is not None else getattr(job, "lease_token", None)
+    if not token:
+        logger.warning("complete_job refused: missing lease for job %s", getattr(job, "id", "?"))
+        return False
     now = datetime.now(timezone.utc)
     updated = (
-        Job.query.filter_by(id=job.id, status="running")
+        Job.query.filter_by(id=job.id, status="running", lease_token=token)
         .update(
             {
                 "status": "done",
@@ -185,31 +230,58 @@ def complete_job(db_session, job, *, site_id: int | None = None) -> bool:
         )
     )
     db_session.commit()
-    return updated == 1
+    if updated == 1:
+        job.status = "done"
+        job.lease_token = None
+        return True
+    logger.warning(
+        "complete_job lost race for job %s (lease=%s…)",
+        getattr(job, "id", "?"),
+        token[:8],
+    )
+    return False
 
 
-def fail_job(db_session, job, error: str) -> bool:
-    """Mark job error only from pending/running — never overwrite done/cancelled."""
+def fail_job(
+    db_session,
+    job,
+    error: str,
+    *,
+    require_lease: bool = True,
+) -> bool:
+    """Mark job error from pending/running.
+
+    When ``require_lease`` is True (worker path), a running job must still
+    own ``lease_token``. Pending jobs without a lease are allowed so system
+    paths can fail unclaimed work. Admin cancel should use ``require_lease=False``
+    or its own update.
+    """
     Job = job.__class__
     now = datetime.now(timezone.utc)
-    updated = (
-        Job.query.filter(
-            Job.id == job.id,
-            Job.status.in_(("pending", "running")),
-        )
-        .update(
-            {
-                "status": "error",
-                "finished_at": now,
-                "error": (error or "errore")[:500],
-                "lease_token": None,
-            },
-            synchronize_session=False,
-        )
+    token = getattr(job, "lease_token", None)
+    q = Job.query.filter(
+        Job.id == job.id,
+        Job.status.in_(("pending", "running")),
+    )
+    if require_lease:
+        if token:
+            q = q.filter(Job.lease_token == token)
+        else:
+            # Only unclaimed pending jobs may fail without a lease.
+            q = q.filter(Job.status == "pending")
+    updated = q.update(
+        {
+            "status": "error",
+            "finished_at": now,
+            "error": (error or "errore")[:500],
+            "lease_token": None,
+        },
+        synchronize_session=False,
     )
     db_session.commit()
     if updated == 1:
         job.status = "error"
         job.error = (error or "errore")[:500]
+        job.lease_token = None
         return True
     return False

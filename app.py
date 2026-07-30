@@ -100,6 +100,7 @@ from services.usage_billing import (
     hold_credit,
     release_hold,
     consume_hold,
+    release_job_hold,
     InsufficientCreditError,
     ConcurrentAnalysisError,
     record_actual_usage,
@@ -1354,14 +1355,31 @@ def process_pending_analyze_jobs(
     stats = {"ok": 0, "error": 0, "empty": 0}
     api_key = openai_api_key if openai_api_key is not None else OPENAI_API_KEY
     model = openai_model or OPENAI_MODEL
+
+    def _on_abandon(abandoned_job: AnalysisJob) -> None:
+        """Release credit hold when a stale job is permanently failed."""
+        held = int(getattr(abandoned_job, "held_cents", 0) or 0)
+        if held <= 0:
+            abandoned_job.held_cents = 0
+            return
+        owner = db.session.get(User, abandoned_job.user_id)
+        release_job_hold(db.session, owner, abandoned_job)
+        app.logger.warning(
+            "Released hold %s cent for abandoned job %s",
+            held,
+            abandoned_job.id,
+        )
+
     for _ in range(max(1, limit)):
-        job = claim_next_job(db.session, AnalysisJob)
+        job = claim_next_job(db.session, AnalysisJob, on_abandon=_on_abandon)
         if job is None:
             stats["empty"] += 1
             break
+        lease_token = getattr(job, "lease_token", None)
         user = User.query.get(job.user_id)
         if user is None:
             fail_job(db.session, job, "Utente non trovato")
+            # User row gone → hold row is gone too; clear job marker only.
             if int(getattr(job, "held_cents", 0) or 0):
                 job.held_cents = 0
                 db.session.commit()
@@ -1390,35 +1408,42 @@ def process_pending_analyze_jobs(
                 unlimited=is_unlimited_user(user),
             )
             if preflight.is_giant:
-                fail_job(db.session, job, preflight.message[:500])
-                if int(getattr(job, "held_cents", 0) or 0):
-                    release_hold(db.session, user, amount_cents=job.held_cents)
-                    job.held_cents = 0
+                if fail_job(db.session, job, preflight.message[:500]):
+                    release_job_hold(db.session, user, job)
                     db.session.commit()
                 stats["error"] += 1
                 continue
             est.service_cost_eur_cents = preflight.required_cost_cents
             if not has_sufficient_credit(user, est):
                 required_with_grace = required_credit_with_grace_cents(est.service_cost_eur_cents)
-                fail_job(
+                if fail_job(
                     db.session,
                     job,
                     (
                         f"Credito insufficiente: saldo €{get_balance_cents(user)/100:.4f}, "
                         f"richiesto con margine €{required_with_grace/100:.4f}"
                     )[:500],
-                )
-                if int(getattr(job, "held_cents", 0) or 0):
-                    release_hold(db.session, user, amount_cents=job.held_cents)
-                    job.held_cents = 0
+                ):
+                    release_job_hold(db.session, user, job)
                     db.session.commit()
                 stats["error"] += 1
                 continue
 
             def _hb():
-                heartbeat_job(db.session, job)
+                ok = heartbeat_job(db.session, job)
+                if not ok:
+                    raise RuntimeError("job lease lost during heartbeat")
+                return ok
 
             def _job_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+                # Refuse to bill if another worker stole the lease.
+                fresh = db.session.get(AnalysisJob, job.id)
+                if (
+                    fresh is None
+                    or fresh.status != "running"
+                    or fresh.lease_token != lease_token
+                ):
+                    raise RuntimeError("job lease lost — stop billing")
                 charged = record_actual_usage(
                     db.session,
                     UsageEvent,
@@ -1464,15 +1489,23 @@ def process_pending_analyze_jobs(
                 max_pages=job.max_pages,
                 heartbeat_callback=_hb,
             )
-            complete_job(db.session, job, site_id=getattr(analysis, "id", None))
-            remaining = int(getattr(job, "held_cents", 0) or 0)
-            if remaining:
-                release_hold(db.session, user, amount_cents=remaining)
-            job.held_cents = 0
-            # Analytics event can't use session flash queue in worker —
-            # leave analytics_complete_sent=False for dashboard_job_status.
-            db.session.commit()
-            stats["ok"] += 1
+            # Restore lease on in-memory job after pipeline commits/refreshes.
+            if not getattr(job, "lease_token", None):
+                job.lease_token = lease_token
+            finished = complete_job(db.session, job, site_id=getattr(analysis, "id", None))
+            if finished:
+                release_job_hold(db.session, user, job)
+                # Analytics event can't use session flash queue in worker —
+                # leave analytics_complete_sent=False for dashboard_job_status.
+                db.session.commit()
+                stats["ok"] += 1
+            else:
+                # Lease lost mid-run: do not release hold (new owner / reclaim path).
+                app.logger.warning(
+                    "Analyze job %s completed locally but lease was lost — skip hold release",
+                    job.id,
+                )
+                stats["error"] += 1
         except Exception as exc:
             app.logger.exception("Analyze job %s failed", job.id)
             # Undo partial realtime usage/credit flushes from a failed run.
@@ -1484,12 +1517,10 @@ def process_pending_analyze_jobs(
             except Exception:
                 app.logger.exception("rollback after job failure failed")
             if job is not None:
-                fail_job(db.session, job, format_job_error(exc))
-                remaining = int(getattr(job, "held_cents", 0) or 0)
-                if remaining and user is not None:
-                    release_hold(db.session, user, amount_cents=remaining)
-                    job.held_cents = 0
-                    db.session.commit()
+                if fail_job(db.session, job, format_job_error(exc)):
+                    if user is not None:
+                        release_job_hold(db.session, user, job)
+                        db.session.commit()
             stats["error"] += 1
     return stats
 
@@ -4108,15 +4139,20 @@ def admin_cancel_job(job_id: int):
                 "status": "error",
                 "error": "Annullato da admin",
                 "finished_at": datetime.now(timezone.utc),
+                "lease_token": None,
             },
             synchronize_session=False,
         )
     )
-    db.session.commit()
-    if updated != 1:
-        flash("Job non cancellabile in questo stato.", "warning")
-    else:
+    if updated == 1:
+        db.session.refresh(job)
+        owner = db.session.get(User, job.user_id)
+        release_job_hold(db.session, owner, job)
+        db.session.commit()
         flash(f"Job #{job_id} annullato.", "success")
+    else:
+        db.session.rollback()
+        flash("Job non cancellabile in questo stato.", "warning")
     return redirect(url_for("admin_home"))
 
 
