@@ -64,8 +64,8 @@ def _gemini_key() -> str:
 
 def _gemini_model() -> str:
     return (
-        _env("GEMINI_MODEL", "GOOGLE_AI_MODEL", default="gemini-2.0-flash")
-        or "gemini-2.0-flash"
+        _env("GEMINI_MODEL", "GOOGLE_AI_MODEL", default="gemini-flash-latest")
+        or "gemini-flash-latest"
     )
 
 
