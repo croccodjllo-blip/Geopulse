@@ -41,7 +41,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import requests
-from sqlalchemy import text
+from sqlalchemy import case, text
 
 from services.ssrf import UnsafeURLError, safe_get
 
@@ -494,6 +494,24 @@ def has_sufficient_credit(user: Any, cost_estimate: CostEstimate) -> bool:
     return get_balance_cents(user) >= required
 
 
+def has_sufficient_credit_for_job(
+    user: Any,
+    cost_estimate: CostEstimate,
+    *,
+    reserved_cents: int = 0,
+) -> bool:
+    """Like ``has_sufficient_credit`` but counts this job's hold as available.
+
+    Worker preflight must not treat the job's own ``held_cents`` as unavailable,
+    or it falsely fails and releases the hold.
+    """
+    if is_unlimited_user(user):
+        return True
+    required = required_credit_with_grace_cents(cost_estimate.service_cost_eur_cents)
+    available = get_balance_cents(user) + max(0, int(reserved_cents or 0))
+    return available >= required
+
+
 def required_credit_with_grace_cents(base_cost_cents: int) -> int:
     """Upfront required credit with safety margin to avoid mid-analysis stops."""
     return max(MIN_BALANCE_EUR_CENTS, int(math.ceil(max(1, base_cost_cents) * (1 + GRACE_MARGIN))))
@@ -507,11 +525,17 @@ def deduct_credit(
     analysis_run_id: int | None,
     cost_eur_cents: int,
     description: str = "Analisi Centropic",
+    reserved_cents: int = 0,
 ) -> None:
     """Atomically deduct credit and log the transaction.
 
     Uses a conditional UPDATE so concurrent workers cannot drive the balance
     negative even if they both passed a prior Python-level balance check.
+
+    ``reserved_cents`` is hold already reserved for this debit (typically the
+    job's remaining ``held_cents``). The update refuses to spend below other
+    jobs' holds: ``balance - cost >= max(0, held - reserved)``.
+
     Admin/unlimited users are never charged — call is silently skipped.
     """
     if is_unlimited_user(user):
@@ -520,12 +544,26 @@ def deduct_credit(
     if cost_eur_cents <= 0:
         return
     UserModel = type(user)
+    reserved = max(0, int(reserved_cents or 0))
+    filters = [
+        UserModel.id == user.id,
+        UserModel.credit_balance_cents >= cost_eur_cents,
+    ]
+    # Protect other jobs' holds when the model tracks credit_held_cents.
+    if hasattr(UserModel, "credit_held_cents"):
+        held_protected = case(
+            (
+                UserModel.credit_held_cents > reserved,
+                UserModel.credit_held_cents - reserved,
+            ),
+            else_=0,
+        )
+        filters.append(
+            (UserModel.credit_balance_cents - cost_eur_cents) >= held_protected
+        )
     updated = (
         db_session.query(UserModel)
-        .filter(
-            UserModel.id == user.id,
-            UserModel.credit_balance_cents >= cost_eur_cents,
-        )
+        .filter(*filters)
         .update(
             {
                 UserModel.credit_balance_cents: UserModel.credit_balance_cents
@@ -674,7 +712,11 @@ def release_hold(
     *,
     amount_cents: int,
 ) -> int:
-    """Release remaining job hold back to spendable balance (floored at 0)."""
+    """Release remaining job hold back to spendable balance.
+
+    On concurrent race (held already reduced), returns 0 without touching
+    other jobs' holds — never clamps the user's entire held balance to 0.
+    """
     if is_unlimited_user(user) or amount_cents <= 0:
         return 0
     amount = min(int(amount_cents), get_held_cents(user))
@@ -693,14 +735,9 @@ def release_hold(
         )
     )
     if updated != 1:
-        # Clamp to zero if concurrent release raced.
-        db_session.query(UserModel).filter(UserModel.id == user.id).update(
-            {UserModel.credit_held_cents: 0},
-            synchronize_session=False,
-        )
+        db_session.refresh(user)
+        return 0
     db_session.refresh(user)
-    if int(getattr(user, "credit_held_cents", 0) or 0) < 0:
-        user.credit_held_cents = 0
     return amount
 
 

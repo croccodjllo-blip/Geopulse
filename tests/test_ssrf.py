@@ -10,6 +10,16 @@ from services.ssrf import (
 )
 
 
+def test_rejects_loopback_without_resolve():
+    """M1: private IP must raise even when resolve=False (UnsafeURLError is ValueError)."""
+    with pytest.raises(UnsafeURLError):
+        assert_public_http_url("http://127.0.0.1/", resolve=False)
+    with pytest.raises(UnsafeURLError):
+        assert_public_http_url("http://10.0.0.1/hook", resolve=False)
+    with pytest.raises(UnsafeURLError):
+        assert_public_http_url("http://169.254.169.254/", resolve=False)
+
+
 def test_rejects_loopback():
     with pytest.raises(UnsafeURLError):
         assert_public_http_url("http://127.0.0.1/")

@@ -193,3 +193,128 @@ def test_hold_credit_rejects_over_reserve():
             pass
         db.session.refresh(u)
         assert u.credit_held_cents == 80
+
+
+def test_release_hold_race_does_not_zero_all_holds(monkeypatch):
+    """H3: concurrent release must not clamp unrelated holds to 0."""
+    with app.app_context():
+        ensure_schema()
+        u = _user("race-hold@example.com", balance=1000)
+        hold_credit(db.session, CreditLedger, u, amount_cents=300, job_id=1)
+        db.session.commit()
+        # DB holds 50 (other job still reserved); stale caller still thinks 200.
+        u.credit_held_cents = 50
+        db.session.commit()
+        monkeypatch.setattr(
+            "services.usage_billing.get_held_cents",
+            lambda _user: 200,
+        )
+        released = release_hold(db.session, u, amount_cents=200)
+        db.session.commit()
+        db.session.refresh(u)
+        assert released == 0
+        assert u.credit_held_cents == 50
+
+
+def test_deduct_credit_respects_other_job_holds():
+    """H4: cannot spend into another job's reserved hold."""
+    from services.usage_billing import deduct_credit
+
+    with app.app_context():
+        ensure_schema()
+        u = _user("deduct-hold@example.com", balance=200)
+        hold_credit(db.session, CreditLedger, u, amount_cents=150, job_id=1)
+        db.session.commit()
+        db.session.refresh(u)
+        # Spendable is 50; without reserved_cents, deduct 100 must fail.
+        try:
+            deduct_credit(
+                db.session,
+                CreditLedger,
+                u,
+                analysis_run_id=None,
+                cost_eur_cents=100,
+                reserved_cents=0,
+            )
+            assert False, "expected InsufficientCreditError"
+        except InsufficientCreditError:
+            pass
+        db.session.refresh(u)
+        assert u.credit_balance_cents == 200
+        # Same debit allowed when this job's hold covers it.
+        deduct_credit(
+            db.session,
+            CreditLedger,
+            u,
+            analysis_run_id=None,
+            cost_eur_cents=100,
+            reserved_cents=150,
+        )
+        db.session.commit()
+        db.session.refresh(u)
+        assert u.credit_balance_cents == 100
+
+
+def test_soft_reclaim_fails_when_partially_billed():
+    """H2: soft reclaim must not re-queue jobs that already billed."""
+    with app.app_context():
+        ensure_schema()
+        u = _user("billed-reclaim@example.com", balance=500)
+        hold_credit(db.session, CreditLedger, u, amount_cents=200, job_id=1)
+        db.session.commit()
+        from services.jobs import enqueue_analysis
+
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=u.id,
+            url="https://example.com/billed",
+            max_pages=2,
+            held_cents=200,
+        )
+        job.status = "running"
+        job.attempt_count = 1
+        job.billed_cents = 40
+        job.started_at = datetime.now(timezone.utc) - timedelta(minutes=40)
+        job.heartbeat_at = datetime.now(timezone.utc) - timedelta(minutes=40)
+        db.session.commit()
+
+        def on_abandon(j):
+            owner = db.session.get(User, j.user_id)
+            release_job_hold(db.session, owner, j)
+
+        n = reclaim_stale_jobs(
+            db.session, AnalysisJob, older_than_minutes=12, on_abandon=on_abandon
+        )
+        assert n == 1
+        db.session.refresh(job)
+        db.session.refresh(u)
+        assert job.status == "error"
+        assert job.held_cents == 0
+        assert u.credit_held_cents == 0
+        assert "doppia fatturazione" in (job.error or "").lower() or "parziale" in (
+            job.error or ""
+        ).lower()
+
+
+def test_has_sufficient_credit_for_job_counts_hold():
+    """H1: worker preflight treats this job's hold as available."""
+    from services.usage_billing import (
+        CostEstimate,
+        has_sufficient_credit,
+        has_sufficient_credit_for_job,
+    )
+
+    with app.app_context():
+        ensure_schema()
+        u = _user("job-credit@example.com", balance=200)
+        hold_credit(db.session, CreditLedger, u, amount_cents=180, job_id=1)
+        db.session.commit()
+        db.session.refresh(u)
+        est = CostEstimate(
+            raw_cost_usd_micro=0.0,
+            service_cost_usd_micro=0.0,
+            service_cost_eur_cents=100,
+        )
+        assert has_sufficient_credit(u, est) is False
+        assert has_sufficient_credit_for_job(u, est, reserved_cents=180) is True

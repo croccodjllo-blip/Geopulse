@@ -93,6 +93,32 @@ def reclaim_stale_jobs(
         if beat is None or beat >= cutoff:
             continue
         attempts = int(getattr(job, "attempt_count", 0) or 0)
+        billed = int(getattr(job, "billed_cents", 0) or 0)
+        # Soft reclaim after partial billing would re-run the pipeline and
+        # double-charge. Fail permanently and release remaining hold instead.
+        if billed > 0 and attempts < MAX_JOB_ATTEMPTS:
+            job.status = "error"
+            job.finished_at = datetime.now(timezone.utc)
+            job.lease_token = None
+            job.error = (
+                "Job interrotto dopo addebito parziale "
+                "(worker perso / timeout heartbeat) — non rieseguito per evitare doppia fatturazione."
+            )[:500]
+            if on_abandon is not None:
+                try:
+                    on_abandon(job)
+                except Exception:
+                    logger.exception("on_abandon failed for billed job %s", job.id)
+            else:
+                if hasattr(job, "held_cents"):
+                    job.held_cents = 0
+            logger.error(
+                "Permanently failed partially-billed stale job %s (billed=%s)",
+                job.id,
+                billed,
+            )
+            n += 1
+            continue
         if attempts >= MAX_JOB_ATTEMPTS:
             job.status = "error"
             job.finished_at = datetime.now(timezone.utc)

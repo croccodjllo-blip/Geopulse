@@ -108,12 +108,14 @@ def assert_public_http_url(url: str, *, resolve: bool = True) -> str:
     # Literal IP in hostname
     try:
         ip = ipaddress.ip_address(host)
-        if _is_blocked_ip(ip):
-            raise UnsafeURLError(f"Indirizzo IP non pubblico: {host}")
     except ValueError:
         # hostname — resolve if requested
         if resolve:
             resolve_public_ips(host)
+    else:
+        # Do NOT catch UnsafeURLError in the ValueError handler above.
+        if _is_blocked_ip(ip):
+            raise UnsafeURLError(f"Indirizzo IP non pubblico: {host}")
 
     # Rebuild without userinfo
     netloc = parsed.hostname or ""
@@ -205,16 +207,20 @@ def safe_get(
         parsed = urlparse(current)
         host = (parsed.hostname or "").lower().rstrip(".")
 
-        # Literal IP: already validated; connect as-is.
+        # Literal IP vs hostname. UnsafeURLError subclasses ValueError — do not
+        # wrap the blocked-IP raise in the same except that catches parse misses.
         try:
-            ipaddress.ip_address(host)
-            request_url = current
-            headers = dict(base_headers)
+            ip = ipaddress.ip_address(host)
         except ValueError:
             ips = resolve_public_ips(host)
             request_url, host_header = _pin_url_to_ip(current, ips[0])
             headers = dict(base_headers)
             headers["Host"] = host_header
+        else:
+            if _is_blocked_ip(ip):
+                raise UnsafeURLError(f"Indirizzo IP non pubblico: {host}")
+            request_url = current
+            headers = dict(base_headers)
 
         resp = pin_session.get(
             request_url,
@@ -280,14 +286,17 @@ def safe_post(
         parsed = urlparse(current)
         host = (parsed.hostname or "").lower().rstrip(".")
         try:
-            ipaddress.ip_address(host)
-            request_url = current
-            headers = dict(base_headers)
+            ip = ipaddress.ip_address(host)
         except ValueError:
             ips = resolve_public_ips(host)
             request_url, host_header = _pin_url_to_ip(current, ips[0])
             headers = dict(base_headers)
             headers["Host"] = host_header
+        else:
+            if _is_blocked_ip(ip):
+                raise UnsafeURLError(f"Indirizzo IP non pubblico: {host}")
+            request_url = current
+            headers = dict(base_headers)
 
         resp = pin_session.post(
             request_url,

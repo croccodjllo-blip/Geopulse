@@ -57,10 +57,9 @@ rsync -az --delete \
   --exclude '.env' \
   "$ROOT/" "${REMOTE}:${REMOTE_DIR}/"
 
-# Copia .env se remoto non ce l'ha; altrimenti lascia quello del server
+# Copia .env solo se remoto non ce l'ha (mai sovrascrivere secrets di produzione).
 ssh "$REMOTE" "test -f '${REMOTE_DIR}/.env' || cp '${REMOTE_DIR}/.env.example' '${REMOTE_DIR}/.env'"
-scp "$ROOT/.env" "${REMOTE}:${REMOTE_DIR}/.env" 2>/dev/null || true
 
 ssh "$REMOTE" "cd '${REMOTE_DIR}' && docker compose build && docker compose up -d && docker compose ps"
 echo "[deploy] Completato su ${REMOTE}"
-echo "[deploy] Espone HOST_PORT (default 8000). Metti Nginx/Caddy davanti per HTTPS."
+echo "[deploy] Bind 127.0.0.1:HOST_PORT (default 8000). Metti Nginx/Caddy davanti per HTTPS."

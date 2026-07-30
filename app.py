@@ -92,6 +92,7 @@ from services.usage_billing import (
     estimate_analysis_cost,
     estimate_improvement,
     has_sufficient_credit,
+    has_sufficient_credit_for_job,
     required_credit_with_grace_cents,
     GRACE_MARGIN,
     get_balance_cents,
@@ -244,10 +245,13 @@ app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
 app.config["BABEL_DEFAULT_LOCALE"] = "it"
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(BASE_DIR, "translations")
 
-# Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix.
+# Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix solo se TRUST_PROXY=1.
 # Do NOT trust X-Forwarded-Host (x_host=0): forged Host enables
 # password-reset and Stripe return URL phishing.
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=0, x_prefix=1)
+# Keep the app bound to 127.0.0.1 (see docker-compose) so clients cannot
+# spoof XFF by hitting Gunicorn directly.
+if os.getenv("TRUST_PROXY", "1").strip().lower() in {"1", "true", "yes", "on"}:
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=0, x_prefix=1)
 
 babel = Babel(app, locale_selector=select_locale)
 
@@ -612,6 +616,8 @@ class AnalysisJob(db.Model):
     # Persist measured SoV intent from confirm form through the async worker.
     run_measured = db.Column(db.Boolean, nullable=False, default=False)
     held_cents = db.Column(db.Integer, nullable=False, default=0)
+    # Cumulative EUR cents already debited for this job (prevents soft-reclaim re-bill).
+    billed_cents = db.Column(db.Integer, nullable=False, default=0)
     heartbeat_at = db.Column(db.DateTime)
     lease_token = db.Column(db.String(64))
     attempt_count = db.Column(db.Integer, nullable=False, default=0)
@@ -1331,6 +1337,7 @@ def ensure_schema() -> None:
                 "competitors_json": "TEXT DEFAULT '[]'",
                 "run_measured": "BOOLEAN DEFAULT 0",
                 "held_cents": "INTEGER DEFAULT 0",
+                "billed_cents": "INTEGER DEFAULT 0",
                 "heartbeat_at": "DATETIME",
                 "lease_token": "TEXT",
                 "attempt_count": "INTEGER DEFAULT 0",
@@ -1427,7 +1434,8 @@ def process_pending_analyze_jobs(
             preflight = check_page_word_budget(
                 url=job.url,
                 base_cost_cents=est.service_cost_eur_cents,
-                balance_cents=get_balance_cents(user),
+                balance_cents=get_balance_cents(user)
+                + int(getattr(job, "held_cents", 0) or 0),
                 unlimited=is_unlimited_user(user),
             )
             if preflight.is_giant:
@@ -1437,13 +1445,15 @@ def process_pending_analyze_jobs(
                 stats["error"] += 1
                 continue
             est.service_cost_eur_cents = preflight.required_cost_cents
-            if not has_sufficient_credit(user, est):
+            job_reserved = int(getattr(job, "held_cents", 0) or 0)
+            if not has_sufficient_credit_for_job(user, est, reserved_cents=job_reserved):
                 required_with_grace = required_credit_with_grace_cents(est.service_cost_eur_cents)
+                available = get_balance_cents(user) + job_reserved
                 if fail_job(
                     db.session,
                     job,
                     (
-                        f"Credito insufficiente: saldo €{get_balance_cents(user)/100:.4f}, "
+                        f"Credito insufficiente: saldo €{available/100:.4f}, "
                         f"richiesto con margine €{required_with_grace/100:.4f}"
                     )[:500],
                 ):
@@ -1480,6 +1490,7 @@ def process_pending_analyze_jobs(
                 debit_cents = debit_cents_from_usage(charged)
                 if debit_cents <= 0:
                     return
+                held_now = int(getattr(job, "held_cents", 0) or 0)
                 deduct_credit(
                     db.session,
                     CreditLedger,
@@ -1487,13 +1498,16 @@ def process_pending_analyze_jobs(
                     analysis_run_id=None,
                     cost_eur_cents=debit_cents,
                     description=f"JOB usage realtime {provider}:{model}",
+                    reserved_cents=held_now,
                 )
-                held_now = int(getattr(job, "held_cents", 0) or 0)
                 if held_now > 0:
                     consumed = consume_hold(
                         db.session, user, amount_cents=min(debit_cents, held_now)
                     )
                     job.held_cents = max(0, held_now - int(consumed or 0))
+                # Persist billed total so soft reclaim cannot re-run & re-bill.
+                job.billed_cents = int(getattr(job, "billed_cents", 0) or 0) + debit_cents
+                db.session.commit()
 
             analysis = run_analysis_pipeline(
                 db_session=db.session,
