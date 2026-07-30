@@ -2390,6 +2390,7 @@ def sitemap_xml():
         ("/humans.txt", "0.4", "monthly"),
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
+        ("/rimborsi", "0.4", "yearly"),
         ("/interesse-pro", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
@@ -2432,9 +2433,17 @@ def privacy():
     return render_template("privacy.html")
 
 
+@app.route("/terms")
 @app.route("/termini")
 def terms():
     return render_template("termini.html")
+
+
+@app.route("/refund")
+@app.route("/refund-policy")
+@app.route("/rimborsi")
+def refunds():
+    return render_template("rimborsi.html")
 
 
 @app.route("/chi-siamo")

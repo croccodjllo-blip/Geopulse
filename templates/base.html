@@ -202,15 +202,19 @@
           <p class="site-footer__label">{{ _('Contatti') }}</p>
           <a href="{{ url_for('contact') }}">{{ _('Pagina contatti') }}</a>
           <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-          <a href="{{ url_for('privacy') }}">Privacy</a>
+          <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+          <a href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
+          <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
         </div>
       </div>
       <div class="site-footer__bottom">
         <span>© {{ now_year }} Centropic · Signal Intelligence for generative visibility</span>
         <span>
-          <a href="{{ url_for('privacy') }}">Privacy</a>
+          <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
           &nbsp;·&nbsp;
           <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a>
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
           &nbsp;·&nbsp;
           <a href="{{ url_for('ai_txt') }}">ai.txt</a>
           &nbsp;·&nbsp;

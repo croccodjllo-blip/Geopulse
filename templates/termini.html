@@ -65,7 +65,16 @@
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">6. Legge applicabile</h2>
+    <h2 class="page-section__title">6. Pagamenti e rimborsi</h2>
+    <p class="lede">
+      Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla
+      <a href="{{ url_for('refunds') }}">Politica di rimborso</a>.
+      I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle).
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">7. Legge applicabile</h2>
     <p class="lede">
       Salvo norme imperative diverse, si applica la legge italiana.
       Per controversie è competente il foro del titolare, fatti salvi i diritti del consumatore.
@@ -74,6 +83,7 @@
 
   <div class="page-cta">
     <a class="btn btn-ghost" href="{{ url_for('privacy') }}">Privacy</a>
+    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">Rimborsi</a>
     <a class="btn btn-primary" href="{{ url_for('register') }}">Crea account</a>
   </div>
 </article>

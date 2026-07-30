@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Politica di rimborso{% endblock %}
+{% block meta_description %}Politica di rimborso Centropic (centropic.ai): abbonamenti Plus, pacchetti crediti e diritto di recesso per i consumatori.{% endblock %}
+{% block canonical %}{{ canonical_base }}/rimborsi{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">Legale</p>
+    <h1 class="h-display page-intro__title">Politica di rimborso</h1>
+    <p class="lede page-intro__lede">
+      Ultimo aggiornamento: 30 luglio 2026 · Contatti:
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">1. Ambito</h2>
+    <p class="lede">
+      Questa politica si applica agli acquisti digitali su Centropic (centropic.ai):
+      abbonamenti (es. piano Plus) e pacchetti di crediti/analisi pagati tramite il
+      checkout del nostro fornitore di pagamento (Paddle). Non riguarda servizi di terzi
+      o costi esterni al nostro SaaS.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">2. Consumatori (UE / SEE)</h2>
+    <p class="lede">
+      Se acquisti come consumatore, puoi esercitare il diritto di recesso entro
+      <strong>14 giorni</strong> dalla conclusione del contratto, senza dover indicare un motivo,
+      salvo le eccezioni previste dalla legge per i contenuti e i servizi digitali.
+    </p>
+    <ul class="plain-list">
+      <li>
+        Se richiedi l’erogazione immediata del servizio (accesso al piano o accredito crediti)
+        e riconosci di perdere il diritto di recesso una volta iniziata l’erogazione,
+        il recesso non si applica dopo che il servizio è stato avviato.
+      </li>
+      <li>
+        Se non hai ancora usato crediti né usufruito di funzionalità a pagamento,
+        puoi chiedere il rimborso entro 14 giorni scrivendo a
+        <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      </li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">3. Crediti e analisi</h2>
+    <p class="lede">
+      I pacchetti di crediti sono beni digitali a consumo. I crediti già utilizzati
+      per analisi o funzionalità a pagamento non sono rimborsabili. I crediti non usati
+      possono essere rimborsati entro 14 giorni dall’acquisto se ne fai richiesta
+      entro quel termine e non risultano consumi sul tuo account.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">4. Abbonamenti</h2>
+    <p class="lede">
+      Puoi disdire un abbonamento in qualsiasi momento per evitare il rinnovo successivo
+      (dalla dashboard di fatturazione o contattandoci). La disdetta non genera di per sé
+      un rimborso per il periodo già pagato e già iniziato, salvo diritto di recesso
+      nei termini di cui sopra o un errore di addebito dimostrato.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">5. Come richiedere un rimborso</h2>
+    <p class="lede">
+      Invia una email a <a href="mailto:info@centropic.ai">info@centropic.ai</a> con:
+      indirizzo email dell’account, data/importo dell’addebito e motivo della richiesta.
+      Esaminiamo le richieste in genere entro pochi giorni lavorativi. I rimborsi
+      approvati vengono elaborati tramite il fornitore di pagamento sullo stesso metodo
+      usato per l’acquisto; i tempi di accredito dipendono dalla banca o dal circuito della carta.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">6. Casi esclusi</h2>
+    <ul class="plain-list">
+      <li>Uso abusivo del servizio, violazione dei termini o frode.</li>
+      <li>Crediti o funzionalità già consumati dopo l’avvio del servizio digitale.</li>
+      <li>Richieste oltre i termini di legge o di questa politica, salvo errore nostro.</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">7. Contatti e documenti correlati</h2>
+    <p class="lede">
+      Domande su addebiti o rimborsi:
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      Vedi anche i
+      <a href="{{ url_for('terms') }}">Termini di servizio</a>
+      e l’<a href="{{ url_for('privacy') }}">Informativa privacy</a>.
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-ghost" href="{{ url_for('terms') }}">Termini</a>
+    <a class="btn btn-ghost" href="{{ url_for('privacy') }}">Privacy</a>
+    <a class="btn btn-primary" href="mailto:info@centropic.ai">Contattaci</a>
+  </div>
+</article>
+{% endblock %}
