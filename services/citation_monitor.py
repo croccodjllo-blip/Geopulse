@@ -85,6 +85,17 @@ def _azure_project_endpoint() -> str:
         "AZURE_AI_PROJECT_ENDPOINT",
         "FOUNDRY_PROJECT_ENDPOINT",
         "AZURE_AI_ENDPOINT",
+        "AZURE_OPENAI_ENDPOINT",
+    )
+
+
+def _azure_ai_api_key() -> str:
+    """Azure AI / Foundry / Cognitive Services API key (alternative to Entra ID)."""
+    return _env(
+        "AZURE_AI_API_KEY",
+        "FOUNDRY_API_KEY",
+        "AZURE_API_KEY",
+        "AZURE_OPENAI_API_KEY",
     )
 
 
@@ -106,14 +117,14 @@ def _azure_ai_agent_name() -> str:
 
 
 def _azure_configured() -> bool:
-    """Endpoint present; Entra ID via SP env or DefaultAzureCredential at call time."""
+    """Endpoint + (API key or Entra ID service principal / DefaultAzureCredential)."""
     if not _azure_project_endpoint():
         return False
-    # Explicit service principal is enough to treat as configured on a VPS.
+    if _azure_ai_api_key():
+        return True
     if _env("AZURE_CLIENT_ID") and _env("AZURE_TENANT_ID") and _env("AZURE_CLIENT_SECRET"):
         return True
-    # Allow DefaultAzureCredential (managed identity / az login / workload identity).
-    return _env("AZURE_AI_USE_DEFAULT_CREDENTIAL", default="1") == "1"
+    return _env("AZURE_AI_USE_DEFAULT_CREDENTIAL", default="0") == "1"
 
 
 def _azure_credential():
@@ -129,6 +140,13 @@ def _azure_credential():
     from azure.identity import DefaultAzureCredential
 
     return DefaultAzureCredential(exclude_interactive_browser_credential=True)
+
+
+def _azure_openai_base_url(endpoint: str) -> str:
+    base = endpoint.rstrip("/")
+    if base.endswith("/openai/v1"):
+        return base
+    return f"{base}/openai/v1"
 
 
 # Back-compat aliases (may be empty if read before load_dotenv in odd import orders).
@@ -671,20 +689,105 @@ def _probe_xai(
     }
 
 
+def _copilot_run_prompts(
+    openai_client: Any,
+    *,
+    model: str,
+    prompts: list[str],
+    needles: set[str],
+    usage_callback: Any | None,
+) -> tuple[int, list[dict[str, Any]]]:
+    hits = 0
+    details: list[dict[str, Any]] = []
+    system = (
+        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
+        "non inventare URL o menzioni."
+    )
+    for prompt in prompts[:3]:
+        try:
+            text = ""
+            try:
+                resp = openai_client.responses.create(
+                    model=model,
+                    input=f"{system}\n\n{prompt}",
+                )
+                text = (getattr(resp, "output_text", None) or "").strip()
+                usage = getattr(resp, "usage", None)
+                if usage and usage_callback:
+                    usage_callback(
+                        provider="azure",
+                        model=model,
+                        input_tokens=int(
+                            getattr(usage, "input_tokens", 0)
+                            or getattr(usage, "prompt_tokens", 0)
+                            or 0
+                        ),
+                        output_tokens=int(
+                            getattr(usage, "output_tokens", 0)
+                            or getattr(usage, "completion_tokens", 0)
+                            or 0
+                        ),
+                    )
+            except Exception:
+                resp = openai_client.chat.completions.create(
+                    model=model,
+                    temperature=0.2,
+                    max_tokens=350,
+                    messages=[
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": prompt},
+                    ],
+                )
+                text = (
+                    (resp.choices[0].message.content or "") if resp.choices else ""
+                ).strip()
+                if hasattr(resp, "usage") and resp.usage and usage_callback:
+                    usage_callback(
+                        provider="azure",
+                        model=model,
+                        input_tokens=int(getattr(resp.usage, "prompt_tokens", 0) or 0),
+                        output_tokens=int(
+                            getattr(resp.usage, "completion_tokens", 0) or 0
+                        ),
+                    )
+        except Exception as exc:
+            logger.exception("azure/copilot citation probe failed")
+            details.append(
+                {"prompt": prompt, "error": str(exc)[:160], "engine": "bing"}
+            )
+            continue
+        ok = _mentioned(text, needles)
+        if ok:
+            hits += 1
+        details.append(
+            {
+                "prompt": prompt,
+                "mentioned": ok,
+                "excerpt": text[:280],
+                "engine": "bing",
+            }
+        )
+    return hits, details
+
+
 def _probe_copilot(
     prompts: list[str],
     needles: set[str],
     usage_callback: Any | None = None,
 ) -> dict[str, Any]:
-    """Microsoft Copilot-like probe via Azure AI Foundry project (AIProjectClient).
+    """Microsoft Copilot-like probe via Azure AI Foundry / Azure OpenAI.
 
-    Uses the OpenAI-compatible client from the project. Prefer an Agent with
-    Grounding with Bing Search (`AZURE_AI_AGENT_NAME`) when available.
-    Auth: Entra ID (service principal env or DefaultAzureCredential).
+    Auth options:
+    1) API key (`AZURE_AI_API_KEY`) + project/resource endpoint
+    2) Entra ID via AIProjectClient (service principal / DefaultAzureCredential)
+
+    Prefer an Agent with Grounding with Bing Search (`AZURE_AI_AGENT_NAME`) when
+    using Entra ID.
     """
     endpoint = _azure_project_endpoint()
     model = _azure_ai_model()
     agent_name = _azure_ai_agent_name() or None
+    api_key = _azure_ai_api_key()
     if not endpoint:
         return {
             "available": False,
@@ -694,120 +797,74 @@ def _probe_copilot(
             ),
             "details": [],
         }
-    try:
-        from azure.ai.projects import AIProjectClient
-    except Exception as exc:  # pragma: no cover
-        return {
-            "available": False,
-            "reason": f"azure-ai-projects non installato: {exc}",
-            "details": [],
-        }
 
     hits = 0
     details: list[dict[str, Any]] = []
-    system = (
-        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
-        "non inventare URL o menzioni."
-    )
-    try:
-        credential = _azure_credential()
-    except Exception as exc:
-        return {
-            "available": False,
-            "reason": f"Azure credential error: {exc}"[:160],
-            "details": [],
-        }
 
-    try:
-        with AIProjectClient(
-            endpoint=endpoint,
-            credential=credential,
-            allow_preview=bool(agent_name),
-        ) as project_client:
-            with project_client.get_openai_client(
-                agent_name=agent_name
-            ) as openai_client:
-                for prompt in prompts[:3]:
-                    try:
-                        text = ""
-                        # Prefer Responses API (Foundry / agent path).
-                        try:
-                            resp = openai_client.responses.create(
-                                model=model,
-                                input=f"{system}\n\n{prompt}",
-                            )
-                            text = (getattr(resp, "output_text", None) or "").strip()
-                            usage = getattr(resp, "usage", None)
-                            if usage and usage_callback:
-                                usage_callback(
-                                    provider="azure",
-                                    model=model,
-                                    input_tokens=int(
-                                        getattr(usage, "input_tokens", 0)
-                                        or getattr(usage, "prompt_tokens", 0)
-                                        or 0
-                                    ),
-                                    output_tokens=int(
-                                        getattr(usage, "output_tokens", 0)
-                                        or getattr(usage, "completion_tokens", 0)
-                                        or 0
-                                    ),
-                                )
-                        except Exception:
-                            # Fallback chat.completions for older deployments.
-                            resp = openai_client.chat.completions.create(
-                                model=model,
-                                temperature=0.2,
-                                max_tokens=350,
-                                messages=[
-                                    {"role": "system", "content": system},
-                                    {"role": "user", "content": prompt},
-                                ],
-                            )
-                            text = (
-                                (resp.choices[0].message.content or "")
-                                if resp.choices
-                                else ""
-                            ).strip()
-                            if hasattr(resp, "usage") and resp.usage and usage_callback:
-                                usage_callback(
-                                    provider="azure",
-                                    model=model,
-                                    input_tokens=int(
-                                        getattr(resp.usage, "prompt_tokens", 0) or 0
-                                    ),
-                                    output_tokens=int(
-                                        getattr(resp.usage, "completion_tokens", 0) or 0
-                                    ),
-                                )
-                    except Exception as exc:
-                        logger.exception("azure/copilot citation probe failed")
-                        details.append(
-                            {
-                                "prompt": prompt,
-                                "error": str(exc)[:160],
-                                "engine": "bing",
-                            }
-                        )
-                        continue
-                    ok = _mentioned(text, needles)
-                    if ok:
-                        hits += 1
-                    details.append(
-                        {
-                            "prompt": prompt,
-                            "mentioned": ok,
-                            "excerpt": text[:280],
-                            "engine": "bing",
-                        }
+    # Path A: API key against OpenAI-compatible Foundry / Azure OpenAI endpoint.
+    if api_key:
+        try:
+            from openai import OpenAI
+        except Exception as exc:  # pragma: no cover
+            return {"available": False, "reason": str(exc), "details": []}
+        try:
+            client = OpenAI(
+                base_url=_azure_openai_base_url(endpoint),
+                api_key=api_key,
+                timeout=45.0,
+                default_headers={"api-key": api_key},
+            )
+            hits, details = _copilot_run_prompts(
+                client,
+                model=model,
+                prompts=prompts,
+                needles=needles,
+                usage_callback=usage_callback,
+            )
+        except Exception as exc:
+            logger.exception("azure api-key copilot probe failed")
+            return {"available": False, "reason": str(exc)[:160], "details": details}
+    else:
+        # Path B: Entra ID + AIProjectClient
+        try:
+            from azure.ai.projects import AIProjectClient
+        except Exception as exc:  # pragma: no cover
+            return {
+                "available": False,
+                "reason": f"azure-ai-projects non installato: {exc}",
+                "details": [],
+            }
+        try:
+            credential = _azure_credential()
+        except Exception as exc:
+            return {
+                "available": False,
+                "reason": f"Azure credential error: {exc}"[:160],
+                "details": [],
+            }
+        try:
+            with AIProjectClient(
+                endpoint=endpoint,
+                credential=credential,
+                allow_preview=bool(agent_name),
+            ) as project_client:
+                with project_client.get_openai_client(
+                    agent_name=agent_name
+                ) as openai_client:
+                    hits, details = _copilot_run_prompts(
+                        openai_client,
+                        model=model,
+                        prompts=prompts,
+                        needles=needles,
+                        usage_callback=usage_callback,
                     )
-    except Exception as exc:
-        logger.exception("azure AIProjectClient init/probe failed")
-        return {
-            "available": False,
-            "reason": str(exc)[:160],
-            "details": details,
-        }
+        except Exception as exc:
+            logger.exception("azure AIProjectClient init/probe failed")
+            return {
+                "available": False,
+                "reason": str(exc)[:160],
+                "details": details,
+            }
 
     ok_details = [d for d in details if "error" not in d]
     if not ok_details:
@@ -1031,8 +1088,8 @@ def run_citation_monitor(
                 "evidence": "unavailable" if _azure_project_endpoint() else "pending",
                 "reason": copilot.get("reason")
                 or (
-                    "Imposta AZURE_AI_PROJECT_ENDPOINT + Entra ID "
-                    "(AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET)."
+                    "Imposta AZURE_AI_PROJECT_ENDPOINT + AZURE_AI_API_KEY "
+                    "(oppure Entra ID: AZURE_TENANT_ID / CLIENT_ID / CLIENT_SECRET)."
                 ),
             }
         )

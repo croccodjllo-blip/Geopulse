@@ -17,11 +17,24 @@ def test_azure_configured_with_sp(monkeypatch):
         "AZURE_AI_PROJECT_ENDPOINT",
         "https://example.services.ai.azure.com/api/projects/demo",
     )
+    monkeypatch.delenv("AZURE_AI_API_KEY", raising=False)
+    monkeypatch.delenv("FOUNDRY_API_KEY", raising=False)
+    monkeypatch.delenv("AZURE_API_KEY", raising=False)
+    monkeypatch.delenv("AZURE_OPENAI_API_KEY", raising=False)
     monkeypatch.setenv("AZURE_TENANT_ID", "tid")
     monkeypatch.setenv("AZURE_CLIENT_ID", "cid")
     monkeypatch.setenv("AZURE_CLIENT_SECRET", "sec")
     assert cm._azure_configured() is True
     assert cm.citation_monitor_available() is True
+
+
+def test_azure_configured_with_api_key(monkeypatch):
+    monkeypatch.setenv(
+        "AZURE_AI_PROJECT_ENDPOINT",
+        "https://example.services.ai.azure.com/api/projects/demo",
+    )
+    monkeypatch.setenv("AZURE_AI_API_KEY", "test-azure-key")
+    assert cm._azure_configured() is True
 
 
 def test_probe_copilot_missing_endpoint(monkeypatch):
