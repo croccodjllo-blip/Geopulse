@@ -2384,6 +2384,10 @@ def robots_txt():
         "Disallow: /dashboard/\n"
         "Disallow: /logout\n"
         "Disallow: /admin\n"
+        "Disallow: /lang\n"
+        "Disallow: /lang/\n"
+        "Disallow: /crediti\n"
+        "Disallow: /crediti/\n"
         "\n"
         "User-agent: GPTBot\n"
         "Allow: /\n"
@@ -2552,6 +2556,8 @@ def set_language(code: str):
     if not nxt:
         nxt = safe_same_origin_url(request.referrer, request) or url_for("index")
     resp = make_response(redirect(nxt))
+    # Language switcher URLs are not content pages — keep them out of indexes.
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     resp.set_cookie(
         LANG_COOKIE,
         loc,

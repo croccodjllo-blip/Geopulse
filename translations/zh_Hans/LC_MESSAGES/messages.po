@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-30 18:48+0000\n"
+"POT-Creation-Date: 2026-07-30 21:23+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: templates/about.html:2 templates/about.html:10 templates/base.html:119
-#: templates/base.html:188 templates/contact.html:27 templates/contact.html:59
+#: templates/base.html:191 templates/contact.html:27 templates/contact.html:59
 msgid "Chi siamo"
 msgstr "我们是谁"
 
@@ -147,7 +147,7 @@ msgid ""
 "pubblica su"
 msgstr "然后生成一份包含关键问题和待发布工件的报告。公开方法在"
 
-#: templates/about.html:57 templates/base.html:117 templates/base.html:185
+#: templates/about.html:57 templates/base.html:117 templates/base.html:186
 #: templates/landing.html:118 templates/pricing.html:84
 msgid "Metodologia"
 msgstr "方法论"
@@ -156,7 +156,7 @@ msgstr "方法论"
 msgid "Aggiorniamo il prodotto in pubblico su"
 msgstr "我们在公开平台上更新产品"
 
-#: templates/about.html:59 templates/base.html:115 templates/base.html:182
+#: templates/about.html:59 templates/base.html:115 templates/base.html:183
 #: templates/contact.html:24 templates/product.html:2
 msgid "Prodotto"
 msgstr "产品"
@@ -167,7 +167,7 @@ msgid "FAQ"
 msgstr "常见问题"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:120 templates/base.html:202 templates/contact.html:2
+#: templates/base.html:120 templates/base.html:206 templates/contact.html:2
 #: templates/contact.html:9 templates/forgot_password.html:64
 #: templates/landing.html:175 templates/partials/auth_help.html:24
 msgid "Contatti"
@@ -200,19 +200,19 @@ msgstr "Centropic — AI驱动的可见性（AIO）和生成引擎优化（GEO�
 msgid "Principale"
 msgstr "主页"
 
-#: templates/base.html:101 templates/base.html:193 templates/dashboard.html:2
+#: templates/base.html:101 templates/base.html:196 templates/dashboard.html:2
 #: templates/history.html:21 templates/site_history.html:13
-#: templates/topup.html:89 templates/verify.html:38
+#: templates/topup.html:90 templates/verify.html:38
 msgid "Dashboard"
 msgstr "仪表板"
 
-#: templates/base.html:102 templates/base.html:194 templates/dashboard.html:177
+#: templates/base.html:102 templates/base.html:197 templates/dashboard.html:177
 #: templates/dashboard.html:685 templates/history.html:2
 #: templates/site_history.html:2
 msgid "Storico"
 msgstr "历史"
 
-#: templates/base.html:103 templates/base.html:195 templates/dashboard.html:29
+#: templates/base.html:103 templates/base.html:198 templates/dashboard.html:29
 #: templates/guide.html:2 templates/guide.html:9
 msgid "Guida"
 msgstr "指南"
@@ -221,7 +221,7 @@ msgstr "指南"
 msgid "Impostazioni"
 msgstr "设置"
 
-#: templates/base.html:105
+#: templates/base.html:105 templates/base.html:199
 msgid "Crediti"
 msgstr "积分"
 
@@ -229,12 +229,13 @@ msgstr "积分"
 msgid "Esci"
 msgstr "退出"
 
-#: templates/base.html:116 templates/base.html:184 templates/login.html:79
+#: templates/base.html:116 templates/base.html:185 templates/login.html:79
 #: templates/pricing.html:2 templates/register.html:134
+#: templates/rimborsi.html:89 templates/rimborsi.html:99
 msgid "Prezzi"
 msgstr "价格"
 
-#: templates/base.html:121 templates/base.html:198
+#: templates/base.html:121 templates/base.html:202
 #: templates/forgot_password.html:50 templates/login.html:2
 #: templates/register.html:130
 msgid "Accedi"
@@ -248,84 +249,93 @@ msgstr "免费开始"
 msgid "Seleziona lingua"
 msgstr "选择语言"
 
-#: templates/base.html:179
+#: templates/base.html:180
 msgid ""
 "Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle "
 "risposte IA. Prodotto di"
 msgstr "AIO和GEO的信号智能。信号的顺序，IA响应中的引用。产品来自"
 
-#: templates/base.html:183
+#: templates/base.html:184
 msgid "Come funziona"
 msgstr "如何运作"
 
-#: templates/base.html:186
+#: templates/base.html:187
 msgid "Guida llms.txt"
 msgstr "llms.txt指南"
 
-#: templates/base.html:191 templates/contact.html:25 templates/history.html:9
+#: templates/base.html:188
+msgid "Guida Schema AI"
+msgstr "AI Schema指南"
+
+#: templates/base.html:189 templates/pricing.html:85
+#: templates/pro_interest.html:28 templates/product.html:50
+msgid "Score vs SoV"
+msgstr "评分与SoV"
+
+#: templates/base.html:194 templates/contact.html:25 templates/history.html:9
 #: templates/settings.html:8
 msgid "Account"
 msgstr "账户"
 
-#: templates/base.html:197 templates/register.html:2
+#: templates/base.html:201 templates/register.html:2
 msgid "Registrati"
 msgstr "注册"
 
-#: templates/base.html:203
+#: templates/base.html:207
 msgid "Pagina contatti"
 msgstr "联系页面"
 
-#: templates/base.html:205 templates/base.html:213 templates/contact.html:49
+#: templates/base.html:209 templates/base.html:217 templates/contact.html:49
 #: templates/partials/auth_help.html:26 templates/pricing.html:80
-#: templates/privacy.html:2 templates/rimborsi.html:87
+#: templates/privacy.html:2 templates/rimborsi.html:98
 #: templates/termini.html:80
 msgid "Privacy"
 msgstr "隐私"
 
-#: templates/base.html:206 templates/privacy.html:74 templates/rimborsi.html:80
+#: templates/base.html:210 templates/privacy.html:81 templates/rimborsi.html:87
 #: templates/termini.html:2 templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "服务条款"
 
-#: templates/base.html:207 templates/base.html:217 templates/contact.html:51
-#: templates/pricing.html:81 templates/privacy.html:75
+#: templates/base.html:211 templates/base.html:221 templates/contact.html:51
+#: templates/pricing.html:81 templates/privacy.html:82
 #: templates/termini.html:81
 msgid "Rimborsi"
 msgstr "退款"
 
-#: templates/base.html:215 templates/contact.html:50 templates/pricing.html:79
-#: templates/register.html:112 templates/rimborsi.html:86
+#: templates/base.html:219 templates/contact.html:50 templates/pricing.html:79
+#: templates/register.html:112 templates/rimborsi.html:97
 msgid "Termini"
 msgstr "条款"
 
-#: templates/base.html:229
+#: templates/base.html:233
 msgid "Cookie e misurazione"
 msgstr "Cookie和测量"
 
-#: templates/base.html:231
+#: templates/base.html:235
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
 " e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
 "accettare o rifiutare. Dettagli nella"
 msgstr "我们使用技术Cookie，并在您的同意下使用Google工具（Analytics和/或Ads/AdSense）来测量流量并显示广告。您可以接受或拒绝。详细信息在"
 
-#: templates/base.html:235
+#: templates/base.html:239
 msgid "Accetta"
 msgstr "接受"
 
-#: templates/base.html:236
+#: templates/base.html:240
 msgid "Rifiuta"
 msgstr "拒绝"
 
-#: templates/base.html:276
+#: templates/base.html:280
 msgid "Copiato"
 msgstr "已复制"
 
-#: templates/base.html:279
+#: templates/base.html:283
 msgid "Errore"
 msgstr "错误"
 
-#: templates/base.html:289
+#: templates/base.html:293
 msgid "Analisi in corso…"
 msgstr "分析进行中…"
 
@@ -580,6 +590,10 @@ msgstr "我们不出售电子邮件列表；我们使用数据提供 Centropic�
 #: templates/contact.html:58
 msgid "Scrivi a info@centropic.ai"
 msgstr "写信至 info@centropic.ai"
+
+#: templates/dashboard.html:13
+msgid "Centropic — mappa Signal Intelligence"
+msgstr "Centropic — 信号智能地图"
 
 #: templates/dashboard.html:22
 msgid "Ciao"
@@ -884,6 +898,10 @@ msgstr "允许机器人"
 #: templates/faq.html:35 templates/product.html:39 templates/termini.html:34
 msgid "Misurato"
 msgstr "测量"
+
+#: templates/dashboard.html:450
+msgid "campioni"
+msgstr "样本"
 
 #: templates/dashboard.html:452
 msgid "Non disponibile"
@@ -1422,6 +1440,11 @@ msgid ""
 "centropic.ai."
 msgstr "Centropic密码恢复：请求通过电子邮件（noreply@centropic.ai）发送安全链接，以重置对centropic.ai上AIO/GEO的访问。"
 
+#: templates/forgot_password.html:12 templates/login.html:12
+#: templates/register.html:12 templates/reset_password.html:11
+msgid "Centropic — orbita Signal Intelligence"
+msgstr "Centropic — 信号智能轨道"
+
 #: templates/forgot_password.html:18
 msgid "Reset sicuro della password. Il link scade in poche ore."
 msgstr "安全密码重置。链接在几小时内过期。"
@@ -1478,7 +1501,7 @@ msgid "Torna all’accesso"
 msgstr "返回登录"
 
 #: templates/forgot_password.html:62 templates/landing.html:189
-#: templates/login.html:77 templates/privacy.html:76 templates/register.html:24
+#: templates/login.html:77 templates/privacy.html:83 templates/register.html:24
 #: templates/termini.html:82
 msgid "Crea account"
 msgstr "创建账户"
@@ -1612,6 +1635,10 @@ msgstr "从以下位置启动第一次分析"
 #: templates/history.html:59
 msgid "dashboard"
 msgstr "仪表板"
+
+#: templates/landing.html:2
+msgid "Signal Intelligence per AIO e GEO"
+msgstr "AIO和GEO的信号智能"
 
 #: templates/landing.html:3
 msgid ""
@@ -2092,11 +2119,6 @@ msgstr "支付由"
 msgid "Domande?"
 msgstr "有问题吗？"
 
-#: templates/pricing.html:85 templates/pro_interest.html:28
-#: templates/product.html:50
-msgid "Score vs SoV"
-msgstr "评分与SoV"
-
 #: templates/pricing.html:86
 msgid "Account Free"
 msgstr "免费账户"
@@ -2116,7 +2138,7 @@ msgid "Legale"
 msgstr "法律"
 
 #: templates/privacy.html:10 templates/register.html:114
-#: templates/rimborsi.html:81
+#: templates/rimborsi.html:88
 msgid "Informativa privacy"
 msgstr "隐私政策"
 
@@ -2193,43 +2215,60 @@ msgid ""
 msgstr "我们不应访问您网站的认证区域。生成的工件将保留在您的账户中，直到您删除它们或关闭账户。"
 
 #: templates/privacy.html:44
-msgid "4. Conservazione e trasferimenti"
-msgstr "4. 数据保留和转移"
+msgid "4. Pagamenti"
+msgstr "4. 付款"
 
 #: templates/privacy.html:46
 msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
-"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
-"titolare; eventuali fornitori (hosting, email transazionale, OpenAI se "
-"configurata per raffinare llms.txt) trattano dati solo per conto del "
-"servizio."
-msgstr "数据在账户处于活动状态时保留，并在关闭后根据技术需要的时间（备份、安全）保留。基础设施由数据控制者管理；任何供应商（托管、事务性电子邮件、如果配置为优化llms.txt的OpenAI）仅代表服务处理数据。"
+"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
+"Paddle.com Market Limited in qualità di merchant of record. Centropic non"
+" memorizza i dati completi della carta. Paddle tratta i dati di "
+"fatturazione necessari all’incasso e alla fiscalità secondo la propria "
+"informativa; riceviamo da Paddle identificativi cliente/transazione, "
+"stato abbonamento e importi per attivare il piano e accreditare il saldo."
+msgstr ""
+"付款（Plus订阅和信用充值）由Paddle.com Market "
+"Limited作为记录商处理。Centropic不存储完整的卡片数据。Paddle根据其隐私政策处理收款和税务所需的账单数据；我们从Paddle收到客户/交易标识、订阅状态和金额，以激活计划并记入余额。"
 
 #: templates/privacy.html:51
-msgid "5. Diritti"
-msgstr "5. 权利"
+msgid "5. Conservazione e trasferimenti"
+msgstr "5. 数据保留和转移"
 
 #: templates/privacy.html:53
+msgid ""
+"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
+"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
+"titolare; eventuali fornitori (hosting, email transazionale, Paddle per i"
+" pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) "
+"trattano dati solo per conto del servizio o come autonomi titolari ove "
+"indicato (es. Paddle)."
+msgstr "数据在账户处于活动状态时保留，并在关闭后根据技术需要的时间（备份、安全）保留。基础设施由所有者管理；任何供应商（托管、事务性电子邮件、Paddle用于付款、OpenAI和其他LLM提供商如果配置用于分析/打包）仅代表服务处理数据，或在指明的情况下作为独立控制者（例如Paddle）。"
+
+#: templates/privacy.html:58
+msgid "6. Diritti"
+msgstr "6. 权利"
+
+#: templates/privacy.html:60
 msgid ""
 "Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità"
 " e opposizione scrivendo a"
 msgstr "您可以通过写信请求访问、更正、删除、限制、可携带性和反对权："
 
-#: templates/privacy.html:55
+#: templates/privacy.html:62
 msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
 msgstr "您还有权向主管机关投诉。"
 
-#: templates/privacy.html:60
-msgid "6. Cookie"
-msgstr "6. Cookie"
+#: templates/privacy.html:67
+msgid "7. Cookie"
+msgstr "7. Cookie"
 
-#: templates/privacy.html:62
+#: templates/privacy.html:69
 msgid ""
 "Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
 "protezione CSRF, preferenza lingua)."
 msgstr "我们使用网站运行所需的技术Cookie（会话、CSRF保护、语言偏好）。"
 
-#: templates/privacy.html:64
+#: templates/privacy.html:71
 msgid ""
 "Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 "
 "e, se configurati, Google Ads / AdSense per misurazione e annunci. Il "
@@ -2238,14 +2277,14 @@ msgstr ""
 "在您的同意下（Cookie横幅），我们可以启用Google Analytics 4，并在配置的情况下启用Google Ads / "
 "AdSense进行测量和广告。该同意通过以下方式管理："
 
-#: templates/privacy.html:66
+#: templates/privacy.html:73
 msgid ""
 "di default storage analytics/ads è negato (UE); puoi accettare o "
 "rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando "
 "la pagina. Non attiviamo AdSense senza consenso pubblicitario."
 msgstr "默认情况下，存储分析/广告被拒绝（欧盟）；您可以随时通过删除网站数据并重新加载页面来接受或拒绝。我们不会在没有广告同意的情况下启用AdSense。"
 
-#: templates/privacy.html:68
+#: templates/privacy.html:75
 msgid ""
 "Attualmente non sono attivi cookie di misurazione o pubblicitari di terze"
 " parti su questo sito."
@@ -2546,7 +2585,7 @@ msgstr "国家"
 msgid "Accetto i"
 msgstr "我接受"
 
-#: templates/register.html:113 templates/rimborsi.html:81
+#: templates/register.html:113
 msgid "e l’"
 msgstr "和"
 
@@ -2706,18 +2745,48 @@ msgid ""
 msgstr "超出法律或本政策规定的请求，除非是我们的错误。"
 
 #: templates/rimborsi.html:75
-msgid "7. Contatti e documenti correlati"
-msgstr "7. 联系方式和相关文件"
+msgid "7. Tempi e modalità di accredito"
+msgstr "7. 记入时间和方式"
 
 #: templates/rimborsi.html:77
+msgid ""
+"Dopo l’approvazione, il rimborso viene istruito sul merchant of record "
+"(Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione "
+"sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 "
+"giorni lavorativi). Ti confermiamo via email quando la pratica è stata "
+"inviata al processore."
+msgstr "在批准后，退款将通过记录商（Paddle）处理到相同的付款方式。到账时间取决于银行或卡片网络（通常为5-10个工作日）。当申请已发送给处理器时，我们会通过电子邮件确认。"
+
+#: templates/rimborsi.html:82
+msgid "8. Contatti e documenti correlati"
+msgstr "8. 联系方式和相关文件"
+
+#: templates/rimborsi.html:84
 msgid "Domande su addebiti o rimborsi:"
 msgstr "关于收费或退款的问题："
 
-#: templates/rimborsi.html:79
+#: templates/rimborsi.html:86
 msgid "Vedi anche i"
 msgstr "另见"
 
 #: templates/rimborsi.html:88
+msgid "l’"
+msgstr "的"
+
+#: templates/rimborsi.html:89
+msgid "e la pagina"
+msgstr "和页面"
+
+#: templates/rimborsi.html:92
+msgid ""
+"Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi"
+" riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di "
+"terzi."
+msgstr ""
+"Centropic (centropic.ai) 是Engineering Factory的产品：退款仅适用于AIO/GEO "
+"SaaS的数字购买，不包括第三方服务。"
+
+#: templates/rimborsi.html:100
 msgid "Contattaci"
 msgstr "联系我们"
 
@@ -3069,59 +3138,65 @@ msgid ""
 " consumatore."
 msgstr "除非有强制性规定，否则适用意大利法律。对于争议，适用持有者的管辖权，消费者的权利不受影响。"
 
-#: templates/topup.html:7
+#: templates/topup.html:3
+msgid ""
+"Ricarica crediti Centropic: pacchetti prepagati per analisi AIO/GEO, "
+"citation monitor e pack artifact su centropic.ai."
+msgstr "Centropic信用充值：用于AIO/GEO分析、引用监控和centropic.ai上的打包工件的预付费包。"
+
+#: templates/topup.html:8
 msgid "Crediti prepagati"
 msgstr "预付信用"
 
-#: templates/topup.html:8
+#: templates/topup.html:9
 msgid "Ricarica il tuo credito"
 msgstr "充值你的信用"
 
-#: templates/topup.html:10
+#: templates/topup.html:11
 msgid "Ogni analisi consuma crediti proporzionali ai token AI utilizzati."
 msgstr "每次分析消耗与使用的 AI 令牌成比例的信用。"
 
-#: templates/topup.html:11
+#: templates/topup.html:12
 msgid "Scegli un pacchetto o inserisci un importo personalizzato."
 msgstr "选择一个套餐或输入自定义金额。"
 
-#: templates/topup.html:16
+#: templates/topup.html:17
 msgid "Credito attuale"
 msgstr "当前信用"
 
-#: templates/topup.html:19
+#: templates/topup.html:20
 msgid "Credito illimitato (account admin)"
 msgstr "无限信用（管理员账户）"
 
-#: templates/topup.html:26
+#: templates/topup.html:27
 msgid "Ultime transazioni"
 msgstr "最近交易"
 
-#: templates/topup.html:30
+#: templates/topup.html:31
 msgid "Data"
 msgstr "日期"
 
-#: templates/topup.html:31
+#: templates/topup.html:32
 msgid "Descrizione"
 msgstr "描述"
 
-#: templates/topup.html:32
+#: templates/topup.html:33
 msgid "Importo"
 msgstr "金额"
 
-#: templates/topup.html:33
+#: templates/topup.html:34
 msgid "Saldo dopo"
 msgstr "余额后"
 
-#: templates/topup.html:56
+#: templates/topup.html:57
 msgid "Scegli un pacchetto"
 msgstr "选择一个套餐"
 
-#: templates/topup.html:71 templates/topup.html:77
+#: templates/topup.html:72 templates/topup.html:78
 msgid "analisi"
 msgstr "分析"
 
-#: templates/topup.html:84
+#: templates/topup.html:85
 msgid ""
 "Il credito non ha scadenza. Le analisi più semplici costano meno, quelle "
 "con SoV Misurato su più engine costano di più."

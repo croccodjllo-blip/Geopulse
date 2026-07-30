@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-30 18:48+0000\n"
+"POT-Creation-Date: 2026-07-30 21:23+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: templates/about.html:2 templates/about.html:10 templates/base.html:119
-#: templates/base.html:188 templates/contact.html:27 templates/contact.html:59
+#: templates/base.html:191 templates/contact.html:27 templates/contact.html:59
 msgid "Chi siamo"
 msgstr "우리는 누구인가"
 
@@ -151,7 +151,7 @@ msgid ""
 "pubblica su"
 msgstr "그런 다음 게시할 비판 및 아티팩트가 포함된 보고서. 공개 방법론은 다음과 같습니다:"
 
-#: templates/about.html:57 templates/base.html:117 templates/base.html:185
+#: templates/about.html:57 templates/base.html:117 templates/base.html:186
 #: templates/landing.html:118 templates/pricing.html:84
 msgid "Metodologia"
 msgstr "방법론"
@@ -160,7 +160,7 @@ msgstr "방법론"
 msgid "Aggiorniamo il prodotto in pubblico su"
 msgstr "우리는 공개적으로 제품을 업데이트합니다:"
 
-#: templates/about.html:59 templates/base.html:115 templates/base.html:182
+#: templates/about.html:59 templates/base.html:115 templates/base.html:183
 #: templates/contact.html:24 templates/product.html:2
 msgid "Prodotto"
 msgstr "제품"
@@ -171,7 +171,7 @@ msgid "FAQ"
 msgstr "자주 묻는 질문"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:120 templates/base.html:202 templates/contact.html:2
+#: templates/base.html:120 templates/base.html:206 templates/contact.html:2
 #: templates/contact.html:9 templates/forgot_password.html:64
 #: templates/landing.html:175 templates/partials/auth_help.html:24
 msgid "Contatti"
@@ -206,19 +206,19 @@ msgstr ""
 msgid "Principale"
 msgstr "주요"
 
-#: templates/base.html:101 templates/base.html:193 templates/dashboard.html:2
+#: templates/base.html:101 templates/base.html:196 templates/dashboard.html:2
 #: templates/history.html:21 templates/site_history.html:13
-#: templates/topup.html:89 templates/verify.html:38
+#: templates/topup.html:90 templates/verify.html:38
 msgid "Dashboard"
 msgstr "대시보드"
 
-#: templates/base.html:102 templates/base.html:194 templates/dashboard.html:177
+#: templates/base.html:102 templates/base.html:197 templates/dashboard.html:177
 #: templates/dashboard.html:685 templates/history.html:2
 #: templates/site_history.html:2
 msgid "Storico"
 msgstr "기록"
 
-#: templates/base.html:103 templates/base.html:195 templates/dashboard.html:29
+#: templates/base.html:103 templates/base.html:198 templates/dashboard.html:29
 #: templates/guide.html:2 templates/guide.html:9
 msgid "Guida"
 msgstr "가이드"
@@ -227,7 +227,7 @@ msgstr "가이드"
 msgid "Impostazioni"
 msgstr "설정"
 
-#: templates/base.html:105
+#: templates/base.html:105 templates/base.html:199
 msgid "Crediti"
 msgstr "크레딧"
 
@@ -235,12 +235,13 @@ msgstr "크레딧"
 msgid "Esci"
 msgstr "로그아웃"
 
-#: templates/base.html:116 templates/base.html:184 templates/login.html:79
+#: templates/base.html:116 templates/base.html:185 templates/login.html:79
 #: templates/pricing.html:2 templates/register.html:134
+#: templates/rimborsi.html:89 templates/rimborsi.html:99
 msgid "Prezzi"
 msgstr "가격"
 
-#: templates/base.html:121 templates/base.html:198
+#: templates/base.html:121 templates/base.html:202
 #: templates/forgot_password.html:50 templates/login.html:2
 #: templates/register.html:130
 msgid "Accedi"
@@ -254,61 +255,70 @@ msgstr "무료 시작"
 msgid "Seleziona lingua"
 msgstr "언어 선택"
 
-#: templates/base.html:179
+#: templates/base.html:180
 msgid ""
 "Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle "
 "risposte IA. Prodotto di"
 msgstr "AIO 및 GEO를 위한 신호 정보. 신호의 정리, IA 응답에서의 인용 가능성. 제품:"
 
-#: templates/base.html:183
+#: templates/base.html:184
 msgid "Come funziona"
 msgstr "작동 방식"
 
-#: templates/base.html:186
+#: templates/base.html:187
 msgid "Guida llms.txt"
 msgstr "llms.txt 가이드"
 
-#: templates/base.html:191 templates/contact.html:25 templates/history.html:9
+#: templates/base.html:188
+msgid "Guida Schema AI"
+msgstr "AI 스키마 가이드"
+
+#: templates/base.html:189 templates/pricing.html:85
+#: templates/pro_interest.html:28 templates/product.html:50
+msgid "Score vs SoV"
+msgstr "점수 대 SoV"
+
+#: templates/base.html:194 templates/contact.html:25 templates/history.html:9
 #: templates/settings.html:8
 msgid "Account"
 msgstr "계정"
 
-#: templates/base.html:197 templates/register.html:2
+#: templates/base.html:201 templates/register.html:2
 msgid "Registrati"
 msgstr "등록"
 
-#: templates/base.html:203
+#: templates/base.html:207
 msgid "Pagina contatti"
 msgstr "연락처 페이지"
 
-#: templates/base.html:205 templates/base.html:213 templates/contact.html:49
+#: templates/base.html:209 templates/base.html:217 templates/contact.html:49
 #: templates/partials/auth_help.html:26 templates/pricing.html:80
-#: templates/privacy.html:2 templates/rimborsi.html:87
+#: templates/privacy.html:2 templates/rimborsi.html:98
 #: templates/termini.html:80
 msgid "Privacy"
 msgstr "개인정보 보호"
 
-#: templates/base.html:206 templates/privacy.html:74 templates/rimborsi.html:80
+#: templates/base.html:210 templates/privacy.html:81 templates/rimborsi.html:87
 #: templates/termini.html:2 templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "서비스 약관"
 
-#: templates/base.html:207 templates/base.html:217 templates/contact.html:51
-#: templates/pricing.html:81 templates/privacy.html:75
+#: templates/base.html:211 templates/base.html:221 templates/contact.html:51
+#: templates/pricing.html:81 templates/privacy.html:82
 #: templates/termini.html:81
 msgid "Rimborsi"
 msgstr "환불"
 
-#: templates/base.html:215 templates/contact.html:50 templates/pricing.html:79
-#: templates/register.html:112 templates/rimborsi.html:86
+#: templates/base.html:219 templates/contact.html:50 templates/pricing.html:79
+#: templates/register.html:112 templates/rimborsi.html:97
 msgid "Termini"
 msgstr "약관"
 
-#: templates/base.html:229
+#: templates/base.html:233
 msgid "Cookie e misurazione"
 msgstr "쿠키 및 측정"
 
-#: templates/base.html:231
+#: templates/base.html:235
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
 " e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
@@ -317,23 +327,23 @@ msgstr ""
 "우리는 기술적 쿠키와 귀하의 동의 하에 Google 도구(Analytics 및/또는 Ads/AdSense)를 사용하여 트래픽을 "
 "측정하고 광고를 표시합니다. 수락하거나 거부할 수 있습니다. 세부 사항은 다음에 있습니다."
 
-#: templates/base.html:235
+#: templates/base.html:239
 msgid "Accetta"
 msgstr "수락"
 
-#: templates/base.html:236
+#: templates/base.html:240
 msgid "Rifiuta"
 msgstr "거부"
 
-#: templates/base.html:276
+#: templates/base.html:280
 msgid "Copiato"
 msgstr "복사됨"
 
-#: templates/base.html:279
+#: templates/base.html:283
 msgid "Errore"
 msgstr "오류"
 
-#: templates/base.html:289
+#: templates/base.html:293
 msgid "Analisi in corso…"
 msgstr "분석 중…"
 
@@ -592,6 +602,10 @@ msgstr "우리는 이메일 목록을 판매하지 않으며, Centropic을 제�
 #: templates/contact.html:58
 msgid "Scrivi a info@centropic.ai"
 msgstr "info@centropic.ai로 작성하세요"
+
+#: templates/dashboard.html:13
+msgid "Centropic — mappa Signal Intelligence"
+msgstr "Centropic — 신호 정보 맵"
 
 #: templates/dashboard.html:22
 msgid "Ciao"
@@ -896,6 +910,10 @@ msgstr "봇 허용"
 #: templates/faq.html:35 templates/product.html:39 templates/termini.html:34
 msgid "Misurato"
 msgstr "측정됨"
+
+#: templates/dashboard.html:450
+msgid "campioni"
+msgstr "샘플"
 
 #: templates/dashboard.html:452
 msgid "Non disponibile"
@@ -1440,6 +1458,11 @@ msgstr ""
 "Centropic 비밀번호 복구: centropic.ai에서 AIO/GEO에 대한 액세스를 재설정하기 위해 안전한 링크를 "
 "이메일(noreply@centropic.ai)로 요청하세요."
 
+#: templates/forgot_password.html:12 templates/login.html:12
+#: templates/register.html:12 templates/reset_password.html:11
+msgid "Centropic — orbita Signal Intelligence"
+msgstr "Centropic — 신호 정보 궤도"
+
 #: templates/forgot_password.html:18
 msgid "Reset sicuro della password. Il link scade in poche ore."
 msgstr "비밀번호의 안전한 재설정. 링크는 몇 시간 후에 만료됩니다."
@@ -1500,7 +1523,7 @@ msgid "Torna all’accesso"
 msgstr "로그인으로 돌아가기"
 
 #: templates/forgot_password.html:62 templates/landing.html:189
-#: templates/login.html:77 templates/privacy.html:76 templates/register.html:24
+#: templates/login.html:77 templates/privacy.html:83 templates/register.html:24
 #: templates/termini.html:82
 msgid "Crea account"
 msgstr "계정 생성"
@@ -1634,6 +1657,10 @@ msgstr "다음에서 첫 번째 분석 시작:"
 #: templates/history.html:59
 msgid "dashboard"
 msgstr "대시보드"
+
+#: templates/landing.html:2
+msgid "Signal Intelligence per AIO e GEO"
+msgstr "AIO 및 GEO를 위한 신호 정보"
 
 #: templates/landing.html:3
 msgid ""
@@ -2134,11 +2161,6 @@ msgstr "결제는 다음에 의해 관리됩니다"
 msgid "Domande?"
 msgstr "질문이 있으신가요?"
 
-#: templates/pricing.html:85 templates/pro_interest.html:28
-#: templates/product.html:50
-msgid "Score vs SoV"
-msgstr "점수 대 SoV"
-
 #: templates/pricing.html:86
 msgid "Account Free"
 msgstr "무료 계정"
@@ -2160,7 +2182,7 @@ msgid "Legale"
 msgstr "법적"
 
 #: templates/privacy.html:10 templates/register.html:114
-#: templates/rimborsi.html:81
+#: templates/rimborsi.html:88
 msgid "Informativa privacy"
 msgstr "개인정보 보호정책"
 
@@ -2242,46 +2264,64 @@ msgstr ""
 "계정에 남아 있습니다."
 
 #: templates/privacy.html:44
-msgid "4. Conservazione e trasferimenti"
-msgstr "4. 보존 및 전송"
+msgid "4. Pagamenti"
+msgstr "4. 결제"
 
 #: templates/privacy.html:46
 msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
-"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
-"titolare; eventuali fornitori (hosting, email transazionale, OpenAI se "
-"configurata per raffinare llms.txt) trattano dati solo per conto del "
-"servizio."
+"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
+"Paddle.com Market Limited in qualità di merchant of record. Centropic non"
+" memorizza i dati completi della carta. Paddle tratta i dati di "
+"fatturazione necessari all’incasso e alla fiscalità secondo la propria "
+"informativa; riceviamo da Paddle identificativi cliente/transazione, "
+"stato abbonamento e importi per attivare il piano e accreditare il saldo."
 msgstr ""
-"데이터는 계정이 활성 상태인 동안 보존되며 종료 후 필요한 기술적 시간(백업, 보안) 동안 보존됩니다. 인프라는 소유자가 관리하며,"
-" 공급업체(호스팅, 트랜잭션 이메일, llms.txt를 정제하기 위해 구성된 경우 OpenAI)는 서비스의 명의로만 데이터를 "
-"처리합니다."
+"결제(Plus 구독 및 크레딧 충전)는 기록 상의 상인으로서 Paddle.com Market Limited에 의해 처리됩니다. "
+"Centropic은 카드의 전체 데이터를 저장하지 않습니다. Paddle은 수금 및 세금에 필요한 청구 데이터를 자신의 정책에 따라"
+" 처리합니다. 우리는 Paddle로부터 고객/거래 식별자, 구독 상태 및 요금을 받아 계획을 활성화하고 잔액을 적립합니다."
 
 #: templates/privacy.html:51
-msgid "5. Diritti"
-msgstr "5. 권리"
+msgid "5. Conservazione e trasferimenti"
+msgstr "5. 보관 및 전송"
 
 #: templates/privacy.html:53
+msgid ""
+"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
+"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
+"titolare; eventuali fornitori (hosting, email transazionale, Paddle per i"
+" pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) "
+"trattano dati solo per conto del servizio o come autonomi titolari ove "
+"indicato (es. Paddle)."
+msgstr ""
+"데이터는 계정이 활성 상태인 동안 유지되며 종료 후 필요한 기술적 시간(백업, 보안) 동안 보관됩니다. 인프라는 소유자가 "
+"관리합니다. 호스팅, 거래 이메일, 결제를 위한 Paddle, OpenAI 및 분석/패키징을 위해 구성된 기타 LLM 공급자와 같은"
+" 공급자는 서비스의 명의로 또는 명시된 대로 독립적인 소유자로서만 데이터를 처리합니다(예: Paddle)."
+
+#: templates/privacy.html:58
+msgid "6. Diritti"
+msgstr "6. 권리"
+
+#: templates/privacy.html:60
 msgid ""
 "Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità"
 " e opposizione scrivendo a"
 msgstr "다음 주소로 연락하여 접근, 수정, 삭제, 제한, 이식 및 반대할 수 있습니다:"
 
-#: templates/privacy.html:55
+#: templates/privacy.html:62
 msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
 msgstr "귀하는 또한 관할 감독 기관에 불만을 제기할 권리가 있습니다."
 
-#: templates/privacy.html:60
-msgid "6. Cookie"
-msgstr "6. 쿠키"
+#: templates/privacy.html:67
+msgid "7. Cookie"
+msgstr "7. 쿠키"
 
-#: templates/privacy.html:62
+#: templates/privacy.html:69
 msgid ""
 "Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
 "protezione CSRF, preferenza lingua)."
 msgstr "우리는 사이트의 작동에 필요한 기술적 쿠키를 사용합니다(세션, CSRF 보호, 언어 선호)."
 
-#: templates/privacy.html:64
+#: templates/privacy.html:71
 msgid ""
 "Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 "
 "e, se configurati, Google Ads / AdSense per misurazione e annunci. Il "
@@ -2290,7 +2330,7 @@ msgstr ""
 "귀하의 동의(쿠키 배너)를 통해 Google Analytics 4를 활성화하고, 구성된 경우 Google Ads / AdSense를"
 " 측정 및 광고를 위해 활성화할 수 있습니다. 동의는 다음과 같이 관리됩니다:"
 
-#: templates/privacy.html:66
+#: templates/privacy.html:73
 msgid ""
 "di default storage analytics/ads è negato (UE); puoi accettare o "
 "rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando "
@@ -2299,7 +2339,7 @@ msgstr ""
 "기본적으로 저장 분석/광고는 거부됩니다(UE); 사이트 데이터를 삭제하고 페이지를 새로 고침하여 언제든지 수락하거나 거부할 수 "
 "있습니다. 우리는 광고 동의 없이 AdSense를 활성화하지 않습니다."
 
-#: templates/privacy.html:68
+#: templates/privacy.html:75
 msgid ""
 "Attualmente non sono attivi cookie di misurazione o pubblicitari di terze"
 " parti su questo sito."
@@ -2607,7 +2647,7 @@ msgstr "국가"
 msgid "Accetto i"
 msgstr "나는 동의합니다"
 
-#: templates/register.html:113 templates/rimborsi.html:81
+#: templates/register.html:113
 msgid "e l’"
 msgstr "및"
 
@@ -2779,18 +2819,50 @@ msgid ""
 msgstr "법률 또는 이 정책의 기한을 초과한 요청, 단 우리의 오류는 제외."
 
 #: templates/rimborsi.html:75
-msgid "7. Contatti e documenti correlati"
-msgstr "7. 연락처 및 관련 문서"
+msgid "7. Tempi e modalità di accredito"
+msgstr "7. 적립 시간 및 방법"
 
 #: templates/rimborsi.html:77
+msgid ""
+"Dopo l’approvazione, il rimborso viene istruito sul merchant of record "
+"(Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione "
+"sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 "
+"giorni lavorativi). Ti confermiamo via email quando la pratica è stata "
+"inviata al processore."
+msgstr ""
+"승인 후, 환불은 기록 상의 상인(Paddle)을 통해 동일한 결제 방법으로 처리됩니다. 계좌에 표시되는 시간은 은행이나 카드 "
+"네트워크에 따라 다릅니다(종종 5-10 영업일). 프로세서에 요청이 전송되면 이메일로 확인해 드립니다."
+
+#: templates/rimborsi.html:82
+msgid "8. Contatti e documenti correlati"
+msgstr "8. 연락처 및 관련 문서"
+
+#: templates/rimborsi.html:84
 msgid "Domande su addebiti o rimborsi:"
 msgstr "청구 또는 환불에 대한 질문:"
 
-#: templates/rimborsi.html:79
+#: templates/rimborsi.html:86
 msgid "Vedi anche i"
 msgstr "다음도 참조하세요:"
 
 #: templates/rimborsi.html:88
+msgid "l’"
+msgstr "그의"
+
+#: templates/rimborsi.html:89
+msgid "e la pagina"
+msgstr "및 페이지"
+
+#: templates/rimborsi.html:92
+msgid ""
+"Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi"
+" riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di "
+"terzi."
+msgstr ""
+"Centropic (centropic.ai)는 Engineering Factory의 제품입니다: 환불은 AIO/GEO SaaS의 "
+"디지털 구매에만 해당되며 제3자의 서비스에는 해당되지 않습니다."
+
+#: templates/rimborsi.html:100
 msgid "Contattaci"
 msgstr "문의하기"
 
@@ -3147,59 +3219,65 @@ msgid ""
 " consumatore."
 msgstr "다른 강행 규정이 없는 한 이탈리아 법이 적용됩니다. 분쟁의 경우 소유자의 관할권이 있으며 소비자의 권리는 보장됩니다."
 
-#: templates/topup.html:7
+#: templates/topup.html:3
+msgid ""
+"Ricarica crediti Centropic: pacchetti prepagati per analisi AIO/GEO, "
+"citation monitor e pack artifact su centropic.ai."
+msgstr "Centropic 크레딧 충전: centropic.ai에서 AIO/GEO 분석, 인용 모니터 및 패키지 아티팩트를 위한 선불 패키지."
+
+#: templates/topup.html:8
 msgid "Crediti prepagati"
 msgstr "선불 크레딧"
 
-#: templates/topup.html:8
+#: templates/topup.html:9
 msgid "Ricarica il tuo credito"
 msgstr "크레딧을 충전하세요"
 
-#: templates/topup.html:10
+#: templates/topup.html:11
 msgid "Ogni analisi consuma crediti proporzionali ai token AI utilizzati."
 msgstr "각 분석은 사용된 AI 토큰에 비례하여 크레딧을 소모합니다."
 
-#: templates/topup.html:11
+#: templates/topup.html:12
 msgid "Scegli un pacchetto o inserisci un importo personalizzato."
 msgstr "패키지를 선택하거나 사용자 정의 금액을 입력하세요."
 
-#: templates/topup.html:16
+#: templates/topup.html:17
 msgid "Credito attuale"
 msgstr "현재 크레딧"
 
-#: templates/topup.html:19
+#: templates/topup.html:20
 msgid "Credito illimitato (account admin)"
 msgstr "무제한 크레딧 (관리자 계정)"
 
-#: templates/topup.html:26
+#: templates/topup.html:27
 msgid "Ultime transazioni"
 msgstr "최근 거래"
 
-#: templates/topup.html:30
+#: templates/topup.html:31
 msgid "Data"
 msgstr "날짜"
 
-#: templates/topup.html:31
+#: templates/topup.html:32
 msgid "Descrizione"
 msgstr "설명"
 
-#: templates/topup.html:32
+#: templates/topup.html:33
 msgid "Importo"
 msgstr "금액"
 
-#: templates/topup.html:33
+#: templates/topup.html:34
 msgid "Saldo dopo"
 msgstr "잔액 후"
 
-#: templates/topup.html:56
+#: templates/topup.html:57
 msgid "Scegli un pacchetto"
 msgstr "패키지를 선택하세요"
 
-#: templates/topup.html:71 templates/topup.html:77
+#: templates/topup.html:72 templates/topup.html:78
 msgid "analisi"
 msgstr "분석"
 
-#: templates/topup.html:84
+#: templates/topup.html:85
 msgid ""
 "Il credito non ha scadenza. Le analisi più semplici costano meno, quelle "
 "con SoV Misurato su più engine costano di più."

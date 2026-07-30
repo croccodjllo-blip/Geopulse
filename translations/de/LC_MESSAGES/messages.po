@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-30 18:48+0000\n"
+"POT-Creation-Date: 2026-07-30 21:23+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: templates/about.html:2 templates/about.html:10 templates/base.html:119
-#: templates/base.html:188 templates/contact.html:27 templates/contact.html:59
+#: templates/base.html:191 templates/contact.html:27 templates/contact.html:59
 msgid "Chi siamo"
 msgstr "Über uns"
 
@@ -164,7 +164,7 @@ msgstr ""
 "dann ein Bericht mit kritischen Punkten und Artefakten zur "
 "Veröffentlichung. Öffentliche Methodologie auf"
 
-#: templates/about.html:57 templates/base.html:117 templates/base.html:185
+#: templates/about.html:57 templates/base.html:117 templates/base.html:186
 #: templates/landing.html:118 templates/pricing.html:84
 msgid "Metodologia"
 msgstr "Methodologie"
@@ -173,7 +173,7 @@ msgstr "Methodologie"
 msgid "Aggiorniamo il prodotto in pubblico su"
 msgstr "Wir aktualisieren das Produkt öffentlich auf"
 
-#: templates/about.html:59 templates/base.html:115 templates/base.html:182
+#: templates/about.html:59 templates/base.html:115 templates/base.html:183
 #: templates/contact.html:24 templates/product.html:2
 msgid "Prodotto"
 msgstr "Produkt"
@@ -184,7 +184,7 @@ msgid "FAQ"
 msgstr "FAQ"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:120 templates/base.html:202 templates/contact.html:2
+#: templates/base.html:120 templates/base.html:206 templates/contact.html:2
 #: templates/contact.html:9 templates/forgot_password.html:64
 #: templates/landing.html:175 templates/partials/auth_help.html:24
 msgid "Contatti"
@@ -220,19 +220,19 @@ msgstr ""
 msgid "Principale"
 msgstr "Hauptseite"
 
-#: templates/base.html:101 templates/base.html:193 templates/dashboard.html:2
+#: templates/base.html:101 templates/base.html:196 templates/dashboard.html:2
 #: templates/history.html:21 templates/site_history.html:13
-#: templates/topup.html:89 templates/verify.html:38
+#: templates/topup.html:90 templates/verify.html:38
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: templates/base.html:102 templates/base.html:194 templates/dashboard.html:177
+#: templates/base.html:102 templates/base.html:197 templates/dashboard.html:177
 #: templates/dashboard.html:685 templates/history.html:2
 #: templates/site_history.html:2
 msgid "Storico"
 msgstr "Historie"
 
-#: templates/base.html:103 templates/base.html:195 templates/dashboard.html:29
+#: templates/base.html:103 templates/base.html:198 templates/dashboard.html:29
 #: templates/guide.html:2 templates/guide.html:9
 msgid "Guida"
 msgstr "Hilfe"
@@ -241,7 +241,7 @@ msgstr "Hilfe"
 msgid "Impostazioni"
 msgstr "Einstellungen"
 
-#: templates/base.html:105
+#: templates/base.html:105 templates/base.html:199
 msgid "Crediti"
 msgstr "Guthaben"
 
@@ -249,12 +249,13 @@ msgstr "Guthaben"
 msgid "Esci"
 msgstr "Abmelden"
 
-#: templates/base.html:116 templates/base.html:184 templates/login.html:79
+#: templates/base.html:116 templates/base.html:185 templates/login.html:79
 #: templates/pricing.html:2 templates/register.html:134
+#: templates/rimborsi.html:89 templates/rimborsi.html:99
 msgid "Prezzi"
 msgstr "Preise"
 
-#: templates/base.html:121 templates/base.html:198
+#: templates/base.html:121 templates/base.html:202
 #: templates/forgot_password.html:50 templates/login.html:2
 #: templates/register.html:130
 msgid "Accedi"
@@ -268,7 +269,7 @@ msgstr "Kostenlos starten"
 msgid "Seleziona lingua"
 msgstr "Sprache auswählen"
 
-#: templates/base.html:179
+#: templates/base.html:180
 msgid ""
 "Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle "
 "risposte IA. Prodotto di"
@@ -276,55 +277,64 @@ msgstr ""
 "Signal Intelligence für AIO und GEO. Ordnung in den Signalen, "
 "Zitierfähigkeit in den IA-Antworten. Produkt von"
 
-#: templates/base.html:183
+#: templates/base.html:184
 msgid "Come funziona"
 msgstr "Wie es funktioniert"
 
-#: templates/base.html:186
+#: templates/base.html:187
 msgid "Guida llms.txt"
 msgstr "Hilfe llms.txt"
 
-#: templates/base.html:191 templates/contact.html:25 templates/history.html:9
+#: templates/base.html:188
+msgid "Guida Schema AI"
+msgstr "Schema AI Anleitung"
+
+#: templates/base.html:189 templates/pricing.html:85
+#: templates/pro_interest.html:28 templates/product.html:50
+msgid "Score vs SoV"
+msgstr "Score vs SoV"
+
+#: templates/base.html:194 templates/contact.html:25 templates/history.html:9
 #: templates/settings.html:8
 msgid "Account"
 msgstr "Konto"
 
-#: templates/base.html:197 templates/register.html:2
+#: templates/base.html:201 templates/register.html:2
 msgid "Registrati"
 msgstr "Registrieren"
 
-#: templates/base.html:203
+#: templates/base.html:207
 msgid "Pagina contatti"
 msgstr "Kontaktseite"
 
-#: templates/base.html:205 templates/base.html:213 templates/contact.html:49
+#: templates/base.html:209 templates/base.html:217 templates/contact.html:49
 #: templates/partials/auth_help.html:26 templates/pricing.html:80
-#: templates/privacy.html:2 templates/rimborsi.html:87
+#: templates/privacy.html:2 templates/rimborsi.html:98
 #: templates/termini.html:80
 msgid "Privacy"
 msgstr "Datenschutz"
 
-#: templates/base.html:206 templates/privacy.html:74 templates/rimborsi.html:80
+#: templates/base.html:210 templates/privacy.html:81 templates/rimborsi.html:87
 #: templates/termini.html:2 templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "Nutzungsbedingungen"
 
-#: templates/base.html:207 templates/base.html:217 templates/contact.html:51
-#: templates/pricing.html:81 templates/privacy.html:75
+#: templates/base.html:211 templates/base.html:221 templates/contact.html:51
+#: templates/pricing.html:81 templates/privacy.html:82
 #: templates/termini.html:81
 msgid "Rimborsi"
 msgstr "Rückerstattungen"
 
-#: templates/base.html:215 templates/contact.html:50 templates/pricing.html:79
-#: templates/register.html:112 templates/rimborsi.html:86
+#: templates/base.html:219 templates/contact.html:50 templates/pricing.html:79
+#: templates/register.html:112 templates/rimborsi.html:97
 msgid "Termini"
 msgstr "Bedingungen"
 
-#: templates/base.html:229
+#: templates/base.html:233
 msgid "Cookie e misurazione"
 msgstr "Cookies und Messung"
 
-#: templates/base.html:231
+#: templates/base.html:235
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
 " e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
@@ -334,23 +344,23 @@ msgstr ""
 " (Analytics und/oder Ads/AdSense), um den Verkehr zu messen und Anzeigen "
 "zu zeigen. Du kannst zustimmen oder ablehnen. Einzelheiten in der"
 
-#: templates/base.html:235
+#: templates/base.html:239
 msgid "Accetta"
 msgstr "Akzeptieren"
 
-#: templates/base.html:236
+#: templates/base.html:240
 msgid "Rifiuta"
 msgstr "Ablehnen"
 
-#: templates/base.html:276
+#: templates/base.html:280
 msgid "Copiato"
 msgstr "Kopiert"
 
-#: templates/base.html:279
+#: templates/base.html:283
 msgid "Errore"
 msgstr "Fehler"
 
-#: templates/base.html:289
+#: templates/base.html:293
 msgid "Analisi in corso…"
 msgstr "Analyse läuft…"
 
@@ -625,6 +635,10 @@ msgstr ""
 #: templates/contact.html:58
 msgid "Scrivi a info@centropic.ai"
 msgstr "Schreibe an info@centropic.ai"
+
+#: templates/dashboard.html:13
+msgid "Centropic — mappa Signal Intelligence"
+msgstr "Centropic — Signal Intelligence Karte"
 
 #: templates/dashboard.html:22
 msgid "Ciao"
@@ -949,6 +963,10 @@ msgstr "Bot erlauben"
 #: templates/faq.html:35 templates/product.html:39 templates/termini.html:34
 msgid "Misurato"
 msgstr "Gemessen"
+
+#: templates/dashboard.html:450
+msgid "campioni"
+msgstr "Proben"
 
 #: templates/dashboard.html:452
 msgid "Non disponibile"
@@ -1529,6 +1547,11 @@ msgstr ""
 "E-Mail (noreply@centropic.ai) an, um den Zugriff auf AIO/GEO auf "
 "centropic.ai zurückzusetzen."
 
+#: templates/forgot_password.html:12 templates/login.html:12
+#: templates/register.html:12 templates/reset_password.html:11
+msgid "Centropic — orbita Signal Intelligence"
+msgstr "Centropic — Signal Intelligence Orbit"
+
 #: templates/forgot_password.html:18
 msgid "Reset sicuro della password. Il link scade in poche ore."
 msgstr "Sichere Passwortzurücksetzung. Der Link verfällt in wenigen Stunden."
@@ -1594,7 +1617,7 @@ msgid "Torna all’accesso"
 msgstr "Zurück zur Anmeldung"
 
 #: templates/forgot_password.html:62 templates/landing.html:189
-#: templates/login.html:77 templates/privacy.html:76 templates/register.html:24
+#: templates/login.html:77 templates/privacy.html:83 templates/register.html:24
 #: templates/termini.html:82
 msgid "Crea account"
 msgstr "Konto erstellen"
@@ -1737,6 +1760,10 @@ msgstr "Starten Sie die erste Analyse von"
 #: templates/history.html:59
 msgid "dashboard"
 msgstr "Dashboard"
+
+#: templates/landing.html:2
+msgid "Signal Intelligence per AIO e GEO"
+msgstr "Signal Intelligence für AIO und GEO"
 
 #: templates/landing.html:3
 msgid ""
@@ -2297,11 +2324,6 @@ msgstr "Zahlungen verwaltet von"
 msgid "Domande?"
 msgstr "Fragen?"
 
-#: templates/pricing.html:85 templates/pro_interest.html:28
-#: templates/product.html:50
-msgid "Score vs SoV"
-msgstr "Score vs SoV"
-
 #: templates/pricing.html:86
 msgid "Account Free"
 msgstr "Kostenloses Konto"
@@ -2324,7 +2346,7 @@ msgid "Legale"
 msgstr "Rechtlich"
 
 #: templates/privacy.html:10 templates/register.html:114
-#: templates/rimborsi.html:81
+#: templates/rimborsi.html:88
 msgid "Informativa privacy"
 msgstr "Datenschutzerklärung"
 
@@ -2415,29 +2437,52 @@ msgstr ""
 "oder das Konto schließt."
 
 #: templates/privacy.html:44
-msgid "4. Conservazione e trasferimenti"
-msgstr "4. Aufbewahrung und Übertragungen"
+msgid "4. Pagamenti"
+msgstr "4. Zahlungen"
 
 #: templates/privacy.html:46
 msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
-"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
-"titolare; eventuali fornitori (hosting, email transazionale, OpenAI se "
-"configurata per raffinare llms.txt) trattano dati solo per conto del "
-"servizio."
+"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
+"Paddle.com Market Limited in qualità di merchant of record. Centropic non"
+" memorizza i dati completi della carta. Paddle tratta i dati di "
+"fatturazione necessari all’incasso e alla fiscalità secondo la propria "
+"informativa; riceviamo da Paddle identificativi cliente/transazione, "
+"stato abbonamento e importi per attivare il piano e accreditare il saldo."
 msgstr ""
-"Die Daten bleiben, solange das Konto aktiv ist, und für die technischen "
-"Zeiträume, die nach der Schließung erforderlich sind (Backup, "
-"Sicherheit). Die Infrastruktur wird vom Verantwortlichen verwaltet; "
-"etwaige Anbieter (Hosting, transaktionale E-Mails, OpenAI, wenn "
-"konfiguriert, um llms.txt zu verfeinern) verarbeiten Daten nur im Auftrag"
-" des Dienstes."
+"Zahlungen (Plus-Abonnement und Guthabenaufladungen) werden von Paddle.com"
+" Market Limited als Merchant of Record verarbeitet. Centropic speichert "
+"keine vollständigen Kartendaten. Paddle verarbeitet die für die "
+"Abrechnung und Besteuerung erforderlichen Rechnungsdaten gemäß seiner "
+"Datenschutzrichtlinie; wir erhalten von Paddle "
+"Kunden-/Transaktionsidentifikatoren, Abonnementstatus und Beträge, um den"
+" Plan zu aktivieren und das Guthaben gutzuschreiben."
 
 #: templates/privacy.html:51
-msgid "5. Diritti"
-msgstr "5. Rechte"
+msgid "5. Conservazione e trasferimenti"
+msgstr "5. Aufbewahrung und Übertragungen"
 
 #: templates/privacy.html:53
+msgid ""
+"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
+"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
+"titolare; eventuali fornitori (hosting, email transazionale, Paddle per i"
+" pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) "
+"trattano dati solo per conto del servizio o come autonomi titolari ove "
+"indicato (es. Paddle)."
+msgstr ""
+"Die Daten bleiben gespeichert, solange das Konto aktiv ist und für die "
+"technischen Zeiträume, die nach der Schließung erforderlich sind (Backup,"
+" Sicherheit). Die Infrastruktur wird vom Inhaber verwaltet; etwaige "
+"Anbieter (Hosting, transaktionale E-Mails, Paddle für Zahlungen, OpenAI "
+"und andere LLM-Anbieter, wenn sie für Analysen/Pack konfiguriert sind) "
+"verarbeiten Daten nur im Auftrag des Dienstes oder als eigenständige "
+"Verantwortliche, wo angegeben (z. B. Paddle)."
+
+#: templates/privacy.html:58
+msgid "6. Diritti"
+msgstr "6. Rechte"
+
+#: templates/privacy.html:60
 msgid ""
 "Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità"
 " e opposizione scrivendo a"
@@ -2445,17 +2490,17 @@ msgstr ""
 "Du kannst Zugang, Berichtigung, Löschung, Einschränkung, "
 "Datenübertragbarkeit und Widerspruch beantragen, indem du an schreibst:"
 
-#: templates/privacy.html:55
+#: templates/privacy.html:62
 msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
 msgstr ""
 "Du hast auch das Recht, bei der zuständigen Aufsichtsbehörde Beschwerde "
 "einzulegen."
 
-#: templates/privacy.html:60
-msgid "6. Cookie"
-msgstr "6. Cookies"
+#: templates/privacy.html:67
+msgid "7. Cookie"
+msgstr "7. Cookies"
 
-#: templates/privacy.html:62
+#: templates/privacy.html:69
 msgid ""
 "Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
 "protezione CSRF, preferenza lingua)."
@@ -2463,7 +2508,7 @@ msgstr ""
 "Wir verwenden technische Cookies, die für den Betrieb der Website "
 "erforderlich sind (Sitzung, CSRF-Schutz, Sprachpräferenz)."
 
-#: templates/privacy.html:64
+#: templates/privacy.html:71
 msgid ""
 "Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 "
 "e, se configurati, Google Ads / AdSense per misurazione e annunci. Il "
@@ -2473,7 +2518,7 @@ msgstr ""
 "aktivieren und, falls konfiguriert, Google Ads / AdSense für Messungen "
 "und Anzeigen aktivieren. Die Einwilligung wird verwaltet mit"
 
-#: templates/privacy.html:66
+#: templates/privacy.html:73
 msgid ""
 "di default storage analytics/ads è negato (UE); puoi accettare o "
 "rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando "
@@ -2484,7 +2529,7 @@ msgstr ""
 "löschst und die Seite neu lädst. Wir aktivieren AdSense nicht ohne "
 "Werbeeinwilligung."
 
-#: templates/privacy.html:68
+#: templates/privacy.html:75
 msgid ""
 "Attualmente non sono attivi cookie di misurazione o pubblicitari di terze"
 " parti su questo sito."
@@ -2821,7 +2866,7 @@ msgstr "Land"
 msgid "Accetto i"
 msgstr "Ich akzeptiere die"
 
-#: templates/register.html:113 templates/rimborsi.html:81
+#: templates/register.html:113
 msgid "e l’"
 msgstr "und die"
 
@@ -3028,18 +3073,54 @@ msgstr ""
 "hinausgehen, es sei denn, es liegt ein Fehler unsererseits vor."
 
 #: templates/rimborsi.html:75
-msgid "7. Contatti e documenti correlati"
-msgstr "7. Kontakte und verwandte Dokumente"
+msgid "7. Tempi e modalità di accredito"
+msgstr "7. Zeiten und Modalitäten der Gutschrift"
 
 #: templates/rimborsi.html:77
+msgid ""
+"Dopo l’approvazione, il rimborso viene istruito sul merchant of record "
+"(Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione "
+"sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 "
+"giorni lavorativi). Ti confermiamo via email quando la pratica è stata "
+"inviata al processore."
+msgstr ""
+"Nach Genehmigung wird die Rückerstattung über den Merchant of Record "
+"(Paddle) auf dasselbe Zahlungsmittel angewiesen. Die Anzeigezeiten auf "
+"dem Konto hängen von der Bank oder dem Kartennetzwerk ab (häufig 5–10 "
+"Werktage). Wir bestätigen dir per E-Mail, wenn der Vorgang an den "
+"Prozessor gesendet wurde."
+
+#: templates/rimborsi.html:82
+msgid "8. Contatti e documenti correlati"
+msgstr "8. Kontakte und zugehörige Dokumente"
+
+#: templates/rimborsi.html:84
 msgid "Domande su addebiti o rimborsi:"
 msgstr "Fragen zu Gebühren oder Rückerstattungen:"
 
-#: templates/rimborsi.html:79
+#: templates/rimborsi.html:86
 msgid "Vedi anche i"
 msgstr "Siehe auch die"
 
 #: templates/rimborsi.html:88
+msgid "l’"
+msgstr "der"
+
+#: templates/rimborsi.html:89
+msgid "e la pagina"
+msgstr "und die Seite"
+
+#: templates/rimborsi.html:92
+msgid ""
+"Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi"
+" riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di "
+"terzi."
+msgstr ""
+"Centropic (centropic.ai) ist ein Produkt von Engineering Factory: "
+"Rückerstattungen betreffen nur digitale Käufe des SaaS AIO/GEO, nicht "
+"Dienstleistungen von Dritten."
+
+#: templates/rimborsi.html:100
 msgid "Contattaci"
 msgstr "Kontaktiere uns"
 
@@ -3430,59 +3511,67 @@ msgstr ""
 "Streitigkeiten ist das Gericht des Inhabers zuständig, unbeschadet der "
 "Verbraucherrechte."
 
-#: templates/topup.html:7
+#: templates/topup.html:3
+msgid ""
+"Ricarica crediti Centropic: pacchetti prepagati per analisi AIO/GEO, "
+"citation monitor e pack artifact su centropic.ai."
+msgstr ""
+"Centropic Guthabenaufladung: Prepaid-Pakete für AIO/GEO-Analysen, "
+"Citation Monitor und Pack-Artifact auf centropic.ai."
+
+#: templates/topup.html:8
 msgid "Crediti prepagati"
 msgstr "Prepaid-Credits"
 
-#: templates/topup.html:8
+#: templates/topup.html:9
 msgid "Ricarica il tuo credito"
 msgstr "Lade dein Guthaben auf"
 
-#: templates/topup.html:10
+#: templates/topup.html:11
 msgid "Ogni analisi consuma crediti proporzionali ai token AI utilizzati."
 msgstr "Jede Analyse verbraucht Credits proportional zu den verwendeten AI-Token."
 
-#: templates/topup.html:11
+#: templates/topup.html:12
 msgid "Scegli un pacchetto o inserisci un importo personalizzato."
 msgstr "Wähle ein Paket oder gib einen benutzerdefinierten Betrag ein."
 
-#: templates/topup.html:16
+#: templates/topup.html:17
 msgid "Credito attuale"
 msgstr "Aktuelles Guthaben"
 
-#: templates/topup.html:19
+#: templates/topup.html:20
 msgid "Credito illimitato (account admin)"
 msgstr "Unbegrenztes Guthaben (Admin-Konto)"
 
-#: templates/topup.html:26
+#: templates/topup.html:27
 msgid "Ultime transazioni"
 msgstr "Letzte Transaktionen"
 
-#: templates/topup.html:30
+#: templates/topup.html:31
 msgid "Data"
 msgstr "Datum"
 
-#: templates/topup.html:31
+#: templates/topup.html:32
 msgid "Descrizione"
 msgstr "Beschreibung"
 
-#: templates/topup.html:32
+#: templates/topup.html:33
 msgid "Importo"
 msgstr "Betrag"
 
-#: templates/topup.html:33
+#: templates/topup.html:34
 msgid "Saldo dopo"
 msgstr "Saldo nach"
 
-#: templates/topup.html:56
+#: templates/topup.html:57
 msgid "Scegli un pacchetto"
 msgstr "Wähle ein Paket"
 
-#: templates/topup.html:71 templates/topup.html:77
+#: templates/topup.html:72 templates/topup.html:78
 msgid "analisi"
 msgstr "Analyse"
 
-#: templates/topup.html:84
+#: templates/topup.html:85
 msgid ""
 "Il credito non ha scadenza. Le analisi più semplici costano meno, quelle "
 "con SoV Misurato su più engine costano di più."

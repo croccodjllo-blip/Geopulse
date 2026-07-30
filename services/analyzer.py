@@ -7,7 +7,7 @@ import re
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
-from urllib.parse import urldefrag, urljoin, urlparse, urlunparse
+from urllib.parse import parse_qsl, urldefrag, urlencode, urljoin, urlparse, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -80,8 +80,26 @@ SKIP_EXT = (
     ".txt",
 )
 SKIP_PATH_RE = re.compile(
-    r"(logout|sign[-_]?out|cart|checkout|wp-admin|admin/|/cdn-cgi/)",
+    r"(logout|sign[-_]?out|cart|checkout|wp-admin|admin/|/cdn-cgi/"
+    r"|(?:^|/)lang(?:/|$)"
+    r"|(?:^|/)crediti(?:/|$)"
+    r"|(?:^|/)dashboard(?:/|$))",
     re.I,
+)
+# Query keys that mint near-duplicate URLs (i18n switcher, login return, ads).
+_DROP_QUERY_KEYS = frozenset(
+    {
+        "next",
+        "lang",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_content",
+        "utm_term",
+        "gclid",
+        "fbclid",
+        "ref",
+    }
 )
 
 
@@ -126,10 +144,18 @@ def canonicalize_page_url(url: str, *, seed: str) -> str | None:
         return None
     if SKIP_PATH_RE.search(path):
         return None
-    # Ignora query lunghe / tracking
-    query = parsed.query
-    if query and len(query) > 80:
-        query = ""
+    # Drop i18n/login/ads params so /login?next=/crediti and /lang/en?next=
+    # do not inflate duplicate titles/descriptions in the crawl sample.
+    query = ""
+    if parsed.query:
+        kept = [
+            (k, v)
+            for k, v in parse_qsl(parsed.query, keep_blank_values=True)
+            if (k or "").lower() not in _DROP_QUERY_KEYS
+        ]
+        query = urlencode(kept)
+        if len(query) > 80:
+            query = ""
     clean = urlunparse((parsed.scheme, parsed.netloc.lower(), path, "", query, ""))
     return clean
 

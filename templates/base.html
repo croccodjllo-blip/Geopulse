@@ -89,7 +89,7 @@
           <img
             class="brand-mark__logo"
             src="{{ url_for('static', filename='img/logo.svg') }}"
-            alt=""
+            alt="Centropic"
             width="32"
             height="32"
             decoding="async"
@@ -140,6 +140,7 @@
                   class="lang-switch__option {% if item.active %}is-active{% endif %}"
                   hreflang="{{ item.code }}"
                   lang="{{ item.code }}"
+                  rel="nofollow"
                 >{{ item.label }}</a>
               </li>
               {% endfor %}
@@ -169,7 +170,7 @@
             <img
               class="brand-mark__logo"
               src="{{ url_for('static', filename='img/logo.svg') }}"
-              alt=""
+              alt="Centropic"
               width="32"
               height="32"
               decoding="async"
@@ -184,6 +185,8 @@
           <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
           <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
           <a href="{{ url_for('guide_llms_txt') }}">{{ _('Guida llms.txt') }}</a>
+          <a href="{{ url_for('guide_schema_ai') }}">{{ _('Guida Schema AI') }}</a>
+          <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>
           <a href="{{ url_for('faq') }}">FAQ</a>
           <a href="{{ url_for('about') }}">{{ _('Chi siamo') }}</a>
         </div>
@@ -193,6 +196,7 @@
             <a href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
             <a href="{{ url_for('dashboard_history') }}">{{ _('Storico') }}</a>
             <a href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
+            <a href="{{ url_for('topup_credit_page') }}">{{ _('Crediti') }}</a>
           {% else %}
             <a href="{{ url_for('register') }}">{{ _('Registrati') }}</a>
             <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>

@@ -72,19 +72,31 @@
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('7. Contatti e documenti correlati') }}</h2>
+    <h2 class="page-section__title">{{ _('7. Tempi e modalità di accredito') }}</h2>
+    <p class="lede">
+      {{ _('Dopo l’approvazione, il rimborso viene istruito sul merchant of record (Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 giorni lavorativi). Ti confermiamo via email quando la pratica è stata inviata al processore.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('8. Contatti e documenti correlati') }}</h2>
     <p class="lede">
       {{ _('Domande su addebiti o rimborsi:') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
       {{ _('Vedi anche i') }}
-      <a href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
-      {{ _('e l’') }}<a href="{{ url_for('privacy') }}">{{ _('Informativa privacy') }}</a>.
+      <a href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>,
+      {{ _('l’') }}<a href="{{ url_for('privacy') }}">{{ _('Informativa privacy') }}</a>
+      {{ _('e la pagina') }} <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
+    </p>
+    <p class="lede">
+      {{ _('Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di terzi.') }}
     </p>
   </section>
 
   <div class="page-cta">
     <a class="btn btn-ghost" href="{{ url_for('terms') }}">{{ _('Termini') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
     <a class="btn btn-primary" href="mailto:info@centropic.ai">{{ _('Contattaci') }}</a>
   </div>
 </article>

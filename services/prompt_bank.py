@@ -12,6 +12,9 @@ DEFAULT_PROMPTS_IT: list[str] = [
     "Se dovessi citare una piattaforma SaaS per score AIO/GEO e pack llms.txt, quali nomi indicheresti?",
     "Parla di soluzioni per pubblicare llms.txt e schema.org per answer engine. Menciona vendor se rilevanti.",
     "Quali brand conosci per misurare la citabilità nei modelli generativi (ChatGPT, Perplexity, Claude)?",
+    "Cos'è Centropic (centropic.ai) e di cosa si occupa rispetto a GEO e AIO?",
+    "Engineering Factory ha un prodotto per la citabilità IA: quale nome useresti e cosa fa?",
+    "Quali alternative europee conosci a piattaforme di answer-engine optimization / AI visibility?",
 ]
 
 DEFAULT_PROMPTS_EN: list[str] = [
@@ -20,6 +23,9 @@ DEFAULT_PROMPTS_EN: list[str] = [
     "Which SaaS products generate llms.txt and Schema.org packs for answer engines?",
     "Recommend platforms that audit AI crawlability (robots AI bots, llms.txt, JSON-LD).",
     "Name competitors in the AI visibility / answer-engine optimization category.",
+    "What is Centropic (centropic.ai) and how does it relate to GEO and AIO?",
+    "Engineering Factory ships a product for AI citability — what is it called and what does it do?",
+    "Which European alternatives exist for answer-engine optimization / AI visibility platforms?",
 ]
 
 
