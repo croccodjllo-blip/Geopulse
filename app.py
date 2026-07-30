@@ -97,6 +97,9 @@ from services.usage_billing import (
     get_balance_cents,
     deduct_credit,
     topup_credit,
+    hold_credit,
+    release_hold,
+    consume_hold,
     InsufficientCreditError,
     ConcurrentAnalysisError,
     record_actual_usage,
@@ -106,7 +109,13 @@ from services.usage_billing import (
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
-from services.jobs import claim_next_job, complete_job, enqueue_analysis, fail_job
+from services.jobs import (
+    claim_next_job,
+    complete_job,
+    enqueue_analysis,
+    fail_job,
+    heartbeat_job,
+)
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
 from services.security import safe_next_url
@@ -403,6 +412,7 @@ class User(db.Model):
     agency_brand_json = db.Column(db.Text, nullable=False, default="")
     # Usage-based billing: prepaid credit balance in EUR cents (integer)
     credit_balance_cents = db.Column(db.Integer, nullable=False, default=0)
+    credit_held_cents = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -597,6 +607,11 @@ class AnalysisJob(db.Model):
     competitors_json = db.Column(db.Text, nullable=False, default="[]")
     # Persist measured SoV intent from confirm form through the async worker.
     run_measured = db.Column(db.Boolean, nullable=False, default=False)
+    held_cents = db.Column(db.Integer, nullable=False, default=0)
+    heartbeat_at = db.Column(db.DateTime)
+    lease_token = db.Column(db.String(64))
+    attempt_count = db.Column(db.Integer, nullable=False, default=0)
+    analytics_complete_sent = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.String(20), nullable=False, default="pending", index=True)
     error = db.Column(db.String(500))
     created_at = db.Column(
@@ -858,7 +873,7 @@ class LoginForm(FlaskForm):
         ],
     )
     password = PasswordField("Password", validators=[DataRequired()])
-    remember_me = BooleanField("Resta connesso", default=True)
+    remember_me = BooleanField("Resta connesso", default=False)
     submit = SubmitField("Accedi")
 
 
@@ -1231,6 +1246,7 @@ def ensure_schema() -> None:
             "prompt_bank_json": "TEXT DEFAULT ''",
             "agency_brand_json": "TEXT DEFAULT ''",
             "credit_balance_cents": "INTEGER DEFAULT 0",
+            "credit_held_cents": "INTEGER DEFAULT 0",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -1290,6 +1306,11 @@ def ensure_schema() -> None:
                 "max_pages": "INTEGER DEFAULT 8",
                 "competitors_json": "TEXT DEFAULT '[]'",
                 "run_measured": "BOOLEAN DEFAULT 0",
+                "held_cents": "INTEGER DEFAULT 0",
+                "heartbeat_at": "DATETIME",
+                "lease_token": "TEXT",
+                "attempt_count": "INTEGER DEFAULT 0",
+                "analytics_complete_sent": "BOOLEAN DEFAULT 0",
                 "status": "TEXT DEFAULT 'pending'",
                 "error": "TEXT",
                 "created_at": "DATETIME",
@@ -1341,6 +1362,9 @@ def process_pending_analyze_jobs(
         user = User.query.get(job.user_id)
         if user is None:
             fail_job(db.session, job, "Utente non trovato")
+            if int(getattr(job, "held_cents", 0) or 0):
+                job.held_cents = 0
+                db.session.commit()
             stats["error"] += 1
             continue
         try:
@@ -1367,6 +1391,10 @@ def process_pending_analyze_jobs(
             )
             if preflight.is_giant:
                 fail_job(db.session, job, preflight.message[:500])
+                if int(getattr(job, "held_cents", 0) or 0):
+                    release_hold(db.session, user, amount_cents=job.held_cents)
+                    job.held_cents = 0
+                    db.session.commit()
                 stats["error"] += 1
                 continue
             est.service_cost_eur_cents = preflight.required_cost_cents
@@ -1380,8 +1408,15 @@ def process_pending_analyze_jobs(
                         f"richiesto con margine €{required_with_grace/100:.4f}"
                     )[:500],
                 )
+                if int(getattr(job, "held_cents", 0) or 0):
+                    release_hold(db.session, user, amount_cents=job.held_cents)
+                    job.held_cents = 0
+                    db.session.commit()
                 stats["error"] += 1
                 continue
+
+            def _hb():
+                heartbeat_job(db.session, job)
 
             def _job_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
                 charged = record_actual_usage(
@@ -1405,6 +1440,12 @@ def process_pending_analyze_jobs(
                     cost_eur_cents=debit_cents,
                     description=f"JOB usage realtime {provider}:{model}",
                 )
+                held_now = int(getattr(job, "held_cents", 0) or 0)
+                if held_now > 0:
+                    consumed = consume_hold(
+                        db.session, user, amount_cents=min(debit_cents, held_now)
+                    )
+                    job.held_cents = max(0, held_now - int(consumed or 0))
 
             analysis = run_analysis_pipeline(
                 db_session=db.session,
@@ -1420,8 +1461,17 @@ def process_pending_analyze_jobs(
                 source="job",
                 public_base=PUBLIC_SITE_URL or "https://centropic.ai",
                 usage_callback=_job_usage_cb,
+                max_pages=job.max_pages,
+                heartbeat_callback=_hb,
             )
             complete_job(db.session, job, site_id=getattr(analysis, "id", None))
+            remaining = int(getattr(job, "held_cents", 0) or 0)
+            if remaining:
+                release_hold(db.session, user, amount_cents=remaining)
+            job.held_cents = 0
+            # Analytics event can't use session flash queue in worker —
+            # leave analytics_complete_sent=False for dashboard_job_status.
+            db.session.commit()
             stats["ok"] += 1
         except Exception as exc:
             app.logger.exception("Analyze job %s failed", job.id)
@@ -1430,10 +1480,16 @@ def process_pending_analyze_jobs(
                 failed_job_id = job.id
                 db.session.rollback()
                 job = db.session.get(AnalysisJob, failed_job_id)
+                user = db.session.get(User, user.id) if user is not None else None
             except Exception:
                 app.logger.exception("rollback after job failure failed")
             if job is not None:
                 fail_job(db.session, job, format_job_error(exc))
+                remaining = int(getattr(job, "held_cents", 0) or 0)
+                if remaining and user is not None:
+                    release_hold(db.session, user, amount_cents=remaining)
+                    job.held_cents = 0
+                    db.session.commit()
             stats["error"] += 1
     return stats
 
@@ -1723,6 +1779,22 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
         )
 
     if ASYNC_ANALYZE:
+        required = required_credit_with_grace_cents(est.service_cost_eur_cents)
+        held = 0
+        try:
+            held = hold_credit(
+                db.session,
+                CreditLedger,
+                user,
+                amount_cents=required,
+                description="Riserva analisi",
+            )
+        except InsufficientCreditError:
+            app.logger.info(
+                "Onboarding analyze skipped for user %s: insufficient credit for hold",
+                user.id,
+            )
+            return None
         job = enqueue_analysis(
             db.session,
             AnalysisJob,
@@ -1731,6 +1803,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             max_pages=user.crawl_pages,
             competitor_urls=[],
             run_measured=False,
+            held_cents=held,
         )
         kick_analyze_worker()
         return int(job.id)
@@ -2066,6 +2139,7 @@ def security_txt():
 @app.route("/robots.txt")
 def robots_txt():
     base = public_base_url()
+    ads_line = f"# Ads auth: {base}/ads.txt\n" if ADS_TXT_CONTENT else ""
     body = (
         "User-agent: *\n"
         "Allow: /\n"
@@ -2112,7 +2186,7 @@ def robots_txt():
         "\n"
         f"# AI policy: {base}/ai.txt\n"
         f"# LLMs guide: {base}/llms.txt\n"
-        f"# Ads auth: {base}/ads.txt\n"
+        f"{ads_line}"
         f"# Humans: {base}/humans.txt\n"
         f"# Methodology: {base}/metodologia\n"
         f"Sitemap: {base}/sitemap.xml\n"
@@ -2136,12 +2210,13 @@ def sitemap_xml():
         ("/contatti", "0.7", "monthly"),
         ("/llms.txt", "0.7", "weekly"),
         ("/ai.txt", "0.6", "weekly"),
-        ("/ads.txt", "0.5", "monthly"),
         ("/humans.txt", "0.4", "monthly"),
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
         ("/interesse-pro", "0.5", "monthly"),
     ]
+    if ADS_TXT_CONTENT:
+        pages.insert(12, ("/ads.txt", "0.5", "monthly"))
     today = datetime.now(timezone.utc).date().isoformat()
     urls = []
     for path, priority, freq in pages:
@@ -2551,7 +2626,7 @@ def register():
 
         session.clear()
         session["user_id"] = user.id
-        session.permanent = True
+        session.permanent = False
         signup_params: dict[str, Any] = {
             "method": "email",
             "event_category": "auth",
@@ -3121,6 +3196,27 @@ def dashboard_analyze_confirmed():
         return redirect(url_for("topup_credit_page"))
 
     if ASYNC_ANALYZE:
+        required = required_credit_with_grace_cents(cost_cents)
+        held = 0
+        try:
+            held = hold_credit(
+                db.session,
+                CreditLedger,
+                user,
+                amount_cents=required,
+                description="Riserva analisi",
+            )
+        except InsufficientCreditError:
+            balance = get_balance_cents(user)
+            required_with_grace = required
+            shortage = max(0, required_with_grace - balance)
+            flash(
+                f"Credito insufficiente: hai €{balance/100:.4f}, "
+                f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+                f"Ricarica almeno €{shortage/100:.4f}.",
+                "error",
+            )
+            return redirect(url_for("topup_credit_page"))
         job = enqueue_analysis(
             db.session,
             AnalysisJob,
@@ -3129,20 +3225,9 @@ def dashboard_analyze_confirmed():
             max_pages=user.crawl_pages,
             competitor_urls=competitor_urls[:3],
             run_measured=run_meas,
+            held_cents=held,
         )
-        db.session.commit()
         kick_analyze_worker()
-        analyze_params: dict[str, Any] = {
-            "event_category": "analysis",
-            "mode": "async",
-            "measured": bool(run_meas),
-            "value": round(cost_cents / 100, 4),
-            "currency": "EUR",
-        }
-        send_to = _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL)
-        if send_to:
-            analyze_params["send_to"] = send_to
-        queue_analytics_event("analyze_complete", analyze_params)
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
 
@@ -3165,20 +3250,6 @@ def dashboard_analyze_confirmed():
 
         pages_n = int(latest.pages_analyzed or 1)
         new_balance = get_balance_cents(user)
-        analyze_params = {
-            "event_category": "analysis",
-            "mode": "sync",
-            "measured": bool(run_meas),
-            "pages": pages_n,
-            "aio_score": latest.aio_score,
-            "geo_score": latest.geo_score,
-            "value": round(cost_cents / 100, 4),
-            "currency": "EUR",
-        }
-        send_to = _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL)
-        if send_to:
-            analyze_params["send_to"] = send_to
-        queue_analytics_event("analyze_complete", analyze_params)
         flash(
             f"Analisi completata su {pages_n} pagine — score, findings e pack pronti. "
             f"Credito residuo: €{new_balance/100:.4f}.",
@@ -3418,34 +3489,37 @@ def dashboard_job_status(job_id: int):
     job = AnalysisJob.query.filter_by(id=job_id, user_id=user.id).first()
     if job is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
-    return jsonify(
-        {
-            "ok": True,
-            "id": job.id,
-            "status": job.status,
-            "url": job.url,
-            "error": job.error,
-            "error_info": classify_analyze_error(job.error) if job.error else None,
-            "site_id": job.site_id,
-            "phase": (
-                "in_coda"
-                if job.status == "pending"
-                else "in_esecuzione"
-                if job.status == "running"
-                else job.status
-            ),
-            "hint": (
-                "In coda: il worker sta per partire."
-                if job.status == "pending"
-                else "Crawl e scoring in corso — di solito 30–90 secondi."
-                if job.status == "running"
-                else None
-            ),
-            "created_at": job.created_at.isoformat() if job.created_at else None,
-            "started_at": job.started_at.isoformat() if job.started_at else None,
-            "finished_at": job.finished_at.isoformat() if job.finished_at else None,
-        }
-    )
+    payload: dict[str, Any] = {
+        "ok": True,
+        "id": job.id,
+        "status": job.status,
+        "url": job.url,
+        "error": job.error,
+        "error_info": classify_analyze_error(job.error) if job.error else None,
+        "site_id": job.site_id,
+        "phase": (
+            "in_coda"
+            if job.status == "pending"
+            else "in_esecuzione"
+            if job.status == "running"
+            else job.status
+        ),
+        "hint": (
+            "In coda: il worker sta per partire."
+            if job.status == "pending"
+            else "Crawl e scoring in corso — di solito 30–90 secondi."
+            if job.status == "running"
+            else None
+        ),
+        "created_at": job.created_at.isoformat() if job.created_at else None,
+        "started_at": job.started_at.isoformat() if job.started_at else None,
+        "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+    }
+    if job.status == "done" and not bool(getattr(job, "analytics_complete_sent", False)):
+        job.analytics_complete_sent = True
+        db.session.commit()
+        payload["emit_analyze_complete"] = True
+    return jsonify(payload)
 
 
 @app.route("/dashboard/guida")
