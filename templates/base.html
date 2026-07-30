@@ -244,6 +244,22 @@
     {% endif %}
     <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
+    {% if paddle_overlay and paddle_config and paddle_config.clientToken %}
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script>
+      window.__CENTROPIC_PADDLE__ = Object.assign(
+        {},
+        {{ paddle_config|tojson }},
+        {
+          userId: {{ (current_user.id if current_user else none)|tojson }},
+          email: {{ (current_user.email if current_user else none)|tojson }},
+          successPlus: {{ url_for('billing_success', _external=True)|tojson }},
+          successTopup: {{ url_for('topup_success', _external=True)|tojson }}
+        }
+      );
+    </script>
+    <script src="{{ url_for('static', filename='js/paddle-checkout.js') }}" defer></script>
+    {% endif %}
 
     <script>
       async function copyFrom(id, btn) {

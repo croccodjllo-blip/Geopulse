@@ -85,8 +85,25 @@ from services.billing import (
     construct_event as stripe_construct_event,
     create_checkout_session,
     create_portal_session,
+    payments_enabled,
+    payments_provider,
     plan_from_subscription_status,
     stripe_enabled,
+)
+from services.paddle_billing import (
+    client_config as paddle_client_config,
+    create_plus_checkout as paddle_create_plus_checkout,
+    create_topup_checkout as paddle_create_topup_checkout,
+    extract_user_id as paddle_extract_user_id,
+    paddle_enabled,
+    paddle_overlay_ready,
+    paddle_topup_price_id,
+    paddle_topups_enabled,
+    parse_webhook_event as paddle_parse_webhook_event,
+    plan_from_paddle_subscription_status,
+    transaction_gross_cents,
+    transaction_is_subscription,
+    verify_webhook_signature as paddle_verify_webhook_signature,
 )
 from services.usage_billing import (
     check_page_word_budget,
@@ -415,6 +432,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     stripe_customer_id = db.Column(db.String(120))
     stripe_subscription_id = db.Column(db.String(120))
+    paddle_customer_id = db.Column(db.String(120))
+    paddle_subscription_id = db.Column(db.String(120))
     reset_token_hash = db.Column(db.String(64))
     reset_token_expires = db.Column(db.DateTime)
     # GEO suite settings
@@ -1247,7 +1266,12 @@ def inject_globals() -> dict[str, Any]:
         "canonical_base": base,
         "canonical_url": canonical,
         "admin_email": ADMIN_EMAIL,
-        "stripe_ready": stripe_enabled(),
+        "stripe_ready": payments_enabled(),
+        "paddle_ready": paddle_enabled(),
+        "payments_ready": payments_enabled(),
+        "payments_provider": payments_provider(),
+        "paddle_overlay": paddle_overlay_ready(),
+        "paddle_config": paddle_client_config(),
         "ga4_measurement_id": GA4_MEASUREMENT_ID,
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
@@ -1342,6 +1366,8 @@ def ensure_schema() -> None:
             "plan": "TEXT DEFAULT 'free'",
             "stripe_customer_id": "TEXT",
             "stripe_subscription_id": "TEXT",
+            "paddle_customer_id": "TEXT",
+            "paddle_subscription_id": "TEXT",
             "reset_token_hash": "TEXT",
             "reset_token_expires": "DATETIME",
             "alert_email_enabled": "BOOLEAN DEFAULT 1",
@@ -1785,7 +1811,7 @@ def quota_block_response(
     code: str = "quota_exceeded",
 ) -> Any:
     """HTTP 423 (JSON) oppure redirect a /prezzi (HTML)."""
-    upgrade = url_for("pro_interest") if not stripe_enabled() else url_for("pricing")
+    upgrade = url_for("pro_interest") if not payments_enabled() else url_for("pricing")
     if wants_json_response():
         return (
             jsonify(
@@ -2023,6 +2049,9 @@ def health():
                 ),
                 "citation_monitor": citation_monitor_available(),
                 "stripe": stripe_enabled(),
+                "paddle": paddle_enabled(),
+                "payments": payments_enabled(),
+                "payments_provider": payments_provider(),
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
@@ -2487,7 +2516,13 @@ def product():
 
 @app.route("/prezzi")
 def pricing():
-    return render_template("pricing.html", stripe_ready=stripe_enabled())
+    return render_template(
+        "pricing.html",
+        stripe_ready=payments_enabled(),
+        payments_ready=payments_enabled(),
+        payments_provider=payments_provider(),
+        paddle_overlay=paddle_overlay_ready(),
+    )
 
 
 @app.route("/billing/checkout", methods=["POST"])
@@ -2497,12 +2532,42 @@ def billing_checkout():
     if not limiter.allow(f"billing-checkout:{user.id}", limit=10, window_seconds=3600):
         flash("Troppe richieste di checkout. Riprova tra poco.", "warning")
         return redirect(url_for("pricing"))
-    if not stripe_enabled():
+    if not payments_enabled():
         flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
         return redirect(url_for("pro_interest"))
     if user.is_pro and not user.is_admin:
         flash("Hai già un piano Plus attivo.", "success")
         return redirect(url_for("dashboard"))
+
+    provider = payments_provider()
+    if provider == "paddle":
+        # Overlay is preferred; server transaction is the fallback when only API key is set.
+        if paddle_overlay_ready() and request.form.get("overlay") == "1":
+            return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
+        try:
+            tx = paddle_create_plus_checkout(
+                user_id=user.id,
+                email=user.email,
+                customer_id=getattr(user, "paddle_customer_id", None),
+                success_url=absolute_url("billing_success"),
+            )
+            if tx.get("customer_id") and not getattr(user, "paddle_customer_id", None):
+                user.paddle_customer_id = str(tx["customer_id"])
+                db.session.commit()
+            url = tx.get("url")
+            if not url:
+                flash(
+                    "Checkout Paddle creato ma senza URL. Verifica Default payment link "
+                    "nel dashboard Paddle.",
+                    "error",
+                )
+                return redirect(url_for("pricing"))
+            return redirect(url)
+        except Exception:
+            app.logger.exception("Paddle Plus checkout failed")
+            flash("Impossibile avviare il checkout Paddle. Riprova o contattaci.", "error")
+            return redirect(url_for("pricing"))
+
     try:
         session_data = create_checkout_session(
             user_id=user.id,
@@ -2527,6 +2592,13 @@ def billing_checkout():
 @login_required
 def billing_portal():
     user = current_user()
+    if payments_provider() == "paddle":
+        flash(
+            "Per gestire l’abbonamento Plus usa il link nella ricevuta Paddle "
+            "o scrivi a info@centropic.ai.",
+            "info",
+        )
+        return redirect(url_for("dashboard"))
     if not stripe_enabled() or not user.stripe_customer_id:
         flash("Portale abbonamento non disponibile.", "warning")
         return redirect(url_for("pricing"))
@@ -2550,6 +2622,135 @@ def billing_success():
         "success",
     )
     return redirect(url_for("dashboard"))
+
+
+@app.route("/billing/paddle-webhook", methods=["POST"])
+@csrf.exempt
+def billing_paddle_webhook():
+    """Paddle Billing notifications: Plus activation + credit top-ups."""
+    payload = request.get_data()
+    sig = request.headers.get("Paddle-Signature", "")
+    if not paddle_verify_webhook_signature(payload, sig):
+        app.logger.warning("Paddle webhook signature reject")
+        return jsonify({"ok": False}), 400
+    try:
+        event = paddle_parse_webhook_event(payload)
+    except Exception as exc:
+        app.logger.warning("Paddle webhook parse failed: %s", exc)
+        return jsonify({"ok": False}), 400
+
+    etype = (event.get("event_type") or event.get("eventType") or "").strip()
+    data = event.get("data") or {}
+
+    def _user_from_paddle(obj: dict) -> User | None:
+        uid = paddle_extract_user_id(obj.get("custom_data"))
+        if uid:
+            return db.session.get(User, uid)
+        cust = obj.get("customer_id") or (obj.get("customer") or {}).get("id")
+        if cust:
+            return User.query.filter_by(paddle_customer_id=str(cust)).first()
+        sub = obj.get("subscription_id") or obj.get("id")
+        if sub and etype.startswith("subscription."):
+            return User.query.filter_by(paddle_subscription_id=str(sub)).first()
+        return None
+
+    try:
+        if etype in {
+            "subscription.activated",
+            "subscription.created",
+            "subscription.trialing",
+            "subscription.updated",
+            "subscription.canceled",
+            "subscription.past_due",
+            "subscription.paused",
+        }:
+            user = _user_from_paddle(data)
+            if user is None and data.get("customer_id"):
+                user = User.query.filter_by(
+                    paddle_customer_id=str(data.get("customer_id"))
+                ).first()
+            if user is not None and (user.plan or "").lower() != "admin":
+                if data.get("customer_id"):
+                    user.paddle_customer_id = str(data.get("customer_id"))
+                sub_id = data.get("id")
+                if sub_id:
+                    user.paddle_subscription_id = str(sub_id)
+                user.plan = plan_from_paddle_subscription_status(data.get("status"))
+                db.session.commit()
+
+        elif etype in {"transaction.completed", "transaction.paid"}:
+            status = (data.get("status") or "").lower()
+            if status and status not in {"completed", "paid", "billed"}:
+                return jsonify({"ok": True, "ignored": status})
+
+            custom = data.get("custom_data") or {}
+            product = str(custom.get("product") or "").lower()
+            is_sub = transaction_is_subscription(data) or product == "plus"
+            user = _user_from_paddle(data)
+
+            if is_sub and product != "topup":
+                if user is not None and (user.plan or "").lower() != "admin":
+                    if data.get("customer_id"):
+                        user.paddle_customer_id = str(data.get("customer_id"))
+                    sub = data.get("subscription_id")
+                    if sub:
+                        user.paddle_subscription_id = str(sub)
+                    user.plan = "plus"
+                    db.session.commit()
+                return jsonify({"ok": True})
+
+            # One-time credit top-up
+            if product != "topup" and not custom.get("topup_cents"):
+                return jsonify({"ok": True, "ignored": "not_topup"})
+
+            allowed = {pkg["cents"] for pkg in _TOPUP_PACKAGES}
+            meta_cents = 0
+            try:
+                meta_cents = int(custom.get("topup_cents") or 0)
+            except (TypeError, ValueError):
+                meta_cents = 0
+            gross = transaction_gross_cents(data)
+            topup_cents = meta_cents if meta_cents in allowed else 0
+            if topup_cents == 0 and gross in allowed:
+                topup_cents = int(gross)
+            # Prefer matching settled amount when both present.
+            if meta_cents in allowed and gross in allowed and meta_cents != gross:
+                app.logger.warning(
+                    "Paddle top-up amount mismatch meta=%s gross=%s", meta_cents, gross
+                )
+                topup_cents = int(gross)
+
+            txn_id = str(data.get("id") or "").strip()
+            if not txn_id:
+                return jsonify({"ok": False, "error": "missing_txn"}), 400
+            pi = f"paddle:{txn_id}"
+            if not user:
+                return jsonify({"ok": True, "ignored": "no_user"})
+            if topup_cents <= 0:
+                return jsonify({"ok": True, "ignored": "bad_amount"})
+            already = CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
+            if already is not None:
+                return jsonify({"ok": True, "duplicate": True})
+            try:
+                topup_credit(
+                    db.session,
+                    CreditLedger,
+                    user,
+                    amount_eur_cents=topup_cents,
+                    description=f"Ricarica €{topup_cents/100:.2f} via Paddle",
+                    stripe_payment_intent=pi,
+                )
+                if data.get("customer_id"):
+                    user.paddle_customer_id = str(data.get("customer_id"))
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                return jsonify({"ok": True, "duplicate": True})
+    except Exception:
+        app.logger.exception("Paddle webhook handler failed")
+        return jsonify({"ok": False}), 500
+
+    return jsonify({"ok": True})
 
 
 @app.route("/billing/webhook", methods=["POST"])
@@ -3286,7 +3487,9 @@ def dashboard():
         user_plan=user.plan_label,
         is_pro=user.is_pro,
         pending_job=pending_job,
-        stripe_ready=stripe_enabled(),
+        stripe_ready=payments_enabled(),
+        payments_ready=payments_enabled(),
+        payments_provider=payments_provider(),
     )
 
 
@@ -3521,7 +3724,7 @@ def topup_credit_page():
 @app.route("/crediti/checkout", methods=["POST"])
 @login_required
 def topup_stripe_checkout():
-    """Create a Stripe Payment Intent / Checkout session for a credit top-up."""
+    """Create a payment checkout for a credit top-up (Paddle preferred, Stripe fallback)."""
     user = current_user()
     if not limiter.allow(f"topup-checkout:{user.id}", limit=10, window_seconds=3600):
         flash("Troppe richieste di ricarica. Riprova tra poco.", "warning")
@@ -3530,6 +3733,34 @@ def topup_stripe_checkout():
     if amount_cents not in {pkg["cents"] for pkg in _TOPUP_PACKAGES}:
         flash("Importo non valido.", "error")
         return redirect(url_for("topup_credit_page"))
+
+    provider = payments_provider()
+    if provider == "paddle" and paddle_topup_price_id(amount_cents):
+        if paddle_overlay_ready() and request.form.get("overlay") == "1":
+            return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
+        try:
+            tx = paddle_create_topup_checkout(
+                user_id=user.id,
+                email=user.email,
+                amount_cents=amount_cents,
+                customer_id=getattr(user, "paddle_customer_id", None),
+                success_url=absolute_url("topup_success"),
+            )
+            if tx.get("customer_id") and not getattr(user, "paddle_customer_id", None):
+                user.paddle_customer_id = str(tx["customer_id"])
+                db.session.commit()
+            url = tx.get("url")
+            if not url:
+                flash(
+                    "Checkout Paddle creato ma senza URL. Verifica Default payment link.",
+                    "error",
+                )
+                return redirect(url_for("topup_credit_page"))
+            return redirect(url)
+        except Exception:
+            app.logger.exception("Paddle topup checkout failed")
+            flash("Errore durante la creazione del pagamento Paddle. Riprova.", "error")
+            return redirect(url_for("topup_credit_page"))
 
     if not stripe_enabled():
         # Dev fallback: add credits directly only when FLASK_DEBUG=1
@@ -3544,7 +3775,14 @@ def topup_stripe_checkout():
             db.session.commit()
             flash(f"[DEBUG] Credito di €{amount_cents/100:.2f} aggiunto.", "success")
             return redirect(url_for("topup_credit_page"))
-        flash("Pagamenti non ancora attivi. Contattaci a info@centropic.ai.", "warning")
+        if provider == "paddle":
+            flash(
+                "Pacchetto non configurato su Paddle. Imposta PADDLE_PRICE_TOPUP_* "
+                "o contattaci a info@centropic.ai.",
+                "warning",
+            )
+        else:
+            flash("Pagamenti non ancora attivi. Contattaci a info@centropic.ai.", "warning")
         return redirect(url_for("topup_credit_page"))
 
     try:

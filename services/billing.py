@@ -20,6 +20,27 @@ def stripe_enabled() -> bool:
     return bool(STRIPE_SECRET_KEY and STRIPE_PRICE_PLUS)
 
 
+def payments_provider() -> str:
+    """Active checkout provider: paddle | stripe | none.
+
+    Paddle is preferred when configured (merchant-of-record for EU SaaS).
+    """
+    try:
+        from services.paddle_billing import paddle_enabled
+
+        if paddle_enabled():
+            return "paddle"
+    except Exception:
+        logger.debug("paddle_enabled check failed", exc_info=True)
+    if stripe_enabled():
+        return "stripe"
+    return "none"
+
+
+def payments_enabled() -> bool:
+    return payments_provider() != "none"
+
+
 def _client():
     if not STRIPE_SECRET_KEY:
         raise RuntimeError("STRIPE_SECRET_KEY non configurata")

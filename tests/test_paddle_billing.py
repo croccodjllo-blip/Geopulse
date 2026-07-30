@@ -1,0 +1,73 @@
+"""Paddle billing helpers and webhook signature."""
+
+from __future__ import annotations
+
+import hashlib
+import hmac
+import json
+import time
+
+from services import paddle_billing as pb
+from services.billing import payments_enabled, payments_provider, stripe_enabled
+
+
+def test_verify_webhook_signature_ok(monkeypatch):
+    secret = "pdl_ntfsec_test"
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", secret)
+    # Reload module constants would need re-import; pass secret explicitly.
+    body = json.dumps({"event_type": "transaction.completed", "data": {"id": "txn_1"}})
+    ts = str(int(time.time()))
+    signed = f"{ts}:{body}".encode("utf-8")
+    h1 = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+    header = f"ts={ts};h1={h1}"
+    assert pb.verify_webhook_signature(body.encode("utf-8"), header, secret=secret)
+
+
+def test_verify_webhook_signature_bad(monkeypatch):
+    body = b'{"event_type":"x"}'
+    assert not pb.verify_webhook_signature(
+        body, "ts=1;h1=deadbeef", secret="secret"
+    )
+
+
+def test_extract_user_id():
+    assert pb.extract_user_id({"centropic_user_id": "42"}) == 42
+    assert pb.extract_user_id({"geopulse_user_id": "7"}) == 7
+    assert pb.extract_user_id({}) is None
+
+
+def test_plan_from_paddle_status():
+    assert pb.plan_from_paddle_subscription_status("active") == "plus"
+    assert pb.plan_from_paddle_subscription_status("canceled") == "free"
+
+
+def test_payments_provider_prefers_paddle(monkeypatch):
+    monkeypatch.setenv("PADDLE_PRICE_PLUS_MONTHLY", "pri_plus")
+    monkeypatch.setenv("PADDLE_CLIENT_TOKEN", "test_token")
+    monkeypatch.delenv("STRIPE_SECRET_KEY", raising=False)
+    monkeypatch.delenv("STRIPE_PRICE_PLUS_MONTHLY", raising=False)
+    # Re-bind module-level constants used by paddle_enabled
+    monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus")
+    monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
+    monkeypatch.setattr(pb, "PADDLE_API_KEY", "")
+    assert pb.paddle_enabled()
+    assert payments_provider() == "paddle"
+    assert payments_enabled()
+
+
+def test_client_config_shape(monkeypatch):
+    monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus")
+    monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
+    monkeypatch.setattr(pb, "PADDLE_API_KEY", "")
+    monkeypatch.setattr(pb, "PADDLE_ENV", "sandbox")
+    cfg = pb.client_config()
+    assert cfg["enabled"] is True
+    assert cfg["overlay"] is True
+    assert cfg["environment"] == "sandbox"
+    assert cfg["pricePlus"] == "pri_plus"
+
+
+def test_topup_price_map(monkeypatch):
+    monkeypatch.setenv("PADDLE_PRICE_TOPUP_500", "pri_500")
+    assert pb.paddle_topup_price_id(500) == "pri_500"
+    assert pb.paddle_topup_price_id(123) is None

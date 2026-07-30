@@ -5,7 +5,7 @@
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">{{ _('Prezzi · aggiornato') }} <time datetime="2026-07-27">27/07/2026</time></p>
+    <p class="eyebrow">{{ _('Prezzi · aggiornato') }} <time datetime="2026-07-30">30/07/2026</time></p>
     <h1 class="h-display page-intro__title">{{ _('Semplici. Scalabili.') }}</h1>
     <p class="lede page-intro__lede">
       {{ _('Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor (SoV measured), alert, re-scan e export. Prodotto di') }}
@@ -30,7 +30,7 @@
 
     <section class="plan plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
-      {% if stripe_ready %}
+      {% if payments_ready or stripe_ready %}
       <p class="plan__price">{{ _('Abbonamento') }}<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Prezzo mostrato al checkout. Per team che ottimizzano più brand in continuo.') }}</p>
       {% else %}
@@ -46,12 +46,24 @@
         <li>{{ _('API + export CSV/ZIP + white-label') }}</li>
         <li>{{ _('Storico run avanzato') }}</li>
       </ul>
-      {% if stripe_ready and current_user %}
-      <form method="post" action="{{ url_for('billing_checkout') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
-      </form>
-      {% elif stripe_ready %}
+      {% if (payments_ready or stripe_ready) and current_user %}
+        {% if paddle_overlay %}
+        <button type="button" class="btn btn-primary btn-block" data-paddle-checkout="plus">
+          {{ _('Passa a Plus') }}
+        </button>
+        <noscript>
+          <form method="post" action="{{ url_for('billing_checkout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
+          </form>
+        </noscript>
+        {% else %}
+        <form method="post" action="{{ url_for('billing_checkout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
+        </form>
+        {% endif %}
+      {% elif payments_ready or stripe_ready %}
       <a class="btn btn-primary btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
       {% else %}
       <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
@@ -60,7 +72,8 @@
   </div>
 
   <p class="plan-note">
-    {{ _('Aggiornato il') }} <time datetime="2026-07-27">27/07/2026</time>.
+    {{ _('Aggiornato il') }} <time datetime="2026-07-30">30/07/2026</time>.
+    {{ _('Pagamenti gestiti da') }} {% if payments_provider == 'paddle' %}Paddle{% elif payments_provider == 'stripe' %}Stripe{% else %}—{% endif %}.
     {{ _('Domande?') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
     · <a href="{{ url_for('faq') }}">{{ _('FAQ') }}</a>
     · <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>

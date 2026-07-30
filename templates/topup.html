@@ -59,11 +59,24 @@
       <form method="POST" action="{{ url_for('topup_stripe_checkout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="amount_cents" value="{{ pkg.cents }}">
+        {% if paddle_overlay and paddle_config.topupPrices and paddle_config.topupPrices[pkg.cents|string] %}
+        <button
+          class="topup-btn"
+          type="button"
+          data-paddle-checkout="topup"
+          data-paddle-cents="{{ pkg.cents }}"
+        >
+          <span class="topup-btn__amount">€&nbsp;{{ "%.2f"|format(pkg.cents / 100) }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }}</span>
+          <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
+        </button>
+        {% else %}
         <button class="topup-btn" type="submit">
           <span class="topup-btn__amount">€&nbsp;{{ "%.2f"|format(pkg.cents / 100) }}</span>
           <span class="topup-btn__desc">{{ pkg.label }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
+        {% endif %}
       </form>
       {% endfor %}
     </div>
