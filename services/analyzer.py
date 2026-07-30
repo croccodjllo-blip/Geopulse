@@ -982,22 +982,64 @@ def score_site(
     findings.extend(aux["findings"])
 
     if crawled > 1:
-        avg_aio = sum(p["aio_score"] for p in pages) / crawled
-        avg_geo = sum(p["geo_score"] for p in pages) / crawled
-        aio = aio * 0.55 + avg_aio * 0.45
-        geo = geo * 0.55 + avg_geo * 0.45
+        # Failed/off-domain crawl pages keep aio_score/geo_score=None — never
+        # feed them into sum() (TypeError: int + NoneType) or `< 55` compares.
+        scored_aio = [
+            float(p["aio_score"])
+            for p in pages
+            if p.get("aio_score") is not None
+        ]
+        scored_geo = [
+            float(p["geo_score"])
+            for p in pages
+            if p.get("geo_score") is not None
+        ]
+        avg_aio = sum(scored_aio) / len(scored_aio) if scored_aio else None
+        avg_geo = sum(scored_geo) / len(scored_geo) if scored_geo else None
+        if avg_aio is not None:
+            aio = aio * 0.55 + avg_aio * 0.45
+        if avg_geo is not None:
+            geo = geo * 0.55 + avg_geo * 0.45
 
-        weak = [p for p in pages if p["aio_score"] < 55 or p["geo_score"] < 55]
+        def _below_threshold(page: dict[str, Any], key: str) -> bool:
+            val = page.get(key)
+            return val is not None and float(val) < 55
+
+        weak = [
+            p
+            for p in pages
+            if _below_threshold(p, "aio_score") or _below_threshold(p, "geo_score")
+        ]
+        fetch_failed = sum(
+            1
+            for p in pages
+            if "crawl_fetch_failed" in (p.get("issues") or [])
+            or "off_domain_redirect" in (p.get("issues") or [])
+        )
         missing_title = sum(1 for p in pages if "title" in p.get("issues", []))
         missing_h1 = sum(1 for p in pages if "h1" in p.get("issues", []))
         with_jsonld = sum(1 for p in pages if "json_ld" not in p.get("issues", []))
 
+        if avg_aio is not None and avg_geo is not None:
+            media = f"Media pagine AIO {avg_aio:.0f} / GEO {avg_geo:.0f}."
+        else:
+            media = (
+                f"{len(scored_aio)}/{crawled} pagine con score "
+                f"(altre non raggiungibili o fuori dominio)."
+            )
         push(
             "crawl",
             "ok",
             f"Crawl dominio: {crawled} pagine",
-            f"Media pagine AIO {avg_aio:.0f} / GEO {avg_geo:.0f}.",
+            media,
         )
+        if fetch_failed:
+            push(
+                "crawl",
+                "warn" if fetch_failed < crawled / 2 else "critical",
+                "Pagine non scorabili nel crawl",
+                f"{fetch_failed}/{crawled} URL fallite o redirect fuori dominio.",
+            )
         if missing_title:
             push(
                 "crawl",
