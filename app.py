@@ -119,7 +119,7 @@ from services.jobs import (
 )
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
-from services.security import safe_next_url
+from services.security import safe_next_url, safe_same_origin_url
 from services.i18n import (
     DEFAULT_LOCALE,
     LANG_COOKIE,
@@ -414,6 +414,8 @@ class User(db.Model):
     # Usage-based billing: prepaid credit balance in EUR cents (integer)
     credit_balance_cents = db.Column(db.Integer, nullable=False, default=0)
     credit_held_cents = db.Column(db.Integer, nullable=False, default=0)
+    # Bumped on password change / reset to invalidate other browser sessions.
+    session_version = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -423,6 +425,7 @@ class User(db.Model):
 
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
+        self.session_version = int(getattr(self, "session_version", 0) or 0) + 1
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
@@ -1005,7 +1008,8 @@ class AgencyBrandForm(FlaskForm):
 def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
-        if not session.get("user_id"):
+        user = current_user()
+        if user is None:
             flash("Accedi per continuare.", "warning")
             return redirect(url_for("login", next=request.path))
         return view(*args, **kwargs)
@@ -1050,7 +1054,25 @@ def current_user() -> User | None:
     user_id = session.get("user_id")
     if not user_id:
         return None
-    return db.session.get(User, user_id)
+    user = db.session.get(User, user_id)
+    if user is None:
+        session.clear()
+        return None
+    # Invalidate stale sessions after password reset/change.
+    expected = int(getattr(user, "session_version", 0) or 0)
+    got = session.get("session_version")
+    if got is None or int(got) != expected:
+        session.clear()
+        return None
+    return user
+
+
+def _establish_session(user: User, *, permanent: bool = True) -> None:
+    """Create a fresh authenticated session bound to the user's session_version."""
+    session.clear()
+    session["user_id"] = user.id
+    session["session_version"] = int(getattr(user, "session_version", 0) or 0)
+    session.permanent = permanent
 
 
 def ensure_admin_user() -> User | None:
@@ -1248,6 +1270,7 @@ def ensure_schema() -> None:
             "agency_brand_json": "TEXT DEFAULT ''",
             "credit_balance_cents": "INTEGER DEFAULT 0",
             "credit_held_cents": "INTEGER DEFAULT 0",
+            "session_version": "INTEGER DEFAULT 0",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -2335,11 +2358,7 @@ def set_language(code: str):
     session["lang"] = loc
     nxt = safe_next_url(request.args.get("next") or request.form.get("next"), fallback="")
     if not nxt:
-        ref = request.referrer or ""
-        if ref.startswith(public_base_url()) or ref.startswith(request.host_url):
-            nxt = ref
-        else:
-            nxt = url_for("index")
+        nxt = safe_same_origin_url(request.referrer, request) or url_for("index")
     resp = make_response(redirect(nxt))
     resp.set_cookie(
         LANG_COOKIE,
@@ -2593,7 +2612,7 @@ def faq():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if session.get("user_id"):
+    if current_user() is not None:
         return redirect(url_for("dashboard"))
 
     form = RegisterForm()
@@ -2655,9 +2674,7 @@ def register():
             flash(str(exc), "error")
             return render_template("register.html", form=form)
 
-        session.clear()
-        session["user_id"] = user.id
-        session.permanent = False
+        _establish_session(user, permanent=False)
         signup_params: dict[str, Any] = {
             "method": "email",
             "event_category": "auth",
@@ -2697,7 +2714,7 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if session.get("user_id"):
+    if current_user() is not None:
         return redirect(url_for("dashboard"))
 
     form = LoginForm()
@@ -2706,14 +2723,15 @@ def login():
             flash("Troppi tentativi di accesso. Attendi qualche minuto.", "error")
             return render_template("login.html", form=form)
         email = form.email.data.strip().lower()
+        if not limiter.allow(f"login:email:{email}", limit=10, window_seconds=900):
+            flash("Troppi tentativi di accesso. Attendi qualche minuto.", "error")
+            return render_template("login.html", form=form)
         user = User.query.filter_by(email=email).first()
         if user is None or not user.check_password(form.password.data):
             flash("Credenziali non valide.", "error")
         else:
-            session.clear()
-            session["user_id"] = user.id
             # Persistent cookie only when the user opts into "Resta connesso".
-            session.permanent = bool(form.remember_me.data)
+            _establish_session(user, permanent=bool(form.remember_me.data))
             flash("Accesso effettuato.", "success")
             next_url = safe_next_url(request.args.get("next"), fallback="")
             if next_url:
@@ -2725,7 +2743,7 @@ def login():
 
 @app.route("/recupero-password", methods=["GET", "POST"])
 def forgot_password():
-    if session.get("user_id"):
+    if current_user() is not None:
         return redirect(url_for("dashboard"))
 
     form = ForgotPasswordForm()
@@ -2787,7 +2805,7 @@ def forgot_password():
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token: str):
-    if session.get("user_id"):
+    if current_user() is not None:
         return redirect(url_for("dashboard"))
 
     token = (token or "").strip()
@@ -3490,6 +3508,10 @@ def billing_topup_webhook():
 
 # ── Admin: top-up crediti manuale ──────────────────────────────────────────
 
+# Allowlisted admin top-up amounts (must match admin.html select options).
+ADMIN_TOPUP_AMOUNTS_CENTS = frozenset({1000, 5000, 10000})
+
+
 @app.route("/admin/topup/<int:user_id>", methods=["POST"])
 @admin_required
 def admin_topup_user(user_id: int):
@@ -3497,9 +3519,12 @@ def admin_topup_user(user_id: int):
     if not u:
         flash("Utente non trovato.", "error")
         return redirect(url_for("admin_home"))
-    amount = int(request.form.get("amount_cents") or 0)
-    if amount <= 0:
-        flash("Importo non valido.", "error")
+    try:
+        amount = int(request.form.get("amount_cents") or 0)
+    except (TypeError, ValueError):
+        amount = 0
+    if amount not in ADMIN_TOPUP_AMOUNTS_CENTS:
+        flash("Importo non consentito.", "error")
         return redirect(url_for("admin_home"))
     topup_credit(
         db.session,
@@ -3839,6 +3864,47 @@ def api_v1_analyze():
             "required_credit_eur": round(required_with_grace / 100, 4),
         }), 402
 
+    required_hold = required_credit_with_grace_cents(api_cost.service_cost_eur_cents)
+    try:
+        api_held = hold_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_cents=required_hold,
+            description="Riserva API analyze",
+        )
+        db.session.commit()
+    except InsufficientCreditError:
+        db.session.rollback()
+        required_with_grace = required_hold
+        return jsonify({
+            "ok": False,
+            "error": "insufficient_credit",
+            "message": (
+                f"Credito insufficiente: hai €{get_balance_cents(user)/100:.4f}, "
+                f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+                "Ricarica su https://centropic.ai/crediti"
+            ),
+            "cost_estimate": api_cost.as_dict(),
+            "required_credit_eur": round(required_with_grace / 100, 4),
+        }), 402
+
+    # Track remaining hold across usage callbacks; on rollback restore full api_held.
+    hold_state = {"remaining": int(api_held or 0), "released": False}
+
+    def _release_api_hold(amount: int) -> None:
+        if hold_state["released"] or amount <= 0:
+            return
+        try:
+            db.session.refresh(user)
+            release_hold(db.session, user, amount_cents=amount)
+            db.session.commit()
+            hold_state["released"] = True
+            hold_state["remaining"] = 0
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("api analyze: failed to release credit hold")
+
     def _api_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
         charged = record_actual_usage(
             db.session,
@@ -3861,7 +3927,14 @@ def api_v1_analyze():
             cost_eur_cents=debit_cents,
             description=f"API usage realtime {provider}:{model}",
         )
+        held_now = int(hold_state["remaining"] or 0)
+        if held_now > 0:
+            consumed = consume_hold(
+                db.session, user, amount_cents=min(debit_cents, held_now)
+            )
+            hold_state["remaining"] = max(0, held_now - int(consumed or 0))
 
+    analysis = None
     try:
         analysis = run_analysis_pipeline(
             db_session=db.session,
@@ -3880,9 +3953,20 @@ def api_v1_analyze():
         )
         db.session.commit()
     except InsufficientCreditError as exc:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        # Rollback restores the full hold — release the original reservation.
+        _release_api_hold(int(api_held or 0))
         return jsonify({"ok": False, "error": "insufficient_credit", "message": str(exc)}), 402
     except Exception as exc:
         app.logger.exception("api analyze failed")
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        _release_api_hold(int(api_held or 0))
         info = classify_analyze_error(exc)
         return (
             jsonify(
@@ -3896,6 +3980,10 @@ def api_v1_analyze():
             ),
             502,
         )
+
+    # Success: release unused remainder of the hold.
+    _release_api_hold(int(hold_state["remaining"] or 0))
+
     return jsonify(
         {
             "ok": True,
