@@ -64,15 +64,15 @@ Source of truth: `services/entitlements.py`.
 
 **Perché prima:** senza monetizzazione e brand coerente il resto non è un “servizio”, è un prototipo.
 
-### 0.1 Monetizzazione Stripe live
-- [ ] Configurare `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_PRICE_PLUS`, `STRIPE_WEBHOOK_SECRET` in produzione
-- [ ] Verificare webhook → `plan=plus` (e downgrade su cancel)
-- [ ] CTA Checkout su `/prezzi` (togliere “In arrivo” quando `stripe_enabled()`)
-- [ ] Customer Portal raggiungibile da dashboard/settings
-- [ ] Test fixture webhook (checkout.session.completed, customer.subscription.deleted)
-- [ ] Allineare metadata billing a `centropic_user_id` (tenere alias `geopulse_user_id` in lettura)
+### 0.1 Monetizzazione Paddle (preferito) + Stripe fallback
+- [x] Integrazione codice Paddle Billing (overlay + webhook + top-up) — branch `cursor/paddle-payments-d537`
+- [ ] Creare account Paddle (sandbox → live), default payment link = `centropic.ai`
+- [ ] Impostare in produzione: `PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_PRICE_PLUS_MONTHLY`, `PADDLE_PRICE_TOPUP_*`
+- [ ] Notification destination: `https://centropic.ai/billing/paddle-webhook` (`subscription.*`, `transaction.completed`, `transaction.paid`)
+- [ ] (Opzionale) Stripe fallback: `STRIPE_*` + Customer Portal in dashboard/settings
+- [ ] CTA Checkout su `/prezzi` attiva quando `payments_enabled()` (oggi mostra waitlist senza chiavi)
 
-**Done quando:** un utente Free completa il pagamento e vede subito le capability Plus senza intervento admin.
+**Done quando:** un utente Free completa il pagamento Paddle e vede subito le capability Plus senza intervento admin.
 
 ### 0.2 Brand / ops Centropic end-to-end
 - [ ] `README.md` + `DEPLOY.md` → Centropic / `centropic.ai` (GeoPulse solo note legacy)
