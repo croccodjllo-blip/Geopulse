@@ -1,22 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Conferma analisi — Centropic{% endblock %}
+{% block title %}{{ _('Conferma analisi') }} — Centropic{% endblock %}
 
 {% block content %}
 <div class="page" style="max-width: 680px; padding: 3rem 0 5rem;">
 
   <div class="page-intro">
-    <p class="eyebrow">Stima analisi</p>
-    <h1 class="page-intro__title">Rivedi e conferma</h1>
+    <p class="eyebrow">{{ _('Stima analisi') }}</p>
+    <h1 class="page-intro__title">{{ _('Rivedi e conferma') }}</h1>
     <p class="page-intro__lede">
-      Prima di procedere, controlla il costo stimato e il miglioramento atteso.
-      I crediti vengono scalati in tempo reale sui token AI consumati durante l'analisi
-      (con margine di sicurezza {{ grace_margin_pct }}% sul saldo richiesto all'avvio).
+      {{ _('Prima di procedere, controlla il costo stimato e il miglioramento atteso.') }}
+      {{ _("I crediti vengono scalati in tempo reale sui token AI consumati durante l'analisi") }}
+      {{ _('(con margine di sicurezza') }} {{ grace_margin_pct }}% {{ _("sul saldo richiesto all'avvio).") }}
     </p>
   </div>
 
   {# ── URL target ── #}
   <div class="page-section">
-    <h2 class="page-section__title">Sito analizzato</h2>
+    <h2 class="page-section__title">{{ _('Sito analizzato') }}</h2>
     <p class="lede" style="word-break: break-all;">
       <strong>{{ url }}</strong>
     </p>
@@ -24,23 +24,23 @@
 
   {# ── Costo stimato ── #}
   <div class="page-section">
-    <h2 class="page-section__title">Costo stimato</h2>
+    <h2 class="page-section__title">{{ _('Costo stimato') }}</h2>
     <div class="cost-card">
       <div class="cost-card__main">
         <span class="cost-card__amount">€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }}</span>
-        <span class="cost-card__label">per questa analisi</span>
+        <span class="cost-card__label">{{ _('per questa analisi') }}</span>
       </div>
       <p class="cost-card__note">
-        Include spread di piattaforma {{ cost.spread_pct }}% sul costo reale dell'API AI.
-        Il costo effettivo viene calcolato sui token realmente consumati.
+        {{ _('Include spread di piattaforma') }} {{ cost.spread_pct }}% {{ _("sul costo reale dell'API AI.") }}
+        {{ _('Il costo effettivo viene calcolato sui token realmente consumati.') }}
       </p>
 
       {% if cost.breakdown %}
       <details class="cost-breakdown">
-        <summary>Dettaglio voci di costo</summary>
+        <summary>{{ _('Dettaglio voci di costo') }}</summary>
         <table class="cost-table">
           <thead>
-            <tr><th>Voce</th><th>Provider</th><th>Modello</th><th>Input tok.</th><th>Output tok.</th></tr>
+            <tr><th>{{ _('Voce') }}</th><th>{{ _('Provider') }}</th><th>{{ _('Modello') }}</th><th>{{ _('Input tok.') }}</th><th>{{ _('Output tok.') }}</th></tr>
           </thead>
           <tbody>
             {% for row in cost.breakdown %}
@@ -61,25 +61,25 @@
 
   {# ── Miglioramento atteso ── #}
   <div class="page-section">
-    <h2 class="page-section__title">Miglioramento atteso</h2>
+    <h2 class="page-section__title">{{ _('Miglioramento atteso') }}</h2>
     <div class="improvement-card">
       <div class="improvement-card__scores">
         {% if improvement.current_aio is not none %}
         <div class="improvement-score">
-          <span class="improvement-score__label">AIO oggi</span>
+          <span class="improvement-score__label">{{ _('AIO oggi') }}</span>
           <span class="improvement-score__val">{{ improvement.current_aio }}</span>
           <span class="improvement-score__arrow">→</span>
           <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_aio_delta }}</span>
         </div>
         <div class="improvement-score">
-          <span class="improvement-score__label">GEO oggi</span>
+          <span class="improvement-score__label">{{ _('GEO oggi') }}</span>
           <span class="improvement-score__val">{{ improvement.current_geo }}</span>
           <span class="improvement-score__arrow">→</span>
           <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_geo_delta }}</span>
         </div>
         {% else %}
         <div class="improvement-score">
-          <span class="improvement-score__label">Prima analisi</span>
+          <span class="improvement-score__label">{{ _('Prima analisi') }}</span>
           <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_aio_delta }} AIO</span>
           <span class="improvement-score__sep">/</span>
           <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_geo_delta }} GEO</span>
@@ -96,36 +96,34 @@
       </div>
       <p class="improvement-card__detail">{{ improvement.improvement_detail }}</p>
       <p class="improvement-card__disclaimer">
-        Le stime di miglioramento sono indicative e calcolate sui gap rilevati
-        nei run precedenti o sul profilo del dominio. Non costituiscono garanzia
-        di risultato.
+        {{ _('Le stime di miglioramento sono indicative e calcolate sui gap rilevati nei run precedenti o sul profilo del dominio. Non costituiscono garanzia di risultato.') }}
       </p>
     </div>
   </div>
 
   {# ── Credito disponibile ── #}
   <div class="page-section">
-    <h2 class="page-section__title">Il tuo credito</h2>
+    <h2 class="page-section__title">{{ _('Il tuo credito') }}</h2>
     {% if current_user.is_admin %}
     <div class="credit-status credit-status--ok">
       <span class="credit-status__balance">
-        Disponibile: <strong>∞ Illimitato</strong>
+        {{ _('Disponibile:') }} <strong>∞ {{ _('Illimitato') }}</strong>
       </span>
-      <span class="credit-status__badge credit-status__badge--ok">✓ Account admin — nessun addebito</span>
+      <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Account admin — nessun addebito') }}</span>
     </div>
     {% else %}
     <div class="credit-status {% if balance_cents >= required_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
       <span class="credit-status__balance">
-        Disponibile: <strong>€&nbsp;{{ "%.4f"|format(balance_cents / 100) }}</strong>
+        {{ _('Disponibile:') }} <strong>€&nbsp;{{ "%.4f"|format(balance_cents / 100) }}</strong>
       </span>
       {% if balance_cents >= required_cents %}
-        <span class="credit-status__badge credit-status__badge--ok">✓ Credito sufficiente (con margine sicurezza {{ grace_margin_pct }}%)</span>
+        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Credito sufficiente (con margine sicurezza') }} {{ grace_margin_pct }}%)</span>
       {% else %}
-        <span class="credit-status__badge credit-status__badge--low">⚠ Credito insufficiente</span>
+        <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Credito insufficiente') }}</span>
         <p class="credit-status__hint">
-          Ricarica almeno €&nbsp;{{ "%.4f"|format((required_cents - balance_cents) / 100) }} per procedere
-          (margine sicurezza {{ grace_margin_pct }}% incluso).
-          <a href="{{ url_for('topup_credit_page') }}">Ricarica credito →</a>
+          {{ _('Ricarica almeno') }} €&nbsp;{{ "%.4f"|format((required_cents - balance_cents) / 100) }} {{ _('per procedere') }}
+          ({{ _('margine sicurezza') }} {{ grace_margin_pct }}% {{ _('incluso') }}).
+          <a href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica credito') }} →</a>
         </p>
       {% endif %}
     </div>
@@ -143,16 +141,16 @@
       <input type="hidden" name="cost_cents" value="{{ cost.service_cost_eur_cents }}">
       <button class="btn btn-core" type="submit">
         {% if current_user.is_admin %}
-          Avvia analisi (admin — gratuito)
+          {{ _('Avvia analisi (admin — gratuito)') }}
         {% else %}
-          Conferma e avvia analisi (€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }})
+          {{ _('Conferma e avvia analisi') }} (€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }})
         {% endif %}
       </button>
     </form>
     {% else %}
-    <a class="btn btn-core" href="{{ url_for('topup_credit_page') }}">Ricarica credito</a>
+    <a class="btn btn-core" href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica credito') }}</a>
     {% endif %}
-    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Annulla</a>
+    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">{{ _('Annulla') }}</a>
   </div>
 
 </div>

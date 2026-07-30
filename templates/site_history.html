@@ -1,24 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Storico {{ analysis.domain }}{% endblock %}
+{% block title %}{{ _('Storico') }} {{ analysis.domain }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
 {% block main_class %}site-main--dash{% endblock %}
 
 {% block content %}
 <section class="workspace">
   <div class="workspace-body workspace-body--flat">
-    <p class="eyebrow">Plus · Storico avanzato</p>
+    <p class="eyebrow">Plus · {{ _('Storico avanzato') }}</p>
     <h1 class="h-display report-domain">{{ analysis.domain }}</h1>
     <p class="report-meta">
-      <a class="site-link" href="{{ analysis.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
-      <a class="site-link" href="{{ url_for('dashboard') }}">← Dashboard</a>
-      <a class="site-link" href="{{ url_for('download_pack', analysis_id=analysis.id) }}">ZIP corrente</a>
+      <a class="site-link" href="{{ analysis.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
+      <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
+      <a class="site-link" href="{{ url_for('download_pack', analysis_id=analysis.id) }}">{{ _('ZIP corrente') }}</a>
     </p>
 
     <section class="monitor-panel" aria-labelledby="schedule-title">
       <div class="monitor-panel__head">
         <div>
           <p class="eyebrow">Plus</p>
-          <h2 class="monitor-panel__title" id="schedule-title">Monitoraggio</h2>
+          <h2 class="monitor-panel__title" id="schedule-title">{{ _('Monitoraggio') }}</h2>
         </div>
       </div>
       {% with site=analysis %}
@@ -27,7 +27,7 @@
     </section>
 
     <section class="history-block">
-      <h2 class="report-section__title">Run <span>max {{ history_limit }}</span></h2>
+      <h2 class="report-section__title">{{ _('Run') }} <span>{{ _('max') }} {{ history_limit }}</span></h2>
       <ul class="history-list">
         {% for item in runs %}
         <li>
@@ -39,15 +39,15 @@
             <div class="history-scores">
               <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }} <span class="hint">AI-Driven Visibility</span></span>
               <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }} <span class="hint">Generative Engine Opt.</span></span>
-              <span>{{ 'Schedulato' if item.source == 'scheduled' else 'Manuale' }}</span>
+              <span>{{ _('Schedulato') if item.source == 'scheduled' else _('Manuale') }}</span>
             </div>
           </div>
           <div class="history-actions">
-            <a href="{{ url_for('download_run_pack', run_id=item.id) }}">ZIP run</a>
+            <a href="{{ url_for('download_run_pack', run_id=item.id) }}">{{ _('ZIP run') }}</a>
           </div>
         </li>
         {% else %}
-        <li><span class="muted">Nessuna run ancora.</span></li>
+        <li><span class="muted">{{ _('Nessuna run ancora.') }}</span></li>
         {% endfor %}
       </ul>
     </section>

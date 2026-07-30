@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}{{ _('Dashboard') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--dash{% endblock %}
@@ -19,31 +19,31 @@
       <div class="workspace-banner__row">
         <div class="workspace-banner__copy">
           <p class="workspace-banner__brand">CENTROPIC</p>
-          <h1 class="workspace-banner__title">Ciao {{ current_user.name.split(' ')[0] }}</h1>
+          <h1 class="workspace-banner__title">{{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}</h1>
           <p class="workspace-banner__lede">
             {% if current_user.company %}{{ current_user.company }} · {% endif %}
-            Analizza, chiudi i gap, pubblica il pack.
+            {{ _('Analizza, chiudi i gap, pubblica il pack.') }}
           </p>
         </div>
-        <nav class="workspace-banner__nav" aria-label="Workspace">
-          <a href="{{ url_for('dashboard_guide') }}">Guida</a>
+        <nav class="workspace-banner__nav" aria-label="{{ _('Workspace') }}">
+          <a href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
         </nav>
       </div>
-      <dl class="workspace-status" aria-label="Stato account">
+      <dl class="workspace-status" aria-label="{{ _('Stato account') }}">
         <div>
-          <dt>Piano</dt>
+          <dt>{{ _('Piano') }}</dt>
           <dd>{{ user_plan }}</dd>
         </div>
         <div>
-          <dt>Siti</dt>
+          <dt>{{ _('Siti') }}</dt>
           <dd>{{ site_count }}/{{ max_sites }}</dd>
         </div>
         <div>
-          <dt>Crawl</dt>
-          <dd>{% if crawl_unlimited %}Intero sito{% else %}{{ crawl_pages_limit }} pag.{% endif %}</dd>
+          <dt>{{ _('Crawl') }}</dt>
+          <dd>{% if crawl_unlimited %}{{ _('Intero sito') }}{% else %}{{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}</dd>
         </div>
         <div>
-          <dt>{% if analysis_limit_lifetime %}Analisi totali{% else %}Quote 24h{% endif %}</dt>
+          <dt>{% if analysis_limit_lifetime %}{{ _('Analisi totali') }}{% else %}{{ _('Quote 24h') }}{% endif %}</dt>
           <dd>{{ analyses_used }}/{{ daily_limit }}</dd>
         </div>
       </dl>
@@ -55,9 +55,9 @@
     <aside class="quota-banner" role="alert">
       <p class="quota-banner__text">{{ free_quota_banner }}</p>
       {% if stripe_ready %}
-      <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">Vedi piano Plus</a>
+      <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">{{ _('Vedi piano Plus') }}</a>
       {% else %}
-      <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pro_interest') }}">Prenota Plus</a>
+      <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
       {% endif %}
     </aside>
     {% endif %}
@@ -68,37 +68,37 @@
         <div class="analyze-composer__head">
           <span class="analyze-composer__prompt" aria-hidden="true">$</span>
           <div>
-            <p class="analyze-composer__label">Nuova analisi</p>
+            <p class="analyze-composer__label">{{ _('Nuova analisi') }}</p>
             <p class="analyze-composer__sub">
               {% if free_exhausted %}
-              Quote Free esaurite · passa a Plus per continuare
+              {{ _('Quote Free esaurite · passa a Plus per continuare') }}
               {% elif free_upsell and not is_pro %}
-              Puoi ri-analizzare il sito già registrato · Plus per più brand
+              {{ _('Puoi ri-analizzare il sito già registrato · Plus per più brand') }}
               {% elif crawl_unlimited %}
-              Crawl BFS · intero sito ({{ user_plan }})
+              {{ _('Crawl BFS · intero sito') }} ({{ user_plan }})
               {% else %}
-              Crawl stesso dominio · max {{ crawl_pages_limit }} pagine ({{ user_plan }})
+              {{ _('Crawl stesso dominio · max') }} {{ crawl_pages_limit }} {{ _('pagine') }} ({{ user_plan }})
               {% endif %}
             </p>
           </div>
         </div>
         <div class="field analyze-composer__field">
-          <label class="visually-hidden" for="url">URL del dominio</label>
+          <label class="visually-hidden" for="url">{{ _('URL del dominio') }}</label>
           <div class="analyze-row">
             {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
             {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
           </div>
           {% if is_pro %}
           <div class="field analyze-competitors">
-            <label for="competitors">Competitor snapshot (Plus, max 3)</label>
+            <label for="competitors">{{ _('Competitor snapshot (Plus, max 3)') }}</label>
             {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
 https://rivale2.com", class_="analyze-input") }}
           </div>
-          <p class="analyze-composer__hint">SoV measured (probe LLM) incluso nel piano Plus quando i connector sono attivi.</p>
+          <p class="analyze-composer__hint">{{ _('SoV measured (probe LLM) incluso nel piano Plus quando i connector sono attivi.') }}</p>
           {% else %}
           <p class="analyze-composer__hint">
-            Free: score AIO/GEO e SoV <em>stimato</em>.
-            <a href="{{ url_for('pricing') }}">Plus</a> sblocca SoV measured / citation monitor.
+            {{ _('Free: score AIO/GEO e SoV') }} <em>{{ _('stimato') }}</em>.
+            <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca SoV measured / citation monitor.') }}
           </p>
           {% endif %}
           {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
@@ -116,23 +116,23 @@ https://rivale2.com", class_="analyze-input") }}
       aria-live="polite"
     >
       <p class="job-status__label">
-        {% if pending_job.status == 'pending' %}In coda{% else %}In esecuzione{% endif %}
+        {% if pending_job.status == 'pending' %}{{ _('In coda') }}{% else %}{{ _('In esecuzione') }}{% endif %}
         · <code>{{ pending_job.url }}</code>
       </p>
       <p class="job-status__hint">
         {% if pending_job.status == 'pending' %}
-        Worker in avvio — di solito parte entro pochi secondi.
+        {{ _('Worker in avvio — di solito parte entro pochi secondi.') }}
         {% else %}
-        Crawl, probe e scoring in corso (tipicamente 30–90 secondi).
+        {{ _('Crawl, probe e scoring in corso (tipicamente 30–90 secondi).') }}
         {% endif %}
       </p>
     </div>
     {% elif pending_job and pending_job.status == 'error' %}
     <div class="job-status job-status--error" role="alert">
-      <p class="job-status__label">Analisi fallita</p>
-      <p class="job-status__hint">{{ pending_job.error or 'Errore sconosciuto' }}</p>
+      <p class="job-status__label">{{ _('Analisi fallita') }}</p>
+      <p class="job-status__hint">{{ pending_job.error or _('Errore sconosciuto') }}</p>
       <p class="job-status__hint">
-        Controlla l’URL e riprova. Supporto: <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+        {{ _('Controlla l’URL e riprova. Supporto:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
       </p>
     </div>
     {% endif %}
@@ -151,30 +151,30 @@ https://rivale2.com", class_="analyze-input") }}
         <section class="report" aria-labelledby="result-domain">
           <div class="report-top report-top--board">
             <div class="report-top__copy">
-              <p class="eyebrow">Ultimo report</p>
+              <p class="eyebrow">{{ _('Ultimo report') }}</p>
               <div class="report-top__title-row">
                 <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
                 <span class="grade-badge" data-grade="{{ rating.code }}">{{ rating.code }}</span>
               </div>
               <p class="report-meta">
                 {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
-                <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">Apri sito</a>
-                {% if latest.pages_analyzed %}<span>{{ latest.pages_analyzed }} pagine</span>{% endif %}
+                <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
+                {% if latest.pages_analyzed %}<span>{{ latest.pages_analyzed }} {{ _('pagine') }}</span>{% endif %}
                 {% if latest.created_at %}
                   <span>{{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
                 {% endif %}
               </p>
             </div>
             <div class="report-top__actions">
-              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica ZIP</a>
+              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica ZIP') }}</a>
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="Email non configurata sul server"{% endif %}>
-                  Invia email
+                <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="{{ _('Email non configurata sul server') }}"{% endif %}>
+                  {{ _('Invia email') }}
                 </button>
               </form>
               {% if is_pro %}
-              <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico</a>
+              <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
               {% endif %}
             </div>
           </div>
@@ -185,24 +185,24 @@ https://rivale2.com", class_="analyze-input") }}
           {% set health = health_raw if health_raw > 8 else 8 %}
           {% if aio_n >= 90 %}
             {% set band = 'peak' %}
-            {% set propensity = 'Segnali AIO molto forti' %}
-            {% set propensity_lede = 'Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. Non è una garanzia di citazione live.' %}
+            {% set propensity = _('Segnali AIO molto forti') %}
+            {% set propensity_lede = _('Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. Non è una garanzia di citazione live.') %}
           {% elif aio_n >= 75 %}
             {% set band = 'high' %}
-            {% set propensity = 'Segnali AIO solidi' %}
-            {% set propensity_lede = 'Buona base machine-readable. Chiudi i gap rimanenti per salire. Score euristico (Stimato), non polling LLM.' %}
+            {% set propensity = _('Segnali AIO solidi') %}
+            {% set propensity_lede = _('Buona base machine-readable. Chiudi i gap rimanenti per salire. Score euristico (Stimato), non polling LLM.') %}
           {% elif aio_n >= 55 %}
             {% set band = 'mid' %}
-            {% set propensity = 'Segnali AIO moderati' %}
-            {% set propensity_lede = 'Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn.' %}
+            {% set propensity = _('Segnali AIO moderati') %}
+            {% set propensity_lede = _('Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn.') %}
           {% elif aio_n >= 35 %}
             {% set band = 'low' %}
-            {% set propensity = 'Segnali AIO emergenti' %}
-            {% set propensity_lede = 'Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file AI.' %}
+            {% set propensity = _('Segnali AIO emergenti') %}
+            {% set propensity_lede = _('Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file AI.') %}
           {% else %}
             {% set band = 'crit' %}
-            {% set propensity = 'Segnali AIO critici' %}
-            {% set propensity_lede = 'Base insufficiente: intervento prioritario su title, schema, robots/llms e contenuti citabili.' %}
+            {% set propensity = _('Segnali AIO critici') %}
+            {% set propensity_lede = _('Base insufficiente: intervento prioritario su title, schema, robots/llms e contenuti citabili.') %}
           {% endif %}
           {% set aio_c = 741.42 %}
           {% set geo_c = 942.48 %}
@@ -210,9 +210,9 @@ https://rivale2.com", class_="analyze-input") }}
           {% set geo_offset = geo_c * (1 - geo_n / 100) %}
           {% set geo_angle = (geo_n / 100 * 360) - 90 %}
 
-          <div class="report-tabs" role="tablist" aria-label="Vista report">
-            <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">Score</button>
-            <button type="button" class="report-tabs__btn" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="false" data-tab="sov">SoV</button>
+          <div class="report-tabs" role="tablist" aria-label="{{ _('Vista report') }}">
+            <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">{{ _('Score') }}</button>
+            <button type="button" class="report-tabs__btn" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="false" data-tab="sov">{{ _('SoV') }}</button>
           </div>
 
           <div class="report-panel is-active" id="panel-score" role="tabpanel" aria-labelledby="tab-score" data-panel="score">
@@ -304,7 +304,7 @@ https://rivale2.com", class_="analyze-input") }}
                 </svg>
 
                 <div class="pulse-core__hub">
-                  <span class="pulse-core__kicker">AIO · AI-Driven Visibility <span class="evidence-badge" data-evidence="proxy">Stimato</span></span>
+                  <span class="pulse-core__kicker">AIO · AI-Driven Visibility <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></span>
                   <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
                   <span class="pulse-core__denom">/100</span>
                   <span class="pulse-core__propensity">{{ propensity }}</span>
@@ -313,17 +313,17 @@ https://rivale2.com", class_="analyze-input") }}
             </div>
 
             <div class="pulse-core__intel">
-              <p class="eyebrow">Signal diagnostics <span class="evidence-badge" data-evidence="proxy">Stimato</span></p>
-              <h3 class="pulse-core__title">Quanto sono solidi i segnali AIO/GEO</h3>
+              <p class="eyebrow">{{ _('Signal diagnostics') }} <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></p>
+              <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
               <p class="pulse-core__lede">
                 {{ propensity_lede }}
-                <span class="hint">AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score da probe/euristiche, non citazioni live garantite.</span>
+                <span class="hint">{{ _('AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score da probe/euristiche, non citazioni live garantite.') }}</span>
               </p>
 
               <div class="pulse-satellites" role="list">
                 <article class="pulse-sat" role="listitem" data-tone="geo">
                   <div class="pulse-sat__copy">
-                    <strong>GEO <span class="evidence-badge" data-evidence="proxy">Stimato</span></strong>
+                    <strong>GEO <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></strong>
                     <em>Generative Engine Optimization</em>
                   </div>
                   <div class="pulse-sat__ring" style="--p: {{ geo_n }};" aria-hidden="true">
@@ -340,7 +340,7 @@ https://rivale2.com", class_="analyze-input") }}
 
                 <article class="pulse-sat" role="listitem" data-tone="grade" data-grade="{{ rating.code }}">
                   <div class="pulse-sat__copy">
-                    <strong>Indice</strong>
+                    <strong>{{ _('Indice') }}</strong>
                     <em>{{ rating.score }}/100 · {{ rating.label.split('—')[0].strip() }}</em>
                   </div>
                   <div
@@ -352,12 +352,12 @@ https://rivale2.com", class_="analyze-input") }}
 
                 <article class="pulse-sat" role="listitem" data-tone="risk">
                   <div class="pulse-sat__copy">
-                    <strong>Interferenze</strong>
+                    <strong>{{ _('Interferenze') }}</strong>
                     <em>
                       {% if crit_n or warn_n %}
                         {{ crit_n }} critical · {{ warn_n }} warn
                       {% else %}
-                        Nessuna criticità aperta
+                        {{ _('Nessuna criticità aperta') }}
                       {% endif %}
                     </em>
                   </div>
@@ -371,7 +371,7 @@ https://rivale2.com", class_="analyze-input") }}
                 </article>
               </div>
 
-              <ol class="pulse-scale" aria-label="Scala da DDD a AAA">
+              <ol class="pulse-scale" aria-label="{{ _('Scala da DDD a AAA') }}">
                 {% for code in rating.scale %}
                 <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
                 {% endfor %}
@@ -385,27 +385,27 @@ https://rivale2.com", class_="analyze-input") }}
             <section class="engine-breakdown" aria-labelledby="sov-title">
               <header class="engine-breakdown__head">
                 <div>
-                  <p class="eyebrow">AI Engine Breakdown</p>
+                  <p class="eyebrow">{{ _('AI Engine Breakdown') }}</p>
                   <h3 class="engine-breakdown__title" id="sov-title">
                     {% if engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
-                    Share of Voice
+                    {{ _('Share of Voice') }}
                     {% else %}
-                    Share of Voice stimato
+                    {{ _('Share of Voice stimato') }}
                     {% endif %}
                   </h3>
                   <p class="engine-breakdown__lede">
                     {% if is_pro and engine_breakdown.evidence in ('mixed', 'measured') %}
-                    Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine.
+                    {{ _('Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine.') }}
                     {% elif not is_pro %}
-                    Piano Free: SoV stimato da score e robots.
-                    <a href="{{ url_for('pricing') }}">Passa a Plus</a> per SoV measured (citation monitor).
+                    {{ _('Piano Free: SoV stimato da score e robots.') }}
+                    <a href="{{ url_for('pricing') }}">{{ _('Passa a Plus') }}</a> {{ _('per SoV measured (citation monitor).') }}
                     {% else %}
-                    Stima euristica da score e robots — non è polling live sui modelli.
+                    {{ _('Stima euristica da score e robots — non è polling live sui modelli.') }}
                     {% endif %}
                     <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
                   </p>
                 </div>
-                <div class="engine-breakdown__brand-sov" aria-label="Brand SoV">
+                <div class="engine-breakdown__brand-sov" aria-label="{{ _('Brand SoV') }}">
                   <span class="engine-breakdown__brand-n">{{ engine_breakdown.brand_sov }}%</span>
                   <span class="engine-breakdown__brand-l">Brand SoV</span>
                 </div>
@@ -414,7 +414,7 @@ https://rivale2.com", class_="analyze-input") }}
               <div
                 class="sov-stack"
                 role="img"
-                aria-label="Composizione SoV per engine"
+                aria-label="{{ _('Composizione SoV per engine') }}"
                 style="--segments: {{ engine_breakdown.engines|length }};"
               >
                 {% for e in engine_breakdown.engines %}
@@ -442,16 +442,16 @@ https://rivale2.com", class_="analyze-input") }}
                     <strong>{{ e.label }}</strong>
                     <span class="engine-bar__vendor">{{ e.vendor }}</span>
                     {% if e.access == 'blocked' %}
-                    <span class="engine-bar__access" data-access="blocked">bot blocked</span>
+                    <span class="engine-bar__access" data-access="blocked">{{ _('bot blocked') }}</span>
                     {% elif e.access == 'allow' %}
-                    <span class="engine-bar__access" data-access="allow">bot allow</span>
+                    <span class="engine-bar__access" data-access="allow">{{ _('bot allow') }}</span>
                     {% endif %}
                     {% if e.evidence == 'measured' %}
-                    <span class="evidence-badge" data-evidence="measured">Misurato{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}</span>
+                    <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}</span>
                     {% elif e.evidence == 'unavailable' %}
-                    <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">Non disponibile</span>
+                    <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('Non disponibile') }}</span>
                     {% elif e.evidence == 'pending' %}
-                    <span class="evidence-badge" data-evidence="estimated">In arrivo</span>
+                    <span class="evidence-badge" data-evidence="estimated">{{ _('In arrivo') }}</span>
                     {% endif %}
                   </div>
                   <div class="engine-bar__track" aria-hidden="true">
@@ -469,16 +469,16 @@ https://rivale2.com", class_="analyze-input") }}
               </ul>
 
               {% if engine_breakdown.has_competitors %}
-              <div class="sov-field" aria-label="Campo competitivo">
+              <div class="sov-field" aria-label="{{ _('Campo competitivo') }}">
                 <div class="sov-field__bar">
                   <span style="--w: {{ engine_breakdown.brand_sov }};" data-tone="brand"></span>
                   <span style="--w: {{ engine_breakdown.rivals_sov }};" data-tone="rivals"></span>
                   <span style="--w: {{ engine_breakdown.other_sov }};" data-tone="other"></span>
                 </div>
                 <ul class="sov-field__legend">
-                  <li data-tone="brand">Brand {{ engine_breakdown.brand_sov }}%</li>
-                  <li data-tone="rivals">Rivali {{ engine_breakdown.rivals_sov }}%</li>
-                  <li data-tone="other">Altro {{ engine_breakdown.other_sov }}%</li>
+                  <li data-tone="brand">{{ _('Brand') }} {{ engine_breakdown.brand_sov }}%</li>
+                  <li data-tone="rivals">{{ _('Rivali') }} {{ engine_breakdown.rivals_sov }}%</li>
+                  <li data-tone="other">{{ _('Altro') }} {{ engine_breakdown.other_sov }}%</li>
                 </ul>
               </div>
               {% endif %}
@@ -486,52 +486,52 @@ https://rivale2.com", class_="analyze-input") }}
               <p class="engine-breakdown__note">{{ engine_breakdown.note }}</p>
             </section>
             {% else %}
-            <p class="dash-block__empty">Nessun breakdown disponibile.</p>
+            <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
             {% endif %}
           </div>
 
           {% if geo_suite %}
-          <section class="dash-block dash-block--panel geo-suite" aria-label="GEO suite">
+          <section class="dash-block dash-block--panel geo-suite" aria-label="{{ _('GEO suite') }}">
             <header class="dash-block__head">
               <div>
-                <p class="dash-block__eyebrow">Suite</p>
-                <h3 class="dash-block__title">GEO / AIO avanzato</h3>
+                <p class="dash-block__eyebrow">{{ _('Suite') }}</p>
+                <h3 class="dash-block__title">{{ _('GEO / AIO avanzato') }}</h3>
               </div>
               <div class="dash-block__meta">
-                <a class="dash-block__chip" href="{{ url_for('dashboard_settings') }}">Impostazioni</a>
+                <a class="dash-block__chip" href="{{ url_for('dashboard_settings') }}">{{ _('Impostazioni') }}</a>
                 {% if latest %}
-                <a class="dash-block__chip" href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">Publish verify</a>
+                <a class="dash-block__chip" href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a>
                 {% endif %}
               </div>
             </header>
             <ul class="geo-suite__grid">
               <li>
-                <strong>Entity graph</strong>
-                <span>{{ (geo_suite.entity_graph.score or 0) }}/100 · {{ (geo_suite.entity_graph.nodes or [])|length }} nodi</span>
+                <strong>{{ _('Entity graph') }}</strong>
+                <span>{{ (geo_suite.entity_graph.score or 0) }}/100 · {{ (geo_suite.entity_graph.nodes or [])|length }} {{ _('nodi') }}</span>
               </li>
               <li>
-                <strong>Citability</strong>
+                <strong>{{ _('Citability') }}</strong>
                 <span>{{ (geo_suite.citability.score or 0) }}/100 · date {{ geo_suite.citability.dates or 0 }}</span>
               </li>
               <li>
-                <strong>Schema quality</strong>
+                <strong>{{ _('Schema quality') }}</strong>
                 <span>{{ (geo_suite.schema_quality.score or 0) }}/100</span>
               </li>
               <li>
-                <strong>Publish verify</strong>
+                <strong>{{ _('Publish verify') }}</strong>
                 <span>{{ (geo_suite.publish_verify.score or 0) }}/100 · {{ geo_suite.publish_verify.published or 0 }}/{{ geo_suite.publish_verify.total or 0 }}</span>
               </li>
               <li>
-                <strong>llms lint</strong>
+                <strong>{{ _('llms lint') }}</strong>
                 <span>{{ (geo_suite.llms_lint.score or 0) }}/100</span>
               </li>
               <li>
-                <strong>Locales</strong>
+                <strong>{{ _('Locales') }}</strong>
                 <span>{{ geo_suite.locales.lang or 'n/d' }} · hreflang {{ (geo_suite.locales.hreflang or [])|length }}</span>
               </li>
               {% if geo_suite.sov_measured and is_pro %}
               <li>
-                <strong>SoV measured</strong>
+                <strong>{{ _('SoV measured') }}</strong>
                 <span>
                   {% if geo_suite.sov_measured.brand_mention_rate is not none %}
                     {{ geo_suite.sov_measured.brand_mention_rate }}% · {{ geo_suite.sov_measured.label }}
@@ -542,8 +542,8 @@ https://rivale2.com", class_="analyze-input") }}
               </li>
               {% elif not is_pro %}
               <li>
-                <strong>SoV measured</strong>
-                <span>Plus · <a href="{{ url_for('pricing') }}">sblocca</a></span>
+                <strong>{{ _('SoV measured') }}</strong>
+                <span>Plus · <a href="{{ url_for('pricing') }}">{{ _('sblocca') }}</a></span>
               </li>
               {% endif %}
             </ul>
@@ -551,9 +551,9 @@ https://rivale2.com", class_="analyze-input") }}
           {% endif %}
 
           {% if run_diff and run_diff.has_previous %}
-          <section class="diff-strip" aria-label="Confronto con run precedente">
+          <section class="diff-strip" aria-label="{{ _('Confronto con run precedente') }}">
             <div class="diff-strip__head">
-              <span class="diff-strip__label">Vs run precedente</span>
+              <span class="diff-strip__label">{{ _('Vs run precedente') }}</span>
               {% if run_diff.delta_aio is not none or run_diff.delta_geo is not none %}
               <span class="diff-strip__deltas">
                 <em data-delta="{{ run_diff.delta_aio }}">AIO (AI-Driven Visibility) {{ '%+d'|format(run_diff.delta_aio or 0) }}</em>
@@ -580,18 +580,18 @@ https://rivale2.com", class_="analyze-input") }}
             <section class="dash-block dash-block--panel" aria-labelledby="crawl-title">
               <header class="dash-block__head">
                 <div>
-                  <p class="dash-block__eyebrow">Priorità</p>
-                  <h3 class="dash-block__title" id="crawl-title">Pagine critiche</h3>
+                  <p class="dash-block__eyebrow">{{ _('Priorità') }}</p>
+                  <h3 class="dash-block__title" id="crawl-title">{{ _('Pagine critiche') }}</h3>
                 </div>
                 <div class="dash-block__meta">
                   <span class="dash-block__count">{{ crawl_pages_view|length }}</span>
                   {% if crawl_crit_n and crawl_warn_n %}
-                  <span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} critic{{ 'he' if crawl_crit_n != 1 else 'a' }}</span>
-                  <span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} attenzione</span>
+                  <span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} {{ _('critiche') if crawl_crit_n != 1 else _('critica') }}</span>
+                  <span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} {{ _('attenzione') }}</span>
                   {% elif crawl_crit_n %}
-                  <span class="dash-block__chip" data-severity="critical">critiche</span>
+                  <span class="dash-block__chip" data-severity="critical">{{ _('critiche') }}</span>
                   {% elif crawl_warn_n %}
-                  <span class="dash-block__chip" data-severity="warn">attenzione</span>
+                  <span class="dash-block__chip" data-severity="warn">{{ _('attenzione') }}</span>
                   {% endif %}
                 </div>
               </header>
@@ -618,20 +618,20 @@ https://rivale2.com", class_="analyze-input") }}
                 {% endfor %}
               </ul>
               {% if crawl_pages_view|length > 24 %}
-              <p class="dash-block__more">Prime 24 criticità · elenco completo nello ZIP</p>
+              <p class="dash-block__more">{{ _('Prime 24 criticità · elenco completo nello ZIP') }}</p>
               {% endif %}
               {% else %}
-              <p class="dash-block__empty">Nessuna pagina critica su {{ pages_analyzed_n }} analizzate.</p>
+              <p class="dash-block__empty">{{ _('Nessuna pagina critica su') }} {{ pages_analyzed_n }} {{ _('analizzate.') }}</p>
               {% endif %}
-              <p class="dash-block__more">Analizzate {{ pages_analyzed_n }} pagine</p>
+              <p class="dash-block__more">{{ _('Analizzate') }} {{ pages_analyzed_n }} {{ _('pagine') }}</p>
             </section>
             {% endif %}
 
             <section class="dash-block dash-block--panel" aria-labelledby="findings-title">
               <header class="dash-block__head">
                 <div>
-                  <p class="dash-block__eyebrow">Priorità</p>
-                  <h3 class="dash-block__title" id="findings-title">Findings critici</h3>
+                  <p class="dash-block__eyebrow">{{ _('Priorità') }}</p>
+                  <h3 class="dash-block__title" id="findings-title">{{ _('Findings critici') }}</h3>
                 </div>
                 <div class="dash-block__meta">
                   <span class="dash-block__count">{{ findings|length }}</span>
@@ -654,7 +654,7 @@ https://rivale2.com", class_="analyze-input") }}
                       {{ f.title }}
                       {% set ev = f.evidence or 'estimated' %}
                       <span class="evidence-badge" data-evidence="{{ ev }}">
-                        {% if ev == 'measured' %}Misurato{% else %}Stimato{% endif %}
+                        {% if ev == 'measured' %}{{ _('Misurato') }}{% else %}{{ _('Stimato') }}{% endif %}
                       </span>
                     </strong>
                     <span>{{ f.detail }}</span>
@@ -662,12 +662,12 @@ https://rivale2.com", class_="analyze-input") }}
                 </li>
                 {% else %}
                 <li class="finding-list__empty">
-                  <span>Nessuna criticità.{% if findings_ok_n %} {{ findings_ok_n }} check ok nascosti.{% endif %}</span>
+                  <span>{{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok nascosti.') }}{% endif %}</span>
                 </li>
                 {% endfor %}
               </ul>
               {% if findings_all_n and findings|length %}
-              <p class="dash-block__more">Solo critical/warn · {{ findings_all_n }} totali</p>
+              <p class="dash-block__more">{{ _('Solo critical/warn ·') }} {{ findings_all_n }} {{ _('totali') }}</p>
               {% endif %}
             </section>
           </div>
@@ -677,12 +677,12 @@ https://rivale2.com", class_="analyze-input") }}
             <div class="monitor-panel__head">
               <div>
                 <p class="eyebrow">Plus</p>
-                <h3 class="monitor-panel__title" id="monitor-title">Monitoraggio</h3>
+                <h3 class="monitor-panel__title" id="monitor-title">{{ _('Monitoraggio') }}</h3>
               </div>
               <div class="monitor-panel__exports">
                 <a href="{{ url_for('export_history_csv') }}">CSV</a>
                 <a href="{{ url_for('export_all_sites_zip') }}">ZIP siti</a>
-                <a href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico</a>
+                <a href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
               </div>
             </div>
             {% with site=latest %}
@@ -691,11 +691,11 @@ https://rivale2.com", class_="analyze-input") }}
           </section>
           {% else %}
           <p class="pro-upsell">
-            Piano Free: 1 sito, ri-analisi del dominio consentita.
+            {{ _('Piano Free: 1 sito, ri-analisi del dominio consentita.') }}
             {% if stripe_ready %}
-            <a href="{{ url_for('pricing') }}">Plus</a> sblocca crawl intero sito, re-scan, export e storico run.
+            <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca crawl intero sito, re-scan, export e storico run.') }}
             {% else %}
-            <a href="{{ url_for('pro_interest') }}">Prenota Plus</a> per crawl intero sito, re-scan, export e storico.
+            <a href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a> {{ _('per crawl intero sito, re-scan, export e storico.') }}
             {% endif %}
           </p>
           {% endif %}
@@ -704,8 +704,8 @@ https://rivale2.com", class_="analyze-input") }}
           <section class="dash-block dash-block--panel" aria-labelledby="comp-title">
             <header class="dash-block__head">
               <div>
-                <p class="dash-block__eyebrow">Confronto</p>
-                <h3 class="dash-block__title" id="comp-title">Competitor snapshot</h3>
+                <p class="dash-block__eyebrow">{{ _('Confronto') }}</p>
+                <h3 class="dash-block__title" id="comp-title">{{ _('Competitor snapshot') }}</h3>
               </div>
               <span class="dash-block__count">{{ latest.competitors|length }}</span>
             </header>
@@ -727,68 +727,66 @@ https://rivale2.com", class_="analyze-input") }}
           <section class="dash-block dash-block--panel dash-block--edge" id="edge-signals" aria-labelledby="edge-title">
             <header class="dash-block__head">
               <div>
-                <p class="dash-block__eyebrow">Infrastruttura</p>
-                <h3 class="dash-block__title" id="edge-title">Edge Signals</h3>
+                <p class="dash-block__eyebrow">{{ _('Infrastruttura') }}</p>
+                <h3 class="dash-block__title" id="edge-title">{{ _('Edge Signals') }}</h3>
               </div>
               {% if latest.signals_hosted %}
-              <span class="edge-status edge-status--on">Attivo · v{{ latest.signals_version or 1 }}</span>
+              <span class="edge-status edge-status--on">{{ _('Attivo') }} · v{{ latest.signals_version or 1 }}</span>
               {% else %}
-              <span class="edge-status">ZIP only</span>
+              <span class="edge-status">{{ _('ZIP only') }}</span>
               {% endif %}
             </header>
             <p class="edge-lede">
-              Invece di ridistribuire un pack statico, ospita <code>llms.txt</code>,
-              <code>robots.txt</code> e <code>signals.json</code> su endpoint Centropic
-              aggiornati quando cambiano i crawler IA. Collega il tuo dominio con
-              Cloudflare Worker o rewrite Vercel.
+              {{ _('Invece di ridistribuire un pack statico, ospita') }} <code>llms.txt</code>,
+              <code>robots.txt</code> {{ _('e') }} <code>signals.json</code> {{ _('su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo dominio con Cloudflare Worker o rewrite Vercel.') }}
             </p>
             {% if not latest.signals_hosted or not edge %}
             <form method="post" action="{{ url_for('edge_enable', analysis_id=latest.id) }}" class="edge-actions">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-              <button type="submit" class="btn btn-primary">Attiva hosting dinamico</button>
+              <button type="submit" class="btn btn-primary">{{ _('Attiva hosting dinamico') }}</button>
             </form>
             <p class="edge-hint">
-              Free: <code>llms.txt</code> + <code>signals.json</code>.
-              Plus: robots live, JSON-LD e snippet Worker/Vercel.
+              {{ _('Free:') }} <code>llms.txt</code> + <code>signals.json</code>.
+              {{ _('Plus: robots live, JSON-LD e snippet Worker/Vercel.') }}
             </p>
             {% else %}
             <ul class="edge-urls">
               <li>
                 <span>llms.txt</span>
                 <a href="{{ edge.llms_url }}" target="_blank" rel="noopener noreferrer">{{ edge.llms_url }}</a>
-                <button type="button" class="linkish" data-copy="{{ edge.llms_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+                <button type="button" class="linkish" data-copy="{{ edge.llms_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
               </li>
               <li>
                 <span>signals.json</span>
                 <a href="{{ edge.signals_url }}" target="_blank" rel="noopener noreferrer">{{ edge.signals_url }}</a>
-                <button type="button" class="linkish" data-copy="{{ edge.signals_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+                <button type="button" class="linkish" data-copy="{{ edge.signals_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
               </li>
               {% if is_pro %}
               <li>
                 <span>robots.txt</span>
                 <a href="{{ edge.robots_url }}" target="_blank" rel="noopener noreferrer">{{ edge.robots_url }}</a>
-                <button type="button" class="linkish" data-copy="{{ edge.robots_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+                <button type="button" class="linkish" data-copy="{{ edge.robots_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
               </li>
               <li>
                 <span>organization.jsonld</span>
                 <a href="{{ edge.jsonld_url }}" target="_blank" rel="noopener noreferrer">{{ edge.jsonld_url }}</a>
-                <button type="button" class="linkish" data-copy="{{ edge.jsonld_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">Copia</button>
+                <button type="button" class="linkish" data-copy="{{ edge.jsonld_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
               </li>
               {% else %}
               <li class="edge-urls__locked">
                 <span>robots + JSON-LD</span>
-                <em>Piano Plus — lista crawler IA live sul tuo dominio</em>
+                <em>{{ _('Piano Plus — lista crawler IA live sul tuo dominio') }}</em>
               </li>
               {% endif %}
             </ul>
             <div class="edge-actions edge-actions--row">
               <form method="post" action="{{ url_for('edge_rotate', analysis_id=latest.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="btn btn-ghost">Rigenera token</button>
+                <button type="submit" class="btn btn-ghost">{{ _('Rigenera token') }}</button>
               </form>
               <form method="post" action="{{ url_for('edge_disable', analysis_id=latest.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="btn btn-ghost">Disattiva</button>
+                <button type="submit" class="btn btn-ghost">{{ _('Disattiva') }}</button>
               </form>
             </div>
             {% if is_pro %}
@@ -796,30 +794,29 @@ https://rivale2.com", class_="analyze-input") }}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>cloudflare-worker.js</span>
-                  <button type="button" class="linkish" onclick="copyFrom('edge-worker-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-worker-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="edge-worker-box">{{ edge.worker }}</pre>
               </div>
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>vercel.json</span>
-                  <button type="button" class="linkish" onclick="copyFrom('edge-vercel-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-vercel-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="edge-vercel-box">{{ edge.vercel }}</pre>
               </div>
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>embed.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('edge-embed-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-embed-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="edge-embed-box">{{ edge.embed }}</pre>
               </div>
             </div>
             {% else %}
             <p class="edge-hint">
-              Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati
-              automaticamente alla lista crawler Centropic.
-              <a href="{{ url_for('pricing') }}">Vedi piani</a>
+              {{ _('Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati automaticamente alla lista crawler Centropic.') }}
+              <a href="{{ url_for('pricing') }}">{{ _('Vedi piani') }}</a>
             </p>
             {% endif %}
             {% endif %}
@@ -828,13 +825,13 @@ https://rivale2.com", class_="analyze-input") }}
           <section class="dash-block dash-block--panel dash-block--pack" aria-labelledby="pack-title">
             <header class="dash-block__head">
               <div>
-                <p class="dash-block__eyebrow">Deliverable</p>
-                <h3 class="dash-block__title" id="pack-title">Pack ottimizzazione</h3>
+                <p class="dash-block__eyebrow">{{ _('Deliverable') }}</p>
+                <h3 class="dash-block__title" id="pack-title">{{ _('Pack ottimizzazione') }}</h3>
               </div>
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="dash-block__mail">
-                  Invia a {{ current_user.email }}
+                  {{ _('Invia a') }} {{ current_user.email }}
                 </button>
               </form>
             </header>
@@ -843,7 +840,7 @@ https://rivale2.com", class_="analyze-input") }}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>fix-this-week.md</span>
-                  <button type="button" class="linkish" onclick="copyFrom('checklist-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('checklist-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="checklist-box">{{ latest.checklist_artifact }}</pre>
               </div>
@@ -852,7 +849,7 @@ https://rivale2.com", class_="analyze-input") }}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>before-after.md</span>
-                  <button type="button" class="linkish" onclick="copyFrom('ba-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('ba-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="ba-box">{{ latest.before_after_artifact }}</pre>
               </div>
@@ -860,14 +857,14 @@ https://rivale2.com", class_="analyze-input") }}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>/llms.txt</span>
-                  <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="llms-box">{{ latest.llms_txt }}</pre>
               </div>
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>organization.jsonld.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('jsonld-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('jsonld-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="jsonld-box">{{ latest.json_ld_artifact }}</pre>
               </div>
@@ -875,7 +872,7 @@ https://rivale2.com", class_="analyze-input") }}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>faq.jsonld.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('faq-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('faq-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="faq-box">{{ latest.faq_artifact }}</pre>
               </div>
@@ -883,14 +880,14 @@ https://rivale2.com", class_="analyze-input") }}
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>meta-pack.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('meta-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('meta-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="meta-box">{{ latest.meta_pack_artifact }}</pre>
               </div>
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
                   <span>robots.txt</span>
-                  <button type="button" class="linkish" onclick="copyFrom('robots-box', this)">Copia</button>
+                  <button type="button" class="linkish" onclick="copyFrom('robots-box', this)">{{ _('Copia') }}</button>
                 </div>
                 <pre id="robots-box">{{ latest.robots_artifact }}</pre>
               </div>
@@ -899,22 +896,22 @@ https://rivale2.com", class_="analyze-input") }}
         </section>
         {% else %}
         <div class="empty-state">
-          <p class="empty-state__eyebrow">Activation loop</p>
-          <strong>Prima diagnosi in un passo</strong>
+          <p class="empty-state__eyebrow">{{ _('Activation loop') }}</p>
+          <strong>{{ _('Prima diagnosi in un passo') }}</strong>
           {% if pending_job and pending_job.status in ('pending', 'running') %}
           <p class="empty-state__hint">
-            Stiamo già elaborando <code>{{ pending_job.url }}</code>.
-            Resta su questa pagina: al termine vedrai score, findings e pack.
+            {{ _('Stiamo già elaborando') }} <code>{{ pending_job.url }}</code>.
+            {{ _('Resta su questa pagina: al termine vedrai score, findings e pack.') }}
           </p>
           {% else %}
           <ol class="empty-state__steps">
-            <li>Incolla l’URL pubblico del brand nella barra sopra (https://…)</li>
-            <li>Avvia: crawl, score AIO/GEO, findings prioritizzati</li>
-            <li>Attiva Edge Signals o scarica il pack da pubblicare</li>
+            <li>{{ _('Incolla l’URL pubblico del brand nella barra sopra (https://…)') }}</li>
+            <li>{{ _('Avvia: crawl, score AIO/GEO, findings prioritizzati') }}</li>
+            <li>{{ _('Attiva Edge Signals o scarica il pack da pubblicare') }}</li>
           </ol>
           <p class="empty-state__hint">
-            Piano Free: {{ max_sites }} sito · {{ daily_limit }} analisi iniziali, poi puoi ri-misurare lo stesso dominio.
-            Nessuna carta. In registrazione, se indichi il sito, la prima analisi parte da sola.
+            {{ _('Piano Free:') }} {{ max_sites }} {{ _('sito') }} · {{ daily_limit }} {{ _('analisi iniziali, poi puoi ri-misurare lo stesso dominio.') }}
+            {{ _('Nessuna carta. In registrazione, se indichi il sito, la prima analisi parte da sola.') }}
           </p>
           {% endif %}
         </div>
@@ -922,14 +919,14 @@ https://rivale2.com", class_="analyze-input") }}
       </div>
 
       {% if latest %}
-      <aside class="workspace-rail" aria-label="Contesto report">
+      <aside class="workspace-rail" aria-label="{{ _('Contesto report') }}">
         <div class="rail-card">
-          <p class="rail-card__eyebrow">Indice</p>
+          <p class="rail-card__eyebrow">{{ _('Indice') }}</p>
           <p class="rail-card__grade" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</p>
           <p class="rail-card__sub">{{ latest.rating.score }}/100</p>
         </div>
         <div class="rail-card">
-          <p class="rail-card__eyebrow">Signal</p>
+          <p class="rail-card__eyebrow">{{ _('Signal') }}</p>
           <dl class="rail-metrics">
             <div>
               <dt>AIO</dt>
@@ -940,42 +937,42 @@ https://rivale2.com", class_="analyze-input") }}
               <dd>{{ latest.geo_score if latest.geo_score is not none else '—' }}</dd>
             </div>
             <div>
-              <dt>Gap</dt>
+              <dt>{{ _('Gap') }}</dt>
               <dd>{{ findings_critical|length if findings_critical is defined else 0 }}</dd>
             </div>
           </dl>
         </div>
         {% if engine_breakdown %}
         <div class="rail-card">
-          <p class="rail-card__eyebrow">SoV</p>
+          <p class="rail-card__eyebrow">{{ _('SoV') }}</p>
           <p class="rail-card__sov">{{ engine_breakdown.brand_sov }}%</p>
           <p class="rail-card__sub">
-            Brand share
+            {{ _('Brand share') }}
             {% if engine_breakdown.top_engine %}· top {{ engine_breakdown.top_engine }}{% endif %}
           </p>
           <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.evidence or 'proxy' }}</span>
         </div>
         {% endif %}
         <div class="rail-card rail-card--actions">
-          <p class="rail-card__eyebrow">Azioni</p>
-          <a href="{{ url_for('download_pack', analysis_id=latest.id) }}">Scarica pack</a>
+          <p class="rail-card__eyebrow">{{ _('Azioni') }}</p>
+          <a href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
           {% if latest.signals_hosted %}
-          <a href="#edge-signals">Edge Signals</a>
+          <a href="#edge-signals">{{ _('Edge Signals') }}</a>
           {% else %}
-          <a href="#edge-signals">Attiva Edge</a>
+          <a href="#edge-signals">{{ _('Attiva Edge') }}</a>
           {% endif %}
-          <a href="#findings-title">Findings critici</a>
+          <a href="#findings-title">{{ _('Findings critici') }}</a>
           {% if is_pro %}
-          <a href="{{ url_for('site_history', analysis_id=latest.id) }}">Storico run</a>
+          <a href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico run') }}</a>
           {% endif %}
         </div>
         {% if is_pro and latest %}
         <div class="rail-card">
-          <p class="rail-card__eyebrow">Azioni</p>
+          <p class="rail-card__eyebrow">{{ _('Azioni') }}</p>
           <p class="rail-card__sub">
-            <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">Publish verify</a><br />
-            <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">White-label MD</a><br />
-            <a href="{{ url_for('dashboard_settings') }}">GEO suite settings</a>
+            <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a><br />
+            <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label MD') }}</a><br />
+            <a href="{{ url_for('dashboard_settings') }}">{{ _('GEO suite settings') }}</a>
           </p>
         </div>
         {% endif %}

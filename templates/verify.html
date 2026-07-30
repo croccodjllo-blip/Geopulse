@@ -1,32 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Publish verify{% endblock %}
+{% block title %}{{ _('Publish verify') }}{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">Publish verify</p>
+    <p class="eyebrow">{{ _('Publish verify') }}</p>
     <h1 class="h-display page-intro__title">{{ analysis.domain }}</h1>
     <p class="lede page-intro__lede">
-      Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio.
-      Score verify: <strong>{{ verify.score }}</strong>/100
-      {% if verify.live %}· probe live{% endif %}
+      {{ _('Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio.') }}
+      {{ _('Score verify:') }} <strong>{{ verify.score }}</strong>/100
+      {% if verify.live %}· {{ _('probe live') }}{% endif %}
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">Checks</h2>
+    <h2 class="page-section__title">{{ _('Checks') }}</h2>
     <ul class="plain-list">
       {% for key, ok in verify.checks.items() %}
         <li>{% if ok %}✓{% else %}✗{% endif %} {{ key }}</li>
       {% endfor %}
     </ul>
     {% if verify.live_error %}
-      <p class="lede">Errore probe: {{ verify.live_error }}</p>
+      <p class="lede">{{ _('Errore probe:') }} {{ verify.live_error }}</p>
     {% endif %}
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Findings</h2>
+    <h2 class="page-section__title">{{ _('Findings') }}</h2>
     <ul class="plain-list">
       {% for f in verify.findings %}
         <li><strong>{{ f.title }}</strong> — {{ f.detail }}</li>
@@ -35,9 +35,9 @@
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a class="btn btn-primary" href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
     {% if is_pro or current_user.is_pro %}
-      <a class="btn btn-ghost" href="{{ url_for('download_whitelabel', analysis_id=analysis.id) }}">Export white-label MD</a>
+      <a class="btn btn-ghost" href="{{ url_for('download_whitelabel', analysis_id=analysis.id) }}">{{ _('Export white-label MD') }}</a>
     {% endif %}
   </div>
 </article>

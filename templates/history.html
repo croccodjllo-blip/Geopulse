@@ -1,26 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Storico{% endblock %}
+{% block title %}{{ _('Storico') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
 {% block main_class %}site-main--dash{% endblock %}
 
 {% block content %}
 <article class="page history-page">
   <header class="page-intro">
-    <p class="eyebrow">Account</p>
+    <p class="eyebrow">{{ _('Account') }}</p>
     <h1 class="h-display page-intro__title">
-      {% if history_is_runs %}Storico run{% else %}Ultime analisi{% endif %}
+      {% if history_is_runs %}{{ _('Storico run') }}{% else %}{{ _('Ultime analisi') }}{% endif %}
     </h1>
     <p class="lede page-intro__lede">
       {% if history_is_runs %}
-        Run manuali e schedulate (max {{ history_limit }}).
+        {{ _('Run manuali e schedulate (max') }} {{ history_limit }}).
       {% else %}
-        Ultimi siti analizzati (max {{ history_limit }}). Passa a Plus per lo storico run completo.
+        {{ _('Ultimi siti analizzati (max') }} {{ history_limit }}). {{ _('Passa a Plus per lo storico run completo.') }}
       {% endif %}
     </p>
     <p class="report-meta">
-      <a class="site-link" href="{{ url_for('dashboard') }}">← Dashboard</a>
+      <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
       {% if is_pro %}
-      <a class="site-link" href="{{ url_for('export_history_csv') }}">Export CSV</a>
+      <a class="site-link" href="{{ url_for('export_history_csv') }}">{{ _('Export CSV') }}</a>
       {% endif %}
     </p>
   </header>
@@ -35,7 +35,7 @@
           <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }} <span class="hint">AI-Driven Visibility</span></span>
           <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }} <span class="hint">Generative Engine Opt.</span></span>
           {% if history_is_runs %}
-          <span>{{ 'Schedulato' if item.source == 'scheduled' else 'Manuale' }}</span>
+          <span>{{ _('Schedulato') if item.source == 'scheduled' else _('Manuale') }}</span>
           {% endif %}
         </div>
       </div>
@@ -44,7 +44,7 @@
         {% if history_is_runs %}
         <a href="{{ url_for('download_run_pack', run_id=item.id) }}">ZIP</a>
         {% if item.site_id %}
-        <a href="{{ url_for('site_history', analysis_id=item.site_id) }}">Dettaglio</a>
+        <a href="{{ url_for('site_history', analysis_id=item.site_id) }}">{{ _('Dettaglio') }}</a>
         {% endif %}
         {% else %}
         <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
@@ -55,8 +55,8 @@
   </ul>
   {% else %}
   <div class="empty-state">
-    <strong>Nessuna analisi ancora</strong>
-    <p>Lancia la prima analisi dalla <a href="{{ url_for('dashboard') }}">dashboard</a>.</p>
+    <strong>{{ _('Nessuna analisi ancora') }}</strong>
+    <p>{{ _('Lancia la prima analisi dalla') }} <a href="{{ url_for('dashboard') }}">{{ _('dashboard') }}</a>.</p>
   </div>
   {% endif %}
 </article>

@@ -66,13 +66,18 @@
   <section class="page-section">
     <h2 class="page-section__title">6. Cookie</h2>
     <p class="lede">
-      Usiamo cookie tecnici necessari all’autenticazione e alla protezione CSRF.
+      Usiamo cookie tecnici necessari al funzionamento del sito
+      (sessione, protezione CSRF, preferenza lingua).
+      {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
       Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e,
       se configurati, Google Ads / AdSense per misurazione e annunci.
       Il consenso è gestito con <strong>Google Consent Mode v2</strong>:
       di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in qualsiasi momento
       cancellando i dati del sito e ricaricando la pagina.
       Non attiviamo AdSense senza consenso pubblicitario.
+      {% else %}
+      Attualmente non sono attivi cookie di misurazione o pubblicitari di terze parti su questo sito.
+      {% endif %}
     </p>
   </section>
 

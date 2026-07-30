@@ -1,62 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Guida — Dopo l’analisi{% endblock %}
+{% block title %}{{ _('Guida') }} — {{ _("Dopo l'analisi") }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
 {% block main_class %}site-main--dash{% endblock %}
 
 {% block content %}
 <article class="page guide-page">
   <header class="page-intro">
-    <p class="eyebrow">Guida</p>
-    <h1 class="h-display page-intro__title">Dopo l’analisi</h1>
+    <p class="eyebrow">{{ _('Guida') }}</p>
+    <h1 class="h-display page-intro__title">{{ _("Dopo l'analisi") }}</h1>
     <p class="lede page-intro__lede">
-      Ordine consigliato per chiudere i gap di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO) e pubblicare il pack.
+      {{ _('Ordine consigliato per chiudere i gap di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO) e pubblicare il pack.') }}
     </p>
     <p class="report-meta">
-      <a class="site-link" href="{{ url_for('dashboard') }}">← Torna alla dashboard</a>
+      <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Torna alla dashboard') }}</a>
     </p>
   </header>
 
   <ol class="guide-page__steps">
     <li>
-      <strong>Indice DDD→AAA</strong>
-      <span>Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado.</span>
+      <strong>{{ _('Indice DDD→AAA') }}</strong>
+      <span>{{ _('Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado.') }}</span>
     </li>
     <li>
-      <strong>Score AIO / GEO</strong>
-      <span>AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Sotto 60 = intervento prioritario.</span>
+      <strong>{{ _('Score AIO / GEO') }}</strong>
+      <span>{{ _('AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Sotto 60 = intervento prioritario.') }}</span>
     </li>
     <li>
-      <strong>Findings</strong>
-      <span>Chiudi prima critical e warn; usa anche <code>fix-this-week.md</code> nel pack.</span>
+      <strong>{{ _('Findings') }}</strong>
+      <span>{{ _('Chiudi prima critical e warn; usa anche') }} <code>fix-this-week.md</code> {{ _('nel pack.') }}</span>
     </li>
     <li>
       <strong>llms.txt</strong>
-      <span>Pubblica in root: <code>/llms.txt</code>.</span>
+      <span>{{ _('Pubblica in root:') }} <code>/llms.txt</code>.</span>
     </li>
     <li>
       <strong>JSON-LD + FAQ + meta</strong>
-      <span>Incolla nel <code>&lt;head&gt;</code> delle pagine chiave.</span>
+      <span>{{ _('Incolla nel') }} <code>&lt;head&gt;</code> {{ _('delle pagine chiave.') }}</span>
     </li>
     <li>
       <strong>robots.txt</strong>
-      <span>Unisci la bozza al file esistente e lascia aperti i bot AI utili.</span>
+      <span>{{ _('Unisci la bozza al file esistente e lascia aperti i bot AI utili.') }}</span>
     </li>
     <li>
-      <strong>Re-scan</strong>
-      <span>Su Plus imposta frequenza e orario UTC, poi confronta before/after.</span>
+      <strong>{{ _('Re-scan') }}</strong>
+      <span>{{ _('Su Plus imposta frequenza e orario UTC, poi confronta before/after.') }}</span>
     </li>
   </ol>
 
   <section class="guide-page__files" aria-labelledby="files-title">
-    <h2 class="dash-block__title" id="files-title">Dove vanno i file</h2>
+    <h2 class="dash-block__title" id="files-title">{{ _('Dove vanno i file') }}</h2>
     <ul>
-      <li><code>llms.txt</code> → root del sito</li>
+      <li><code>llms.txt</code> → {{ _('root del sito') }}</li>
       <li><code>organization.jsonld.html</code> → <code>&lt;head&gt;</code></li>
       <li><code>faq.jsonld.html</code> → <code>&lt;head&gt;</code></li>
       <li><code>meta-pack.html</code> → <code>&lt;head&gt;</code></li>
-      <li><code>robots.txt</code> → root del sito</li>
-      <li><code>fix-this-week.md</code> → checklist operativa</li>
-      <li><code>before-after.md</code> → confronto tra run</li>
+      <li><code>robots.txt</code> → {{ _('root del sito') }}</li>
+      <li><code>fix-this-week.md</code> → {{ _('checklist operativa') }}</li>
+      <li><code>before-after.md</code> → {{ _('confronto tra run') }}</li>
     </ul>
   </section>
 </article>

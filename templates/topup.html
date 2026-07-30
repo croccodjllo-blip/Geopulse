@@ -1,36 +1,36 @@
 {% extends "base.html" %}
-{% block title %}Ricarica crediti — Centropic{% endblock %}
+{% block title %}{{ _('Ricarica crediti') }} — Centropic{% endblock %}
 
 {% block content %}
 <div class="page" style="max-width: 620px; padding: 3rem 0 5rem;">
   <div class="page-intro">
-    <p class="eyebrow">Crediti prepagati</p>
-    <h1 class="page-intro__title">Ricarica il tuo credito</h1>
+    <p class="eyebrow">{{ _('Crediti prepagati') }}</p>
+    <h1 class="page-intro__title">{{ _('Ricarica il tuo credito') }}</h1>
     <p class="page-intro__lede">
-      Ogni analisi consuma crediti proporzionali ai token AI utilizzati.
-      Scegli un pacchetto o inserisci un importo personalizzato.
+      {{ _('Ogni analisi consuma crediti proporzionali ai token AI utilizzati.') }}
+      {{ _('Scegli un pacchetto o inserisci un importo personalizzato.') }}
     </p>
   </div>
 
   <div class="page-section">
-    <h2 class="page-section__title">Credito attuale</h2>
+    <h2 class="page-section__title">{{ _('Credito attuale') }}</h2>
     <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
       {% if current_user.is_admin %}
-        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">Credito illimitato (account admin)</span>
+        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Credito illimitato (account admin)') }}</span>
       {% else %}
         €&nbsp;{{ "%.4f"|format(balance_cents / 100) }}
       {% endif %}
     </p>
     {% if ledger %}
     <details style="margin-top: 1rem;">
-      <summary style="cursor: pointer; font-size: 0.85rem; color: var(--ink-soft);">Ultime transazioni</summary>
+      <summary style="cursor: pointer; font-size: 0.85rem; color: var(--ink-soft);">{{ _('Ultime transazioni') }}</summary>
       <table style="width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:0.75rem;">
         <thead>
           <tr>
-            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Data</th>
-            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Descrizione</th>
-            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Importo</th>
-            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">Saldo dopo</th>
+            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Data') }}</th>
+            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Descrizione') }}</th>
+            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Importo') }}</th>
+            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Saldo dopo') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -53,7 +53,7 @@
   </div>
 
   <div class="page-section">
-    <h2 class="page-section__title">Scegli un pacchetto</h2>
+    <h2 class="page-section__title">{{ _('Scegli un pacchetto') }}</h2>
     <div class="topup-grid">
       {% for pkg in packages %}
       <form method="POST" action="{{ url_for('topup_stripe_checkout') }}">
@@ -62,19 +62,18 @@
         <button class="topup-btn" type="submit">
           <span class="topup-btn__amount">€&nbsp;{{ "%.2f"|format(pkg.cents / 100) }}</span>
           <span class="topup-btn__desc">{{ pkg.label }}</span>
-          <span class="topup-btn__approx">≈ {{ pkg.analyses }} analisi</span>
+          <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
       </form>
       {% endfor %}
     </div>
     <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
-      Il credito non ha scadenza. Le analisi più semplici costano meno,
-      quelle con SoV Misurato su più engine costano di più.
+      {{ _('Il credito non ha scadenza. Le analisi più semplici costano meno, quelle con SoV Misurato su più engine costano di più.') }}
     </p>
   </div>
 
   <div class="page-cta">
-    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">← Dashboard</a>
+    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
   </div>
 </div>
 
