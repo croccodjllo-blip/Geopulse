@@ -4041,13 +4041,39 @@ def dashboard_analyze_confirmed():
 
 
 # ── Top-up pages & Stripe payment ──────────────────────────────────────────
+#
+# GEO token pricing (product unit of credit purchase):
+#   1 token == 1 EUR cent == €0.01  →  1000 token = €10.00
+# Analysis yield (engine estimate + 8% hold grace, gpt-4o-mini stack):
+#   light / measured OpenAI ≈ 2¢ hold → ~500 analisi / 1000 token
+#   measured multi-engine   ≈ 3¢ hold → ~333 analisi / 1000 token
+# Packs advertise ~350 / 1000 token (mid conservative, multi-engine biased).
+
+GEO_TOKEN_EUR_CENTS = 1  # 1 token = 1 cent
+GEO_TOKENS_PER_EURO = 100  # €1 → 100 token; €10 → 1000 token
 
 _TOPUP_PACKAGES = [
-    {"cents": 100,   "label": "Starter",    "analyses": "~30"},
-    {"cents": 500,   "label": "Piccolo",    "analyses": "~150"},
-    {"cents": 1000,  "label": "Standard",   "analyses": "~300"},
-    {"cents": 5000,  "label": "Avanzato",   "analyses": "1.500+"},
-    {"cents": 10000, "label": "Pro",        "analyses": "3.000+"},
+    {
+        "cents": 1000,
+        "tokens": 1000,
+        "label": "Starter",
+        "analyses": "~350",
+        "price_eur": 10,
+    },
+    {
+        "cents": 2000,
+        "tokens": 2000,
+        "label": "Growth",
+        "analyses": "~700",
+        "price_eur": 20,
+    },
+    {
+        "cents": 5000,
+        "tokens": 5000,
+        "label": "Scale",
+        "analyses": "~1.750",
+        "price_eur": 50,
+    },
 ]
 
 STRIPE_TOPUP_SUCCESS_URL = os.getenv("STRIPE_TOPUP_SUCCESS_URL", "")
@@ -4160,7 +4186,12 @@ def topup_stripe_checkout():
                 "price_data": {
                     "currency": "eur",
                     "unit_amount": amount_cents,
-                    "product_data": {"name": f"Crediti Centropic — €{amount_cents/100:.2f}"},
+                    "product_data": {
+                        "name": (
+                            f"Centropic — {amount_cents} token "
+                            f"(€{amount_cents/100:.2f})"
+                        ),
+                    },
                 },
                 "quantity": 1,
             }],
@@ -4262,7 +4293,7 @@ def billing_topup_webhook():
 # ── Admin: top-up crediti manuale ──────────────────────────────────────────
 
 # Allowlisted admin top-up amounts (must match admin.html select options).
-ADMIN_TOPUP_AMOUNTS_CENTS = frozenset({1000, 5000, 10000})
+ADMIN_TOPUP_AMOUNTS_CENTS = frozenset({1000, 2000, 5000})
 
 
 @app.route("/admin/topup/<int:user_id>", methods=["POST"])

@@ -22,12 +22,11 @@ PADDLE_ENV = (os.getenv("PADDLE_ENV") or "sandbox").strip().lower()
 PADDLE_PRICE_PLUS = (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or "").strip()
 
 # Optional per-package catalog prices (EUR cents → pri_…)
+# Public packs: €10 / €20 / €50  (= 1000 / 2000 / 5000 GEO token).
 _TOPUP_ENV = {
-    100: "PADDLE_PRICE_TOPUP_100",
-    500: "PADDLE_PRICE_TOPUP_500",
     1000: "PADDLE_PRICE_TOPUP_1000",
+    2000: "PADDLE_PRICE_TOPUP_2000",
     5000: "PADDLE_PRICE_TOPUP_5000",
-    10000: "PADDLE_PRICE_TOPUP_10000",
 }
 
 

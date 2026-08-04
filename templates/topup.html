@@ -1,26 +1,29 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Ricarica crediti') }}{% endblock %}
+{% block title %}{{ _('Ricarica token') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
-{% block meta_description %}{{ _('Ricarica crediti Centropic: pacchetti prepagati per analisi AIO/GEO, citation monitor e pack artifact su centropic.ai.') }}{% endblock %}
+{% block meta_description %}{{ _('Ricarica token Centropic: €10 ogni 1000 token. Pacchetti €10, €20, €50 per analisi AIO/GEO su centropic.ai.') }}{% endblock %}
 
 {% block content %}
 <div class="page" style="max-width: 620px; padding: 3rem 0 5rem;">
   <div class="page-intro">
-    <p class="eyebrow">{{ _('Crediti prepagati') }}</p>
-    <h1 class="page-intro__title">{{ _('Ricarica il tuo credito') }}</h1>
+    <p class="eyebrow">{{ _('Token prepagati') }}</p>
+    <h1 class="page-intro__title">{{ _('Ricarica i tuoi token') }}</h1>
     <p class="page-intro__lede">
-      {{ _('Ogni analisi consuma crediti proporzionali ai token AI utilizzati.') }}
-      {{ _('Scegli un pacchetto o inserisci un importo personalizzato.') }}
+      {{ _('Tariffa fissa: €10 ogni 1000 token (1 token = €0,01).') }}
+      {{ _('Ogni analisi consuma token in base all’uso AI reale (tipicamente 2–3 token con margine di sicurezza).') }}
     </p>
   </div>
 
   <div class="page-section">
-    <h2 class="page-section__title">{{ _('Credito attuale') }}</h2>
+    <h2 class="page-section__title">{{ _('Saldo attuale') }}</h2>
     <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
       {% if current_user.is_admin %}
         ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Credito illimitato (account admin)') }}</span>
       {% else %}
-        €&nbsp;{{ "%.4f"|format(balance_cents / 100) }}
+        {{ balance_cents }} {{ _('token') }}
+        <span style="font-size:0.85rem; font-weight:400; color:var(--ink-soft);">
+          (€&nbsp;{{ "%.2f"|format(balance_cents / 100) }})
+        </span>
       {% endif %}
     </p>
     {% if ledger %}
@@ -31,7 +34,7 @@
           <tr>
             <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Data') }}</th>
             <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Descrizione') }}</th>
-            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Importo') }}</th>
+            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Token') }}</th>
             <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Saldo dopo') }}</th>
           </tr>
         </thead>
@@ -41,10 +44,10 @@
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.created_at.strftime('%d/%m %H:%M') }}</td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.description[:60] }}</td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; {% if entry.amount_cents > 0 %}color:#00c97a{% else %}color:#e84040{% endif %}; font-family:var(--font-mono);">
-              {% if entry.amount_cents > 0 %}+{% endif %}€&nbsp;{{ "%.4f"|format(entry.amount_cents / 100) }}
+              {% if entry.amount_cents > 0 %}+{% endif %}{{ entry.amount_cents }}
             </td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; font-family:var(--font-mono);">
-              €&nbsp;{{ "%.4f"|format(entry.balance_after_cents / 100) }}
+              {{ entry.balance_after_cents }}
             </td>
           </tr>
           {% endfor %}
@@ -68,14 +71,14 @@
           data-paddle-checkout="topup"
           data-paddle-cents="{{ pkg.cents }}"
         >
-          <span class="topup-btn__amount">€&nbsp;{{ "%.2f"|format(pkg.cents / 100) }}</span>
-          <span class="topup-btn__desc">{{ pkg.label }}</span>
+          <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
+          <span class="topup-btn__desc">{{ pkg.tokens }} {{ _('token') }} · {{ pkg.label }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
         {% else %}
         <button class="topup-btn" type="submit">
-          <span class="topup-btn__amount">€&nbsp;{{ "%.2f"|format(pkg.cents / 100) }}</span>
-          <span class="topup-btn__desc">{{ pkg.label }}</span>
+          <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
+          <span class="topup-btn__desc">{{ pkg.tokens }} {{ _('token') }} · {{ pkg.label }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
         {% endif %}
@@ -83,7 +86,7 @@
       {% endfor %}
     </div>
     <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
-      {{ _('Il credito non ha scadenza. Le analisi più semplici costano meno, quelle con SoV Misurato su più engine costano di più.') }}
+      {{ _('Con 1000 token: circa 500 analisi leggere, circa 333 con SoV Misurato multi-engine. Stima pack ≈350 analisi (media conservativa). Il credito non ha scadenza.') }}
     </p>
   </div>
 

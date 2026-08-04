@@ -80,7 +80,7 @@ def test_session_invalidated_after_password_change():
 
 
 def test_admin_topup_allowlist():
-    assert ADMIN_TOPUP_AMOUNTS_CENTS == frozenset({1000, 5000, 10000})
+    assert ADMIN_TOPUP_AMOUNTS_CENTS == frozenset({1000, 2000, 5000})
     assert 999999 not in ADMIN_TOPUP_AMOUNTS_CENTS
 
 

@@ -85,8 +85,8 @@ def test_client_config_shape(monkeypatch):
 
 
 def test_topup_price_map(monkeypatch):
-    monkeypatch.setenv("PADDLE_PRICE_TOPUP_500", "pri_500")
-    assert pb.paddle_topup_price_id(500) == "pri_500"
+    monkeypatch.setenv("PADDLE_PRICE_TOPUP_2000", "pri_2000")
+    assert pb.paddle_topup_price_id(2000) == "pri_2000"
     assert pb.paddle_topup_price_id(123) is None
 
 
@@ -95,7 +95,7 @@ def test_transaction_grants_plus_ignores_custom_data(monkeypatch):
     # Attacker sets custom_data.product=plus on a cheap one-time item.
     data = {
         "custom_data": {"product": "plus", "centropic_user_id": "1"},
-        "items": [{"price_id": "pri_topup_100", "price": {"id": "pri_topup_100"}}],
+        "items": [{"price_id": "pri_topup_1000", "price": {"id": "pri_topup_1000"}}],
     }
     assert pb.transaction_grants_plus(data) is False
 
@@ -111,14 +111,14 @@ def test_transaction_grants_plus_by_price_id(monkeypatch):
 
 
 def test_topup_cents_from_price_id_not_custom_data(monkeypatch):
-    monkeypatch.setenv("PADDLE_PRICE_TOPUP_100", "pri_100")
-    monkeypatch.setenv("PADDLE_PRICE_TOPUP_10000", "pri_10000")
+    monkeypatch.setenv("PADDLE_PRICE_TOPUP_1000", "pri_1000")
+    monkeypatch.setenv("PADDLE_PRICE_TOPUP_5000", "pri_5000")
     data = {
-        "custom_data": {"product": "topup", "topup_cents": "10000"},
-        "items": [{"price_id": "pri_100"}],
-        "details": {"totals": {"grand_total": "100"}},
+        "custom_data": {"product": "topup", "topup_cents": "5000"},
+        "items": [{"price_id": "pri_1000"}],
+        "details": {"totals": {"grand_total": "1000"}},
     }
-    assert pb.topup_cents_for_transaction(data) == 100
+    assert pb.topup_cents_for_transaction(data) == 1000
 
 
 def test_transaction_gross_cents_no_custom_data_fallback():

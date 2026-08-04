@@ -7,7 +7,8 @@ Requires:
 
 Creates (if missing by name):
   - Product "Centropic Plus" + monthly price
-  - Product "Centropic Credits" + one-time prices for €1/5/10/50/100
+  - Product "Centropic Credits" + one-time prices for €10/20/50
+    (1000 / 2000 / 5000 GEO token at €10 per 1000 token)
 
 Prints env lines to paste into .env. Does not write secrets.
 """
@@ -29,11 +30,9 @@ BASE = (
 )
 
 TOPUPS = [
-    (100, "Crediti €1"),
-    (500, "Crediti €5"),
-    (1000, "Crediti €10"),
-    (5000, "Crediti €50"),
-    (10000, "Crediti €100"),
+    (1000, "Crediti €10 — 1000 token"),
+    (2000, "Crediti €20 — 2000 token"),
+    (5000, "Crediti €50 — 5000 token"),
 ]
 
 
