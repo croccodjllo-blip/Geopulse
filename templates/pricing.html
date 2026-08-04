@@ -64,6 +64,7 @@
           <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
         </form>
         {% endif %}
+        {# Only advertise yearly when a matching Paddle/Stripe price ID is configured. #}
         {% if plus_yearly_ready %}
         <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -72,17 +73,14 @@
             {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
           </button>
         </form>
-        {% else %}
-        <p class="plan-note" style="margin-top:0.75rem">
-          {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%) —
-          <a href="mailto:info@centropic.ai?subject=Plus%20annuale">{{ _('richiedi attivazione') }}</a>
-        </p>
         {% endif %}
       {% elif paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
+      {% if plus_yearly_ready %}
       <p class="plan-note" style="margin-top:0.75rem">
         {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
       </p>
+      {% endif %}
       {% else %}
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
       <a class="btn btn-core btn-block" href="{{ url_for('topup_credit_page') }}" style="margin-top:0.5rem">{{ _('Ricarica token') }}</a>

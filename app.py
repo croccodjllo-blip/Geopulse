@@ -2973,6 +2973,7 @@ def about():
     return render_template("about.html")
 
 
+@app.route("/contact")
 @app.route("/contatti")
 def contact():
     return render_template("contact.html")
