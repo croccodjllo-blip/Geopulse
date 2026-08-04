@@ -2884,7 +2884,13 @@ def ads_txt():
     if ADSENSE_CLIENT_ID and ADSENSE_CLIENT_ID.startswith("ca-pub-"):
         body = f"google.com, {ADSENSE_CLIENT_ID}, DIRECT, f08c47fec0942fa0\n"
         return Response(body, mimetype="text/plain; charset=utf-8")
-    return Response("# ads.txt not configured\n", mimetype="text/plain; charset=utf-8", status=404)
+    # 200 (not 404): empty ads.txt is valid when the site does not sell ads.
+    # A 404 here becomes a crawl critical and can tank the site rating.
+    body = (
+        "# centropic.ai does not currently authorize third-party ad crawlers.\n"
+        "# This file is intentionally published empty (HTTP 200) for crawl hygiene.\n"
+    )
+    return Response(body, mimetype="text/plain; charset=utf-8")
 
 
 @app.route("/privacy")

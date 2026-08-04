@@ -723,12 +723,18 @@ def analyze_crawl_aggregate(
     errors = [p for p in pages if (p.get("status_code") or 200) >= 400]
     slow = [p for p in pages if (p.get("response_ms") or 0) > 3000]
     if errors:
+        sample = ", ".join(
+            (p.get("url") or p.get("final_url") or "")[:80] for p in errors[:4]
+        )
         findings.append(
             {
                 "category": "technical",
                 "severity": "critical",
                 "title": f"{len(errors)} URL con errore HTTP",
-                "detail": "Correggi 4xx/5xx nel campione crawl.",
+                "detail": (
+                    f"Correggi 4xx/5xx nel campione crawl"
+                    + (f": {sample}" if sample.strip() else ".")
+                ),
             }
         )
     if slow:

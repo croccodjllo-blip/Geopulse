@@ -83,7 +83,9 @@ SKIP_PATH_RE = re.compile(
     r"(logout|sign[-_]?out|cart|checkout|wp-admin|admin/|/cdn-cgi/"
     r"|(?:^|/)lang(?:/|$)"
     r"|(?:^|/)crediti(?:/|$)"
-    r"|(?:^|/)dashboard(?:/|$))",
+    r"|(?:^|/)dashboard(?:/|$)"
+    r"|(?:^|/)health(?:/|$)"
+    r"|(?:^|/)api(?:/|$))",
     re.I,
 )
 # Query keys that mint near-duplicate URLs (i18n switcher, login return, ads).

@@ -36,9 +36,21 @@
     <p class="lede">
       {{ _('Per la metodologia Stimato/Misurato vedi') }}
       <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a>.
-      {{ _('Endpoint machine:') }} <a href="{{ url_for('health') }}">/health</a>,
+      {{ _('Endpoint machine (JSON, non HTML):') }} <code>/health</code>.
+      {{ _('Policy crawler:') }}
       <a href="{{ url_for('robots_txt') }}">/robots.txt</a>,
-      <a href="{{ url_for('llms_txt') }}">/llms.txt</a>.
+      <a href="{{ url_for('llms_txt') }}">/llms.txt</a>,
+      <a href="{{ url_for('ai_txt') }}">/ai.txt</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Segnali che monitoriamo qui') }}</h2>
+    <p class="lede">
+      {{ _('Questa pagina conferma che l’app Flask risponde, che il database delle analisi è raggiungibile, che la coda job async è interrogabile e che il provider pagamenti (Paddle/Stripe) è configurato o in modalità interesse. Non espone metriche private, token utenti o log applicativi.') }}
+    </p>
+    <p class="lede">
+      {{ _('Uno status verde non implica che i tuoi score AIO/GEO siano alti: per quello serve un’analisi di dominio dalla dashboard, con findings e pack artifact da pubblicare.') }}
     </p>
   </section>
 
