@@ -119,12 +119,11 @@
         {{ _('Disponibile:') }} <strong>{{ balance_cents|tok }}</strong>
       </span>
       {% if balance_cents >= required_cents %}
-        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Token sufficienti (con margine sicurezza') }} {{ grace_margin_pct }}%)</span>
+        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Token sufficienti') }}</span>
       {% else %}
         <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Token insufficienti') }}</span>
         <p class="credit-status__hint">
-          {{ _('Ricarica almeno') }} {{ (required_cents - balance_cents)|tok }} {{ _('per procedere') }}
-          ({{ _('margine sicurezza') }} {{ grace_margin_pct }}% {{ _('incluso') }}).
+          {{ _('Ricarica almeno') }} {{ (required_cents - balance_cents)|tok }} {{ _('per procedere.') }}
           <a href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }} →</a>
         </p>
       {% endif %}
