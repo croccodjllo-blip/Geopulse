@@ -6,9 +6,6 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    // Flask shell still ships the live dashboard UI
-    "./templates/**/*.html",
-    "./static/js/**/*.{js,ts}",
   ],
   theme: {
     extend: {
@@ -30,5 +27,4 @@ const config: Config = {
   },
   plugins: [],
 };
-
 export default config;

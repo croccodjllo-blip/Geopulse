@@ -1,13 +1,10 @@
 /** @type {import('tailwindcss').Config} */
-/** JS mirror of tailwind.config.ts — keep brand tokens in sync. */
 module.exports = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./templates/**/*.html",
-    "./static/js/**/*.{js,ts}",
   ],
   theme: {
     extend: {
