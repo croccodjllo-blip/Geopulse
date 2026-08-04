@@ -70,9 +70,12 @@ def test_estimate_with_measured_openai_only():
         has_perplexity=False,
         has_anthropic=False,
     )
-    # llms.txt + openai SoV
+    # llms.txt + openai SoV (5 prompt calls)
     assert len(est.breakdown) == 2
+    assert est.estimated_calls == 6
     assert est.raw_cost_usd_micro > 0
+    # Per-call ceil: 6 AI calls → ≥6¢ (matches realtime debit shape)
+    assert est.service_cost_eur_cents == 6
 
 
 def test_estimate_all_providers_measured():
@@ -86,8 +89,30 @@ def test_estimate_all_providers_measured():
         has_perplexity=True,
         has_anthropic=True,
     )
-    assert len(est.breakdown) == 4   # llms + 3 probes
-    assert est.service_cost_eur_cents >= 1
+    assert len(est.breakdown) == 4   # llms + 3 probe groups
+    # 1 llms + 5 openai + 3 pplx + 3 anthropic = 12 calls
+    assert est.estimated_calls == 12
+    assert est.service_cost_eur_cents == 12
+
+
+def test_estimate_mirrors_per_call_ceil_not_bulk_round():
+    """Aggregating tokens then rounding once would under-bill measured runs."""
+    est = estimate_analysis_cost(
+        openai_model="gpt-4o-mini",
+        anthropic_model="claude-haiku-4-5-20251001",
+        perplexity_model="sonar",
+        run_measured=True,
+        n_prompts=5,
+        has_openai=True,
+        has_perplexity=True,
+        has_anthropic=True,
+        has_gemini=True,
+        has_xai=True,
+    )
+    assert est.estimated_calls == 18
+    assert est.service_cost_eur_cents == 18
+    hold = required_credit_with_grace_cents(est.service_cost_eur_cents)
+    assert hold == 20
 
 
 def test_estimate_as_dict():

@@ -4107,10 +4107,10 @@ def dashboard_analyze_confirmed():
 # Packs:
 #   €10 → 100 token, €20 → 200 token, €50 → 600 token (bonus)
 # Plus subscription (€14.99/mo): includes 100 token each billing cycle.
-# Analysis yield (engine estimate + 8% hold grace, gpt-4o-mini stack):
-#   light / measured OpenAI ≈ 2¢ hold → ~0.2 token → ~500 analisi / €10
-#   measured multi-engine   ≈ 3¢ hold → ~0.3 token → ~333 analisi / €10
-# Packs advertise ~350 analisi / €10 (mid conservative, multi-engine biased).
+# Pre-analysis estimate mirrors realtime per-call ceil debit (citation probes
+# count as one call each). Typical holds with SoV Misurato:
+#   OpenAI-only ≈ 7¢ · OAI+Pplx ≈ 10¢ · multi-engine ≈ 20–23¢
+# Pack "analisi" copy uses multi-engine hold (~20¢) as conservative mid.
 
 _TOPUP_PACKAGES = [
     {
@@ -4118,7 +4118,7 @@ _TOPUP_PACKAGES = [
         "tokens": 100,
         "credit_cents": 1000,  # ledger credit (= tokens × 10)
         "label": "Starter",
-        "analyses": "~350",
+        "analyses": "~50",
         "price_eur": 10,
     },
     {
@@ -4126,7 +4126,7 @@ _TOPUP_PACKAGES = [
         "tokens": 200,
         "credit_cents": 2000,
         "label": "Growth",
-        "analyses": "~700",
+        "analyses": "~100",
         "price_eur": 20,
     },
     {
@@ -4134,7 +4134,7 @@ _TOPUP_PACKAGES = [
         "tokens": 600,
         "credit_cents": 6000,  # bonus vs €50 payment
         "label": "Scale",
-        "analyses": "~2.100",
+        "analyses": "~300",
         "price_eur": 50,
     },
 ]

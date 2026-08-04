@@ -129,35 +129,30 @@ def _estimate_llms_txt(model: str) -> TokenBudget:
     return TokenBudget(model=model, input_tokens=800, output_tokens=1500)
 
 
-def _estimate_openai_sov(model: str, n_prompts: int) -> TokenBudget:
-    """_probe_openai() — up to 8 prompts, 350 out each."""
-    n = min(n_prompts, 8)
-    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+def _estimate_sov_call(model: str) -> TokenBudget:
+    """One citation-monitor prompt call (matches runtime per-prompt debit)."""
+    return TokenBudget(model=model, input_tokens=150, output_tokens=350)
 
 
-def _estimate_perplexity_sov(model: str, n_prompts: int) -> TokenBudget:
-    n = min(n_prompts, 3)
-    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+def _openai_sov_calls(n_prompts: int) -> int:
+    # citation_monitor._probe_openai iterates all prompts (cap kept for sanity).
+    return max(0, min(int(n_prompts or 0), 8))
 
 
-def _estimate_anthropic_sov(model: str, n_prompts: int) -> TokenBudget:
-    n = min(n_prompts, 3)
-    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+def _other_sov_calls(n_prompts: int) -> int:
+    # Non-OpenAI probes use prompts[:3].
+    return max(0, min(int(n_prompts or 0), 3))
 
 
-def _estimate_gemini_sov(model: str, n_prompts: int) -> TokenBudget:
-    n = min(n_prompts, 3)
-    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+def _service_eur_cents_from_micro(raw_micro: float) -> float:
+    """Fractional EUR cents after platform spread (pre-ceil)."""
+    service_micro = float(raw_micro) * (1 + PLATFORM_SPREAD)
+    return service_micro / 1_000_000 * USD_TO_EUR * 100
 
 
-def _estimate_xai_sov(model: str, n_prompts: int) -> TokenBudget:
-    n = min(n_prompts, 3)
-    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
-
-
-def _estimate_azure_sov(model: str, n_prompts: int) -> TokenBudget:
-    n = min(n_prompts, 3)
-    return TokenBudget(model=model, input_tokens=n * 150, output_tokens=n * 350)
+def _debit_cents_for_budget(budget: TokenBudget) -> int:
+    """Mirror runtime ``debit_cents_from_usage`` for a single AI call."""
+    return debit_cents_from_usage(_service_eur_cents_from_micro(budget.cost_usd_micro()))
 
 
 # ─────────────────────────── estimate API ────────────────────────────────────
@@ -171,6 +166,7 @@ class CostEstimate:
     breakdown: list[dict[str, Any]] = field(default_factory=list)
     run_measured: bool = False
     n_prompts: int = 0
+    estimated_calls: int = 0
 
     @property
     def service_cost_eur(self) -> float:
@@ -185,6 +181,7 @@ class CostEstimate:
             "spread_pct": round(PLATFORM_SPREAD * 100),
             "run_measured": self.run_measured,
             "n_prompts": self.n_prompts,
+            "estimated_calls": self.estimated_calls,
             "breakdown": self.breakdown,
         }
 
@@ -206,92 +203,115 @@ def estimate_analysis_cost(
     azure_model: str = "gpt-4o-mini",
     has_azure: bool = False,
 ) -> CostEstimate:
-    """Estimate the total cost of one analysis run (before it runs)."""
-    budgets: list[TokenBudget] = []
+    """Estimate total analysis cost mirroring realtime per-call ceil billing.
+
+    Runtime debits each AI HTTP call separately with ``ceil`` to whole EUR
+    cents. Aggregating tokens then rounding once under-estimates measured
+    multi-prompt runs; this estimate expands one budget per expected call.
+    """
+    call_budgets: list[TokenBudget] = []
     breakdown: list[dict[str, Any]] = []
 
-    # 1. llms.txt generation
-    if has_openai:
-        b = _estimate_llms_txt(openai_model)
-        budgets.append(b)
+    def _add_group(
+        *,
+        item: str,
+        provider: str,
+        model: str,
+        calls: int,
+        per_call: TokenBudget,
+    ) -> None:
+        if calls <= 0:
+            return
+        debit = 0
+        raw = 0.0
+        for _ in range(calls):
+            call_budgets.append(per_call)
+            debit += _debit_cents_for_budget(per_call)
+            raw += per_call.cost_usd_micro()
         breakdown.append({
-            "item": "Generazione llms.txt",
-            "provider": "openai",
-            "model": b.model,
-            "input_tokens": b.input_tokens,
-            "output_tokens": b.output_tokens,
+            "item": item,
+            "provider": provider,
+            "model": model,
+            "input_tokens": per_call.input_tokens * calls,
+            "output_tokens": per_call.output_tokens * calls,
+            "estimated_calls": calls,
+            "estimated_debit_cents": debit,
         })
 
-    # 2. Measured SoV probes (only if Plus + keys configured + flag on)
+    # 1. llms.txt generation — one OpenAI call
+    if has_openai:
+        b = _estimate_llms_txt(openai_model)
+        _add_group(
+            item="Generazione llms.txt",
+            provider="openai",
+            model=b.model,
+            calls=1,
+            per_call=b,
+        )
+
+    # 2. Measured SoV probes — one debit per prompt call (matches citation_monitor)
     if run_measured:
         if has_openai:
-            b = _estimate_openai_sov(openai_model, n_prompts)
-            budgets.append(b)
-            breakdown.append({
-                "item": f"Citation probe ChatGPT ({n_prompts} prompt)",
-                "provider": "openai",
-                "model": b.model,
-                "input_tokens": b.input_tokens,
-                "output_tokens": b.output_tokens,
-            })
+            n = _openai_sov_calls(n_prompts)
+            _add_group(
+                item=f"Citation probe ChatGPT ({n} call)",
+                provider="openai",
+                model=openai_model,
+                calls=n,
+                per_call=_estimate_sov_call(openai_model),
+            )
         if has_perplexity:
-            b = _estimate_perplexity_sov(perplexity_model, n_prompts)
-            budgets.append(b)
-            breakdown.append({
-                "item": f"Citation probe Perplexity ({min(n_prompts,3)} prompt)",
-                "provider": "perplexity",
-                "model": b.model,
-                "input_tokens": b.input_tokens,
-                "output_tokens": b.output_tokens,
-            })
+            n = _other_sov_calls(n_prompts)
+            _add_group(
+                item=f"Citation probe Perplexity ({n} call)",
+                provider="perplexity",
+                model=perplexity_model,
+                calls=n,
+                per_call=_estimate_sov_call(perplexity_model),
+            )
         if has_anthropic:
-            b = _estimate_anthropic_sov(anthropic_model, n_prompts)
-            budgets.append(b)
-            breakdown.append({
-                "item": f"Citation probe Claude ({min(n_prompts,3)} prompt)",
-                "provider": "anthropic",
-                "model": b.model,
-                "input_tokens": b.input_tokens,
-                "output_tokens": b.output_tokens,
-            })
+            n = _other_sov_calls(n_prompts)
+            _add_group(
+                item=f"Citation probe Claude ({n} call)",
+                provider="anthropic",
+                model=anthropic_model,
+                calls=n,
+                per_call=_estimate_sov_call(anthropic_model),
+            )
         if has_gemini:
-            b = _estimate_gemini_sov(gemini_model, n_prompts)
-            budgets.append(b)
-            breakdown.append({
-                "item": f"Citation probe Gemini ({min(n_prompts,3)} prompt)",
-                "provider": "google",
-                "model": b.model,
-                "input_tokens": b.input_tokens,
-                "output_tokens": b.output_tokens,
-            })
+            n = _other_sov_calls(n_prompts)
+            _add_group(
+                item=f"Citation probe Gemini ({n} call)",
+                provider="google",
+                model=gemini_model,
+                calls=n,
+                per_call=_estimate_sov_call(gemini_model),
+            )
         if has_xai:
-            b = _estimate_xai_sov(xai_model, n_prompts)
-            budgets.append(b)
-            breakdown.append({
-                "item": f"Citation probe Grok ({min(n_prompts,3)} prompt)",
-                "provider": "xai",
-                "model": b.model,
-                "input_tokens": b.input_tokens,
-                "output_tokens": b.output_tokens,
-            })
+            n = _other_sov_calls(n_prompts)
+            _add_group(
+                item=f"Citation probe Grok ({n} call)",
+                provider="xai",
+                model=xai_model,
+                calls=n,
+                per_call=_estimate_sov_call(xai_model),
+            )
         if has_azure:
-            b = _estimate_azure_sov(azure_model, n_prompts)
-            budgets.append(b)
-            breakdown.append({
-                "item": f"Citation probe Copilot/Azure ({min(n_prompts,3)} prompt)",
-                "provider": "azure",
-                "model": b.model,
-                "input_tokens": b.input_tokens,
-                "output_tokens": b.output_tokens,
-            })
+            n = _other_sov_calls(n_prompts)
+            _add_group(
+                item=f"Citation probe Copilot/Azure ({n} call)",
+                provider="azure",
+                model=azure_model,
+                calls=n,
+                per_call=_estimate_sov_call(azure_model),
+            )
 
-    raw_micro = sum(b.cost_usd_micro() for b in budgets)
+    raw_micro = sum(b.cost_usd_micro() for b in call_budgets)
     service_micro = raw_micro * (1 + PLATFORM_SPREAD)
-    # Ceil — never under-estimate vs realtime debit rounding.
-    service_eur_cents = max(
-        1,
-        int(math.ceil(service_micro / 1_000_000 * USD_TO_EUR * 100 - 1e-12)),
-    )
+    # Sum of per-call ceils (= what ledger will charge), never below 1¢ if any work.
+    service_eur_cents = sum(_debit_cents_for_budget(b) for b in call_budgets)
+    if call_budgets and service_eur_cents < 1:
+        service_eur_cents = 1
 
     return CostEstimate(
         raw_cost_usd_micro=raw_micro,
@@ -300,6 +320,7 @@ def estimate_analysis_cost(
         breakdown=breakdown,
         run_measured=run_measured,
         n_prompts=n_prompts,
+        estimated_calls=len(call_budgets),
     )
 
 

@@ -10,7 +10,7 @@
     <h1 class="page-intro__title">{{ _('Ricarica i tuoi token') }}</h1>
     <p class="page-intro__lede">
       {{ _('Tariffa base: €10 = 100 token (1 token = €0,10). Il pack da €50 include un bonus.') }}
-      {{ _('Ogni analisi consuma token in base all’uso AI reale (tipicamente 0,2–0,3 token con margine di sicurezza).') }}
+      {{ _('Il costo pre-analisi stima ogni chiamata AI (arrotondamento per call). Con SoV Misurato tipicamente 0,6–2 token a run.') }}
     </p>
   </div>
 
@@ -83,7 +83,7 @@
       {% endfor %}
     </div>
     <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
-      {{ _('Con 100 token (~€10): circa 500 analisi leggere, circa 333 con SoV Misurato multi-engine. Stima pack ≈350 analisi (media conservativa). I token non scadono. Plus include 100 token ogni mese.') }}
+      {{ _('Stima analisi (SoV Misurato multi-engine, ~20 cent di hold): ~50 con 100 token, ~100 con 200, ~300 con 600. Solo OpenAI: circa il doppio. I token non scadono. Plus include 100 token ogni mese.') }}
     </p>
   </div>
 

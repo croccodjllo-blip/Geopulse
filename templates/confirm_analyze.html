@@ -32,7 +32,11 @@
         <span class="cost-card__label">{{ _('stimati per questa analisi') }}</span>
       </div>
       <p class="cost-card__note">
-        {{ _('Il costo effettivo viene calcolato sui token realmente consumati.') }}
+        {{ _('Stima allineata all’addebito reale: ogni chiamata AI viene arrotondata per eccesso (come in fatturazione).') }}
+        {% if cost.estimated_calls %}
+          {{ _('Call previste:') }} {{ cost.estimated_calls }}.
+        {% endif %}
+        {{ _('Il saldo richiesto all’avvio include il margine di sicurezza') }} {{ grace_margin_pct }}%.
       </p>
 
       {% if cost.breakdown %}
@@ -40,7 +44,13 @@
         <summary>{{ _('Dettaglio voci di costo') }}</summary>
         <table class="cost-table">
           <thead>
-            <tr><th>{{ _('Voce') }}</th><th>{{ _('Provider') }}</th><th>{{ _('Modello') }}</th><th>{{ _('Input tok.') }}</th><th>{{ _('Output tok.') }}</th></tr>
+            <tr>
+              <th>{{ _('Voce') }}</th>
+              <th>{{ _('Provider') }}</th>
+              <th>{{ _('Modello') }}</th>
+              <th>{{ _('Call') }}</th>
+              <th>{{ _('Costo stim.') }}</th>
+            </tr>
           </thead>
           <tbody>
             {% for row in cost.breakdown %}
@@ -48,8 +58,8 @@
               <td>{{ row.item }}</td>
               <td>{{ row.provider }}</td>
               <td><code>{{ row.model }}</code></td>
-              <td>{{ row.input_tokens }}</td>
-              <td>{{ row.output_tokens }}</td>
+              <td>{{ row.estimated_calls or '—' }}</td>
+              <td>{{ (row.estimated_debit_cents or 0)|tok }}</td>
             </tr>
             {% endfor %}
           </tbody>

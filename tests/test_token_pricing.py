@@ -28,6 +28,7 @@ def test_public_packages_10_20_50_with_token_grants():
     assert [p["cents"] for p in _TOPUP_PACKAGES] == [1000, 2000, 5000]
     assert [p["tokens"] for p in _TOPUP_PACKAGES] == [100, 200, 600]
     assert [p["credit_cents"] for p in _TOPUP_PACKAGES] == [1000, 2000, 6000]
+    assert [p["analyses"] for p in _TOPUP_PACKAGES] == ["~50", "~100", "~300"]
     for p in _TOPUP_PACKAGES:
         assert p["cents"] == p["price_eur"] * 100
         assert p["credit_cents"] == p["tokens"] * GEO_TOKEN_EUR_CENTS
