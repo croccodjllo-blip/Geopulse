@@ -126,10 +126,18 @@
             {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
           </div>
           {% if is_pro %}
-          <div class="field analyze-competitors">
-            <label for="competitors">{{ _('Competitor snapshot (Plus, max 3)') }}</label>
+          <div class="field analyze-competitors"
+               data-competitor-suggest
+               data-suggest-url="{{ url_for('dashboard_competitors_suggest') }}">
+            <div class="analyze-competitors__head">
+              <label for="competitors">{{ _('Competitor snapshot (Plus, max 3)') }}</label>
+              <button type="button" class="linkish analyze-competitors__suggest" data-competitor-suggest-btn>
+                {{ _('Suggerisci automatico') }}
+              </button>
+            </div>
             {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
-https://rivale2.com", class_="analyze-input") }}
+https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input': '1'}) }}
+            <p class="analyze-competitors__hint" data-competitor-suggest-status hidden></p>
           </div>
           <div class="analyze-option">
             <label class="analyze-option__hit" for="deep_crawl">
@@ -1104,6 +1112,9 @@ https://rivale2.com", class_="analyze-input") }}
 
 {% include "partials/analyze_overlay.html" %}
 <script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
+{% if is_pro %}
+<script src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
+{% endif %}
 <script>
 (() => {
   const el = document.querySelector('.pulse-core__value[data-count-to]');

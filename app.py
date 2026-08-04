@@ -145,6 +145,7 @@ from services.growth import (
     trial_is_active,
 )
 from services.site_guide import site_guide_payload
+from services.competitor_suggest import suggest_competitors, normalize_competitor_url
 from services.jobs import (
     claim_next_job,
     complete_job,
@@ -1990,6 +1991,62 @@ def kick_analyze_worker() -> None:
             app.logger.exception("kick_analyze_worker failed")
 
     threading.Thread(target=_run, daemon=True, name="analyze-kick").start()
+
+
+def parse_competitor_urls(raw: str, *, seed_url: str = "") -> list[str]:
+    """Parse textarea lines into normalized public competitor URLs (max 3)."""
+    seed_host = ""
+    if seed_url:
+        try:
+            from urllib.parse import urlparse as _up
+
+            seed_host = (_up(seed_url).netloc or "").lower().removeprefix("www.")
+        except Exception:
+            seed_host = ""
+    out: list[str] = []
+    for line in re.split(r"[\n,;]+", raw or ""):
+        line = line.strip()
+        if not line:
+            continue
+        norm = normalize_competitor_url(line, seed_host=seed_host)
+        if norm and norm not in out:
+            out.append(norm)
+        if len(out) >= 3:
+            break
+    return out
+
+
+def resolve_competitor_urls(
+    raw: str,
+    *,
+    seed_url: str,
+    user: "User",
+    auto: bool = True,
+) -> tuple[list[str], str]:
+    """
+    Plus: use submitted competitors, or auto-suggest when empty.
+    Returns (urls, source) where source is manual|suggested|empty.
+    """
+    if not getattr(user, "is_pro", False):
+        return [], "empty"
+    parsed = parse_competitor_urls(raw, seed_url=seed_url)
+    if parsed:
+        return parsed, "manual"
+    if not auto:
+        return [], "empty"
+    try:
+        suggested = suggest_competitors(
+            seed_url,
+            api_key=OPENAI_API_KEY,
+            model=OPENAI_MODEL,
+            limit=3,
+            logger=app.logger,
+        )
+        urls = list(suggested.get("competitors") or [])[:3]
+        return urls, ("suggested" if urls else "empty")
+    except Exception:
+        app.logger.exception("auto competitor suggest failed for %s", seed_url)
+        return [], "empty"
 
 
 def render_guide(slug: str):
@@ -4107,13 +4164,19 @@ def dashboard():
             blocked = enforce_analyze_limits(user, url=url, existing=existing)
             if blocked is not None:
                 return blocked
-            competitor_urls: list[str] = []
             raw_comp = (form.competitors.data or "").strip()
-            if raw_comp and user.is_pro:
-                for line in re.split(r"[\n,;]+", raw_comp):
-                    line = line.strip()
-                    if line:
-                        competitor_urls.append(line)
+            competitor_urls, comp_source = resolve_competitor_urls(
+                raw_comp, seed_url=url, user=user, auto=True
+            )
+            competitors_raw_out = (
+                "\n".join(competitor_urls) if competitor_urls else raw_comp
+            )
+            if comp_source == "suggested" and competitor_urls:
+                flash(
+                    "Competitor snapshot compilato in automatico: "
+                    + ", ".join(competitor_urls),
+                    "info",
+                )
 
             # ── Usage billing: stima + pagina conferma ──────────────────────
             run_meas = should_run_measured(
@@ -4178,7 +4241,7 @@ def dashboard():
                 required_cents=required_credit_with_grace_cents(cost.service_cost_eur_cents),
                 grace_margin_pct=round(GRACE_MARGIN * 100, 1),
                 run_measured=run_meas,
-                competitors_raw=raw_comp,
+                competitors_raw=competitors_raw_out,
                 deep_crawl=deep_crawl,
                 crawl_pages=crawl_pages,
             )
@@ -4477,12 +4540,9 @@ def dashboard_analyze_confirmed():
     cost.service_cost_eur_cents = preflight.required_cost_cents
     cost_cents = cost.service_cost_eur_cents
 
-    competitor_urls: list[str] = []
-    if competitors_raw and user.is_pro:
-        for line in re.split(r"[\n,;]+", competitors_raw):
-            line = line.strip()
-            if line:
-                competitor_urls.append(line)
+    competitor_urls, _comp_source = resolve_competitor_urls(
+        competitors_raw, seed_url=url, user=user, auto=True
+    )
 
     def _usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
         charged = record_actual_usage(
@@ -4938,6 +4998,42 @@ def admin_topup_user(user_id: int):
     db.session.commit()
     flash(f"Aggiunti {format_token_amount(amount)} a {u.email}.", "success")
     return redirect(url_for("admin_home"))
+
+
+@app.route("/dashboard/competitors/suggest", methods=["POST"])
+@login_required
+def dashboard_competitors_suggest():
+    """Plus: suggest up to 3 competitor homepage URLs for the analyze form."""
+    user = current_user()
+    if not user.is_pro:
+        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not limiter.allow(
+        f"comp-suggest:{user.id}", limit=20, window_seconds=3600
+    ):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    payload = request.get_json(silent=True) or {}
+    raw_url = (payload.get("url") or request.form.get("url") or "").strip()
+    if not raw_url:
+        return jsonify({"ok": False, "error": "url_required"}), 400
+    try:
+        url = normalize_url(raw_url)
+    except ValueError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 400
+    result = suggest_competitors(
+        url,
+        api_key=OPENAI_API_KEY,
+        model=OPENAI_MODEL,
+        limit=3,
+        logger=app.logger,
+    )
+    return jsonify(
+        {
+            "ok": True,
+            "competitors": result.get("competitors") or [],
+            "source": result.get("source") or "empty",
+            "domain": result.get("domain") or "",
+        }
+    )
 
 
 @app.route("/dashboard/jobs/<int:job_id>")

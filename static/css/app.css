@@ -586,6 +586,18 @@ body.app-body:not(.body-dash) {
   transition: border-color 150ms var(--ease), box-shadow 150ms var(--ease);
   font-size: 0.9rem;
 }
+.field input[type="checkbox"],
+.field input[type="radio"] {
+  width: auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.2rem;
+  background: transparent;
+  box-shadow: none;
+  accent-color: var(--signal);
+}
 .field input::placeholder,
 .field textarea::placeholder { color: var(--slate); }
 .field input:hover,
@@ -3100,6 +3112,47 @@ html.analyze-busy {
 }
 
 .analyze-competitors { margin-top: 0.8rem; }
+
+.analyze-competitors__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.85rem;
+}
+
+.analyze-competitors__head label { margin: 0; }
+
+.analyze-competitors__suggest {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--signal-soft);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.analyze-competitors__suggest:hover,
+.analyze-competitors__suggest:focus-visible {
+  color: var(--signal);
+}
+
+.analyze-competitors__suggest:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.analyze-competitors__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: var(--slate);
+  line-height: 1.4;
+}
+
+.analyze-competitors__hint.is-error { color: var(--warn); }
 
 .analyze-competitors textarea {
   min-height: 3.5rem;
