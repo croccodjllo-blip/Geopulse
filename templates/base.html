@@ -138,11 +138,10 @@
           {% else %}
             <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
             <a href="{{ url_for('site_guide') }}" class="{% if request.endpoint == 'site_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
+            <a href="{{ url_for('sample_report') }}" class="{% if request.endpoint == 'sample_report' %}is-active{% endif %}">{{ _('Esempio') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
-            <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">{{ _('Metodologia') }}</a>
+            <a href="{{ url_for('agencies') }}" class="{% if request.endpoint == 'agencies' %}is-active{% endif %}">{{ _('Agenzie') }}</a>
             <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
-            <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}is-active{% endif %}">{{ _('Chi siamo') }}</a>
-            <a href="{{ url_for('contact') }}" class="{% if request.endpoint == 'contact' %}is-active{% endif %}">{{ _('Contatti') }}</a>
             <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
             <a class="nav-cta" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
           {% endif %}
@@ -208,7 +207,9 @@
           <p class="site-footer__label">{{ _('Prodotto') }}</p>
           <a href="{{ url_for('product') }}">{{ _('Come funziona') }}</a>
           <a href="{{ url_for('site_guide') }}">{{ _('Guida completa') }}</a>
+          <a href="{{ url_for('sample_report') }}">{{ _('Esempio report') }}</a>
           <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
+          <a href="{{ url_for('agencies') }}">{{ _('Per agenzie') }}</a>
           <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
           <a href="{{ url_for('site_guide') }}#glossario">{{ _('Glossario') }}</a>
           <a href="{{ url_for('guide_llms_txt') }}">{{ _('Guida llms.txt') }}</a>
@@ -233,6 +234,7 @@
           <p class="site-footer__label">{{ _('Contatti') }}</p>
           <a href="{{ url_for('contact') }}">{{ _('Pagina contatti') }}</a>
           <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+          <a href="{{ url_for('status_page') }}">Status</a>
           <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
           <a href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
           <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>

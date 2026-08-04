@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Esempio report') }} — Centropic{% endblock %}
+{% block meta_description %}{{ _('Esempio di report Centropic: score AIO/GEO, finding critici e pack artifact per essere citati dalle IA.') }}{% endblock %}
+{% block body_class %}body-marketing{% endblock %}
+
+{% block content %}
+<article class="page page--v2">
+  <header class="page-intro page-intro--v2">
+    <p class="eyebrow">{{ _('Esempio') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Come appare un report Centropic') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo la diagnosi.') }}
+    </p>
+  </header>
+
+  <section class="page-section">
+    <p class="lede"><strong>{{ report.domain }}</strong> · {{ _('Indice') }} <code>{{ report.rating }}</code>
+      · AIO {{ report.aio_score }} · GEO {{ report.geo_score }} · SoV {{ report.brand_sov }}% ({{ report.evidence }})</p>
+    <p class="lede">{{ report.summary }}</p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('3 gap critici') }}</h2>
+    <ol class="plain-list">
+      {% for f in report.critical_findings %}
+      <li>
+        <strong>{{ f.title }}</strong><br />
+        <span class="muted">{{ f.detail }}</span><br />
+        <em>{{ _('Fix:') }} {{ f.fix }}</em>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Pack incluso') }}</h2>
+    <ul class="plain-list">
+      {% for p in report.pack %}<li><code>{{ p }}</code></li>{% endfor %}
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Prossimi passi') }}</h2>
+    <ul class="plain-list">
+      {% for s in report.next_steps %}<li>{{ s }}</li>{% endfor %}
+    </ul>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Analizza il tuo sito') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi Plus') }}</a>
+  </div>
+</article>
+{% endblock %}

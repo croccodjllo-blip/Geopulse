@@ -32,7 +32,12 @@
       <dl class="workspace-status" aria-label="{{ _('Stato account') }}">
         <div>
           <dt>{{ _('Piano') }}</dt>
-          <dd>{{ user_plan }}</dd>
+          <dd>
+            {{ user_plan }}
+            {% if on_trial and trial_ends_at %}
+            <span class="muted">({{ _('fino al') }} {{ trial_ends_at.strftime('%d/%m') }})</span>
+            {% endif %}
+          </dd>
         </div>
         <div>
           <dt>{{ _('Siti') }}</dt>
@@ -61,6 +66,34 @@
       {% endif %}
     </aside>
     {% endif %}
+
+    <aside class="dash-block dash-block--panel" aria-labelledby="progress-title" style="margin-bottom:1.25rem">
+      <header class="dash-block__head">
+        <div>
+          <p class="dash-block__eyebrow">{{ _('Onboarding') }}</p>
+          <h2 class="dash-block__title" id="progress-title">{{ _('I tuoi prossimi passi') }}</h2>
+        </div>
+      </header>
+      <ol class="plain-list" style="margin:0;padding-left:1.25rem">
+        <li>{% if current_user.email_verified %}✓{% else %}○{% endif %} {{ _('Conferma email') }}</li>
+        <li>{% if latest %}✓{% else %}○{% endif %} {{ _('Prima analisi del dominio') }}</li>
+        <li>{% if latest and findings_critical %}○{% elif latest %}✓{% else %}○{% endif %} {{ _('Chiudi i finding critici / pubblica il pack') }}</li>
+        <li>{% if is_pro and not on_trial %}✓{% elif on_trial %}◐{% else %}○{% endif %} {{ _('Plus (SoV measured + crawl esteso)') }}</li>
+      </ol>
+      {% if trial_available %}
+      <form method="post" action="{{ url_for('dashboard_trial_start') }}" style="margin-top:0.85rem">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button type="submit" class="btn btn-ghost">{{ _('Attiva prova Plus 7 giorni') }}</button>
+      </form>
+      {% endif %}
+      {% if referral_code %}
+      <p class="lede" style="margin-top:0.85rem;font-size:0.92rem">
+        {{ _('Invita un collega:') }}
+        <code>{{ url_for('register', ref=referral_code, _external=True) }}</code>
+        — {{ _('tu ricevi') }} {{ referral_bonus_tokens }} {{ _('token quando conferma l’email.') }}
+      </p>
+      {% endif %}
+    </aside>
 
     {% if latest %}
       {% include "partials/geo_overview.html" %}
@@ -751,11 +784,11 @@ https://rivale2.com", class_="analyze-input") }}
           </section>
           {% else %}
           <p class="pro-upsell">
-            {{ _('Piano Free: 1 sito, ri-analisi del dominio consentita.') }}
+            {{ _('Piano Free: 1 sito, ri-analisi del dominio consentita (consuma token).') }}
             {% if stripe_ready %}
-            <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca crawl intero sito, re-scan, export e storico run.') }}
+            <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, re-scan, export e storico run.') }}
             {% else %}
-            <a href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a> {{ _('per crawl intero sito, re-scan, export e storico.') }}
+            <a href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a> {{ _('per crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, re-scan, export e storico.') }}
             {% endif %}
           </p>
           {% endif %}

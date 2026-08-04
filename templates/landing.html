@@ -32,15 +32,15 @@
       </span>
     </div>
     <h1 class="hero-headline hero-headline--v2">
-      {{ _('Ordine nelle risposte') }}
-      <span class="text-gradient">{{ _('generative') }}</span>
+      {{ _('Scopri se le IA') }}
+      <span class="text-gradient">{{ _('ti citano') }}</span>
     </h1>
     <p class="lede hero-lede">
-      {{ _('Diagnosi AIO/GEO del dominio e artifact machine-readable per essere citati da ChatGPT, Claude e Perplexity.') }}
+      {{ _('In pochi minuti: score AIO/GEO, gap prioritizzati e pack da pubblicare (llms.txt, schema, robots) per ChatGPT, Claude e Perplexity.') }}
     </p>
     <div class="cta-row">
-      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Avvia la diagnosi') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('product') }}">{{ _('Scopri il metodo') }}</a>
+      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Analizza il tuo sito') }}</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('sample_report') }}">{{ _('Vedi esempio report') }}</a>
     </div>
   </div>
 </section>
@@ -154,7 +154,8 @@
     <details class="faq-item">
       <summary>{{ _('Limiti del piano Free?') }}</summary>
       <p>
-        {{ max_sites_free }} {{ _('sito e') }} {{ free_total_analyses }} {{ _('analisi totali, senza carta. Volumi superiori su Plus.') }}
+        {{ max_sites_free }} {{ _('sito,') }} {{ free_total_analyses }} {{ _('analisi su nuovi siti; ri-analisi dello stesso URL consuma token. Plus: crawl fino a') }}
+        {{ pro_crawl_pages }} {{ _('pagine, SoV measured e 100 token/mese.') }}
       </p>
     </details>
   </div>

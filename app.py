@@ -132,6 +132,18 @@ from services.usage_billing import (
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
+from services.growth import (
+    REFERRAL_BONUS_CENTS,
+    TRIAL_DAYS,
+    build_analysis_complete_email,
+    build_free_exhausted_email,
+    build_low_balance_email,
+    build_trial_started_email,
+    new_referral_code,
+    sample_report_payload,
+    trial_ends_at,
+    trial_is_active,
+)
 from services.site_guide import site_guide_payload
 from services.jobs import (
     claim_next_job,
@@ -243,6 +255,7 @@ PRO_DEEP_CRAWL_PAGES = max(
     PRO_CRAWL_PAGES if not PRO_CRAWL_UNLIMITED else FREE_CRAWL_PAGES,
     min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
+PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "143.90"))  # ~−20% vs 12×14.99
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 PACK_EMAIL_DAILY_LIMIT = max(1, int(os.getenv("PACK_EMAIL_DAILY_LIMIT", "10")))
@@ -509,6 +522,12 @@ class User(db.Model):
     verify_token_hash = db.Column(db.String(64))
     verify_token_expires = db.Column(db.DateTime)
     welcome_credit_granted = db.Column(db.Boolean, nullable=False, default=False)
+    referral_code = db.Column(db.String(32), unique=True, index=True)
+    referred_by = db.Column(db.Integer, db.ForeignKey("users.id"))
+    trial_ends_at = db.Column(db.DateTime)
+    trial_started_at = db.Column(db.DateTime)
+    free_exhausted_email_sent = db.Column(db.Boolean, nullable=False, default=False)
+    low_balance_email_sent_at = db.Column(db.DateTime)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -579,16 +598,34 @@ class User(db.Model):
 
     @property
     def is_pro(self) -> bool:
-        """Piano Plus (alias storici: pro) o Admin."""
-        return self.is_admin or (self.plan or "").lower() in {"plus", "pro"}
+        """Piano Plus/pro/admin oppure trial Plus attivo."""
+        if self.is_admin or (self.plan or "").lower() in {"plus", "pro"}:
+            return True
+        from services.growth import trial_is_active
+
+        return trial_is_active(self)
 
     @property
     def plan_label(self) -> str:
         if self.is_admin:
             return "Admin"
-        if self.is_pro:
+        if (self.plan or "").lower() in {"plus", "pro"}:
             return "Plus"
+        from services.growth import trial_is_active
+
+        if trial_is_active(self):
+            return "Plus trial"
         return "Free"
+
+    @property
+    def on_trial(self) -> bool:
+        from services.growth import trial_is_active
+
+        return trial_is_active(self) and (self.plan or "").lower() not in {
+            "plus",
+            "pro",
+            "admin",
+        }
 
     @property
     def max_sites(self) -> int:
@@ -1594,6 +1631,12 @@ def ensure_schema() -> None:
             "verify_token_hash": "TEXT",
             "verify_token_expires": "DATETIME",
             "welcome_credit_granted": "BOOLEAN DEFAULT 0",
+            "referral_code": "TEXT",
+            "referred_by": "INTEGER",
+            "trial_ends_at": "DATETIME",
+            "trial_started_at": "DATETIME",
+            "free_exhausted_email_sent": "BOOLEAN DEFAULT 0",
+            "low_balance_email_sent_at": "DATETIME",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -1865,6 +1908,14 @@ def process_pending_analyze_jobs(
                 # Analytics event can't use session flash queue in worker —
                 # leave analytics_complete_sent=False for dashboard_job_status.
                 db.session.commit()
+                try:
+                    maybe_send_analysis_complete_email(user, analysis)
+                except Exception:
+                    app.logger.exception("post-analysis email hook failed")
+                try:
+                    maybe_send_lifecycle_emails(user)
+                except Exception:
+                    app.logger.exception("lifecycle email hook failed")
                 stats["ok"] += 1
             else:
                 # Lease lost mid-run: do not release hold (new owner / reclaim path).
@@ -2031,8 +2082,8 @@ def wants_json_response() -> bool:
 
 
 FREE_QUOTA_BANNER = (
-    "Hai usato le analisi Free iniziali. Puoi continuare a ri-analizzare il tuo sito; "
-    "passa a Plus per più brand, crawl completo e monitoraggio"
+    "Hai usato le 2 analisi Free su nuovi siti. Puoi ancora ri-analizzare lo stesso dominio "
+    "(consuma token). Passa a Plus per più brand, SoV measured, crawl 120+ pagine e 100 token/mese"
 )
 
 
@@ -2750,12 +2801,15 @@ def sitemap_xml():
         ("/", "1.0", "weekly"),
         ("/prodotto", "0.9", "weekly"),
         ("/guida", "0.95", "weekly"),
+        ("/esempio-report", "0.85", "weekly"),
+        ("/agenzie", "0.8", "monthly"),
         ("/prezzi", "0.8", "weekly"),
         ("/metodologia", "0.9", "monthly"),
         ("/guide/llms-txt", "0.8", "monthly"),
         ("/guide/schema-ai", "0.8", "monthly"),
         ("/guide/score-vs-sov", "0.8", "monthly"),
         ("/faq", "0.8", "monthly"),
+        ("/status", "0.5", "daily"),
         ("/chi-siamo", "0.7", "monthly"),
         ("/contatti", "0.7", "monthly"),
         ("/llms.txt", "0.7", "weekly"),
@@ -2827,6 +2881,162 @@ def about():
 @app.route("/contatti")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/esempio-report")
+def sample_report():
+    """Public anonymized sample report — PLG social proof."""
+    return render_template(
+        "sample_report.html",
+        report=sample_report_payload(),
+    )
+
+
+@app.route("/agenzie")
+def agencies():
+    return render_template("agencies.html")
+
+
+@app.route("/status")
+def status_page():
+    """Lightweight public status (no secrets)."""
+    detail = {
+        "app": "ok",
+        "payments": payments_provider(),
+        "time": datetime.now(timezone.utc).isoformat(),
+    }
+    return render_template("status.html", detail=detail)
+
+
+def credit_shortage_response(*, message: str):
+    """Plus-first paywall: prefer /prezzi over raw top-up."""
+    if wants_json_response():
+        return (
+            jsonify(
+                {
+                    "ok": False,
+                    "error": "insufficient_credit",
+                    "message": message,
+                    "upgrade_url": url_for("pricing", _external=False),
+                    "topup_url": url_for("topup_credit_page", _external=False),
+                }
+            ),
+            402,
+        )
+    flash(message, "error")
+    return redirect(url_for("pricing") + "#plus")
+
+
+def maybe_send_analysis_complete_email(user: User, analysis: SiteAnalysis) -> None:
+    if not mail_configured() or user is None or analysis is None:
+        return
+    try:
+        rating = ""
+        if isinstance(analysis.rating, dict):
+            rating = str(analysis.rating.get("code") or "")
+        to, subject, body = build_analysis_complete_email(
+            to_email=user.email,
+            name=user.name or "",
+            domain=analysis.domain or analysis.url or "sito",
+            aio_score=analysis.aio_score,
+            geo_score=analysis.geo_score,
+            rating=rating,
+            findings=list(analysis.findings or [])[:12],
+            dashboard_url=absolute_url("dashboard"),
+            pricing_url=absolute_url("pricing"),
+        )
+        send_email(to_email=to, subject=subject, text_body=body)
+    except Exception:
+        app.logger.exception("analysis complete email failed")
+
+
+def start_plus_trial(user: User) -> bool:
+    """Start 7-day Plus trial once per account. Returns True if started."""
+    if user.is_admin or (user.plan or "").lower() in {"plus", "pro"}:
+        return False
+    if getattr(user, "trial_started_at", None) is not None:
+        return False
+    if trial_is_active(user):
+        return False
+    user.trial_started_at = datetime.now(timezone.utc)
+    user.trial_ends_at = trial_ends_at(days=TRIAL_DAYS)
+    return True
+
+
+def ensure_user_referral_code(user: User) -> str:
+    code = (getattr(user, "referral_code", None) or "").strip()
+    if code:
+        return code
+    for _ in range(8):
+        candidate = new_referral_code()
+        if User.query.filter_by(referral_code=candidate).first() is not None:
+            continue
+        user.referral_code = candidate
+        try:
+            db.session.commit()
+            return candidate
+        except Exception:
+            db.session.rollback()
+            continue
+    return ""
+
+
+def maybe_send_lifecycle_emails(user: User) -> None:
+    """Low-balance and free-quota soft-upsell emails (throttled)."""
+    if not mail_configured() or user is None or not user.email:
+        return
+    # Free analyses exhausted (soft upsell — remesure still allowed).
+    if free_upsell_suggested(user) and not bool(
+        getattr(user, "free_exhausted_email_sent", False)
+    ):
+        try:
+            to, subject, body = build_free_exhausted_email(
+                to_email=user.email,
+                name=user.name or "",
+                pricing_url=absolute_url("pricing"),
+            )
+            send_email(to_email=to, subject=subject, text_body=body)
+            user.free_exhausted_email_sent = True
+            db.session.commit()
+        except Exception:
+            app.logger.exception("free exhausted email failed")
+            try:
+                db.session.rollback()
+            except Exception:
+                pass
+
+    plan = (user.plan or "free").lower()
+    if plan not in {"plus", "pro"} or user.is_admin:
+        return
+
+    bal = get_balance_cents(user)
+    if bal >= 300:  # ≥ 30 token
+        return
+    last = getattr(user, "low_balance_email_sent_at", None)
+    if last is not None:
+        try:
+            prev = last if last.tzinfo else last.replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) - prev < timedelta(days=7):
+                return
+        except Exception:
+            pass
+    try:
+        to, subject, body = build_low_balance_email(
+            to_email=user.email,
+            name=user.name or "",
+            balance_tokens=cents_to_tokens(bal),
+            topup_url=absolute_url("topup_credit_page"),
+            pricing_url=absolute_url("pricing"),
+        )
+        send_email(to_email=to, subject=subject, text_body=body)
+        user.low_balance_email_sent_at = datetime.now(timezone.utc)
+        db.session.commit()
+    except Exception:
+        app.logger.exception("low balance email failed")
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
 
 @app.route("/guida")
@@ -2918,6 +3128,13 @@ def pricing():
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
         paddle_overlay=paddle_overlay_ready(),
+        plus_yearly_eur=PLUS_YEARLY_EUR,
+        plus_yearly_ready=bool(
+            (os.environ.get("PADDLE_PRICE_PLUS_YEARLY") or "").strip()
+            or (os.environ.get("STRIPE_PRICE_PLUS_YEARLY") or "").strip()
+        ),
+        pro_crawl_pages=PRO_CRAWL_PAGES,
+        deep_crawl_pages=PRO_DEEP_CRAWL_PAGES,
     )
 
 
@@ -2941,11 +3158,13 @@ def billing_checkout():
         if paddle_overlay_ready() and request.form.get("overlay") == "1":
             return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
         try:
+            interval = (request.form.get("interval") or "month").strip().lower()
             tx = paddle_create_plus_checkout(
                 user_id=user.id,
                 email=user.email,
                 customer_id=getattr(user, "paddle_customer_id", None),
                 success_url=absolute_url("billing_success"),
+                interval=interval,
             )
             if tx.get("customer_id") and not getattr(user, "paddle_customer_id", None):
                 user.paddle_customer_id = str(tx["customer_id"])
@@ -3407,7 +3626,14 @@ def register():
                 plan="free",
                 credit_balance_cents=0,
                 welcome_credit_granted=False,
+                referral_code=new_referral_code(),
             )
+            # Optional referral: ?ref=CODE
+            ref = (request.args.get("ref") or request.form.get("ref") or "").strip().lower()
+            if ref:
+                referrer = User.query.filter_by(referral_code=ref).first()
+                if referrer is not None and referrer.email != email:
+                    user.referred_by = referrer.id
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.flush()
@@ -3536,6 +3762,51 @@ def verify_email(token: str):
     db.session.commit()
     _establish_session(user, permanent=False)
 
+    # Referral bonus to inviter (once per referred user).
+    try:
+        ref_id = getattr(user, "referred_by", None)
+        if ref_id and REFERRAL_BONUS_CENTS > 0:
+            pi = f"referral:{user.id}"
+            if CreditLedger.query.filter_by(stripe_payment_intent=pi).first() is None:
+                referrer = db.session.get(User, int(ref_id))
+                if referrer is not None:
+                    topup_credit(
+                        db.session,
+                        CreditLedger,
+                        referrer,
+                        amount_eur_cents=REFERRAL_BONUS_CENTS,
+                        description=(
+                            f"Bonus referral {format_token_amount(REFERRAL_BONUS_CENTS)}"
+                        ),
+                        stripe_payment_intent=pi,
+                    )
+                    db.session.commit()
+    except Exception:
+        app.logger.exception("referral bonus failed")
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+
+    # Auto-start Plus trial once after verify (PLG activation).
+    try:
+        user = db.session.get(User, user.id) or user
+        if start_plus_trial(user):
+            db.session.commit()
+            if mail_configured():
+                try:
+                    to, subject, body = build_trial_started_email(
+                        to_email=user.email,
+                        name=user.name or "",
+                        ends_at=user.trial_ends_at,
+                        dashboard_url=absolute_url("dashboard"),
+                    )
+                    send_email(to_email=to, subject=subject, text_body=body)
+                except Exception:
+                    app.logger.exception("trial email failed")
+    except Exception:
+        app.logger.exception("trial start failed")
+
     website = getattr(user, "website_url", None)
     job_id = None
     if granted_now or already:
@@ -3543,6 +3814,8 @@ def verify_email(token: str):
 
     if granted_now:
         msg = f"Email confermata. Credito di benvenuto: {format_token_amount(WELCOME_CREDIT_CENTS)}."
+        if getattr(user, "on_trial", False):
+            msg += f" Plus trial {TRIAL_DAYS} giorni attivo."
         if job_id:
             msg += " Prima diagnosi avviata."
         flash(msg, "success")
@@ -3820,10 +4093,10 @@ def dashboard():
                 flash(
                     "Richiesta bloccata prima dell'analisi AI. "
                     + preflight.message
-                    + " Ricarica il credito o riduci la pagina da analizzare.",
+                    + " Passa a Plus o ricarica token, oppure riduci la pagina.",
                     "warning",
                 )
-                return redirect(url_for("topup_credit_page"))
+                return redirect(url_for("pricing") + "#plus")
             cost.service_cost_eur_cents = preflight.required_cost_cents
             deep_crawl = bool(user.is_pro and form.deep_crawl.data)
             crawl_pages = resolve_crawl_pages(user, deep_crawl=deep_crawl)
@@ -4018,11 +4291,50 @@ def dashboard():
         site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
+        on_trial=bool(getattr(user, "on_trial", False)),
+        trial_ends_at=getattr(user, "trial_ends_at", None),
+        trial_available=(
+            not user.is_admin
+            and (user.plan or "").lower() not in {"plus", "pro"}
+            and getattr(user, "trial_started_at", None) is None
+            and not trial_is_active(user)
+        ),
+        referral_code=ensure_user_referral_code(user),
+        referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
         stripe_ready=payments_enabled(),
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
     )
+
+
+@app.route("/dashboard/trial/start", methods=["POST"])
+@login_required
+def dashboard_trial_start():
+    user = current_user()
+    if not user.email_verified:
+        flash("Conferma l’email prima di attivare la prova Plus.", "error")
+        return redirect(url_for("dashboard"))
+    if start_plus_trial(user):
+        db.session.commit()
+        if mail_configured():
+            try:
+                to, subject, body = build_trial_started_email(
+                    to_email=user.email,
+                    name=user.name or "",
+                    ends_at=user.trial_ends_at,
+                    dashboard_url=absolute_url("dashboard"),
+                )
+                send_email(to_email=to, subject=subject, text_body=body)
+            except Exception:
+                app.logger.exception("trial email failed")
+        flash(
+            f"Prova Plus di {TRIAL_DAYS} giorni attivata. SoV measured e crawl esteso sono disponibili subito.",
+            "success",
+        )
+    else:
+        flash("Prova Plus non disponibile (già usata o piano attivo).", "error")
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/dashboard/analyze/confirmed", methods=["POST"])
@@ -4094,10 +4406,10 @@ def dashboard_analyze_confirmed():
         flash(
             "Richiesta bloccata prima dell'analisi AI. "
             + preflight.message
-            + " Ricarica il credito o riduci la pagina target.",
+            + " Passa a Plus o ricarica token, oppure riduci la pagina target.",
             "warning",
         )
-        return redirect(url_for("topup_credit_page"))
+        return redirect(url_for("pricing") + "#plus")
     cost.service_cost_eur_cents = preflight.required_cost_cents
     cost_cents = cost.service_cost_eur_cents
 
@@ -4152,13 +4464,14 @@ def dashboard_analyze_confirmed():
         balance = get_balance_cents(user)
         required_with_grace = required_credit_with_grace_cents(cost_cents)
         shortage = max(0, required_with_grace - balance)
-        flash(
-            f"Token insufficienti: hai {format_token_amount(balance)}, "
-            f"servono {format_token_amount(required_with_grace)} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
-            f"Ricarica almeno {format_token_amount(shortage)}.",
-            "error",
+        return credit_shortage_response(
+            message=(
+                f"Token insufficienti: hai {format_token_amount(balance)}, "
+                f"servono {format_token_amount(required_with_grace)}. "
+                f"Passa a Plus (100 token/mese) o ricarica almeno "
+                f"{format_token_amount(shortage)}."
+            )
         )
-        return redirect(url_for("topup_credit_page"))
 
     if ASYNC_ANALYZE:
         required = required_credit_with_grace_cents(cost_cents)
@@ -4175,13 +4488,14 @@ def dashboard_analyze_confirmed():
             balance = get_balance_cents(user)
             required_with_grace = required
             shortage = max(0, required_with_grace - balance)
-            flash(
-                f"Token insufficienti: hai {format_token_amount(balance)}, "
-                f"servono {format_token_amount(required_with_grace)} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
-                f"Ricarica almeno {format_token_amount(shortage)}.",
-                "error",
+            return credit_shortage_response(
+                message=(
+                    f"Token insufficienti: hai {format_token_amount(balance)}, "
+                    f"servono {format_token_amount(required_with_grace)}. "
+                    f"Passa a Plus (100 token/mese) o ricarica almeno "
+                    f"{format_token_amount(shortage)}."
+                )
             )
-            return redirect(url_for("topup_credit_page"))
         job = enqueue_analysis(
             db.session,
             AnalysisJob,

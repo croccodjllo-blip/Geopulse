@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Centropic per agenzie') }}{% endblock %}
+{% block meta_description %}{{ _('White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che gestiscono più brand.') }}{% endblock %}
+{% block body_class %}body-marketing{% endblock %}
+
+{% block content %}
+<article class="page page--v2">
+  <header class="page-intro page-intro--v2">
+    <p class="eyebrow">{{ _('Agenzie') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Consegna citabilità IA ai tuoi clienti') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account.') }}
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Cosa ottengono i vostri clienti') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Score + findings prioritizzati in linguaggio operativo') }}</li>
+      <li>{{ _('llms.txt, JSON-LD, robots e CMS connector') }}</li>
+      <li>{{ _('SoV measured (Plus) per dimostrare menzioni, non solo proxy') }}</li>
+      <li>{{ _('Export white-label MD/HTML con il vostro brand') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Perché le agenzie scelgono Plus') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Multi-sito + re-scan schedulato') }}</li>
+      <li>{{ _('API /api/v1 per automatizzare onboarding clienti') }}</li>
+      <li>{{ _('100 token/mese + pack ricaricabili') }}</li>
+    </ul>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('pricing') }}#plus">{{ _('Attiva Plus') }}</a>
+    <a class="btn btn-ghost" href="mailto:info@centropic.ai?subject=Agenzia%20Centropic">{{ _('Parla con noi (15 min)') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('sample_report') }}">{{ _('Vedi esempio report') }}</a>
+  </div>
+</article>
+{% endblock %}

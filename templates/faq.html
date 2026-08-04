@@ -54,7 +54,8 @@
       <summary>{{ _('Quali sono i limiti del piano Free?') }}</summary>
       <p>
         {{ _('Massimo') }} {{ max_sites_free }} {{ _('sito,') }} {{ free_crawl_pages }} {{ _('pagine per crawl,') }}
-        {{ free_total_analyses }} {{ _('analisi iniziali e ri-analisi illimitata dello stesso dominio. Il piano Plus analizza l’intero sito senza limite pagine e alza gli altri limiti.') }}
+        {{ free_total_analyses }} {{ _('analisi su nuovi siti. Puoi ri-analizzare lo stesso dominio (consuma token, non la quota Free). Plus: crawl fino a') }}
+        {{ pro_crawl_pages }} {{ _('pagine (Deep fino a') }} {{ deep_crawl_pages }}), {{ _('SoV measured e 100 token/mese.') }}
       </p>
     </details>
 

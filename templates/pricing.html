@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic 2026: piano Free senza carta e Plus con crawl intero sito, SoV measured, monitoraggio e export.') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic 2026: Free senza carta; Plus con crawl fino a 120 pagine, SoV measured, 100 token/mese e export.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -9,7 +9,7 @@
     <p class="eyebrow">{{ _('Prezzi') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Semplici. Scalabili.') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor, alert e export.') }}
+      {{ _('Free per validare readiness AIO/GEO. Plus per crawl esteso, citation monitor, alert e export.') }}
     </p>
   </header>
 
@@ -21,14 +21,14 @@
       <ul class="plan__features">
         <li>{{ _('Massimo') }} {{ max_sites_free }} {{ _('sito') }}</li>
         <li>{{ _('Crawl fino a') }} {{ free_crawl_pages }} {{ _('pagine') }}</li>
-        <li>{{ free_total_analyses }} {{ _('analisi iniziali + ri-analisi del sito') }}</li>
+        <li>{{ free_total_analyses }} {{ _('analisi su nuovi siti; ri-analisi stesso URL (consuma token)') }}</li>
         <li>{{ _('Score + findings (SoV stimato; Misurato solo su Plus)') }}</li>
         <li>{{ _('Pack ZIP') }}</li>
       </ul>
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
     </section>
 
-    <section class="plan plan--v2 plan--featured" role="listitem">
+    <section class="plan plan--v2 plan--featured" id="plus" role="listitem">
       <p class="plan__name">Plus</p>
       {% if paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
@@ -40,8 +40,7 @@
       <ul class="plan__features">
         <li>{{ _('100 token inclusi ogni mese') }}</li>
         <li>{{ _('Più siti e analisi') }}</li>
-        <li>{{ _('Crawl dell’intero sito') }}</li>
-        <li>{{ _('Crawl fino a 120 pagine (Deep opzionale)') }}</li>
+        <li>{{ _('Crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine (Deep fino a') }} {{ deep_crawl_pages }})</li>
         <li>{{ _('Citation monitor / SoV measured — solo Plus') }}</li>
         <li>{{ _('Prompt bank + alert email/webhook') }}</li>
         <li>{{ _('Re-scan giornaliero/settimanale') }}</li>
@@ -65,8 +64,25 @@
           <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
         </form>
         {% endif %}
+        {% if plus_yearly_ready %}
+        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="interval" value="year" />
+          <button type="submit" class="btn btn-ghost-light btn-block">
+            {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+          </button>
+        </form>
+        {% else %}
+        <p class="plan-note" style="margin-top:0.75rem">
+          {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%) —
+          <a href="mailto:info@centropic.ai?subject=Plus%20annuale">{{ _('richiedi attivazione') }}</a>
+        </p>
+        {% endif %}
       {% elif paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
+      <p class="plan-note" style="margin-top:0.75rem">
+        {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+      </p>
       {% else %}
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
       <a class="btn btn-core btn-block" href="{{ url_for('topup_credit_page') }}" style="margin-top:0.5rem">{{ _('Ricarica token') }}</a>

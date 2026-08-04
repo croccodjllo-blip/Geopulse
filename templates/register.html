@@ -21,6 +21,7 @@
 
     <form method="post" class="form-grid form-grid--2 panel" novalidate>
       {{ form.hidden_tag() }}
+      <input type="hidden" name="ref" value="{{ request.args.get('ref', '') }}" />
 
       <div class="field span-2">
         <label for="name">{{ _('Nome e cognome') }}</label>

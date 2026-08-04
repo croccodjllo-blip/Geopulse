@@ -123,8 +123,10 @@
       {% else %}
         <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Token insufficienti') }}</span>
         <p class="credit-status__hint">
-          {{ _('Ricarica almeno') }} {{ (required_cents - balance_cents)|tok }} {{ _('per procedere.') }}
-          <a href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }} →</a>
+          {{ _('Servono almeno') }} {{ (required_cents - balance_cents)|tok }}.
+          <a href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
+          {{ _('(100 token/mese) o') }}
+          <a href="{{ url_for('topup_credit_page') }}">{{ _('ricarica token') }} →</a>
         </p>
       {% endif %}
     </div>
@@ -150,7 +152,8 @@
       </button>
     </form>
     {% else %}
-    <a class="btn btn-core" href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }}</a>
+    <a class="btn btn-core" href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }}</a>
     {% endif %}
     <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">{{ _('Annulla') }}</a>
   </div>

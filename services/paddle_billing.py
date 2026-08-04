@@ -20,6 +20,7 @@ PADDLE_CLIENT_TOKEN = (os.getenv("PADDLE_CLIENT_TOKEN") or "").strip()
 PADDLE_WEBHOOK_SECRET = (os.getenv("PADDLE_WEBHOOK_SECRET") or "").strip()
 PADDLE_ENV = (os.getenv("PADDLE_ENV") or "sandbox").strip().lower()
 PADDLE_PRICE_PLUS = (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or "").strip()
+PADDLE_PRICE_PLUS_YEARLY = (os.getenv("PADDLE_PRICE_PLUS_YEARLY") or "").strip()
 
 # Optional per-package catalog prices (EUR cents payment → pri_…)
 # Packs: €10→100 token, €20→200 token, €50→600 token (1 token = €0.10).
@@ -84,6 +85,7 @@ def client_config() -> dict[str, Any]:
         "environment": paddle_environment(),
         "clientToken": PADDLE_CLIENT_TOKEN if overlay else "",
         "pricePlus": PADDLE_PRICE_PLUS,
+        "pricePlusYearly": PADDLE_PRICE_PLUS_YEARLY,
         "topupPrices": {str(k): v for k, v in topup_price_map().items()},
     }
 
@@ -149,14 +151,25 @@ def create_plus_checkout(
     email: str,
     customer_id: str | None = None,
     success_url: str | None = None,
+    interval: str = "month",
 ) -> dict[str, Any]:
-    if not PADDLE_PRICE_PLUS:
-        raise RuntimeError("PADDLE_PRICE_PLUS_MONTHLY non configurata")
+    yearly = (interval or "").lower() in {"year", "yearly", "annual", "annuale"}
+    price_id = (
+        (os.getenv("PADDLE_PRICE_PLUS_YEARLY") or PADDLE_PRICE_PLUS_YEARLY or "").strip()
+        if yearly
+        else (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or PADDLE_PRICE_PLUS or "").strip()
+    )
+    if not price_id:
+        raise RuntimeError(
+            "PADDLE_PRICE_PLUS_YEARLY non configurata"
+            if yearly
+            else "PADDLE_PRICE_PLUS_MONTHLY non configurata"
+        )
     return create_transaction(
-        price_id=PADDLE_PRICE_PLUS,
+        price_id=price_id,
         user_id=user_id,
         email=email,
-        custom_data={"product": "plus"},
+        custom_data={"product": "plus", "interval": "year" if yearly else "month"},
         success_url=success_url,
         customer_id=customer_id,
     )
@@ -358,15 +371,22 @@ def plus_price_id() -> str:
     return (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or PADDLE_PRICE_PLUS or "").strip()
 
 
+def plus_yearly_price_id() -> str:
+    return (
+        os.getenv("PADDLE_PRICE_PLUS_YEARLY") or PADDLE_PRICE_PLUS_YEARLY or ""
+    ).strip()
+
+
 def transaction_grants_plus(data: dict[str, Any]) -> bool:
-    """Grant Plus only when the settled line items include the Plus price.
+    """Grant Plus only when the settled line items include a Plus price.
 
     Never trust client ``custom_data.product`` — overlay checkout can set it.
     """
-    plus = plus_price_id()
-    if not plus:
+    prices = {plus_price_id(), plus_yearly_price_id()} - {""}
+    if not prices:
         return False
-    return plus in transaction_price_ids(data)
+    settled = set(transaction_price_ids(data))
+    return bool(prices & settled)
 
 
 def topup_payment_cents_for_transaction(data: dict[str, Any]) -> int | None:

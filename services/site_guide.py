@@ -324,7 +324,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "name": "Free",
                 "points": [
-                    "1 sito, crawl pagine limitate, 2 analisi lifetime sullo stesso dominio",
+                    "1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso URL ok, consuma token)",
                     "Score, findings, pack ZIP, Edge base (llms + signals)",
                     "SoV stimato (proxy)",
                 ],
@@ -332,7 +332,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "name": "Plus",
                 "points": [
-                    "Crawl intero sito, multi-sito, competitor, storico esteso",
+                    "Crawl fino a 120 pagine (Deep 500), multi-sito, competitor, storico esteso",
                     "SoV measured, prompt bank, re-scan, API, white-label",
                     "Edge completo + CMS connector + 100 token/ciclo",
                 ],

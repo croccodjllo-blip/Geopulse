@@ -117,7 +117,7 @@ def require_capability(ents: PlanEntitlements, capability: str) -> str | None:
         return None
     labels = {
         "multi_site": "più siti",
-        "full_crawl": "crawl intero sito",
+        "full_crawl": "crawl Plus (fino a 120 pagine)",
         "competitors": "snapshot competitor",
         "measured_sov": "SoV measured / citation monitor",
         "prompt_bank": "prompt bank personalizzato",
