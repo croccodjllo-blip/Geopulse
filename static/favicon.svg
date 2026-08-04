@@ -1,8 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centropic">
+  <defs>
+    <linearGradient id="fav-arc" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#7000FF"/>
+    </linearGradient>
+    <radialGradient id="fav-core" cx="50%" cy="50%" r="50%">
+      <stop stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#7000FF"/>
+    </radialGradient>
+  </defs>
   <rect width="64" height="64" rx="14" fill="#0B0F19"/>
-  <circle cx="32" cy="32" r="24" stroke="#00F0FF" stroke-opacity="0.22" stroke-width="1" fill="none"/>
-  <circle cx="32" cy="32" r="17" stroke="#00F0FF" stroke-width="1.4" fill="none"/>
-  <path d="M46.2 20A15.8 15.8 0 1 1 43.2 13.2" stroke="#7000FF" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-  <circle cx="32" cy="32" r="5.2" fill="#7000FF"/>
-  <circle cx="32" cy="32" r="1.8" fill="#0B0F19"/>
+  <circle cx="32" cy="32" r="22" stroke="#1F2937" stroke-width="1.2" fill="none"/>
+  <path
+    d="M44.8 18.2A18.5 18.5 0 1 0 44.8 45.8"
+    stroke="url(#fav-arc)"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <circle cx="32" cy="32" r="5.4" fill="url(#fav-core)"/>
+  <circle cx="32" cy="32" r="1.85" fill="#0B0F19"/>
 </svg>

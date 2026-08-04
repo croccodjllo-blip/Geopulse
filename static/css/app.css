@@ -3,7 +3,7 @@
    GEO / Generative Engine Optimization SaaS
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
   /* ——— Enterprise brand tokens ——— */
@@ -80,9 +80,9 @@
   --danger-bg:  rgba(251, 113, 133, 0.12);
   --danger-brd: rgba(251, 113, 133, 0.35);
 
-  /* ——— Typography — Plus Jakarta Sans ——— */
-  --font-display: "Plus Jakarta Sans", Inter, Geist, system-ui, sans-serif;
-  --font-body:    "Plus Jakarta Sans", Inter, Geist, system-ui, sans-serif;
+  /* ——— Typography — Sora display + Plus Jakarta body ——— */
+  --font-display: "Sora", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body:    "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono:    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* ——— Geometry ——— */
@@ -187,16 +187,16 @@ body.app-body:not(.body-dash) {
 
 .site-header .nav-cta,
 .site-header--invert .nav-cta {
-  border-color: rgba(0, 255, 157, 0.4) !important;
-  color: var(--color-core) !important;
+  border-color: rgba(0, 240, 255, 0.45) !important;
+  color: var(--brand-cyan) !important;
   background: transparent !important;
 }
 .site-header .nav-cta:hover,
 .site-header--invert .nav-cta:hover {
-  background: var(--color-core) !important;
+  background: var(--brand-cyan) !important;
   border-color: transparent !important;
-  color: var(--color-chaos) !important;
-  box-shadow: 0 0 28px rgba(0, 255, 157, 0.28);
+  color: var(--brand-bg) !important;
+  box-shadow: var(--shadow-glow);
 }
 
 .site-header__inner {
@@ -288,7 +288,7 @@ body.app-body:not(.body-dash) {
 }
 
 .nav-cta {
-  border: 1px solid rgba(0, 255, 157, 0.35) !important;
+  border: 1px solid rgba(0, 240, 255, 0.4) !important;
   padding: 0.42rem 0.95rem !important;
   border-radius: var(--radius-sm);
   font-weight: 600 !important;
@@ -301,10 +301,10 @@ body.app-body:not(.body-dash) {
 }
 
 .nav-cta:hover {
-  background: var(--color-core) !important;
-  color: var(--color-chaos) !important;
+  background: var(--brand-cyan) !important;
+  color: var(--brand-bg) !important;
   border-color: transparent !important;
-  box-shadow: 0 0 24px rgba(0, 255, 157, 0.28);
+  box-shadow: var(--shadow-glow);
 }
 
 /* Main + footer containers */
@@ -5812,12 +5812,17 @@ html.analyze-busy {
 .app-sidebar__mark {
   display: grid;
   place-items: center;
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: 0.5rem;
   color: var(--brand-cyan);
   border: 1px solid rgba(0, 240, 255, 0.4);
   background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(112, 0, 255, 0.2));
   box-shadow: var(--shadow-glow);
+}
+.app-sidebar__mark img {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
 }
 
 .app-sidebar__title {
@@ -6228,4 +6233,335 @@ html.analyze-busy {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ═══════════════════════════════════════════
+   SITE REDESIGN v2 — Brand lockup, hero, auth, pricing
+═══════════════════════════════════════════ */
+
+.brand-mark__ai,
+.hero-brand__ai,
+.auth-aside__copy .brand span {
+  color: var(--brand-cyan);
+  font-weight: 500;
+}
+
+.site-header--transparent {
+  background: rgba(11, 15, 25, 0.35);
+  border-bottom-color: transparent;
+}
+
+.site-header--transparent.is-scrolled,
+.site-header--transparent:focus-within {
+  background: rgba(11, 15, 25, 0.82);
+  border-bottom-color: var(--brand-border);
+}
+
+body.body-marketing,
+body.body-auth {
+  background-image:
+    radial-gradient(ellipse 70% 50% at 85% -10%, rgba(112, 0, 255, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 5% 15%, rgba(0, 240, 255, 0.10) 0%, transparent 50%),
+    var(--bg-gradient);
+  background-attachment: fixed;
+}
+
+/* ——— Hero v2: full-bleed field, brand-first ——— */
+.hero--v2 {
+  min-height: calc(100svh - var(--header-h));
+  display: grid;
+  align-items: center;
+  background: var(--brand-bg);
+}
+
+.hero-visual--field {
+  background:
+    radial-gradient(ellipse 60% 55% at 72% 48%, rgba(0, 240, 255, 0.14) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 45% at 18% 72%, rgba(112, 0, 255, 0.16) 0%, transparent 55%),
+    linear-gradient(165deg, #070A12 0%, #0B0F19 45%, #0F172A 100%);
+}
+
+.hero-visual__aurora {
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 75%;
+  background:
+    radial-gradient(ellipse 50% 45% at 65% 30%, rgba(0, 240, 255, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 35% at 25% 55%, rgba(112, 0, 255, 0.14) 0%, transparent 55%);
+  pointer-events: none;
+  animation: glow-drift 16s ease-in-out infinite alternate;
+  filter: blur(2px);
+}
+
+.hero-visual__signal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    conic-gradient(from 210deg at 70% 45%, transparent 0deg, rgba(0, 240, 255, 0.06) 40deg, transparent 90deg);
+  animation: signal-sweep 14s linear infinite;
+  opacity: 0.7;
+}
+
+.hero-visual__core {
+  position: absolute;
+  right: clamp(-4%, 2vw, 8%);
+  top: 50%;
+  width: min(58vw, 560px);
+  height: min(58vw, 560px);
+  transform: translateY(-50%);
+  pointer-events: none;
+  opacity: 0.38;
+  animation: core-breathe 5.5s var(--ease) infinite;
+  mask-image: radial-gradient(circle at 48% 50%, #000 0%, #000 42%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 48% 50%, #000 0%, #000 42%, transparent 72%);
+}
+
+.hero-visual__core img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 48px rgba(0, 240, 255, 0.22));
+}
+
+@media (max-width: 860px) {
+  .hero-visual__core {
+    right: 50%;
+    top: 12%;
+    width: min(78vw, 340px);
+    height: min(78vw, 340px);
+    transform: translateX(50%);
+    opacity: 0.22;
+  }
+}
+
+.hero-copy--v2 {
+  width: min(var(--max-w), calc(100% - 2.5rem));
+  margin: 0 auto;
+  padding: clamp(4.5rem, 12vh, 7.5rem) 0 clamp(3.5rem, 10vh, 6rem);
+  animation: rise 900ms var(--ease) both;
+}
+
+.hero-brand--v2 {
+  margin: 0 0 1.75rem;
+  gap: 1rem;
+}
+
+.hero-brand__lockup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hero-brand__mark {
+  letter-spacing: 0.16em;
+}
+
+.hero-headline--v2 {
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 7.5vw, 4.75rem);
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin: 0 0 1.25rem;
+}
+
+.hero-headline--v2 .text-gradient {
+  display: inline;
+}
+
+.btn-core {
+  background: var(--brand-cyan);
+  color: var(--brand-bg);
+  border-color: transparent;
+  font-weight: 700;
+  box-shadow: 0 0 0 0 transparent;
+  transition: transform 180ms var(--ease), box-shadow 180ms var(--ease), background 180ms var(--ease);
+}
+.btn-core:hover {
+  background: #5ff7ff;
+  color: var(--brand-bg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow), 0 0 40px rgba(112, 0, 255, 0.18);
+}
+
+.btn-ghost-light {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: rgba(248, 250, 252, 0.88);
+  background: rgba(248, 250, 252, 0.03);
+}
+.btn-ghost-light:hover {
+  border-color: rgba(0, 240, 255, 0.45);
+  color: #fff;
+  background: rgba(0, 240, 255, 0.06);
+}
+
+/* ——— Marketing sections v2 ——— */
+.section-band--v2 {
+  padding: clamp(4rem, 10vh, 6.5rem) 0;
+}
+
+.section-band--v2 h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.step-flow--v2 {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--brand-border);
+}
+
+.step-flow--v2 li {
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--brand-border);
+  display: grid;
+  gap: 0.35rem;
+  animation: rise 700ms var(--ease) both;
+}
+
+.feature-grid--v2 {
+  margin-top: 2.75rem;
+  gap: 2.25rem 2.75rem;
+}
+
+.artifact-list--v2 {
+  margin-top: 1.75rem;
+}
+
+.faq-list--v2 .faq-item {
+  border-color: var(--brand-border);
+  background: transparent;
+}
+
+.section-cta--v2 {
+  border-top: 1px solid var(--brand-border);
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 100%, rgba(0, 240, 255, 0.08) 0%, transparent 55%),
+    transparent;
+  padding: clamp(4.5rem, 12vh, 7rem) 0;
+}
+
+.section-cta--v2 h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+/* ——— Auth shell v2 ——— */
+.auth-shell--v2 {
+  min-height: calc(100svh - var(--header-h) - 4rem);
+}
+
+.auth-aside--v2 {
+  position: relative;
+  overflow: hidden;
+  background: var(--brand-bg);
+  border-right: 1px solid var(--brand-border);
+}
+
+.auth-aside--v2 .auth-aside__img { display: none; }
+
+.auth-aside__field {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.auth-aside__aurora {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 40% 30%, rgba(0, 240, 255, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 70% 75%, rgba(112, 0, 255, 0.18) 0%, transparent 50%);
+  animation: glow-drift 14s ease-in-out infinite alternate;
+}
+
+.auth-aside__logo {
+  position: relative;
+  width: min(52%, 220px);
+  height: auto;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 36px rgba(0, 240, 255, 0.25));
+  animation: core-breathe 5s var(--ease) infinite;
+  z-index: 1;
+}
+
+.auth-aside--v2 .auth-aside__copy {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, transparent 0%, rgba(11, 15, 25, 0.85) 35%, rgba(11, 15, 25, 0.95) 100%);
+}
+
+.auth-aside--v2 .auth-aside__copy .brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  font-size: 1.05rem;
+}
+
+.panel--auth {
+  background: rgba(17, 24, 39, 0.72);
+  border: 1px solid var(--brand-border);
+  backdrop-filter: blur(10px);
+}
+
+/* ——— Pricing / page v2 ——— */
+.page--v2 {
+  padding-top: 1rem;
+}
+
+.page-intro--v2 .page-intro__title {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+}
+
+.plan-grid--v2 {
+  gap: 1.5rem;
+}
+
+.plan--v2 {
+  background: rgba(17, 24, 39, 0.65);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: none;
+}
+
+.plan--v2.plan--featured {
+  border-color: rgba(0, 240, 255, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.08), var(--shadow-glow);
+  background:
+    linear-gradient(165deg, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+    rgba(17, 24, 39, 0.8);
+}
+
+.plan--v2 .plan__name {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--brand-cyan);
+}
+
+.plan--v2 .plan__price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+@keyframes signal-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual__aurora,
+  .hero-visual__signal,
+  .hero-visual__core,
+  .auth-aside__aurora,
+  .auth-aside__logo,
+  .brand-mark__logo {
+    animation: none !important;
+  }
 }

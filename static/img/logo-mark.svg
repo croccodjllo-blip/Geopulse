@@ -9,22 +9,16 @@
       <stop offset="1" stop-color="#7000FF"/>
     </radialGradient>
   </defs>
-  <!-- Soft field -->
   <circle cx="32" cy="32" r="29" stroke="#00F0FF" stroke-opacity="0.12" stroke-width="1"/>
-  <!-- Orbit ring -->
   <circle cx="32" cy="32" r="22" stroke="#1F2937" stroke-width="1.25"/>
-  <!-- Signal C-arc (open on the right) -->
   <path
     d="M44.8 18.2A18.5 18.5 0 1 0 44.8 45.8"
     stroke="url(#c-arc)"
     stroke-width="3.2"
     stroke-linecap="round"
   />
-  <!-- Inner pulse ring -->
   <circle cx="32" cy="32" r="11.5" stroke="#00F0FF" stroke-opacity="0.35" stroke-width="1"/>
-  <!-- Core node -->
   <circle cx="32" cy="32" r="5.4" fill="url(#c-core)"/>
   <circle cx="32" cy="32" r="1.85" fill="#0B0F19"/>
-  <!-- Signal ticks -->
   <path d="M32 5.5v3.2M32 55.3v3.2M5.5 32h3.2M55.3 32h3.2" stroke="#00F0FF" stroke-width="1.35" stroke-linecap="round" stroke-opacity="0.55"/>
 </svg>

@@ -37,7 +37,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     {% if ga4_measurement_id or google_ads_id %}
@@ -93,12 +93,12 @@
           <img
             class="brand-mark__logo"
             src="{{ url_for('static', filename='img/logo.svg') }}"
-            alt="Centropic"
+            alt=""
             width="32"
             height="32"
             decoding="async"
           />
-          <span class="brand-mark__word">CENTROPIC</span>
+          <span class="brand-mark__word">CENTROPIC<span class="brand-mark__ai">.AI</span></span>
         </a>
         <nav class="nav-links" aria-label="{{ _('Principale') }}">
           {% if current_user %}
@@ -179,12 +179,12 @@
             <img
               class="brand-mark__logo"
               src="{{ url_for('static', filename='img/logo.svg') }}"
-              alt="Centropic"
+              alt=""
               width="32"
               height="32"
               decoding="async"
             />
-            <span class="brand-mark__word">CENTROPIC</span>
+            <span class="brand-mark__word">CENTROPIC<span class="brand-mark__ai">.AI</span></span>
           </a>
           <p>{{ _('Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle risposte IA. Prodotto di') }} <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
         </div>

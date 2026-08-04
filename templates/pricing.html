@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
 {% block meta_description %}{{ _('Prezzi Centropic 2026: piano Free senza carta e Plus con crawl intero sito, SoV measured, monitoraggio e export.') }}{% endblock %}
+{% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
-<article class="page">
-  <header class="page-intro">
-    <p class="eyebrow">{{ _('Prezzi · aggiornato') }} <time datetime="2026-07-30">30/07/2026</time></p>
+<article class="page page--v2">
+  <header class="page-intro page-intro--v2">
+    <p class="eyebrow">{{ _('Prezzi') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Semplici. Scalabili.') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor (SoV measured), alert, re-scan e export. Prodotto di') }}
-      <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
+      {{ _('Free per validare readiness AIO/GEO. Plus per crawl completo, citation monitor, alert e export.') }}
     </p>
   </header>
 
-  <div class="plan-grid" role="list">
-    <section class="plan" role="listitem">
+  <div class="plan-grid plan-grid--v2" role="list">
+    <section class="plan plan--v2" role="listitem">
       <p class="plan__name">Free</p>
       <p class="plan__price">0&nbsp;€<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Per il primo dominio e le prime ottimizzazioni.') }}</p>
@@ -25,66 +25,58 @@
         <li>{{ _('Score + findings (Misurato/Stimato)') }}</li>
         <li>{{ _('Pack ZIP') }}</li>
       </ul>
-      <a class="btn btn-primary btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+      <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
     </section>
 
-    <section class="plan plan--featured" role="listitem">
+    <section class="plan plan--v2 plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
       {% if paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
       <p class="plan__price">{{ _('Abbonamento') }}<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Prezzo mostrato al checkout. Per team che ottimizzano più brand in continuo.') }}</p>
+      <p class="plan__desc">{{ _('Prezzo al checkout. Per team che ottimizzano più brand in continuo.') }}</p>
       {% else %}
       <p class="plan__price">{{ _('In arrivo') }}</p>
-      <p class="plan__desc">{{ _('Checkout Plus in attivazione. Nel frattempo puoi ricaricare crediti. Prenota interesse per accesso prioritario.') }}</p>
+      <p class="plan__desc">{{ _('Checkout Plus in attivazione. Puoi ricaricare crediti o prenotare interesse.') }}</p>
       {% endif %}
       <ul class="plan__features">
         <li>{{ _('Più siti e analisi') }}</li>
         <li>{{ _('Crawl dell’intero sito') }}</li>
-        <li>{{ _('Citation monitor / SoV measured (LLM probe) — solo Plus') }}</li>
+        <li>{{ _('Citation monitor / SoV measured — solo Plus') }}</li>
         <li>{{ _('Prompt bank + alert email/webhook') }}</li>
         <li>{{ _('Re-scan giornaliero/settimanale') }}</li>
-        <li>{{ _('API + export CSV/ZIP + white-label') }}</li>
+        <li>{{ _('API + export + white-label') }}</li>
         <li>{{ _('Storico run avanzato') }}</li>
       </ul>
       {% if (paddle_ready or (payments_provider == 'stripe' and stripe_ready)) and current_user %}
         {% if paddle_overlay and paddle_ready %}
-        <button type="button" class="btn btn-primary btn-block" data-paddle-checkout="plus">
+        <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
           {{ _('Passa a Plus') }}
         </button>
         <noscript>
           <form method="post" action="{{ url_for('billing_checkout') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
+            <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
           </form>
         </noscript>
         {% else %}
         <form method="post" action="{{ url_for('billing_checkout') }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <button type="submit" class="btn btn-primary btn-block">{{ _('Passa a Plus') }}</button>
+          <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
         </form>
         {% endif %}
       {% elif paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
-      <a class="btn btn-primary btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
+      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
       {% else %}
-      <a class="btn btn-ghost btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
-      <a class="btn btn-primary btn-block" href="{{ url_for('topup_credit_page') }}" style="margin-top:0.5rem">{{ _('Ricarica crediti') }}</a>
+      <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
+      <a class="btn btn-core btn-block" href="{{ url_for('topup_credit_page') }}" style="margin-top:0.5rem">{{ _('Ricarica crediti') }}</a>
       {% endif %}
     </section>
   </div>
 
   <p class="plan-note">
-    {{ _('Aggiornato il') }} <time datetime="2026-07-30">30/07/2026</time>.
-    {{ _('Pagamenti gestiti da') }} {% if payments_provider == 'paddle' %}Paddle{% elif payments_provider == 'stripe' %}Stripe{% else %}—{% endif %}.
-    {{ _('Policy:') }}
+    {{ _('Pagamenti:') }} {% if payments_provider == 'paddle' %}Paddle{% elif payments_provider == 'stripe' %}Stripe{% else %}—{% endif %}.
     <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a> ·
     <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
     <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>.
-    {{ _('Domande?') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-    · <a href="{{ url_for('faq') }}">{{ _('FAQ') }}</a>
-    · <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
-    · <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>
-    · <a href="{{ url_for('register') }}">{{ _('Account Free') }}</a>
-    · {{ _('Owner:') }} <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>
   </p>
 </article>
 {% endblock %}

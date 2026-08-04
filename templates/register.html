@@ -3,27 +3,19 @@
 {% block meta_description %}{{ _('Crea un account Free Centropic: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/register{% endblock %}
 
+{% block body_class %}body-auth{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
+
 {% block content %}
-<section class="auth-shell">
-  <aside class="auth-aside" aria-hidden="true">
-    <img
-      class="auth-aside__img"
-      src="{{ url_for('static', filename='img/auth-orbit.jpg') }}"
-      alt="{{ _('Centropic — orbita Signal Intelligence') }}"
-      width="1024"
-      height="1536"
-    />
-    <div class="auth-aside__copy">
-      <p class="brand">CENTROPIC</p>
-      <p>{{ _('Analizza i segnali. Chiudi le criticità. Pubblica il pack.') }}</p>
-    </div>
-  </aside>
+<section class="auth-shell auth-shell--v2">
+  {% set auth_aside_line = _('Analizza i segnali. Chiudi le criticità. Pubblica il pack.') %}
+  {% include "partials/auth_aside.html" %}
 
   <div class="auth-wrap auth-wrap--wide">
-    <p class="eyebrow">{{ _('Registrazione · aggiornato') }} <time datetime="2026-07-27">27/07/2026</time></p>
+    <p class="eyebrow">{{ _('Registrazione') }}</p>
     <h1 class="h-display auth-title">{{ _('Crea account') }}</h1>
     <p class="lede auth-lede">
-      {{ _('Crea l’account con nome, email e password. Conferma l’email per sbloccare il credito di benvenuto e avviare la prima diagnosi. Azienda e URL del sito sono opzionali. Supporto:') }}
+      {{ _('Nome, email e password. Conferma l’email per il credito di benvenuto. Azienda e URL sono opzionali.') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
 
@@ -119,7 +111,7 @@
       </div>
 
       <div class="span-2">
-        {{ form.submit(class_="btn btn-primary btn-block") }}
+        {{ form.submit(class_="btn btn-core btn-block") }}
       </div>
     </form>
 

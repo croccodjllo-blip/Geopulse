@@ -2,31 +2,22 @@
 {% block title %}{{ _('Accedi') }}{% endblock %}
 {% block meta_description %}{{ _('Accedi a Centropic: dashboard per score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings e pack llms.txt/JSON-LD.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/login{% endblock %}
+{% block body_class %}body-auth{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
 
 {% block content %}
-<section class="auth-shell">
-  <aside class="auth-aside" aria-hidden="true">
-    <img
-      class="auth-aside__img"
-      src="{{ url_for('static', filename='img/auth-orbit.jpg') }}"
-      alt="{{ _('Centropic — orbita Signal Intelligence') }}"
-      width="1024"
-      height="1536"
-    />
-    <div class="auth-aside__copy">
-      <p class="brand">CENTROPIC</p>
-      <p>{{ _('AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO). Findings. Pack da pubblicare.') }}</p>
-    </div>
-  </aside>
+<section class="auth-shell auth-shell--v2">
+  {% set auth_aside_line = _('Signal Intelligence per AIO e GEO. Findings prioritizzati. Pack da pubblicare.') %}
+  {% include "partials/auth_aside.html" %}
 
   <div class="auth-wrap">
-    <p class="eyebrow">{{ _('Accesso · aggiornato') }} <time datetime="2026-07-29">29/07/2026</time></p>
+    <p class="eyebrow">{{ _('Accesso') }}</p>
     <h1 class="h-display auth-title">{{ _('Bentornato') }}</h1>
     <p class="lede auth-lede">
-      {{ _('Entra in dashboard, analizza il dominio e scarica il pack da pubblicare. Piano Free senza carta di credito.') }}
+      {{ _('Entra in dashboard, analizza il dominio e scarica il pack. Piano Free senza carta.') }}
     </p>
 
-    <form method="post" class="form-grid panel" novalidate>
+    <form method="post" class="form-grid panel panel--auth" novalidate>
       {{ form.hidden_tag() }}
       <div class="field">
         <label for="email">{{ _('Email') }}</label>
@@ -57,18 +48,8 @@
       <p class="switch-line" style="margin: -0.35rem 0 0.25rem">
         <a href="{{ url_for('forgot_password') }}">{{ _('Password dimenticata?') }}</a>
       </p>
-      {{ form.submit(class_="btn btn-primary btn-block") }}
+      {{ form.submit(class_="btn btn-core btn-block") }}
     </form>
-
-    <div class="auth-notes">
-      <h2 class="auth-notes__title">{{ _('Cosa trovi in dashboard') }}</h2>
-      <p>
-        {{ _('Score AIO/GEO da probe ed euristiche, findings con badge Stimato/Misurato, pagine deboli del crawl e artifact pronti da copiare o scaricare in ZIP. Documentazione:') }}
-        <a href="{{ url_for('product') }}">{{ _('prodotto') }}</a>,
-        <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a>,
-        <a href="{{ url_for('faq') }}">{{ _('FAQ') }}</a>.
-      </p>
-    </div>
 
     {% include "partials/auth_help.html" %}
 

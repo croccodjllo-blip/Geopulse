@@ -1,0 +1,18 @@
+{# Brand field for auth pages — CSS aurora + logo, no photo dependency #}
+<aside class="auth-aside auth-aside--v2" aria-hidden="true">
+  <div class="auth-aside__field">
+    <div class="auth-aside__aurora"></div>
+    <img
+      class="auth-aside__logo"
+      src="{{ url_for('static', filename='img/logo.svg') }}"
+      alt=""
+      width="220"
+      height="220"
+      decoding="async"
+    />
+  </div>
+  <div class="auth-aside__copy">
+    <p class="brand">CENTROPIC<span>.AI</span></p>
+    <p>{{ auth_aside_line|default(_('Signal Intelligence per AIO e GEO.')) }}</p>
+  </div>
+</aside>

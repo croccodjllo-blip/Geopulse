@@ -6,7 +6,6 @@ import {
   Plug,
   Settings,
   CreditCard,
-  Network,
   History,
 } from "lucide-react";
 
@@ -34,12 +33,54 @@ export type SidebarProps = {
   integrationsHref?: string;
   historyHref?: string;
   settingsHref?: string;
+  logoSrc?: string;
 };
 
 const navItemClass = (active: boolean) =>
   active
     ? "flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-brand-cyan/10 to-transparent border-l-2 border-brand-cyan text-white text-sm font-medium"
     : "flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-muted hover:text-white hover:bg-brand-border/40 text-sm font-medium transition-colors";
+
+function LogoMark({ src }: { src?: string }) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        width={28}
+        height={28}
+        className="w-7 h-7"
+        decoding="async"
+      />
+    );
+  }
+  return (
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 64 64"
+      fill="none"
+      aria-hidden
+      className="w-7 h-7"
+    >
+      <circle cx="32" cy="32" r="22" stroke="#1F2937" strokeWidth="1.25" />
+      <path
+        d="M44.8 18.2A18.5 18.5 0 1 0 44.8 45.8"
+        stroke="url(#sidebarLogoGrad)"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+      <defs>
+        <linearGradient id="sidebarLogoGrad" x1="12" y1="8" x2="52" y2="56">
+          <stop stopColor="#00F0FF" />
+          <stop offset="1" stopColor="#7000FF" />
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="5.4" fill="#00F0FF" />
+      <circle cx="32" cy="32" r="1.85" fill="#0B0F19" />
+    </svg>
+  );
+}
 
 export function Sidebar({
   active = "dashboard",
@@ -54,6 +95,7 @@ export function Sidebar({
   integrationsHref = "#",
   historyHref = "#",
   settingsHref = "#",
+  logoSrc,
 }: SidebarProps) {
   const pct =
     creditsCap > 0
@@ -64,13 +106,13 @@ export function Sidebar({
     <aside className="w-64 bg-brand-card border-r border-brand-border h-screen flex flex-col justify-between p-4 fixed left-0 top-0 z-40">
       <div>
         <div className="flex items-center gap-3 px-2 py-4 border-b border-brand-border/60 mb-6">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-violet/20 border border-brand-cyan/40 text-brand-cyan shadow-glow">
-            <Network className="w-6 h-6" aria-hidden />
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-violet/20 border border-brand-cyan/40 shadow-glow">
+            <LogoMark src={logoSrc} />
           </div>
           <div>
             <h1 className="text-lg font-bold text-white tracking-wide">
               CENTROPIC
-              <span className="text-brand-cyan font-normal">.AI</span>
+              <span className="text-brand-cyan font-medium">.AI</span>
             </h1>
             <p className="text-xs text-brand-muted">GEO Intelligence Engine</p>
           </div>
