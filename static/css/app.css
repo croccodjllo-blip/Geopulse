@@ -5776,3 +5776,194 @@ html.analyze-busy {
   outline: 2px solid var(--brand-cyan);
   outline-offset: 2px;
 }
+
+/* ==========================================================================
+   App Sidebar — Enterprise shell (mirrors components/Sidebar.tsx)
+   ========================================================================== */
+
+.app-shell {
+  display: block;
+}
+
+.app-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  width: 16rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--brand-card);
+  border-right: 1px solid var(--brand-border);
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.85);
+}
+
+.app-sidebar__mark {
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: var(--brand-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(112, 0, 255, 0.2));
+  box-shadow: var(--shadow-glow);
+}
+
+.app-sidebar__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+.app-sidebar__title span {
+  color: var(--brand-cyan);
+  font-weight: 500;
+}
+
+.app-sidebar__tag {
+  margin: 0.15rem 0 0;
+  font-size: 0.7rem;
+  color: var(--brand-muted);
+}
+
+.app-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--brand-muted);
+  border-left: 2px solid transparent;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+}
+.app-sidebar__link:hover {
+  color: #fff;
+  background: rgba(31, 41, 55, 0.45);
+}
+.app-sidebar__link.is-active {
+  color: #fff;
+  border-left-color: var(--brand-cyan);
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), transparent);
+}
+.app-sidebar__link.is-active svg {
+  color: var(--brand-cyan);
+}
+
+.app-sidebar__credits {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--brand-bg);
+  border: 1px solid var(--brand-border);
+}
+
+.app-sidebar__credits-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--brand-muted);
+}
+.app-sidebar__credits-row strong {
+  color: var(--brand-cyan);
+  font-weight: 600;
+}
+
+.app-sidebar__bar {
+  margin-top: 0.65rem;
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--brand-border);
+}
+.app-sidebar__bar-fill {
+  height: 100%;
+  background: var(--accent-gradient);
+  box-shadow: var(--shadow-glow);
+}
+
+.app-sidebar__credits-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(31, 41, 55, 0.55);
+  font-size: 0.75rem;
+}
+
+.app-sidebar__billing {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--brand-muted);
+}
+.app-sidebar__billing:hover {
+  color: #fff;
+}
+
+.app-shell--sidebar .site-header,
+.app-shell--sidebar .site-main,
+.app-shell--sidebar .site-footer {
+  margin-left: 16rem;
+  width: calc(100% - 16rem);
+}
+
+.app-shell--sidebar .site-header__inner,
+.app-shell--sidebar .site-footer__inner {
+  max-width: none;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.app-shell--sidebar .site-header .nav-links a:not(.lang-switch__option),
+.app-shell--sidebar .site-header .nav-links form {
+  /* Compact top bar: keep utility actions, primary nav lives in sidebar */
+}
+
+.app-shell--sidebar .brand-mark {
+  opacity: 0.85;
+}
+
+@media (max-width: 960px) {
+  .app-sidebar {
+    position: sticky;
+    width: 100%;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--brand-border);
+  }
+  .app-shell--sidebar .site-header,
+  .app-shell--sidebar .site-main,
+  .app-shell--sidebar .site-footer {
+    margin-left: 0;
+    width: 100%;
+  }
+  .app-sidebar__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .app-sidebar__credits {
+    display: none;
+  }
+}

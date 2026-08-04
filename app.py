@@ -1291,8 +1291,42 @@ def inject_globals() -> dict[str, Any]:
     canonical = base if path == "/" else f"{base}{path}"
     ui_lang = active_ui_locale()
     meta = locale_meta(ui_lang)
+    user = current_user()
+    sidebar_balance = 0
+    sidebar_credits_used = 0
+    sidebar_credits_cap = 0
+    sidebar_plan = "Free"
+    sidebar_active = "dashboard"
+    if user is not None:
+        try:
+            sidebar_balance = int(get_balance_cents(user) or 0)
+        except Exception:
+            sidebar_balance = int(getattr(user, "credit_balance_cents", 0) or 0)
+        sidebar_plan = getattr(user, "plan_label", None) or str(
+            getattr(user, "plan", "free")
+        ).title()
+        # Free: show lifetime analyses vs cap; Plus: EUR balance (no fake denominator).
+        if not getattr(user, "is_pro", False):
+            try:
+                sidebar_credits_used = int(analyses_total(user.id))
+            except Exception:
+                sidebar_credits_used = 0
+            sidebar_credits_cap = int(FREE_TOTAL_ANALYSES or 0)
+        ep = (request.endpoint or "")
+        if ep in {"dashboard_settings"}:
+            sidebar_active = "settings"
+        elif ep in {"dashboard_history", "site_history", "export_history_csv"}:
+            sidebar_active = "history"
+        elif ep in {"topup_credit_page"}:
+            sidebar_active = "billing"
+        elif ep in {"dashboard_verify", "dashboard_verify_rescan"}:
+            sidebar_active = "geo"
+        elif "history" in ep:
+            sidebar_active = "history"
+        else:
+            sidebar_active = "dashboard"
     return {
-        "current_user": current_user(),
+        "current_user": user,
         "csrf_token": generate_csrf,
         "max_sites_free": MAX_SITES_FREE,
         "free_daily_analyses": FREE_TOTAL_ANALYSES,
@@ -1329,6 +1363,11 @@ def inject_globals() -> dict[str, Any]:
         "ui_languages": language_switcher_items(ui_lang),
         "supported_locales": SUPPORTED_LOCALES,
         "_": _,
+        "sidebar_balance_cents": sidebar_balance,
+        "sidebar_credits_used": sidebar_credits_used,
+        "sidebar_credits_cap": sidebar_credits_cap,
+        "sidebar_plan": sidebar_plan,
+        "sidebar_active": sidebar_active,
     }
 
 

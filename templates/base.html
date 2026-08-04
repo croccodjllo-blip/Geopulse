@@ -81,11 +81,15 @@
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
   </head>
-  <body class="app-body {% block body_class %}{% endblock %}">
+  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-dash' in _bc %} app-shell app-shell--sidebar{% endif %}{% endif %}">
     {% block shell %}
+    {% set _dash_shell = current_user and ('body-dash' in (self.body_class()|default('', true)|trim)) %}
+    {% if _dash_shell %}
+      {% include "partials/app_sidebar.html" %}
+    {% endif %}
     <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        <a class="brand-mark" href="{{ url_for('index') }}" aria-label="Centropic home">
+        <a class="brand-mark" href="{{ url_for('index') if not _dash_shell else url_for('dashboard') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
             src="{{ url_for('static', filename='img/logo.svg') }}"
@@ -98,12 +102,17 @@
         </a>
         <nav class="nav-links" aria-label="{{ _('Principale') }}">
           {% if current_user %}
+            {% if not _dash_shell %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">{{ _('Dashboard') }}</a>
             <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">{{ _('Storico') }}</a>
             <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
             <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">{{ _('Impostazioni') }}</a>
             <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Crediti') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Plus</a>
+            {% else %}
+            <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
+            <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Crediti') }}</a>
+            {% endif %}
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
