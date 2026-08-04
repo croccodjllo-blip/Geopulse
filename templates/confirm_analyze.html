@@ -31,13 +31,6 @@
         <span class="cost-card__amount">{{ cost.service_cost_eur_cents|tok }}</span>
         <span class="cost-card__label">{{ _('stimati per questa analisi') }}</span>
       </div>
-      <p class="cost-card__note">
-        {{ _('Stima allineata all’addebito reale: ogni chiamata AI ha un minimo di 1 cent (ceil), come in fatturazione.') }}
-        {% if cost.estimated_calls %}
-          {{ _('Call previste:') }} {{ cost.estimated_calls }}.
-        {% endif %}
-        {{ _('Il saldo richiesto all’avvio include il margine di sicurezza') }} {{ grace_margin_pct }}%.
-      </p>
 
       {% if cost.breakdown %}
       <details class="cost-breakdown">
@@ -186,7 +179,6 @@
   color: var(--color-core);
 }
 .cost-card__label { color: var(--ink-soft); font-size: 0.9rem; }
-.cost-card__note  { font-size: 0.82rem; color: var(--ink-soft); margin: 0; }
 
 .cost-breakdown { margin-top: 1rem; }
 .cost-breakdown summary {
