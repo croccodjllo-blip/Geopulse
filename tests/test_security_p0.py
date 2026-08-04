@@ -80,8 +80,9 @@ def test_session_invalidated_after_password_change():
 
 
 def test_admin_topup_allowlist():
-    assert ADMIN_TOPUP_AMOUNTS_CENTS == frozenset({1000, 2000, 5000})
+    assert ADMIN_TOPUP_AMOUNTS_CENTS == frozenset({1000, 2000, 6000})
     assert 999999 not in ADMIN_TOPUP_AMOUNTS_CENTS
+    assert 5000 not in ADMIN_TOPUP_AMOUNTS_CENTS  # €50 pack credits 6000¢ (bonus)
 
 
 def test_safe_next_url_still_blocks_open_redirects():

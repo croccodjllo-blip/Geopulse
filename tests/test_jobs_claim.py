@@ -9,6 +9,11 @@ from services.jobs import claim_next_job, enqueue_analysis
 def test_claim_next_job_is_exclusive():
     with app.app_context():
         ensure_schema()
+        # Isolate from other pending jobs left by parallel tests.
+        AnalysisJob.query.filter(AnalysisJob.status.in_(("pending", "running"))).update(
+            {"status": "error", "error": "test-isolate"}, synchronize_session=False
+        )
+        db.session.commit()
         # DB in-memory: create user + two pending jobs
         user = User(email="claim-test@example.com", name="T", plan="plus")
         user.set_password("x" * 12)

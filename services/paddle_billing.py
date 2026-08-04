@@ -21,8 +21,8 @@ PADDLE_WEBHOOK_SECRET = (os.getenv("PADDLE_WEBHOOK_SECRET") or "").strip()
 PADDLE_ENV = (os.getenv("PADDLE_ENV") or "sandbox").strip().lower()
 PADDLE_PRICE_PLUS = (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or "").strip()
 
-# Optional per-package catalog prices (EUR cents → pri_…)
-# Public packs: €10 / €20 / €50  (= 1000 / 2000 / 5000 GEO token).
+# Optional per-package catalog prices (EUR cents payment → pri_…)
+# Packs: €10→100 token, €20→200 token, €50→600 token (1 token = €0.10).
 _TOPUP_ENV = {
     1000: "PADDLE_PRICE_TOPUP_1000",
     2000: "PADDLE_PRICE_TOPUP_2000",
@@ -190,37 +190,77 @@ def verify_webhook_signature(
     secret: str | None = None,
     max_age_seconds: int = 300,
 ) -> bool:
-    """Verify Paddle-Signature: ts=…;h1=… over ``{ts}:{raw_body}``."""
-    secret = (secret or PADDLE_WEBHOOK_SECRET or "").strip()
-    if not secret or not signature_header:
-        return False
-    if isinstance(raw_body, bytes):
-        body_str = raw_body.decode("utf-8")
-    else:
-        body_str = raw_body
+    """Verify Paddle-Signature: ``ts=…;h1=…`` over ``{ts}:{raw_body}``.
 
-    parts: dict[str, str] = {}
+    Supports multiple ``h1`` values (secret rotation) and multiple secrets
+    (comma-separated ``PADDLE_WEBHOOK_SECRET``).
+    """
+    secrets = _webhook_secrets(secret)
+    if not secrets or not signature_header:
+        logger.warning(
+            "Paddle webhook verify fail: %s",
+            "missing_secret" if not secrets else "missing_signature_header",
+        )
+        return False
+
+    if isinstance(raw_body, bytes):
+        body_bytes = raw_body
+    else:
+        body_bytes = raw_body.encode("utf-8")
+
+    ts: str | None = None
+    h1_values: list[str] = []
     for element in signature_header.split(";"):
         element = element.strip()
         if "=" not in element:
             continue
         key, value = element.split("=", 1)
-        parts[key.strip()] = value.strip()
-    ts = parts.get("ts")
-    h1 = parts.get("h1")
-    if not ts or not h1:
+        key = key.strip()
+        value = value.strip()
+        if key == "ts":
+            ts = value
+        elif key == "h1" and value:
+            h1_values.append(value)
+    if not ts or not h1_values:
+        logger.warning("Paddle webhook verify fail: malformed_signature_header")
         return False
     try:
         age = abs(int(time.time()) - int(ts))
     except ValueError:
+        logger.warning("Paddle webhook verify fail: bad_timestamp")
         return False
     if age > max_age_seconds:
         logger.warning("Paddle webhook timestamp too old (%ss)", age)
         return False
 
-    signed = f"{ts}:{body_str}".encode("utf-8")
-    digest = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
-    return hmac.compare_digest(digest, h1)
+    signed = f"{ts}:".encode("utf-8") + body_bytes
+    for sec in secrets:
+        digest = hmac.new(sec.encode("utf-8"), signed, hashlib.sha256).hexdigest()
+        for h1 in h1_values:
+            if hmac.compare_digest(digest, h1):
+                return True
+    logger.warning(
+        "Paddle webhook verify fail: signature_mismatch (secrets=%s h1=%s age=%ss)",
+        len(secrets),
+        len(h1_values),
+        age,
+    )
+    return False
+
+
+def _webhook_secrets(explicit: str | None = None) -> list[str]:
+    """Collect webhook secrets from arg or env (comma-separated allowed)."""
+    raw = (explicit if explicit is not None else os.getenv("PADDLE_WEBHOOK_SECRET") or "")
+    raw = str(raw).strip()
+    if not raw:
+        # Fall back to module-level for tests that monkeypatch the constant.
+        raw = (PADDLE_WEBHOOK_SECRET or "").strip()
+    out: list[str] = []
+    for part in raw.split(","):
+        s = part.strip().strip('"').strip("'")
+        if s and s not in out:
+            out.append(s)
+    return out
 
 
 def parse_webhook_event(raw_body: bytes | str) -> dict[str, Any]:

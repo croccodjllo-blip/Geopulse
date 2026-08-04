@@ -241,6 +241,7 @@ ADMIN_NAME = os.getenv("ADMIN_NAME") or "Admin Centropic"
 ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
+ANALYSIS_SOV_PROMPTS = 8  # must match citation_monitor / prompt_bank max
 # Welcome credit granted only after email verification (anti-farming).
 WELCOME_CREDIT_CENTS = max(0, int(os.getenv("WELCOME_CREDIT_CENTS", "200")))
 EMAIL_VERIFY_HOURS = max(1, int(os.getenv("EMAIL_VERIFY_HOURS", "48")))
@@ -1719,7 +1720,7 @@ def process_pending_analyze_jobs(
         try:
             run_measured_job = should_run_measured(
                 user=user,
-                requested=bool(getattr(job, "run_measured", False)) or MEASURED_SOV_ON_ANALYZE,
+                requested=bool(getattr(job, "run_measured", False)),
                 env_enabled=MEASURED_SOV_ON_ANALYZE,
             )
             est = estimate_analysis_cost(
@@ -1727,7 +1728,7 @@ def process_pending_analyze_jobs(
                 anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
                 perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
                 run_measured=run_measured_job,
-                n_prompts=5,
+                n_prompts=ANALYSIS_SOV_PROMPTS,
                 has_openai=bool(api_key),
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -3000,13 +3001,18 @@ def billing_paddle_webhook():
 
             if transaction_grants_plus(data):
                 if user is not None and (user.plan or "").lower() != "admin":
-                    if data.get("customer_id"):
-                        user.paddle_customer_id = str(data.get("customer_id"))
-                    sub = data.get("subscription_id")
-                    if sub:
-                        user.paddle_subscription_id = str(sub)
-                    user.plan = "plus"
                     txn_id = str(data.get("id") or "").strip()
+                    customer_id = data.get("customer_id")
+                    sub = data.get("subscription_id")
+
+                    def _apply_plus(u: User) -> None:
+                        if customer_id:
+                            u.paddle_customer_id = str(customer_id)
+                        if sub:
+                            u.paddle_subscription_id = str(sub)
+                        u.plan = "plus"
+
+                    _apply_plus(user)
                     if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
                         pi = f"paddle-plus-tokens:{txn_id}"
                         already = CreditLedger.query.filter_by(
@@ -3026,8 +3032,11 @@ def billing_paddle_webhook():
                                     stripe_payment_intent=pi,
                                 )
                             except IntegrityError:
+                                # Duplicate credit race: keep Plus plan, drop credit insert.
                                 db.session.rollback()
                                 user = _user_from_paddle(data) or user
+                                if user is not None and (user.plan or "").lower() != "admin":
+                                    _apply_plus(user)
                     db.session.commit()
                 return jsonify({"ok": True})
 
@@ -3655,7 +3664,7 @@ def dashboard():
                 anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
                 perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
                 run_measured=run_meas,
-                n_prompts=5,
+                n_prompts=ANALYSIS_SOV_PROMPTS,
                 has_openai=bool(OPENAI_API_KEY),
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -3923,7 +3932,7 @@ def dashboard_analyze_confirmed():
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
         run_measured=run_meas,
-        n_prompts=5,
+        n_prompts=ANALYSIS_SOV_PROMPTS,
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -4110,7 +4119,7 @@ def dashboard_analyze_confirmed():
 # Pre-analysis estimate mirrors realtime per-call ceil debit (citation probes
 # count as one call each). Typical holds with SoV Misurato:
 #   OpenAI-only ≈ 7¢ · OAI+Pplx ≈ 10¢ · multi-engine ≈ 20–23¢
-# Pack "analisi" copy uses multi-engine hold (~20¢) as conservative mid.
+# Packs advertise ~40 / ~80 / ~250 analisi (multi-engine hold ≈23–24¢).
 
 _TOPUP_PACKAGES = [
     {
@@ -4118,7 +4127,7 @@ _TOPUP_PACKAGES = [
         "tokens": 100,
         "credit_cents": 1000,  # ledger credit (= tokens × 10)
         "label": "Starter",
-        "analyses": "~50",
+        "analyses": "~40",
         "price_eur": 10,
     },
     {
@@ -4126,7 +4135,7 @@ _TOPUP_PACKAGES = [
         "tokens": 200,
         "credit_cents": 2000,
         "label": "Growth",
-        "analyses": "~100",
+        "analyses": "~80",
         "price_eur": 20,
     },
     {
@@ -4134,7 +4143,7 @@ _TOPUP_PACKAGES = [
         "tokens": 600,
         "credit_cents": 6000,  # bonus vs €50 payment
         "label": "Scale",
-        "analyses": "~300",
+        "analyses": "~250",
         "price_eur": 50,
     },
 ]
@@ -4167,11 +4176,23 @@ def topup_credit_page():
         .limit(20)
         .all()
     )
+    packages = list(_TOPUP_PACKAGES)
+    # Hide packs that cannot be purchased on the active Paddle catalog.
+    if payments_provider() == "paddle" and (
+        paddle_enabled() or paddle_topups_enabled()
+    ):
+        priced = [
+            pkg
+            for pkg in packages
+            if paddle_topup_price_id(int(pkg["cents"]))
+        ]
+        if priced:
+            packages = priced
     return render_template(
         "topup.html",
         balance_cents=get_balance_cents(user),
         ledger=ledger,
-        packages=_TOPUP_PACKAGES,
+        packages=packages,
     )
 
 
@@ -4861,7 +4882,7 @@ def api_v1_analyze():
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
         run_measured=want_measured,
-        n_prompts=5,
+        n_prompts=ANALYSIS_SOV_PROMPTS,
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),

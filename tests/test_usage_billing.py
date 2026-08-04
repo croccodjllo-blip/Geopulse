@@ -115,6 +115,26 @@ def test_estimate_mirrors_per_call_ceil_not_bulk_round():
     assert hold == 20
 
 
+def test_estimate_runtime_prompt_cap_eight():
+    """App uses ANALYSIS_SOV_PROMPTS=8 to match citation_monitor max."""
+    est = estimate_analysis_cost(
+        openai_model="gpt-4o-mini",
+        anthropic_model="claude-haiku-4-5-20251001",
+        perplexity_model="sonar",
+        run_measured=True,
+        n_prompts=8,
+        has_openai=True,
+        has_perplexity=True,
+        has_anthropic=True,
+        has_gemini=True,
+        has_xai=True,
+        has_azure=True,
+    )
+    # 1 llms + 8 oai + 3*5 other engines = 1+8+15 = 24
+    assert est.estimated_calls == 24
+    assert est.service_cost_eur_cents == 24
+
+
 def test_estimate_as_dict():
     est = estimate_analysis_cost(
         openai_model="gpt-4o-mini",

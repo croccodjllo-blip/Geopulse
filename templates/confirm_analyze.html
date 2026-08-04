@@ -32,7 +32,7 @@
         <span class="cost-card__label">{{ _('stimati per questa analisi') }}</span>
       </div>
       <p class="cost-card__note">
-        {{ _('Stima allineata all’addebito reale: ogni chiamata AI viene arrotondata per eccesso (come in fatturazione).') }}
+        {{ _('Stima allineata all’addebito reale: ogni chiamata AI ha un minimo di 1 cent (ceil), come in fatturazione.') }}
         {% if cost.estimated_calls %}
           {{ _('Call previste:') }} {{ cost.estimated_calls }}.
         {% endif %}

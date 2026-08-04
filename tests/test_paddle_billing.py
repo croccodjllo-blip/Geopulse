@@ -23,6 +23,26 @@ def test_verify_webhook_signature_ok(monkeypatch):
     assert pb.verify_webhook_signature(body.encode("utf-8"), header, secret=secret)
 
 
+def test_verify_webhook_signature_multiple_h1(monkeypatch):
+    secret = "pdl_ntfsec_test"
+    body = b'{"event_type":"transaction.completed"}'
+    ts = str(int(time.time()))
+    good = hmac.new(secret.encode(), f"{ts}:".encode() + body, hashlib.sha256).hexdigest()
+    header = f"ts={ts};h1=deadbeef;h1={good}"
+    assert pb.verify_webhook_signature(body, header, secret=secret)
+
+
+def test_verify_webhook_signature_comma_secrets(monkeypatch):
+    body = b'{"ok":true}'
+    ts = str(int(time.time()))
+    good_secret = "secret-b"
+    h1 = hmac.new(good_secret.encode(), f"{ts}:".encode() + body, hashlib.sha256).hexdigest()
+    header = f"ts={ts};h1={h1}"
+    assert pb.verify_webhook_signature(
+        body, header, secret="secret-a, secret-b"
+    )
+
+
 def test_verify_webhook_signature_bad(monkeypatch):
     body = b'{"event_type":"x"}'
     assert not pb.verify_webhook_signature(
