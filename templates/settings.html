@@ -67,6 +67,16 @@
       </div>
       {{ prompt_form.submit(class_="btn btn-primary") }}
     </form>
+    <form method="post" class="form-grid panel" style="margin-top:1rem">
+      {{ vertical_form.hidden_tag() }}
+      <input type="hidden" name="action" value="vertical" />
+      <div class="field">
+        <label for="vertical">{{ _('Vertical pack') }}</label>
+        {{ vertical_form.vertical(id="vertical") }}
+      </div>
+      <p class="lede">{{ _('Applica un set di prompt e checklist per settore (SaaS, e-commerce, local, agency, media).') }}</p>
+      {{ vertical_form.submit(class_="btn btn-ghost") }}
+    </form>
     {% endif %}
   </section>
 

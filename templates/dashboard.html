@@ -789,6 +789,14 @@ https://rivale2.com", class_="analyze-input") }}
                 <button type="submit" class="btn btn-ghost">{{ _('Disattiva') }}</button>
               </form>
             </div>
+            {% if edge.crawlers %}
+            <p class="edge-hint" style="margin-top:1rem">{{ _('Crawler IA recenti su Edge:') }}</p>
+            <ul class="plain-list">
+              {% for row in edge.crawlers %}
+              <li><code>{{ row.crawler }}</code> — {{ row.hits }} {{ _('hit') }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
             {% if is_pro %}
             <div class="pack-grid pack-grid--edge">
               <div class="code-shell code-shell--compact">
@@ -972,6 +980,7 @@ https://rivale2.com", class_="analyze-input") }}
           <p class="rail-card__sub">
             <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a><br />
             <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label MD') }}</a><br />
+            <a href="{{ url_for('download_whitelabel_html', analysis_id=latest.id) }}">{{ _('White-label HTML') }}</a><br />
             <a href="{{ url_for('dashboard_settings') }}">{{ _('GEO suite settings') }}</a>
           </p>
         </div>

@@ -30,6 +30,7 @@ def build_whitelabel_markdown(
     *,
     site: Any,
     agency: dict[str, Any] | None = None,
+    sov_series: list[dict[str, Any]] | None = None,
 ) -> str:
     agency = agency or {}
     brand = agency.get("brand_name") or "Centropic"
@@ -51,6 +52,92 @@ def build_whitelabel_markdown(
     for f in list(findings)[:20]:
         if str(f.get("severity")).lower() in {"critical", "warn"}:
             lines.append(f"- **{f.get('title')}** — {f.get('detail')}")
+    if sov_series:
+        lines.extend(["", "## SoV measured (serie)", ""])
+        for pt in sov_series[-12:]:
+            rate = pt.get("rate")
+            rate_s = f"{float(rate):.0f}%" if rate is not None else "n/d"
+            lines.append(f"- {pt.get('t', '')[:19]} — brand mention {rate_s}")
     note = agency.get("footer_note") or "Score diagnostici (probe/euristiche) salvo badge Misurato."
     lines.extend(["", f"_{note}_", ""])
     return "\n".join(lines)
+
+
+def build_whitelabel_html(
+    *,
+    site: Any,
+    agency: dict[str, Any] | None = None,
+    sov_series: list[dict[str, Any]] | None = None,
+) -> str:
+    """Client-ready HTML report (no Centropic chrome)."""
+    agency = agency or {}
+    brand = agency.get("brand_name") or "Centropic"
+    color = agency.get("primary_color") or "#0B3D2E"
+    logo = agency.get("logo_url") or ""
+    domain = getattr(site, "domain", "") or ""
+    url = getattr(site, "url", "") or ""
+    aio = getattr(site, "aio_score", None)
+    geo = getattr(site, "geo_score", None)
+    findings = getattr(site, "findings", None) or []
+    if callable(findings):
+        findings = findings()
+    items = []
+    for f in list(findings)[:20]:
+        if str(f.get("severity")).lower() in {"critical", "warn"}:
+            items.append(
+                f"<li><strong>{_esc(f.get('title'))}</strong> — {_esc(f.get('detail'))}</li>"
+            )
+    sov_rows = ""
+    if sov_series:
+        cells = []
+        for pt in sov_series[-12:]:
+            rate = pt.get("rate")
+            rate_s = f"{float(rate):.0f}%" if rate is not None else "n/d"
+            cells.append(f"<tr><td>{_esc(str(pt.get('t', ''))[:19])}</td><td>{rate_s}</td></tr>")
+        sov_rows = (
+            "<h2>SoV measured</h2><table><thead><tr><th>Quando</th><th>Brand</th></tr></thead>"
+            f"<tbody>{''.join(cells)}</tbody></table>"
+        )
+    logo_html = f'<img src="{_esc(logo)}" alt="" style="max-height:48px" />' if logo else ""
+    note = agency.get("footer_note") or "Score diagnostici salvo badge Misurato."
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<title>Report AIO/GEO — {_esc(domain)}</title>
+<style>
+body{{font-family:Georgia,serif;margin:0;background:#f7f5f0;color:#1a1a1a}}
+.wrap{{max-width:720px;margin:0 auto;padding:2.5rem 1.25rem}}
+.brand{{color:{_esc(color)};font-size:1.4rem;font-weight:700;margin:0 0 .5rem}}
+h1{{font-size:1.75rem;margin:.25rem 0 1rem}}
+.meta{{color:#444;margin-bottom:1.5rem}}
+ul{{padding-left:1.2rem}}
+table{{width:100%;border-collapse:collapse;margin:1rem 0}}
+td,th{{border-bottom:1px solid #ddd;padding:.4rem .2rem;text-align:left}}
+footer{{margin-top:2rem;font-size:.9rem;color:#555}}
+</style>
+</head>
+<body>
+<div class="wrap">
+{logo_html}
+<p class="brand">{_esc(brand)}</p>
+<h1>Report AIO/GEO — {_esc(domain)}</h1>
+<p class="meta">URL: {_esc(url)} · AIO {aio if aio is not None else 'n/d'} · GEO {geo if geo is not None else 'n/d'}</p>
+<h2>Findings prioritari</h2>
+<ul>{''.join(items) or '<li>Nessun finding critico.</li>'}</ul>
+{sov_rows}
+<footer>{_esc(note)}</footer>
+</div>
+</body>
+</html>
+"""
+
+
+def _esc(value: Any) -> str:
+    s = "" if value is None else str(value)
+    return (
+        s.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )

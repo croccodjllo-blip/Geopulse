@@ -102,6 +102,8 @@ def dispatch_alerts(
     findings: list[dict[str, Any]],
     rating: dict[str, Any] | None = None,
     base_url: str = "https://centropic.ai",
+    db_session: Any | None = None,
+    AlertDelivery: Any | None = None,
 ) -> dict[str, Any]:
     """Invia email/webhook se l’utente ha abilitato gli alert."""
     alerts = _alert_findings(findings)
@@ -123,6 +125,30 @@ def dispatch_alerts(
     lines.append("")
     lines.append(f"Dashboard: {base_url.rstrip('/')}/dashboard")
     text = "\n".join(lines)
+    title_summary = (alerts[0].get("title") if alerts else "Alert") or "Alert"
+    site_url = getattr(site, "url", None) or getattr(site, "domain", None)
+
+    def _log_delivery(channel: str, ok: bool, detail: str | None = None) -> None:
+        if db_session is None or AlertDelivery is None:
+            return
+        try:
+            row = AlertDelivery(
+                user_id=getattr(user, "id", None),
+                site_url=(str(site_url)[:500] if site_url else None),
+                channel=channel[:40],
+                title=str(title_summary)[:300],
+                body=text[:8000],
+                ok=bool(ok),
+                detail=(detail or "")[:500] or None,
+            )
+            db_session.add(row)
+            db_session.commit()
+        except Exception:
+            logger.exception("alert delivery log failed")
+            try:
+                db_session.rollback()
+            except Exception:
+                pass
 
     if email_on and mail_configured():
         try:
@@ -132,9 +158,11 @@ def dispatch_alerts(
                 text_body=text,
             )
             result["email"] = {"ok": True}
+            _log_delivery("email", True)
         except Exception as exc:
             logger.exception("alert email failed")
             result["email"] = {"ok": False, "error": str(exc)[:160]}
+            _log_delivery("email", False, str(exc)[:160])
 
     if webhook_url.startswith("http"):
         payload = {
@@ -151,8 +179,15 @@ def dispatch_alerts(
             result["webhook"] = deliver_webhook(
                 url=webhook_url, secret=webhook_secret, payload=payload
             )
+            wh = result["webhook"] or {}
+            _log_delivery(
+                "webhook",
+                bool(wh.get("ok")),
+                str(wh.get("error") or wh.get("status") or "")[:160],
+            )
         except Exception as exc:
             logger.exception("alert webhook failed")
             result["webhook"] = {"ok": False, "error": str(exc)[:160]}
+            _log_delivery("webhook", False, str(exc)[:160])
 
     return result

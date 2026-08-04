@@ -26,6 +26,50 @@
       {% endwith %}
     </section>
 
+    {% if sov_series and sov_series|length > 0 %}
+    <section class="history-block" aria-labelledby="sov-title">
+      <h2 class="report-section__title" id="sov-title">{{ _('SoV measured') }}</h2>
+      <p class="lede">{{ _('Andamento brand mention rate sulle run misurate.') }}</p>
+      {% set rates = sov_series|selectattr('rate', 'ne', none)|list %}
+      {% if rates %}
+      <svg class="sov-spark" viewBox="0 0 320 64" width="100%" height="64" role="img" aria-label="{{ _('SoV sparkline') }}">
+        {% set vals = [] %}
+        {% for p in rates %}{% if vals.append(p.rate) %}{% endif %}{% endfor %}
+        {% set vmin = vals|min %}
+        {% set vmax = vals|max %}
+        {% set span = (vmax - vmin) if (vmax - vmin) > 0 else 1 %}
+        {% set pts = [] %}
+        {% for p in rates %}
+          {% set x = (loop.index0 / ([rates|length - 1, 1]|max)) * 300 + 10 %}
+          {% set y = 56 - ((p.rate - vmin) / span) * 48 %}
+          {% if pts.append('%.1f,%.1f'|format(x, y)) %}{% endif %}
+        {% endfor %}
+        <polyline fill="none" stroke="currentColor" stroke-width="2" points="{{ pts|join(' ') }}" />
+        {% for p in rates %}
+          {% set x = (loop.index0 / ([rates|length - 1, 1]|max)) * 300 + 10 %}
+          {% set y = 56 - ((p.rate - vmin) / span) * 48 %}
+          <circle cx="{{ '%.1f'|format(x) }}" cy="{{ '%.1f'|format(y) }}" r="2.5" fill="currentColor" />
+        {% endfor %}
+      </svg>
+      <ul class="history-list">
+        {% for p in sov_series|reverse %}
+        <li>
+          <div class="history-main">
+            <strong>{{ p.t[:16] if p.t else '—' }}</strong>
+            <div class="history-scores">
+              <span>{{ '%.0f'|format(p.rate) if p.rate is not none else '—' }}%</span>
+              <span>{{ p.evidence or '' }}</span>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">{{ _('Nessuno snapshot SoV measured ancora.') }}</p>
+      {% endif %}
+    </section>
+    {% endif %}
+
     <section class="history-block">
       <h2 class="report-section__title">{{ _('Run') }} <span>{{ _('max') }} {{ history_limit }}</span></h2>
       <ul class="history-list">

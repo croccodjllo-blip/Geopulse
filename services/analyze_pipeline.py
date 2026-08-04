@@ -14,6 +14,12 @@ from services.geo_suite import run_geo_suite
 from services.prompt_bank import resolve_prompts
 from services.rating import compute_rating
 from services.signals import compare_with_previous
+from services.sov_graph import (
+    extract_sov_snapshot,
+    persist_sov_snapshot,
+    previous_brand_rate,
+    sov_delta_findings,
+)
 from services.sov_measured import should_run_measured
 
 logger = logging.getLogger(__name__)
@@ -37,6 +43,8 @@ def run_analysis_pipeline(
     usage_callback: Any | None = None,
     max_pages: int | None = None,
     heartbeat_callback: Any | None = None,
+    SovSnapshot: Any | None = None,
+    AlertDelivery: Any | None = None,
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     previous_run = None
@@ -46,6 +54,15 @@ def run_analysis_pipeline(
             .order_by(AnalysisRun.created_at.desc())
             .first()
         )
+
+    prev_sov_rate = None
+    if existing is not None and SovSnapshot is not None:
+        try:
+            prev_sov_rate = previous_brand_rate(
+                SovSnapshot, site_id=existing.id, user_id=user.id
+            )
+        except Exception:
+            logger.exception("previous_brand_rate failed")
 
     pages = int(max_pages) if max_pages is not None else int(user.crawl_pages)
     if pages <= 0:
@@ -157,6 +174,15 @@ def run_analysis_pipeline(
             alerts["findings"]
         )
 
+    # Measurement graph: SoV drop → alert findings (before pack/persist)
+    try:
+        snap = extract_sov_snapshot(result)
+        delta = sov_delta_findings(current=snap, previous_rate=prev_sov_rate)
+        if delta:
+            result["findings"] = list(result.get("findings") or []) + list(delta)
+    except Exception:
+        logger.exception("sov_delta_findings failed")
+
     _hb(phase="pack", done=crawled, total=max(crawled, pages))
 
     pack = build_optimization_pack(
@@ -188,6 +214,33 @@ def run_analysis_pipeline(
         source=source,
     )
 
+    # Persist SoV snapshot for measurement graph / agency charts
+    if SovSnapshot is not None:
+        try:
+            snap = extract_sov_snapshot(result)
+            if snap:
+                run = (
+                    AnalysisRun.query.filter_by(site_id=analysis.id, user_id=user.id)
+                    .order_by(AnalysisRun.created_at.desc())
+                    .first()
+                )
+                persist_sov_snapshot(
+                    db_session,
+                    SovSnapshot=SovSnapshot,
+                    site_id=analysis.id,
+                    user_id=user.id,
+                    run_id=getattr(run, "id", None),
+                    snapshot=snap,
+                    source=source if source in {"manual", "scheduled"} else "analyze",
+                )
+                db_session.commit()
+        except Exception:
+            logger.exception("persist_sov_snapshot failed")
+            try:
+                db_session.rollback()
+            except Exception:
+                pass
+
     # Outbound alerts (email / webhook) after persist
     try:
         if getattr(user, "alert_email_enabled", True) or (
@@ -199,6 +252,8 @@ def run_analysis_pipeline(
                 findings=result.get("findings") or [],
                 rating=rating_now,
                 base_url=public_base,
+                db_session=db_session if AlertDelivery is not None else None,
+                AlertDelivery=AlertDelivery,
             )
     except Exception:
         logger.exception("dispatch_alerts failed")

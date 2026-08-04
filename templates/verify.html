@@ -34,10 +34,26 @@
     </ul>
   </section>
 
+  {% if sov_delta %}
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('SoV delta') }}</h2>
+    <p class="lede">
+      {{ _('Brand mention:') }}
+      {{ '%.0f'|format(sov_delta['from']) }}% → {{ '%.0f'|format(sov_delta['to']) }}%
+      (Δ {{ '%+.0f'|format(sov_delta['delta']) }} pt)
+    </p>
+  </section>
+  {% endif %}
+
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
-    {% if is_pro or current_user.is_pro %}
+    {% if is_pro %}
+      <form method="post" action="{{ url_for('dashboard_verify_rescan', analysis_id=analysis.id) }}" style="display:inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button type="submit" class="btn btn-signal">{{ _('Re-scan dopo publish') }}</button>
+      </form>
       <a class="btn btn-ghost" href="{{ url_for('download_whitelabel', analysis_id=analysis.id) }}">{{ _('Export white-label MD') }}</a>
+      <a class="btn btn-ghost" href="{{ url_for('download_whitelabel_html', analysis_id=analysis.id) }}">{{ _('Export white-label HTML') }}</a>
     {% endif %}
   </div>
 </article>

@@ -174,11 +174,23 @@ from services.signals import compare_with_previous
 from services.sov_measured import should_run_measured
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
 from services.api_auth import find_user_by_api_key, generate_api_key
-from services.agency import build_whitelabel_markdown, dump_agency_brand, parse_agency_brand
+from services.agency import (
+    build_whitelabel_html,
+    build_whitelabel_markdown,
+    dump_agency_brand,
+    parse_agency_brand,
+)
 from services.gsc import gsc_status
 from services.js_crawl import js_crawl_available
 from services.publish_verify import verify_published_pack
 from services.citation_monitor import citation_monitor_available
+from services.sov_graph import list_sov_snapshots, sov_series_for_chart
+from services.edge_telemetry import record_edge_hit, top_crawlers_for_site
+from services.vertical_packs import (
+    apply_vertical_to_prompt_bank,
+    list_verticals,
+    vertical_checklist,
+)
 from services.edge_signals import (
     CACHE_CONTROL as EDGE_CACHE_CONTROL,
     build_live_robots_txt,
@@ -1113,6 +1125,16 @@ class PromptBankForm(FlaskForm):
     submit = SubmitField("Salva prompt bank")
 
 
+class VerticalPackForm(FlaskForm):
+    vertical = SelectField(
+        "Vertical pack",
+        choices=[("", "— seleziona —")]
+        + [(v["slug"], v["label"]) for v in list_verticals()],
+        validators=[Optional()],
+    )
+    submit = SubmitField("Applica pack al prompt bank")
+
+
 class AgencyBrandForm(FlaskForm):
     brand_name = StringField("Brand agenzia", validators=[Optional(), Length(max=80)])
     logo_url = StringField("Logo URL", validators=[Optional(), Length(max=300)])
@@ -1313,6 +1335,75 @@ def inject_globals() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Schema helpers
 # ---------------------------------------------------------------------------
+
+
+
+class SovSnapshot(db.Model):
+    """Share-of-voice time series for measurement graph / agency reports."""
+
+    __tablename__ = "sov_snapshots"
+
+    id = db.Column(db.Integer, primary_key=True)
+    site_id = db.Column(
+        db.Integer, db.ForeignKey("site_analyses.id"), nullable=False, index=True
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    run_id = db.Column(
+        db.Integer, db.ForeignKey("analysis_runs.id"), nullable=True, index=True
+    )
+    brand_mention_rate = db.Column(db.Float, nullable=True)
+    evidence = db.Column(db.String(40), nullable=True)
+    engines_json = db.Column(db.Text, nullable=True)
+    source = db.Column(db.String(40), nullable=False, default="analyze")
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        index=True,
+    )
+
+
+class EdgeHit(db.Model):
+    """Edge crawler / bot hit telemetry for /e/<token> endpoints."""
+
+    __tablename__ = "edge_hits"
+
+    id = db.Column(db.Integer, primary_key=True)
+    site_id = db.Column(
+        db.Integer, db.ForeignKey("site_analyses.id"), nullable=True, index=True
+    )
+    token = db.Column(db.String(64), nullable=False, index=True)
+    path = db.Column(db.String(200), nullable=False)
+    user_agent = db.Column(db.String(500), nullable=True)
+    crawler = db.Column(db.String(80), nullable=True, index=True)
+    ip_hash = db.Column(db.String(64), nullable=True)
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        index=True,
+    )
+
+
+class AlertDelivery(db.Model):
+    """Audit log of citation / SoV alert deliveries."""
+
+    __tablename__ = "alert_deliveries"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    site_url = db.Column(db.String(500), nullable=True)
+    channel = db.Column(db.String(40), nullable=False)
+    title = db.Column(db.String(300), nullable=False)
+    body = db.Column(db.Text, nullable=True)
+    ok = db.Column(db.Boolean, default=False, nullable=False)
+    detail = db.Column(db.String(500), nullable=True)
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        index=True,
+    )
 
 
 def ensure_schema() -> None:
@@ -1662,6 +1753,8 @@ def process_pending_analyze_jobs(
                 usage_callback=_job_usage_cb,
                 max_pages=job.max_pages,
                 heartbeat_callback=_hb,
+                SovSnapshot=SovSnapshot,
+                AlertDelivery=AlertDelivery,
             )
             # Restore lease on in-memory job after pipeline commits/refreshes.
             if not getattr(job, "lease_token", None):
@@ -2033,6 +2126,8 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="onboarding",
             usage_callback=_onboarding_usage_cb,
+            SovSnapshot=SovSnapshot,
+            AlertDelivery=AlertDelivery,
         )
     except Exception as exc:
         app.logger.exception("Onboarding analyze failed")
@@ -2160,8 +2255,25 @@ def _edge_response(
     mimetype: str,
     etag_seed: str,
     analysis: SiteAnalysis,
+    path: str = "",
+    token: str = "",
 ) -> Response:
     version = int(getattr(analysis, "signals_version", 1) or 1)
+    if path and token:
+        try:
+            ip = _edge_client_key()
+            ip_hash = hashlib.sha256(f"{ip}:{token}".encode("utf-8")).hexdigest()[:32]
+            record_edge_hit(
+                db.session,
+                EdgeHit=EdgeHit,
+                site_id=analysis.id,
+                token=token,
+                path=path,
+                user_agent=request.headers.get("User-Agent"),
+                ip_hash=ip_hash,
+            )
+        except Exception:
+            app.logger.exception("edge hit telemetry failed")
     etag = f'W/"{content_etag(etag_seed, str(version), str(analysis.id))}"'
     if request.headers.get("If-None-Match") == etag:
         return Response(status=304)
@@ -2195,6 +2307,8 @@ def edge_llms_txt(token: str):
         mimetype="text/plain; charset=utf-8",
         etag_seed=body[:2000],
         analysis=analysis,
+        path="llms.txt",
+        token=token,
     )
 
 
@@ -2218,6 +2332,8 @@ def edge_robots_txt(token: str):
         mimetype="text/plain; charset=utf-8",
         etag_seed=body,
         analysis=analysis,
+        path="robots.txt",
+        token=token,
     )
 
 
@@ -2240,6 +2356,8 @@ def edge_organization_jsonld(token: str):
         mimetype="application/ld+json; charset=utf-8",
         etag_seed=body[:4000],
         analysis=analysis,
+        path="organization.jsonld",
+        token=token,
     )
 
 
@@ -2263,6 +2381,8 @@ def edge_signals_json(token: str):
         mimetype="application/json; charset=utf-8",
         etag_seed=body[:4000],
         analysis=analysis,
+        path="signals.json",
+        token=token,
     )
 
 
@@ -2272,6 +2392,20 @@ def edge_meta(token: str):
     if _edge_rate_limited(token):
         return jsonify({"error": "rate_limited"}), 429
     analysis = _edge_site_or_404(token)
+    try:
+        ip = _edge_client_key()
+        ip_hash = hashlib.sha256(f"{ip}:{token}".encode("utf-8")).hexdigest()[:32]
+        record_edge_hit(
+            db.session,
+            EdgeHit=EdgeHit,
+            site_id=analysis.id,
+            token=token,
+            path="meta",
+            user_agent=request.headers.get("User-Agent"),
+            ip_hash=ip_hash,
+        )
+    except Exception:
+        app.logger.exception("edge meta telemetry failed")
     full = _edge_full_access(analysis)
     base = edge_base_url(public_base_url(), token)
     return jsonify(
@@ -3566,6 +3700,7 @@ def dashboard():
             ),
             "vercel": vercel_edge_config_snippet(origin_edge_base=base),
             "embed": html_embed_snippet(signals_url=signals_url),
+            "crawlers": top_crawlers_for_site(EdgeHit, site_id=latest.id, limit=8),
         }
 
     return render_template(
@@ -3791,6 +3926,8 @@ def dashboard_analyze_confirmed():
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="manual",
             usage_callback=_usage_cb,
+            SovSnapshot=SovSnapshot,
+            AlertDelivery=AlertDelivery,
         )
         db.session.commit()
 
@@ -4145,6 +4282,7 @@ def dashboard_settings():
     prompt_form = PromptBankForm(
         prompts="\n".join(parse_prompt_bank(getattr(user, "prompt_bank_json", None)))
     )
+    vertical_form = VerticalPackForm()
     agency = parse_agency_brand(getattr(user, "agency_brand_json", None))
     agency_form = AgencyBrandForm(
         brand_name=agency.get("brand_name") or "",
@@ -4246,6 +4384,20 @@ def dashboard_settings():
             db.session.commit()
             flash("Prompt bank aggiornato.", "success")
             return redirect(url_for("dashboard_settings"))
+        if action == "vertical" and vertical_form.validate_on_submit():
+            blocked = require_capability(plan_entitlements(user), "prompt_bank")
+            if blocked:
+                flash(blocked, "warning")
+                return redirect(url_for("pricing"))
+            slug = (vertical_form.vertical.data or "").strip()
+            dumped = apply_vertical_to_prompt_bank(slug)
+            if not dumped:
+                flash("Vertical pack non valido.", "error")
+                return redirect(url_for("dashboard_settings"))
+            user.prompt_bank_json = dumped
+            db.session.commit()
+            flash(f"Vertical pack '{slug}' applicato al prompt bank.", "success")
+            return redirect(url_for("dashboard_settings"))
         if action == "agency" and agency_form.validate_on_submit():
             blocked = require_capability(plan_entitlements(user), "agency_whitelabel")
             if blocked:
@@ -4281,11 +4433,14 @@ def dashboard_settings():
                 "settings.html",
                 alert_form=alert_form,
                 prompt_form=prompt_form,
+                vertical_form=vertical_form,
                 agency_form=agency_form,
                 password_form=password_form,
                 email_verified=user.email_verified,
                 api_key_prefix=prefix,
                 api_key_once=raw,
+                verticals=list_verticals(),
+                vertical_checklist=vertical_checklist(vertical_form.vertical.data),
                 citation_ready=citation_monitor_available(),
                 gsc=gsc_status(),
                 js_crawl_ready=js_crawl_available(),
@@ -4301,11 +4456,14 @@ def dashboard_settings():
         "settings.html",
         alert_form=alert_form,
         prompt_form=prompt_form,
+        vertical_form=vertical_form,
         agency_form=agency_form,
         password_form=password_form,
         email_verified=user.email_verified,
         api_key_prefix=getattr(user, "api_key_prefix", None),
         api_key_once=None,
+        verticals=list_verticals(),
+        vertical_checklist=[],
         citation_ready=citation_monitor_available(),
         gsc=gsc_status(),
         js_crawl_ready=js_crawl_available(),
@@ -4353,7 +4511,53 @@ def dashboard_verify(analysis_id: int):
         verify["live"] = True
     except Exception as exc:
         verify["live_error"] = str(exc)[:160]
-    return render_template("verify.html", analysis=analysis, verify=verify)
+
+    # SoV delta vs last snapshot (publish → verify → measure loop)
+    sov_delta = None
+    try:
+        rows = list_sov_snapshots(
+            SovSnapshot, site_id=analysis.id, user_id=user.id, limit=2
+        )
+        series = sov_series_for_chart(rows)
+        if len(series) >= 2:
+            a, b = series[-2], series[-1]
+            if a.get("rate") is not None and b.get("rate") is not None:
+                sov_delta = {
+                    "from": float(a["rate"]),
+                    "to": float(b["rate"]),
+                    "delta": float(b["rate"]) - float(a["rate"]),
+                }
+    except Exception:
+        app.logger.exception("verify sov_delta failed")
+
+    return render_template(
+        "verify.html",
+        analysis=analysis,
+        verify=verify,
+        sov_delta=sov_delta,
+        is_pro=user.is_pro,
+    )
+
+
+@app.route("/dashboard/verify/<int:analysis_id>/rescan", methods=["POST"])
+@login_required
+def dashboard_verify_rescan(analysis_id: int):
+    """Enqueue a measured re-scan after publish verify (Plus)."""
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+    if not user.is_pro:
+        flash("Re-scan measured dopo verify è riservato a Plus.", "warning")
+        return redirect(url_for("pricing"))
+    # Reuse dashboard analyze flow via redirect with prefilled URL
+    session["verify_rescan_url"] = analysis.url
+    flash(
+        "Apri Analizza in dashboard e conferma il re-scan (SoV measured attivo su Plus).",
+        "success",
+    )
+    return redirect(url_for("dashboard", url=analysis.url, measured=1))
 
 
 @app.route("/dashboard/export/whitelabel/<int:analysis_id>.md")
@@ -4365,9 +4569,13 @@ def download_whitelabel(analysis_id: int):
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
+    series = sov_series_for_chart(
+        list_sov_snapshots(SovSnapshot, site_id=analysis.id, user_id=user.id, limit=30)
+    )
     md = build_whitelabel_markdown(
         site=analysis,
         agency=parse_agency_brand(getattr(user, "agency_brand_json", None)),
+        sov_series=series,
     )
     buf = io.BytesIO(md.encode("utf-8"))
     buf.seek(0)
@@ -4376,6 +4584,33 @@ def download_whitelabel(analysis_id: int):
         as_attachment=True,
         download_name=f"centropic-{analysis.domain}-report.md",
         mimetype="text/markdown; charset=utf-8",
+    )
+
+
+@app.route("/dashboard/export/whitelabel/<int:analysis_id>.html")
+@login_required
+@pro_required
+def download_whitelabel_html(analysis_id: int):
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+    series = sov_series_for_chart(
+        list_sov_snapshots(SovSnapshot, site_id=analysis.id, user_id=user.id, limit=30)
+    )
+    html = build_whitelabel_html(
+        site=analysis,
+        agency=parse_agency_brand(getattr(user, "agency_brand_json", None)),
+        sov_series=series,
+    )
+    buf = io.BytesIO(html.encode("utf-8"))
+    buf.seek(0)
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=f"centropic-{analysis.domain}-report.html",
+        mimetype="text/html; charset=utf-8",
     )
 
 
@@ -4572,6 +4807,8 @@ def api_v1_analyze():
             source="api",
             public_base=public_base_url(),
             usage_callback=_api_usage_cb,
+            SovSnapshot=SovSnapshot,
+            AlertDelivery=AlertDelivery,
         )
         db.session.commit()
     except InsufficientCreditError as exc:
@@ -5014,12 +5251,17 @@ def site_history(analysis_id: int):
         interval=analysis.rescan_interval or "off",
         hour=str(clamp_hour(getattr(analysis, "rescan_hour", DEFAULT_RESCAN_HOUR))),
     )
+    sov_rows = list_sov_snapshots(
+        SovSnapshot, site_id=analysis.id, user_id=user.id, limit=30
+    )
+    sov_series = sov_series_for_chart(sov_rows)
     return render_template(
         "site_history.html",
         analysis=analysis,
         runs=runs,
         schedule_form=schedule_form,
         history_limit=PRO_HISTORY_LIMIT,
+        sov_series=sov_series,
     )
 
 

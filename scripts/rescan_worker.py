@@ -17,8 +17,10 @@ from app import (  # noqa: E402
     MEASURED_SOV_ON_ANALYZE,
     OPENAI_API_KEY,
     OPENAI_MODEL,
+    AlertDelivery,
     AnalysisRun,
     SiteAnalysis,
+    SovSnapshot,
     User,
     analyses_today,
     app,
@@ -56,6 +58,8 @@ def main() -> int:
             runs_today_for=analyses_today,
             # Plus-only gate is inside pipeline; Free sites are already filtered.
             measured=bool(MEASURED_SOV_ON_ANALYZE),
+            SovSnapshot=SovSnapshot,
+            AlertDelivery=AlertDelivery,
         )
         logging.info(
             "Rescan worker done ok=%s error=%s skipped=%s measured=%s",

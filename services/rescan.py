@@ -39,6 +39,8 @@ def process_due_rescans(
     runs_today_for: Callable[[int], int] | None = None,
     measured: bool = False,
     public_base: str = "https://centropic.ai",
+    SovSnapshot: Any | None = None,
+    AlertDelivery: Any | None = None,
 ) -> dict[str, int]:
     """Esegue i re-scan scaduti via pipeline completa (suite + alert)."""
     from services.analysis_store import mark_rescan_error
@@ -76,6 +78,8 @@ def process_due_rescans(
                 measured_env_enabled=True,
                 source="scheduled",
                 public_base=public_base,
+                SovSnapshot=SovSnapshot,
+                AlertDelivery=AlertDelivery,
             )
             stats["ok"] += 1
             logger.info("Rescan ok site_id=%s url=%s", site.id, site.url)
