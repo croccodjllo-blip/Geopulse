@@ -790,7 +790,7 @@ https://rivale2.com", class_="analyze-input") }}
             </header>
             <p class="edge-lede">
               {{ _('Invece di ridistribuire un pack statico, ospita') }} <code>llms.txt</code>,
-              <code>robots.txt</code> {{ _('e') }} <code>signals.json</code> {{ _('su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo dominio con Cloudflare Worker o rewrite Vercel.') }}
+              <code>robots.txt</code> {{ _('e') }} <code>signals.json</code> {{ _('su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel).') }}
             </p>
             {% if not latest.signals_hosted or not edge %}
             <form method="post" action="{{ url_for('edge_enable', analysis_id=latest.id) }}" class="edge-actions">
@@ -831,6 +831,19 @@ https://rivale2.com", class_="analyze-input") }}
               </li>
               {% endif %}
             </ul>
+            <div class="edge-cms">
+              <p class="edge-hint" style="margin-top:1rem">
+                {{ _('CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo stesso Edge base.') }}
+              </p>
+              <div class="edge-actions edge-actions--row">
+                <a class="btn btn-primary" href="{{ url_for('edge_cms_bundle', analysis_id=latest.id) }}">{{ _('Scarica connector CMS (.zip)') }}</a>
+              </div>
+              <ul class="plain-list edge-cms__list">
+                <li>WordPress · Drupal · Shopify</li>
+                <li>PHP / Apache / Nginx</li>
+                <li>Netlify · Cloudflare · Vercel · HTML embed</li>
+              </ul>
+            </div>
             <div class="edge-actions edge-actions--row">
               <form method="post" action="{{ url_for('edge_rotate', analysis_id=latest.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -1018,6 +1031,7 @@ https://rivale2.com", class_="analyze-input") }}
           <a href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
           {% if latest.signals_hosted %}
           <a href="#edge-signals">{{ _('Edge Signals') }}</a>
+          <a href="{{ url_for('edge_cms_bundle', analysis_id=latest.id) }}">{{ _('Connector CMS') }}</a>
           {% else %}
           <a href="#edge-signals">{{ _('Attiva Edge') }}</a>
           {% endif %}

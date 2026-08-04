@@ -202,6 +202,11 @@ from services.vertical_packs import (
     list_verticals,
     vertical_checklist,
 )
+from services.cms_connector import (
+    EDGE_ROUTE_MAP,
+    build_cms_bundle,
+    cms_bundle_zip_bytes,
+)
 from services.edge_signals import (
     CACHE_CONTROL as EDGE_CACHE_CONTROL,
     build_live_robots_txt,
@@ -2565,6 +2570,36 @@ def edge_rotate(analysis_id: int):
     db.session.commit()
     flash("Token Edge rigenerato. Aggiorna Worker / rewrite con il nuovo URL.", "success")
     return redirect(url_for("dashboard") + "#edge-signals")
+
+
+@app.route("/dashboard/edge/<int:analysis_id>/cms-bundle.zip")
+@login_required
+def edge_cms_bundle(analysis_id: int):
+    """ZIP universale: WordPress, Drupal, Shopify, PHP, Netlify, CF, Vercel, embed."""
+    user = current_user()
+    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    if analysis is None:
+        flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
+        flash("Attiva prima Edge Signals per scaricare il connector CMS.", "error")
+        return redirect(url_for("dashboard") + "#edge-signals")
+    base = edge_base_url(public_base_url(), analysis.public_token)
+    site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    raw = cms_bundle_zip_bytes(
+        origin_edge_base=base,
+        site_origin=site_origin,
+        public_base=public_base_url(),
+    )
+    buf = io.BytesIO(raw)
+    buf.seek(0)
+    safe_dom = re.sub(r"[^a-zA-Z0-9._-]+", "-", (analysis.domain or "site"))[:80]
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=f"centropic-cms-connector-{safe_dom}.zip",
+        mimetype="application/zip",
+    )
 
 
 @app.route("/ai.txt")
@@ -5141,6 +5176,114 @@ def api_v1_sites():
                 for s in sites
             ],
         }
+    )
+
+
+@app.route("/api/v1/sites/<int:site_id>/edge", methods=["GET"])
+@csrf.exempt
+def api_v1_site_edge(site_id: int):
+    """Edge Signals + CMS connector metadata for external plugins / CI."""
+    auth = request.headers.get("Authorization") or ""
+    raw = ""
+    if auth.lower().startswith("bearer "):
+        raw = auth[7:].strip()
+    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    user = find_user_by_api_key(User, raw)
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not user.is_pro:
+        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not limiter.allow(f"api_edge:{user.id}", limit=120, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    analysis = SiteAnalysis.query.filter_by(id=site_id, user_id=user.id).first()
+    if analysis is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
+        return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
+    base = edge_base_url(public_base_url(), analysis.public_token)
+    site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    full = _edge_full_access(analysis)
+    bundle = build_cms_bundle(
+        origin_edge_base=base,
+        site_origin=site_origin,
+        public_base=public_base_url(),
+    )
+    adapters = {
+        key: {
+            "label": adapter.get("label"),
+            "install": adapter.get("install"),
+            "files": sorted((adapter.get("files") or {}).keys()),
+        }
+        for key, adapter in (bundle.get("adapters") or {}).items()
+    }
+    return jsonify(
+        {
+            "ok": True,
+            "schema": bundle.get("schema"),
+            "site_id": analysis.id,
+            "domain": analysis.domain,
+            "hosted": True,
+            "tier": "full" if full else "basic",
+            "version": int(getattr(analysis, "signals_version", 1) or 1),
+            "token": analysis.public_token,
+            "edge_base": base,
+            "site_origin": site_origin,
+            "routes": dict(EDGE_ROUTE_MAP),
+            "endpoints": {
+                "llms_txt": f"{base}/llms.txt",
+                "signals_json": f"{base}/signals.json",
+                **(
+                    {
+                        "robots_txt": f"{base}/robots.txt",
+                        "organization_jsonld": f"{base}/organization.jsonld",
+                    }
+                    if full
+                    else {}
+                ),
+            },
+            "adapters": adapters,
+            "cms_bundle_url": url_for(
+                "edge_cms_bundle", analysis_id=analysis.id, _external=True
+            ),
+        }
+    )
+
+
+@app.route("/api/v1/sites/<int:site_id>/edge/cms-bundle.zip", methods=["GET"])
+@csrf.exempt
+def api_v1_site_edge_cms_bundle(site_id: int):
+    auth = request.headers.get("Authorization") or ""
+    raw = ""
+    if auth.lower().startswith("bearer "):
+        raw = auth[7:].strip()
+    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    user = find_user_by_api_key(User, raw)
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not user.is_pro:
+        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not limiter.allow(f"api_edge_zip:{user.id}", limit=30, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    analysis = SiteAnalysis.query.filter_by(id=site_id, user_id=user.id).first()
+    if analysis is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
+        return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
+    base = edge_base_url(public_base_url(), analysis.public_token)
+    site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    raw_zip = cms_bundle_zip_bytes(
+        origin_edge_base=base,
+        site_origin=site_origin,
+        public_base=public_base_url(),
+    )
+    buf = io.BytesIO(raw_zip)
+    buf.seek(0)
+    safe_dom = re.sub(r"[^a-zA-Z0-9._-]+", "-", (analysis.domain or "site"))[:80]
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=f"centropic-cms-connector-{safe_dom}.zip",
+        mimetype="application/zip",
     )
 
 
