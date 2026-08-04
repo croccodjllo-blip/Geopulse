@@ -17,7 +17,6 @@ from services.usage_billing import (
     is_unlimited_user,
     debit_cents_from_usage,
     _model_price,
-    _next_rating,
 )
 
 
@@ -230,9 +229,6 @@ def test_admin_is_unlimited():
 def test_improvement_first_time_is_diagnosis_not_uplift():
     imp = estimate_improvement(existing_site=None, run_measured=False, crawl_pages=8)
     assert imp.current_aio is None
-    assert imp.expected_aio_delta == 0
-    assert imp.expected_geo_delta == 0
-    assert imp.expected_new_rating is None
     assert imp.improvement_label == "Prima diagnosi"
     assert "guadagno" in imp.improvement_detail.lower() or "dipende" in imp.improvement_detail.lower()
 
@@ -246,7 +242,6 @@ def test_improvement_reanalysis_is_remeasure():
 
     imp = estimate_improvement(existing_site=_Site(), run_measured=False, crawl_pages=8)
     assert imp.current_aio == 60
-    assert imp.expected_aio_delta == 0
     assert imp.improvement_label == "Ri-misurazione"
     assert "garantito" in imp.improvement_detail.lower()
 
@@ -254,16 +249,8 @@ def test_improvement_reanalysis_is_remeasure():
 def test_improvement_measured_noted_not_as_score_boost():
     imp_no = estimate_improvement(existing_site=None, run_measured=False, crawl_pages=8)
     imp_yes = estimate_improvement(existing_site=None, run_measured=True, crawl_pages=8)
-    assert imp_yes.expected_geo_delta == imp_no.expected_geo_delta == 0
     assert "Misurato" in imp_yes.improvement_detail
     assert "Misurato" not in imp_no.improvement_detail
-
-
-def test_next_rating():
-    assert _next_rating("C") == "B"
-    assert _next_rating("AAA") == "AAA"
-    assert _next_rating("DDD") == "DD"
-    assert _next_rating(None) is None
 
 
 def test_giant_page_required_cost_cents_scales_up():

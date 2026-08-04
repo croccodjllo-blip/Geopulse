@@ -4,9 +4,8 @@ Architecture
 ============
 1. ESTIMATE  — before the user confirms, calculate the expected AI API cost and
                apply a 77% platform spread so the user sees a fair "service price".
-2. PREVIEW   — compute expected improvement score (delta AIO/GEO) from a quick
-               lightweight pre-scan or from the last known run.
-3. CONFIRM   — the frontend asks the user to confirm the shown price + improvement.
+2. PREVIEW   — show baseline AIO/GEO (if any) and honest diagnosis / re-measure copy.
+3. CONFIRM   — the frontend asks the user to confirm the shown price + re-measure copy.
 4. CHECK     — verify the user has enough credit balance; refuse if not.
 5. DEDUCT    — after the analysis completes, consume actual token usage; issue a
                credit ledger entry.
@@ -425,42 +424,12 @@ def check_page_word_budget(
 
 @dataclass
 class ImprovementPreview:
-    """Expected improvement estimate shown to the user before they confirm."""
+    """Baseline + re-measure copy shown before the user confirms an analysis."""
     current_aio: int | None
     current_geo: int | None
     current_rating: str | None
-    expected_aio_delta: int       # e.g. +8
-    expected_geo_delta: int
-    expected_new_rating: str | None
     improvement_label: str
     improvement_detail: str
-
-    def as_dict(self) -> dict[str, Any]:
-        return {
-            "current_aio": self.current_aio,
-            "current_geo": self.current_geo,
-            "current_rating": self.current_rating,
-            "expected_aio_delta": self.expected_aio_delta,
-            "expected_geo_delta": self.expected_geo_delta,
-            "expected_new_rating": self.expected_new_rating,
-            "improvement_label": self.improvement_label,
-            "improvement_detail": self.improvement_detail,
-        }
-
-
-_RATING_ORDER = ["DDD", "DD", "D", "C", "B", "A", "AA", "AAA"]
-
-
-def _next_rating(current: str | None) -> str | None:
-    if not current:
-        return None
-    try:
-        idx = _RATING_ORDER.index(current.upper())
-        if idx + 1 < len(_RATING_ORDER):
-            return _RATING_ORDER[idx + 1]
-        return current.upper()
-    except ValueError:
-        return None
 
 
 def _refresh_label(
@@ -519,10 +488,6 @@ def estimate_improvement(
         current_aio=current_aio,
         current_geo=current_geo,
         current_rating=current_rating,
-        # Kept for template/API compat; UI must not sell these as expected gains.
-        expected_aio_delta=0,
-        expected_geo_delta=0,
-        expected_new_rating=None,
         improvement_label=label,
         improvement_detail=detail,
     )
