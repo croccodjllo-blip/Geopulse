@@ -398,18 +398,18 @@ https://rivale2.com", class_="analyze-input") }}
 
           <div class="report-panel" id="panel-sov" role="tabpanel" aria-labelledby="tab-sov" data-panel="sov" hidden>
             {% if engine_breakdown %}
-            <section class="engine-breakdown" aria-labelledby="sov-title">
-              <header class="engine-breakdown__head">
-                <div>
+            <section class="sov-panel" aria-labelledby="sov-title">
+              <header class="sov-panel__head">
+                <div class="sov-panel__intro">
                   <p class="eyebrow">{{ _('AI Engine Breakdown') }}</p>
-                  <h3 class="engine-breakdown__title" id="sov-title">
+                  <h3 class="sov-panel__title" id="sov-title">
                     {% if engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
                     {{ _('Share of Voice') }}
                     {% else %}
                     {{ _('Share of Voice stimato') }}
                     {% endif %}
                   </h3>
-                  <p class="engine-breakdown__lede">
+                  <p class="sov-panel__lede">
                     {% if is_pro and engine_breakdown.evidence in ('mixed', 'measured') %}
                     {{ _('Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine.') }}
                     {% elif not is_pro %}
@@ -418,88 +418,124 @@ https://rivale2.com", class_="analyze-input") }}
                     {% else %}
                     {{ _('Stima euristica da score e robots — non è polling live sui modelli.') }}
                     {% endif %}
-                    <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
                   </p>
+                  <span class="evidence-badge sov-panel__badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
                 </div>
-                <div class="engine-breakdown__brand-sov" aria-label="{{ _('Brand SoV') }}">
-                  <span class="engine-breakdown__brand-n">{{ engine_breakdown.brand_sov }}%</span>
-                  <span class="engine-breakdown__brand-l">Brand SoV</span>
+
+                <div class="sov-hero" aria-label="{{ _('Brand SoV') }}">
+                  <div class="sov-hero__ring" style="--sov: {{ engine_breakdown.brand_sov }};">
+                    <svg class="sov-hero__svg" viewBox="0 0 120 120" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="sovRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#0066FF"/>
+                          <stop offset="55%" stop-color="#00F0FF"/>
+                          <stop offset="100%" stop-color="#8A2BE2"/>
+                        </linearGradient>
+                      </defs>
+                      <circle class="sov-hero__track" cx="60" cy="60" r="52" fill="none" stroke-width="8"/>
+                      <circle class="sov-hero__progress" cx="60" cy="60" r="52" fill="none" stroke-width="8" stroke="url(#sovRingGrad)"
+                        stroke-dasharray="{{ (engine_breakdown.brand_sov / 100 * 326.73)|round(2) }} 326.73"
+                        transform="rotate(-90 60 60)"/>
+                    </svg>
+                    <div class="sov-hero__value">
+                      <span class="sov-hero__n">{{ engine_breakdown.brand_sov }}%</span>
+                      <span class="sov-hero__l">Brand SoV</span>
+                    </div>
+                  </div>
+                  {% if engine_breakdown.has_competitors %}
+                  <ul class="sov-hero__split" aria-label="{{ _('Campo competitivo') }}">
+                    <li data-tone="brand"><span>{{ _('Brand') }}</span><strong>{{ engine_breakdown.brand_sov }}%</strong></li>
+                    <li data-tone="rivals"><span>{{ _('Rivali') }}</span><strong>{{ engine_breakdown.rivals_sov }}%</strong></li>
+                    <li data-tone="other"><span>{{ _('Altro') }}</span><strong>{{ engine_breakdown.other_sov }}%</strong></li>
+                  </ul>
+                  {% endif %}
                 </div>
               </header>
 
-              <div
-                class="sov-stack"
-                role="img"
-                aria-label="{{ _('Composizione SoV per engine') }}"
-                style="--segments: {{ engine_breakdown.engines|length }};"
-              >
-                {% for e in engine_breakdown.engines %}
-                <span
-                  class="sov-stack__seg"
-                  data-engine="{{ e.id }}"
-                  style="--share: {{ e.share }}; --accent: {{ e.accent }};"
-                  title="{{ e.label }} {{ e.share }}%"
-                ></span>
-                {% endfor %}
+              <div class="sov-compose">
+                <p class="sov-compose__label">{{ _('Composizione per engine') }}</p>
+                <div
+                  class="sov-stack"
+                  role="img"
+                  aria-label="{{ _('Composizione SoV per engine') }}"
+                  style="--segments: {{ engine_breakdown.engines|length }};"
+                >
+                  {% for e in engine_breakdown.engines %}
+                  <span
+                    class="sov-stack__seg"
+                    data-engine="{{ e.id }}"
+                    style="--share: {{ e.share }}; --accent: {{ e.accent }};"
+                    title="{{ e.label }} {{ e.share }}%"
+                  ></span>
+                  {% endfor %}
+                </div>
+                <ul class="sov-stack__legend">
+                  {% for e in engine_breakdown.engines %}
+                  <li>
+                    <i style="--accent: {{ e.accent }};" aria-hidden="true"></i>
+                    <span>{{ e.label }}</span>
+                    <em>{{ e.share }}%</em>
+                  </li>
+                  {% endfor %}
+                </ul>
               </div>
-              <ul class="sov-stack__legend">
-                {% for e in engine_breakdown.engines %}
-                <li>
-                  <i style="--accent: {{ e.accent }};" aria-hidden="true"></i>
-                  {{ e.label }} <em>{{ e.share }}%</em>
-                </li>
-                {% endfor %}
-              </ul>
-
-              <ul class="engine-bars" role="list">
-                {% for e in engine_breakdown.engines %}
-                <li class="engine-bar" data-engine="{{ e.id }}" data-band="{{ e.band }}" style="--accent: {{ e.accent }}; --p: {{ e.propensity }};">
-                  <div class="engine-bar__meta">
-                    <strong>{{ e.label }}</strong>
-                    <span class="engine-bar__vendor">{{ e.vendor }}</span>
-                    {% if e.access == 'blocked' %}
-                    <span class="engine-bar__access" data-access="blocked">{{ _('bot blocked') }}</span>
-                    {% elif e.access == 'allow' %}
-                    <span class="engine-bar__access" data-access="allow">{{ _('bot allow') }}</span>
-                    {% endif %}
-                    {% if e.evidence == 'measured' %}
-                    <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}{% if e.samples is not none %} · {{ e.samples }} {{ _('campioni') }}{% endif %}</span>
-                    {% elif e.evidence == 'unavailable' %}
-                    <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('Non disponibile') }}</span>
-                    {% elif e.evidence == 'pending' %}
-                    <span class="evidence-badge" data-evidence="estimated">{{ _('In arrivo') }}</span>
-                    {% endif %}
-                  </div>
-                  <div class="engine-bar__track" aria-hidden="true">
-                    <span class="engine-bar__fill"></span>
-                  </div>
-                  <div class="engine-bar__score">
-                    <span class="engine-bar__n">{{ e.propensity }}</span>
-                    <span class="engine-bar__unit">/100</span>
-                  </div>
-                  {% if e.evidence == 'unavailable' and e.reason %}
-                  <p class="engine-bar__hint">{{ e.reason }}</p>
-                  {% endif %}
-                </li>
-                {% endfor %}
-              </ul>
 
               {% if engine_breakdown.has_competitors %}
-              <div class="sov-field" aria-label="{{ _('Campo competitivo') }}">
+              <div class="sov-field" aria-label="{{ _('Distribuzione competitiva') }}">
+                <p class="sov-compose__label">{{ _('Campo competitivo') }}</p>
                 <div class="sov-field__bar">
                   <span style="--w: {{ engine_breakdown.brand_sov }};" data-tone="brand"></span>
                   <span style="--w: {{ engine_breakdown.rivals_sov }};" data-tone="rivals"></span>
                   <span style="--w: {{ engine_breakdown.other_sov }};" data-tone="other"></span>
                 </div>
                 <ul class="sov-field__legend">
-                  <li data-tone="brand">{{ _('Brand') }} {{ engine_breakdown.brand_sov }}%</li>
-                  <li data-tone="rivals">{{ _('Rivali') }} {{ engine_breakdown.rivals_sov }}%</li>
-                  <li data-tone="other">{{ _('Altro') }} {{ engine_breakdown.other_sov }}%</li>
+                  <li data-tone="brand"><i aria-hidden="true"></i>{{ _('Brand') }} <em>{{ engine_breakdown.brand_sov }}%</em></li>
+                  <li data-tone="rivals"><i aria-hidden="true"></i>{{ _('Rivali') }} <em>{{ engine_breakdown.rivals_sov }}%</em></li>
+                  <li data-tone="other"><i aria-hidden="true"></i>{{ _('Altro') }} <em>{{ engine_breakdown.other_sov }}%</em></li>
                 </ul>
               </div>
               {% endif %}
 
-              <p class="engine-breakdown__note">{{ engine_breakdown.note }}</p>
+              <div class="sov-engines">
+                <p class="sov-compose__label">{{ _('Propensity per engine') }}</p>
+                <ul class="engine-bars" role="list">
+                  {% for e in engine_breakdown.engines %}
+                  <li class="engine-bar" data-engine="{{ e.id }}" data-band="{{ e.band }}" style="--accent: {{ e.accent }}; --p: {{ e.propensity }};">
+                    <div class="engine-bar__meta">
+                      <strong>{{ e.label }}</strong>
+                      <span class="engine-bar__vendor">{{ e.vendor }}</span>
+                      {% if e.access == 'blocked' %}
+                      <span class="engine-bar__access" data-access="blocked">{{ _('bot blocked') }}</span>
+                      {% elif e.access == 'allow' %}
+                      <span class="engine-bar__access" data-access="allow">{{ _('bot allow') }}</span>
+                      {% endif %}
+                      {% if e.evidence == 'measured' %}
+                      <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}{% if e.samples is not none %} · {{ e.samples }} {{ _('campioni') }}{% endif %}</span>
+                      {% elif e.evidence == 'unavailable' %}
+                      <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('Non disponibile') }}</span>
+                      {% elif e.evidence == 'pending' %}
+                      <span class="evidence-badge" data-evidence="estimated">{{ _('In arrivo') }}</span>
+                      {% endif %}
+                    </div>
+                    <div class="engine-bar__track" aria-hidden="true">
+                      <span class="engine-bar__fill"></span>
+                    </div>
+                    <div class="engine-bar__score">
+                      <span class="engine-bar__n">{{ e.propensity }}</span>
+                      <span class="engine-bar__unit">/100</span>
+                    </div>
+                    <div class="engine-bar__share" title="{{ _('Share') }}">
+                      <span>{{ e.share }}%</span>
+                    </div>
+                    {% if e.evidence == 'unavailable' and e.reason %}
+                    <p class="engine-bar__hint">{{ e.reason }}</p>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <p class="sov-panel__note">{{ engine_breakdown.note }}</p>
             </section>
             {% else %}
             <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
