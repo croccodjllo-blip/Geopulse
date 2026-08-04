@@ -10,7 +10,7 @@
     <h1 class="page-intro__title">{{ _('Rivedi e conferma') }}</h1>
     <p class="page-intro__lede">
       {{ _('Prima di procedere, controlla il costo stimato e il miglioramento atteso.') }}
-      {{ _("I crediti vengono scalati in tempo reale sui token AI consumati durante l'analisi") }}
+      {{ _("I token GEO vengono scalati in tempo reale sui token AI consumati durante l'analisi") }}
       {{ _('(con margine di sicurezza') }} {{ grace_margin_pct }}% {{ _("sul saldo richiesto all'avvio).") }}
     </p>
   </div>
@@ -28,8 +28,8 @@
     <h2 class="page-section__title">{{ _('Costo stimato') }}</h2>
     <div class="cost-card">
       <div class="cost-card__main">
-        <span class="cost-card__amount">€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }}</span>
-        <span class="cost-card__label">{{ _('per questa analisi') }}</span>
+        <span class="cost-card__amount">{{ cost.service_cost_eur_cents|tok }}</span>
+        <span class="cost-card__label">{{ _('stimati per questa analisi') }}</span>
       </div>
       <p class="cost-card__note">
         {{ _('Include spread di piattaforma') }} {{ cost.spread_pct }}% {{ _("sul costo reale dell'API AI.") }}
@@ -104,7 +104,7 @@
 
   {# ── Credito disponibile ── #}
   <div class="page-section">
-    <h2 class="page-section__title">{{ _('Il tuo credito') }}</h2>
+    <h2 class="page-section__title">{{ _('I tuoi token') }}</h2>
     {% if current_user.is_admin %}
     <div class="credit-status credit-status--ok">
       <span class="credit-status__balance">
@@ -115,16 +115,16 @@
     {% else %}
     <div class="credit-status {% if balance_cents >= required_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
       <span class="credit-status__balance">
-        {{ _('Disponibile:') }} <strong>€&nbsp;{{ "%.4f"|format(balance_cents / 100) }}</strong>
+        {{ _('Disponibile:') }} <strong>{{ balance_cents|tok }}</strong>
       </span>
       {% if balance_cents >= required_cents %}
-        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Credito sufficiente (con margine sicurezza') }} {{ grace_margin_pct }}%)</span>
+        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Token sufficienti (con margine sicurezza') }} {{ grace_margin_pct }}%)</span>
       {% else %}
-        <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Credito insufficiente') }}</span>
+        <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Token insufficienti') }}</span>
         <p class="credit-status__hint">
-          {{ _('Ricarica almeno') }} €&nbsp;{{ "%.4f"|format((required_cents - balance_cents) / 100) }} {{ _('per procedere') }}
+          {{ _('Ricarica almeno') }} {{ (required_cents - balance_cents)|tok }} {{ _('per procedere') }}
           ({{ _('margine sicurezza') }} {{ grace_margin_pct }}% {{ _('incluso') }}).
-          <a href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica credito') }} →</a>
+          <a href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }} →</a>
         </p>
       {% endif %}
     </div>
@@ -144,12 +144,12 @@
         {% if current_user.is_admin %}
           {{ _('Avvia analisi (admin — gratuito)') }}
         {% else %}
-          {{ _('Conferma e avvia analisi') }} (€&nbsp;{{ "%.4f"|format(cost.service_cost_eur) }})
+          {{ _('Conferma e avvia analisi') }} ({{ cost.service_cost_eur_cents|tok }})
         {% endif %}
       </button>
     </form>
     {% else %}
-    <a class="btn btn-core" href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica credito') }}</a>
+    <a class="btn btn-core" href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }}</a>
     {% endif %}
     <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">{{ _('Annulla') }}</a>
   </div>

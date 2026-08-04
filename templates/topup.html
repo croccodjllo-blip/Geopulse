@@ -18,12 +18,9 @@
     <h2 class="page-section__title">{{ _('Saldo attuale') }}</h2>
     <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
       {% if current_user.is_admin %}
-        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Credito illimitato (account admin)') }}</span>
+        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Token illimitati (account admin)') }}</span>
       {% else %}
-        {{ balance_cents }} {{ _('token') }}
-        <span style="font-size:0.85rem; font-weight:400; color:var(--ink-soft);">
-          (€&nbsp;{{ "%.2f"|format(balance_cents / 100) }})
-        </span>
+        {{ balance_cents|tok }}
       {% endif %}
     </p>
     {% if ledger %}
@@ -44,10 +41,10 @@
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.created_at.strftime('%d/%m %H:%M') }}</td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.description[:60] }}</td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; {% if entry.amount_cents > 0 %}color:#00c97a{% else %}color:#e84040{% endif %}; font-family:var(--font-mono);">
-              {% if entry.amount_cents > 0 %}+{% endif %}{{ entry.amount_cents }}
+              {{ format_token_amount(entry.amount_cents, signed=True, with_unit=False) }}
             </td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; font-family:var(--font-mono);">
-              {{ entry.balance_after_cents }}
+              {{ entry.balance_after_cents|tok_short }}
             </td>
           </tr>
           {% endfor %}
@@ -71,14 +68,14 @@
           data-paddle-checkout="topup"
           data-paddle-cents="{{ pkg.cents }}"
         >
-          <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
-          <span class="topup-btn__desc">{{ pkg.tokens }} {{ _('token') }} · {{ pkg.label }}</span>
+          <span class="topup-btn__amount">{{ pkg.tokens }} {{ _('token') }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }} · {{ _('paga') }} €&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
         {% else %}
         <button class="topup-btn" type="submit">
-          <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
-          <span class="topup-btn__desc">{{ pkg.tokens }} {{ _('token') }} · {{ pkg.label }}</span>
+          <span class="topup-btn__amount">{{ pkg.tokens }} {{ _('token') }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }} · {{ _('paga') }} €&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
         {% endif %}
@@ -86,7 +83,7 @@
       {% endfor %}
     </div>
     <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
-      {{ _('Con 1000 token: circa 500 analisi leggere, circa 333 con SoV Misurato multi-engine. Stima pack ≈350 analisi (media conservativa). Il credito non ha scadenza.') }}
+      {{ _('Con 1000 token: circa 500 analisi leggere, circa 333 con SoV Misurato multi-engine. Stima pack ≈350 analisi (media conservativa). I token non scadono.') }}
     </p>
   </div>
 

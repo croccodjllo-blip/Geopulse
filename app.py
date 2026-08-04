@@ -171,6 +171,14 @@ from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.geo_ui_payload import build_geo_ui_payload
+from services.token_units import (
+    GEO_TOKEN_EUR_CENTS,
+    GEO_TOKENS_PER_EURO,
+    cents_to_tokens,
+    format_token_amount,
+    format_tokens_short,
+    tokens_to_cents,
+)
 from services.signals import compare_with_previous
 from services.sov_measured import should_run_measured
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
@@ -1379,7 +1387,21 @@ def inject_globals() -> dict[str, Any]:
         "sidebar_credits_cap": sidebar_credits_cap,
         "sidebar_plan": sidebar_plan,
         "sidebar_active": sidebar_active,
+        "format_token_amount": format_token_amount,
+        "format_tokens_short": format_tokens_short,
+        "cents_to_tokens": cents_to_tokens,
     }
+
+
+@app.template_filter("tok")
+def jinja_tok_filter(cents: int | None) -> str:
+    """Format ledger cents as GEO tokens, e.g. ``1.250 token``."""
+    return format_token_amount(cents, with_unit=True)
+
+
+@app.template_filter("tok_short")
+def jinja_tok_short_filter(cents: int | None) -> str:
+    return format_tokens_short(cents)
 
 
 # ---------------------------------------------------------------------------
@@ -1745,8 +1767,8 @@ def process_pending_analyze_jobs(
                     db.session,
                     job,
                     (
-                        f"Credito insufficiente: saldo €{available/100:.4f}, "
-                        f"richiesto con margine €{required_with_grace/100:.4f}"
+                        f"Token insufficienti: saldo {format_token_amount(available)}, "
+                        f"richiesti con margine {format_token_amount(required_with_grace)}"
                     )[:500],
                 ):
                     release_job_hold(db.session, user, job)
@@ -3014,7 +3036,7 @@ def billing_paddle_webhook():
                     CreditLedger,
                     user,
                     amount_eur_cents=int(topup_cents),
-                    description=f"Ricarica €{topup_cents/100:.2f} via Paddle",
+                    description=f"Ricarica {format_token_amount(topup_cents)} via Paddle",
                     stripe_payment_intent=pi,
                 )
                 if data.get("customer_id"):
@@ -3280,7 +3302,7 @@ def register():
                 "Account creato. Conferma l’email per sbloccare il credito di benvenuto "
                 "e avviare la prima diagnosi."
                 + (
-                    f" (fino a €{WELCOME_CREDIT_CENTS/100:.2f})"
+                    f" (fino a {format_token_amount(WELCOME_CREDIT_CENTS)})"
                     if WELCOME_CREDIT_CENTS > 0
                     else ""
                 ),
@@ -3338,7 +3360,7 @@ def verify_email(token: str):
                         user,
                         amount_eur_cents=WELCOME_CREDIT_CENTS,
                         description=(
-                            f"Credito di benvenuto €{WELCOME_CREDIT_CENTS/100:.2f}"
+                            f"Credito di benvenuto {format_token_amount(WELCOME_CREDIT_CENTS)}"
                         ),
                         stripe_payment_intent=pi,
                     )
@@ -3361,7 +3383,7 @@ def verify_email(token: str):
         job_id = start_first_analysis_if_needed(user, website)
 
     if granted_now:
-        msg = f"Email confermata. Credito di benvenuto: €{WELCOME_CREDIT_CENTS/100:.2f}."
+        msg = f"Email confermata. Credito di benvenuto: {format_token_amount(WELCOME_CREDIT_CENTS)}."
         if job_id:
             msg += " Prima diagnosi avviata."
         flash(msg, "success")
@@ -3966,9 +3988,9 @@ def dashboard_analyze_confirmed():
         required_with_grace = required_credit_with_grace_cents(cost_cents)
         shortage = max(0, required_with_grace - balance)
         flash(
-            f"Credito insufficiente: hai €{balance/100:.4f}, "
-            f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
-            f"Ricarica almeno €{shortage/100:.4f}.",
+            f"Token insufficienti: hai {format_token_amount(balance)}, "
+            f"servono {format_token_amount(required_with_grace)} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+            f"Ricarica almeno {format_token_amount(shortage)}.",
             "error",
         )
         return redirect(url_for("topup_credit_page"))
@@ -3989,9 +4011,9 @@ def dashboard_analyze_confirmed():
             required_with_grace = required
             shortage = max(0, required_with_grace - balance)
             flash(
-                f"Credito insufficiente: hai €{balance/100:.4f}, "
-                f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
-                f"Ricarica almeno €{shortage/100:.4f}.",
+                f"Token insufficienti: hai {format_token_amount(balance)}, "
+                f"servono {format_token_amount(required_with_grace)} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+                f"Ricarica almeno {format_token_amount(shortage)}.",
                 "error",
             )
             return redirect(url_for("topup_credit_page"))
@@ -4032,7 +4054,7 @@ def dashboard_analyze_confirmed():
         new_balance = get_balance_cents(user)
         flash(
             f"Analisi completata su {pages_n} pagine — score, findings e pack pronti. "
-            f"Credito residuo: €{new_balance/100:.4f}.",
+            f"Token residui: {format_token_amount(new_balance)}.",
             "success",
         )
     except InsufficientCreditError as exc:
@@ -4061,9 +4083,6 @@ def dashboard_analyze_confirmed():
 #   light / measured OpenAI ≈ 2¢ hold → ~500 analisi / 1000 token
 #   measured multi-engine   ≈ 3¢ hold → ~333 analisi / 1000 token
 # Packs advertise ~350 / 1000 token (mid conservative, multi-engine biased).
-
-GEO_TOKEN_EUR_CENTS = 1  # 1 token = 1 cent
-GEO_TOKENS_PER_EURO = 100  # €1 → 100 token; €10 → 1000 token
 
 _TOPUP_PACKAGES = [
     {
@@ -4163,7 +4182,7 @@ def topup_stripe_checkout():
                 description=f"Ricarica test {amount_cents} cent",
             )
             db.session.commit()
-            flash(f"[DEBUG] Credito di €{amount_cents/100:.2f} aggiunto.", "success")
+            flash(f"[DEBUG] {format_token_amount(amount_cents)} aggiunti.", "success")
             return redirect(url_for("topup_credit_page"))
         if provider == "paddle":
             flash(
@@ -4201,7 +4220,7 @@ def topup_stripe_checkout():
                     "unit_amount": amount_cents,
                     "product_data": {
                         "name": (
-                            f"Centropic — {amount_cents} token "
+                            f"Centropic — {format_token_amount(amount_cents)} "
                             f"(€{amount_cents/100:.2f})"
                         ),
                     },
@@ -4285,7 +4304,7 @@ def billing_topup_webhook():
                             CreditLedger,
                             u,
                             amount_eur_cents=topup_cents,
-                            description=f"Ricarica €{topup_cents/100:.2f} via Stripe",
+                            description=f"Ricarica {format_token_amount(topup_cents)} via Stripe",
                             stripe_payment_intent=pi,
                         )
                         db.session.commit()
@@ -4328,10 +4347,10 @@ def admin_topup_user(user_id: int):
         CreditLedger,
         u,
         amount_eur_cents=amount,
-        description=f"Ricarica admin: {amount} cent",
+        description=f"Ricarica admin: {format_token_amount(amount)}",
     )
     db.session.commit()
-    flash(f"Aggiunto €{amount/100:.4f} a {u.email}.", "success")
+    flash(f"Aggiunti {format_token_amount(amount)} a {u.email}.", "success")
     return redirect(url_for("admin_home"))
 
 
@@ -4821,6 +4840,7 @@ def api_v1_analyze():
                 "message": preflight.message,
                 "word_count": preflight.word_count,
                 "required_credit_eur": round(preflight.required_cost_cents / 100, 4),
+                "required_credit_tokens": cents_to_tokens(preflight.required_cost_cents),
             }
         ), 413
     api_cost.service_cost_eur_cents = preflight.required_cost_cents
@@ -4836,16 +4856,19 @@ def api_v1_analyze():
         return jsonify({"ok": False, "error": "too_many_jobs", "message": str(exc)}), 429
     except InsufficientCreditError:
         required_with_grace = required_credit_with_grace_cents(api_cost.service_cost_eur_cents)
+        bal = get_balance_cents(user)
         return jsonify({
             "ok": False,
             "error": "insufficient_credit",
             "message": (
-                f"Credito insufficiente: hai €{get_balance_cents(user)/100:.4f}, "
-                f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+                f"Token insufficienti: hai {format_token_amount(bal)}, "
+                f"servono {format_token_amount(required_with_grace)} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
                 "Ricarica su https://centropic.ai/crediti"
             ),
             "cost_estimate": api_cost.as_dict(),
             "required_credit_eur": round(required_with_grace / 100, 4),
+            "required_credit_tokens": cents_to_tokens(required_with_grace),
+            "credit_balance_tokens": cents_to_tokens(bal),
         }), 402
 
     required_hold = required_credit_with_grace_cents(api_cost.service_cost_eur_cents)
@@ -4861,16 +4884,19 @@ def api_v1_analyze():
     except InsufficientCreditError:
         db.session.rollback()
         required_with_grace = required_hold
+        bal = get_balance_cents(user)
         return jsonify({
             "ok": False,
             "error": "insufficient_credit",
             "message": (
-                f"Credito insufficiente: hai €{get_balance_cents(user)/100:.4f}, "
-                f"servono €{required_with_grace/100:.4f} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
+                f"Token insufficienti: hai {format_token_amount(bal)}, "
+                f"servono {format_token_amount(required_with_grace)} (include margine sicurezza {round(GRACE_MARGIN*100,1):.1f}%). "
                 "Ricarica su https://centropic.ai/crediti"
             ),
             "cost_estimate": api_cost.as_dict(),
             "required_credit_eur": round(required_with_grace / 100, 4),
+            "required_credit_tokens": cents_to_tokens(required_with_grace),
+            "credit_balance_tokens": cents_to_tokens(bal),
         }), 402
 
     # Track remaining hold across usage callbacks; on rollback restore full api_held.
@@ -4994,7 +5020,9 @@ def api_v1_analyze():
             "billing": {
                 "cost_eur_cents": api_cost.service_cost_eur_cents,
                 "cost_eur": round(api_cost.service_cost_eur, 4),
+                "cost_tokens": cents_to_tokens(api_cost.service_cost_eur_cents),
                 "credit_balance_eur": round(get_balance_cents(user) / 100, 4),
+                "credit_balance_tokens": cents_to_tokens(get_balance_cents(user)),
             },
         }
     )

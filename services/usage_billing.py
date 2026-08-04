@@ -44,6 +44,7 @@ import requests
 from sqlalchemy import case, text
 
 from services.ssrf import UnsafeURLError, safe_get
+from services.token_units import format_token_amount
 
 logger = logging.getLogger(__name__)
 
@@ -373,8 +374,8 @@ def check_page_word_budget(
         if shortage > 0:
             msg = (
                 f"Pagina molto grande ({words} parole). "
-                f"Credito richiesto stimato: €{required/100:.4f}. "
-                f"Ti mancano €{shortage/100:.4f}."
+                f"Token richiesti stimati: {format_token_amount(required)}. "
+                f"Ti mancano {format_token_amount(shortage)}."
             )
             return PageWordCountCheck(
                 word_count=words,
@@ -388,7 +389,7 @@ def check_page_word_budget(
             required_cost_cents=required,
             message=(
                 f"Pagina grande ({words} parole): costo scalato a "
-                f"€{required/100:.4f}."
+                f"{format_token_amount(required)}."
             ),
         )
     return PageWordCountCheck(
@@ -700,8 +701,8 @@ def deduct_credit(
         # Refresh for accurate error message
         db_session.refresh(user)
         raise InsufficientCreditError(
-            f"Credito insufficiente: {get_balance_cents(user)} cent disponibili, "
-            f"{cost_eur_cents} richiesti."
+            f"Token insufficienti: {format_token_amount(get_balance_cents(user))} disponibili, "
+            f"{format_token_amount(cost_eur_cents)} richiesti."
         )
     db_session.refresh(user)
     new_balance = int(user.credit_balance_cents or 0)
@@ -773,8 +774,8 @@ def assert_can_start_analysis(
     need = max(1, int(required_cents))
     if get_balance_cents(user) < need:
         raise InsufficientCreditError(
-            f"Credito insufficiente: {get_balance_cents(user)} cent disponibili, "
-            f"{need} richiesti."
+            f"Token insufficienti: {format_token_amount(get_balance_cents(user))} disponibili, "
+            f"{format_token_amount(need)} richiesti."
         )
 
 
@@ -813,8 +814,8 @@ def hold_credit(
         db_session.refresh(user)
         spendable = get_balance_cents(user)
         raise InsufficientCreditError(
-            f"Credito insufficiente per la riserva: {spendable} "
-            f"cent disponibili, {amount} richiesti."
+            f"Token insufficienti per la riserva: {format_token_amount(spendable)} "
+            f"disponibili, {format_token_amount(amount)} richiesti."
         )
     db_session.refresh(user)
     entry = CreditLedger(

@@ -20,7 +20,7 @@
       <div class="cost-card"><div class="muted">Utenti totali</div><strong>{{ stats.users_total }}</strong><div class="muted">Free {{ stats.users_free }} · Plus {{ stats.users_plus }} · Admin {{ stats.users_admin }}</div></div>
       <div class="cost-card"><div class="muted">Siti / Run</div><strong>{{ stats.sites_total }} / {{ stats.runs_total }}</strong><div class="muted">Run 30gg: {{ stats.runs_30d }}</div></div>
       <div class="cost-card"><div class="muted">Coda job</div><strong>P {{ stats.jobs_pending }} · R {{ stats.jobs_running }} · E {{ stats.jobs_error }}</strong><div class="muted">Stato in tempo reale da DB</div></div>
-      <div class="cost-card"><div class="muted">Billing 30gg</div><strong>+€ {{ "%.2f"|format(stats.topup_30d_cents / 100) }}</strong><div class="muted">Addebiti: € {{ "%.2f"|format(stats.charged_30d_cents / 100) }}</div></div>
+      <div class="cost-card"><div class="muted">Billing 30gg</div><strong>+{{ stats.topup_30d_cents|tok_short }}</strong><div class="muted">Addebiti: {{ stats.charged_30d_cents|tok_short }}</div></div>
       <div class="cost-card"><div class="muted">Token 30gg</div><strong>{{ "{:,}".format(stats.input_tokens_30d + stats.output_tokens_30d).replace(",", ".") }}</strong><div class="muted">In {{ "{:,}".format(stats.input_tokens_30d).replace(",", ".") }} · Out {{ "{:,}".format(stats.output_tokens_30d).replace(",", ".") }}</div></div>
       <div class="cost-card"><div class="muted">Config credito</div><strong>Grace margin {{ grace_margin_pct }}%</strong><div class="muted">Aggiornato: {{ now_utc.strftime('%Y-%m-%d %H:%M UTC') }}</div></div>
     </div>
@@ -36,7 +36,7 @@
           <div class="history-scores">
             <span>Piano {{ u.plan_label }}</span>
             <span>Role {{ u.role or 'user' }}</span>
-            <span>Credito € {{ "%.2f"|format(u.credit_balance_cents / 100) if u.credit_balance_cents < 2000000000 else "∞" }}</span>
+            <span>Token {{ u.credit_balance_cents|tok_short if u.credit_balance_cents < 2000000000 else "∞" }}</span>
             <span>{{ u.company or '—' }}</span>
           </div>
           {% if u.website_url %}<div class="muted" style="margin-top:0.35rem">{{ u.website_url }}</div>{% endif %}
@@ -58,9 +58,9 @@
           <form method="post" action="{{ url_for('admin_topup_user', user_id=u.id) }}" style="display:inline-flex;gap:0.4rem;align-items:center">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <select name="amount_cents" style="font-size:0.75rem">
-              <option value="1000">+€10 (1000 token)</option>
-              <option value="2000">+€20 (2000 token)</option>
-              <option value="5000">+€50 (5000 token)</option>
+              <option value="1000">+1000 token (€10)</option>
+              <option value="2000">+2000 token (€20)</option>
+              <option value="5000">+5000 token (€50)</option>
             </select>
             <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Topup</button>
           </form>
@@ -130,15 +130,15 @@
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">Ledger crediti (ultimi 80 movimenti)</h2>
+    <h2 class="page-section__title">Ledger token (ultimi 80 movimenti)</h2>
     <ul class="history-list">
       {% for row in recent_ledger %}
       <li>
         <div class="history-main">
           <strong>User {{ row.user_id }} · {{ row.description }}</strong>
           <div class="history-scores">
-            <span>Importo {{ "+" if row.amount_cents >= 0 else "" }}€ {{ "%.2f"|format(row.amount_cents / 100) }}</span>
-            <span>Saldo dopo € {{ "%.2f"|format(row.balance_after_cents / 100) }}</span>
+            <span>Importo {{ format_token_amount(row.amount_cents, signed=True) }}</span>
+            <span>Saldo dopo {{ row.balance_after_cents|tok }}</span>
           </div>
         </div>
         <div class="history-actions">
