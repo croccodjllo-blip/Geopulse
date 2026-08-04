@@ -15,3 +15,8 @@ export {
   type ShareOfModelChartProps,
   type SomSeriesPoint,
 } from "./ShareOfModelChart";
+export {
+  EngineVisibilityChart,
+  type EngineVisibilityChartProps,
+  type EngineBarPoint,
+} from "./EngineVisibilityChart";

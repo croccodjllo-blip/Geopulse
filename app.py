@@ -3494,6 +3494,18 @@ def logout():
     return redirect(url_for("login"))
 
 
+@app.route("/dashboard/geo-ui")
+@app.route("/dashboard/geo-ui/")
+@login_required
+def dashboard_geo_ui():
+    """Serve the React + Recharts enterprise GEO dashboard SPA."""
+    geo_dir = os.path.join(app.static_folder or "static", "geo-ui")
+    index_path = os.path.join(geo_dir, "index.html")
+    if not os.path.isfile(index_path):
+        abort(404)
+    return send_from_directory(geo_dir, "index.html")
+
+
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():

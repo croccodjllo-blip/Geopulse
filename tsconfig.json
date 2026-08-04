@@ -11,10 +11,12 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "types": ["vite/client"]
   },
-  "include": ["components/**/*", "tailwind.config.ts"]
+  "include": ["src/**/*", "components/**/*", "vite.config.ts", "tailwind.config.ts"]
 }
