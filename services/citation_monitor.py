@@ -973,6 +973,7 @@ def run_citation_monitor(
     engines_out: list[dict[str, Any]] = []
     all_details: list[dict[str, Any]] = []
     usage_lock = threading.Lock()
+    credit_stop: dict[str, Any] = {"exc": None}
 
     def _beat() -> None:
         if not callable(heartbeat_callback):
@@ -985,8 +986,20 @@ def run_citation_monitor(
     def _usage(**kwargs: Any) -> None:
         if not callable(usage_callback):
             return
+        from services.usage_billing import InsufficientCreditError
+
         with usage_lock:
-            usage_callback(**kwargs)
+            if credit_stop["exc"] is not None:
+                raise credit_stop["exc"]
+            try:
+                usage_callback(**kwargs)
+            except InsufficientCreditError as exc:
+                credit_stop["exc"] = exc
+                raise
+            except Exception:
+                # Never let billing/session glitches abort the whole measured suite
+                # from a worker thread (would leave the job stuck in phase=geo).
+                logger.exception("SoV usage_callback failed")
 
     # Probe engines in parallel (wall-clock ~ max(engine) not sum).
     jobs: list[tuple[str, Any]] = [
@@ -1006,8 +1019,18 @@ def run_citation_monitor(
             try:
                 results[name] = fut.result() or {}
             except Exception as exc:
+                from services.usage_billing import InsufficientCreditError
+
+                if isinstance(exc, InsufficientCreditError) or credit_stop["exc"] is not None:
+                    for pending in futures:
+                        pending.cancel()
+                    raise (credit_stop["exc"] or exc)
                 logger.exception("SoV engine %s failed", name)
                 results[name] = {"available": False, "reason": str(exc)[:160]}
+            if credit_stop["exc"] is not None:
+                for pending in futures:
+                    pending.cancel()
+                raise credit_stop["exc"]
             try:
                 _beat()
             except Exception:

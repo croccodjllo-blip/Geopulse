@@ -1841,44 +1841,68 @@ def process_pending_analyze_jobs(
                 continue
 
             def _hb(phase=None, done=None, total=None):
-                ok = heartbeat_job(
-                    db.session,
-                    job,
-                    progress_phase=phase,
-                    progress_done=done,
-                    progress_total=total,
-                )
-                if not ok:
-                    raise RuntimeError("job lease lost during heartbeat")
-                return ok
+                # SoV engines run in worker threads; always re-enter app context.
+                with app.app_context():
+                    ok = heartbeat_job(
+                        db.session,
+                        job,
+                        progress_phase=phase,
+                        progress_done=done,
+                        progress_total=total,
+                    )
+                    if not ok:
+                        raise RuntimeError("job lease lost during heartbeat")
+                    return ok
 
-            def _job_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
-                # Persist usage then debit only while this worker still owns the lease
-                # (BEGIN IMMEDIATE + FOR UPDATE inside debit_leased_job_usage).
-                charged = record_actual_usage(
-                    db.session,
-                    UsageEvent,
-                    user_id=user.id,
-                    analysis_run_id=None,
-                    provider=provider,
-                    model=model,
-                    input_tokens=input_tokens,
-                    output_tokens=output_tokens,
-                )
-                debit_cents = debit_cents_from_usage(charged)
-                if debit_cents <= 0:
-                    return
-                debit_leased_job_usage(
-                    db.session,
-                    CreditLedger,
-                    AnalysisJob,
-                    user,
-                    job,
-                    lease_token=lease_token,
-                    cost_eur_cents=debit_cents,
-                    description=f"JOB usage realtime {provider}:{model}",
-                )
-                db.session.commit()
+            def _job_usage_cb(
+                *, provider: str, model: str, input_tokens: int, output_tokens: int
+            ):
+                # Persist usage then debit only while this worker still owns the lease.
+                # Must open app context: citation probes run in ThreadPoolExecutor threads.
+                from services.usage_billing import InsufficientCreditError
+
+                with app.app_context():
+                    try:
+                        charged = record_actual_usage(
+                            db.session,
+                            UsageEvent,
+                            user_id=user.id,
+                            analysis_run_id=None,
+                            provider=provider,
+                            model=model,
+                            input_tokens=input_tokens,
+                            output_tokens=output_tokens,
+                        )
+                        debit_cents = debit_cents_from_usage(charged)
+                        if debit_cents <= 0:
+                            return
+                        debit_leased_job_usage(
+                            db.session,
+                            CreditLedger,
+                            AnalysisJob,
+                            user,
+                            job,
+                            lease_token=lease_token,
+                            cost_eur_cents=debit_cents,
+                            description=f"JOB usage realtime {provider}:{model}",
+                        )
+                        db.session.commit()
+                    except InsufficientCreditError:
+                        try:
+                            db.session.rollback()
+                        except Exception:
+                            pass
+                        raise
+                    except Exception:
+                        try:
+                            db.session.rollback()
+                        except Exception:
+                            pass
+                        app.logger.exception(
+                            "job usage debit failed provider=%s model=%s",
+                            provider,
+                            model,
+                        )
 
             analysis = run_analysis_pipeline(
                 db_session=db.session,
