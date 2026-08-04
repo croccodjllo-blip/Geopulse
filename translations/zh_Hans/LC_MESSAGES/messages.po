@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-04 20:09+0000\n"
+"POT-Creation-Date: 2026-08-04 21:20+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans\n"
@@ -18,7 +18,1087 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: templates/about.html:2 templates/about.html:10 templates/base.html:219
+#: app.py:2066 templates/about.html:24 templates/contact.html:42
+msgid "27 luglio 2026"
+msgstr "2026年7月27日"
+
+#: services/guides.py:34 templates/about.html:57 templates/base.html:214
+#: templates/guide.html:151 templates/landing.html:121
+msgid "Metodologia"
+msgstr "方法论"
+
+#: services/guides.py:35
+msgid "Come Centropic misura AIO e GEO"
+msgstr "Centropic 如何测量 AIO 和 GEO"
+
+#: services/guides.py:37
+msgid ""
+"Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge "
+"Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured."
+msgstr ""
+"Centropic 方法论：通过探测和启发式算法计算 AIO/GEO 分数，Misurato/Stimato 徽章，SoV 代理的限制以及通往 "
+"SoV measured 的路径。"
+
+#: services/guides.py:40
+msgid ""
+"Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non"
+" promettiamo."
+msgstr "方法透明度：我们在网站上观察到什么，我们估计了什么，我们不承诺什么。"
+
+#: services/guides.py:43
+msgid ""
+"\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">1. Cosa osserviamo (Misurato)</h2>\n"
+"    <p class=\"lede\">Probe HTTP e parsing HTML sullo stesso dominio: "
+"title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt,"
+" crawl multi-pagina. Questi finding possono essere badge "
+"<em>Misurato</em>.</p>\n"
+"    <p class=\"lede\">Centropic (centropic.ai) registra anche segnali di "
+"entity (Organization, sameAs, contatti), citabilità del copy e policy "
+"verso bot AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended).</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">2. Cosa stimiamo (Stimato / "
+"proxy)</h2>\n"
+"    <p class=\"lede\">Score compositi AIO/GEO, indice DDD→AAA e Share of "
+"Voice per engine derivano da formule euristiche sui segnali osservati. "
+"Non sono, di default, citazioni live su ChatGPT/Perplexity/Claude.</p>\n"
+"    <p class=\"lede\">Il breakdown per engine (ChatGPT, Gemini come proxy"
+" AI Overview, Claude, Perplexity, Grok, Azure AI) resta etichettato "
+"<em>Stimato</em> finché non gira il citation monitor Plus.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">3. SoV measured (Plus)</h2>\n"
+"    <p class=\"lede\">Sul piano Plus, con connector API configurati, "
+"Centropic invia un prompt bank al citation monitor e conta le menzioni "
+"del brand/dominio nelle risposte. È un campione probe, non un ranking "
+"garantito nelle UI consumer degli LLM.</p>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>Prompt personalizzabili in Impostazioni (prompt bank).</li>\n"
+"      <li>Evidence badge <em>Misurato</em> per engine disponibili.</li>\n"
+"      <li>Gemini e Azure AI sono proxy onesti (non Google AI Overview "
+"nativo né Copilot Bing nativo).</li>\n"
+"    </ul>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">4. Limiti</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>Nessuna garanzia di ranking o menzione da parte di modelli di "
+"terzi.</li>\n"
+"      <li>Il pack artifact è una bozza operativa: la pubblicazione resta "
+"a carico del cliente.</li>\n"
+"      <li>SoV measured è disponibile <strong>solo sul piano Plus</strong>"
+" (e Admin), quando i connector API sono configurati.</li>\n"
+"      <li>GEO in Centropic non significa GIS; AIO non significa All-in-"
+"One.</li>\n"
+"    </ul>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">5. Approfondimenti</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li><a href=\"/guida\">Guida completa Centropic (servizi, analisi, "
+"glossario)</a></li>\n"
+"      <li><a href=\"/guide/llms-txt\">Guida llms.txt</a></li>\n"
+"      <li><a href=\"/guide/schema-ai\">Schema.org per answer "
+"engine</a></li>\n"
+"      <li><a href=\"/guide/score-vs-sov\">Score AIO/GEO vs Share of "
+"Voice</a></li>\n"
+"      <li><a href=\"/llms.txt\">llms.txt pubblico di Centropic</a></li>\n"
+"      <li><a href=\"/prodotto\">Come funziona il prodotto</a></li>\n"
+"    </ul>\n"
+"  </section>\n"
+msgstr ""
+"<section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">1. 我们观察到什么 (测量)</h2>\n"
+"    <p class=\"lede\">同一域上的 HTTP 探测和 HTML 解析：标题、元数据、JSON-"
+"LD、常见问题、爬虫、llms.txt、网站地图、ai.txt、humans.txt、多页面爬取。这些发现可以是 <em>测量</em> "
+"徽章。</p>\n"
+"    <p class=\"lede\">Centropic (centropic.ai) "
+"还记录实体信号（组织、sameAs、联系方式）、文案的可引用性和对 AI 机器人（GPTBot、ClaudeBot、PerplexityBot"
+"、Google-Extended）的政策。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">2. 我们估计了什么 (估计 / 代理)</h2>\n"
+"    <p class=\"lede\">AIO/GEO 的复合分数、DDD→AAA "
+"指数和引擎的声音份额来自于对观察到的信号的启发式公式。默认情况下，这些不是 ChatGPT/Perplexity/Claude "
+"的实时引用。</p>\n"
+"    <p class=\"lede\">每个引擎的细分（ChatGPT、Gemini 作为 AI "
+"概述代理、Claude、Perplexity、Grok、Azure AI）在 citation monitor Plus 运行之前保持标记为 "
+"<em>估计</em>。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">3. SoV 测量 (Plus)</h2>\n"
+"    <p class=\"lede\">在 Plus 计划中，配置了 API 连接器，Centropic "
+"向引用监控器发送提示库，并计算品牌/域名在响应中的提及。这是一个探测样本，而不是 LLM 消费者 UI 中的保证排名。</p>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>设置中的可自定义提示（提示库）。</li>\n"
+"      <li>可用引擎的证据徽章 <em>测量</em>。</li>\n"
+"      <li>Gemini 和 Azure AI 是诚实的代理（不是原生 Google AI 概述或原生 Copilot "
+"Bing）。</li>\n"
+"    </ul>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">4. 限制</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>没有第三方模型的排名或提及的保证。</li>\n"
+"      <li>包裹工件是一个操作草案：发布由客户负责。</li>\n"
+"      <li>SoV 测量 <strong>仅在 Plus 计划</strong>（和管理员）中可用，当 API 连接器已配置时。</li>"
+"\n"
+"      <li>Centropic 中的 GEO 不意味着 GIS；AIO 不意味着一体化。</li>\n"
+"    </ul>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">5. 深入了解</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li><a href=\"/guida\">Centropic 完整指南（服务、分析、术语表）</a></li>\n"
+"      <li><a href=\"/guide/llms-txt\">llms.txt 指南</a></li>\n"
+"      <li><a href=\"/guide/schema-ai\">Schema.org 用于答案引擎</a></li>\n"
+"      <li><a href=\"/guide/score-vs-sov\">AIO/GEO 分数与声音份额</a></li>\n"
+"      <li><a href=\"/llms.txt\">Centropic 的公共 llms.txt</a></li>\n"
+"      <li><a href=\"/prodotto\">产品如何运作</a></li>\n"
+"    </ul>\n"
+"  </section>"
+
+#: services/guides.py:91 services/guides.py:139 services/guides.py:183
+#: templates/base.html:125 templates/base.html:141 templates/base.html:227
+#: templates/dashboard.html:29 templates/guide.html:10
+#: templates/partials/app_sidebar.html:58
+msgid "Guida"
+msgstr "指南"
+
+#: services/guides.py:92
+msgid "llms.txt: guida pratica per la citabilità IA"
+msgstr "llms.txt：AI 可引用性的实用指南"
+
+#: services/guides.py:94
+msgid ""
+"Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera "
+"e lo valida nel crawl."
+msgstr "什么是 llms.txt，如何为 AIO/GEO 结构化，以及 Centropic 如何在爬取中生成和验证它。"
+
+#: services/guides.py:97
+msgid ""
+"Un file root machine-readable che spiega brand, topic e pagine preferite "
+"ai modelli e crawler AI."
+msgstr "一个机器可读的根文件，向 AI 模型和爬虫解释品牌、主题和首选页面。"
+
+#: services/guides.py:100
+msgid ""
+"\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Perché conta</h2>\n"
+"    <p class=\"lede\">llms.txt riduce ambiguità entity: dice chi sei, "
+"cosa offri e quali URL citare. In Centropic la presenza e la qualità del "
+"file alimentano score AIO/GEO (probe Misurato).</p>\n"
+"    <p class=\"lede\">Answer engine e crawler AI (GPTBot, ClaudeBot, "
+"PerplexityBot, Google-Extended) usano segnali pubblici; un llms.txt "
+"chiaro è un’ancora di citazione accanto a Schema.org e robots "
+"permissivi.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Sezioni utili</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>Site / Summary / Key topics con brand e dominio canonici</li>\n"
+"      <li>Preferred citation (brand + acronimi espansi: AIO, GEO)</li>\n"
+"      <li>Important pages con URL https assoluti</li>\n"
+"      <li>Disambiguazione (cosa non siete: GIS, All-in-One generici)</li>"
+"\n"
+"      <li>Contact e owner / parent organization</li>\n"
+"    </ul>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Come Centropic aiuta</h2>\n"
+"    <p class=\"lede\">Ogni analisi genera una bozza <code>llms.txt</code>"
+" nel pack ZIP. Pubblicala in root "
+"(<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding "
+"passa a “disponibile” se il probe la trova.</p>\n"
+"    <p class=\"lede\">Esempio vivo: il llms.txt di Centropic è su <a "
+"href=\"/llms.txt\">centropic.ai/llms.txt</a>, con preferred citation e "
+"link a metodologia.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Checklist rapida</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>Una sola brand primaria (evita nomi fantasma)</li>\n"
+"      <li>URL canonici https, niente query di tracking</li>\n"
+"      <li>Allinea llms.txt a JSON-LD Organization e alla home</li>\n"
+"      <li>Aggiorna la data quando cambi offerta o positioning</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">Vedi anche <a href=\"/guide/schema-ai\">Schema "
+"AI</a> e <a href=\"/metodologia\">metodologia</a>.</p>\n"
+"  </section>\n"
+msgstr ""
+"<section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">为什么重要</h2>\n"
+"    <p class=\"lede\">llms.txt 减少了实体的歧义：说明你是谁、提供什么以及引用哪些 URL。在 Centropic "
+"中，文件的存在和质量会影响 AIO/GEO 分数（测量探测）。</p>\n"
+"    <p class=\"lede\">答案引擎和 AI 爬虫（GPTBot、ClaudeBot、PerplexityBot、Google-"
+"Extended）使用公共信号；清晰的 llms.txt 是引用的锚点，旁边是 Schema.org 和允许的爬虫。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">有用的部分</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>网站 / 摘要 / 关键主题，包含品牌和规范域名</li>\n"
+"      <li>首选引用（品牌 + 扩展缩写：AIO、GEO）</li>\n"
+"      <li>重要页面，包含绝对的 https URL</li>\n"
+"      <li>消歧义（你不是：GIS、通用一体化）</li>\n"
+"      <li>联系方式和所有者/母公司组织</li>\n"
+"    </ul>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Centropic 如何帮助</h2>\n"
+"    <p class=\"lede\">每次分析都会在 ZIP 包中生成一个 <code>llms.txt</code> "
+"草案。将其发布在根目录（<code>https://tuodominio/llms.txt</code>）并重新分析：如果探测找到它，发现将变为“可用”。</p>"
+"\n"
+"    <p class=\"lede\">实时示例：Centropic 的 llms.txt 位于 <a "
+"href=\"/llms.txt\">centropic.ai/llms.txt</a>，包含首选引用和方法链接。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">快速检查清单</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>一个主要品牌（避免虚假名称）</li>\n"
+"      <li>规范的 https URL，不要跟踪查询</li>\n"
+"      <li>将 llms.txt 与 JSON-LD 组织和主页对齐</li>\n"
+"      <li>更改产品或定位时更新日期</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">另见 <a href=\"/guide/schema-ai\">Schema AI</a> 和 <a "
+"href=\"/metodologia\">方法论</a>。</p>\n"
+"  </section>"
+
+#: services/guides.py:140
+msgid "Schema.org per answer engine (AIO/GEO)"
+msgstr "Schema.org 用于答案引擎 (AIO/GEO)"
+
+#: services/guides.py:142
+msgid ""
+"Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine "
+"Optimization: Organization, WebSite, FAQPage, SoftwareApplication, "
+"Article."
+msgstr "哪些 Schema.org 类型有助于 AI 驱动的可见性和生成引擎优化：组织、网站、FAQ 页面、软件应用、文章。"
+
+#: services/guides.py:145
+msgid ""
+"I dati strutturati non “garantiscono” citazioni, ma rendono l’entity "
+"leggibile a crawler e modelli. Aggiornato 30/07/2026."
+msgstr "结构化数据并不“保证”引用，但使实体对爬虫和模型可读。更新于 2026 年 7 月 30 日。"
+
+#: services/guides.py:148
+msgid ""
+"\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Tipi prioritari</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li><strong>Organization</strong> + <strong>WebSite</strong> "
+"collegati via @id</li>\n"
+"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate "
+"all’HTML visibile</li>\n"
+"      <li><strong>SoftwareApplication</strong> o Product se vendi "
+"software (come Centropic)</li>\n"
+"      <li><strong>Article</strong> / HowTo per guide evergreen con author"
+" e date</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">Riferimento normativo: <a "
+"href=\"https://schema.org/\" rel=\"noopener noreferrer\" "
+"target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano"
+" score AIO/GEO (probe Misurato).</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Errori comuni</h2>\n"
+"    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-"
+"referenziali, FAQ senza acceptedAnswer, Organization senza contatto o "
+"logo. Centropic li segnala nei findings.</p>\n"
+"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non "
+"basta: preferisci profili esterni reali (azienda madre, directory, social"
+" verificati).</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Checklist minima</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>name + url + email (o telephone) su Organization</li>\n"
+"      <li>sameAs verso profili esterni reali (non pagine interne del "
+"sito)</li>\n"
+"      <li>logo ImageObject con URL assoluto https e caption</li>\n"
+"      <li>FAQPage solo se le domande sono visibili in pagina</li>\n"
+"      <li>knowsAbout allineato a llms.txt e al copy della home</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">Vedi anche <a "
+"href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-"
+"txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs "
+"SoV</a>.</p>\n"
+"  </section>\n"
+msgstr ""
+"<section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">优先类型</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li><strong>组织</strong> + <strong>网站</strong> 通过 @id 连接</li>\n"
+"      <li><strong>FAQPage</strong> 用于与可见 HTML 对齐的 Q&amp;A</li>\n"
+"      <li><strong>软件应用</strong> 或产品，如果你销售软件（如 Centropic）</li>\n"
+"      <li><strong>文章</strong> / 如何为具有作者和日期的常青指南</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">规范参考：<a href=\"https://schema.org/\" rel=\"noopener"
+" noreferrer\" target=\"_blank\">schema.org</a>。在 Centropic 中，检测到的类型会影响 "
+"AIO/GEO 分数（测量探测）。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">常见错误</h2>\n"
+"    <p class=\"lede\">没有关键类型的孤立 JSON-LD，sameAs 仅自我引用，FAQ 没有 "
+"acceptedAnswer，组织没有联系方式或徽标。Centropic 在发现中标记这些错误。</p>\n"
+"    <p class=\"lede\">仅指向唯一所有者网站的 sameAs "
+"不够：更倾向于真实的外部资料（母公司、目录、经过验证的社交媒体）。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">最低检查清单</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>组织上的名称 + URL + 电子邮件（或电话）</li>\n"
+"      <li>指向真实外部资料的 sameAs（而不是网站内部页面）</li>\n"
+"      <li>带有绝对 https URL 和说明的 logo ImageObject</li>\n"
+"      <li>仅当问题在页面上可见时才使用 FAQPage</li>\n"
+"      <li>knowsAbout 与 llms.txt 和主页文案对齐</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">另见 <a href=\"/metodologia\">方法论</a>、<a "
+"href=\"/guide/llms-txt\">llms.txt</a> 和 <a href=\"/guide/score-vs-"
+"sov\">分数与 SoV</a>。</p>\n"
+"  </section>"
+
+#: services/guides.py:184
+msgid "Score AIO/GEO vs Share of Voice"
+msgstr "AIO/GEO 分数与声音份额"
+
+#: services/guides.py:186
+msgid ""
+"Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per "
+"answer engine (proxy o measured) in Centropic."
+msgstr "AIO/GEO 分数（探测诊断）与 Centropic 中答案引擎的声音份额（代理或测量）之间的区别。"
+
+#: services/guides.py:189
+msgid ""
+"Due metriche diverse: una valuta i segnali sul sito, l’altra stima la "
+"presenza relativa negli engine."
+msgstr "两种不同的度量：一种评估网站上的信号，另一种估计引擎中的相对存在。"
+
+#: services/guides.py:192
+msgid ""
+"\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Score AIO / GEO</h2>\n"
+"    <p class=\"lede\">Indici 0–100 da crawl e probe. Badge Stimato sul "
+"compositario; singoli check di presenza file possono essere Misurato.</p>"
+"\n"
+"    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> premia "
+"leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. "
+"<strong>GEO (Generative Engine Optimization)</strong> premia citabilità e"
+" policy crawler AI.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + robots"
+" osservato. <strong>Measured</strong>: polling prompt su LLM (Plus) con "
+"conteggio menzioni brand. Non confondere i due.</p>\n"
+"    <p class=\"lede\">Per alzare SoV measured: rafforza entity pubblica "
+"(llms.txt, Organization, about), pubblica contenuti citabili, amplia il "
+"prompt bank con domande che il tuo mercato pone davvero.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Come leggerli insieme</h2>\n"
+"    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
+"(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
+"measured resta una diagnosi, non una prova di citazione.</p>\n"
+"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
+"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
+"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"  </section>\n"
+msgstr ""
+"<section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">AIO / GEO 分数</h2>\n"
+"    <p class=\"lede\">来自爬取和探测的 0–100 指数。复合体上的估计徽章；单个文件存在检查可以是测量的。</p>\n"
+"    <p class=\"lede\"><strong>AIO (AI 驱动的可见性)</strong> 奖励 IA "
+"系统的可读性：实体、架构、常见问题、llms.txt、元数据。<strong>GEO (生成引擎优化)</strong> 奖励可引用性和 AI "
+"爬虫政策。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">声音份额 (SoV)</h2>\n"
+"    <p class=\"lede\"><strong>代理</strong>：基于 AIO/GEO + "
+"观察到的爬虫的公式。<strong>测量</strong>：在 LLM（Plus）上进行投票提示，计算品牌提及。不要混淆这两者。</p>\n"
+"    <p class=\"lede\">要提高 SoV "
+"测量：增强公共实体（llms.txt、组织、关于），发布可引用内容，扩展提示库，包含市场真正提出的问题。</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">如何一起阅读它们</h2>\n"
+"    <p class=\"lede\">首先提高信号（分数），然后测量声音（SoV）。高 SoV 伴随低分数是脆弱的；高分数而没有 SoV "
+"测量仍然是诊断，而不是引用的证明。</p>\n"
+"    <p class=\"lede\">Centropic 始终显示证据徽章：估计、混合或测量。详细信息请参见 <a "
+"href=\"/metodologia\">方法论</a> 和产品 <a "
+"href=\"/prodotto\">/prodotto</a>。</p>\n"
+"  </section>"
+
+#: services/site_guide.py:16
+msgid ""
+"AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a "
+"modelli e crawler IA. Non significa All-in-One."
+msgstr "AI 驱动的可见性：品牌和网站对 AI 模型和爬虫的可理解性/可见性。这并不意味着一体化。"
+
+#: services/site_guide.py:23
+msgid ""
+"Generative Engine Optimization: ottimizzazione per essere citati nelle "
+"risposte generate da answer engine. Non significa GIS."
+msgstr "生成引擎优化：优化以便在答案引擎生成的响应中被引用。这并不意味着 GIS。"
+
+#: services/site_guide.py:28
+msgid "SoV (Share of Voice)"
+msgstr "SoV（声音份额）"
+
+#: services/site_guide.py:30
+msgid ""
+"Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured"
+" = campionato via citation monitor (Plus)."
+msgstr "品牌相对于引擎的“声音”份额。代理 = 估计；测量 = 通过引用监控器（Plus）进行抽样。"
+
+#: services/site_guide.py:35 templates/dashboard.html:566
+#: templates/dashboard.html:762 templates/faq.html:35 templates/product.html:38
+#: templates/termini.html:34
+msgid "Misurato"
+msgstr "测量"
+
+#: services/site_guide.py:37
+msgid ""
+"Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
+"API LLM configurate."
+msgstr "直接观察到的信号（HTTP/HTML 探测）或通过配置的 LLM API 计算的提及。"
+
+#: services/site_guide.py:42 templates/faq.html:35 templates/product.html:28
+msgid "Stimato (proxy)"
+msgstr "估计（代理）"
+
+#: services/site_guide.py:44
+msgid ""
+"Valore euristico derivato dai segnali del sito, non una citazione live "
+"nella UI dell’LLM."
+msgstr "基于网站信号的启发式值，而不是 LLM UI 中的实时引用。"
+
+#: services/site_guide.py:49 services/site_guide.py:493
+msgid "Indice DDD→AAA"
+msgstr "DDD→AAA 指数"
+
+#: services/site_guide.py:51
+msgid ""
+"Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a "
+"eccellente (AAA)."
+msgstr "AIO/GEO 整体质量的综合评分，从差（DDD）到优（AAA）。"
+
+#: services/site_guide.py:58
+msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
+msgstr "单个差距或确认（关键/警告/正常），带有上下文和优先级。"
+
+#: services/site_guide.py:65
+msgid ""
+"Insieme di artifact generati dall’analisi (llms, schema, meta, robots, "
+"checklist)."
+msgstr "由分析生成的一组工件（llms、架构、元数据、爬虫、检查清单）。"
+
+#: services/site_guide.py:72
+msgid ""
+"File root machine-readable che spiega brand, topic e URL preferiti ai "
+"modelli/crawler IA."
+msgstr "一个机器可读的根文件，向 AI 模型和爬虫解释品牌、主题和首选 URL。"
+
+#: services/site_guide.py:79
+msgid ""
+"Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage,"
+" …)."
+msgstr "嵌入页面的结构化数据 Schema.org（组织、FAQ 页面等）。"
+
+#: services/site_guide.py:86
+msgid ""
+"Endpoint Centropic /e/<token>/… che servono artifact aggiornati "
+"dinamicamente."
+msgstr "Centropic /e/<token>/… 端点，用于动态更新工件。"
+
+#: services/site_guide.py:93
+msgid ""
+"Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo "
+"dominio verso Edge."
+msgstr "一个通用包（插件/重写），将您域的 AIO 路径指向 Edge。"
+
+#: services/site_guide.py:100
+msgid ""
+"Payload macchina con versioning e metadati Edge per discovery e "
+"integrazioni."
+msgstr "带有版本控制和 Edge 元数据的机器负载，用于发现和集成。"
+
+#: services/site_guide.py:107
+msgid "Job Plus che invia prompt bank agli LLM e misura menzioni del brand."
+msgstr "发送提示库到 LLM 并测量品牌提及的 Plus 任务。"
+
+#: services/site_guide.py:114
+msgid "Elenco prompt usati per SoV measured; personalizzabile in Impostazioni."
+msgstr "用于 SoV 测量的提示列表；可在设置中自定义。"
+
+#: services/site_guide.py:121
+msgid "Set di prompt/checklist per settore (es. SaaS, local, ecommerce)."
+msgstr "针对行业的提示/检查清单（例如：SaaS、本地、电子商务）。"
+
+#: services/site_guide.py:128
+msgid ""
+"Controllo che gli artifact pubblicati sul dominio siano raggiungibili e "
+"coerenti."
+msgstr "检查发布在域上的工件是否可访问且一致。"
+
+#: services/site_guide.py:135
+msgid "Rete di segnali entity (nome, sameAs, contatti) che disambiguano il brand."
+msgstr "实体信号网络（名称，sameAs，联系方式）消除品牌歧义。"
+
+#: services/site_guide.py:142
+msgid ""
+"Quanto il contenuto è facilmente citabile da un modello (chiarezza, "
+"fatti, struttura)."
+msgstr "内容被模型引用的容易程度（清晰度，事实，结构）。"
+
+#: services/site_guide.py:149
+msgid "Completezza e correttezza dei dati strutturati sul sito."
+msgstr "网站上结构化数据的完整性和准确性。"
+
+#: services/site_guide.py:154
+msgid "Crawler IA"
+msgstr "IA爬虫"
+
+#: services/site_guide.py:156
+msgid ""
+"Bot come GPTBot, ClaudeBot, PerplexityBot, Google-Extended che "
+"indicizzano per modelli."
+msgstr "像GPTBot、ClaudeBot、PerplexityBot、Google-Extended这样的机器人为模型进行索引。"
+
+#: services/site_guide.py:163
+msgid ""
+"Policy di accesso crawler; bozza Centropic apre i bot IA utili senza "
+"spezzare le regole esistenti."
+msgstr "爬虫访问政策；Centropic草案允许有用的IA机器人而不破坏现有规则。"
+
+#: services/site_guide.py:170
+msgid ""
+"Unità di credito prodotto (1 token = €0,10). Consumata da analisi e job "
+"measured."
+msgstr "产品信用单位（1个令牌 = €0.10）。由分析和测量的工作消耗。"
+
+#: services/site_guide.py:177
+msgid ""
+"Prenotazione temporanea di credito prima di un job; rilasciata o "
+"convertita a debito a fine run."
+msgstr "在工作之前临时预留信用；在运行结束时释放或转换为债务。"
+
+#: services/site_guide.py:183
+msgid "Nuova analisi dello stesso sito, manuale o schedulata (Plus)."
+msgstr "对同一网站的新分析，手动或定期（Plus）。"
+
+#: services/site_guide.py:189
+msgid "Report esportabile con brand agenzia (logo/colori) per clienti finali."
+msgstr "可导出的报告，带有代理品牌（徽标/颜色）供最终客户使用。"
+
+#: services/site_guide.py:195
+msgid "Chiave Bearer per /api/v1 (analyze, sites, edge). Solo Plus."
+msgstr "用于/api/v1（分析，网站，边缘）的Bearer密钥。仅限Plus。"
+
+#: services/site_guide.py:201
+msgid ""
+"Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) "
+"dello Share of Voice."
+msgstr "针对引擎（ChatGPT，Gemini*，Claude，Perplexity，Grok，Azure*）的声音份额视图。"
+
+#: services/site_guide.py:206 templates/dashboard.html:689
+msgid "Pagine critiche"
+msgstr "关键页面"
+
+#: services/site_guide.py:208
+msgid "URL del crawl con gap gravi che trascinano score o citabilità."
+msgstr "具有严重缺口的爬虫URL，影响评分或引用性。"
+
+#: services/site_guide.py:214
+msgid "Documento pack che confronta due run successive dopo fix."
+msgstr "比较修复后两个连续运行的文档包。"
+
+#: services/site_guide.py:243
+msgid "Guida completa Centropic"
+msgstr "Centropic完整指南"
+
+#: services/site_guide.py:245
+msgid ""
+"Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli "
+"diagnostici, pack, Edge Signals, CMS, token, API e glossario."
+msgstr "所有产品在一个页面上：AIO/GEO分析，诊断模块，包，Edge Signals，CMS，令牌，API和术语表。"
+
+#: services/site_guide.py:248 templates/pro_interest.html:9
+msgid "4 agosto 2026"
+msgstr "2026年8月4日"
+
+#: services/site_guide.py:250 templates/guide.html:34
+msgid "Introduzione"
+msgstr "介绍"
+
+#: services/site_guide.py:251 templates/guide.html:47
+msgid "Servizi"
+msgstr "服务"
+
+#: services/site_guide.py:252 templates/guide.html:68
+msgid "Analisi e moduli"
+msgstr "分析和模块"
+
+#: services/site_guide.py:253 templates/guide.html:87
+msgid "Dopo l’analisi"
+msgstr "分析后"
+
+#: services/site_guide.py:254 templates/guide.html:100
+msgid "Pack e file"
+msgstr "包和文件"
+
+#: services/site_guide.py:255
+msgid "Edge e CMS"
+msgstr "Edge和CMS"
+
+#: services/site_guide.py:256 templates/guide.html:133
+msgid "Piani e token"
+msgstr "计划和令牌"
+
+#: services/site_guide.py:257 templates/base.html:215 templates/faq.html:103
+#: templates/guide.html:156
+msgid "Glossario"
+msgstr "词汇表"
+
+#: services/site_guide.py:262 templates/base.html:123 templates/base.html:225
+#: templates/dashboard.html:2 templates/history.html:21
+#: templates/partials/app_sidebar.html:38 templates/site_history.html:13
+#: templates/topup.html:91 templates/verify.html:50
+msgid "Dashboard"
+msgstr "仪表板"
+
+#: services/site_guide.py:265
+msgid "Workspace unico: ultima analisi, score, findings, SoV e azioni."
+msgstr "唯一工作区：最新分析，评分，发现，SoV和行动。"
+
+#: services/site_guide.py:268
+msgid "Avvia o ripeti l’analisi sull’URL del sito"
+msgstr "启动或重复对网站URL的分析"
+
+#: services/site_guide.py:269
+msgid "Vedi Indice DDD→AAA, score AIO/GEO e Share of Voice"
+msgstr "查看DDD→AAA索引，AIO/GEO评分和声音份额"
+
+#: services/site_guide.py:270
+msgid "Accedi a pack, Edge Signals, storico e crediti"
+msgstr "访问包，Edge Signals，历史和信用"
+
+#: services/site_guide.py:275
+msgid "Analisi AIO / GEO"
+msgstr "AIO / GEO分析"
+
+#: services/site_guide.py:278
+msgid "Probe HTTP + parsing HTML sul dominio: misurato ciò che è osservabile."
+msgstr "HTTP探测 + 对域的HTML解析：测量可观察的内容。"
+
+#: services/site_guide.py:281
+msgid "AIO = AI-Driven Visibility (quanto i modelli “vedono” il brand)"
+msgstr "AIO = AI驱动的可见性（模型“看到”品牌的程度）"
+
+#: services/site_guide.py:283
+msgid "GEO = Generative Engine Optimization (citabilità nelle risposte generate)"
+msgstr "GEO = 生成引擎优化（生成回答中的引用性）"
+
+#: services/site_guide.py:285
+msgid "Indice lettera DDD→AAA sintetizza la qualità complessiva"
+msgstr "DDD→AAA字母索引总结了整体质量"
+
+#: services/site_guide.py:290
+msgid "Findings e pagine critiche"
+msgstr "发现和关键页面"
+
+#: services/site_guide.py:293
+msgid "Gap prioritizzati: critical, warn, ok — con azioni concrete."
+msgstr "优先缺口：关键，警告，正常 — 采取具体行动。"
+
+#: services/site_guide.py:296
+msgid "Chiudi prima i critical (es. bot IA bloccati in robots)"
+msgstr "首先关闭关键问题（例如，IA机器人被robots阻止）"
+
+#: services/site_guide.py:297
+msgid "Usa fix-this-week.md come checklist operativa"
+msgstr "使用fix-this-week.md作为操作检查表"
+
+#: services/site_guide.py:298
+msgid "Le pagine critiche evidenziano URL con gap gravi"
+msgstr "关键页面突出显示具有严重缺口的URL"
+
+#: services/site_guide.py:303 templates/dashboard.html:955
+msgid "Pack ottimizzazione"
+msgstr "优化包"
+
+#: services/site_guide.py:306
+msgid "Artifact pronti: llms.txt, JSON-LD, FAQ, meta, robots, before/after."
+msgstr "准备好的工件：llms.txt，JSON-LD，FAQ，meta，robots，前/后。"
+
+#: services/site_guide.py:309
+msgid "Copia dai pannelli o scarica lo ZIP"
+msgstr "从面板复制或下载ZIP"
+
+#: services/site_guide.py:310
+msgid "Su Plus puoi inviare il pack via email"
+msgstr "在Plus上，您可以通过电子邮件发送包"
+
+#: services/site_guide.py:312
+msgid "La pubblicazione sul sito resta a tuo carico (o via Edge/CMS)"
+msgstr "网站发布仍由您负责（或通过Edge/CMS）"
+
+#: services/site_guide.py:321
+msgid "Hosting dinamico degli artifact su centropic.ai/e/<token>/…"
+msgstr "在 centropic.ai/e/<token>/… 上动态托管 artifact"
+
+#: services/site_guide.py:324
+msgid "Free: llms.txt + signals.json"
+msgstr "免费：llms.txt + signals.json"
+
+#: services/site_guide.py:325
+msgid "Plus: robots live, organization.jsonld, Worker/Vercel/embed"
+msgstr "Plus：实时机器人，organization.jsonld，Worker/Vercel/embed"
+
+#: services/site_guide.py:327
+msgid "Si aggiorna a ogni re-scan e quando cambia la lista crawler IA"
+msgstr "在每次重新扫描时更新，并在 IA 爬虫列表更改时更新"
+
+#: services/site_guide.py:333
+msgid "CMS Connector universale"
+msgstr "通用 CMS 连接器"
+
+#: services/site_guide.py:336
+msgid "Un ZIP per WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel."
+msgstr "一个 ZIP 文件适用于 WordPress、Drupal、Shopify、PHP、Netlify、Cloudflare、Vercel。"
+
+#: services/site_guide.py:339
+msgid "Attiva Edge, poi scarica il connector dalla dashboard"
+msgstr "启用 Edge，然后从仪表板下载连接器"
+
+#: services/site_guide.py:340
+msgid "Un solo adapter sul tuo host: proxy verso Edge"
+msgstr "在你的主机上只有一个适配器：指向 Edge 的代理"
+
+#: services/site_guide.py:346 templates/dashboard.html:460
+#: templates/partials/app_sidebar.html:42
+#: templates/partials/geo_overview.html:110
+msgid "Share of Voice"
+msgstr "声音份额"
+
+#: services/site_guide.py:349
+msgid ""
+"Proxy (stimato) su tutti i piani; measured solo su Plus con citation "
+"monitor."
+msgstr "所有计划均有（估计）代理；仅在 Plus 上使用 citation monitor 进行测量。"
+
+#: services/site_guide.py:352
+msgid "Stimato: euristiche su segnali del sito"
+msgstr "估计：网站信号的启发式"
+
+#: services/site_guide.py:353
+msgid "Misurato: prompt bank → menzioni brand nelle risposte LLM"
+msgstr "测量：提示库 → LLM 回答中的品牌提及"
+
+#: services/site_guide.py:355
+msgid "Gemini e Azure AI restano proxy onesti (non Overview/Copilot nativi)"
+msgstr "Gemini 和 Azure AI 仍然是诚实的代理（不是原生的 Overview/Copilot）"
+
+#: services/site_guide.py:364
+msgid ""
+"Moduli: entity graph, citability, schema, publish verify, llms lint, "
+"locales."
+msgstr "模块：实体图，引用性，模式，发布验证，llms lint，本地化。"
+
+#: services/site_guide.py:367
+msgid "Entity: Organization, sameAs, contatti"
+msgstr "实体：组织，sameAs，联系人"
+
+#: services/site_guide.py:368
+msgid "Publish verify: controlla se gli artifact sono live"
+msgstr "发布验证：检查 artifact 是否在线"
+
+#: services/site_guide.py:369
+msgid "Locales: hreflang e coerenza mercati"
+msgstr "本地化：hreflang 和市场一致性"
+
+#: services/site_guide.py:374 templates/dashboard.html:813
+msgid "Competitor snapshot"
+msgstr "竞争对手快照"
+
+#: services/site_guide.py:377
+msgid "Confronto rapido AIO/GEO/rating sui competitor (Plus)."
+msgstr "对竞争对手进行快速 AIO/GEO/评级比较（Plus）。"
+
+#: services/site_guide.py:380
+msgid "Stesse metriche del tuo sito"
+msgstr "与你的网站相同的指标"
+
+#: services/site_guide.py:381
+msgid "Utile per priorità relative, non ranking assoluto"
+msgstr "对相对优先级有用，而不是绝对排名"
+
+#: services/site_guide.py:386
+msgid "Storico e re-scan"
+msgstr "历史记录和重新扫描"
+
+#: services/site_guide.py:389
+msgid "Cronologia run, trend e schedulazione automatica (Plus)."
+msgstr "运行历史，趋势和自动调度（Plus）。"
+
+#: services/site_guide.py:392
+msgid "before-after.md confronta due analisi"
+msgstr "before-after.md 比较两个分析"
+
+#: services/site_guide.py:393
+msgid "Imposta frequenza e orario UTC in Impostazioni"
+msgstr "在设置中设置频率和 UTC 时间"
+
+#: services/site_guide.py:394
+msgid "Storico esteso sul piano Plus"
+msgstr "在 Plus 计划上有扩展历史"
+
+#: services/site_guide.py:399
+msgid "Token GEO e crediti"
+msgstr "GEO 令牌和积分"
+
+#: services/site_guide.py:402
+msgid "Le analisi e il SoV measured consumano token; i pack ricaricano il saldo."
+msgstr "分析和 SoV 测量消耗令牌；包裹会重新加载余额。"
+
+#: services/site_guide.py:405
+msgid "1 GEO token = €0,10 (ledger in centesimi)"
+msgstr "1 GEO 令牌 = €0.10（以分为单位的账本）"
+
+#: services/site_guide.py:406
+msgid "Pack €10→100, €20→200, €50→600 (bonus)"
+msgstr "包 €10→100，€20→200，€50→600（奖金）"
+
+#: services/site_guide.py:407
+msgid "Plus €14,99/mese include 100 token per ciclo pagato"
+msgstr "Plus €14.99/月包括每个付费周期的 100 个令牌"
+
+#: services/site_guide.py:412
+msgid "API e white-label"
+msgstr "API 和白标"
+
+#: services/site_guide.py:415
+msgid "Automazione agenzia: API key, analyze, sites, edge; report white-label."
+msgstr "代理自动化：API 密钥，分析，网站，边缘；白标报告。"
+
+#: services/site_guide.py:418
+msgid "Bearer gp_… su /api/v1/*"
+msgstr "Bearer gp_… 在 /api/v1/* 上"
+
+#: services/site_guide.py:419
+msgid "Export report MD/HTML con brand agenzia"
+msgstr "导出带有代理品牌的 MD/HTML 报告"
+
+#: services/site_guide.py:420
+msgid "Riservato al piano Plus"
+msgstr "仅限 Plus 计划"
+
+#: services/site_guide.py:426
+msgid "Crawl e probe"
+msgstr "爬虫和探测"
+
+#: services/site_guide.py:428
+msgid ""
+"Centropic richiede title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, "
+"ai.txt, humans.txt e pagine del sito. Free: tetto pagine; Plus: crawl "
+"intero (con tetto operativo di piattaforma)."
+msgstr ""
+"Centropic需要title、meta、JSON-"
+"LD、FAQ、robots、llms.txt、sitemap、ai.txt、humans.txt和网站页面。免费：页面上限；Plus：完整爬取（带平台操作上限）。"
+
+#: services/site_guide.py:436
+msgid ""
+"Vista per ChatGPT, Gemini (proxy AI Overview), Claude, Perplexity, Grok e"
+" Azure AI. Di default è Stimato; con SoV measured gli engine disponibili "
+"passano a Misurato."
+msgstr ""
+"查看ChatGPT、Gemini（代理AI概述）、Claude、Perplexity、Grok和Azure "
+"AI。默认情况下是估计的；使用SoV测量时，可用引擎变为测量的。"
+
+#: services/site_guide.py:444
+msgid ""
+"Valuta coerenza Organization / brand, sameAs, contatti e segnali entity "
+"riutilizzabili da crawler e modelli."
+msgstr "评估组织/品牌的一致性、sameAs、联系信息和可由爬虫和模型重用的实体信号。"
+
+#: services/site_guide.py:451
+msgid ""
+"Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili,"
+" meno ambiguità sul “chi siete / cosa fate”."
+msgstr "文案的可引用性：清晰的声明、定义、可验证的事实，减少关于“你是谁/你做什么”的模糊性。"
+
+#: services/site_guide.py:458
+msgid ""
+"Qualità e completezza JSON-LD (Organization, WebSite, FAQPage, "
+"SoftwareApplication, Article dove rilevante)."
+msgstr ""
+"JSON-"
+"LD的质量和完整性（Organization、WebSite、FAQPage、SoftwareApplication、Article在相关时）。"
+
+#: services/site_guide.py:465
+msgid ""
+"Verifica se llms.txt, robots e schema pubblicati sul dominio "
+"corrispondono alle bozze del pack / Edge."
+msgstr "检查发布在域上的llms.txt、robots和schema是否与pack/Edge的草稿相符。"
+
+#: services/site_guide.py:472
+msgid ""
+"Controlla presenza e qualità di /llms.txt: brand, topic, URL assoluti, "
+"preferred citation."
+msgstr "检查/llms.txt的存在和质量：品牌、主题、绝对URL、首选引用。"
+
+#: services/site_guide.py:479
+msgid ""
+"Segnali hreflang / mercati: coerenza linguistica e copertura "
+"internazionale per answer engine multi-lingua."
+msgstr "hreflang信号/市场：多语言回答引擎的语言一致性和国际覆盖。"
+
+#: services/site_guide.py:484 templates/dashboard.html:639
+#: templates/dashboard.html:650 templates/site_history.html:31
+msgid "SoV measured"
+msgstr "测量的SoV"
+
+#: services/site_guide.py:486
+msgid ""
+"Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio"
+" nelle risposte — campione probe, non garanzia di ranking nelle UI "
+"consumer."
+msgstr "仅限Plus：带有提示库的引用监控。计算回答中的品牌/域名提及——样本探测，不保证在消费者UI中的排名。"
+
+#: services/site_guide.py:495
+msgid ""
+"Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un "
+"grado tra un re-scan e l’altro."
+msgstr "阅读信件：DDD是关键，AAA是顶级。目标是在一次重新扫描与另一扫描之间至少提升一个等级。"
+
+#: services/site_guide.py:499
+msgid "Score AIO / GEO"
+msgstr "AIO / GEO评分"
+
+#: services/site_guide.py:501
+msgid ""
+"Sotto 60 = intervento prioritario. AIO e GEO vanno letti insieme al SoV, "
+"non isolati."
+msgstr "低于60 = 优先干预。AIO和GEO应与SoV一起阅读，而不是孤立。"
+
+#: services/site_guide.py:507
+msgid "Chiudi critical e warn; usa fix-this-week.md. Poi ripubblica e verifica."
+msgstr "关闭critical和warn；使用fix-this-week.md。然后重新发布并验证。"
+
+#: services/site_guide.py:511
+msgid "Pubblica llms.txt"
+msgstr "发布llms.txt"
+
+#: services/site_guide.py:513
+msgid "Root del sito: https://tuodominio/llms.txt — oppure Edge + CMS connector."
+msgstr "网站根目录：https://tuodominio/llms.txt — 或者Edge + CMS连接器。"
+
+#: services/site_guide.py:519
+msgid ""
+"Incolla nel <head> delle pagine chiave (o lascia Edge servire "
+"organization.jsonld)."
+msgstr "粘贴到关键页面的<head>中（或让Edge提供organization.jsonld）。"
+
+#: services/site_guide.py:525
+msgid ""
+"Unisci la bozza al file esistente; lascia aperti i bot IA utili (GPTBot, "
+"ClaudeBot, …)."
+msgstr "将草稿合并到现有文件中；保持有用的AI机器人（GPTBot、ClaudeBot等）开放。"
+
+#: services/site_guide.py:531
+msgid "Su Plus imposta frequenza/orario UTC e confronta before/after.md."
+msgstr "在Plus上设置频率/UTC时间，并比较before/after.md。"
+
+#: services/site_guide.py:536 services/site_guide.py:543
+msgid "root del sito"
+msgstr "网站根目录"
+
+#: services/site_guide.py:539
+msgid "<head> o Edge /.well-known/"
+msgstr "<head>或Edge /.well-known/"
+
+#: services/site_guide.py:546
+msgid "checklist operativa interna"
+msgstr "内部操作检查清单"
+
+#: services/site_guide.py:548
+msgid "confronto tra run"
+msgstr "运行之间的比较"
+
+#: services/site_guide.py:551
+msgid "Edge /geopulse/signals.json via CMS"
+msgstr "通过CMS的Edge /geopulse/signals.json"
+
+#: services/site_guide.py:559
+msgid ""
+"1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso"
+" URL ok, consuma token)"
+msgstr "1个网站，爬取有限页面，2个新网站分析（重新分析相同URL可以，消耗token）"
+
+#: services/site_guide.py:561
+msgid "Score, findings, pack ZIP, Edge base (llms + signals)"
+msgstr "评分、发现、打包ZIP、Edge基础（llms + signals）"
+
+#: services/site_guide.py:562
+msgid "SoV stimato (proxy)"
+msgstr "估计的SoV（代理）"
+
+#: services/site_guide.py:569
+msgid "Crawl fino a 120 pagine (Deep 500), multi-sito, competitor, storico esteso"
+msgstr "爬取最多120页（深度500），多站点、竞争对手、扩展历史"
+
+#: services/site_guide.py:571
+msgid "SoV measured, prompt bank, re-scan, API, white-label"
+msgstr "测量的SoV、提示库、重新扫描、API、白标"
+
+#: services/site_guide.py:572
+msgid "Edge completo + CMS connector + 100 token/ciclo"
+msgstr "完整的Edge + CMS连接器 + 100 token/周期"
+
+#: services/site_guide.py:580
+msgid "Metodologia (Misurato vs Stimato)"
+msgstr "方法论（测量 vs 估计）"
+
+#: services/site_guide.py:582 templates/base.html:216
+msgid "Guida llms.txt"
+msgstr "llms.txt指南"
+
+#: services/site_guide.py:585
+msgid "Schema.org per answer engine"
+msgstr "Schema.org用于回答引擎"
+
+#: services/site_guide.py:589
+msgid "Score AIO/GEO vs SoV"
+msgstr "AIO/GEO评分与SoV"
+
+#: services/site_guide.py:592 templates/about.html:59 templates/base.html:140
+#: templates/base.html:208 templates/contact.html:24 templates/product.html:2
+#: templates/product.html:11
+msgid "Prodotto"
+msgstr "产品"
+
+#: services/site_guide.py:593
+msgid "Piani e prezzi"
+msgstr "计划和价格"
+
+#: services/site_guide.py:594 templates/base.html:210 templates/faq.html:102
+#: templates/product.html:69
+msgid "Guida completa"
+msgstr "完整指南"
+
+#: services/site_guide.py:595 templates/base.html:211
+#: templates/sample_report.html:2
+msgid "Esempio report"
+msgstr "示例报告"
+
+#: services/site_guide.py:596 templates/base.html:213
+msgid "Per agenzie"
+msgstr "面向营销机构"
+
+#: templates/about.html:2 templates/about.html:10 templates/base.html:220
 #: templates/contact.html:27 templates/contact.html:59
 msgid "Chi siamo"
 msgstr "我们是谁"
@@ -55,7 +1135,7 @@ msgstr ""
 "搜索的回答不遵循经典排名：它们优先考虑清晰的实体、语义结构和机器可读文件。我们帮助创始人、品牌和代理商通过评分来填补这一差距。"
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/dashboard.html:834 templates/faq.html:27
+#: templates/dashboard.html:846 templates/faq.html:27
 #: templates/partials/auth_help.html:7 templates/partials/auth_help.html:19
 #: templates/pro_interest.html:27 templates/product.html:14
 #: templates/termini.html:21
@@ -69,10 +1149,6 @@ msgstr "发现和包"
 #: templates/about.html:24
 msgid "Aggiornamento editoriale:"
 msgstr "编辑更新："
-
-#: templates/about.html:24 templates/contact.html:42
-msgid "27 luglio 2026"
-msgstr "2026年7月27日"
 
 #: templates/about.html:25
 msgid "Fonti di metodo:"
@@ -146,19 +1222,9 @@ msgid ""
 "pubblica su"
 msgstr "然后生成一份包含关键问题和待发布工件的报告。公开方法在"
 
-#: templates/about.html:57 templates/base.html:213 templates/guide.html:151
-#: templates/landing.html:121
-msgid "Metodologia"
-msgstr "方法论"
-
 #: templates/about.html:58
 msgid "Aggiorniamo il prodotto in pubblico su"
 msgstr "我们在公开平台上更新产品"
-
-#: templates/about.html:59 templates/base.html:139 templates/base.html:207
-#: templates/contact.html:24 templates/product.html:2 templates/product.html:11
-msgid "Prodotto"
-msgstr "产品"
 
 #: templates/about.html:60 templates/faq.html:2 templates/faq.html:11
 #: templates/guide.html:19
@@ -166,12 +1232,12 @@ msgid "FAQ"
 msgstr "常见问题"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:234 templates/contact.html:2 templates/contact.html:9
-#: templates/partials/auth_help.html:24
+#: templates/base.html:235 templates/contact.html:2 templates/contact.html:9
+#: templates/partials/auth_help.html:24 templates/status.html:69
 msgid "Contatti"
 msgstr "联系方式"
 
-#: templates/about.html:67 templates/faq.html:93
+#: templates/about.html:67 templates/faq.html:93 templates/status.html:60
 msgid "Scrivi a"
 msgstr "写信给"
 
@@ -194,10 +1260,10 @@ msgstr "Centropic 为代理商"
 #: templates/agencies.html:3
 msgid ""
 "White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che "
-"gestiscono più brand."
-msgstr "白标，多站点，API 和 SoV 测量，适用于管理多个品牌的 SEO/GEO 代理商。"
+"gestiscono più brand. Diagnosi AIO/GEO e pack pronti per i clienti."
+msgstr "白标、多站点、API和为管理多个品牌的SEO/GEO机构测量的SoV。AIO/GEO诊断和为客户准备的包。"
 
-#: templates/agencies.html:9 templates/base.html:143
+#: templates/agencies.html:9 templates/base.html:144
 msgid "Agenzie"
 msgstr "代理商"
 
@@ -208,234 +1274,233 @@ msgstr "为客户交付 AI 可被引用性"
 #: templates/agencies.html:12
 msgid ""
 "Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza "
-"ricostruire lo stack per ogni account."
-msgstr "AIO/GEO 诊断、准备好的包、Edge Signals 和白标报告——无需为每个账户重建堆栈。"
+"ricostruire lo stack per ogni account. Gli score restano diagnostici "
+"(Stimato); su Plus puoi aggiungere menzioni Misurate."
+msgstr ""
+"AIO/GEO诊断、准备好的包、Edge "
+"Signals和白标报告——无需为每个账户重建堆栈。评分保持诊断性（估计）；在Plus上可以添加测量的提及。"
 
 #: templates/agencies.html:17
 msgid "Cosa ottengono i vostri clienti"
 msgstr "您的客户能获得什么"
 
 #: templates/agencies.html:19
+msgid ""
+"Un report operativo con score AIO/GEO, findings prioritizzati e artifact "
+"da pubblicare in root o via CMS connector. Ideale per kickoff, audit "
+"trimestrali e handover al team contenuto/IT."
+msgstr "一份包含 AIO/GEO 评分、优先级发现和可在根目录或通过 CMS 连接器发布的工件的操作报告。非常适合启动、季度审计和交接给内容/IT 团队。"
+
+#: templates/agencies.html:22
 msgid "Score + findings prioritizzati in linguaggio operativo"
 msgstr "分数 + 优先级发现以操作语言呈现"
 
-#: templates/agencies.html:20
+#: templates/agencies.html:23
 msgid "llms.txt, JSON-LD, robots e CMS connector"
 msgstr "llms.txt, JSON-LD, 机器人和 CMS 连接器"
 
-#: templates/agencies.html:21
+#: templates/agencies.html:24
 msgid "SoV measured (Plus) per dimostrare menzioni, non solo proxy"
 msgstr "SoV 测量（Plus）用于证明提及，而不仅仅是代理"
 
-#: templates/agencies.html:22
+#: templates/agencies.html:25
 msgid "Export white-label MD/HTML con il vostro brand"
 msgstr "以您的品牌导出白标 MD/HTML"
 
-#: templates/agencies.html:27
+#: templates/agencies.html:30
 msgid "Perché le agenzie scelgono Plus"
 msgstr "为什么代理商选择 Plus"
 
-#: templates/agencies.html:29
+#: templates/agencies.html:32
+msgid ""
+"Plus aggiunge multi-sito, crawl fino a 120 pagine (Deep 500), re-scan, "
+"API e 100 token/mese. Non promettiamo ranking: misuriamo segnali e, ove "
+"configurato, menzioni Misurate."
+msgstr ""
+"Plus 增加了多站点、最多可爬取 120 页（深度 500）、重新扫描、API 和每月 100 "
+"个令牌。我们不承诺排名：我们测量信号，并在配置的情况下测量提及。"
+
+#: templates/agencies.html:35
 msgid "Multi-sito + re-scan schedulato"
 msgstr "多站点 + 定期重新扫描"
 
-#: templates/agencies.html:30
+#: templates/agencies.html:36
 msgid "API /api/v1 per automatizzare onboarding clienti"
 msgstr "API /api/v1 用于自动化客户入职"
 
-#: templates/agencies.html:31
+#: templates/agencies.html:37
 msgid "100 token/mese + pack ricaricabili"
 msgstr "每月 100 个令牌 + 可充值包"
 
-#: templates/agencies.html:36
+#: templates/agencies.html:42
+msgid "Come iniziare"
+msgstr "如何开始"
+
+#: templates/agencies.html:44
+msgid ""
+"Attiva Plus, importa il primo dominio cliente, pubblica il pack (o Edge "
+"Signals) e confronta lo storico run. Per un walkthrough di 15 minuti "
+"scrivi a info@centropic.ai."
+msgstr ""
+"激活 Plus，导入第一个客户域名，发布包（或 Edge Signals），并比较历史运行。要进行 15 分钟的演示，请发送邮件至 "
+"info@centropic.ai。"
+
+#: templates/agencies.html:49
 msgid "Attiva Plus"
 msgstr "激活 Plus"
 
-#: templates/agencies.html:37
+#: templates/agencies.html:50
 msgid "Parla con noi (15 min)"
 msgstr "与我们交谈（15 分钟）"
 
-#: templates/agencies.html:38 templates/landing.html:43
+#: templates/agencies.html:51 templates/landing.html:43
 msgid "Vedi esempio report"
 msgstr "查看示例报告"
 
-#: templates/base.html:9
+#: templates/base.html:10
 msgid ""
 "Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e "
 "Generative Engine Optimization (GEO): diagnosi, artifact e citabilità "
 "nelle risposte IA."
 msgstr "Centropic — AI驱动的可见性（AIO）和生成引擎优化（GEO）的信号智能：诊断、工件和在IA响应中的引用。"
 
-#: templates/base.html:101
+#: templates/base.html:102
 msgid "Apri menu"
 msgstr "打开菜单"
 
-#: templates/base.html:119
+#: templates/base.html:120
 msgid "Principale"
 msgstr "主页"
 
-#: templates/base.html:122 templates/base.html:224 templates/dashboard.html:2
-#: templates/history.html:21 templates/partials/app_sidebar.html:38
-#: templates/site_history.html:13 templates/topup.html:91
-#: templates/verify.html:50
-msgid "Dashboard"
-msgstr "仪表板"
-
-#: templates/base.html:123 templates/base.html:225 templates/dashboard.html:222
-#: templates/dashboard.html:778 templates/history.html:2
+#: templates/base.html:124 templates/base.html:226 templates/dashboard.html:234
+#: templates/dashboard.html:790 templates/history.html:2
 #: templates/partials/app_sidebar.html:54 templates/site_history.html:2
 msgid "Storico"
 msgstr "历史"
 
-#: templates/base.html:124 templates/base.html:140 templates/base.html:226
-#: templates/dashboard.html:29 templates/guide.html:10
-#: templates/partials/app_sidebar.html:58
-msgid "Guida"
-msgstr "指南"
-
-#: templates/base.html:125 templates/dashboard.html:594
+#: templates/base.html:126 templates/dashboard.html:606
 #: templates/partials/app_sidebar.html:62
 msgid "Impostazioni"
 msgstr "设置"
 
-#: templates/base.html:126 templates/base.html:227
+#: templates/base.html:127 templates/base.html:228
 #: templates/partials/app_sidebar.html:66 templates/topup.html:34
 msgid "Token"
 msgstr "令牌"
 
-#: templates/base.html:133 templates/partials/app_sidebar.html:105
+#: templates/base.html:134 templates/partials/app_sidebar.html:105
 msgid "Esci"
 msgstr "退出"
 
-#: templates/base.html:141 templates/sample_report.html:9
+#: templates/base.html:142 templates/sample_report.html:9
 msgid "Esempio"
 msgstr "示例"
 
-#: templates/base.html:142 templates/base.html:211 templates/login.html:60
+#: templates/base.html:143 templates/base.html:212 templates/login.html:60
 #: templates/pricing.html:2 templates/pricing.html:9
 #: templates/register.html:127 templates/rimborsi.html:89
 #: templates/rimborsi.html:99
 msgid "Prezzi"
 msgstr "价格"
 
-#: templates/base.html:145 templates/base.html:230 templates/guide.html:183
+#: templates/base.html:146 templates/base.html:231 templates/guide.html:183
 #: templates/login.html:2 templates/register.html:123
 msgid "Accedi"
 msgstr "登录"
 
-#: templates/base.html:146 templates/faq.html:101 templates/guide.html:18
+#: templates/base.html:147 templates/faq.html:101 templates/guide.html:18
 #: templates/guide.html:182 templates/pricing.html:28
 msgid "Inizia gratis"
 msgstr "免费开始"
 
-#: templates/base.html:154
+#: templates/base.html:155
 msgid "Seleziona lingua"
 msgstr "选择语言"
 
-#: templates/base.html:204
+#: templates/base.html:205
 msgid ""
 "Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle "
 "risposte IA. Prodotto di"
 msgstr "AIO和GEO的信号智能。信号的顺序，IA响应中的引用。产品来自"
 
-#: templates/base.html:208
+#: templates/base.html:209
 msgid "Come funziona"
 msgstr "如何运作"
 
-#: templates/base.html:209 templates/faq.html:102 templates/product.html:69
-msgid "Guida completa"
-msgstr "完整指南"
-
-#: templates/base.html:210 templates/sample_report.html:2
-msgid "Esempio report"
-msgstr "示例报告"
-
-#: templates/base.html:212
-msgid "Per agenzie"
-msgstr "面向营销机构"
-
-#: templates/base.html:214 templates/faq.html:103 templates/guide.html:156
-msgid "Glossario"
-msgstr "词汇表"
-
-#: templates/base.html:215
-msgid "Guida llms.txt"
-msgstr "llms.txt指南"
-
-#: templates/base.html:216
+#: templates/base.html:217
 msgid "Guida Schema AI"
 msgstr "AI Schema指南"
 
-#: templates/base.html:217 templates/landing.html:123
+#: templates/base.html:218 templates/landing.html:123
 #: templates/pro_interest.html:28 templates/product.html:49
 msgid "Score vs SoV"
 msgstr "评分与SoV"
 
-#: templates/base.html:222 templates/contact.html:25
+#: templates/base.html:223 templates/contact.html:25
 #: templates/forgot_password.html:14 templates/history.html:9
 #: templates/reset_password.html:13 templates/settings.html:9
 msgid "Account"
 msgstr "账户"
 
-#: templates/base.html:229 templates/register.html:2
+#: templates/base.html:230 templates/register.html:2
 msgid "Registrati"
 msgstr "注册"
 
-#: templates/base.html:235
+#: templates/base.html:236
 msgid "Pagina contatti"
 msgstr "联系页面"
 
-#: templates/base.html:238 templates/base.html:246 templates/contact.html:49
+#: templates/base.html:239 templates/base.html:247 templates/contact.html:49
 #: templates/partials/auth_help.html:26 templates/pricing.html:96
 #: templates/privacy.html:2 templates/rimborsi.html:98
 #: templates/termini.html:80
 msgid "Privacy"
 msgstr "隐私"
 
-#: templates/base.html:239 templates/privacy.html:81 templates/rimborsi.html:87
+#: templates/base.html:240 templates/privacy.html:81 templates/rimborsi.html:87
 #: templates/termini.html:2 templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "服务条款"
 
-#: templates/base.html:240 templates/base.html:250 templates/contact.html:51
+#: templates/base.html:241 templates/base.html:251 templates/contact.html:51
 #: templates/pricing.html:97 templates/privacy.html:82
 #: templates/termini.html:81
 msgid "Rimborsi"
 msgstr "退款"
 
-#: templates/base.html:248 templates/contact.html:50 templates/pricing.html:95
+#: templates/base.html:249 templates/contact.html:50 templates/pricing.html:95
 #: templates/register.html:105 templates/rimborsi.html:97
 msgid "Termini"
 msgstr "条款"
 
-#: templates/base.html:262
+#: templates/base.html:263
 msgid "Cookie e misurazione"
 msgstr "Cookie和测量"
 
-#: templates/base.html:264
+#: templates/base.html:265
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
 " e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
 "accettare o rifiutare. Dettagli nella"
 msgstr "我们使用技术Cookie，并在您的同意下使用Google工具（Analytics和/或Ads/AdSense）来测量流量并显示广告。您可以接受或拒绝。详细信息在"
 
-#: templates/base.html:268
+#: templates/base.html:269
 msgid "Accetta"
 msgstr "接受"
 
-#: templates/base.html:269
+#: templates/base.html:270
 msgid "Rifiuta"
 msgstr "拒绝"
 
-#: templates/base.html:310
+#: templates/base.html:311
 msgid "Copiato"
 msgstr "已复制"
 
-#: templates/base.html:313
+#: templates/base.html:314
 msgid "Errore"
 msgstr "错误"
 
-#: templates/base.html:323
+#: templates/base.html:324
 msgid "Analisi in corso…"
 msgstr "分析进行中…"
 
@@ -549,7 +1614,7 @@ msgid "Servono almeno"
 msgstr "至少需要"
 
 #: templates/confirm_analyze.html:127 templates/confirm_analyze.html:155
-#: templates/dashboard.html:458 templates/pricing.html:53
+#: templates/dashboard.html:470 templates/pricing.html:53
 #: templates/pricing.html:58 templates/pricing.html:64
 #: templates/settings.html:56
 msgid "Passa a Plus"
@@ -731,7 +1796,7 @@ msgstr "24小时报价"
 msgid "Vedi piano Plus"
 msgstr "查看 Plus 计划"
 
-#: templates/dashboard.html:65 templates/dashboard.html:791
+#: templates/dashboard.html:65 templates/dashboard.html:803
 msgid "Prenota Plus"
 msgstr "预订 Plus"
 
@@ -795,8 +1860,8 @@ msgstr "爬取 BFS · 整个网站"
 msgid "Crawl stesso dominio · max"
 msgstr "爬取同一域 · 最大"
 
-#: templates/dashboard.html:117 templates/dashboard.html:139
-#: templates/dashboard.html:207 templates/dashboard.html:719
+#: templates/dashboard.html:117 templates/dashboard.html:149
+#: templates/dashboard.html:219 templates/dashboard.html:731
 #: templates/pricing.html:23
 msgid "pagine"
 msgstr "页面"
@@ -805,512 +1870,493 @@ msgstr "页面"
 msgid "URL del dominio"
 msgstr "域名 URL"
 
-#: templates/dashboard.html:130
+#: templates/dashboard.html:133
 msgid "Competitor snapshot (Plus, max 3)"
 msgstr "竞争对手快照 (Plus，最多 3 个)"
 
-#: templates/dashboard.html:137
+#: templates/dashboard.html:135
+msgid "Suggerisci automatico"
+msgstr "自动建议"
+
+#: templates/dashboard.html:146
 msgid "Deep crawl"
 msgstr "深度爬虫"
 
-#: templates/dashboard.html:138
-msgid "fino a"
+#: templates/dashboard.html:148
+msgid "Fino a"
 msgstr "最多"
 
-#: templates/dashboard.html:138
+#: templates/dashboard.html:148
 msgid "pagine — più lento"
 msgstr "页面 — 更慢"
 
-#: templates/dashboard.html:139
+#: templates/dashboard.html:149
 msgid "Standard:"
 msgstr "标准："
 
-#: templates/dashboard.html:142
+#: templates/dashboard.html:154
 msgid ""
 "SoV measured (probe LLM) incluso nel piano Plus quando i connector sono "
 "attivi."
 msgstr "测量的 SoV（探测 LLM）包含在 Plus 计划中，当连接器处于活动状态时。"
 
-#: templates/dashboard.html:145
+#: templates/dashboard.html:157
 msgid "Free: score AIO/GEO e SoV"
 msgstr "免费：AIO/GEO 和 SoV 评分"
 
-#: templates/dashboard.html:145
+#: templates/dashboard.html:157
 msgid "stimato"
 msgstr "估计"
 
-#: templates/dashboard.html:146
+#: templates/dashboard.html:158
 msgid "sblocca SoV measured / citation monitor."
 msgstr "解锁测量的 SoV / 引用监控。"
 
-#: templates/dashboard.html:164 templates/partials/analyze_overlay.html:52
+#: templates/dashboard.html:176 templates/partials/analyze_overlay.html:52
 msgid "In coda"
 msgstr "排队中"
 
-#: templates/dashboard.html:164
+#: templates/dashboard.html:176
 msgid "In esecuzione"
 msgstr "正在进行"
 
-#: templates/dashboard.html:169
+#: templates/dashboard.html:181
 msgid "Worker in avvio — di solito parte entro pochi secondi."
 msgstr "工作者正在启动 — 通常在几秒钟内开始。"
 
-#: templates/dashboard.html:171
+#: templates/dashboard.html:183
 msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
 msgstr "爬取、探测和评分进行中（通常 30–90 秒）。"
 
-#: templates/dashboard.html:177
+#: templates/dashboard.html:189
 msgid "Analisi fallita"
 msgstr "分析失败"
 
-#: templates/dashboard.html:178
+#: templates/dashboard.html:190
 msgid "Errore sconosciuto"
 msgstr "未知错误"
 
-#: templates/dashboard.html:180
+#: templates/dashboard.html:192
 msgid "Controlla l’URL e riprova. Supporto:"
 msgstr "检查 URL 并重试。支持："
 
-#: templates/dashboard.html:199
+#: templates/dashboard.html:211
 msgid "Ultimo report"
 msgstr "最后报告"
 
-#: templates/dashboard.html:206 templates/site_history.html:12
+#: templates/dashboard.html:218 templates/site_history.html:12
 msgid "Apri sito"
 msgstr "打开网站"
 
-#: templates/dashboard.html:214
+#: templates/dashboard.html:226
 msgid "Scarica ZIP"
 msgstr "下载 ZIP"
 
-#: templates/dashboard.html:217
+#: templates/dashboard.html:229
 msgid "Email non configurata sul server"
 msgstr "电子邮件未在服务器上配置"
 
-#: templates/dashboard.html:218
+#: templates/dashboard.html:230
 msgid "Invia email"
 msgstr "发送电子邮件"
 
-#: templates/dashboard.html:233
+#: templates/dashboard.html:245
 msgid "Segnali AIO molto forti"
 msgstr "非常强的 AIO 信号"
 
-#: templates/dashboard.html:234
+#: templates/dashboard.html:246
 msgid ""
 "Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. "
 "Non è una garanzia di citazione live."
 msgstr "探测诊断：AI 驱动可见性信号的高完整性。这并不保证实时引用。"
 
-#: templates/dashboard.html:237
+#: templates/dashboard.html:249
 msgid "Segnali AIO solidi"
 msgstr "稳固的 AIO 信号"
 
-#: templates/dashboard.html:238
+#: templates/dashboard.html:250
 msgid ""
 "Buona base machine-readable. Chiudi i gap rimanenti per salire. Score "
 "euristico (Stimato), non polling LLM."
 msgstr "良好的机器可读基础。填补剩余的差距以提升。启发式评分（估计），不是对 LLM 的轮询。"
 
-#: templates/dashboard.html:241
+#: templates/dashboard.html:253
 msgid "Segnali AIO moderati"
 msgstr "适度的 AIO 信号"
 
-#: templates/dashboard.html:242
+#: templates/dashboard.html:254
 msgid ""
 "Alcuni asset presenti, diversi gap aperti. Prioritizza findings "
 "critical/warn."
 msgstr "存在一些资产，存在多个开放的差距。优先处理关键/警告发现。"
 
-#: templates/dashboard.html:245
+#: templates/dashboard.html:257
 msgid "Segnali AIO emergenti"
 msgstr "新兴的 AIO 信号"
 
-#: templates/dashboard.html:246
+#: templates/dashboard.html:258
 msgid ""
 "Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e "
 "file AI."
 msgstr "爬取信号较弱：需要在实体、架构和 AI 文件上进行结构性工作。"
 
-#: templates/dashboard.html:249
+#: templates/dashboard.html:261
 msgid "Segnali AIO critici"
 msgstr "关键 AIO 信号"
 
-#: templates/dashboard.html:250
+#: templates/dashboard.html:262
 msgid ""
 "Base insufficiente: intervento prioritario su title, schema, robots/llms "
 "e contenuti citabili."
 msgstr "基础不足：优先处理标题、架构、robots/llms 和可引用内容。"
 
-#: templates/dashboard.html:258
+#: templates/dashboard.html:270
 msgid "Metriche chiave"
 msgstr "关键指标"
 
-#: templates/dashboard.html:259
+#: templates/dashboard.html:271
 msgid "AI-Driven Visibility"
 msgstr "人工智能驱动的可见性"
 
-#: templates/dashboard.html:262
+#: templates/dashboard.html:274
 msgid "Generative Engine Opt."
 msgstr "生成引擎优化。"
 
-#: templates/dashboard.html:265 templates/verify.html:30
+#: templates/dashboard.html:277 templates/verify.html:30
 msgid "Findings"
 msgstr "发现"
 
-#: templates/dashboard.html:265
+#: templates/dashboard.html:277
 msgid "critical + warn"
 msgstr "关键 + 警告"
 
-#: templates/dashboard.html:270
+#: templates/dashboard.html:282
 msgid "Vista report"
 msgstr "报告视图"
 
-#: templates/dashboard.html:271
+#: templates/dashboard.html:283
 msgid "Score"
 msgstr "评分"
 
-#: templates/dashboard.html:272 templates/dashboard.html:1061
+#: templates/dashboard.html:284 templates/dashboard.html:1073
 msgid "SoV"
 msgstr "SoV"
 
-#: templates/dashboard.html:364 templates/dashboard.html:373
-#: templates/dashboard.html:383 templates/dashboard.html:750
+#: templates/dashboard.html:376 templates/dashboard.html:385
+#: templates/dashboard.html:395 templates/dashboard.html:762
 #: templates/product.html:38
 msgid "Stimato"
 msgstr "估计"
 
-#: templates/dashboard.html:373
+#: templates/dashboard.html:385
 msgid "Signal diagnostics"
 msgstr "信号诊断"
 
-#: templates/dashboard.html:374
+#: templates/dashboard.html:386
 msgid "Quanto sono solidi i segnali AIO/GEO"
 msgstr "AIO/GEO 信号有多稳固"
 
-#: templates/dashboard.html:377
+#: templates/dashboard.html:389
 msgid ""
 "AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score "
 "da probe/euristiche, non citazioni live garantite."
 msgstr "AIO = AI 驱动的可见性 · GEO = 生成引擎优化。评分来自探测/启发式，不保证实时引用。"
 
-#: templates/dashboard.html:400 templates/dashboard.html:1038
-#: templates/guide.html:25 templates/sample_report.html:17
+#: templates/dashboard.html:412 templates/dashboard.html:1050
+#: templates/guide.html:25 templates/sample_report.html:18
 msgid "Indice"
 msgstr "索引"
 
-#: templates/dashboard.html:412
+#: templates/dashboard.html:424
 msgid "Interferenze"
 msgstr "干扰"
 
-#: templates/dashboard.html:417
+#: templates/dashboard.html:429
 msgid "Nessuna criticità aperta"
 msgstr "没有开放的关键问题"
 
-#: templates/dashboard.html:431
+#: templates/dashboard.html:443
 msgid "Scala da DDD a AAA"
 msgstr "从 DDD 到 AAA 的等级"
 
-#: templates/dashboard.html:445
+#: templates/dashboard.html:457
 msgid "AI Engine Breakdown"
 msgstr "AI 引擎分析"
 
-#: templates/dashboard.html:448 templates/partials/app_sidebar.html:42
-#: templates/partials/geo_overview.html:110
-msgid "Share of Voice"
-msgstr "声音份额"
-
-#: templates/dashboard.html:450
+#: templates/dashboard.html:462
 msgid "Share of Voice stimato"
 msgstr "估计的声音份额"
 
-#: templates/dashboard.html:455
+#: templates/dashboard.html:467
 msgid "Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine."
 msgstr "LLM 探测（测量）和启发式估计（估计）混合用于引擎。"
 
-#: templates/dashboard.html:457
+#: templates/dashboard.html:469
 msgid "Piano Free: SoV stimato da score e robots."
 msgstr "免费计划：根据评分和 robots 估计的 SoV。"
 
-#: templates/dashboard.html:458
+#: templates/dashboard.html:470
 msgid "per SoV measured (citation monitor)."
 msgstr "用于测量 SoV（引用监控）。"
 
-#: templates/dashboard.html:460
+#: templates/dashboard.html:472
 msgid "Stima euristica da score e robots — non è polling live sui modelli."
 msgstr "根据评分和 robots 的启发式估计 — 不是对模型的实时轮询。"
 
-#: templates/dashboard.html:466
+#: templates/dashboard.html:478
 msgid "Brand SoV"
 msgstr "品牌 SoV"
 
-#: templates/dashboard.html:487 templates/dashboard.html:526
+#: templates/dashboard.html:499 templates/dashboard.html:538
 msgid "Campo competitivo"
 msgstr "竞争领域"
 
-#: templates/dashboard.html:488 templates/dashboard.html:533
+#: templates/dashboard.html:500 templates/dashboard.html:545
 #: templates/settings.html:156
 msgid "Brand"
 msgstr "品牌"
 
-#: templates/dashboard.html:489 templates/dashboard.html:534
+#: templates/dashboard.html:501 templates/dashboard.html:546
 msgid "Rivali"
 msgstr "竞争对手"
 
-#: templates/dashboard.html:490 templates/dashboard.html:535
+#: templates/dashboard.html:502 templates/dashboard.html:547
 msgid "Altro"
 msgstr "其他"
 
-#: templates/dashboard.html:497
+#: templates/dashboard.html:509
 msgid "Composizione per engine"
 msgstr "引擎组成"
 
-#: templates/dashboard.html:501
+#: templates/dashboard.html:513
 msgid "Composizione SoV per engine"
 msgstr "引擎的SoV组成"
 
-#: templates/dashboard.html:525
+#: templates/dashboard.html:537
 msgid "Distribuzione competitiva"
 msgstr "竞争分布"
 
-#: templates/dashboard.html:541
+#: templates/dashboard.html:553
 msgid "Propensity per engine"
 msgstr "引擎倾向"
 
-#: templates/dashboard.html:549
+#: templates/dashboard.html:561
 msgid "bot blocked"
 msgstr "机器人被阻止"
 
-#: templates/dashboard.html:551
+#: templates/dashboard.html:563
 msgid "bot allow"
 msgstr "允许机器人"
 
-#: templates/dashboard.html:554 templates/dashboard.html:750
-#: templates/faq.html:35 templates/product.html:38 templates/termini.html:34
-msgid "Misurato"
-msgstr "测量"
-
-#: templates/dashboard.html:554
+#: templates/dashboard.html:566
 msgid "campioni"
 msgstr "样本"
 
-#: templates/dashboard.html:556
+#: templates/dashboard.html:568
 msgid "Non disponibile"
 msgstr "不可用"
 
-#: templates/dashboard.html:558
+#: templates/dashboard.html:570
 msgid "In arrivo"
 msgstr "即将到来"
 
-#: templates/dashboard.html:568
+#: templates/dashboard.html:580
 msgid "Share"
 msgstr "分享"
 
-#: templates/dashboard.html:582
+#: templates/dashboard.html:594
 msgid "Nessun breakdown disponibile."
 msgstr "没有可用的细分。"
 
-#: templates/dashboard.html:587
+#: templates/dashboard.html:599
 msgid "GEO suite"
 msgstr "GEO套件"
 
-#: templates/dashboard.html:590
+#: templates/dashboard.html:602
 msgid "Suite"
 msgstr "套件"
 
-#: templates/dashboard.html:591
+#: templates/dashboard.html:603
 msgid "GEO / AIO avanzato"
 msgstr "高级GEO / AIO"
 
-#: templates/dashboard.html:596 templates/dashboard.html:614
-#: templates/dashboard.html:1088 templates/verify.html:2
+#: templates/dashboard.html:608 templates/dashboard.html:626
+#: templates/dashboard.html:1100 templates/verify.html:2
 #: templates/verify.html:8
 msgid "Publish verify"
 msgstr "发布验证"
 
-#: templates/dashboard.html:602
+#: templates/dashboard.html:614
 msgid "Entity graph"
 msgstr "实体图"
 
-#: templates/dashboard.html:603
+#: templates/dashboard.html:615
 msgid "nodi"
 msgstr "节点"
 
-#: templates/dashboard.html:606
+#: templates/dashboard.html:618
 msgid "Citability"
 msgstr "引用性"
 
-#: templates/dashboard.html:610
+#: templates/dashboard.html:622
 msgid "Schema quality"
 msgstr "架构质量"
 
-#: templates/dashboard.html:618
+#: templates/dashboard.html:630
 msgid "llms lint"
 msgstr "llms lint"
 
-#: templates/dashboard.html:622
+#: templates/dashboard.html:634
 msgid "Locales"
 msgstr "地区"
 
-#: templates/dashboard.html:627 templates/dashboard.html:638
-#: templates/site_history.html:31
-msgid "SoV measured"
-msgstr "测量的SoV"
-
-#: templates/dashboard.html:639
+#: templates/dashboard.html:651
 msgid "sblocca"
 msgstr "解锁"
 
-#: templates/dashboard.html:647
+#: templates/dashboard.html:659
 msgid "Confronto con run precedente"
 msgstr "与之前的运行比较"
 
-#: templates/dashboard.html:649
+#: templates/dashboard.html:661
 msgid "Vs run precedente"
 msgstr "与之前的运行对比"
 
-#: templates/dashboard.html:676 templates/dashboard.html:726
+#: templates/dashboard.html:688 templates/dashboard.html:738
 msgid "Priorità"
 msgstr "优先级"
 
-#: templates/dashboard.html:677
-msgid "Pagine critiche"
-msgstr "关键页面"
-
-#: templates/dashboard.html:682 templates/dashboard.html:685
+#: templates/dashboard.html:694 templates/dashboard.html:697
 msgid "critiche"
 msgstr "关键"
 
-#: templates/dashboard.html:682
+#: templates/dashboard.html:694
 msgid "critica"
 msgstr "关键"
 
-#: templates/dashboard.html:683 templates/dashboard.html:687
+#: templates/dashboard.html:695 templates/dashboard.html:699
 msgid "attenzione"
 msgstr "注意"
 
-#: templates/dashboard.html:714
+#: templates/dashboard.html:726
 msgid "Prime 24 criticità · elenco completo nello ZIP"
 msgstr "前24个关键问题 · ZIP中的完整列表"
 
-#: templates/dashboard.html:717
+#: templates/dashboard.html:729
 msgid "Nessuna pagina critica su"
 msgstr "没有关键页面在"
 
-#: templates/dashboard.html:717
+#: templates/dashboard.html:729
 msgid "analizzate."
 msgstr "分析。"
 
-#: templates/dashboard.html:719
+#: templates/dashboard.html:731
 msgid "Analizzate"
 msgstr "分析过的"
 
-#: templates/dashboard.html:727 templates/dashboard.html:1079
+#: templates/dashboard.html:739 templates/dashboard.html:1091
 msgid "Findings critici"
 msgstr "关键发现"
 
-#: templates/dashboard.html:758
+#: templates/dashboard.html:770
 msgid "Nessuna criticità."
 msgstr "没有关键问题。"
 
-#: templates/dashboard.html:758
+#: templates/dashboard.html:770
 msgid "check ok nascosti."
 msgstr "检查隐藏的ok。"
 
-#: templates/dashboard.html:763
+#: templates/dashboard.html:775
 msgid "Solo critical/warn ·"
 msgstr "仅关键/警告 ·"
 
-#: templates/dashboard.html:763
+#: templates/dashboard.html:775
 msgid "totali"
 msgstr "总计"
 
-#: templates/dashboard.html:773 templates/site_history.html:21
+#: templates/dashboard.html:785 templates/site_history.html:21
 msgid "Monitoraggio"
 msgstr "监控"
 
-#: templates/dashboard.html:787
+#: templates/dashboard.html:799
 msgid "Piano Free: 1 sito, ri-analisi del dominio consentita (consuma token)."
 msgstr "免费计划：1个网站，允许重新分析域名（消耗令牌）。"
 
-#: templates/dashboard.html:789
+#: templates/dashboard.html:801
 msgid "sblocca crawl fino a"
 msgstr "解锁爬虫最多"
 
-#: templates/dashboard.html:789
+#: templates/dashboard.html:801
 msgid "pagine, re-scan, export e storico run."
 msgstr "页面，重新扫描，导出和历史运行。"
 
-#: templates/dashboard.html:791
+#: templates/dashboard.html:803
 msgid "per crawl fino a"
 msgstr "每个爬虫最多"
 
-#: templates/dashboard.html:791
+#: templates/dashboard.html:803
 msgid "pagine, re-scan, export e storico."
 msgstr "页面，重新扫描，导出和历史。"
 
-#: templates/dashboard.html:800
+#: templates/dashboard.html:812
 msgid "Confronto"
 msgstr "比较"
 
-#: templates/dashboard.html:801
-msgid "Competitor snapshot"
-msgstr "竞争对手快照"
-
-#: templates/dashboard.html:823
+#: templates/dashboard.html:835
 msgid "Infrastruttura"
 msgstr "基础设施"
 
-#: templates/dashboard.html:824 templates/dashboard.html:1074
+#: templates/dashboard.html:836 templates/dashboard.html:1086
 #: templates/partials/app_sidebar.html:46
 msgid "Edge Signals"
 msgstr "Edge Signals"
 
-#: templates/dashboard.html:827
+#: templates/dashboard.html:839
 msgid "Attivo"
 msgstr "活跃"
 
-#: templates/dashboard.html:829
+#: templates/dashboard.html:841
 msgid "ZIP only"
 msgstr "仅限 ZIP"
 
-#: templates/dashboard.html:833
+#: templates/dashboard.html:845
 msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr "与其重新分发静态包，不如托管"
 
-#: templates/dashboard.html:834
+#: templates/dashboard.html:846
 msgid ""
 "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
 " tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify,"
 " PHP, Netlify, Cloudflare, Vercel)."
 msgstr "在Centropic端点上更新，当AI爬虫发生变化时。通过通用CMS连接器（WordPress，Drupal，Shopify，PHP，Netlify，Cloudflare，Vercel）连接你的域名。"
 
-#: templates/dashboard.html:839
+#: templates/dashboard.html:851
 msgid "Attiva hosting dinamico"
 msgstr "启用动态托管"
 
-#: templates/dashboard.html:842
+#: templates/dashboard.html:854
 msgid "Free:"
 msgstr "免费："
 
-#: templates/dashboard.html:843
+#: templates/dashboard.html:855
 msgid "Plus: robots live, JSON-LD e snippet Worker/Vercel."
 msgstr "Plus：实时机器人，JSON-LD 和 Worker/Vercel 代码片段。"
 
-#: templates/dashboard.html:850 templates/dashboard.html:855
-#: templates/dashboard.html:861 templates/dashboard.html:866
-#: templates/dashboard.html:911 templates/dashboard.html:918
-#: templates/dashboard.html:925 templates/dashboard.html:957
-#: templates/dashboard.html:966 templates/dashboard.html:974
-#: templates/dashboard.html:981 templates/dashboard.html:989
-#: templates/dashboard.html:997 templates/dashboard.html:1004
+#: templates/dashboard.html:862 templates/dashboard.html:867
+#: templates/dashboard.html:873 templates/dashboard.html:878
+#: templates/dashboard.html:923 templates/dashboard.html:930
+#: templates/dashboard.html:937 templates/dashboard.html:969
+#: templates/dashboard.html:978 templates/dashboard.html:986
+#: templates/dashboard.html:993 templates/dashboard.html:1001
+#: templates/dashboard.html:1009 templates/dashboard.html:1016
 msgid "Copia"
 msgstr "复制"
 
-#: templates/dashboard.html:871
+#: templates/dashboard.html:883
 msgid "Piano Plus — lista crawler IA live sul tuo dominio"
 msgstr "Plus 计划 — 你域名上的实时 IA 爬虫列表"
 
-#: templates/dashboard.html:877
+#: templates/dashboard.html:889
 msgid ""
 "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid "
 "Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti "
@@ -1319,140 +2365,136 @@ msgstr ""
 "通用CMS：一个包含WordPress插件、Drupal模块、Liquid "
 "Shopify、PHP代理、Netlify/Vercel重写和Cloudflare Worker的ZIP — 所有指向相同的基础Edge。"
 
-#: templates/dashboard.html:880
+#: templates/dashboard.html:892
 msgid "Scarica connector CMS (.zip)"
 msgstr "下载CMS连接器（.zip）"
 
-#: templates/dashboard.html:891
+#: templates/dashboard.html:903
 msgid "Rigenera token"
 msgstr "重新生成令牌"
 
-#: templates/dashboard.html:895
+#: templates/dashboard.html:907
 msgid "Disattiva"
 msgstr "禁用"
 
-#: templates/dashboard.html:899
+#: templates/dashboard.html:911
 msgid "Crawler IA recenti su Edge:"
 msgstr "Edge上的最新AI爬虫："
 
-#: templates/dashboard.html:902
+#: templates/dashboard.html:914
 msgid "hit"
 msgstr "命中"
 
-#: templates/dashboard.html:932
+#: templates/dashboard.html:944
 msgid ""
 "Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati "
 "automaticamente alla lista crawler Centropic."
 msgstr "升级到 Plus，以便在你的域名上使用 Worker 代理，并自动将机器人更新到 Centropic 爬虫列表。"
 
-#: templates/dashboard.html:933
+#: templates/dashboard.html:945
 msgid "Vedi piani"
 msgstr "查看计划"
 
-#: templates/dashboard.html:942 templates/landing.html:128
+#: templates/dashboard.html:954 templates/landing.html:128
 msgid "Deliverable"
 msgstr "可交付成果"
 
-#: templates/dashboard.html:943
-msgid "Pack ottimizzazione"
-msgstr "优化包"
-
-#: templates/dashboard.html:948
+#: templates/dashboard.html:960
 msgid "Invia a"
 msgstr "发送至"
 
-#: templates/dashboard.html:1013
+#: templates/dashboard.html:1025
 msgid "Activation loop"
 msgstr "激活循环"
 
-#: templates/dashboard.html:1014
+#: templates/dashboard.html:1026
 msgid "Prima diagnosi in un passo"
 msgstr "第一次诊断一步到位"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1029
 msgid "Stiamo già elaborando"
 msgstr "我们正在处理"
 
-#: templates/dashboard.html:1018
+#: templates/dashboard.html:1030
 msgid "Resta su questa pagina: al termine vedrai score, findings e pack."
 msgstr "请留在此页面：完成后你将看到评分、发现和包。"
 
-#: templates/dashboard.html:1022
+#: templates/dashboard.html:1034
 msgid "Incolla l’URL pubblico del brand nella barra sopra (https://…)"
 msgstr "在上面的栏中粘贴品牌的公共 URL (https://…)"
 
-#: templates/dashboard.html:1023
+#: templates/dashboard.html:1035
 msgid "Avvia: crawl, score AIO/GEO, findings prioritizzati"
 msgstr "启动：爬取，评分 AIO/GEO，优先发现"
 
-#: templates/dashboard.html:1024
+#: templates/dashboard.html:1036
 msgid "Attiva Edge Signals o scarica il pack da pubblicare"
 msgstr "启用 Edge Signals 或下载要发布的包"
 
-#: templates/dashboard.html:1027 templates/landing.html:60
+#: templates/dashboard.html:1039 templates/landing.html:60
 msgid "Piano Free:"
 msgstr "免费计划："
 
-#: templates/dashboard.html:1027 templates/landing.html:60
+#: templates/dashboard.html:1039 templates/landing.html:60
 #: templates/pricing.html:22
 msgid "sito"
 msgstr "网站"
 
-#: templates/dashboard.html:1027
+#: templates/dashboard.html:1039
 msgid "analisi iniziali, poi puoi ri-misurare lo stesso dominio."
 msgstr "初步分析，然后你可以重新测量同一域名。"
 
-#: templates/dashboard.html:1028
+#: templates/dashboard.html:1040
 msgid ""
 "Nessuna carta. In registrazione, se indichi il sito, la prima analisi "
 "parte da sola."
 msgstr "没有卡。在注册时，如果你指定网站，第一次分析会自动开始。"
 
-#: templates/dashboard.html:1036
+#: templates/dashboard.html:1048
 msgid "Contesto report"
 msgstr "报告上下文"
 
-#: templates/dashboard.html:1043
+#: templates/dashboard.html:1055
 msgid "Signal"
 msgstr "信号"
 
-#: templates/dashboard.html:1054
+#: templates/dashboard.html:1066
 msgid "Gap"
 msgstr "差距"
 
-#: templates/dashboard.html:1064
+#: templates/dashboard.html:1076
 msgid "Brand share"
 msgstr "品牌份额"
 
-#: templates/dashboard.html:1071 templates/dashboard.html:1086
+#: templates/dashboard.html:1083 templates/dashboard.html:1098
 msgid "Azioni"
 msgstr "行动"
 
-#: templates/dashboard.html:1072
+#: templates/dashboard.html:1084
 msgid "Scarica pack"
 msgstr "下载包"
 
-#: templates/dashboard.html:1075
+#: templates/dashboard.html:1087
 msgid "Connector CMS"
 msgstr "CMS连接器"
 
-#: templates/dashboard.html:1077
+#: templates/dashboard.html:1089
 msgid "Attiva Edge"
 msgstr "启用 Edge"
 
-#: templates/dashboard.html:1081 templates/history.html:11
+#: templates/dashboard.html:1093 templates/history.html:11
 msgid "Storico run"
 msgstr "运行历史"
 
-#: templates/dashboard.html:1089
+#: templates/dashboard.html:1101
 msgid "White-label MD"
 msgstr "白标 MD"
 
-#: templates/dashboard.html:1090
+#: templates/dashboard.html:1102
 msgid "White-label HTML"
 msgstr "白标 HTML"
 
-#: templates/dashboard.html:1091
+#: templates/dashboard.html:1103
 msgid "GEO suite settings"
 msgstr "GEO 套件设置"
 
@@ -1519,10 +2561,6 @@ msgstr "基于探测和启发式的诊断"
 #: templates/faq.html:35
 msgid "(contenuto, schema, robots, llms.txt). Il badge"
 msgstr "(内容、架构、机器人、llms.txt)。徽章"
-
-#: templates/faq.html:35 templates/product.html:28
-msgid "Stimato (proxy)"
-msgstr "估计（代理）"
 
 #: templates/faq.html:35
 msgid "indica una stima;"
@@ -1698,10 +2736,6 @@ msgstr "返回仪表板"
 msgid "Indice guida"
 msgstr "指南索引"
 
-#: templates/guide.html:34
-msgid "Introduzione"
-msgstr "介绍"
-
 #: templates/guide.html:36
 msgid ""
 "Centropic misura e migliora la visibilità del tuo sito nei modelli "
@@ -1726,17 +2760,9 @@ msgstr "Centropic 仪表板概览"
 msgid "Workspace: score, findings, token e azioni in un’unica dashboard."
 msgstr "工作区：在一个仪表板中查看分数、发现、令牌和操作。"
 
-#: templates/guide.html:47
-msgid "Servizi"
-msgstr "服务"
-
 #: templates/guide.html:48
 msgid "Ogni blocco del prodotto, con illustrazione e cosa fa."
 msgstr "每个产品模块，带有说明和功能。"
-
-#: templates/guide.html:68
-msgid "Analisi e moduli"
-msgstr "分析和模块"
 
 #: templates/guide.html:70
 msgid ""
@@ -1752,17 +2778,9 @@ msgstr "GEO 套件模块"
 msgid "Entity, citability, schema, publish verify, llms lint, locales."
 msgstr "实体、引用度、架构、发布验证、llms lint、本地化。"
 
-#: templates/guide.html:87
-msgid "Dopo l’analisi"
-msgstr "分析后"
-
 #: templates/guide.html:88
 msgid "Ordine consigliato per chiudere i gap e pubblicare."
 msgstr "建议的顺序以填补差距并发布。"
-
-#: templates/guide.html:100
-msgid "Pack e file"
-msgstr "包和文件"
 
 #: templates/guide.html:102 templates/partials/analyze_overlay.html:56
 msgid "Pack artifact"
@@ -1798,10 +2816,6 @@ msgstr "深入了解"
 msgid "FAQ Edge Signals"
 msgstr "Edge Signals 常见问题"
 
-#: templates/guide.html:133
-msgid "Piani e token"
-msgstr "计划和令牌"
-
 #: templates/guide.html:135
 msgid "Token GEO"
 msgstr "GEO 令牌"
@@ -1818,7 +2832,7 @@ msgstr "在仪表板、报告和 Edge 中使用的条目。"
 msgid "Approfondimenti"
 msgstr "深入分析"
 
-#: templates/guide.html:179
+#: templates/guide.html:179 templates/status.html:67
 msgid "Apri dashboard"
 msgstr "打开仪表板"
 
@@ -1899,7 +2913,7 @@ msgid ""
 "(llms.txt, schema, robots) per ChatGPT, Claude e Perplexity."
 msgstr "在几分钟内：AIO/GEO评分、优先级差距和待发布的包（llms.txt、schema、robots）用于ChatGPT、Claude和Perplexity。"
 
-#: templates/landing.html:42 templates/sample_report.html:50
+#: templates/landing.html:42 templates/sample_report.html:56
 msgid "Analizza il tuo sito"
 msgstr "分析你的网站"
 
@@ -2013,14 +3027,15 @@ msgid "Governance"
 msgstr "治理"
 
 #: templates/landing.html:118
-msgid "Stimato e Misurato, sempre distinti."
-msgstr "估计和测量，总是分开的。"
+msgid "Stimato e Misurato restano distinti."
+msgstr "估计和测量保持分开。"
 
 #: templates/landing.html:120
 msgid ""
 "Ogni finding deriva da un segnale osservato oppure è etichettato Stimato."
-" Su Plus, i probe LLM possono aggiungere menzioni Misurate."
-msgstr "每个发现来自观察到的信号或标记为估计。在Plus上，LLM探测可以添加测量提及。"
+" Su Plus, i probe LLM possono aggiungere menzioni Misurate — non è una "
+"garanzia di ranking o citazione."
+msgstr "每个发现来自观察到的信号或标记为估计。在 Plus 上，LLM 探针可以添加测量提及——这并不保证排名或引用。"
 
 #: templates/landing.html:129
 msgid "Artifact pronti per la pubblicazione."
@@ -2435,10 +3450,6 @@ msgstr "预订 Centropic Plus 的兴趣：爬取最多 120 页，SoV 测量，�
 msgid "Piano Plus · aggiornato"
 msgstr "Plus计划 · 更新"
 
-#: templates/pro_interest.html:9
-msgid "4 agosto 2026"
-msgstr "2026年8月4日"
-
 #: templates/pro_interest.html:10
 msgid "Prenota l’interesse Plus"
 msgstr "预订Plus兴趣"
@@ -2480,7 +3491,7 @@ msgid ""
 msgstr "分数保持诊断性（探测/启发式），带有估计/测量徽章 — 见"
 
 #: templates/partials/auth_help.html:15 templates/pro_interest.html:27
-#: templates/product.html:30
+#: templates/product.html:30 templates/status.html:38
 msgid "metodologia"
 msgstr "方法论"
 
@@ -2918,8 +3929,9 @@ msgstr "联系我们"
 #: templates/sample_report.html:3
 msgid ""
 "Esempio di report Centropic: score AIO/GEO, finding critici e pack "
-"artifact per essere citati dalle IA."
-msgstr "Centropic 报告示例：AIO/GEO 得分、关键发现和供 AI 引用的工件包。"
+"artifact per essere citati dalle IA. Report anonimizzato, stessi moduli "
+"della dashboard."
+msgstr "Centropic 报告示例：AIO/GEO 评分、关键发现和可供 AI 引用的包工件。报告匿名化，使用与仪表板相同的模块。"
 
 #: templates/sample_report.html:10
 msgid "Come appare un report Centropic"
@@ -2928,26 +3940,47 @@ msgstr "Centropic 报告的外观"
 #: templates/sample_report.html:12
 msgid ""
 "Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo"
-" la diagnosi."
-msgstr "示例匿名报告——与您在诊断后在仪表板上看到的相同模块。"
+" la diagnosi. Gli score sono diagnostici (Stimato) salvo dove indicato "
+"Misurato."
+msgstr "示例匿名报告——与您在诊断后仪表板中看到的模块相同。评分是诊断性的（估计），除非指明为测量。"
 
-#: templates/sample_report.html:23
+#: templates/sample_report.html:17
+msgid "Sintesi"
+msgstr "摘要"
+
+#: templates/sample_report.html:24
 msgid "3 gap critici"
 msgstr "3 个关键差距"
 
-#: templates/sample_report.html:29
+#: templates/sample_report.html:25
+msgid ""
+"Priorità tipiche dopo il primo crawl: segnali machine-readable, accesso "
+"crawler IA e entity Schema.org."
+msgstr "第一次爬取后的典型优先事项：机器可读信号、AI 爬虫访问和 Schema.org 实体。"
+
+#: templates/sample_report.html:31
 msgid "Fix:"
 msgstr "修复："
 
-#: templates/sample_report.html:36
+#: templates/sample_report.html:38
 msgid "Pack incluso"
 msgstr "包含包"
 
-#: templates/sample_report.html:43
+#: templates/sample_report.html:39
+msgid "Artifact pronti da pubblicare in root o via Edge Signals / CMS connector."
+msgstr "准备在根目录或通过 Edge Signals / CMS 连接器发布的工件。"
+
+#: templates/sample_report.html:46
 msgid "Prossimi passi"
 msgstr "下一步"
 
 #: templates/sample_report.html:51
+msgid ""
+"Vuoi lo stesso flusso sul tuo dominio? Crea un account Free o passa a "
+"Plus per SoV measured e crawl esteso."
+msgstr "想在您的域名上实现相同的流程吗？创建一个免费帐户或升级到 Plus 以获得测量的 SoV 和扩展爬取。"
+
+#: templates/sample_report.html:57
 msgid "Vedi Plus"
 msgstr "查看 Plus"
 
@@ -3192,20 +4225,110 @@ msgid "Status"
 msgstr "状态"
 
 #: templates/status.html:3
-msgid "Stato operativo Centropic.ai"
-msgstr "Centropic.ai 操作状态"
+msgid ""
+"Stato operativo di Centropic.ai: app, database, coda analisi e pagamenti."
+" Heartbeat pubblico senza dati sensibili."
+msgstr "Centropic.ai 的操作状态：应用程序、数据库、分析队列和支付。公共心跳，无敏感数据。"
 
 #: templates/status.html:10
-msgid "Sistema operativo"
-msgstr "系统运行正常"
+msgid "Stato del servizio"
+msgstr "服务状态"
 
-#: templates/status.html:11
-msgid "Heartbeat pubblico — nessun dato sensibile."
-msgstr "公开心跳检测 — 不含敏感数据。"
+#: templates/status.html:12
+msgid ""
+"Heartbeat pubblico di Centropic: verifica rapida di app, database, coda "
+"analisi e provider pagamenti. Nessun dato account o segreto operativo."
+msgstr "Centropic 的公共心跳：快速检查应用程序、数据库、分析队列和支付提供商。没有帐户数据或操作秘密。"
 
-#: templates/status.html:15
+#: templates/status.html:17
+msgid "Componenti"
+msgstr "组件"
+
+#: templates/status.html:19
+msgid "processo web attivo su centropic.ai"
+msgstr "在 centropic.ai 上的活动网络进程"
+
+#: templates/status.html:20
+msgid "persistenza analisi, job e ledger token"
+msgstr "分析、作业和账本令牌的持久性"
+
+#: templates/status.html:21
 msgid "Pagamenti"
 msgstr "支付"
+
+#: templates/status.html:21
+msgid "checkout Plus e pack token"
+msgstr "结账 Plus 和包令牌"
+
+#: templates/status.html:23
+msgid "Coda analisi"
+msgstr "分析队列"
+
+#: templates/status.html:24
+msgid "job pending/running"
+msgstr "作业待处理/运行中"
+
+#: templates/status.html:32
+msgid "Cosa significa questa pagina"
+msgstr "此页面的含义"
+
+#: templates/status.html:34
+msgid ""
+"Centropic diagnostica la citabilità AIO/GEO dei siti pubblici e produce "
+"artifact machine-readable (llms.txt, JSON-LD, robots). Lo status conferma"
+" che la piattaforma risponde; non sostituisce il report di analisi né "
+"garantisce ranking o menzioni sui modelli."
+msgstr ""
+"Centropic 诊断公共网站的 AIO/GEO 可引用性，并生成机器可读的工件（llms.txt、JSON-"
+"LD、robots）。状态确认平台响应；不替代分析报告，也不保证排名或模型上的提及。"
+
+#: templates/status.html:37
+msgid "Per la metodologia Stimato/Misurato vedi"
+msgstr "有关估计/测量方法，请参见"
+
+#: templates/status.html:39
+msgid "Endpoint machine (JSON, non HTML):"
+msgstr "机器端点（JSON，不是 HTML）："
+
+#: templates/status.html:40
+msgid "Policy crawler:"
+msgstr "爬虫策略："
+
+#: templates/status.html:48
+msgid "Segnali che monitoriamo qui"
+msgstr "我们在这里监控的信号"
+
+#: templates/status.html:50
+msgid ""
+"Questa pagina conferma che l’app Flask risponde, che il database delle "
+"analisi è raggiungibile, che la coda job async è interrogabile e che il "
+"provider pagamenti (Paddle/Stripe) è configurato o in modalità interesse."
+" Non espone metriche private, token utenti o log applicativi."
+msgstr ""
+"此页面确认 Flask "
+"应用程序响应，分析数据库可访问，异步作业队列可查询，并且支付提供商（Paddle/Stripe）已配置或处于兴趣模式。未公开私人指标、用户令牌或应用程序日志。"
+
+#: templates/status.html:53
+msgid ""
+"Uno status verde non implica che i tuoi score AIO/GEO siano alti: per "
+"quello serve un’analisi di dominio dalla dashboard, con findings e pack "
+"artifact da pubblicare."
+msgstr "绿色状态并不意味着您的 AIO/GEO 评分很高：为此需要从仪表板进行域名分析，并发布发现和包工件。"
+
+#: templates/status.html:58
+msgid "Se qualcosa non risponde"
+msgstr "如果有什么没有响应"
+
+#: templates/status.html:61
+msgid ""
+"con orario UTC e URL interessato. Per incidenti di pagamento indica il "
+"provider (Paddle/Stripe) e l’email account, senza condividere chiavi o "
+"token."
+msgstr "带有 UTC 时间和相关 URL。对于支付事故，请指明提供商（Paddle/Stripe）和电子邮件帐户，而不共享密钥或令牌。"
+
+#: templates/status.html:67
+msgid "Analizza un sito"
+msgstr "分析一个网站"
 
 #: templates/termini.html:3
 msgid ""
