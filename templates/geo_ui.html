@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Live Charts') }}{% endblock %}
+{% block body_class %}body-dash{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
+{% block main_class %}site-main--dash site-main--geo-ui{% endblock %}
+
+{% block content %}
+<section class="geo-ui-embed" aria-label="{{ _('GEO Live Charts') }}">
+  <iframe
+    class="geo-ui-embed__frame"
+    title="{{ _('Centropic GEO Live Charts') }}"
+    src="{{ url_for('static', filename='geo-ui/index.html') }}?embed=1"
+    loading="lazy"
+    referrerpolicy="same-origin"
+  ></iframe>
+</section>
+{% endblock %}

@@ -1317,7 +1317,7 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "settings"
         elif ep in {"dashboard_history", "site_history", "export_history_csv"}:
             sidebar_active = "history"
-        elif ep in {"topup_credit_page"}:
+        elif ep in {"topup_credit_page", "pricing", "pro_interest", "billing_checkout"}:
             sidebar_active = "billing"
         elif ep in {"dashboard_guide"}:
             sidebar_active = "guide"
@@ -1331,7 +1331,7 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "admin"
         elif "history" in ep:
             sidebar_active = "history"
-        elif ep == "dashboard":
+        elif ep in {"dashboard", "confirm_analyze"}:
             sidebar_active = "dashboard"
         else:
             sidebar_active = "dashboard"
@@ -2732,6 +2732,8 @@ def guide_score_vs_sov():
 
 @app.route("/")
 def index():
+    if current_user() is not None:
+        return redirect(url_for("dashboard"))
     return render_template("landing.html")
 
 
@@ -3508,12 +3510,8 @@ def logout():
 @app.route("/dashboard/geo-ui/")
 @login_required
 def dashboard_geo_ui():
-    """Serve the React + Recharts enterprise GEO dashboard SPA."""
-    geo_dir = os.path.join(app.static_folder or "static", "geo-ui")
-    index_path = os.path.join(geo_dir, "index.html")
-    if not os.path.isfile(index_path):
-        abort(404)
-    return send_from_directory(geo_dir, "index.html")
+    """GEO Live Charts inside the authenticated app shell (sidebar)."""
+    return render_template("geo_ui.html")
 
 
 @app.route("/dashboard", methods=["GET", "POST"])

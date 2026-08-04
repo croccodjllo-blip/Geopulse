@@ -81,13 +81,15 @@
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
   </head>
-  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-dash' in _bc %} app-shell app-shell--sidebar{% endif %}{% endif %}">
+  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar{% endif %}{% endif %}">
     {% block shell %}
-    {% set _dash_shell = current_user and ('body-dash' in (self.body_class()|default('', true)|trim)) %}
+    {# Sidebar on every authenticated page except auth flows (login/register/reset). #}
+    {% set _bc = self.body_class()|default('', true)|trim %}
+    {% set _dash_shell = current_user and ('body-auth' not in _bc) %}
     {% if _dash_shell %}
       {% include "partials/app_sidebar.html" %}
     {% endif %}
-    <header class="site-header {% block header_class %}{% endblock %}">
+    <header class="site-header {% block header_class %}{% endblock %}{% if _dash_shell %} site-header--invert{% endif %}">
       <div class="site-header__inner">
         {% if _dash_shell %}
         <button
@@ -123,17 +125,15 @@
             <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">{{ _('Impostazioni') }}</a>
             <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Crediti') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Plus</a>
-            {% else %}
-            <span class="nav-user" title="{{ current_user.email }}">{{ current_user.name.split(' ')[0] }}</span>
-            {% endif %}
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
-            {% if not _dash_shell %}
             <form method="post" action="{{ url_for('logout') }}" style="display:inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit">{{ _('Esci') }}</button>
             </form>
+            {% else %}
+            <span class="nav-user" title="{{ current_user.email }}">{{ current_user.name.split(' ')[0] }}</span>
             {% endif %}
           {% else %}
             <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
