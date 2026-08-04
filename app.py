@@ -1345,7 +1345,12 @@ def public_base_url() -> str:
 
 def absolute_url(endpoint: str, **values: Any) -> str:
     """Build an absolute URL under PUBLIC_SITE_URL (host-header safe)."""
-    path = url_for(endpoint, **values)
+    try:
+        path = url_for(endpoint, **values)
+    except RuntimeError:
+        # Worker / email threads have app context but no HTTP request.
+        with app.test_request_context(base_url=public_base_url()):
+            path = url_for(endpoint, **values)
     if path.startswith("http://") or path.startswith("https://"):
         return path
     return f"{public_base_url()}{path}"
