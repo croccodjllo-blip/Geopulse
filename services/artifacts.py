@@ -6,7 +6,7 @@ import json
 import re
 from datetime import datetime, timezone
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from openai import OpenAI
 from services.usage_billing import MAX_TOKENS_PER_CALL
@@ -411,35 +411,109 @@ def build_json_ld(url: str, scraped: dict[str, Any]) -> str:
     )
 
 
-def build_meta_pack(url: str, scraped: dict[str, Any]) -> str:
-    brand = (scraped.get("domain") or urlparse(url).netloc).replace("www.", "")
-    title = scraped.get("title") or f"{brand} — Official site"
-    description = scraped.get("description") or (
-        f"{brand}: contenuti e servizi ottimizzati per AIO e GEO. "
-        "Scopri risorse e contatti sul sito ufficiale."
+def _normalize_public_url(raw: str, fallback: str) -> str:
+    """Absolute http(s) URL without fragment; drop trailing slash on bare host."""
+    value = (raw or "").strip() or fallback
+    if value.startswith("//"):
+        value = "https:" + value
+    if not re.match(r"^https?://", value, flags=re.I):
+        value = urljoin(fallback, value)
+    parsed = urlparse(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return fallback.rstrip("/") or fallback
+    path = parsed.path or ""
+    if path in {"", "/"}:
+        path = ""
+    elif path.endswith("/") and path.count("/") > 1:
+        path = path.rstrip("/")
+    return f"{parsed.scheme}://{parsed.netloc}{path}"
+
+
+def _meta_title(scraped: dict[str, Any], *, brand: str, domain: str) -> str:
+    raw = (
+        scraped.get("og_title")
+        or scraped.get("title")
+        or scraped.get("og_site_name")
+        or brand
     )
+    page = _clean_slogan(str(raw), brand=brand, domain=domain)
+    if not page:
+        return brand
+    if page.lower() == brand.lower() or brand.lower() in page.lower():
+        return page
+    # Brand-first recommendation for answer-engine citability.
+    return f"{brand} — {page}"
+
+
+def _meta_locale(lang: str) -> str:
+    raw = (lang or "it").strip().replace("-", "_")
+    if not raw:
+        return "it_IT"
+    if "_" in raw:
+        parts = raw.split("_", 1)
+        return f"{parts[0].lower()}_{parts[1].upper()}"
+    return f"{raw.lower()}_{raw.upper()}"
+
+
+def build_meta_pack(url: str, scraped: dict[str, Any]) -> str:
+    domain = str(scraped.get("domain") or urlparse(url).netloc).removeprefix("www.")
+    brand = _clean_brand_name(domain, scraped.get("title"))
+    title = _meta_title(scraped, brand=brand, domain=domain)
+    description = (
+        scraped.get("og_description")
+        or scraped.get("description")
+        or (
+            f"{brand}: contenuti e servizi ottimizzati per AIO e GEO. "
+            "Scopri risorse e contatti sul sito ufficiale."
+        )
+    ).strip()
     if len(description) > 160:
         description = description[:157].rstrip() + "..."
-    lang = scraped.get("lang") or "it"
-    canonical = scraped.get("canonical") or url
+
+    lang = (scraped.get("lang") or "it").split(",")[0].strip() or "it"
+    locale = _meta_locale(lang)
+    canonical = _normalize_public_url(str(scraped.get("canonical") or url), url)
+    page_url = _normalize_public_url(url, canonical)
+    # Keep og:url aligned with canonical to avoid duplicate signals.
+    og_url = canonical or page_url
+    og_image = (scraped.get("og_image") or scraped.get("logo_url") or "").strip()
+    if og_image and not re.match(r"^https?://", og_image, flags=re.I):
+        og_image = urljoin(page_url if page_url.endswith("/") else page_url + "/", og_image)
+
     t = html_attr(title)
     d = html_attr(description)
     c = html_attr(canonical)
-    u = html_attr(url)
+    b = html_attr(brand)
+    o = html_attr(og_url)
     l = html_attr(lang)
-    return "\n".join(
+    loc = html_attr(locale)
+
+    lines = [
+        f'<html lang="{l}">',
+        f"<title>{t}</title>",
+        f'<meta name="description" content="{d}">',
+        f'<link rel="canonical" href="{c}">',
+        f'<meta property="og:site_name" content="{b}">',
+        f'<meta property="og:locale" content="{loc}">',
+        f'<meta property="og:title" content="{t}">',
+        f'<meta property="og:description" content="{d}">',
+        f'<meta property="og:url" content="{o}">',
+        '<meta property="og:type" content="website">',
+    ]
+    if og_image:
+        img = html_attr(og_image)
+        lines.append(f'<meta property="og:image" content="{img}">')
+        lines.append('<meta name="twitter:card" content="summary_large_image">')
+    else:
+        lines.append('<meta name="twitter:card" content="summary">')
+    lines.extend(
         [
-            f"<title>{t}</title>",
-            f'<meta name="description" content="{d}">',
-            f'<link rel="canonical" href="{c}">',
-            f'<meta property="og:title" content="{t}">',
-            f'<meta property="og:description" content="{d}">',
-            f'<meta property="og:url" content="{u}">',
-            '<meta property="og:type" content="website">',
-            f"<!-- Assicurati che <html lang=\"{l}\"> sia impostato -->",
+            f'<meta name="twitter:title" content="{t}">',
+            f'<meta name="twitter:description" content="{d}">',
             "",
         ]
     )
+    return "\n".join(lines)
 
 
 def build_robots_txt(url: str, scraped: dict[str, Any] | None = None) -> str:

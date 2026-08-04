@@ -224,6 +224,8 @@ def scrape_page(url: str) -> dict[str, Any]:
     robots = _extract_meta(soup, name="robots")
     og_title = _extract_meta(soup, prop="og:title")
     og_description = _extract_meta(soup, prop="og:description")
+    og_image = _extract_meta(soup, prop="og:image")
+    og_site_name = _extract_meta(soup, prop="og:site_name")
     twitter_card = _extract_meta(soup, name="twitter:card")
     twitter_title = _extract_meta(soup, name="twitter:title")
     author_meta = _extract_meta(soup, name="author")
@@ -343,6 +345,8 @@ def scrape_page(url: str) -> dict[str, Any]:
         "robots": robots,
         "og_title": og_title,
         "og_description": og_description,
+        "og_image": og_image,
+        "og_site_name": og_site_name,
         "twitter_card": twitter_card,
         "twitter_title": twitter_title,
         "has_h1": has_h1,
