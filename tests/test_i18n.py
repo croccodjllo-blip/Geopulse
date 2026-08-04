@@ -11,6 +11,30 @@ def test_supported_locales_include_requested_languages():
     assert normalize_locale("en-US") == "en"
 
 
+def test_translation_catalogs_are_complete():
+    """Every non-Italian UI locale catalog must be fully translated (no empty/fuzzy)."""
+    from pathlib import Path
+
+    from babel.messages.pofile import read_po
+
+    root = Path(__file__).resolve().parents[1] / "translations"
+    for loc in ("en", "de", "es", "zh_Hans", "ko"):
+        path = root / loc / "LC_MESSAGES" / "messages.po"
+        catalog = read_po(path.open(encoding="utf-8"))
+        empty = fuzzy = total = 0
+        for msg in catalog:
+            if not msg.id or msg.id == "" or isinstance(msg.id, tuple):
+                continue
+            total += 1
+            if not (msg.string or "").strip():
+                empty += 1
+            if msg.fuzzy:
+                fuzzy += 1
+        assert total >= 700, f"{loc}: unexpectedly small catalog ({total})"
+        assert empty == 0, f"{loc}: {empty} empty msgstr"
+        assert fuzzy == 0, f"{loc}: {fuzzy} fuzzy msgstr"
+
+
 def test_set_language_persists_cookie_and_session():
     from app import app, LANG_COOKIE
 
