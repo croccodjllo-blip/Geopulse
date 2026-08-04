@@ -986,19 +986,23 @@ def run_citation_monitor(
     def _usage(**kwargs: Any) -> None:
         if not callable(usage_callback):
             return
-        from services.usage_billing import InsufficientCreditError
+        from services.usage_billing import InsufficientCreditError, JobLeaseLostError
 
         with usage_lock:
             if credit_stop["exc"] is not None:
                 raise credit_stop["exc"]
             try:
                 usage_callback(**kwargs)
-            except InsufficientCreditError as exc:
+            except (InsufficientCreditError, JobLeaseLostError) as exc:
                 credit_stop["exc"] = exc
                 raise
-            except Exception:
-                # Never let billing/session glitches abort the whole measured suite
-                # from a worker thread (would leave the job stuck in phase=geo).
+            except Exception as exc:
+                # Stop after debit/lease failures raised as RuntimeError from the job cb.
+                msg = str(exc).lower()
+                if "lease lost" in msg or "debit failed" in msg or "stop billing" in msg:
+                    credit_stop["exc"] = exc
+                    raise
+                # Session/app-context noise from worker threads must not kill the suite.
                 logger.exception("SoV usage_callback failed")
 
     # Probe engines in parallel (wall-clock ~ max(engine) not sum).

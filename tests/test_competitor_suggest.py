@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
 from services.competitor_suggest import (
+    _snippet_context,
     normalize_competitor_url,
     suggest_competitors,
 )
+from services.ssrf import UnsafeURLError
 
 
 def test_normalize_skips_same_host_and_social():
@@ -40,3 +44,34 @@ def test_suggest_centropic_uses_vertical_seeds(monkeypatch):
     assert "peec.ai" in joined
     assert "otterly.ai" in joined
     assert out["source"] in {"seed", "mixed", "heuristic"}
+
+
+def test_snippet_context_uses_safe_get_not_raw_redirects():
+    resp = MagicMock()
+    resp.status_code = 200
+    resp.text = "<title>Safe</title><meta name='description' content='ok'>"
+    with patch(
+        "services.competitor_suggest.assert_public_http_url",
+        return_value="https://example.com/",
+    ):
+        with patch("services.competitor_suggest.safe_get", return_value=resp) as mock_get:
+            with patch("services.competitor_suggest.requests.get") as raw_get:
+                out = _snippet_context("https://example.com/")
+    assert out["title"] == "Safe"
+    mock_get.assert_called_once()
+    assert mock_get.call_args.kwargs.get("max_redirects") == 3
+    raw_get.assert_not_called()
+
+
+def test_snippet_context_blocks_ssrf_redirect_target():
+    with patch(
+        "services.competitor_suggest.assert_public_http_url",
+        return_value="https://open-redirect.example/",
+    ):
+        with patch(
+            "services.competitor_suggest.safe_get",
+            side_effect=UnsafeURLError("private hop"),
+        ):
+            out = _snippet_context("https://open-redirect.example/")
+    assert out["title"] == ""
+    assert out["description"] == ""

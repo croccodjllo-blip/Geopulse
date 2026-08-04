@@ -47,6 +47,19 @@ from services.token_units import format_token_amount
 
 logger = logging.getLogger(__name__)
 
+
+class JobLeaseLostError(RuntimeError):
+    """Worker lost the analyze job lease — stop LLM calls and billing."""
+
+
+class InsufficientCreditError(Exception):
+    """Raised when a user tries to run an analysis without enough credit."""
+
+
+class ConcurrentAnalysisError(Exception):
+    """Raised when the user already has too many pending/running jobs."""
+
+
 # ─────────────────────────── price table (µUSD / token) ──────────────────────
 
 _PRICE_TABLE: dict[str, dict[str, float]] = {
@@ -587,7 +600,7 @@ def debit_leased_job_usage(
     Updates ``job.held_cents`` / ``job.billed_cents`` in the same transaction.
 
     Returns cents actually debited (0 for unlimited users or non-positive cost).
-    Raises ``RuntimeError`` if the lease was lost.
+    Raises ``JobLeaseLostError`` if the lease was lost.
     """
     if cost_eur_cents <= 0:
         return 0
@@ -606,7 +619,7 @@ def debit_leased_job_usage(
         or getattr(locked, "status", None) != "running"
         or getattr(locked, "lease_token", None) != lease_token
     ):
-        raise RuntimeError("job lease lost — stop billing")
+        raise JobLeaseLostError("job lease lost — stop billing")
 
     held_now = int(getattr(locked, "held_cents", 0) or 0)
     deduct_credit(
@@ -933,14 +946,6 @@ def topup_credit(
     )
     db_session.add(entry)
     db_session.flush()
-
-
-class InsufficientCreditError(Exception):
-    """Raised when a user tries to run an analysis without enough credit."""
-
-
-class ConcurrentAnalysisError(Exception):
-    """Raised when the user already has too many pending/running jobs."""
 
 
 # ─────────────────────────── actual token capture ─────────────────────────────

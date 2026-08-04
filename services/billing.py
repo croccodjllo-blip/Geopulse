@@ -90,8 +90,16 @@ def create_checkout_session(
         "success_url": success_url,
         "cancel_url": cancel_url,
         "client_reference_id": str(user_id),
-        "metadata": {"geopulse_user_id": str(user_id)},
-        "subscription_data": {"metadata": {"geopulse_user_id": str(user_id)}},
+        "metadata": {
+            "centropic_user_id": str(user_id),
+            "geopulse_user_id": str(user_id),
+        },
+        "subscription_data": {
+            "metadata": {
+                "centropic_user_id": str(user_id),
+                "geopulse_user_id": str(user_id),
+            }
+        },
         "allow_promotion_codes": True,
     }
     # API 2026-03-25+ optional; ignore if SDK rejects

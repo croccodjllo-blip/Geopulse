@@ -1728,7 +1728,7 @@ def ensure_schema() -> None:
     # Usage-based billing tables (additive — never drop)
     db.create_all()  # creates credit_ledger and usage_events if absent
 
-    # Unique Stripe payment intent → prevents double-credit on webhook races.
+    # Unique payment intent (Stripe/Paddle) → prevents double-credit on webhook races.
     try:
         with db.engine.begin() as conn:
             conn.execute(
@@ -1739,9 +1739,33 @@ def ensure_schema() -> None:
                     "AND stripe_payment_intent != ''"
                 )
             )
+        # Fail-loud if the index is still missing (double-credit risk).
+        dialect = db.engine.dialect.name
+        with db.engine.connect() as conn:
+            if dialect == "sqlite":
+                row = conn.execute(
+                    text(
+                        "SELECT 1 FROM sqlite_master "
+                        "WHERE type='index' AND name='uq_credit_ledger_stripe_pi'"
+                    )
+                ).fetchone()
+            else:
+                row = conn.execute(
+                    text(
+                        "SELECT 1 FROM pg_indexes "
+                        "WHERE indexname='uq_credit_ledger_stripe_pi'"
+                    )
+                ).fetchone()
+            if row is None:
+                app.logger.error(
+                    "CRITICAL: credit_ledger unique index uq_credit_ledger_stripe_pi "
+                    "missing — webhook double-credit possible"
+                )
     except Exception:
-        # SQLite versions / dialects without partial indexes: best-effort only.
-        app.logger.exception("credit_ledger stripe unique index skipped")
+        app.logger.exception(
+            "CRITICAL: credit_ledger stripe unique index skipped — "
+            "webhook double-credit possible"
+        )
 
 
 def process_pending_analyze_jobs(
@@ -1865,7 +1889,10 @@ def process_pending_analyze_jobs(
             ):
                 # Persist usage then debit only while this worker still owns the lease.
                 # Must open app context: citation probes run in ThreadPoolExecutor threads.
-                from services.usage_billing import InsufficientCreditError
+                from services.usage_billing import (
+                    InsufficientCreditError,
+                    JobLeaseLostError,
+                )
 
                 with app.app_context():
                     try:
@@ -1893,11 +1920,12 @@ def process_pending_analyze_jobs(
                             description=f"JOB usage realtime {provider}:{model}",
                         )
                         db.session.commit()
-                    except InsufficientCreditError:
+                    except (InsufficientCreditError, JobLeaseLostError):
                         try:
                             db.session.rollback()
                         except Exception:
                             pass
+                        # Stop LLM spend after lease steal / empty balance.
                         raise
                     except Exception:
                         try:
@@ -1909,6 +1937,10 @@ def process_pending_analyze_jobs(
                             provider,
                             model,
                         )
+                        # Fail closed: do not continue free LLM calls after debit errors.
+                        raise RuntimeError(
+                            f"job usage debit failed for {provider}:{model}"
+                        ) from None
 
             analysis = run_analysis_pipeline(
                 db_session=db.session,
@@ -3532,12 +3564,19 @@ def billing_webhook():
 
     def _user_from_meta(obj: dict) -> User | None:
         meta = obj.get("metadata") or {}
-        uid = meta.get("geopulse_user_id") or obj.get("client_reference_id")
-        if uid:
+        for key in ("centropic_user_id", "geopulse_user_id"):
+            uid = meta.get(key)
+            if uid:
+                try:
+                    return db.session.get(User, int(uid))
+                except (TypeError, ValueError):
+                    pass
+        ref = obj.get("client_reference_id")
+        if ref:
             try:
-                return User.query.get(int(uid))
+                return db.session.get(User, int(ref))
             except (TypeError, ValueError):
-                return None
+                pass
         customer = obj.get("customer")
         if customer:
             return User.query.filter_by(stripe_customer_id=str(customer)).first()
@@ -4869,7 +4908,11 @@ def topup_stripe_checkout():
             success_url=success_url + "?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=cancel_url,
             client_reference_id=str(user.id),
-            metadata={"centropic_user_id": str(user.id), "topup_cents": str(amount_cents)},
+            metadata={
+                "centropic_user_id": str(user.id),
+                "geopulse_user_id": str(user.id),
+                "topup_cents": str(amount_cents),
+            },
         )
         return redirect(session_obj["url"])
     except Exception:
@@ -4914,7 +4957,20 @@ def billing_topup_webhook():
         sess = event["data"]["object"]
         if sess.get("payment_status") == "paid":
             meta = sess.get("metadata") or {}
-            user_id = int(meta.get("centropic_user_id") or 0)
+            user_id = 0
+            for key in ("centropic_user_id", "geopulse_user_id"):
+                raw = meta.get(key)
+                if raw:
+                    try:
+                        user_id = int(raw)
+                        break
+                    except (TypeError, ValueError):
+                        pass
+            if not user_id:
+                try:
+                    user_id = int(sess.get("client_reference_id") or 0)
+                except (TypeError, ValueError):
+                    user_id = 0
             # Prefer Stripe-settled amount over client/metadata (anti-tamper).
             amount_total = int(sess.get("amount_total") or 0)
             meta_cents = int(meta.get("topup_cents") or 0)

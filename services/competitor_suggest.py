@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import requests
 from openai import OpenAI
 
-from services.ssrf import assert_public_http_url
+from services.ssrf import assert_public_http_url, safe_get
 from services.usage_billing import MAX_TOKENS_PER_CALL
 
 logger = logging.getLogger(__name__)
@@ -95,18 +95,20 @@ def _snippet_context(url: str, timeout: float = 12.0) -> dict[str, str]:
     """Lightweight public fetch for title/description used by the suggester."""
     out = {"url": url, "domain": _host_key(urlparse(url).netloc), "title": "", "description": ""}
     try:
-        safe = assert_public_http_url(url, resolve=True)
+        assert_public_http_url(url, resolve=True)
     except Exception:
         return out
     try:
-        res = requests.get(
-            safe,
+        session = requests.Session()
+        res = safe_get(
+            session,
+            url,
             timeout=timeout,
+            max_redirects=3,
             headers={
                 "User-Agent": "Centropic/1.0 (+https://centropic.ai; competitor-suggest)",
                 "Accept": "text/html,application/xhtml+xml",
             },
-            allow_redirects=True,
         )
     except Exception:
         return out

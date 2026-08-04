@@ -58,6 +58,7 @@ export default function App() {
   const embed = isEmbedMode();
   const live = readLiveData();
 
+  // Embed must never fall open to demo KPIs if Flask payload is missing.
   const overviewProps: DashboardOverviewProps = live
     ? {
         embedded: true,
@@ -81,7 +82,15 @@ export default function App() {
         empty: !live.ready,
         domain: live.domain || undefined,
       }
-    : { embedded: embed };
+    : embed
+      ? {
+          embedded: true,
+          live: true,
+          empty: true,
+          auditHref: "/dashboard#analyze",
+          reportHref: "/dashboard",
+        }
+      : { embedded: false };
 
   const bars = live?.engineBars || [];
 
