@@ -1,20 +1,60 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Status') }} — Centropic{% endblock %}
-{% block meta_description %}{{ _('Stato operativo Centropic.ai') }}{% endblock %}
+{% block meta_description %}{{ _('Stato operativo di Centropic.ai: app, database, coda analisi e pagamenti. Heartbeat pubblico senza dati sensibili.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
 <article class="page page--v2">
   <header class="page-intro page-intro--v2">
     <p class="eyebrow">Status</p>
-    <h1 class="h-display page-intro__title">{{ _('Sistema operativo') }}</h1>
-    <p class="lede page-intro__lede">{{ _('Heartbeat pubblico — nessun dato sensibile.') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Stato del servizio') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Heartbeat pubblico di Centropic: verifica rapida di app, database, coda analisi e provider pagamenti. Nessun dato account o segreto operativo.') }}
+    </p>
   </header>
-  <ul class="plain-list">
-    <li><strong>App</strong>: {{ detail.app }}</li>
-    <li><strong>{{ _('Pagamenti') }}</strong>: {{ detail.payments }}</li>
-    <li><strong>UTC</strong>: <code>{{ detail.time }}</code></li>
-  </ul>
-  <p class="lede"><a href="{{ url_for('health') }}">/health</a> · <a href="mailto:info@centropic.ai">info@centropic.ai</a></p>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Componenti') }}</h2>
+    <ul class="plain-list">
+      <li><strong>App</strong>: {{ detail.app }} — {{ _('processo web attivo su centropic.ai') }}</li>
+      <li><strong>Database</strong>: {{ detail.database }} — {{ _('persistenza analisi, job e ledger token') }}</li>
+      <li><strong>{{ _('Pagamenti') }}</strong>: {{ detail.payments }} — {{ _('checkout Plus e pack token') }}</li>
+      <li>
+        <strong>{{ _('Coda analisi') }}</strong>:
+        {% if detail.queue is not none %}{{ detail.queue }} {{ _('job pending/running') }}{% else %}—{% endif %}
+        · async={{ detail.async_analyze }}
+      </li>
+      <li><strong>UTC</strong>: <code>{{ detail.time }}</code></li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Cosa significa questa pagina') }}</h2>
+    <p class="lede">
+      {{ _('Centropic diagnostica la citabilità AIO/GEO dei siti pubblici e produce artifact machine-readable (llms.txt, JSON-LD, robots). Lo status conferma che la piattaforma risponde; non sostituisce il report di analisi né garantisce ranking o menzioni sui modelli.') }}
+    </p>
+    <p class="lede">
+      {{ _('Per la metodologia Stimato/Misurato vedi') }}
+      <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a>.
+      {{ _('Endpoint machine:') }} <a href="{{ url_for('health') }}">/health</a>,
+      <a href="{{ url_for('robots_txt') }}">/robots.txt</a>,
+      <a href="{{ url_for('llms_txt') }}">/llms.txt</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Se qualcosa non risponde') }}</h2>
+    <p class="lede">
+      {{ _('Scrivi a') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      {{ _('con orario UTC e URL interessato. Per incidenti di pagamento indica il provider (Paddle/Stripe) e l’email account, senza condividere chiavi o token.') }}
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('dashboard') if current_user else url_for('register') }}">
+      {% if current_user %}{{ _('Apri dashboard') }}{% else %}{{ _('Analizza un sito') }}{% endif %}
+    </a>
+    <a class="btn btn-ghost" href="{{ url_for('contact') }}">{{ _('Contatti') }}</a>
+  </div>
 </article>
 {% endblock %}

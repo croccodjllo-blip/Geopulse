@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Esempio report') }} — Centropic{% endblock %}
-{% block meta_description %}{{ _('Esempio di report Centropic: score AIO/GEO, finding critici e pack artifact per essere citati dalle IA.') }}{% endblock %}
+{% block meta_description %}{{ _('Esempio di report Centropic: score AIO/GEO, finding critici e pack artifact per essere citati dalle IA. Report anonimizzato, stessi moduli della dashboard.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -9,11 +9,12 @@
     <p class="eyebrow">{{ _('Esempio') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Come appare un report Centropic') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo la diagnosi.') }}
+      {{ _('Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo la diagnosi. Gli score sono diagnostici (Stimato) salvo dove indicato Misurato.') }}
     </p>
   </header>
 
   <section class="page-section">
+    <h2 class="page-section__title">{{ _('Sintesi') }}</h2>
     <p class="lede"><strong>{{ report.domain }}</strong> · {{ _('Indice') }} <code>{{ report.rating }}</code>
       · AIO {{ report.aio_score }} · GEO {{ report.geo_score }} · SoV {{ report.brand_sov }}% ({{ report.evidence }})</p>
     <p class="lede">{{ report.summary }}</p>
@@ -21,6 +22,7 @@
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('3 gap critici') }}</h2>
+    <p class="lede">{{ _('Priorità tipiche dopo il primo crawl: segnali machine-readable, accesso crawler IA e entity Schema.org.') }}</p>
     <ol class="plain-list">
       {% for f in report.critical_findings %}
       <li>
@@ -34,6 +36,7 @@
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Pack incluso') }}</h2>
+    <p class="lede">{{ _('Artifact pronti da pubblicare in root o via Edge Signals / CMS connector.') }}</p>
     <ul class="plain-list">
       {% for p in report.pack %}<li><code>{{ p }}</code></li>{% endfor %}
     </ul>
@@ -44,6 +47,9 @@
     <ul class="plain-list">
       {% for s in report.next_steps %}<li>{{ s }}</li>{% endfor %}
     </ul>
+    <p class="lede">
+      {{ _('Vuoi lo stesso flusso sul tuo dominio? Crea un account Free o passa a Plus per SoV measured e crawl esteso.') }}
+    </p>
   </section>
 
   <div class="page-cta">

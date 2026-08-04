@@ -2813,6 +2813,9 @@ def robots_txt():
         "User-agent: cohere-ai\n"
         "Allow: /\n"
         "\n"
+        "User-agent: meta-externalagent\n"
+        "Allow: /\n"
+        "\n"
         f"# AI policy: {base}/ai.txt\n"
         f"# LLMs guide: {base}/llms.txt\n"
         f"{ads_line}"
@@ -2928,11 +2931,29 @@ def agencies():
 
 @app.route("/status")
 def status_page():
-    """Lightweight public status (no secrets)."""
+    """Public status page — enough copy for crawl scoring, no secrets."""
+    payments = payments_provider() or "—"
+    try:
+        db_ok = True
+        from sqlalchemy import text as sa_text
+
+        db.session.execute(sa_text("SELECT 1"))
+    except Exception:
+        db_ok = False
+    try:
+        pending_jobs = (
+            AnalysisJob.query.filter(AnalysisJob.status.in_(("pending", "running")))
+            .count()
+        )
+    except Exception:
+        pending_jobs = None
     detail = {
         "app": "ok",
-        "payments": payments_provider(),
+        "database": "ok" if db_ok else "degraded",
+        "payments": payments,
+        "queue": pending_jobs,
         "time": datetime.now(timezone.utc).isoformat(),
+        "async_analyze": ASYNC_ANALYZE,
     }
     return render_template("status.html", detail=detail)
 
@@ -3165,6 +3186,14 @@ def pricing():
         pro_crawl_pages=PRO_CRAWL_PAGES,
         deep_crawl_pages=PRO_DEEP_CRAWL_PAGES,
     )
+
+
+@app.route("/pricing")
+@app.route("/pricing/")
+@app.route("/price")
+def pricing_alias():
+    """EN/legacy aliases — avoid crawl 404 criticals on /pricing."""
+    return redirect(url_for("pricing"), code=301)
 
 
 @app.route("/billing/checkout", methods=["POST"])

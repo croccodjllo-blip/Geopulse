@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Centropic per agenzie') }}{% endblock %}
-{% block meta_description %}{{ _('White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che gestiscono più brand.') }}{% endblock %}
+{% block meta_description %}{{ _('White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che gestiscono più brand. Diagnosi AIO/GEO e pack pronti per i clienti.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -9,12 +9,15 @@
     <p class="eyebrow">{{ _('Agenzie') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Consegna citabilità IA ai tuoi clienti') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account.') }}
+      {{ _('Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account. Gli score restano diagnostici (Stimato); su Plus puoi aggiungere menzioni Misurate.') }}
     </p>
   </header>
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Cosa ottengono i vostri clienti') }}</h2>
+    <p class="lede">
+      {{ _('Un report operativo con score AIO/GEO, findings prioritizzati e artifact da pubblicare in root o via CMS connector. Ideale per kickoff, audit trimestrali e handover al team contenuto/IT.') }}
+    </p>
     <ul class="plain-list">
       <li>{{ _('Score + findings prioritizzati in linguaggio operativo') }}</li>
       <li>{{ _('llms.txt, JSON-LD, robots e CMS connector') }}</li>
@@ -25,11 +28,21 @@
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Perché le agenzie scelgono Plus') }}</h2>
+    <p class="lede">
+      {{ _('Plus aggiunge multi-sito, crawl fino a 120 pagine (Deep 500), re-scan, API e 100 token/mese. Non promettiamo ranking: misuriamo segnali e, ove configurato, menzioni Misurate.') }}
+    </p>
     <ul class="plain-list">
       <li>{{ _('Multi-sito + re-scan schedulato') }}</li>
       <li>{{ _('API /api/v1 per automatizzare onboarding clienti') }}</li>
       <li>{{ _('100 token/mese + pack ricaricabili') }}</li>
     </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('Come iniziare') }}</h2>
+    <p class="lede">
+      {{ _('Attiva Plus, importa il primo dominio cliente, pubblica il pack (o Edge Signals) e confronta lo storico run. Per un walkthrough di 15 minuti scrivi a info@centropic.ai.') }}
+    </p>
   </section>
 
   <div class="page-cta">

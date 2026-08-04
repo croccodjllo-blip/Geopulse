@@ -17,14 +17,14 @@
     <div class="hero-visual__grid"></div>
     <div class="hero-visual__signal"></div>
     <div class="hero-visual__core">
-      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="480" height="480" decoding="async">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Centropic" width="480" height="480" decoding="async">
     </div>
   </div>
 
   <div class="hero-copy hero-copy--v2">
     <div class="hero-brand hero-brand--v2 hero-brand--holo" id="hero-brand">
       <span class="holo-brand__emblem holo-brand__emblem--hero" aria-hidden="true">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" width="88" height="88" alt="" decoding="async">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" width="88" height="88" alt="Centropic" decoding="async">
       </span>
       <span class="hero-brand__lockup">
         <span class="holo-brand__word holo-brand__word--hero">centropic<span>.ai</span></span>
@@ -115,9 +115,9 @@
 
 <section class="section-band section-band--v2" id="metodo-citabile">
   <p class="eyebrow">{{ _('Governance') }}</p>
-  <h2>{{ _('Stimato e Misurato, sempre distinti.') }}</h2>
+  <h2>{{ _('Stimato e Misurato restano distinti.') }}</h2>
   <p class="lede">
-    {{ _('Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus, i probe LLM possono aggiungere menzioni Misurate.') }}
+    {{ _('Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus, i probe LLM possono aggiungere menzioni Misurate — non è una garanzia di ranking o citazione.') }}
     <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
     ·
     <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>.

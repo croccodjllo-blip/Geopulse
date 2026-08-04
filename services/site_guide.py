@@ -346,6 +346,10 @@ def site_guide_payload() -> dict[str, Any]:
             {"href": "/guide/score-vs-sov", "label": "Score AIO/GEO vs SoV"},
             {"href": "/faq", "label": "FAQ"},
             {"href": "/prodotto", "label": "Prodotto"},
-            {"href": "/pricing", "label": "Piani e prezzi"},
+            {"href": "/prezzi", "label": "Piani e prezzi"},
+            {"href": "/guida", "label": "Guida completa"},
+            {"href": "/esempio-report", "label": "Esempio report"},
+            {"href": "/agenzie", "label": "Per agenzie"},
+            {"href": "/status", "label": "Status"},
         ],
     }
