@@ -503,6 +503,8 @@ class User(db.Model):
     stripe_subscription_id = db.Column(db.String(120))
     paddle_customer_id = db.Column(db.String(120))
     paddle_subscription_id = db.Column(db.String(120))
+    # First past_due event time — grace must not reset on webhook retries.
+    paddle_past_due_since = db.Column(db.DateTime)
     reset_token_hash = db.Column(db.String(64))
     reset_token_expires = db.Column(db.DateTime)
     # GEO suite settings
@@ -1621,6 +1623,7 @@ def ensure_schema() -> None:
             "stripe_subscription_id": "TEXT",
             "paddle_customer_id": "TEXT",
             "paddle_subscription_id": "TEXT",
+            "paddle_past_due_since": "DATETIME",
             "reset_token_hash": "TEXT",
             "reset_token_expires": "DATETIME",
             "alert_email_enabled": "BOOLEAN DEFAULT 1",
@@ -2776,6 +2779,8 @@ def edge_disable(analysis_id: int):
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
     analysis.signals_hosted = False
+    # Bust CDN/client caches that may still hold Plus bodies briefly.
+    analysis.signals_version = int(getattr(analysis, "signals_version", 1) or 1) + 1
     db.session.commit()
     flash("Edge Signals disattivato. Gli URL pubblici non rispondono più.", "success")
     return redirect(url_for("dashboard") + "#edge-signals")
@@ -3444,23 +3449,31 @@ def billing_paddle_webhook():
                 sub_id = data.get("id")
                 if sub_id:
                     user.paddle_subscription_id = str(sub_id)
-                status = data.get("status")
+                status = (data.get("status") or "").lower()
                 past_due_at = None
-                if (status or "").lower() == "past_due":
-                    raw_ts = (
-                        event.get("occurred_at")
-                        or data.get("updated_at")
-                        or data.get("status_changed_at")
-                    )
-                    if raw_ts:
-                        try:
-                            past_due_at = datetime.fromisoformat(
-                                str(raw_ts).replace("Z", "+00:00")
-                            )
-                        except ValueError:
-                            past_due_at = datetime.now(timezone.utc)
+                if status == "past_due":
+                    # Preserve first past_due timestamp so grace does not restart.
+                    existing_pd = getattr(user, "paddle_past_due_since", None)
+                    if existing_pd is not None:
+                        past_due_at = existing_pd
                     else:
-                        past_due_at = datetime.now(timezone.utc)
+                        raw_ts = (
+                            event.get("occurred_at")
+                            or data.get("updated_at")
+                            or data.get("status_changed_at")
+                        )
+                        if raw_ts:
+                            try:
+                                past_due_at = datetime.fromisoformat(
+                                    str(raw_ts).replace("Z", "+00:00")
+                                )
+                            except ValueError:
+                                past_due_at = datetime.now(timezone.utc)
+                        else:
+                            past_due_at = datetime.now(timezone.utc)
+                        user.paddle_past_due_since = past_due_at
+                elif status in {"active", "trialing", "canceled", "paused"}:
+                    user.paddle_past_due_since = None
                 user.plan = plan_from_paddle_subscription_status(
                     status, past_due_at=past_due_at
                 )
@@ -3601,15 +3614,19 @@ def billing_webhook():
                 if user is not None:
                     cust = data.get("customer")
                     sub = data.get("subscription")
-                    if cust:
-                        user.stripe_customer_id = str(cust)
-                    if sub:
-                        user.stripe_subscription_id = str(sub)
-                    if (user.plan or "").lower() != "admin":
-                        user.plan = "plus"
+
+                    def _apply_stripe_plus(u: User) -> None:
+                        if cust:
+                            u.stripe_customer_id = str(cust)
+                        if sub:
+                            u.stripe_subscription_id = str(sub)
+                        if (u.plan or "").lower() != "admin":
+                            u.plan = "plus"
+
+                    _apply_stripe_plus(user)
                     session_id = str(data.get("id") or "").strip()
                     if session_id:
-                        grant_plus_monthly_tokens(
+                        granted = grant_plus_monthly_tokens(
                             user=user,
                             idempotency_key=f"stripe-plus-tokens:{session_id}",
                             description=(
@@ -3617,6 +3634,11 @@ def billing_webhook():
                                 f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
                             ),
                         )
+                        if not granted:
+                            # IntegrityError rollback may expire Plus — re-apply.
+                            user = _user_from_meta(data) or user
+                            if user is not None:
+                                _apply_stripe_plus(user)
                     db.session.commit()
         elif etype in {
             "invoice.paid",
@@ -3635,7 +3657,7 @@ def billing_webhook():
                 user.plan = "plus"
                 inv_id = str(data.get("id") or "").strip()
                 if inv_id:
-                    grant_plus_monthly_tokens(
+                    granted = grant_plus_monthly_tokens(
                         user=user,
                         idempotency_key=f"stripe-plus-tokens:{inv_id}",
                         description=(
@@ -3643,6 +3665,10 @@ def billing_webhook():
                             f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
                         ),
                     )
+                    if not granted:
+                        user = _user_from_meta(data) or user
+                        if user is not None and (user.plan or "").lower() != "admin":
+                            user.plan = "plus"
                 db.session.commit()
         elif etype in {
             "customer.subscription.updated",

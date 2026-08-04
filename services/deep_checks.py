@@ -720,7 +720,16 @@ def analyze_crawl_aggregate(
             }
         )
 
-    errors = [p for p in pages if (p.get("status_code") or 200) >= 400]
+    errors = [
+        p
+        for p in pages
+        if (
+            p.get("crawl_error")
+            or p.get("crawl_fetch_failed")
+            or p.get("status_code") is None
+            or int(p.get("status_code") or 0) >= 400
+        )
+    ]
     slow = [p for p in pages if (p.get("response_ms") or 0) > 3000]
     if errors:
         sample = ", ".join(

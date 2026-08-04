@@ -4,6 +4,8 @@ from __future__ import annotations
 import pytest
 
 from services.usage_billing import (
+    consume_hold,
+    release_job_hold,
     GRACE_MARGIN,
     MAX_PREFLIGHT_WORDS,
     estimate_analysis_cost,
@@ -328,3 +330,37 @@ def test_estimate_uses_ceil_not_truncate():
     # With all providers, cost must remain a positive integer cents value.
     assert isinstance(est.service_cost_eur_cents, int)
     assert est.service_cost_eur_cents >= 1
+
+
+def test_consume_hold_returns_zero_when_update_misses(monkeypatch):
+    """Stale in-memory held must not shrink job markers without a DB match."""
+    class _Q:
+        def filter(self, *a, **k):
+            return self
+        def update(self, *a, **k):
+            return 0
+
+    class _Sess:
+        def query(self, model):
+            return _Q()
+        def refresh(self, user):
+            pass
+
+    class _User:
+        id = 1
+        role = "user"
+        plan = "free"
+        credit_held_cents = 500
+
+    assert consume_hold(_Sess(), _User(), amount_cents=100) == 0
+
+
+def test_release_job_hold_keeps_remainder_when_release_fails(monkeypatch):
+    monkeypatch.setattr(
+        "services.usage_billing.release_hold", lambda *a, **k: 0
+    )
+    job = type("J", (), {"held_cents": 250})()
+    user = type("U", (), {"id": 1, "role": "user", "plan": "free", "credit_held_cents": 250})()
+    released = release_job_hold(None, user, job)
+    assert released == 0
+    assert job.held_cents == 250

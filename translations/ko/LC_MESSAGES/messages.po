@@ -257,7 +257,7 @@ msgstr ""
 
 #: services/guides.py:140
 msgid "Schema.org per answer engine (AIO/GEO)"
-msgstr ""
+msgstr "Schema.org per answer engine (AIO/GEO)"
 
 #: services/guides.py:142
 msgid ""
@@ -265,12 +265,17 @@ msgid ""
 "Optimization: Organization, WebSite, FAQPage, SoftwareApplication, "
 "Article."
 msgstr ""
+"Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine "
+"Optimization: Organization, WebSite, FAQPage, SoftwareApplication, "
+"Article."
 
 #: services/guides.py:145
 msgid ""
 "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity "
 "leggibile a crawler e modelli. Aggiornato 30/07/2026."
 msgstr ""
+"I dati strutturati non “garantiscono” citazioni, ma rendono l’entity "
+"leggibile a crawler e modelli. Aggiornato 30/07/2026."
 
 #: services/guides.py:148
 msgid ""
@@ -317,9 +322,50 @@ msgid ""
 "SoV</a>.</p>\n"
 "  </section>\n"
 msgstr ""
+"\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Tipi prioritari</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li><strong>Organization</strong> + <strong>WebSite</strong> "
+"collegati via @id</li>\n"
+"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate "
+"all’HTML visibile</li>\n"
+"      <li><strong>SoftwareApplication</strong> o Product se vendi "
+"software (come Centropic)</li>\n"
+"      <li><strong>Article</strong> / HowTo per guide evergreen con author"
+" e date</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">Riferimento normativo: <a "
+"href=\"https://schema.org/\" rel=\"noopener noreferrer\" "
+"target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano"
+" score AIO/GEO (probe Misurato).</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Errori comuni</h2>\n"
+"    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-"
+"referenziali, FAQ senza acceptedAnswer, Organization senza contatto o "
+"logo. Centropic li segnala nei findings.</p>\n"
+"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non "
+"basta: preferisci profili esterni reali (azienda madre, directory, social"
+" verificati).</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Checklist minima</h2>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li>name + url + email (o telephone) su Organization</li>\n"
+"      <li>sameAs verso profili esterni reali (non pagine interne del "
+"sito)</li>\n"
+"      <li>logo ImageObject con URL assoluto https e caption</li>\n"
+"      <li>FAQPage solo se le domande sono visibili in pagina</li>\n"
+"      <li>knowsAbout allineato a llms.txt e al copy della home</li>\n"
+"    </ul>\n"
+"    <p class=\"lede\">Vedi anche <a "
+"href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-"
+"txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs "
+"SoV</a>.</p>\n"
+"  </section>\n"
 
 #: services/guides.py:184
-#, fuzzy
 msgid "Score AIO/GEO vs Share of Voice"
 msgstr "점수 vs 음성 점유율"
 
@@ -328,12 +374,16 @@ msgid ""
 "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per "
 "answer engine (proxy o measured) in Centropic."
 msgstr ""
+"Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per "
+"answer engine (proxy o measured) in Centropic."
 
 #: services/guides.py:189
 msgid ""
 "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la "
 "presenza relativa negli engine."
 msgstr ""
+"Due metriche diverse: una valuta i segnali sul sito, l’altra stima la "
+"presenza relativa negli engine."
 
 #: services/guides.py:192
 msgid ""
@@ -367,22 +417,51 @@ msgid ""
 "nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
+"\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Score AIO / GEO</h2>\n"
+"    <p class=\"lede\">Indici 0–100 da crawl e probe. Badge Stimato sul "
+"compositario; singoli check di presenza file possono essere Misurato.</p>"
+"\n"
+"    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> premia "
+"leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. "
+"<strong>GEO (Generative Engine Optimization)</strong> premia citabilità e"
+" policy crawler AI.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + robots"
+" osservato. <strong>Measured</strong>: polling prompt su LLM (Plus) con "
+"conteggio menzioni brand. Non confondere i due.</p>\n"
+"    <p class=\"lede\">Per alzare SoV measured: rafforza entity pubblica "
+"(llms.txt, Organization, about), pubblica contenuti citabili, amplia il "
+"prompt bank con domande che il tuo mercato pone davvero.</p>\n"
+"  </section>\n"
+"  <section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Come leggerli insieme</h2>\n"
+"    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
+"(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
+"measured resta una diagnosi, non una prova di citazione.</p>\n"
+"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
+"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
+"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"  </section>\n"
 
 #: services/site_guide.py:16
 msgid ""
 "AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a "
 "modelli e crawler IA. Non significa All-in-One."
 msgstr ""
+"AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a "
+"modelli e crawler IA. Non significa All-in-One."
 
 #: services/site_guide.py:23
-#, fuzzy
 msgid ""
 "Generative Engine Optimization: ottimizzazione per essere citati nelle "
 "risposte generate da answer engine. Non significa GIS."
 msgstr "답변 엔진(ChatGPT, Perplexity, AI 검색)에서 생성된 답변에 인용되도록 얼마나 최적화되어 있는지."
 
 #: services/site_guide.py:28
-#, fuzzy
 msgid "SoV (Share of Voice)"
 msgstr "음성 점유율"
 
@@ -391,6 +470,8 @@ msgid ""
 "Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured"
 " = campionato via citation monitor (Plus)."
 msgstr ""
+"Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured"
+" = campionato via citation monitor (Plus)."
 
 #: services/site_guide.py:35 templates/dashboard.html:566
 #: templates/dashboard.html:762 templates/faq.html:35 templates/product.html:38
@@ -403,6 +484,8 @@ msgid ""
 "Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
 "API LLM configurate."
 msgstr ""
+"Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
+"API LLM configurate."
 
 #: services/site_guide.py:42 templates/faq.html:35 templates/product.html:28
 msgid "Stimato (proxy)"
@@ -413,9 +496,10 @@ msgid ""
 "Valore euristico derivato dai segnali del sito, non una citazione live "
 "nella UI dell’LLM."
 msgstr ""
+"Valore euristico derivato dai segnali del sito, non una citazione live "
+"nella UI dell’LLM."
 
 #: services/site_guide.py:49 services/site_guide.py:493
-#, fuzzy
 msgid "Indice DDD→AAA"
 msgstr "가이드 색인"
 
@@ -424,57 +508,70 @@ msgid ""
 "Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a "
 "eccellente (AAA)."
 msgstr ""
+"Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a "
+"eccellente (AAA)."
 
 #: services/site_guide.py:58
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
-msgstr ""
+msgstr "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
 
 #: services/site_guide.py:65
 msgid ""
 "Insieme di artifact generati dall’analisi (llms, schema, meta, robots, "
 "checklist)."
 msgstr ""
+"Insieme di artifact generati dall’analisi (llms, schema, meta, robots, "
+"checklist)."
 
 #: services/site_guide.py:72
 msgid ""
 "File root machine-readable che spiega brand, topic e URL preferiti ai "
 "modelli/crawler IA."
 msgstr ""
+"File root machine-readable che spiega brand, topic e URL preferiti ai "
+"modelli/crawler IA."
 
 #: services/site_guide.py:79
 msgid ""
 "Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage,"
 " …)."
 msgstr ""
+"Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage,"
+" …)."
 
 #: services/site_guide.py:86
 msgid ""
 "Endpoint Centropic /e/<token>/… che servono artifact aggiornati "
 "dinamicamente."
 msgstr ""
+"Endpoint Centropic /e/<token>/… che servono artifact aggiornati "
+"dinamicamente."
 
 #: services/site_guide.py:93
 msgid ""
 "Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo "
 "dominio verso Edge."
 msgstr ""
+"Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo "
+"dominio verso Edge."
 
 #: services/site_guide.py:100
 msgid ""
 "Payload macchina con versioning e metadati Edge per discovery e "
 "integrazioni."
 msgstr ""
+"Payload macchina con versioning e metadati Edge per discovery e "
+"integrazioni."
 
 #: services/site_guide.py:107
 msgid "Job Plus che invia prompt bank agli LLM e misura menzioni del brand."
-msgstr ""
+msgstr "Job Plus che invia prompt bank agli LLM e misura menzioni del brand."
 
 #: services/site_guide.py:114
 msgid "Elenco prompt usati per SoV measured; personalizzabile in Impostazioni."
-msgstr ""
+msgstr "Elenco prompt usati per SoV measured; personalizzabile in Impostazioni."
 
 #: services/site_guide.py:121
-#, fuzzy
 msgid "Set di prompt/checklist per settore (es. SaaS, local, ecommerce)."
 msgstr "산업별 프롬프트 및 체크리스트 세트를 적용하세요 (SaaS, 전자상거래, 지역, 에이전시, 미디어)."
 
@@ -483,6 +580,8 @@ msgid ""
 "Controllo che gli artifact pubblicati sul dominio siano raggiungibili e "
 "coerenti."
 msgstr ""
+"Controllo che gli artifact pubblicati sul dominio siano raggiungibili e "
+"coerenti."
 
 #: services/site_guide.py:135
 msgid "Rete di segnali entity (nome, sameAs, contatti) che disambiguano il brand."

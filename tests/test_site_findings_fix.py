@@ -30,7 +30,8 @@ def test_site_guide_does_not_link_broken_pricing():
     from app import app
     from services.site_guide import site_guide_payload
 
-    with app.app_context():
+    with app.test_request_context("/guida"):
+        app.preprocess_request()
         links = [d["href"] for d in site_guide_payload()["deep_links"]]
     assert "/pricing" not in links
     assert "/prezzi" in links

@@ -225,7 +225,18 @@ Snippet homepage: {scraped.get('snippet')}
         content = re.sub(r"\s*```$", "", content)
         content = _sanitize_generated_llms(content)
         return content.strip() + "\n"
-    except Exception:
+    except Exception as exc:
+        # Billing/lease failures after a paid completion must not become free fallback.
+        try:
+            from services.usage_billing import InsufficientCreditError, JobLeaseLostError
+        except Exception:
+            InsufficientCreditError = ()  # type: ignore
+            JobLeaseLostError = ()  # type: ignore
+        if isinstance(exc, (InsufficientCreditError, JobLeaseLostError)):
+            raise
+        msg = str(exc).lower()
+        if "lease lost" in msg or "debit failed" in msg or "stop billing" in msg:
+            raise
         if logger is not None:
             logger.exception("OpenAI generation failed; using fallback")
         return fallback_llms_txt(url, scraped)
@@ -624,38 +635,8 @@ def _robots_disallow_paths(
 
 def build_faq_json_ld(url: str, scraped: dict[str, Any]) -> str:
     """Build FAQPage JSON-LD from real Q&A only — never fake Cos'è + marketing H2."""
-    brand = _clean_brand_name(
-        str(scraped.get("domain") or urlparse(url).netloc),
-        scraped.get("title"),
-    )
-    domain = (scraped.get("domain") or urlparse(url).netloc or "").replace(
-        "www.", ""
-    )
-    description = (scraped.get("description") or "").strip()
-    snippet = (scraped.get("snippet") or "").strip()
-
+    # Real Q&A only — never invent Cos'è {brand}? marketing placeholders.
     pairs = _collect_faq_pairs(scraped)
-    if not pairs:
-        about = description or (
-            f"{brand} ({domain}): sito ufficiale. Maggiori dettagli su {url}."
-        )
-        pairs = [
-            {
-                "name": f"Cos’è {brand}?",
-                "text": about[:600],
-            },
-            {
-                "name": f"Dove trovo informazioni ufficiali su {brand}?",
-                "text": f"Consulta il sito ufficiale: {url}",
-            },
-        ]
-        if snippet and len(snippet) >= 80:
-            pairs.append(
-                {
-                    "name": f"Di cosa si occupa {brand}?",
-                    "text": snippet[:500],
-                }
-            )
 
     questions = []
     seen: set[str] = set()

@@ -122,10 +122,15 @@ def run_geo_suite(
             signals["sov_measured"] = monitored
             findings.extend(monitored.get("findings") or [])
         except Exception as exc:
-            # Soft-fail: mid-run credit exhaustion or provider errors must not
-            # discard the core crawl/score pack already computed.
-            from services.usage_billing import InsufficientCreditError
+            # Soft-fail credit stop only. Lease/debit failures must abort the job
+            # so a stolen lease cannot keep spending LLM after reclaim.
+            from services.usage_billing import InsufficientCreditError, JobLeaseLostError
 
+            if isinstance(exc, JobLeaseLostError):
+                raise
+            msg = str(exc).lower()
+            if "lease lost" in msg or "debit failed" in msg or "stop billing" in msg:
+                raise
             if isinstance(exc, InsufficientCreditError):
                 logger.warning("citation_monitor stopped: insufficient credit")
                 extras["sov_measured"] = {

@@ -880,13 +880,20 @@ def consume_hold(
     if amount <= 0:
         return 0
     UserModel = type(user)
-    db_session.query(UserModel).filter(
-        UserModel.id == user.id,
-        UserModel.credit_held_cents >= amount,
-    ).update(
-        {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
-        synchronize_session=False,
+    updated = (
+        db_session.query(UserModel)
+        .filter(
+            UserModel.id == user.id,
+            UserModel.credit_held_cents >= amount,
+        )
+        .update(
+            {UserModel.credit_held_cents: UserModel.credit_held_cents - amount},
+            synchronize_session=False,
+        )
     )
+    if updated != 1:
+        db_session.refresh(user)
+        return 0
     db_session.refresh(user)
     return amount
 
@@ -896,7 +903,7 @@ def release_job_hold(
     user: Any | None,
     job: Any,
 ) -> int:
-    """Release ``job.held_cents`` back to the user and clear the job marker."""
+    """Release ``job.held_cents`` back to the user; only clear what was released."""
     held = int(getattr(job, "held_cents", 0) or 0)
     if held <= 0:
         if hasattr(job, "held_cents"):
@@ -905,7 +912,9 @@ def release_job_hold(
     released = 0
     if user is not None:
         released = release_hold(db_session, user, amount_cents=held)
-    job.held_cents = 0
+    # Keep remainder marker if release raced / failed — reclaim can retry.
+    if hasattr(job, "held_cents"):
+        job.held_cents = max(0, held - int(released or 0))
     return released
 
 

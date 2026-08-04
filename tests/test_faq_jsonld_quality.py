@@ -38,12 +38,11 @@ def test_faq_does_not_wrap_marketing_headings():
     )
     assert "Cos’è Scopri se le IA ti citano" not in html
     assert "Cos’è Tre fasi" not in html
+    assert "Cos’è Signal Intelligence" not in html
     assert "informazioni ufficiali su centropic.ai. Dettagli su" not in html.lower()
     ents = _entities(html)
-    assert len(ents) >= 2
-    names = " ".join(e["name"] for e in ents)
-    assert "Scopri se le IA ti citano" not in names
-    assert "Centropic" in names
+    # No real FAQ on the page → empty mainEntity (never invent Cos'è {brand}?).
+    assert ents == []
 
 
 def test_faq_prefers_existing_jsonld_entities():

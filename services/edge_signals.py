@@ -35,7 +35,8 @@ AI_CRAWLER_USER_AGENTS: list[dict[str, str]] = [
     {"name": "YouBot", "vendor": "You.com", "ua": "YouBot", "purpose": "search"},
 ]
 
-CACHE_CONTROL = "public, max-age=300, stale-while-revalidate=3600"
+# Private/short TTL: plan downgrades must not keep serving Plus bodies via CDN.
+CACHE_CONTROL = "private, max-age=60"
 
 
 def new_public_token() -> str:
@@ -217,7 +218,7 @@ export default {{
     const out = new Headers(res.headers);
     out.set("Access-Control-Allow-Origin", "*");
     out.set("X-GeoPulse-Edge", "1");
-    out.set("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+    out.set("Cache-Control", "private, max-age=60");
     return new Response(res.body, {{ status: res.status, headers: out }});
   }},
 }};
@@ -259,7 +260,7 @@ def vercel_edge_config_snippet(*, origin_edge_base: str) -> str:
     {{
       "source": "/(llms.txt|robots.txt|geopulse/signals.json)",
       "headers": [
-        {{ "key": "Cache-Control", "value": "public, max-age=300, stale-while-revalidate=3600" }},
+        {{ "key": "Cache-Control", "value": "private, max-age=60" }},
         {{ "key": "X-GeoPulse-Edge", "value": "1" }}
       ]
     }}
