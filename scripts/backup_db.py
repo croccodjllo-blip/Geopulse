@@ -18,11 +18,18 @@ from pathlib import Path
 
 
 def resolve_db_path(database_url: str | None, base_dir: Path) -> Path:
+    """Resolve SQLite path from DATABASE_URL.
+
+    SQLAlchemy absolute forms:
+      sqlite:////opt/aio-bot/data/database.db  → /opt/aio-bot/data/database.db
+      sqlite:///relative.db                    → <base_dir>/relative.db
+    """
     uri = (database_url or "").strip()
     if not uri:
         return base_dir / "database.db"
     if uri.startswith("sqlite:////"):
-        return Path(uri.removeprefix("sqlite:////"))
+        # Four slashes ⇒ absolute filesystem path; keep leading "/".
+        return Path("/" + uri.removeprefix("sqlite:////"))
     if uri.startswith("sqlite:///"):
         rel = uri.removeprefix("sqlite:///")
         if rel == ":memory:":
