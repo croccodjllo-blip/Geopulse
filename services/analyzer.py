@@ -1312,6 +1312,12 @@ def analyze_site(
         blob = f"{label} {href}".lower()
         if re.search(r"\b404\b|not found|pagina non trovata", blob):
             continue
+        host = urlparse(str(href)).netloc.lower().removeprefix("www.")
+        if host.endswith("centropic.ai") and str(href).rstrip("/").endswith(
+            ("/pricing", "/price")
+        ):
+            href = re.sub(r"/(?:pricing|price)/?$", "/prezzi", str(href).rstrip("/"))
+            label = "Prezzi · centropic.ai"
         important.append(f"{label} -> {href}")
     scraped = {
         **scraped,
