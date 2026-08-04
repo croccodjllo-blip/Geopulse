@@ -229,13 +229,19 @@ MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "1")))
 PRO_DAILY_ANALYSES = max(FREE_TOTAL_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
 MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
 FREE_CRAWL_PAGES = max(1, min(20, int(os.getenv("FREE_CRAWL_PAGES", "8"))))
-# Piano Plus: 0 = crawl intero sito (tetto operativo ABS_MAX_CRAWL_PAGES).
-_PRO_CRAWL_RAW = int(os.getenv("PRO_CRAWL_PAGES", "0"))
+# Piano Plus: crawl cap di default (0 = illimitato fino ad ABS_MAX_CRAWL_PAGES).
+# Deep crawl opt-in usa PRO_DEEP_CRAWL_PAGES (max ABS_MAX).
+_PRO_CRAWL_RAW = int(os.getenv("PRO_CRAWL_PAGES", "120"))
 PRO_CRAWL_UNLIMITED = _PRO_CRAWL_RAW <= 0
 PRO_CRAWL_PAGES = (
     ABS_MAX_CRAWL_PAGES
     if PRO_CRAWL_UNLIMITED
     else max(FREE_CRAWL_PAGES, min(ABS_MAX_CRAWL_PAGES, _PRO_CRAWL_RAW))
+)
+_PRO_DEEP_RAW = int(os.getenv("PRO_DEEP_CRAWL_PAGES", "500"))
+PRO_DEEP_CRAWL_PAGES = max(
+    PRO_CRAWL_PAGES if not PRO_CRAWL_UNLIMITED else FREE_CRAWL_PAGES,
+    min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
@@ -1068,6 +1074,11 @@ class AnalyzeForm(FlaskForm):
         "Competitor (max 3 URL, uno per riga)",
         validators=[Optional(), Length(max=1500)],
     )
+    deep_crawl = BooleanField(
+        "Deep crawl (Plus: più pagine, più lento)",
+        default=False,
+        validators=[Optional()],
+    )
     submit = SubmitField("Analizza dominio")
 
 
@@ -1362,6 +1373,7 @@ def inject_globals() -> dict[str, Any]:
         "free_crawl_pages": FREE_CRAWL_PAGES,
         "pro_crawl_pages": PRO_CRAWL_PAGES,
         "pro_crawl_unlimited": PRO_CRAWL_UNLIMITED,
+        "deep_crawl_pages": PRO_DEEP_CRAWL_PAGES,
         "abs_max_crawl_pages": ABS_MAX_CRAWL_PAGES,
         "mail_ready": mail_configured(),
         "now_year": datetime.now(timezone.utc).year,
@@ -2096,6 +2108,50 @@ def history_limit_for(user: User) -> int:
     return plan_entitlements(user).history_limit
 
 
+def resolve_crawl_pages(user: User, *, deep_crawl: bool = False) -> int:
+    """Plus default cap; deep_crawl opt-in raises to PRO_DEEP_CRAWL_PAGES."""
+    if not getattr(user, "is_pro", False):
+        return int(FREE_CRAWL_PAGES)
+    if deep_crawl:
+        return int(PRO_DEEP_CRAWL_PAGES)
+    if PRO_CRAWL_UNLIMITED:
+        return int(ABS_MAX_CRAWL_PAGES)
+    return int(PRO_CRAWL_PAGES)
+
+
+def grant_plus_monthly_tokens(
+    *,
+    user: User,
+    idempotency_key: str,
+    description: str | None = None,
+) -> bool:
+    """Credit Plus monthly GEO tokens once per billing event. Returns True if granted."""
+    if PLUS_MONTHLY_CREDIT_CENTS <= 0 or not user or not idempotency_key:
+        return False
+    pi = str(idempotency_key).strip()
+    if not pi:
+        return False
+    already = CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
+    if already is not None:
+        return False
+    try:
+        topup_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_eur_cents=PLUS_MONTHLY_CREDIT_CENTS,
+            description=description
+            or (
+                f"Plus mensile: {format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
+            ),
+            stripe_payment_intent=pi,
+        )
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        return False
+
+
 def plan_entitlements(user: User | None):
     """Resolved Free/Plus entitlements for the current user."""
     return entitlements_for(
@@ -2193,7 +2249,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             AnalysisJob,
             user_id=user.id,
             url=url,
-            max_pages=user.crawl_pages,
+            max_pages=resolve_crawl_pages(user, deep_crawl=False),
             competitor_urls=[],
             run_measured=False,
             held_cents=held,
@@ -3061,29 +3117,15 @@ def billing_paddle_webhook():
 
                     _apply_plus(user)
                     if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
-                        pi = f"paddle-plus-tokens:{txn_id}"
-                        already = CreditLedger.query.filter_by(
-                            stripe_payment_intent=pi
-                        ).first()
-                        if already is None:
-                            try:
-                                topup_credit(
-                                    db.session,
-                                    CreditLedger,
-                                    user,
-                                    amount_eur_cents=PLUS_MONTHLY_CREDIT_CENTS,
-                                    description=(
-                                        f"Plus mensile: "
-                                        f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
-                                    ),
-                                    stripe_payment_intent=pi,
-                                )
-                            except IntegrityError:
-                                # Duplicate credit race: keep Plus plan, drop credit insert.
-                                db.session.rollback()
-                                user = _user_from_paddle(data) or user
-                                if user is not None and (user.plan or "").lower() != "admin":
-                                    _apply_plus(user)
+                        granted = grant_plus_monthly_tokens(
+                            user=user,
+                            idempotency_key=f"paddle-plus-tokens:{txn_id}",
+                        )
+                        if not granted:
+                            # Duplicate or race: keep Plus plan after possible rollback.
+                            user = _user_from_paddle(data) or user
+                            if user is not None and (user.plan or "").lower() != "admin":
+                                _apply_plus(user)
                     db.session.commit()
                 return jsonify({"ok": True})
 
@@ -3185,7 +3227,43 @@ def billing_webhook():
                         user.stripe_subscription_id = str(sub)
                     if (user.plan or "").lower() != "admin":
                         user.plan = "plus"
+                    session_id = str(data.get("id") or "").strip()
+                    if session_id:
+                        grant_plus_monthly_tokens(
+                            user=user,
+                            idempotency_key=f"stripe-plus-tokens:{session_id}",
+                            description=(
+                                f"Plus mensile (Stripe): "
+                                f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
+                            ),
+                        )
                     db.session.commit()
+        elif etype in {
+            "invoice.paid",
+            "invoice.payment_succeeded",
+        }:
+            # Recurring cycles only — first month credited on checkout.session.completed.
+            billing_reason = (data.get("billing_reason") or "").strip()
+            if billing_reason != "subscription_cycle":
+                return jsonify({"ok": True, "ignored": "invoice_reason"})
+            user = _user_from_meta(data)
+            if user is None and data.get("customer"):
+                user = User.query.filter_by(
+                    stripe_customer_id=str(data.get("customer"))
+                ).first()
+            if user is not None and (user.plan or "").lower() != "admin":
+                user.plan = "plus"
+                inv_id = str(data.get("id") or "").strip()
+                if inv_id:
+                    grant_plus_monthly_tokens(
+                        user=user,
+                        idempotency_key=f"stripe-plus-tokens:{inv_id}",
+                        description=(
+                            f"Plus mensile (Stripe invoice): "
+                            f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
+                        ),
+                    )
+                db.session.commit()
         elif etype in {
             "customer.subscription.updated",
             "customer.subscription.deleted",
@@ -3747,10 +3825,12 @@ def dashboard():
                 )
                 return redirect(url_for("topup_credit_page"))
             cost.service_cost_eur_cents = preflight.required_cost_cents
+            deep_crawl = bool(user.is_pro and form.deep_crawl.data)
+            crawl_pages = resolve_crawl_pages(user, deep_crawl=deep_crawl)
             improvement = estimate_improvement(
                 existing_site=existing,
                 run_measured=run_meas,
-                crawl_pages=user.crawl_pages,
+                crawl_pages=crawl_pages,
             )
             return render_template(
                 "confirm_analyze.html",
@@ -3762,6 +3842,8 @@ def dashboard():
                 grace_margin_pct=round(GRACE_MARGIN * 100, 1),
                 run_measured=run_meas,
                 competitors_raw=raw_comp,
+                deep_crawl=deep_crawl,
+                crawl_pages=crawl_pages,
             )
         except ValueError as exc:
             flash(str(exc), "error")
@@ -3951,6 +4033,8 @@ def dashboard_analyze_confirmed():
     url_raw = (request.form.get("url") or "").strip()
     run_measured_flag = request.form.get("run_measured") == "1"
     competitors_raw = (request.form.get("competitors") or "").strip()
+    deep_crawl = request.form.get("deep_crawl") == "1" and bool(user.is_pro)
+    crawl_pages = resolve_crawl_pages(user, deep_crawl=deep_crawl)
     # Ignore client cost_cents — recomputed server-side below.
 
     if not url_raw:
@@ -4103,7 +4187,7 @@ def dashboard_analyze_confirmed():
             AnalysisJob,
             user_id=user.id,
             url=url,
-            max_pages=user.crawl_pages,
+            max_pages=crawl_pages,
             competitor_urls=competitor_urls[:3],
             run_measured=run_meas,
             held_cents=held,
@@ -4126,6 +4210,7 @@ def dashboard_analyze_confirmed():
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="manual",
             usage_callback=_usage_cb,
+            max_pages=crawl_pages,
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
         )

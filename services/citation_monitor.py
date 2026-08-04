@@ -11,7 +11,9 @@ from __future__ import annotations
 import logging
 import os
 import re
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 from services.llm_retry import call_with_retries, http_should_retry, probe_pacing_seconds
@@ -931,6 +933,30 @@ def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
     return min(25.0, sum(scores) / len(scores) * 0.2)
 
 
+def _sov_engine_parallelism() -> int:
+    try:
+        n = int(os.getenv("SOV_ENGINE_PARALLEL", "3") or "3")
+    except (TypeError, ValueError):
+        n = 3
+    return max(1, min(6, n))
+
+
+def _sov_prompt_limit() -> int:
+    """Full pack size (default 8). Fast mode uses SOV_FAST_PROMPTS when set."""
+    try:
+        full = int(os.getenv("ANALYSIS_SOV_PROMPTS", "8") or "8")
+    except (TypeError, ValueError):
+        full = 8
+    mode = (os.getenv("SOV_PROMPT_MODE", "full") or "full").strip().lower()
+    if mode in {"fast", "quick", "lite"}:
+        try:
+            fast = int(os.getenv("SOV_FAST_PROMPTS", "3") or "3")
+        except (TypeError, ValueError):
+            fast = 3
+        return max(1, min(full, fast))
+    return max(1, min(8, full))
+
+
 def run_citation_monitor(
     *,
     brand: str,
@@ -940,11 +966,13 @@ def run_citation_monitor(
     usage_callback: Any | None = None,
     heartbeat_callback: Any | None = None,
 ) -> dict[str, Any]:
-    prompts = list(prompts or default_prompts(locale="it"))[:8]
+    limit = _sov_prompt_limit()
+    prompts = list(prompts or default_prompts(locale="it"))[:limit]
     needles = _needles(brand, domain)
     findings: list[dict[str, str]] = []
     engines_out: list[dict[str, Any]] = []
     all_details: list[dict[str, Any]] = []
+    usage_lock = threading.Lock()
 
     def _beat() -> None:
         if not callable(heartbeat_callback):
@@ -952,11 +980,43 @@ def run_citation_monitor(
         try:
             heartbeat_callback()
         except Exception:
-            # Propagate lease-loss / cancel so the worker can stop cleanly.
             raise
 
-    openai = _probe_openai(prompts, needles, usage_callback=usage_callback)
-    _beat()
+    def _usage(**kwargs: Any) -> None:
+        if not callable(usage_callback):
+            return
+        with usage_lock:
+            usage_callback(**kwargs)
+
+    # Probe engines in parallel (wall-clock ~ max(engine) not sum).
+    jobs: list[tuple[str, Any]] = [
+        ("openai", lambda: _probe_openai(prompts, needles, usage_callback=_usage)),
+        ("perplexity", lambda: _probe_perplexity(prompts, needles, usage_callback=_usage)),
+        ("anthropic", lambda: _probe_anthropic(prompts, needles, usage_callback=_usage)),
+        ("gemini", lambda: _probe_gemini(prompts, needles, usage_callback=_usage)),
+        ("xai", lambda: _probe_xai(prompts, needles, usage_callback=_usage)),
+        ("copilot", lambda: _probe_copilot(prompts, needles, usage_callback=_usage)),
+    ]
+    results: dict[str, dict[str, Any]] = {}
+    workers = _sov_engine_parallelism()
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(fn): name for name, fn in jobs}
+        for fut in as_completed(futures):
+            name = futures[fut]
+            try:
+                results[name] = fut.result() or {}
+            except Exception as exc:
+                logger.exception("SoV engine %s failed", name)
+                results[name] = {"available": False, "reason": str(exc)[:160]}
+            try:
+                _beat()
+            except Exception:
+                # Cancel remaining work on lease loss.
+                for pending in futures:
+                    pending.cancel()
+                raise
+
+    openai = results.get("openai") or {}
     if openai.get("available"):
         engines_out.append(
             {
@@ -984,8 +1044,7 @@ def run_citation_monitor(
             }
         )
 
-    pplx = _probe_perplexity(prompts, needles, usage_callback=usage_callback)
-    _beat()
+    pplx = results.get("perplexity") or {}
     if pplx.get("available"):
         engines_out.append(
             {
@@ -1014,8 +1073,7 @@ def run_citation_monitor(
             }
         )
 
-    anthropic = _probe_anthropic(prompts, needles, usage_callback=usage_callback)
-    _beat()
+    anthropic = results.get("anthropic") or {}
     if anthropic.get("available"):
         engines_out.append(
             {
@@ -1027,7 +1085,7 @@ def run_citation_monitor(
                 "samples": anthropic["samples"],
                 "evidence": "measured",
                 "accent": "#D4A27F",
-                "model": anthropic.get("model") or _anthropic_model(),
+                "model": anthropic.get("model"),
             }
         )
         all_details.extend(anthropic.get("details") or [])
@@ -1044,8 +1102,7 @@ def run_citation_monitor(
             }
         )
 
-    gemini = _probe_gemini(prompts, needles, usage_callback=usage_callback)
-    _beat()
+    gemini = results.get("gemini") or {}
     if gemini.get("available"):
         engines_out.append(
             {
@@ -1078,8 +1135,7 @@ def run_citation_monitor(
             }
         )
 
-    xai = _probe_xai(prompts, needles, usage_callback=usage_callback)
-    _beat()
+    xai = results.get("xai") or {}
     if xai.get("available"):
         engines_out.append(
             {
@@ -1109,8 +1165,7 @@ def run_citation_monitor(
             }
         )
 
-    copilot = _probe_copilot(prompts, needles, usage_callback=usage_callback)
-    _beat()
+    copilot = results.get("copilot") or {}
     if copilot.get("available"):
         engines_out.append(
             {
@@ -1176,7 +1231,7 @@ def run_citation_monitor(
                 "detail": (
                     f"Probe measured su {len(measured_rates)} engine · "
                     f"brand mention rate medio {brand_rate}% · "
-                    f"{len(prompts)} prompt."
+                    f"{len(prompts)} prompt · parallel={workers}."
                 ),
                 "evidence": "measured",
             }
@@ -1221,12 +1276,14 @@ def run_citation_monitor(
         "competitor_benchmark": competitor_benchmark,
         "competitor_pressure": round(pressure, 1),
         "findings": findings,
+        "parallel_engines": workers,
         "note": (
             "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / "
             "Azure AI (proxy Copilot): mention rate da prompt pack. "
             "Non equivale a ranking garantito nelle risposte live."
         ),
     }
+
 
 
 def run_measured_sov(

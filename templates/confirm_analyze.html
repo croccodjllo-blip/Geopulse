@@ -139,6 +139,7 @@
       <input type="hidden" name="url" value="{{ url }}">
       <input type="hidden" name="run_measured" value="{{ '1' if run_measured else '0' }}">
       <input type="hidden" name="competitors" value="{{ competitors_raw }}">
+      <input type="hidden" name="deep_crawl" value="{{ '1' if deep_crawl else '0' }}">
       <input type="hidden" name="cost_cents" value="{{ cost.service_cost_eur_cents }}">
       <button class="btn btn-core" type="submit">
         {% if current_user.is_admin %}

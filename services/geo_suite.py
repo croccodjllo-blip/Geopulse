@@ -121,8 +121,34 @@ def run_geo_suite(
             extras["sov_measured"] = monitored
             signals["sov_measured"] = monitored
             findings.extend(monitored.get("findings") or [])
-        except Exception:
-            logger.exception("citation_monitor failed")
+        except Exception as exc:
+            # Soft-fail: mid-run credit exhaustion or provider errors must not
+            # discard the core crawl/score pack already computed.
+            from services.usage_billing import InsufficientCreditError
+
+            if isinstance(exc, InsufficientCreditError):
+                logger.warning("citation_monitor stopped: insufficient credit")
+                extras["sov_measured"] = {
+                    "available": False,
+                    "evidence": "proxy",
+                    "label": "Interrotto (credito)",
+                    "findings": [
+                        {
+                            "category": "geo",
+                            "severity": "warn",
+                            "title": "SoV measured interrotto",
+                            "detail": (
+                                "Credito esaurito a metà citation monitor. "
+                                "Il report core resta disponibile; ricarica per SoV completo."
+                            ),
+                            "evidence": "estimated",
+                        }
+                    ],
+                }
+                signals["sov_measured"] = extras["sov_measured"]
+                findings.extend(extras["sov_measured"]["findings"])
+            else:
+                logger.exception("citation_monitor failed")
     elif run_measured and not user_can_run_measured(user):
         logger.info("Skip measured SoV: piano Free (richiede Plus)")
 

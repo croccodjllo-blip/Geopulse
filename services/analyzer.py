@@ -1314,7 +1314,8 @@ def analyze_site(
             comp_url = normalize_url(raw)
             if same_host(comp_url, base):
                 continue
-            comp = analyze_site(comp_url, max_pages=min(5, max_pages))
+            # Lightweight snapshot: homepage + root probes only (not mini-crawl).
+            comp = analyze_site(comp_url, max_pages=1)
             competitors.append(summarize_competitor(comp))
         except Exception:
             competitors.append({"url": raw, "error": "analisi non riuscita"})
