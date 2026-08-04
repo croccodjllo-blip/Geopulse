@@ -6,19 +6,21 @@ import { EngineVisibilityChart } from "@/components/EngineVisibilityChart";
 
 function isEmbedMode(): boolean {
   if (typeof window === "undefined") return false;
+  const w = window as Window & { __CENTROPIC_GEO_EMBED__?: boolean };
+  if (w.__CENTROPIC_GEO_EMBED__) return true;
   const q = new URLSearchParams(window.location.search);
-  return q.get("embed") === "1" || window.self !== window.top;
+  return q.get("embed") === "1";
 }
 
 /**
- * Centropic Enterprise GEO Dashboard — holographic brand + analytics shell.
- * When ?embed=1 (or iframed), hide the React sidebar — Flask owns navigation.
+ * Centropic Enterprise GEO Dashboard.
+ * Embed mode (Flask Live Charts): no React sidebar — Flask owns navigation.
  */
 export default function App() {
   const embed = isEmbedMode();
 
   return (
-    <div className={`min-h-screen bg-brand-bg text-white antialiased ${embed ? "" : ""}`}>
+    <div className="min-h-screen bg-brand-bg text-white antialiased">
       {embed ? null : (
         <Sidebar
           active="dashboard"

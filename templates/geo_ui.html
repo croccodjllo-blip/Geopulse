@@ -6,12 +6,25 @@
 
 {% block content %}
 <section class="geo-ui-embed" aria-label="{{ _('GEO Live Charts') }}">
-  <iframe
-    class="geo-ui-embed__frame"
-    title="{{ _('Centropic GEO Live Charts') }}"
-    src="{{ url_for('static', filename='geo-ui/index.html') }}?embed=1"
-    loading="lazy"
-    referrerpolicy="same-origin"
-  ></iframe>
+  {# Mount React in-page — avoids X-Frame-Options DENY / frame-ancestors none #}
+  <div id="root" class="geo-ui-embed__root"></div>
 </section>
+<script>
+  window.__CENTROPIC_GEO_EMBED__ = true;
+</script>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.css) }}"
+/>
+{% if geo_ui_assets.recharts %}
+<link
+  rel="modulepreload"
+  href="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.recharts) }}"
+/>
+{% endif %}
+<script
+  type="module"
+  crossorigin
+  src="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.js) }}"
+></script>
 {% endblock %}

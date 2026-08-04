@@ -3506,12 +3506,30 @@ def logout():
     return redirect(url_for("login"))
 
 
+def resolve_geo_ui_assets() -> dict[str, str]:
+    """Locate hashed Vite build assets under static/geo-ui/assets."""
+    assets_dir = os.path.join(app.static_folder or "static", "geo-ui", "assets")
+    css = js = recharts = ""
+    if os.path.isdir(assets_dir):
+        for name in sorted(os.listdir(assets_dir)):
+            if name.startswith("index-") and name.endswith(".css"):
+                css = name
+            elif name.startswith("index-") and name.endswith(".js"):
+                js = name
+            elif name.startswith("recharts-") and name.endswith(".js"):
+                recharts = name
+    return {"css": css, "js": js, "recharts": recharts}
+
+
 @app.route("/dashboard/geo-ui")
 @app.route("/dashboard/geo-ui/")
 @login_required
 def dashboard_geo_ui():
-    """GEO Live Charts inside the authenticated app shell (sidebar)."""
-    return render_template("geo_ui.html")
+    """GEO Live Charts mounted in-page (no iframe — CSP frame-ancestors none)."""
+    assets = resolve_geo_ui_assets()
+    if not assets.get("js") or not assets.get("css"):
+        abort(404)
+    return render_template("geo_ui.html", geo_ui_assets=assets)
 
 
 @app.route("/dashboard", methods=["GET", "POST"])

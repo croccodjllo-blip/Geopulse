@@ -7045,3 +7045,10 @@ body.body-auth {
     max-width: 100% !important;
   }
 }
+
+/* Live Charts — in-page React mount (no iframe) */
+.geo-ui-embed__root {
+  min-height: calc(100vh - var(--header-h) - 1px);
+  background: var(--brand-bg);
+}
+.geo-ui-embed__frame { display: none !important; }
