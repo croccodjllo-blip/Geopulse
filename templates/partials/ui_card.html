@@ -1,0 +1,13 @@
+{# Enterprise card shell — Centropic dashboard UI kit
+   Set variables before include: eyebrow, title, title_id, body, interactive, panel, class, id, labelledby
+   Put nested markup after include in a wrapper, or use class="ui-card" directly.
+#}
+<section class="ui-card{% if interactive %} ui-card--interactive{% endif %}{% if panel %} ui-card--panel{% endif %}{% if class %} {{ class }}{% endif %}"{% if id %} id="{{ id }}"{% endif %}{% if labelledby %} aria-labelledby="{{ labelledby }}"{% endif %}>
+  {% if eyebrow or title %}
+  <header>
+    {% if eyebrow %}<p class="ui-card__eyebrow">{{ eyebrow }}</p>{% endif %}
+    {% if title %}<h3 class="ui-card__title"{% if title_id %} id="{{ title_id }}"{% endif %}>{{ title }}</h3>{% endif %}
+  </header>
+  {% endif %}
+  {% if body %}<p class="ui-card__body">{{ body }}</p>{% endif %}
+</section>

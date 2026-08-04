@@ -1,20 +1,33 @@
-/* Centropic — Brand System
-   Design language: sintropia · signal intelligence · clarity
-   Palette: Chaos (night), Core (emerald), Flow (cyan), Clarity (platinum)
+/* Centropic — Enterprise Brand System
+   Design language: Deep Space · Quantum Cyan · Electric Violet
+   GEO / Generative Engine Optimization SaaS
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
-  /* ——— Centropic brand tokens ——— */
-  --color-chaos: #0A0F24;
-  --color-core: #00FF9D;
-  --color-flow: #00D2FF;
-  --color-clarity: #F5F7FA;
+  /* ——— Enterprise brand tokens ——— */
+  --brand-bg: #0B0F19;       /* Deep Space Navy */
+  --brand-card: #111827;     /* Dark Slate */
+  --brand-border: #1F2937;   /* Border subtle */
+  --brand-cyan: #00F0FF;     /* Quantum Cyan */
+  --brand-violet: #7000FF;   /* Electric Violet */
+  --brand-muted: #94A3B8;    /* Slate Grey */
+  --brand-clarity: #F8FAFC;
 
-  /* Gradienti del Brand */
-  --bg-gradient: linear-gradient(135deg, var(--color-chaos) 0%, #121A3A 100%);
-  --accent-gradient: linear-gradient(90deg, var(--color-flow) 0%, var(--color-core) 100%);
+  /* Legacy aliases → enterprise palette */
+  --color-chaos: var(--brand-bg);
+  --color-core: var(--brand-cyan);
+  --color-flow: var(--brand-cyan);
+  --color-violet: var(--brand-violet);
+  --color-clarity: var(--brand-clarity);
+
+  /* Gradienti del Brand: Cyan → Violet */
+  --bg-gradient:
+    radial-gradient(1200px 600px at 10% -10%, rgba(112, 0, 255, 0.18), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(0, 240, 255, 0.12), transparent 50%),
+    linear-gradient(160deg, #0B0F19 0%, #0F172A 55%, #0B0F19 100%);
+  --accent-gradient: linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-violet) 100%);
 
   /* Aliases (Tailwind + legacy vars) */
   --centropic-chaos: var(--color-chaos);
@@ -22,38 +35,40 @@
   --centropic-flow: var(--color-flow);
   --centropic-clarity: var(--color-clarity);
 
-  /* ——— Core palette (dark shell: ink = text, chaos = fills) ——— */
+  /* ——— Core palette (dark shell) ——— */
   --ink:         var(--color-clarity);
-  --ink-soft:    rgba(245, 247, 250, 0.78);
-  --ink-mid:     rgba(245, 247, 250, 0.55);
-  --ink-soft-bg: #121833;
-  --bg-deep:     var(--color-chaos);
+  --ink-soft:    rgba(248, 250, 252, 0.78);
+  --ink-mid:     rgba(248, 250, 252, 0.55);
+  --ink-soft-bg: var(--brand-card);
+  --bg-deep:     var(--brand-bg);
 
-  --slate:       #8B93A7;
-  --slate-light: #B4BBC9;
-  --slate-pale:  #D0D5DE;
+  --slate:       var(--brand-muted);
+  --slate-light: #CBD5E1;
+  --slate-pale:  #E2E8F0;
 
-  --surface:     rgba(245, 247, 250, 0.06);
-  --surface-2:   rgba(245, 247, 250, 0.09);
-  --surface-3:   rgba(245, 247, 250, 0.12);
-  --surface-4:   rgba(245, 247, 250, 0.16);
-  --surface-solid: #F5F7FA;
+  --surface:     rgba(248, 250, 252, 0.04);
+  --surface-2:   rgba(248, 250, 252, 0.07);
+  --surface-3:   rgba(248, 250, 252, 0.10);
+  --surface-4:   rgba(248, 250, 252, 0.14);
+  --surface-solid: var(--brand-card);
 
-  --border:      rgba(245, 247, 250, 0.12);
-  --border-mid:  rgba(245, 247, 250, 0.18);
-  --border-str:  rgba(245, 247, 250, 0.28);
+  --border:      var(--brand-border);
+  --border-mid:  #374151;
+  --border-str:  #4B5563;
 
-  /* ——— Brand accent: Core emerald + Flow cyan ——— */
-  --signal:      var(--color-core);
-  --signal-deep: #00D984;
-  --signal-glow: rgba(0, 255, 157, 0.22);
-  --signal-pale: rgba(0, 255, 157, 0.10);
-  --signal-soft: var(--color-flow);
+  /* ——— Brand accent: Quantum Cyan + Electric Violet ——— */
+  --signal:      var(--brand-cyan);
+  --signal-deep: #00C4D1;
+  --signal-glow: rgba(0, 240, 255, 0.22);
+  --signal-pale: rgba(0, 240, 255, 0.10);
+  --signal-soft: var(--brand-cyan);
+  --signal-violet: var(--brand-violet);
+  --signal-violet-glow: rgba(112, 0, 255, 0.22);
 
-  /* ——— Positive: emerald ——— */
-  --ok:     #00FF9D;
-  --ok-bg:  rgba(0, 255, 157, 0.12);
-  --ok-brd: rgba(0, 255, 157, 0.35);
+  /* ——— Positive ——— */
+  --ok:     #00F0FF;
+  --ok-bg:  rgba(0, 240, 255, 0.12);
+  --ok-brd: rgba(0, 240, 255, 0.35);
 
   /* ——— Warning: amber ——— */
   --warn:     #FBBF24;
@@ -65,9 +80,9 @@
   --danger-bg:  rgba(251, 113, 133, 0.12);
   --danger-brd: rgba(251, 113, 133, 0.35);
 
-  /* ——— Typography — Sora: geometric, AI-native precision ——— */
-  --font-display: "Sora", system-ui, sans-serif;
-  --font-body:    "Sora", system-ui, sans-serif;
+  /* ——— Typography — Plus Jakarta Sans ——— */
+  --font-display: "Plus Jakarta Sans", Inter, Geist, system-ui, sans-serif;
+  --font-body:    "Plus Jakarta Sans", Inter, Geist, system-ui, sans-serif;
   --font-mono:    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* ——— Geometry ——— */
@@ -85,6 +100,8 @@
   --shadow-lg:   0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.22);
   --shadow-xl:   0 25px 50px -12px rgba(0, 0, 0, 0.45);
   --shadow-signal: 0 0 0 3px var(--signal-glow);
+  --shadow-glow: 0 0 15px rgba(0, 240, 255, 0.15);
+  --shadow-glow-violet: 0 0 15px rgba(112, 0, 255, 0.2);
 
   /* ——— Easing ——— */
   --ease:    cubic-bezier(0.22, 1, 0.36, 1);
@@ -2047,7 +2064,7 @@ body.app-body:not(.body-dash) {
 }
 .analyze-overlay__title {
   margin: 0.45rem 0 0;
-  font-family: var(--font-display, Sora, sans-serif);
+  font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 700;
   color: #f8fafc;
@@ -4042,10 +4059,10 @@ html.analyze-busy {
    Orbital signal visualization (not a bar chart)
 ═══════════════════════════════════════════ */
 .pulse-core {
-  --pc-grad-a: #00D2FF;
-  --pc-grad-b: #00FF9D;
+  --pc-grad-a: #00F0FF;
+  --pc-grad-b: #00F0FF;
   --pc-grad-c: #00D984;
-  --pc-glow: #00FF9D;
+  --pc-glow: #00F0FF;
   --pc-ink: var(--color-clarity);
   --pc-muted: var(--slate-light);
   --pc-surface: var(--color-chaos);
@@ -4073,21 +4090,21 @@ html.analyze-busy {
   --pc-glow: #059669;
 }
 .pulse-core[data-band="high"] {
-  --pc-grad-a: #00D2FF;
-  --pc-grad-b: #00FF9D;
+  --pc-grad-a: #00F0FF;
+  --pc-grad-b: #00F0FF;
   --pc-grad-c: #22D3EE;
-  --pc-glow: #00FF9D;
+  --pc-glow: #00F0FF;
 }
 .pulse-core[data-band="mid"] {
   --pc-grad-a: #FCD34D;
-  --pc-grad-b: #00FF9D;
-  --pc-grad-c: #00D2FF;
+  --pc-grad-b: #00F0FF;
+  --pc-grad-c: #00F0FF;
   --pc-glow: #6366F1;
 }
 .pulse-core[data-band="low"] {
   --pc-grad-a: #FDBA74;
   --pc-grad-b: #D97706;
-  --pc-grad-c: #00FF9D;
+  --pc-grad-c: #00F0FF;
   --pc-glow: #D97706;
 }
 .pulse-core[data-band="crit"] {
@@ -4116,7 +4133,7 @@ html.analyze-busy {
   background:
     radial-gradient(circle at 50% 42%, rgba(0, 255, 157, 0.22), transparent 42%),
     radial-gradient(circle at 70% 70%, rgba(34, 211, 238, 0.08), transparent 45%),
-    linear-gradient(160deg, #111827 0%, #0A0F24 55%, #070B14 100%);
+    linear-gradient(160deg, #111827 0%, #0B0F19 55%, #070B14 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -4216,7 +4233,7 @@ html.analyze-busy {
 }
 
 .pc-satellite__dot {
-  fill: #00FF9D;
+  fill: #00F0FF;
   stroke: #fff;
   stroke-width: 1.5;
 }
@@ -4647,7 +4664,7 @@ html.analyze-busy {
   --signal-glow: rgba(0, 255, 157, 0.28);
   --signal-pale: rgba(0, 255, 157, 0.12);
   --signal-soft: var(--color-flow);
-  --ok: #00FF9D;
+  --ok: #00F0FF;
   --ok-bg: rgba(0, 255, 157, 0.12);
   --ok-brd: rgba(0, 255, 157, 0.35);
   --warn: #FBBF24;
@@ -5293,7 +5310,7 @@ html.analyze-busy {
 .body-dash .pulse-sat[data-grade="BBB"] .pulse-sat__mark,
 .body-dash .pulse-sat[data-grade="BB"] .pulse-sat__mark,
 .body-dash .pulse-sat[data-grade="B"] .pulse-sat__mark {
-  color: #00D2FF;
+  color: #00F0FF;
 }
 
 .body-dash .pulse-sat[data-grade="CCC"] .pulse-sat__mark,
@@ -5317,7 +5334,7 @@ html.analyze-busy {
 .body-dash .rail-card__grade[data-grade="BBB"],
 .body-dash .rail-card__grade[data-grade="BB"],
 .body-dash .rail-card__grade[data-grade="B"] {
-  color: #00D2FF;
+  color: #00F0FF;
 }
 
 .body-dash .rail-card__grade[data-grade="CCC"],
@@ -5478,14 +5495,14 @@ html.analyze-busy {
   padding: 1.1rem 1.25rem;
   border: 1px solid var(--border-mid);
   border-radius: var(--radius-md, 12px);
-  background: rgba(10, 15, 36, 0.96);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+  background: rgba(11, 15, 25, 0.96);
+  box-shadow: var(--shadow-glow), 0 18px 48px rgba(0, 0, 0, 0.35);
   color: var(--color-clarity);
 }
 .cookie-consent[hidden] { display: none !important; }
 .cookie-consent__title {
   margin: 0 0 0.35rem;
-  font-family: var(--font-display, "Sora", sans-serif);
+  font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 600;
 }
@@ -5514,4 +5531,248 @@ html.analyze-busy {
     width: min(26rem, calc(100vw - 2.5rem));
     margin: 0;
   }
+}
+
+/* ==========================================================================
+   Enterprise Dashboard UI Kit — Centropic GEO/AIO
+   Cards, CTAs, badges, metrics, panels (Deep Space / Cyan / Violet)
+   ========================================================================== */
+
+.ui-shell {
+  background: var(--bg-gradient);
+  color: var(--brand-clarity);
+  min-height: 100%;
+}
+
+.ui-card {
+  background: var(--brand-card);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glow);
+  padding: 1.25rem 1.35rem;
+}
+
+.ui-card--panel {
+  padding: 1.5rem 1.5rem 1.35rem;
+}
+
+.ui-card--interactive {
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.ui-card--interactive:hover {
+  border-color: rgba(0, 240, 255, 0.35);
+  box-shadow: var(--shadow-glow), 0 0 0 1px rgba(0, 240, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.ui-card__eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+
+.ui-card__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--brand-clarity);
+}
+
+.ui-card__body {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.ui-grid {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .ui-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ui-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ui-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.ui-metric {
+  background: var(--brand-card);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.2rem;
+  box-shadow: var(--shadow-glow);
+}
+
+.ui-metric__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+  margin-bottom: 0.45rem;
+}
+
+.ui-metric__value {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--brand-cyan);
+  text-shadow: 0 0 18px rgba(0, 240, 255, 0.25);
+  line-height: 1.1;
+}
+
+.ui-metric__hint {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--brand-muted);
+}
+
+.ui-metric--violet .ui-metric__value {
+  color: #B794FF;
+  text-shadow: 0 0 18px rgba(112, 0, 255, 0.35);
+}
+
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  line-height: 1.3;
+}
+
+.ui-badge--cyan {
+  color: var(--brand-bg);
+  background: var(--brand-cyan);
+  box-shadow: var(--shadow-glow);
+}
+
+.ui-badge--violet {
+  color: #EDE9FE;
+  background: rgba(112, 0, 255, 0.28);
+  border-color: rgba(112, 0, 255, 0.55);
+  box-shadow: var(--shadow-glow-violet);
+}
+
+.ui-badge--muted {
+  color: var(--brand-muted);
+  background: rgba(148, 163, 184, 0.12);
+  border-color: var(--brand-border);
+}
+
+.ui-badge--ai {
+  color: #EDE9FE;
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.18), rgba(112, 0, 255, 0.28));
+  border-color: rgba(112, 0, 255, 0.45);
+}
+
+.btn-primary,
+.btn.btn-primary {
+  background: var(--accent-gradient) !important;
+  color: #041018 !important;
+  border: none !important;
+  box-shadow: var(--shadow-glow);
+  font-weight: 700;
+}
+.btn-primary:hover,
+.btn.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.28);
+}
+
+.btn-signal,
+.btn.btn-signal {
+  background: var(--brand-cyan) !important;
+  color: var(--brand-bg) !important;
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-ghost,
+.btn.btn-ghost {
+  background: transparent !important;
+  color: var(--brand-clarity) !important;
+  border: 1px solid var(--brand-border) !important;
+}
+.btn-ghost:hover,
+.btn.btn-ghost:hover {
+  border-color: rgba(0, 240, 255, 0.4) !important;
+  color: var(--brand-cyan) !important;
+  box-shadow: var(--shadow-glow);
+}
+
+.ui-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.ui-divider {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--brand-border), transparent);
+  margin: 1.25rem 0;
+}
+
+.ui-node-line {
+  height: 2px;
+  border: 0;
+  background: var(--accent-gradient);
+  box-shadow: var(--shadow-glow);
+  opacity: 0.85;
+}
+
+.ui-insight {
+  border-left: 3px solid var(--brand-violet);
+  background: linear-gradient(90deg, rgba(112, 0, 255, 0.12), transparent 70%);
+  padding: 0.85rem 1rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.ui-insight__label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #B794FF;
+  margin-bottom: 0.3rem;
+}
+
+.dash-block--panel,
+.monitor-panel,
+.panel {
+  background: var(--brand-card);
+  border-color: var(--brand-border);
+}
+
+.workspace,
+.body-dash,
+.site-main--dash {
+  background: transparent;
+}
+
+/* Active nav / focus ring */
+.site-header .nav-links a.is-active {
+  color: var(--brand-cyan);
+}
+:focus-visible {
+  outline: 2px solid var(--brand-cyan);
+  outline-offset: 2px;
 }

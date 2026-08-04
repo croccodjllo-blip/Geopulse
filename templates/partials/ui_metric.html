@@ -1,0 +1,8 @@
+{# Enterprise metric tile — Centropic dashboard UI kit #}
+{# usage: {% include "partials/ui_metric.html" with context %}
+   expects: label, value, hint (optional), variant (optional: cyan|violet) #}
+<div class="ui-metric{% if variant == 'violet' %} ui-metric--violet{% endif %}">
+  <span class="ui-metric__label">{{ label }}</span>
+  <span class="ui-metric__value">{{ value }}</span>
+  {% if hint %}<span class="ui-metric__hint">{{ hint }}</span>{% endif %}
+</div>

@@ -1,9 +1,11 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from "tailwindcss";
+
 /**
- * JS mirror of tailwind.config.ts for tooling that does not load TypeScript.
- * Keep brand tokens in sync with tailwind.config.ts.
+ * Centropic.ai — Enterprise GEO/AIO design tokens.
+ * Flask templates consume the compiled/hand-authored CSS in static/css/app.css;
+ * this config is the source of truth for Tailwind utility generation and future UI kits.
  */
-module.exports = {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./templates/**/*.html",
@@ -16,13 +18,14 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          bg: "#0B0F19",
-          card: "#111827",
-          border: "#1F2937",
-          cyan: "#00F0FF",
-          violet: "#7000FF",
-          muted: "#94A3B8",
+          bg: "#0B0F19", // Deep Space Navy
+          card: "#111827", // Dark Slate
+          border: "#1F2937", // Border subtle
+          cyan: "#00F0FF", // Quantum Cyan
+          violet: "#7000FF", // Electric Violet
+          muted: "#94A3B8", // Slate Grey
         },
+        // Legacy Centropic aliases → new enterprise palette
         centropic: {
           chaos: "#0B0F19",
           core: "#00F0FF",
@@ -69,3 +72,5 @@ module.exports = {
   },
   plugins: [],
 };
+
+export default config;

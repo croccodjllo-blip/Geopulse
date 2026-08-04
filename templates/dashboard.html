@@ -210,6 +210,18 @@ https://rivale2.com", class_="analyze-input") }}
           {% set geo_offset = geo_c * (1 - geo_n / 100) %}
           {% set geo_angle = (geo_n / 100 * 360) - 90 %}
 
+          <div class="ui-grid ui-grid--3" style="margin: 1rem 0 1.25rem" aria-label="{{ _('Metriche chiave') }}">
+            {% with label='AIO', value=(aio if aio is number else '—'), hint=_('AI-Driven Visibility'), variant='cyan' %}
+              {% include "partials/ui_metric.html" %}
+            {% endwith %}
+            {% with label='GEO', value=(geo if geo is number else '—'), hint=_('Generative Engine Opt.'), variant='violet' %}
+              {% include "partials/ui_metric.html" %}
+            {% endwith %}
+            {% with label=_('Findings'), value=findings_n, hint=_('critical + warn'), variant='cyan' %}
+              {% include "partials/ui_metric.html" %}
+            {% endwith %}
+          </div>
+
           <div class="report-tabs" role="tablist" aria-label="{{ _('Vista report') }}">
             <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">{{ _('Score') }}</button>
             <button type="button" class="report-tabs__btn" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="false" data-tab="sov">{{ _('SoV') }}</button>
@@ -233,8 +245,8 @@ https://rivale2.com", class_="analyze-input") }}
                       <stop offset="100%" stop-color="var(--pc-grad-c)" />
                     </linearGradient>
                     <linearGradient id="geoArcGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stop-color="#00D2FF" stop-opacity="0.15" />
-                      <stop offset="100%" stop-color="#00FF9D" stop-opacity="0.85" />
+                      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.15" />
+                      <stop offset="100%" stop-color="#7000FF" stop-opacity="0.85" />
                     </linearGradient>
                     <radialGradient id="coreGlow" cx="50%" cy="45%" r="55%">
                       <stop offset="0%" stop-color="var(--pc-glow)" stop-opacity="0.55" />

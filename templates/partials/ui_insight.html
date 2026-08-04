@@ -1,0 +1,5 @@
+{# AI insight callout — Electric Violet accent #}
+<aside class="ui-insight"{% if role %} role="{{ role }}"{% endif %}>
+  {% if label %}<span class="ui-insight__label">{{ label }}</span>{% endif %}
+  <div class="ui-insight__text">{{ text }}</div>
+</aside>
