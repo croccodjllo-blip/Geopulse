@@ -1408,7 +1408,14 @@ class AlertDelivery(db.Model):
 
 def ensure_schema() -> None:
     """create_all + colonne nuove su SQLite già esistente."""
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as exc:
+        # Gunicorn multi-worker race: two boots CREATE TABLE at once.
+        msg = str(exc).lower()
+        if "already exists" not in msg and "duplicate" not in msg:
+            raise
+        app.logger.warning("ensure_schema create_all race ignored: %s", exc)
     with db.engine.begin() as conn:
         conn.execute(text("PRAGMA journal_mode=WAL"))
         conn.execute(text("PRAGMA synchronous=NORMAL"))
