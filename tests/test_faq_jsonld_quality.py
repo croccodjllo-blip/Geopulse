@@ -30,7 +30,7 @@ def test_faq_does_not_wrap_marketing_headings():
             ),
             "headings": [
                 "Scopri se le IA ti citano",
-                "I modelli citano ciò che è chiaro e strutturato.",
+                "Le IA consigliano chi è chiaro da citare.",
                 "Tre fasi. Output operativo.",
                 "Diagnosi, priorità, artifact.",
             ],
