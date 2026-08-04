@@ -89,7 +89,20 @@
     {% endif %}
     <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        <a class="brand-mark brand-mark--holo" href="{{ url_for('index') if not _dash_shell else url_for('dashboard') }}" aria-label="Centropic home">
+        {% if _dash_shell %}
+        <button
+          type="button"
+          class="app-sidebar__toggle"
+          data-sidebar-toggle
+          aria-controls="app-sidebar"
+          aria-expanded="false"
+          aria-label="{{ _('Apri menu') }}"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <p class="site-header__dash-title">{{ self.title() }}</p>
+        {% else %}
+        <a class="brand-mark brand-mark--holo" href="{{ url_for('index') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
             src="{{ url_for('static', filename='img/logo.svg') }}"
@@ -100,6 +113,7 @@
           />
           <span class="brand-mark__word holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></span>
         </a>
+        {% endif %}
         <nav class="nav-links" aria-label="{{ _('Principale') }}">
           {% if current_user %}
             {% if not _dash_shell %}
@@ -110,16 +124,17 @@
             <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Crediti') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">Plus</a>
             {% else %}
-            <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
-            <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Crediti') }}</a>
+            <span class="nav-user" title="{{ current_user.email }}">{{ current_user.name.split(' ')[0] }}</span>
             {% endif %}
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
+            {% if not _dash_shell %}
             <form method="post" action="{{ url_for('logout') }}" style="display:inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit">{{ _('Esci') }}</button>
             </form>
+            {% endif %}
           {% else %}
             <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
@@ -261,6 +276,7 @@
     {% endif %}
     <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/shell.js') }}" defer></script>
     {% if paddle_overlay and paddle_config and paddle_config.clientToken %}
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>

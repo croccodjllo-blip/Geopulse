@@ -1,4 +1,4 @@
-{# Enterprise app sidebar — mirrors components/Sidebar.tsx #}
+{# Enterprise app sidebar — primary workspace navigation #}
 {% set nav = sidebar_active|default('dashboard') %}
 {% set plan = sidebar_plan|default(current_user.plan_label if current_user else 'Free') %}
 {% set used = sidebar_credits_used|default(0) %}
@@ -10,74 +10,96 @@
 {% set pct = 0 %}
 {% endif %}
 
-<aside class="app-sidebar" aria-label="{{ _('Navigazione workspace') }}">
+<aside class="app-sidebar" id="app-sidebar" aria-label="{{ _('Navigazione workspace') }}">
   <div class="app-sidebar__top">
     <div class="app-sidebar__brand">
-      <div class="app-sidebar__mark" aria-hidden="true">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" width="24" height="24" alt="" decoding="async">
-      </div>
-      <div>
-        <p class="app-sidebar__title">centropic<span>.ai</span></p>
-        <p class="app-sidebar__tag">GEO Intelligence Engine</p>
-      </div>
+      <a class="app-sidebar__brand-link" href="{{ url_for('dashboard') }}" aria-label="Centropic dashboard">
+        <span class="app-sidebar__mark" aria-hidden="true">
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" width="24" height="24" alt="" decoding="async">
+        </span>
+        <span class="app-sidebar__brand-text">
+          <span class="app-sidebar__title">centropic<span>.ai</span></span>
+          <span class="app-sidebar__tag">GEO Intelligence</span>
+        </span>
+      </a>
+      <button
+        type="button"
+        class="app-sidebar__close"
+        data-sidebar-close
+        aria-label="{{ _('Chiudi menu') }}"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
     </div>
 
     <nav class="app-sidebar__nav">
-      <a href="{{ url_for('dashboard') }}" class="app-sidebar__link{% if nav == 'dashboard' %} is-active{% endif %}">
+      <a href="{{ url_for('dashboard') }}" class="app-sidebar__link{% if nav == 'dashboard' %} is-active{% endif %}" {% if nav == 'dashboard' %}aria-current="page"{% endif %}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        {{ _('Dashboard') }}
+        <span class="app-sidebar__link-label">{{ _('Dashboard') }}</span>
       </a>
-      <a href="{{ url_for('dashboard') }}#sov" class="app-sidebar__link{% if nav == 'tracker' %} is-active{% endif %}">
+      <a href="{{ url_for('dashboard') }}#panel-sov" class="app-sidebar__link{% if nav == 'tracker' %} is-active{% endif %}" data-dash-tab="sov">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
-        {{ _('Multi-LLM Tracker') }}
-      </a>
-      <a href="{{ url_for('dashboard_geo_ui') }}" class="app-sidebar__link{% if nav == 'geo-ui' %} is-active{% endif %}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-        {{ _('GEO Live Charts') }}
+        <span class="app-sidebar__link-label">{{ _('Share of Voice') }}</span>
       </a>
       <a href="{{ url_for('dashboard') }}#edge-signals" class="app-sidebar__link{% if nav == 'geo' %} is-active{% endif %}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-        {{ _('GEO Optimization') }}
+        <span class="app-sidebar__link-label">{{ _('Edge Signals') }}</span>
       </a>
-      <a href="{{ url_for('dashboard') }}#edge-signals" class="app-sidebar__link{% if nav == 'integrations' %} is-active{% endif %}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>
-        {{ _('Integrations & CMS') }}
+      <a href="{{ url_for('dashboard_geo_ui') }}" class="app-sidebar__link{% if nav == 'geo-ui' %} is-active{% endif %}" {% if nav == 'geo-ui' %}aria-current="page"{% endif %}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        <span class="app-sidebar__link-label">{{ _('Live Charts') }}</span>
       </a>
-      {% if current_user and current_user.is_pro %}
-      <a href="{{ url_for('dashboard_history') }}" class="app-sidebar__link{% if nav == 'history' %} is-active{% endif %}">
+      <a href="{{ url_for('dashboard_history') }}" class="app-sidebar__link{% if nav == 'history' %} is-active{% endif %}" {% if nav == 'history' %}aria-current="page"{% endif %}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-        {{ _('Storico') }}
+        <span class="app-sidebar__link-label">{{ _('Storico') }}</span>
       </a>
-      {% endif %}
-      <a href="{{ url_for('dashboard_settings') }}" class="app-sidebar__link{% if nav == 'settings' %} is-active{% endif %}">
+      <a href="{{ url_for('dashboard_guide') }}" class="app-sidebar__link{% if nav == 'guide' %} is-active{% endif %}" {% if nav == 'guide' %}aria-current="page"{% endif %}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span class="app-sidebar__link-label">{{ _('Guida') }}</span>
+      </a>
+      <a href="{{ url_for('dashboard_settings') }}" class="app-sidebar__link{% if nav == 'settings' %} is-active{% endif %}" {% if nav == 'settings' %}aria-current="page"{% endif %}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-        {{ _('Impostazioni') }}
+        <span class="app-sidebar__link-label">{{ _('Impostazioni') }}</span>
+      </a>
+      <a href="{{ url_for('topup_credit_page') }}" class="app-sidebar__link{% if nav == 'billing' %} is-active{% endif %}" {% if nav == 'billing' %}aria-current="page"{% endif %}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+        <span class="app-sidebar__link-label">{{ _('Crediti') }}</span>
       </a>
     </nav>
   </div>
 
-  <div class="app-sidebar__credits">
-    <div class="app-sidebar__credits-row">
-      <span>{{ _('GEO Credits') }}</span>
-      <strong>
-        {% if cap %}
-          {{ used }} / {{ cap }}
-        {% else %}
-          €{{ '%.2f'|format((sidebar_balance_cents|default(0)) / 100) }}
-        {% endif %}
-      </strong>
+  <div class="app-sidebar__foot">
+    <div class="app-sidebar__credits">
+      <div class="app-sidebar__credits-row">
+        <span>{{ _('GEO Credits') if cap else _('Saldo') }}</span>
+        <strong>
+          {% if cap %}
+            {{ used }} / {{ cap }}
+          {% else %}
+            €{{ '%.2f'|format((sidebar_balance_cents|default(0)) / 100) }}
+          {% endif %}
+        </strong>
+      </div>
+      {% if cap %}
+      <div class="app-sidebar__bar" aria-hidden="true">
+        <div class="app-sidebar__bar-fill" style="width: {{ '%.1f'|format(pct) }}%"></div>
+      </div>
+      {% endif %}
+      <div class="app-sidebar__credits-foot">
+        <span class="ui-badge ui-badge--violet">{{ plan }}</span>
+        <a href="{{ url_for('pricing') }}" class="app-sidebar__billing">Plus</a>
+      </div>
     </div>
-    {% if cap %}
-    <div class="app-sidebar__bar" aria-hidden="true">
-      <div class="app-sidebar__bar-fill" style="width: {{ '%.1f'|format(pct) }}%"></div>
-    </div>
+
+    {% if current_user %}
+    <form method="post" action="{{ url_for('logout') }}" class="app-sidebar__logout">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button type="submit" class="app-sidebar__logout-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        {{ _('Esci') }}
+      </button>
+    </form>
     {% endif %}
-    <div class="app-sidebar__credits-foot">
-      <span class="ui-badge ui-badge--violet">{{ plan }}</span>
-      <a href="{{ url_for('topup_credit_page') }}" class="app-sidebar__billing">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-        {{ _('Billing') }}
-      </a>
-    </div>
   </div>
 </aside>
+<div class="app-sidebar__backdrop" data-sidebar-backdrop hidden></div>

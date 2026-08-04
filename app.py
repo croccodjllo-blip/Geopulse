@@ -1319,10 +1319,16 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "history"
         elif ep in {"topup_credit_page"}:
             sidebar_active = "billing"
+        elif ep in {"dashboard_guide"}:
+            sidebar_active = "guide"
+        elif ep in {"dashboard_geo_ui"}:
+            sidebar_active = "geo-ui"
         elif ep in {"dashboard_verify", "dashboard_verify_rescan"}:
             sidebar_active = "geo"
         elif "history" in ep:
             sidebar_active = "history"
+        elif ep == "dashboard":
+            sidebar_active = "dashboard"
         else:
             sidebar_active = "dashboard"
     return {

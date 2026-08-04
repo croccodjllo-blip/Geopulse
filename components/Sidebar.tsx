@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Bot,
   Sparkles,
-  Plug,
   Settings,
   CreditCard,
   History,
@@ -89,14 +88,14 @@ export function Sidebar({
   creditsUsed = 0,
   creditsCap = 10000,
   creditsLabel = "GEO Credits",
-  billingHref = "#",
-  dashboardHref = "#",
-  trackerHref = "#",
-  geoHref = "#",
-  integrationsHref = "#",
-  historyHref = "#",
-  settingsHref = "#",
-  logoSrc,
+  billingHref = "/prezzi",
+  dashboardHref = "/dashboard",
+  trackerHref = "/dashboard#panel-sov",
+  geoHref = "/dashboard#edge-signals",
+  integrationsHref = "/dashboard#edge-signals",
+  historyHref = "/dashboard/storico",
+  settingsHref = "/dashboard/impostazioni",
+  logoSrc = "/static/img/logo.svg",
 }: SidebarProps) {
   const pct =
     creditsCap > 0
@@ -104,59 +103,59 @@ export function Sidebar({
       : 0;
 
   return (
-    <aside className="w-64 bg-brand-card border-r border-brand-border h-screen flex flex-col justify-between p-4 fixed left-0 top-0 z-40">
-      <div>
-        <div className="flex items-center gap-3 px-2 py-4 border-b border-brand-border/60 mb-6">
-          <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-violet/20 border border-brand-cyan/40 shadow-glow">
+    <aside className="w-64 max-w-[16rem] bg-brand-card border-r border-brand-border h-screen flex flex-col justify-between p-4 fixed left-0 top-0 z-40 overflow-hidden">
+      <div className="min-h-0 flex flex-col flex-1 overflow-hidden">
+        <a
+          href={dashboardHref}
+          className="flex items-center gap-3 px-2 py-4 border-b border-brand-border/60 mb-4 min-w-0"
+        >
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-violet/20 border border-brand-cyan/40 shadow-glow shrink-0">
             <LogoMark src={logoSrc} />
           </div>
-          <div>
-            <h1 className="text-lg font-bold tracking-wide bg-gradient-to-r from-[#0066FF] via-brand-cyan to-brand-violet bg-clip-text text-transparent">
+          <div className="min-w-0">
+            <h1 className="text-base font-bold tracking-wide text-white truncate">
               centropic
-              <span className="font-medium">.ai</span>
+              <span className="text-brand-cyan font-medium">.ai</span>
             </h1>
-            <p className="text-xs text-brand-muted">GEO Intelligence Engine</p>
+            <p className="text-xs text-brand-muted truncate">GEO Intelligence</p>
           </div>
-        </div>
+        </a>
 
-        <nav className="space-y-1" aria-label="Primary">
+        <nav className="space-y-1 overflow-y-auto min-h-0 pr-1" aria-label="Primary">
           <a href={dashboardHref} className={navItemClass(active === "dashboard")}>
             <LayoutDashboard
-              className={`w-4 h-4 ${active === "dashboard" ? "text-brand-cyan" : ""}`}
+              className={`w-4 h-4 shrink-0 ${active === "dashboard" ? "text-brand-cyan" : ""}`}
               aria-hidden
             />
-            Dashboard
+            <span className="truncate">Dashboard</span>
           </a>
           <a href={trackerHref} className={navItemClass(active === "tracker")}>
-            <Bot className="w-4 h-4" aria-hidden />
-            Multi-LLM Tracker
+            <Bot className="w-4 h-4 shrink-0" aria-hidden />
+            <span className="truncate">Share of Voice</span>
           </a>
           <a href={geoHref} className={navItemClass(active === "geo")}>
-            <Sparkles className="w-4 h-4" aria-hidden />
-            GEO Optimization
-          </a>
-          <a
-            href={integrationsHref}
-            className={navItemClass(active === "integrations")}
-          >
-            <Plug className="w-4 h-4" aria-hidden />
-            Integrations &amp; CMS
+            <Sparkles className="w-4 h-4 shrink-0" aria-hidden />
+            <span className="truncate">Edge Signals</span>
           </a>
           <a href={historyHref} className={navItemClass(active === "history")}>
-            <History className="w-4 h-4" aria-hidden />
-            History
+            <History className="w-4 h-4 shrink-0" aria-hidden />
+            <span className="truncate">History</span>
           </a>
           <a href={settingsHref} className={navItemClass(active === "settings")}>
-            <Settings className="w-4 h-4" aria-hidden />
-            Settings
+            <Settings className="w-4 h-4 shrink-0" aria-hidden />
+            <span className="truncate">Settings</span>
+          </a>
+          <a href={billingHref} className={navItemClass(active === "billing")}>
+            <CreditCard className="w-4 h-4 shrink-0" aria-hidden />
+            <span className="truncate">Billing</span>
           </a>
         </nav>
       </div>
 
-      <div className="p-4 rounded-xl bg-brand-bg border border-brand-border space-y-3">
-        <div className="flex justify-between items-center text-xs">
-          <span className="text-brand-muted">{creditsLabel}</span>
-          <span className="text-brand-cyan font-semibold">
+      <div className="p-4 rounded-xl bg-brand-bg border border-brand-border space-y-3 shrink-0 mt-4">
+        <div className="flex justify-between items-center text-xs gap-2">
+          <span className="text-brand-muted truncate">{creditsLabel}</span>
+          <span className="text-brand-cyan font-semibold whitespace-nowrap">
             {creditsCap > 0
               ? `${creditsUsed.toLocaleString()} / ${creditsCap.toLocaleString()}`
               : creditsUsed.toLocaleString()}
@@ -170,7 +169,7 @@ export function Sidebar({
             />
           </div>
         ) : null}
-        <div className="flex items-center justify-between pt-2 border-t border-brand-border/40 text-xs">
+        <div className="flex items-center justify-between pt-2 border-t border-brand-border/40 text-xs gap-2">
           <span className="px-2 py-0.5 rounded bg-brand-violet/20 text-brand-violet border border-brand-violet/30 font-medium">
             {planLabel}
           </span>
@@ -178,7 +177,7 @@ export function Sidebar({
             href={billingHref}
             className="text-brand-muted hover:text-white flex items-center gap-1 transition-colors"
           >
-            <CreditCard className="w-3 h-3" aria-hidden /> Billing
+            <CreditCard className="w-3 h-3" aria-hidden /> Plus
           </a>
         </div>
       </div>
