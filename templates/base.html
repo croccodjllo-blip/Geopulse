@@ -27,7 +27,7 @@
     <meta property="og:url" content="{{ self.canonical() }}" />
     <meta property="og:image" content="{{ url_for('static', filename='img/hero-earth.jpg', _external=True) }}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#0B0F19" />
+    <meta name="theme-color" content="#080B10" />
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
@@ -89,7 +89,7 @@
     {% endif %}
     <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        <a class="brand-mark" href="{{ url_for('index') if not _dash_shell else url_for('dashboard') }}" aria-label="Centropic home">
+        <a class="brand-mark brand-mark--holo" href="{{ url_for('index') if not _dash_shell else url_for('dashboard') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
             src="{{ url_for('static', filename='img/logo.svg') }}"
@@ -98,7 +98,7 @@
             height="32"
             decoding="async"
           />
-          <span class="brand-mark__word">CENTROPIC<span class="brand-mark__ai">.AI</span></span>
+          <span class="brand-mark__word holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></span>
         </a>
         <nav class="nav-links" aria-label="{{ _('Principale') }}">
           {% if current_user %}
@@ -184,7 +184,7 @@
               height="32"
               decoding="async"
             />
-            <span class="brand-mark__word">CENTROPIC<span class="brand-mark__ai">.AI</span></span>
+            <span class="brand-mark__word holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></span>
           </a>
           <p>{{ _('Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle risposte IA. Prodotto di') }} <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.</p>
         </div>

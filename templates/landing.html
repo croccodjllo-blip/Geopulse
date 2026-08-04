@@ -22,13 +22,15 @@
   </div>
 
   <div class="hero-copy hero-copy--v2">
-    <p class="hero-brand hero-brand--v2" id="hero-brand">
-      <img class="hero-brand__logo" src="{{ url_for('static', filename='img/logo.svg') }}" width="72" height="72" alt="" decoding="async">
+    <div class="hero-brand hero-brand--v2 hero-brand--holo" id="hero-brand">
+      <span class="holo-brand__emblem holo-brand__emblem--hero" aria-hidden="true">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" width="88" height="88" alt="" decoding="async">
+      </span>
       <span class="hero-brand__lockup">
-        <span class="hero-brand__mark">CENTROPIC<span class="hero-brand__ai">.AI</span></span>
+        <span class="holo-brand__word holo-brand__word--hero">centropic<span>.ai</span></span>
         <span class="hero-brand__ver">{{ _('GEO Intelligence') }}</span>
       </span>
-    </p>
+    </div>
     <h1 class="hero-headline hero-headline--v2">
       {{ _('Ordine nelle risposte') }}
       <span class="text-gradient">{{ _('generative') }}</span>

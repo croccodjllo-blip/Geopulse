@@ -7,12 +7,13 @@
 
 :root {
   /* ——— Enterprise brand tokens ——— */
-  --brand-bg: #0B0F19;       /* Deep Space Navy */
-  --brand-card: #111827;     /* Dark Slate */
-  --brand-border: #1F2937;   /* Border subtle */
-  --brand-cyan: #00F0FF;     /* Quantum Cyan */
-  --brand-violet: #7000FF;   /* Electric Violet */
-  --brand-muted: #94A3B8;    /* Slate Grey */
+  --brand-bg: #080B10;       /* Liquid chrome / metallic carbon */
+  --brand-card: #121824;     /* Carbon panel */
+  --brand-border: #1F2937;
+  --brand-cyan: #00F0FF;     /* Neon Electric Cyan */
+  --brand-blue: #0066FF;     /* Quantum Blue */
+  --brand-violet: #8A2BE2;   /* Holographic Violet / UV */
+  --brand-muted: #94A3B8;
   --brand-clarity: #F8FAFC;
 
   /* Legacy aliases → enterprise palette */
@@ -22,12 +23,13 @@
   --color-violet: var(--brand-violet);
   --color-clarity: var(--brand-clarity);
 
-  /* Gradienti del Brand: Cyan → Violet */
+  /* Gradienti: Quantum Blue → Cyan → Violet */
   --bg-gradient:
-    radial-gradient(1200px 600px at 10% -10%, rgba(112, 0, 255, 0.18), transparent 55%),
+    radial-gradient(1200px 600px at 10% -10%, rgba(138, 43, 226, 0.16), transparent 55%),
     radial-gradient(900px 500px at 90% 0%, rgba(0, 240, 255, 0.12), transparent 50%),
-    linear-gradient(160deg, #0B0F19 0%, #0F172A 55%, #0B0F19 100%);
-  --accent-gradient: linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-violet) 100%);
+    linear-gradient(160deg, #080B10 0%, #0C1220 55%, #121824 100%);
+  --accent-gradient: linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-cyan) 50%, var(--brand-violet) 100%);
+  --iridescent: linear-gradient(90deg, #0066FF 0%, #00F0FF 45%, #8A2BE2 100%);
 
   /* Aliases (Tailwind + legacy vars) */
   --centropic-chaos: var(--color-chaos);
@@ -63,7 +65,7 @@
   --signal-pale: rgba(0, 240, 255, 0.10);
   --signal-soft: var(--brand-cyan);
   --signal-violet: var(--brand-violet);
-  --signal-violet-glow: rgba(112, 0, 255, 0.22);
+  --signal-violet-glow: rgba(138, 43, 226, 0.25);
 
   /* ——— Positive ——— */
   --ok:     #00F0FF;
@@ -6564,4 +6566,148 @@ body.body-auth {
   .brand-mark__logo {
     animation: none !important;
   }
+}
+
+/* ═══════════════════════════════════════════
+   HOLOGRAPHIC BRAND MODULE
+═══════════════════════════════════════════ */
+
+.holo-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.holo-brand__emblem {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: radial-gradient(circle at 40% 35%, rgba(0, 240, 255, 0.18), transparent 55%), #080B10;
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.22),
+    0 0 28px rgba(0, 240, 255, 0.22),
+    0 0 48px rgba(138, 43, 226, 0.12);
+  padding: 0.2rem;
+}
+.holo-brand__emblem img {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.35));
+}
+.holo-brand__emblem--hero {
+  padding: 0.35rem;
+}
+.holo-brand__emblem--hero img {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.holo-brand__word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  line-height: 1;
+  background: var(--iridescent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.28));
+}
+.holo-brand__word span {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.holo-brand__word--nav {
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+}
+.holo-brand__word--hero {
+  font-size: clamp(2rem, 5.5vw, 3.25rem);
+  letter-spacing: 0.1em;
+}
+
+.holo-brand__tag {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+
+.brand-mark--holo .brand-mark__logo {
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.2),
+    0 0 18px rgba(0, 240, 255, 0.2);
+}
+
+.brand-mark--holo .holo-brand__word--nav {
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  background: var(--iridescent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-brand--holo {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin: 0 0 1.75rem;
+}
+
+.hero-visual--field {
+  background:
+    radial-gradient(ellipse 60% 55% at 72% 48%, rgba(0, 240, 255, 0.16) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 45% at 18% 72%, rgba(138, 43, 226, 0.18) 0%, transparent 55%),
+    linear-gradient(165deg, #080B10 0%, #0C1220 45%, #121824 100%);
+}
+
+.hero-visual__core img {
+  filter: drop-shadow(0 0 48px rgba(0, 240, 255, 0.28)) drop-shadow(0 0 72px rgba(138, 43, 226, 0.18));
+  animation: holo-pulse 4.8s var(--ease) infinite;
+}
+
+@keyframes holo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 36px rgba(0, 240, 255, 0.22)) drop-shadow(0 0 56px rgba(138, 43, 226, 0.12)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 56px rgba(0, 240, 255, 0.38)) drop-shadow(0 0 88px rgba(138, 43, 226, 0.22)); transform: scale(1.02); }
+}
+
+.text-gradient {
+  background: var(--iridescent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-core {
+  background: linear-gradient(90deg, #0066FF 0%, #00F0FF 55%, #5ff7ff 100%);
+  color: #080B10;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.28);
+}
+.btn-core:hover {
+  background: linear-gradient(90deg, #00F0FF 0%, #8A2BE2 100%);
+  color: #fff;
+  box-shadow: 0 0 32px rgba(0, 240, 255, 0.4), 0 0 48px rgba(138, 43, 226, 0.25);
+}
+
+.app-sidebar__title {
+  background: var(--iridescent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.app-sidebar__title span {
+  color: inherit;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual__core img { animation: none !important; }
 }

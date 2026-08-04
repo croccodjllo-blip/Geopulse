@@ -20,3 +20,6 @@ export {
   type EngineVisibilityChartProps,
   type EngineBarPoint,
 } from "./EngineVisibilityChart";
+export { HoloEmblem, type HoloEmblemProps } from "./HoloEmblem";
+export { BrandLockup, type BrandLockupProps } from "./BrandLockup";
+export { BrandModule, type BrandModuleProps } from "./BrandModule";

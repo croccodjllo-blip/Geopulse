@@ -10,17 +10,20 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          bg: "#0B0F19", // Deep Space Navy
-          card: "#111827", // Dark Slate
-          border: "#1F2937", // Border subtle
-          cyan: "#00F0FF", // Quantum Cyan
-          violet: "#7000FF", // Electric Violet
-          muted: "#94A3B8", // Slate Grey
+          bg: "#080B10",
+          card: "#121824",
+          border: "#1F2937",
+          cyan: "#00F0FF",
+          blue: "#0066FF",
+          violet: "#8A2BE2",
+          muted: "#94A3B8",
         },
       },
       boxShadow: {
         glow: "0 0 15px rgba(0, 240, 255, 0.15)",
-        "glow-violet": "0 0 15px rgba(112, 0, 255, 0.2)",
+        "glow-violet": "0 0 15px rgba(138, 43, 226, 0.25)",
+        "glow-holo":
+          "0 0 24px rgba(0, 240, 255, 0.35), 0 0 48px rgba(138, 43, 226, 0.18)",
       },
     },
   },

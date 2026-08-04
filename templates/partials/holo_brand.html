@@ -1,0 +1,23 @@
+{# Holographic Centropic brand lockup for Jinja templates #}
+{% set bm_size = brand_size|default('md') %}
+<a
+  class="holo-brand holo-brand--{{ bm_size }}"
+  href="{{ brand_href|default(url_for('index')) }}"
+  aria-label="Centropic home"
+>
+  <span class="holo-brand__emblem" aria-hidden="true">
+    <img
+      src="{{ url_for('static', filename='img/logo.svg') }}"
+      width="{{ 48 if bm_size == 'lg' else (72 if bm_size == 'hero' else 32) }}"
+      height="{{ 48 if bm_size == 'lg' else (72 if bm_size == 'hero' else 32) }}"
+      alt=""
+      decoding="async"
+    />
+  </span>
+  <span class="holo-brand__text">
+    <span class="holo-brand__word">centropic<span>.ai</span></span>
+    {% if brand_tagline %}
+    <span class="holo-brand__tag">{{ brand_tagline }}</span>
+    {% endif %}
+  </span>
+</a>

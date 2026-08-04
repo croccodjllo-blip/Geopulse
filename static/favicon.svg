@@ -1,23 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="fav-arc" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#00F0FF"/>
-      <stop offset="1" stop-color="#7000FF"/>
+    <linearGradient id="f-holo" x1="10" y1="54" x2="54" y2="10" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0066FF"/>
+      <stop offset="0.5" stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#8A2BE2"/>
     </linearGradient>
-    <radialGradient id="fav-core" cx="50%" cy="50%" r="50%">
-      <stop stop-color="#00F0FF"/>
-      <stop offset="1" stop-color="#7000FF"/>
-    </radialGradient>
+    <filter id="f-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#0B0F19"/>
-  <circle cx="32" cy="32" r="22" stroke="#1F2937" stroke-width="1.2" fill="none"/>
-  <path
-    d="M44.8 18.2A18.5 18.5 0 1 0 44.8 45.8"
-    stroke="url(#fav-arc)"
-    stroke-width="3.2"
-    stroke-linecap="round"
-    fill="none"
-  />
-  <circle cx="32" cy="32" r="5.4" fill="url(#fav-core)"/>
-  <circle cx="32" cy="32" r="1.85" fill="#0B0F19"/>
+  <rect width="64" height="64" rx="14" fill="#080B10"/>
+  <circle cx="32" cy="32" r="26" stroke="url(#f-holo)" stroke-opacity="0.35" stroke-width="1" fill="none"/>
+  <path d="M32 46c9-1 14-7 13-14s-8-11-14-10c-5 1-8 6-7 11" stroke="url(#f-holo)" stroke-width="1.4" stroke-linecap="round" fill="none" filter="url(#f-glow)"/>
+  <path d="M32 48V18" stroke="url(#f-holo)" stroke-width="2.4" stroke-linecap="round" filter="url(#f-glow)"/>
+  <path d="M32 12 L40 24 L32 21 L24 24 Z" fill="url(#f-holo)" filter="url(#f-glow)"/>
 </svg>

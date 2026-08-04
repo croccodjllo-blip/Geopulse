@@ -1,11 +1,11 @@
 import React from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { BrandModule } from "@/components/BrandModule";
 import { DashboardOverview } from "@/components/DashboardOverview";
 import { EngineVisibilityChart } from "@/components/EngineVisibilityChart";
 
 /**
- * Centropic Enterprise GEO Dashboard — root composition.
- * Layout: fixed Sidebar + scrollable main (GEO Overview + Engine Visibility).
+ * Centropic Enterprise GEO Dashboard — holographic brand + analytics shell.
  */
 export default function App() {
   return (
@@ -17,8 +17,11 @@ export default function App() {
         creditsCap={10000}
       />
       <div className="ml-64 min-h-screen">
+        <div className="p-8 pb-0">
+          <BrandModule variant="panel" ctaHref="/register" />
+        </div>
         <DashboardOverview embedded />
-        <div className="px-8 pb-10 -mt-2">
+        <div className="px-8 pb-10">
           <EngineVisibilityChart />
         </div>
       </div>

@@ -61,23 +61,24 @@ function LogoMark({ src }: { src?: string }) {
       viewBox="0 0 64 64"
       fill="none"
       aria-hidden
-      className="w-7 h-7"
+      className="w-7 h-7 drop-shadow-[0_0_8px_rgba(0,240,255,0.45)]"
     >
-      <circle cx="32" cy="32" r="22" stroke="#1F2937" strokeWidth="1.25" />
-      <path
-        d="M44.8 18.2A18.5 18.5 0 1 0 44.8 45.8"
-        stroke="url(#sidebarLogoGrad)"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-      />
       <defs>
-        <linearGradient id="sidebarLogoGrad" x1="12" y1="8" x2="52" y2="56">
-          <stop stopColor="#00F0FF" />
-          <stop offset="1" stopColor="#7000FF" />
+        <linearGradient id="sidebarLogoGrad" x1="10" y1="54" x2="54" y2="10">
+          <stop stopColor="#0066FF" />
+          <stop offset="0.5" stopColor="#00F0FF" />
+          <stop offset="1" stopColor="#8A2BE2" />
         </linearGradient>
       </defs>
-      <circle cx="32" cy="32" r="5.4" fill="#00F0FF" />
-      <circle cx="32" cy="32" r="1.85" fill="#0B0F19" />
+      <circle cx="32" cy="32" r="26" stroke="url(#sidebarLogoGrad)" strokeOpacity="0.35" strokeWidth="1" />
+      <path
+        d="M32 46c9-1 14-7 13-14s-8-11-14-10c-5 1-8 6-7 11"
+        stroke="url(#sidebarLogoGrad)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path d="M32 48V18" stroke="url(#sidebarLogoGrad)" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M32 12 L40 24 L32 21 L24 24 Z" fill="url(#sidebarLogoGrad)" />
     </svg>
   );
 }
@@ -110,9 +111,9 @@ export function Sidebar({
             <LogoMark src={logoSrc} />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white tracking-wide">
-              CENTROPIC
-              <span className="text-brand-cyan font-medium">.AI</span>
+            <h1 className="text-lg font-bold tracking-wide bg-gradient-to-r from-[#0066FF] via-brand-cyan to-brand-violet bg-clip-text text-transparent">
+              centropic
+              <span className="font-medium">.ai</span>
             </h1>
             <p className="text-xs text-brand-muted">GEO Intelligence Engine</p>
           </div>
