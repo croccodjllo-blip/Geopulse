@@ -65,6 +65,12 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
         <span class="app-sidebar__link-label">{{ _('Crediti') }}</span>
       </a>
+      {% if current_user and current_user.is_admin %}
+      <a href="{{ url_for('admin_home') }}" class="app-sidebar__link{% if nav == 'admin' %} is-active{% endif %}" {% if nav == 'admin' %}aria-current="page"{% endif %}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span class="app-sidebar__link-label">Admin</span>
+      </a>
+      {% endif %}
     </nav>
   </div>
 

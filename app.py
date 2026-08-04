@@ -1325,6 +1325,10 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "geo-ui"
         elif ep in {"dashboard_verify", "dashboard_verify_rescan"}:
             sidebar_active = "geo"
+        elif ep in {"admin_home", "admin_set_plan", "admin_topup_user"} or (
+            ep or ""
+        ).startswith("admin_"):
+            sidebar_active = "admin"
         elif "history" in ep:
             sidebar_active = "history"
         elif ep == "dashboard":

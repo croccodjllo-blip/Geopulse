@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Admin{% endblock %}
+{% block body_class %}body-dash{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
+{% block main_class %}site-main--dash site-main--admin{% endblock %}
 
 {% block content %}
-<article class="page" style="width:min(1200px,100%)">
-  <header class="page-intro">
+<article class="page page--admin">
+  <header class="page-intro page-intro--v2">
     <p class="eyebrow">Area admin</p>
     <h1 class="h-display page-intro__title">Pannello Centropic</h1>
     <p class="lede page-intro__lede">

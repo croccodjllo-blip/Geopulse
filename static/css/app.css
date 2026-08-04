@@ -6920,3 +6920,60 @@ body.body-auth {
   body.sidebar-open { overflow: auto; }
   .app-sidebar__backdrop { display: none !important; }
 }
+
+/* ═══════════════════════════════════════════
+   ADMIN PAGE — avoid sidebar / header overlap
+═══════════════════════════════════════════ */
+
+.app-shell--sidebar .site-main.site-main--admin,
+.site-main--admin {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.page--admin {
+  width: min(1200px, 100%);
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-inline: 0.25rem 0.5rem;
+}
+
+.page--admin .history-list > li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.page--admin .history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+  max-width: 100%;
+}
+
+.app-shell--sidebar .site-header {
+  z-index: 45;
+}
+
+.app-shell--sidebar .app-sidebar {
+  z-index: 50;
+}
+
+/* Keep main content clear of the fixed left rail */
+@media (min-width: 961px) {
+  .app-shell--sidebar .site-main,
+  .app-shell--sidebar .site-header,
+  .app-shell--sidebar .site-footer {
+    margin-left: 16rem;
+    width: calc(100% - 16rem);
+    max-width: calc(100% - 16rem);
+  }
+}
