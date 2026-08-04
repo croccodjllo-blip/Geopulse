@@ -353,56 +353,143 @@ def build_robots_txt(url: str) -> str:
 
 
 def build_faq_json_ld(url: str, scraped: dict[str, Any]) -> str:
-    brand = (scraped.get("domain") or urlparse(url).netloc).replace("www.", "")
-    headings = [h for h in (scraped.get("headings") or []) if h][:4]
-    questions = []
-    if headings:
-        for heading in headings:
-            questions.append(
-                {
-                    "@type": "Question",
-                    "name": heading if heading.endswith("?") else f"Cos’è {heading}?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": (
-                            f"{heading}: informazioni ufficiali su {brand}. "
-                            f"Dettagli su {url}."
-                        ),
-                    },
-                }
-            )
-    else:
-        questions = [
+    """Build FAQPage JSON-LD from real Q&A only — never fake Cos'è + marketing H2."""
+    brand = _clean_brand_name(
+        str(scraped.get("domain") or urlparse(url).netloc),
+        scraped.get("title"),
+    )
+    domain = (scraped.get("domain") or urlparse(url).netloc or "").replace(
+        "www.", ""
+    )
+    description = (scraped.get("description") or "").strip()
+    snippet = (scraped.get("snippet") or "").strip()
+
+    pairs = _collect_faq_pairs(scraped)
+    if not pairs:
+        about = description or (
+            f"{brand} ({domain}): sito ufficiale. Maggiori dettagli su {url}."
+        )
+        pairs = [
             {
-                "@type": "Question",
                 "name": f"Cos’è {brand}?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": (
-                        scraped.get("description")
-                        or f"{brand} è il sito ufficiale. Visita {url}."
-                    ),
-                },
+                "text": about[:600],
             },
             {
-                "@type": "Question",
-                "name": f"Dove trovo maggiori informazioni su {brand}?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": f"Consulta il sito ufficiale: {url}",
-                },
+                "name": f"Dove trovo informazioni ufficiali su {brand}?",
+                "text": f"Consulta il sito ufficiale: {url}",
             },
         ]
+        if snippet and len(snippet) >= 80:
+            pairs.append(
+                {
+                    "name": f"Di cosa si occupa {brand}?",
+                    "text": snippet[:500],
+                }
+            )
+
+    questions = []
+    seen: set[str] = set()
+    for pair in pairs:
+        name = str(pair.get("name") or "").strip()
+        text = str(pair.get("text") or "").strip()
+        if not name or not text or len(text) < 20:
+            continue
+        if _is_placeholder_faq_answer(text):
+            continue
+        key = name.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        questions.append(
+            {
+                "@type": "Question",
+                "name": name,
+                "acceptedAnswer": {"@type": "Answer", "text": text[:900]},
+            }
+        )
+        if len(questions) >= 6:
+            break
+
     payload = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": questions[:6],
+        "mainEntity": questions,
     }
     return (
         '<script type="application/ld+json">\n'
         + json.dumps(payload, ensure_ascii=False, indent=2)
         + "\n</script>\n"
     )
+
+
+def _is_placeholder_faq_answer(text: str) -> bool:
+    low = text.lower()
+    return bool(
+        re.search(
+            r"informazioni ufficiali su .+\. dettagli su https?://",
+            low,
+        )
+    )
+
+
+def _looks_like_real_question(text: str) -> bool:
+    t = (text or "").strip()
+    if not t or len(t) > 160:
+        return False
+    if t.endswith("?"):
+        return True
+    # Italian/English interrogatives without requiring "?"
+    return bool(
+        re.match(
+            r"^(che\s+cos[a’']?|cosa|cos[’']è|come|quando|dove|perché|perche|"
+            r"quale|quali|quanto|quanti|who|what|when|where|why|how)\b",
+            t,
+            re.I,
+        )
+    )
+
+
+def _collect_faq_pairs(scraped: dict[str, Any]) -> list[dict[str, str]]:
+    """Prefer real FAQPage / HTML details pairs over marketing headings."""
+    out: list[dict[str, str]] = []
+
+    jsonld = scraped.get("jsonld") or {}
+    for ent in jsonld.get("faq_entities") or []:
+        if isinstance(ent, dict) and ent.get("name") and ent.get("text"):
+            out.append({"name": str(ent["name"]), "text": str(ent["text"])})
+
+    html_faq = scraped.get("html_faq") or {}
+    for ent in html_faq.get("pairs") or []:
+        if isinstance(ent, dict) and ent.get("name") and ent.get("text"):
+            out.append({"name": str(ent["name"]), "text": str(ent["text"])})
+
+    # Explicit pairs passed by analyzer / tests.
+    for ent in scraped.get("faq_pairs") or []:
+        if isinstance(ent, dict) and ent.get("name") and ent.get("text"):
+            out.append({"name": str(ent["name"]), "text": str(ent["text"])})
+
+    # Only keep headings that are already real questions — never wrap slogans.
+    description = (scraped.get("description") or "").strip()
+    snippet = (scraped.get("snippet") or "").strip()
+    for heading in scraped.get("headings") or []:
+        h = str(heading or "").strip()
+        if not _looks_like_real_question(h):
+            continue
+        answer = description or snippet
+        if not answer or len(answer) < 40:
+            continue
+        out.append({"name": h if h.endswith("?") else f"{h}?", "text": answer[:600]})
+
+    # Deduplicate by question name (first wins — usually site FAQPage).
+    deduped: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for pair in out:
+        key = pair["name"].strip().lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(pair)
+    return deduped
 
 
 def build_optimization_pack(

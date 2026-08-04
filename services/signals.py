@@ -106,9 +106,24 @@ def parse_json_ld_scripts(scripts_text: list[str]) -> dict[str, Any]:
 
     faq_blocks = [b for b in blocks if "FAQPage" in b["types"]]
     faq_questions = 0
+    faq_entities: list[dict[str, str]] = []
     for block in faq_blocks:
         ents = _as_list(block["node"].get("mainEntity"))
         faq_questions += len(ents)
+        for ent in ents:
+            if not isinstance(ent, dict):
+                continue
+            name = str(ent.get("name") or "").strip()
+            ans = ent.get("acceptedAnswer")
+            if isinstance(ans, list) and ans:
+                ans = ans[0]
+            text = ""
+            if isinstance(ans, dict):
+                text = str(ans.get("text") or ans.get("name") or "").strip()
+            elif isinstance(ans, str):
+                text = ans.strip()
+            if name and text:
+                faq_entities.append({"name": name, "text": text})
 
     org_nodes = [
         b["node"]
@@ -122,6 +137,7 @@ def parse_json_ld_scripts(scripts_text: list[str]) -> dict[str, Any]:
         "parse_errors": parse_errors,
         "has_faq_page": bool(faq_blocks),
         "faq_questions": faq_questions,
+        "faq_entities": faq_entities[:12],
         "has_organization": any(t in {"Organization", "LocalBusiness"} for t in uniq),
         "has_website": "WebSite" in uniq,
         "valuable_types": [t for t in uniq if t in VALUABLE_TYPES],
@@ -146,10 +162,28 @@ def extract_json_ld_from_soup(soup: Any) -> dict[str, Any]:
 def detect_html_faq(soup: Any, body_text: str = "") -> dict[str, Any]:
     """Segnali FAQ in HTML (oltre a FAQPage JSON-LD)."""
     details_q = 0
+    pairs: list[dict[str, str]] = []
     for det in soup.find_all("details"):
         summary = det.find("summary")
-        if summary and summary.get_text(strip=True):
-            details_q += 1
+        if not summary:
+            continue
+        q = summary.get_text(" ", strip=True)
+        if not q:
+            continue
+        details_q += 1
+        ans_parts: list[str] = []
+        for child in det.children:
+            if getattr(child, "name", None) == "summary":
+                continue
+            if hasattr(child, "get_text"):
+                t = child.get_text(" ", strip=True)
+            else:
+                t = str(child).strip()
+            if t:
+                ans_parts.append(t)
+        answer = " ".join(ans_parts).strip()
+        if answer and len(answer) >= 24:
+            pairs.append({"name": q, "text": answer[:800]})
 
     class_hits = soup.find_all(
         class_=re.compile(r"(faq|accordion|question)", re.I)
@@ -161,6 +195,7 @@ def detect_html_faq(soup: Any, body_text: str = "") -> dict[str, Any]:
         "class_hits": len(class_hits),
         "question_marks": q_marks,
         "html_faq_likely": details_q >= 2 or (len(class_hits) >= 2 and q_marks >= 3),
+        "pairs": pairs[:10],
     }
 
 

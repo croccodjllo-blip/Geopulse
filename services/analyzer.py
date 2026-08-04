@@ -1319,11 +1319,64 @@ def analyze_site(
             href = re.sub(r"/(?:pricing|price)/?$", "/prezzi", str(href).rstrip("/"))
             label = "Prezzi · centropic.ai"
         important.append(f"{label} -> {href}")
+
+    # Merge FAQ Q&A from seed + crawled pages (prefer real FAQPage / details).
+    faq_entities: list[dict[str, str]] = list(
+        ((scraped.get("jsonld") or {}).get("faq_entities") or [])
+    )
+    html_pairs: list[dict[str, str]] = list(
+        ((scraped.get("html_faq") or {}).get("pairs") or [])
+    )
+    seen_q = {str(e.get("name") or "").strip().lower() for e in faq_entities}
+    for p in page_reports:
+        page_scraped = p.get("scraped") or {}
+        for ent in ((page_scraped.get("jsonld") or {}).get("faq_entities") or []):
+            if not isinstance(ent, dict):
+                continue
+            name = str(ent.get("name") or "").strip()
+            text = str(ent.get("text") or "").strip()
+            key = name.lower()
+            if not name or not text or key in seen_q:
+                continue
+            seen_q.add(key)
+            faq_entities.append({"name": name, "text": text})
+        for ent in ((page_scraped.get("html_faq") or {}).get("pairs") or []):
+            if not isinstance(ent, dict):
+                continue
+            name = str(ent.get("name") or "").strip()
+            text = str(ent.get("text") or "").strip()
+            if name and text and len(text) >= 24:
+                html_pairs.append({"name": name, "text": text})
+
+    jsonld_merged = dict(scraped.get("jsonld") or {})
+    if faq_entities:
+        jsonld_merged["faq_entities"] = faq_entities[:12]
+        jsonld_merged["has_faq_page"] = True
+        jsonld_merged["faq_questions"] = max(
+            int(jsonld_merged.get("faq_questions") or 0), len(faq_entities)
+        )
+    html_faq_merged = dict(scraped.get("html_faq") or {})
+    if html_pairs:
+        # Dedup HTML pairs
+        uniq_pairs: list[dict[str, str]] = []
+        seen_hp: set[str] = set()
+        for ent in html_pairs:
+            key = str(ent.get("name") or "").strip().lower()
+            if not key or key in seen_hp:
+                continue
+            seen_hp.add(key)
+            uniq_pairs.append(ent)
+        html_faq_merged["pairs"] = uniq_pairs[:10]
+        if len(uniq_pairs) >= 2:
+            html_faq_merged["html_faq_likely"] = True
+
     scraped = {
         **scraped,
         "links": important or scraped.get("links") or [],
         "crawled_pages": crawl_pages,
         "pages_analyzed": len(crawl_pages),
+        "jsonld": jsonld_merged,
+        "html_faq": html_faq_merged,
     }
 
     competitors: list[dict[str, Any]] = []
