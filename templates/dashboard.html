@@ -238,8 +238,8 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
 
           {% set aio_n = aio if aio is number else 0 %}
           {% set geo_n = geo if geo is number else 0 %}
-          {% set health_raw = 100 - (findings_n * 8) %}
-          {% set health = health_raw if health_raw > 8 else 8 %}
+          {# Constellation ticks follow AIO (honest), not a fake 100-findings*8 "health". #}
+          {% set health = aio_n %}
           {% if aio_n >= 90 %}
             {% set band = 'peak' %}
             {% set propensity = _('Segnali AIO molto forti') %}
