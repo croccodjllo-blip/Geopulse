@@ -4,12 +4,14 @@
   "version": "0.1.0",
   "description": "Centropic enterprise dashboard UI kit (React + Tailwind tokens)",
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "postinstall": "echo \"centropic-ui: recharts + lucide-react ready\""
   },
   "dependencies": {
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@types/react": "^19.1.2",

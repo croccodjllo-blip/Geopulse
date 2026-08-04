@@ -5,3 +5,8 @@ export {
   type OverviewEngineRow,
   type OverviewInsight,
 } from "./DashboardOverview";
+export {
+  SomTrendChart,
+  type SomTrendChartProps,
+  type SomPoint,
+} from "./SomTrendChart";
