@@ -2,44 +2,59 @@
 
 Internal ledger stays in EUR cents. Product unit for users:
 
-  1 GEO token == 1 EUR cent == €0.01
-  1000 token == €10.00
+  1 GEO token == 10 EUR cents == €0.10
+  10 token == €1.00
+  100 token == €10.00 (base pack rate)
+
+Plus subscription includes ``PLUS_MONTHLY_TOKENS`` each billing cycle.
+The €50 pack grants a bonus (600 token for €50 = €60 face value).
 """
 
 from __future__ import annotations
 
 
-GEO_TOKEN_EUR_CENTS = 1
-GEO_TOKENS_PER_EURO = 100
+GEO_TOKEN_EUR_CENTS = 10
+GEO_TOKENS_PER_EURO = 10
+PLUS_MONTHLY_TOKENS = 100
+PLUS_MONTHLY_CREDIT_CENTS = PLUS_MONTHLY_TOKENS * GEO_TOKEN_EUR_CENTS
 
 
-def cents_to_tokens(cents: int | None) -> int:
-    """Convert ledger cents to GEO tokens (1:1)."""
-    return int(cents or 0)
+def cents_to_tokens(cents: int | None) -> float:
+    """Convert ledger cents to GEO tokens."""
+    return float(int(cents or 0)) / float(GEO_TOKEN_EUR_CENTS)
 
 
-def tokens_to_cents(tokens: int | None) -> int:
-    return int(tokens or 0) * GEO_TOKEN_EUR_CENTS
+def tokens_to_cents(tokens: int | float | None) -> int:
+    return int(round(float(tokens or 0) * GEO_TOKEN_EUR_CENTS))
 
 
-def format_token_amount(cents: int | None, *, with_unit: bool = True, signed: bool = False) -> str:
-    """Human-readable token amount for UI (Italian thousands separator)."""
-    n = int(cents or 0)
+def _format_token_number(tokens: float) -> str:
+    """Italian-style number: thousands ``.``, decimal ``,`` when needed."""
+    if abs(tokens - round(tokens)) < 1e-9:
+        n = int(round(tokens))
+        return f"{n:,}".replace(",", ".")
+    # Keep one decimal for fractional analysis costs.
+    return f"{tokens:.1f}".replace(".", ",")
+
+
+def format_token_amount(
+    cents: int | None, *, with_unit: bool = True, signed: bool = False
+) -> str:
+    """Human-readable token amount for UI from ledger cents."""
+    raw = int(cents or 0)
+    tokens = cents_to_tokens(abs(raw))
     sign = ""
-    if signed and n > 0:
+    if signed and raw > 0:
         sign = "+"
-    elif n < 0:
+    elif raw < 0:
         sign = "−"
-        n = abs(n)
-    body = f"{n:,}".replace(",", ".")
+    body = _format_token_number(tokens)
     if with_unit:
-        unit = "token" if n == 1 else "token"
-        return f"{sign}{body} {unit}"
+        return f"{sign}{body} token"
     return f"{sign}{body}"
 
 
 def format_tokens_short(cents: int | None) -> str:
-    """Compact sidebar form, e.g. ``1.250 tok``."""
-    n = int(cents or 0)
-    body = f"{n:,}".replace(",", ".")
+    """Compact sidebar form, e.g. ``125 tok`` or ``0,3 tok``."""
+    body = _format_token_number(cents_to_tokens(cents))
     return f"{body} tok"

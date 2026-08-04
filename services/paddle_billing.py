@@ -329,8 +329,11 @@ def transaction_grants_plus(data: dict[str, Any]) -> bool:
     return plus in transaction_price_ids(data)
 
 
-def topup_cents_for_transaction(data: dict[str, Any]) -> int | None:
-    """Map settled price_id → EUR cents via server catalog. Ignore custom_data."""
+def topup_payment_cents_for_transaction(data: dict[str, Any]) -> int | None:
+    """Map settled price_id → payment EUR cents via server catalog.
+
+    Ignore client ``custom_data`` — overlay checkout can set it.
+    """
     inverse = {pid: cents for cents, pid in topup_price_map().items()}
     if not inverse:
         return None
@@ -338,6 +341,11 @@ def topup_cents_for_transaction(data: dict[str, Any]) -> int | None:
         if pid in inverse:
             return int(inverse[pid])
     return None
+
+
+def topup_cents_for_transaction(data: dict[str, Any]) -> int | None:
+    """Backward-compatible alias: payment cents for the settled top-up price."""
+    return topup_payment_cents_for_transaction(data)
 
 
 def transaction_gross_cents(data: dict[str, Any]) -> int | None:

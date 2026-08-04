@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Ricarica token') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
-{% block meta_description %}{{ _('Ricarica token Centropic: €10 ogni 1000 token. Pacchetti €10, €20, €50 per analisi AIO/GEO su centropic.ai.') }}{% endblock %}
+{% block meta_description %}{{ _('Ricarica token Centropic: €10 = 100 token, €20 = 200, €50 = 600. Plus €14,99/mese con 100 token. Analisi AIO/GEO su centropic.ai.') }}{% endblock %}
 
 {% block content %}
 <div class="page" style="max-width: 620px; padding: 3rem 0 5rem;">
@@ -9,8 +9,8 @@
     <p class="eyebrow">{{ _('Token prepagati') }}</p>
     <h1 class="page-intro__title">{{ _('Ricarica i tuoi token') }}</h1>
     <p class="page-intro__lede">
-      {{ _('Tariffa fissa: €10 ogni 1000 token (1 token = €0,01).') }}
-      {{ _('Ogni analisi consuma token in base all’uso AI reale (tipicamente 2–3 token con margine di sicurezza).') }}
+      {{ _('Tariffa base: €10 = 100 token (1 token = €0,10). Il pack da €50 include un bonus.') }}
+      {{ _('Ogni analisi consuma token in base all’uso AI reale (tipicamente 0,2–0,3 token con margine di sicurezza).') }}
     </p>
   </div>
 
@@ -83,7 +83,7 @@
       {% endfor %}
     </div>
     <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
-      {{ _('Con 1000 token: circa 500 analisi leggere, circa 333 con SoV Misurato multi-engine. Stima pack ≈350 analisi (media conservativa). I token non scadono.') }}
+      {{ _('Con 100 token (~€10): circa 500 analisi leggere, circa 333 con SoV Misurato multi-engine. Stima pack ≈350 analisi (media conservativa). I token non scadono. Plus include 100 token ogni mese.') }}
     </p>
   </div>
 

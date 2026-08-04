@@ -31,13 +31,14 @@
     <section class="plan plan--v2 plan--featured" role="listitem">
       <p class="plan__name">Plus</p>
       {% if paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
-      <p class="plan__price">{{ _('Abbonamento') }}<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Prezzo al checkout. Per team che ottimizzano più brand in continuo.') }}</p>
+      <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="plan__desc">{{ _('Include 100 token ogni mese. Per team che ottimizzano più brand in continuo.') }}</p>
       {% else %}
-      <p class="plan__price">{{ _('In arrivo') }}</p>
-      <p class="plan__desc">{{ _('Checkout Plus in attivazione. Puoi ricaricare crediti o prenotare interesse.') }}</p>
+      <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="plan__desc">{{ _('Include 100 token/mese. Checkout in attivazione — puoi già ricaricare token o prenotare interesse.') }}</p>
       {% endif %}
       <ul class="plan__features">
+        <li>{{ _('100 token inclusi ogni mese') }}</li>
         <li>{{ _('Più siti e analisi') }}</li>
         <li>{{ _('Crawl dell’intero sito') }}</li>
         <li>{{ _('Citation monitor / SoV measured — solo Plus') }}</li>

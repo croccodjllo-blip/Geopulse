@@ -174,6 +174,8 @@ from services.geo_ui_payload import build_geo_ui_payload
 from services.token_units import (
     GEO_TOKEN_EUR_CENTS,
     GEO_TOKENS_PER_EURO,
+    PLUS_MONTHLY_CREDIT_CENTS,
+    PLUS_MONTHLY_TOKENS,
     cents_to_tokens,
     format_token_amount,
     format_tokens_short,
@@ -3004,18 +3006,41 @@ def billing_paddle_webhook():
                     if sub:
                         user.paddle_subscription_id = str(sub)
                     user.plan = "plus"
+                    txn_id = str(data.get("id") or "").strip()
+                    if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
+                        pi = f"paddle-plus-tokens:{txn_id}"
+                        already = CreditLedger.query.filter_by(
+                            stripe_payment_intent=pi
+                        ).first()
+                        if already is None:
+                            try:
+                                topup_credit(
+                                    db.session,
+                                    CreditLedger,
+                                    user,
+                                    amount_eur_cents=PLUS_MONTHLY_CREDIT_CENTS,
+                                    description=(
+                                        f"Plus mensile: "
+                                        f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
+                                    ),
+                                    stripe_payment_intent=pi,
+                                )
+                            except IntegrityError:
+                                db.session.rollback()
+                                user = _user_from_paddle(data) or user
                     db.session.commit()
                 return jsonify({"ok": True})
 
-            topup_cents = topup_cents_for_transaction(data)
-            if not topup_cents:
+            payment_cents = topup_cents_for_transaction(data)
+            if not payment_cents:
                 return jsonify({"ok": True, "ignored": "not_topup"})
 
+            credit_cents = _topup_credit_cents(int(payment_cents))
             gross = transaction_gross_cents(data)
-            if gross is not None and int(gross) != int(topup_cents):
+            if gross is not None and int(gross) != int(payment_cents):
                 app.logger.warning(
                     "Paddle top-up catalog/gross mismatch catalog=%s gross=%s txn=%s",
-                    topup_cents,
+                    payment_cents,
                     gross,
                     data.get("id"),
                 )
@@ -3035,8 +3060,8 @@ def billing_paddle_webhook():
                     db.session,
                     CreditLedger,
                     user,
-                    amount_eur_cents=int(topup_cents),
-                    description=f"Ricarica {format_token_amount(topup_cents)} via Paddle",
+                    amount_eur_cents=int(credit_cents),
+                    description=f"Ricarica {format_token_amount(credit_cents)} via Paddle",
                     stripe_payment_intent=pi,
                 )
                 if data.get("customer_id"):
@@ -4078,35 +4103,55 @@ def dashboard_analyze_confirmed():
 # ── Top-up pages & Stripe payment ──────────────────────────────────────────
 #
 # GEO token pricing (product unit of credit purchase):
-#   1 token == 1 EUR cent == €0.01  →  1000 token = €10.00
+#   1 token == 10 EUR cents == €0.10  →  100 token = €10.00 (base rate)
+# Packs:
+#   €10 → 100 token, €20 → 200 token, €50 → 600 token (bonus)
+# Plus subscription (€14.99/mo): includes 100 token each billing cycle.
 # Analysis yield (engine estimate + 8% hold grace, gpt-4o-mini stack):
-#   light / measured OpenAI ≈ 2¢ hold → ~500 analisi / 1000 token
-#   measured multi-engine   ≈ 3¢ hold → ~333 analisi / 1000 token
-# Packs advertise ~350 / 1000 token (mid conservative, multi-engine biased).
+#   light / measured OpenAI ≈ 2¢ hold → ~0.2 token → ~500 analisi / €10
+#   measured multi-engine   ≈ 3¢ hold → ~0.3 token → ~333 analisi / €10
+# Packs advertise ~350 analisi / €10 (mid conservative, multi-engine biased).
 
 _TOPUP_PACKAGES = [
     {
-        "cents": 1000,
-        "tokens": 1000,
+        "cents": 1000,  # payment EUR cents
+        "tokens": 100,
+        "credit_cents": 1000,  # ledger credit (= tokens × 10)
         "label": "Starter",
         "analyses": "~350",
         "price_eur": 10,
     },
     {
         "cents": 2000,
-        "tokens": 2000,
+        "tokens": 200,
+        "credit_cents": 2000,
         "label": "Growth",
         "analyses": "~700",
         "price_eur": 20,
     },
     {
         "cents": 5000,
-        "tokens": 5000,
+        "tokens": 600,
+        "credit_cents": 6000,  # bonus vs €50 payment
         "label": "Scale",
-        "analyses": "~1.750",
+        "analyses": "~2.100",
         "price_eur": 50,
     },
 ]
+
+
+def _topup_package_by_payment_cents(payment_cents: int) -> dict[str, Any] | None:
+    for pkg in _TOPUP_PACKAGES:
+        if int(pkg["cents"]) == int(payment_cents):
+            return pkg
+    return None
+
+
+def _topup_credit_cents(payment_cents: int) -> int:
+    pkg = _topup_package_by_payment_cents(payment_cents)
+    if pkg is None:
+        return int(payment_cents)
+    return int(pkg["credit_cents"])
 
 STRIPE_TOPUP_SUCCESS_URL = os.getenv("STRIPE_TOPUP_SUCCESS_URL", "")
 STRIPE_TOPUP_CANCEL_URL  = os.getenv("STRIPE_TOPUP_CANCEL_URL",  "")
@@ -4174,15 +4219,16 @@ def topup_stripe_checkout():
     if not stripe_enabled():
         # Dev fallback: add credits directly only when FLASK_DEBUG=1
         if os.getenv("FLASK_DEBUG", "0") == "1":
+            credit_cents = _topup_credit_cents(amount_cents)
             topup_credit(
                 db.session,
                 CreditLedger,
                 user,
-                amount_eur_cents=amount_cents,
-                description=f"Ricarica test {amount_cents} cent",
+                amount_eur_cents=credit_cents,
+                description=f"Ricarica test {credit_cents} cent",
             )
             db.session.commit()
-            flash(f"[DEBUG] {format_token_amount(amount_cents)} aggiunti.", "success")
+            flash(f"[DEBUG] {format_token_amount(credit_cents)} aggiunti.", "success")
             return redirect(url_for("topup_credit_page"))
         if provider == "paddle":
             flash(
@@ -4220,7 +4266,8 @@ def topup_stripe_checkout():
                     "unit_amount": amount_cents,
                     "product_data": {
                         "name": (
-                            f"Centropic — {format_token_amount(amount_cents)} "
+                            f"Centropic — "
+                            f"{format_token_amount(_topup_credit_cents(amount_cents))} "
                             f"(€{amount_cents/100:.2f})"
                         ),
                     },
@@ -4291,6 +4338,7 @@ def billing_topup_webhook():
                 app.logger.error("topup webhook missing payment identity")
                 return jsonify({"ok": False, "error": "missing_payment_id"}), 400
             if user_id and topup_cents:
+                credit_cents = _topup_credit_cents(int(topup_cents))
                 already = (
                     CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
                 )
@@ -4303,15 +4351,20 @@ def billing_topup_webhook():
                             db.session,
                             CreditLedger,
                             u,
-                            amount_eur_cents=topup_cents,
-                            description=f"Ricarica {format_token_amount(topup_cents)} via Stripe",
+                            amount_eur_cents=credit_cents,
+                            description=f"Ricarica {format_token_amount(credit_cents)} via Stripe",
                             stripe_payment_intent=pi,
                         )
                         db.session.commit()
                     except IntegrityError:
                         db.session.rollback()
                         return jsonify({"ok": True, "duplicate": True})
-                    app.logger.info("topup: user %s +%d cent", user_id, topup_cents)
+                    app.logger.info(
+                        "topup: user %s +%d credit_cents (paid %d)",
+                        user_id,
+                        credit_cents,
+                        topup_cents,
+                    )
             elif user_id and amount_total and amount_total not in allowed:
                 app.logger.warning(
                     "topup webhook rejected amount_total=%s user=%s",
@@ -4324,8 +4377,10 @@ def billing_topup_webhook():
 
 # ── Admin: top-up crediti manuale ──────────────────────────────────────────
 
-# Allowlisted admin top-up amounts (must match admin.html select options).
-ADMIN_TOPUP_AMOUNTS_CENTS = frozenset({1000, 2000, 5000})
+# Allowlisted admin top-up credit amounts (ledger cents = tokens × 10).
+ADMIN_TOPUP_AMOUNTS_CENTS = frozenset(
+    {int(p["credit_cents"]) for p in _TOPUP_PACKAGES}
+)
 
 
 @app.route("/admin/topup/<int:user_id>", methods=["POST"])

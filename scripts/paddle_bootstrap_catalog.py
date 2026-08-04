@@ -6,9 +6,9 @@ Requires:
   PADDLE_ENV=sandbox|production
 
 Creates (if missing by name):
-  - Product "Centropic Plus" + monthly price
+  - Product "Centropic Plus" + monthly price (€14.99)
   - Product "Centropic Credits" + one-time prices for €10/20/50
-    (1000 / 2000 / 5000 GEO token at €10 per 1000 token)
+    (€10→100 token, €20→200 token, €50→600 token; 1 token = €0.10)
 
 Prints env lines to paste into .env. Does not write secrets.
 """
@@ -30,9 +30,9 @@ BASE = (
 )
 
 TOPUPS = [
-    (1000, "Crediti €10 — 1000 token"),
-    (2000, "Crediti €20 — 2000 token"),
-    (5000, "Crediti €50 — 5000 token"),
+    (1000, "100 token — €10"),
+    (2000, "200 token — €20"),
+    (5000, "600 token — €50"),
 ]
 
 
@@ -100,11 +100,11 @@ def main() -> int:
         return 2
 
     plus_product = ensure_product("Centropic Plus")
-    # Default Plus at €49/month — adjust in Paddle dashboard if needed.
+    # Default Plus at €14.99/month — includes 100 token/billing cycle in-app.
     plus_price = ensure_price(
         product_id=plus_product["id"],
         name="Plus monthly",
-        unit_price_cents=4900,
+        unit_price_cents=1499,
         billing_cycle={"interval": "month", "frequency": 1},
     )
 
