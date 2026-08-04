@@ -1299,8 +1299,20 @@ def analyze_site(
     for p in crawl_pages[:20]:
         label = p.get("title") or p.get("url") or ""
         href = p.get("url") or ""
-        if href:
-            important.append(f"{label} -> {href}")
+        if not href:
+            continue
+        status = p.get("status_code")
+        err = p.get("crawl_error")
+        try:
+            status_i = int(status) if status is not None else None
+        except (TypeError, ValueError):
+            status_i = None
+        if err or (status_i is not None and status_i >= 400):
+            continue
+        blob = f"{label} {href}".lower()
+        if re.search(r"\b404\b|not found|pagina non trovata", blob):
+            continue
+        important.append(f"{label} -> {href}")
     scraped = {
         **scraped,
         "links": important or scraped.get("links") or [],
