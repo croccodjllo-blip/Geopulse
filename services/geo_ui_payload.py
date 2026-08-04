@@ -22,12 +22,25 @@ def _engine_status(share: float | None) -> str:
 
 
 def _insight_severity(raw: str) -> str:
+    """Preserve finding severity — never remap critical→success."""
     sev = (raw or "").lower()
     if sev == "critical":
-        return "high"
-    if sev == "warn":
-        return "gap"
+        return "critical"
+    if sev in {"warn", "warning"}:
+        return "warn"
     return "info"
+
+
+def _issue_pressure(n_open: int) -> tuple[int, str]:
+    """Honest KPI: open critical+warn count (not model sentiment)."""
+    n = max(0, int(n_open))
+    if n <= 0:
+        return n, "Clear"
+    if n <= 2:
+        return n, "Watch"
+    if n <= 5:
+        return n, "Elevated"
+    return n, "High"
 
 
 def build_geo_ui_payload(
@@ -55,8 +68,8 @@ def build_geo_ui_payload(
         "geoScore": None,
         "pagesAnalyzed": None,
         "findingsCount": 0,
-        "sentiment": None,
-        "sentimentLabel": None,
+        "issuePressure": None,
+        "issuePressureLabel": None,
         "evidenceLabel": None,
         "engines": [],
         "engineBars": [],
@@ -138,13 +151,7 @@ def build_geo_ui_payload(
         )
 
     n_crit = len(findings_critical)
-    sentiment = max(8, min(100, 100 - n_crit * 8))
-    if sentiment >= 75:
-        sent_label = "Positive"
-    elif sentiment >= 45:
-        sent_label = "Mixed"
-    else:
-        sent_label = "At risk"
+    issue_n, issue_label = _issue_pressure(n_crit)
 
     rating = compute_rating(latest.aio_score, latest.geo_score, findings_all)
     series_rows = list_sov_snapshots(
@@ -175,8 +182,8 @@ def build_geo_ui_payload(
         "geoScore": latest.geo_score,
         "pagesAnalyzed": pages,
         "findingsCount": len(findings_all),
-        "sentiment": sentiment,
-        "sentimentLabel": sent_label,
+        "issuePressure": issue_n,
+        "issuePressureLabel": issue_label,
         "evidenceLabel": (engine_breakdown or {}).get("label"),
         "engines": engines,
         "engineBars": engine_bars,

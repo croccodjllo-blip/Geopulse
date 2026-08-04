@@ -8,14 +8,18 @@
 {% set delta_aio = run_diff.delta_aio if run_diff and run_diff.delta_aio is not none else none %}
 {% set findings_list = findings_critical or [] %}
 {% set findings_n_local = findings_list|length %}
-{% set sent_raw = 100 - (findings_n_local * 8) %}
-{% set sent = 8 if sent_raw < 8 else (100 if sent_raw > 100 else sent_raw) %}
-{% if sent >= 75 %}
-  {% set sent_label = _('Positive') %}
-{% elif sent >= 45 %}
-  {% set sent_label = _('Mixed') %}
+{% if findings_n_local <= 0 %}
+  {% set pressure_label = _('Clear') %}
+  {% set pressure_tone = 'is-clear' %}
+{% elif findings_n_local <= 2 %}
+  {% set pressure_label = _('Watch') %}
+  {% set pressure_tone = 'is-watch' %}
+{% elif findings_n_local <= 5 %}
+  {% set pressure_label = _('Elevated') %}
+  {% set pressure_tone = 'is-elevated' %}
 {% else %}
-  {% set sent_label = _('At risk') %}
+  {% set pressure_label = _('High') %}
+  {% set pressure_tone = 'is-high-pressure' %}
 {% endif %}
 {% set tones = ['emerald', 'cyan', 'violet', 'amber', 'cyan', 'violet'] %}
 
@@ -79,20 +83,12 @@
     </article>
 
     <article class="geo-kpi">
-      <p class="geo-kpi__label">AI Sentiment Index</p>
+      <p class="geo-kpi__label">{{ _('Issue pressure') }}</p>
       <div class="geo-kpi__row">
-        <p class="geo-kpi__value">{{ sent }}/100</p>
-        <span class="geo-kpi__delta is-cyan">{{ sent_label }}</span>
+        <p class="geo-kpi__value">{{ findings_n_local }}</p>
+        <span class="geo-kpi__delta {{ pressure_tone }}">{{ pressure_label }}</span>
       </div>
-      {% set pos = sent %}
-      {% set mid = ((100 - sent) * 0.66)|int %}
-      {% set neg = 100 - pos - mid %}
-      {% if neg < 0 %}{% set neg = 0 %}{% endif %}
-      <div class="geo-kpi__bar" aria-hidden="true">
-        <span class="is-pos" style="width:{{ pos }}%"></span>
-        <span class="is-mid" style="width:{{ mid }}%"></span>
-        <span class="is-neg" style="width:{{ neg }}%"></span>
-      </div>
+      <p class="geo-kpi__hint">{{ _('Critical + warn aperti (non è sentiment del modello)') }}</p>
     </article>
   </div>
 
@@ -160,8 +156,8 @@
         {% for f in findings_list[:4] %}
           {% set sev = (f.severity or '')|lower %}
           <div class="geo-insight">
-            <p class="geo-insight__sev {% if sev == 'critical' %}is-gap{% else %}is-high{% endif %}">
-              {% if sev == 'critical' %}{{ _('Gap Detected') }}{% else %}{{ _('High Impact') }}{% endif %}
+            <p class="geo-insight__sev {% if sev == 'critical' %}is-critical{% elif sev == 'warn' or sev == 'warning' %}is-warn{% else %}is-info{% endif %}">
+              {% if sev == 'critical' %}{{ _('Critical') }}{% elif sev == 'warn' or sev == 'warning' %}{{ _('Warn') }}{% else %}{{ _('Info') }}{% endif %}
             </p>
             <p class="geo-insight__title">{{ f.title }}</p>
             <p class="geo-insight__detail">{{ f.detail }}</p>

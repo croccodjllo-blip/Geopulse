@@ -1,7 +1,6 @@
 import React from "react";
 import {
   TrendingUp,
-  CheckCircle2,
   AlertCircle,
   ArrowUpRight,
   RefreshCw,
@@ -22,7 +21,7 @@ export type OverviewEngineRow = {
 };
 
 export type OverviewInsight = {
-  severity: "high" | "gap" | "info";
+  severity: "critical" | "warn" | "info";
   title: string;
   detail: string;
 };
@@ -41,8 +40,9 @@ export type DashboardOverviewProps = {
   citationsDeltaPct?: number | null;
   citationsLabel?: string;
   citationsHint?: string;
-  sentiment?: number | null;
-  sentimentLabel?: string;
+  /** Open critical+warn count — not model sentiment. */
+  issuePressure?: number | null;
+  issuePressureLabel?: string;
   engines?: OverviewEngineRow[];
   insights?: OverviewInsight[];
   evidenceLabel?: string;
@@ -95,14 +95,14 @@ const DEFAULT_ENGINES: OverviewEngineRow[] = [
 
 const DEFAULT_INSIGHTS: OverviewInsight[] = [
   {
-    severity: "high",
+    severity: "critical",
     title: "Add JSON-LD Schema to Pricing Page",
-    detail: "Will increase Perplexity citation likelihood by ~24%.",
+    detail: "Missing Organization schema on a money page.",
   },
   {
-    severity: "gap",
+    severity: "warn",
     title: "Competitor Mention in SearchGPT",
-    detail: "Competitor X is currently top-ranked for key prompt query.",
+    detail: "Competitor X appears for a tracked prompt — verify your signals.",
   },
 ];
 
@@ -140,8 +140,8 @@ export function DashboardOverview({
   citationsDeltaPct,
   citationsLabel = "Total AI Citations",
   citationsHint = "Verified source links",
-  sentiment,
-  sentimentLabel = "Positive",
+  issuePressure,
+  issuePressureLabel = "Clear",
   engines,
   insights,
   evidenceLabel,
@@ -162,11 +162,28 @@ export function DashboardOverview({
   const resolvedRankDelta = recRankDelta ?? (useDemo ? 0.8 : null);
   const resolvedCitations = citations ?? (useDemo ? 12840 : null);
   const resolvedCitationsDelta = citationsDeltaPct ?? (useDemo ? 12 : null);
-  const resolvedSentiment = sentiment ?? (useDemo ? 88 : null);
-  const sent = Math.max(0, Math.min(100, Number(resolvedSentiment ?? 0)));
-  const pos = sent;
-  const mid = Math.max(0, Math.min(100 - pos, Math.round((100 - pos) * 0.66)));
-  const neg = Math.max(0, 100 - pos - mid);
+  const resolvedPressure = issuePressure ?? (useDemo ? 2 : null);
+  const resolvedPressureLabel =
+    issuePressureLabel ||
+    (resolvedPressure == null
+      ? "—"
+      : resolvedPressure <= 0
+        ? "Clear"
+        : resolvedPressure <= 2
+          ? "Watch"
+          : resolvedPressure <= 5
+            ? "Elevated"
+            : "High");
+  const pressureTone =
+    resolvedPressure == null
+      ? "text-brand-muted"
+      : resolvedPressure <= 0
+        ? "text-emerald-400"
+        : resolvedPressure <= 2
+          ? "text-brand-cyan"
+          : resolvedPressure <= 5
+            ? "text-amber-400"
+            : "text-rose-400";
 
   if (empty) {
     return (
@@ -304,21 +321,19 @@ export function DashboardOverview({
 
         <div className="p-5 rounded-xl bg-brand-card border border-brand-border space-y-2">
           <p className="text-xs text-brand-muted uppercase font-medium">
-            AI Sentiment Index
+            Issue pressure
           </p>
           <div className="flex items-baseline justify-between">
             <h3 className="text-2xl font-bold text-white">
-              {resolvedSentiment != null ? `${resolvedSentiment}/100` : "—"}
+              {resolvedPressure != null ? resolvedPressure : "—"}
             </h3>
-            <span className="text-xs font-semibold text-brand-cyan">
-              {sentimentLabel}
+            <span className={`text-xs font-semibold ${pressureTone}`}>
+              {resolvedPressureLabel}
             </span>
           </div>
-          <div className="w-full bg-brand-border h-1.5 rounded-full overflow-hidden flex">
-            <div className="bg-emerald-400 h-full" style={{ width: `${pos}%` }} />
-            <div className="bg-amber-400 h-full" style={{ width: `${mid}%` }} />
-            <div className="bg-rose-400 h-full" style={{ width: `${neg}%` }} />
-          </div>
+          <p className="text-xs text-brand-muted">
+            Critical + warn open (not model sentiment)
+          </p>
         </div>
       </div>
 
@@ -411,23 +426,19 @@ export function DashboardOverview({
                 >
                   <div
                     className={`flex items-center gap-2 text-xs font-medium ${
-                      ins.severity === "high"
-                        ? "text-emerald-400"
-                        : ins.severity === "gap"
+                      ins.severity === "critical"
+                        ? "text-rose-400"
+                        : ins.severity === "warn"
                           ? "text-amber-400"
                           : "text-brand-cyan"
                     }`}
                   >
-                    {ins.severity === "high" ? (
-                      <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
-                    ) : (
-                      <AlertCircle className="w-3.5 h-3.5" aria-hidden />
-                    )}
-                    {ins.severity === "high"
-                      ? "High Impact"
-                      : ins.severity === "gap"
-                        ? "Gap Detected"
-                        : "Insight"}
+                    <AlertCircle className="w-3.5 h-3.5" aria-hidden />
+                    {ins.severity === "critical"
+                      ? "Critical"
+                      : ins.severity === "warn"
+                        ? "Warn"
+                        : "Info"}
                   </div>
                   <p className="text-xs font-semibold text-white">{ins.title}</p>
                   <p className="text-xs text-brand-muted">{ins.detail}</p>

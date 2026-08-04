@@ -6351,8 +6351,13 @@ html.analyze-busy {
   font-size: 0.72rem;
   font-weight: 600;
 }
-.geo-insight__sev.is-high { color: #34d399; }
-.geo-insight__sev.is-gap { color: #fbbf24; }
+.geo-insight__sev.is-critical { color: #fb7185; }
+.geo-insight__sev.is-warn { color: #fbbf24; }
+.geo-insight__sev.is-info { color: var(--color-core, #00f0ff); }
+.geo-kpi__delta.is-clear { color: #34d399; }
+.geo-kpi__delta.is-watch { color: var(--color-core, #00f0ff); }
+.geo-kpi__delta.is-elevated { color: #fbbf24; }
+.geo-kpi__delta.is-high-pressure { color: #fb7185; }
 .geo-insight__title {
   margin: 0;
   font-size: 0.8rem;

@@ -463,15 +463,34 @@ def _next_rating(current: str | None) -> str | None:
         return None
 
 
-def _improvement_label(aio_delta: int, geo_delta: int) -> tuple[str, str]:
-    avg = (aio_delta + geo_delta) / 2
-    if avg >= 20:
-        return "Significativo", "L'analisi dovrebbe portare miglioramenti importanti sulla visibilità AI."
-    if avg >= 10:
-        return "Buono", "Attesi miglioramenti chiari su citabilità e machine-readability."
-    if avg >= 5:
-        return "Moderato", "Attesi piccoli ma concreti guadagni su score AIO/GEO."
-    return "Manutenzione", "Il sito è già ben posizionato — l'analisi valida e aggiorna il profilo."
+def _refresh_label(
+    *,
+    has_baseline: bool,
+    run_measured: bool,
+    crawl_pages: int,
+) -> tuple[str, str]:
+    """Honest confirm copy — re-measure signals, do not sell score uplift."""
+    depth = f"Crawl fino a {int(crawl_pages)} pagine. " if crawl_pages else ""
+    measured = (
+        "Include probe SoV Misurato (Plus). "
+        if run_measured
+        else ""
+    )
+    if not has_baseline:
+        return (
+            "Prima diagnosi",
+            depth
+            + measured
+            + "Misura i segnali pubblici attuali e produce score AIO/GEO, findings e pack. "
+            "Non prevede un guadagno di score: il risultato dipende dal sito.",
+        )
+    return (
+        "Ri-misurazione",
+        depth
+        + measured
+        + "Ricalcola score e findings dopo eventuali fix pubblicati. "
+        "Gli score possono salire o scendere — non è un miglioramento garantito.",
+    )
 
 
 def estimate_improvement(
@@ -480,7 +499,7 @@ def estimate_improvement(
     run_measured: bool,
     crawl_pages: int,
 ) -> ImprovementPreview:
-    """Estimate improvement for the confirmation dialog."""
+    """Baseline + re-measure preview for the confirmation dialog (no fake uplift)."""
     current_aio: int | None = None
     current_geo: int | None = None
     current_rating: str | None = None
@@ -490,37 +509,20 @@ def estimate_improvement(
         current_geo = getattr(existing_site, "geo_score", None)
         current_rating = (getattr(existing_site, "rating", None) or {}).get("code")
 
-    # Deltas are heuristic estimates based on context
-    # — first-time analysis (no existing data) → larger expected gains
-    # — re-analysis → smaller incremental improvement
-    if current_aio is None:
-        aio_delta = 18
-        geo_delta = 22
-    else:
-        # Regression toward AAA — the room to grow
-        room_aio = max(0, 100 - int(current_aio))
-        room_geo = max(0, 100 - int(current_geo or 0))
-        aio_delta = max(3, min(15, room_aio // 5))
-        geo_delta = max(3, min(15, room_geo // 5))
-
-    # Measured SoV adds citation evidence → extra geo delta
-    if run_measured:
-        geo_delta = min(100, geo_delta + 8)
-
-    # Deeper crawl → more pages found → higher confidence
-    if crawl_pages > 50:
-        aio_delta = min(100, aio_delta + 3)
-
-    new_rating = _next_rating(current_rating) if current_aio is not None else "C"
-    label, detail = _improvement_label(aio_delta, geo_delta)
+    label, detail = _refresh_label(
+        has_baseline=current_aio is not None,
+        run_measured=run_measured,
+        crawl_pages=crawl_pages,
+    )
 
     return ImprovementPreview(
         current_aio=current_aio,
         current_geo=current_geo,
         current_rating=current_rating,
-        expected_aio_delta=aio_delta,
-        expected_geo_delta=geo_delta,
-        expected_new_rating=new_rating,
+        # Kept for template/API compat; UI must not sell these as expected gains.
+        expected_aio_delta=0,
+        expected_geo_delta=0,
+        expected_new_rating=None,
         improvement_label=label,
         improvement_detail=detail,
     )

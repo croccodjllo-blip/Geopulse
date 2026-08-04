@@ -61,44 +61,39 @@
     </div>
   </div>
 
-  {# ── Miglioramento atteso ── #}
+  {# ── Cosa fa questa analisi (no fake score uplift) ── #}
   <div class="page-section">
-    <h2 class="page-section__title">{{ _('Miglioramento atteso') }}</h2>
+    <h2 class="page-section__title">{{ _('Cosa fa questa analisi') }}</h2>
     <div class="improvement-card">
       <div class="improvement-card__scores">
         {% if improvement.current_aio is not none %}
         <div class="improvement-score">
-          <span class="improvement-score__label">{{ _('AIO oggi') }}</span>
+          <span class="improvement-score__label">{{ _('Baseline AIO') }}</span>
           <span class="improvement-score__val">{{ improvement.current_aio }}</span>
-          <span class="improvement-score__arrow">→</span>
-          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_aio_delta }}</span>
         </div>
         <div class="improvement-score">
-          <span class="improvement-score__label">{{ _('GEO oggi') }}</span>
+          <span class="improvement-score__label">{{ _('Baseline GEO') }}</span>
           <span class="improvement-score__val">{{ improvement.current_geo }}</span>
-          <span class="improvement-score__arrow">→</span>
-          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_geo_delta }}</span>
         </div>
+        {% if improvement.current_rating %}
+        <div class="improvement-score">
+          <span class="improvement-score__label">{{ _('Rating') }}</span>
+          <span class="improvement-score__val">{{ improvement.current_rating }}</span>
+        </div>
+        {% endif %}
         {% else %}
         <div class="improvement-score">
-          <span class="improvement-score__label">{{ _('Prima analisi') }}</span>
-          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_aio_delta }} AIO</span>
-          <span class="improvement-score__sep">/</span>
-          <span class="improvement-score__val improvement-score__val--new">+{{ improvement.expected_geo_delta }} GEO</span>
+          <span class="improvement-score__label">{{ _('Nessuna baseline') }}</span>
+          <span class="improvement-score__val">—</span>
         </div>
         {% endif %}
       </div>
       <div class="improvement-card__label">
         <strong>{{ improvement.improvement_label }}</strong>
-        {% if improvement.expected_new_rating and improvement.current_rating %}
-          <span class="improvement-card__rating">
-            {{ improvement.current_rating }} → {{ improvement.expected_new_rating }}
-          </span>
-        {% endif %}
       </div>
       <p class="improvement-card__detail">{{ improvement.improvement_detail }}</p>
       <p class="improvement-card__disclaimer">
-        {{ _('Le stime di miglioramento sono indicative e calcolate sui gap rilevati nei run precedenti o sul profilo del dominio. Non costituiscono garanzia di risultato.') }}
+        {{ _('Pubblica prima i fix del pack (llms.txt, schema, robots), poi ri-misura. Lo score non sale solo perché rilanci l’analisi.') }}
       </p>
     </div>
   </div>

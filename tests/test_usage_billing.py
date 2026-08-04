@@ -227,15 +227,17 @@ def test_admin_is_unlimited():
 
 # ── Improvement preview ──────────────────────────────────────────────────────
 
-def test_improvement_first_time():
+def test_improvement_first_time_is_diagnosis_not_uplift():
     imp = estimate_improvement(existing_site=None, run_measured=False, crawl_pages=8)
     assert imp.current_aio is None
-    assert imp.expected_aio_delta > 0
-    assert imp.expected_geo_delta > 0
-    assert imp.improvement_label in {"Significativo", "Buono", "Moderato", "Manutenzione"}
+    assert imp.expected_aio_delta == 0
+    assert imp.expected_geo_delta == 0
+    assert imp.expected_new_rating is None
+    assert imp.improvement_label == "Prima diagnosi"
+    assert "guadagno" in imp.improvement_detail.lower() or "dipende" in imp.improvement_detail.lower()
 
 
-def test_improvement_reanalysis():
+def test_improvement_reanalysis_is_remeasure():
     class _Site:
         aio_score = 60
         geo_score = 55
@@ -244,13 +246,17 @@ def test_improvement_reanalysis():
 
     imp = estimate_improvement(existing_site=_Site(), run_measured=False, crawl_pages=8)
     assert imp.current_aio == 60
-    assert imp.expected_aio_delta > 0
+    assert imp.expected_aio_delta == 0
+    assert imp.improvement_label == "Ri-misurazione"
+    assert "garantito" in imp.improvement_detail.lower()
 
 
-def test_improvement_measured_boosts_geo():
-    imp_no  = estimate_improvement(existing_site=None, run_measured=False, crawl_pages=8)
-    imp_yes = estimate_improvement(existing_site=None, run_measured=True,  crawl_pages=8)
-    assert imp_yes.expected_geo_delta > imp_no.expected_geo_delta
+def test_improvement_measured_noted_not_as_score_boost():
+    imp_no = estimate_improvement(existing_site=None, run_measured=False, crawl_pages=8)
+    imp_yes = estimate_improvement(existing_site=None, run_measured=True, crawl_pages=8)
+    assert imp_yes.expected_geo_delta == imp_no.expected_geo_delta == 0
+    assert "Misurato" in imp_yes.improvement_detail
+    assert "Misurato" not in imp_no.improvement_detail
 
 
 def test_next_rating():

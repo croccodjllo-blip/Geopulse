@@ -24,8 +24,8 @@ type GeoUiData = {
   geoScore?: number | null;
   pagesAnalyzed?: number | null;
   findingsCount?: number;
-  sentiment?: number | null;
-  sentimentLabel?: string | null;
+  issuePressure?: number | null;
+  issuePressureLabel?: string | null;
   evidenceLabel?: string | null;
   engines?: OverviewEngineRow[];
   engineBars?: EngineBarPoint[];
@@ -71,8 +71,8 @@ export default function App() {
         citationsLabel: "Pages scored",
         citationsHint: `${live.findingsCount ?? 0} findings in last audit`,
         citationsDeltaPct: null,
-        sentiment: live.sentiment ?? null,
-        sentimentLabel: live.sentimentLabel || undefined,
+        issuePressure: live.issuePressure ?? null,
+        issuePressureLabel: live.issuePressureLabel || undefined,
         engines: live.engines || [],
         insights: live.insights || [],
         somTrend: live.somTrend || [],
