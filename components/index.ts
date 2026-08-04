@@ -10,3 +10,8 @@ export {
   type SomTrendChartProps,
   type SomPoint,
 } from "./SomTrendChart";
+export {
+  ShareOfModelChart,
+  type ShareOfModelChartProps,
+  type SomSeriesPoint,
+} from "./ShareOfModelChart";

@@ -7,6 +7,10 @@ import {
   ArrowDownRight,
   RefreshCw,
 } from "lucide-react";
+import {
+  ShareOfModelChart,
+  type SomSeriesPoint,
+} from "./ShareOfModelChart";
 
 export type OverviewEngineRow = {
   id: string;
@@ -40,6 +44,7 @@ export type DashboardOverviewProps = {
   engines?: OverviewEngineRow[];
   insights?: OverviewInsight[];
   evidenceLabel?: string;
+  somSeries?: SomSeriesPoint[];
 };
 
 const statusClass: Record<OverviewEngineRow["status"], string> = {
@@ -98,6 +103,7 @@ export function DashboardOverview({
   engines = [],
   insights = [],
   evidenceLabel,
+  somSeries,
 }: DashboardOverviewProps) {
   const sent = Math.max(0, Math.min(100, Number(sentiment ?? 0)));
   const pos = sent;
@@ -202,6 +208,8 @@ export function DashboardOverview({
           </div>
         </div>
       </div>
+
+      <ShareOfModelChart data={somSeries} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 p-6 rounded-xl bg-brand-card border border-brand-border space-y-4">
