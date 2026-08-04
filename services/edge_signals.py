@@ -29,6 +29,7 @@ AI_CRAWLER_USER_AGENTS: list[dict[str, str]] = [
     {"name": "CCBot", "vendor": "Common Crawl", "ua": "CCBot", "purpose": "training"},
     {"name": "meta-externalagent", "vendor": "Meta", "ua": "meta-externalagent", "purpose": "training"},
     {"name": "Applebot-Extended", "vendor": "Apple", "ua": "Applebot-Extended", "purpose": "training"},
+    {"name": "Amazonbot", "vendor": "Amazon", "ua": "Amazonbot", "purpose": "search"},
     {"name": "cohere-ai", "vendor": "Cohere", "ua": "cohere-ai", "purpose": "training"},
     {"name": "Diffbot", "vendor": "Diffbot", "ua": "Diffbot", "purpose": "extraction"},
     {"name": "YouBot", "vendor": "You.com", "ua": "YouBot", "purpose": "search"},
