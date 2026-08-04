@@ -132,6 +132,7 @@ from services.usage_billing import (
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
 from services.guides import GUIDES
+from services.site_guide import site_guide_payload
 from services.jobs import (
     claim_next_job,
     complete_job,
@@ -1336,7 +1337,7 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "history"
         elif ep in {"topup_credit_page", "pricing", "pro_interest", "billing_checkout"}:
             sidebar_active = "billing"
-        elif ep in {"dashboard_guide"}:
+        elif ep in {"dashboard_guide", "site_guide"}:
             sidebar_active = "guide"
         elif ep in {"dashboard_geo_ui"}:
             sidebar_active = "geo-ui"
@@ -2692,6 +2693,7 @@ def sitemap_xml():
     pages = [
         ("/", "1.0", "weekly"),
         ("/prodotto", "0.9", "weekly"),
+        ("/guida", "0.95", "weekly"),
         ("/prezzi", "0.8", "weekly"),
         ("/metodologia", "0.9", "monthly"),
         ("/guide/llms-txt", "0.8", "monthly"),
@@ -2769,6 +2771,16 @@ def about():
 @app.route("/contatti")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/guida")
+def site_guide():
+    """Guida completa pubblica: servizi, analisi, glossario."""
+    return render_template(
+        "guide.html",
+        guide=site_guide_payload(),
+        dash_shell=False,
+    )
 
 
 @app.route("/metodologia")
@@ -4525,7 +4537,11 @@ def dashboard_job_status(job_id: int):
 @app.route("/dashboard/guida")
 @login_required
 def dashboard_guide():
-    return render_template("guide.html")
+    return render_template(
+        "guide.html",
+        guide=site_guide_payload(),
+        dash_shell=True,
+    )
 
 
 @app.route("/dashboard/impostazioni", methods=["GET", "POST"])

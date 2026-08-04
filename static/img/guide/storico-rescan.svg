@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Storico</title>
+  <desc id="d">Re-scan e before/after</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#080B10"/>
+      <stop offset="55%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#0E1A28"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#00F0FF" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <circle cx="820" cy="90" r="160" fill="#00F0FF" opacity=".06"/>
+  <circle cx="120" cy="460" r="140" fill="#00B8C4" opacity=".05"/>
+  <rect x="36" y="36" width="888" height="468" rx="22" fill="#121A2B" stroke="#1E2A3F" stroke-width="1.5"/>
+  <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
+  <text x="64" y="88" fill="#00F0FF" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">STORICO</text>
+  <text x="64" y="122" fill="#E8EEF7" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="700">Re-scan e before/after</text>
+  
+  <g font-family="sans-serif">
+    <polyline points="100,380 220,300 340,320 460,240 580,260 700,180 820,200"
+      fill="none" stroke="#00F0FF" stroke-width="3"/>
+    <circle cx="100" cy="380" r="7" fill="#00F0FF"/><circle cx="220" cy="300" r="7" fill="#00F0FF"/><circle cx="340" cy="320" r="7" fill="#00F0FF"/><circle cx="460" cy="240" r="7" fill="#00F0FF"/><circle cx="580" cy="260" r="7" fill="#00F0FF"/><circle cx="700" cy="180" r="7" fill="#00F0FF"/><circle cx="820" cy="200" r="7" fill="#00F0FF"/>
+    <text x="100" y="420" fill="#8B9BB4" font-size="12">run 1</text>
+    <text x="460" y="220" fill="#8B9BB4" font-size="12">fix pack</text>
+    <text x="700" y="160" fill="#3DDC97" font-size="12" font-weight="700">re-scan Plus</text>
+    <text x="64" y="175" fill="#E8EEF7" font-size="18" font-weight="700">Trend score nel tempo</text>
+    <text x="64" y="205" fill="#8B9BB4" font-size="14">Schedula frequenza e orario UTC · confronta before/after.md</text>
+  </g>
+
+  <text x="64" y="480" fill="#8B9BB4" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+</svg>

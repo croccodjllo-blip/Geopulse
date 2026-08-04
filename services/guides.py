@@ -41,6 +41,7 @@ GUIDES: dict[str, dict[str, str]] = {
   <section class="page-section">
     <h2 class="page-section__title">5. Approfondimenti</h2>
     <ul class="plain-list">
+      <li><a href="/guida">Guida completa Centropic (servizi, analisi, glossario)</a></li>
       <li><a href="/guide/llms-txt">Guida llms.txt</a></li>
       <li><a href="/guide/schema-ai">Schema.org per answer engine</a></li>
       <li><a href="/guide/score-vs-sov">Score AIO/GEO vs Share of Voice</a></li>

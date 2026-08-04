@@ -137,6 +137,7 @@
             {% endif %}
           {% else %}
             <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
+            <a href="{{ url_for('site_guide') }}" class="{% if request.endpoint == 'site_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
             <a href="{{ url_for('methodology') }}" class="{% if request.endpoint == 'methodology' %}is-active{% endif %}">{{ _('Metodologia') }}</a>
             <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
@@ -206,8 +207,10 @@
         <div class="site-footer__col">
           <p class="site-footer__label">{{ _('Prodotto') }}</p>
           <a href="{{ url_for('product') }}">{{ _('Come funziona') }}</a>
+          <a href="{{ url_for('site_guide') }}">{{ _('Guida completa') }}</a>
           <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
           <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
+          <a href="{{ url_for('site_guide') }}#glossario">{{ _('Glossario') }}</a>
           <a href="{{ url_for('guide_llms_txt') }}">{{ _('Guida llms.txt') }}</a>
           <a href="{{ url_for('guide_schema_ai') }}">{{ _('Guida Schema AI') }}</a>
           <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>

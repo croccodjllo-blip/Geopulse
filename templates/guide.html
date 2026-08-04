@@ -1,63 +1,187 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Guida') }} — {{ _("Dopo l'analisi") }}{% endblock %}
-{% block body_class %}body-dash{% endblock %}
-{% block main_class %}site-main--dash{% endblock %}
+{% block title %}{{ guide.title }} — Centropic{% endblock %}
+{% block meta_description %}{{ guide.lede }}{% endblock %}
+{% block body_class %}{% if dash_shell %}body-dash{% endif %}{% endblock %}
+{% block main_class %}{% if dash_shell %}site-main--dash{% endif %}{% endblock %}
 
 {% block content %}
-<article class="page guide-page">
-  <header class="page-intro">
+<article class="page guide-page guide-page--full">
+  <header class="page-intro page-intro--v2">
     <p class="eyebrow">{{ _('Guida') }}</p>
-    <h1 class="h-display page-intro__title">{{ _("Dopo l'analisi") }}</h1>
-    <p class="lede page-intro__lede">
-      {{ _('Ordine consigliato per chiudere i gap di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO) e pubblicare il pack.') }}
-    </p>
+    <h1 class="h-display page-intro__title">{{ guide.title }}</h1>
+    <p class="lede page-intro__lede">{{ guide.lede }}</p>
     <p class="report-meta">
-      <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Torna alla dashboard') }}</a>
+      {{ _('Aggiornato') }} {{ guide.updated }}
+      {% if dash_shell %}
+      · <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Torna alla dashboard') }}</a>
+      {% else %}
+      · <a class="site-link" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+      · <a class="site-link" href="{{ url_for('faq') }}">{{ _('FAQ') }}</a>
+      {% endif %}
     </p>
   </header>
 
-  <ol class="guide-page__steps">
-    <li>
-      <strong>{{ _('Indice DDD→AAA') }}</strong>
-      <span>{{ _('Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado.') }}</span>
-    </li>
-    <li>
-      <strong>{{ _('Score AIO / GEO') }}</strong>
-      <span>{{ _('AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Sotto 60 = intervento prioritario.') }}</span>
-    </li>
-    <li>
-      <strong>{{ _('Findings') }}</strong>
-      <span>{{ _('Chiudi prima critical e warn; usa anche') }} <code>fix-this-week.md</code> {{ _('nel pack.') }}</span>
-    </li>
-    <li>
-      <strong>llms.txt</strong>
-      <span>{{ _('Pubblica in root:') }} <code>/llms.txt</code>.</span>
-    </li>
-    <li>
-      <strong>JSON-LD + FAQ + meta</strong>
-      <span>{{ _('Incolla nel') }} <code>&lt;head&gt;</code> {{ _('delle pagine chiave.') }}</span>
-    </li>
-    <li>
-      <strong>robots.txt</strong>
-      <span>{{ _('Unisci la bozza al file esistente e lascia aperti i bot AI utili.') }}</span>
-    </li>
-    <li>
-      <strong>{{ _('Re-scan') }}</strong>
-      <span>{{ _('Su Plus imposta frequenza e orario UTC, poi confronta before/after.') }}</span>
-    </li>
-  </ol>
+  <nav class="guide-toc" aria-label="{{ _('Indice guida') }}">
+    <p class="guide-toc__label">{{ _('Indice') }}</p>
+    <ol>
+      {% for item in guide.toc %}
+      <li><a href="#{{ item.id }}">{{ item.label }}</a></li>
+      {% endfor %}
+    </ol>
+  </nav>
 
-  <section class="guide-page__files" aria-labelledby="files-title">
-    <h2 class="dash-block__title" id="files-title">{{ _('Dove vanno i file') }}</h2>
-    <ul>
-      <li><code>llms.txt</code> → {{ _('root del sito') }}</li>
-      <li><code>organization.jsonld.html</code> → <code>&lt;head&gt;</code></li>
-      <li><code>faq.jsonld.html</code> → <code>&lt;head&gt;</code></li>
-      <li><code>meta-pack.html</code> → <code>&lt;head&gt;</code></li>
-      <li><code>robots.txt</code> → {{ _('root del sito') }}</li>
-      <li><code>fix-this-week.md</code> → {{ _('checklist operativa') }}</li>
-      <li><code>before-after.md</code> → {{ _('confronto tra run') }}</li>
+  <section class="guide-section" id="introduzione" aria-labelledby="intro-title">
+    <h2 class="guide-section__title" id="intro-title">{{ _('Introduzione') }}</h2>
+    <p class="guide-section__lede">
+      {{ _('Centropic misura e migliora la visibilità del tuo sito nei modelli generativi.') }}
+      <strong>AIO</strong> {{ _('(AI-Driven Visibility) e') }}
+      <strong>GEO</strong> {{ _('(Generative Engine Optimization) non sono GIS né “all-in-one”: sono metriche di citabilità IA.') }}
+    </p>
+    <figure class="guide-figure">
+      <img src="{{ url_for('static', filename=guide.services[0].image) }}" width="960" height="540" alt="{{ _('Panoramica dashboard Centropic') }}" loading="eager" />
+      <figcaption>{{ _('Workspace: score, findings, token e azioni in un’unica dashboard.') }}</figcaption>
+    </figure>
+  </section>
+
+  <section class="guide-section" id="servizi" aria-labelledby="servizi-title">
+    <h2 class="guide-section__title" id="servizi-title">{{ _('Servizi') }}</h2>
+    <p class="guide-section__lede">{{ _('Ogni blocco del prodotto, con illustrazione e cosa fa.') }}</p>
+    <div class="guide-service-grid">
+      {% for svc in guide.services %}
+      <article class="guide-service" id="{{ svc.id }}">
+        <figure class="guide-figure guide-figure--card">
+          <img src="{{ url_for('static', filename=svc.image) }}" width="960" height="540" alt="{{ svc.title }}" loading="lazy" />
+        </figure>
+        <h3 class="guide-service__title">{{ svc.title }}</h3>
+        <p class="guide-service__summary">{{ svc.summary }}</p>
+        <ul class="guide-service__list">
+          {% for b in svc.bullets %}
+          <li>{{ b }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="guide-section" id="analisi" aria-labelledby="analisi-title">
+    <h2 class="guide-section__title" id="analisi-title">{{ _('Analisi e moduli') }}</h2>
+    <p class="guide-section__lede">
+      {{ _('Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per engine.') }}
+    </p>
+    <figure class="guide-figure">
+      <img src="{{ url_for('static', filename='img/guide/geo-suite.svg') }}" width="960" height="540" alt="{{ _('Moduli GEO Suite') }}" loading="lazy" />
+      <figcaption>{{ _('Entity, citability, schema, publish verify, llms lint, locales.') }}</figcaption>
+    </figure>
+    <div class="guide-analysis-grid">
+      {% for row in guide.analyses %}
+      <article class="guide-analysis">
+        <h3 class="guide-analysis__title">{{ row.title }}</h3>
+        <p>{{ row.body }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="guide-section" id="dopo-analisi" aria-labelledby="dopo-title">
+    <h2 class="guide-section__title" id="dopo-title">{{ _('Dopo l’analisi') }}</h2>
+    <p class="guide-section__lede">{{ _('Ordine consigliato per chiudere i gap e pubblicare.') }}</p>
+    <ol class="guide-page__steps">
+      {% for step in guide.workflow %}
+      <li>
+        <strong>{{ step.title }}</strong>
+        <span>{{ step.body }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="guide-section" id="pack" aria-labelledby="pack-title">
+    <h2 class="guide-section__title" id="pack-title">{{ _('Pack e file') }}</h2>
+    <figure class="guide-figure">
+      <img src="{{ url_for('static', filename='img/guide/pack-artifact.svg') }}" width="960" height="540" alt="{{ _('Pack artifact') }}" loading="lazy" />
+    </figure>
+    <div class="guide-page__files">
+      <h3 class="dash-block__title">{{ _('Dove vanno i file') }}</h3>
+      <ul>
+        {% for row in guide.pack_files %}
+        <li><code>{{ row.file }}</code> → {{ row.where }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <section class="guide-section" id="edge-cms" aria-labelledby="edge-title">
+    <h2 class="guide-section__title" id="edge-title">{{ _('Edge Signals e CMS') }}</h2>
+    <div class="guide-duo">
+      <figure class="guide-figure">
+        <img src="{{ url_for('static', filename='img/guide/edge-signals.svg') }}" width="960" height="540" alt="Edge Signals" loading="lazy" />
+        <figcaption>{{ _('Proxy dal tuo dominio verso') }} <code>/e/&lt;token&gt;/</code></figcaption>
+      </figure>
+      <figure class="guide-figure">
+        <img src="{{ url_for('static', filename='img/guide/cms-connector.svg') }}" width="960" height="540" alt="CMS Connector" loading="lazy" />
+        <figcaption>{{ _('WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel, embed.') }}</figcaption>
+      </figure>
+    </div>
+    <p class="guide-section__lede">
+      {{ _('In dashboard: Attiva hosting dinamico → Scarica connector CMS (.zip) → installa un solo adapter.') }}
+      {{ _('Approfondimento in') }} <a href="{{ url_for('faq') }}#edge-signals">{{ _('FAQ Edge Signals') }}</a>.
+    </p>
+  </section>
+
+  <section class="guide-section" id="piani" aria-labelledby="piani-title">
+    <h2 class="guide-section__title" id="piani-title">{{ _('Piani e token') }}</h2>
+    <figure class="guide-figure">
+      <img src="{{ url_for('static', filename='img/guide/token-crediti.svg') }}" width="960" height="540" alt="{{ _('Token GEO') }}" loading="lazy" />
+    </figure>
+    <div class="guide-plans">
+      {% for plan in guide.plans %}
+      <article class="guide-plan">
+        <h3 class="guide-plan__name">{{ plan.name }}</h3>
+        <ul>
+          {% for p in plan.points %}
+          <li>{{ p }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="guide-section__lede">
+      <a href="{{ url_for('pricing') }}">{{ _('Vedi prezzi aggiornati') }}</a>
+      · <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
+    </p>
+  </section>
+
+  <section class="guide-section guide-section--glossary" id="glossario" aria-labelledby="gloss-title">
+    <h2 class="guide-section__title" id="gloss-title">{{ _('Glossario') }}</h2>
+    <p class="guide-section__lede">{{ _('Voci usate in dashboard, report e Edge.') }}</p>
+    <dl class="guide-glossary">
+      {% for g in guide.glossary %}
+      <div class="guide-glossary__item" id="g-{{ g.slug }}">
+        <dt>{{ g.term }}</dt>
+        <dd>{{ g.definition }}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+  </section>
+
+  <section class="guide-section" aria-labelledby="deep-title">
+    <h2 class="guide-section__title" id="deep-title">{{ _('Approfondimenti') }}</h2>
+    <ul class="plain-list">
+      {% for link in guide.deep_links %}
+      <li><a href="{{ link.href }}">{{ link.label }}</a></li>
+      {% endfor %}
     </ul>
   </section>
+
+  <div class="page-cta">
+    {% if dash_shell %}
+    <a class="btn btn-primary" href="{{ url_for('dashboard') }}">{{ _('Apri dashboard') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Piani') }}</a>
+    {% else %}
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
+    {% endif %}
+  </div>
 </article>
 {% endblock %}
