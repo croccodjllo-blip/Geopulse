@@ -21,12 +21,27 @@ def test_http_error_finding_lists_urls():
 
     out = analyze_crawl_aggregate(
         pages=[
-            {"url": "https://centropic.ai/ads.txt", "status_code": 404},
-            {"url": "https://centropic.ai/faq", "status_code": 200, "response_ms": 100},
+            {"url": "https://centropic.ai/ads.txt", "status_code": 404, "word_count": 200},
+            {
+                "url": "https://centropic.ai/faq",
+                "status_code": 200,
+                "response_ms": 100,
+                "word_count": 400,
+            },
+            {
+                "url": "https://centropic.ai/",
+                "status_code": 200,
+                "response_ms": 100,
+                "word_count": 500,
+            },
         ],
-        sitemap_urls=["https://centropic.ai/faq"],
+        sitemap_urls=["https://centropic.ai/faq", "https://centropic.ai/"],
         seed_url="https://centropic.ai/",
     )
-    crit = [f for f in out["findings"] if f.get("severity") == "critical"]
-    assert crit
-    assert "ads.txt" in crit[0]["detail"]
+    http_crit = [
+        f
+        for f in out["findings"]
+        if f.get("severity") == "critical" and "HTTP" in f.get("title", "")
+    ]
+    assert http_crit
+    assert "ads.txt" in http_crit[0]["detail"]
