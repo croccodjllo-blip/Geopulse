@@ -74,7 +74,7 @@ def generate_llms_txt(
     if not api_key:
         return fallback_llms_txt(url, scraped)
 
-    client = OpenAI(api_key=api_key, timeout=45.0)
+        client = OpenAI(api_key=api_key, timeout=45.0, max_retries=3)
     prompt = f"""
 Sei un esperto di GEO (Generative Engine Optimization) e AIO (AI Optimization).
 Genera un file llms.txt in markdown chiaro, pronto da pubblicare in /.

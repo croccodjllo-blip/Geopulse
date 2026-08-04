@@ -11,8 +11,10 @@ from __future__ import annotations
 import logging
 import os
 import re
+import time
 from typing import Any
 
+from services.llm_retry import call_with_retries, http_should_retry, probe_pacing_seconds
 from services.prompt_bank import default_prompts
 
 logger = logging.getLogger(__name__)
@@ -234,26 +236,34 @@ def _probe_openai(
     except Exception as exc:  # pragma: no cover
         return {"available": False, "reason": str(exc), "details": []}
 
-    client = OpenAI(api_key=api_key, timeout=45.0)
+    # max_retries=0: we own pacing/backoff to avoid stampedes across prompts.
+    client = OpenAI(api_key=api_key, timeout=45.0, max_retries=0)
     hits = 0
     details: list[dict[str, Any]] = []
-    for prompt in prompts:
+    pace = probe_pacing_seconds()
+    for idx, prompt in enumerate(prompts):
+        if idx and pace:
+            time.sleep(pace)
         try:
-            resp = client.chat.completions.create(
-                model=model,
-                temperature=0.2,
-                max_tokens=350,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "Rispondi in modo fattuale. Cita brand solo se li conosci; "
-                            "non inventare URL."
-                        ),
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-            )
+
+            def _once(p: str = prompt) -> Any:
+                return client.chat.completions.create(
+                    model=model,
+                    temperature=0.2,
+                    max_tokens=350,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": (
+                                "Rispondi in modo fattuale. Cita brand solo se li conosci; "
+                                "non inventare URL."
+                            ),
+                        },
+                        {"role": "user", "content": p},
+                    ],
+                )
+
+            resp = call_with_retries(_once, retries=5, label="openai-sov")
             if hasattr(resp, "usage") and resp.usage and usage_callback:
                 usage_callback(
                     provider="openai",
@@ -263,7 +273,7 @@ def _probe_openai(
                 )
             text = (resp.choices[0].message.content or "").strip()
         except Exception as exc:
-            logger.exception("openai citation probe failed")
+            logger.warning("openai citation probe failed: %s", str(exc)[:200])
             details.append({"prompt": prompt, "error": str(exc)[:160]})
             continue
         ok = _mentioned(text, needles)
@@ -309,27 +319,37 @@ def _probe_perplexity(
     hits = 0
     details: list[dict[str, Any]] = []
     system = "Be factual. Cite real brands only. Answer briefly."
-    for prompt in prompts[:3]:
+    pace = probe_pacing_seconds()
+    for idx, prompt in enumerate(prompts[:3]):
+        if idx and pace:
+            time.sleep(pace)
         try:
-            res = requests.post(
-                "https://api.perplexity.ai/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": model,
-                    "temperature": 0.2,
-                    "max_tokens": 350,
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": f"{system}\n\n{prompt}",
-                        }
-                    ],
-                },
-                timeout=45,
-            )
+
+            def _once(p: str = prompt) -> Any:
+                res = requests.post(
+                    "https://api.perplexity.ai/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "temperature": 0.2,
+                        "max_tokens": 350,
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": f"{system}\n\n{p}",
+                            }
+                        ],
+                    },
+                    timeout=45,
+                )
+                if http_should_retry(res.status_code):
+                    raise RuntimeError(f"HTTP {res.status_code}: {(res.text or '')[:120]}")
+                return res
+
+            res = call_with_retries(_once, retries=4, label="perplexity-sov")
             if not res.ok:
                 err_body = (res.text or "")[:180]
                 details.append(
@@ -354,7 +374,7 @@ def _probe_perplexity(
                 or ""
             ).strip()
         except Exception as exc:
-            logger.exception("perplexity citation probe failed")
+            logger.warning("perplexity citation probe failed: %s", str(exc)[:200])
             details.append(
                 {"prompt": prompt, "error": str(exc)[:160], "engine": "perplexity"}
             )

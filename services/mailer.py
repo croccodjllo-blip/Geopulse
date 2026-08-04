@@ -5,8 +5,10 @@ from __future__ import annotations
 import base64
 import logging
 import os
+import re
 import smtplib
 from email.message import EmailMessage
+from email.utils import parseaddr
 from typing import Any
 
 import requests
@@ -27,6 +29,43 @@ def mail_from_address() -> str:
         or (os.getenv("SMTP_FROM") or "").strip()
         or (os.getenv("ADMIN_EMAIL") or "noreply@centropic.ai").strip()
     )
+
+
+def _email_addr(value: str) -> str:
+    """Extract bare address from ``Name <addr@host>`` or bare email."""
+    _, addr = parseaddr(value or "")
+    addr = (addr or "").strip()
+    if addr and "@" in addr:
+        return addr
+    # Fallback: last token that looks like an email
+    m = re.search(r"[\w.+\-]+@[\w.\-]+\.\w+", value or "")
+    return m.group(0) if m else (value or "").strip()
+
+
+def smtp_envelope_from() -> str:
+    """From header for SMTP.
+
+    Providers like Aruba reject MAIL FROM when it does not match the
+    authenticated mailbox (``SMTP_USER``). Keep the display name from
+    ``MAIL_FROM`` when possible, but force the address to ``SMTP_USER``.
+    """
+    configured = mail_from_address()
+    smtp_user = (os.getenv("SMTP_USER") or "").strip()
+    if not smtp_user or "@" not in smtp_user:
+        return configured
+
+    display, configured_addr = parseaddr(configured)
+    configured_addr = (configured_addr or _email_addr(configured)).strip()
+    if configured_addr.lower() == smtp_user.lower():
+        return configured
+
+    name = (display or "").strip() or "Centropic"
+    logger.warning(
+        "SMTP From %s not allowed for mailbox %s — using SMTP_USER",
+        configured_addr or configured,
+        smtp_user,
+    )
+    return f"{name} <{smtp_user}>"
 
 
 def send_email(
@@ -107,7 +146,7 @@ def _send_plain_via_smtp(
     password = os.getenv("SMTP_PASSWORD") or ""
     use_ssl = (os.getenv("SMTP_SSL") or "0").strip() == "1"
     use_starttls = (os.getenv("SMTP_STARTTLS") or "1").strip() != "0"
-    from_addr = mail_from_address()
+    from_addr = smtp_envelope_from()
 
     msg = EmailMessage()
     msg["Subject"] = subject
@@ -132,7 +171,7 @@ def _send_plain_via_smtp(
                 smtp.login(user, password)
             smtp.send_message(msg)
 
-    return {"provider": "smtp", "to": to_email, "host": host}
+    return {"provider": "smtp", "to": to_email, "host": host, "from": from_addr}
 
 
 def build_password_reset_email(
@@ -306,7 +345,7 @@ def _send_via_smtp(
     password = os.getenv("SMTP_PASSWORD") or ""
     use_ssl = (os.getenv("SMTP_SSL") or "0").strip() == "1"
     use_starttls = (os.getenv("SMTP_STARTTLS") or "1").strip() != "0"
-    from_addr = mail_from_address()
+    from_addr = smtp_envelope_from()
 
     msg = EmailMessage()
     msg["Subject"] = subject
@@ -338,7 +377,7 @@ def _send_via_smtp(
                 smtp.login(user, password)
             smtp.send_message(msg)
 
-    return {"provider": "smtp", "to": to_email, "host": host}
+    return {"provider": "smtp", "to": to_email, "host": host, "from": from_addr}
 
 
 def build_pack_email(
