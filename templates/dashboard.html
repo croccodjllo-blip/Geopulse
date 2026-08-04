@@ -62,7 +62,11 @@
     </aside>
     {% endif %}
 
-    <form method="post" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
+    {% if latest %}
+      {% include "partials/geo_overview.html" %}
+    {% endif %}
+
+    <form method="post" id="analyze" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
       {{ form.hidden_tag() }}
       <div class="analyze-composer analyze-composer--cmd">
         <div class="analyze-composer__head">

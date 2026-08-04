@@ -1,0 +1,175 @@
+{# GEO Overview — mirrors components/DashboardOverview.tsx
+   Expects: latest, engine_breakdown, aio, geo, findings_critical, findings_n,
+            findings_all_n, pages_analyzed_n, rating, run_diff, is_pro
+#}
+{% set som = engine_breakdown.brand_sov if engine_breakdown else none %}
+{% set engines = (engine_breakdown.engines if engine_breakdown else []) or [] %}
+{% set n_eng = engines|length %}
+{% set delta_aio = run_diff.delta_aio if run_diff and run_diff.delta_aio is not none else none %}
+{% set findings_list = findings_critical or [] %}
+{% set findings_n_local = findings_list|length %}
+{% set sent_raw = 100 - (findings_n_local * 8) %}
+{% set sent = 8 if sent_raw < 8 else (100 if sent_raw > 100 else sent_raw) %}
+{% if sent >= 75 %}
+  {% set sent_label = _('Positive') %}
+{% elif sent >= 45 %}
+  {% set sent_label = _('Mixed') %}
+{% else %}
+  {% set sent_label = _('At risk') %}
+{% endif %}
+{% set tones = ['emerald', 'cyan', 'violet', 'amber', 'cyan', 'violet'] %}
+
+<section class="geo-overview" aria-labelledby="geo-overview-title">
+  <div class="geo-overview__head">
+    <div>
+      <h2 class="geo-overview__title" id="geo-overview-title">GEO Overview</h2>
+      <p class="geo-overview__lede">
+        {{ _('Share of Model & AI Visibility metrics.') }}
+        {% if engine_breakdown and engine_breakdown.label %}
+          <span class="geo-overview__evidence">· {{ engine_breakdown.label }}</span>
+        {% endif %}
+      </p>
+    </div>
+    <div class="geo-overview__actions">
+      <label class="geo-overview__range visually-hidden" for="geo-range">{{ _('Periodo') }}</label>
+      <select id="geo-range" class="geo-overview__select" disabled title="{{ _('Storico range: in arrivo') }}">
+        <option>{{ _('Last 30 Days') }}</option>
+        <option>{{ _('Last 7 Days') }}</option>
+        <option>{{ _('Quarter to Date') }}</option>
+      </select>
+      <a class="btn btn-primary geo-overview__audit" href="#analyze">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        {{ _('Run Instant GEO Audit') }}
+      </a>
+    </div>
+  </div>
+
+  <div class="geo-overview__kpis">
+    <article class="geo-kpi">
+      <p class="geo-kpi__label">Share of Model (SoM)</p>
+      <div class="geo-kpi__row">
+        <p class="geo-kpi__value">{% if som is not none %}{{ som }}%{% else %}—{% endif %}</p>
+        {% if delta_aio is not none %}
+        <span class="geo-kpi__delta {% if delta_aio >= 0 %}is-up{% else %}is-down{% endif %}">
+          {% if delta_aio >= 0 %}+{% endif %}{{ delta_aio }} AIO
+        </span>
+        {% endif %}
+      </div>
+      <p class="geo-kpi__hint">{{ _('Across') }} {{ n_eng or '—' }} {{ _('tracked LLM platforms') }}</p>
+    </article>
+
+    <article class="geo-kpi">
+      <p class="geo-kpi__label">AI Rec. Rank</p>
+      <div class="geo-kpi__row">
+        <p class="geo-kpi__value">{% if rating and rating.code %}{{ rating.code }}{% else %}—{% endif %}</p>
+        {% if geo is number %}
+        <span class="geo-kpi__delta is-neutral">GEO {{ geo }}</span>
+        {% endif %}
+      </div>
+      <p class="geo-kpi__hint">{{ _('Composite grade from AIO/GEO scores') }}</p>
+    </article>
+
+    <article class="geo-kpi">
+      <p class="geo-kpi__label">{{ _('Pages / signals') }}</p>
+      <div class="geo-kpi__row">
+        <p class="geo-kpi__value">{{ pages_analyzed_n if pages_analyzed_n is defined else (latest.pages_analyzed or '—') }}</p>
+        <span class="geo-kpi__delta is-neutral">{{ findings_all_n|default(0) }} {{ _('findings') }}</span>
+      </div>
+      <p class="geo-kpi__hint">{{ _('Pages scored in last audit') }}</p>
+    </article>
+
+    <article class="geo-kpi">
+      <p class="geo-kpi__label">AI Sentiment Index</p>
+      <div class="geo-kpi__row">
+        <p class="geo-kpi__value">{{ sent }}/100</p>
+        <span class="geo-kpi__delta is-cyan">{{ sent_label }}</span>
+      </div>
+      {% set pos = sent %}
+      {% set mid = ((100 - sent) * 0.66)|int %}
+      {% set neg = 100 - pos - mid %}
+      {% if neg < 0 %}{% set neg = 0 %}{% endif %}
+      <div class="geo-kpi__bar" aria-hidden="true">
+        <span class="is-pos" style="width:{{ pos }}%"></span>
+        <span class="is-mid" style="width:{{ mid }}%"></span>
+        <span class="is-neg" style="width:{{ neg }}%"></span>
+      </div>
+    </article>
+  </div>
+
+  <div class="geo-overview__grid">
+    <div class="geo-panel geo-panel--wide">
+      <div class="geo-panel__head">
+        <h3 class="geo-panel__title">LLM Visibility Breakdown</h3>
+        <a class="geo-panel__link" href="#panel-sov">{{ _('View Detailed Report') }}</a>
+      </div>
+      <div class="geo-table-wrap">
+        <table class="geo-table">
+          <thead>
+            <tr>
+              <th>{{ _('Engine') }}</th>
+              <th>{{ _('Share of Voice') }}</th>
+              <th>{{ _('Propensity') }}</th>
+              <th>{{ _('Status') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in engines %}
+              {% set share = e.share if e.share is not none else e.mention_rate %}
+              {% set prop = e.propensity if e.propensity is not none else share %}
+              {% if share is not none and share >= 40 %}
+                {% set st = 'dominant' %}
+                {% set st_label = _('Dominant') %}
+              {% elif share is not none and share >= 28 %}
+                {% set st = 'optimal' %}
+                {% set st_label = _('Optimal') %}
+              {% elif share is not none %}
+                {% set st = 'needs' %}
+                {% set st_label = _('Needs Action') %}
+              {% else %}
+                {% set st = 'unknown' %}
+                {% set st_label = '—' %}
+              {% endif %}
+              {% set tone = tones[loop.index0 % tones|length] %}
+              <tr>
+                <td>
+                  <span class="geo-engine">
+                    <i class="geo-engine__dot tone-{{ tone }}" aria-hidden="true"></i>
+                    {{ e.label or e.id }}
+                  </span>
+                </td>
+                <td>{% if share is not none %}{{ share }}%{% else %}—{% endif %}</td>
+                <td class="is-muted">{% if prop is not none %}{{ prop }}{% else %}—{% endif %}</td>
+                <td><span class="geo-status geo-status--{{ st }}">{{ st_label }}</span></td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="is-muted">{{ _('Nessun breakdown engine — lancia un audit.') }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <aside class="geo-panel geo-panel--insights" aria-labelledby="geo-insights-title">
+      <div class="geo-panel__head geo-panel__head--violet">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <h3 class="geo-panel__title" id="geo-insights-title">{{ _('Actionable GEO Insights') }}</h3>
+      </div>
+      <div class="geo-insights">
+        {% for f in findings_list[:4] %}
+          {% set sev = (f.severity or '')|lower %}
+          <div class="geo-insight">
+            <p class="geo-insight__sev {% if sev == 'critical' %}is-gap{% else %}is-high{% endif %}">
+              {% if sev == 'critical' %}{{ _('Gap Detected') }}{% else %}{{ _('High Impact') }}{% endif %}
+            </p>
+            <p class="geo-insight__title">{{ f.title }}</p>
+            <p class="geo-insight__detail">{{ f.detail }}</p>
+          </div>
+        {% else %}
+          <p class="geo-insight__empty">{{ _('Nessun finding critical/warn su questa run.') }}</p>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+</section>
