@@ -1357,6 +1357,28 @@ def analyze_site(
         jsonld_merged["faq_questions"] = max(
             int(jsonld_merged.get("faq_questions") or 0), len(faq_entities)
         )
+    # Prefer richest Organization node across seed + crawl (for pack JSON-LD).
+    org_nodes = list(jsonld_merged.get("org_nodes") or [])
+    seen_org: set[str] = set()
+    for node in org_nodes:
+        if isinstance(node, dict):
+            seen_org.add(str(node.get("@id") or node.get("name") or id(node)))
+    for p in page_reports:
+        page_scraped = p.get("scraped") or {}
+        for node in ((page_scraped.get("jsonld") or {}).get("org_nodes") or []):
+            if not isinstance(node, dict):
+                continue
+            key = str(node.get("@id") or node.get("name") or "")
+            if key and key in seen_org:
+                continue
+            if key:
+                seen_org.add(key)
+            org_nodes.append(node)
+    if org_nodes:
+        # Prefer the node with the most keys (richer schema).
+        org_nodes.sort(key=lambda n: len(n.keys()) if isinstance(n, dict) else 0, reverse=True)
+        jsonld_merged["org_nodes"] = org_nodes[:5]
+        jsonld_merged["has_organization"] = True
     html_faq_merged = dict(scraped.get("html_faq") or {})
     if html_pairs:
         # Dedup HTML pairs

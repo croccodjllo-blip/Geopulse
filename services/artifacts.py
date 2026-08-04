@@ -268,21 +268,142 @@ def _sanitize_generated_llms(content: str) -> str:
     return "\n".join(lines_out)
 
 
+def _looks_like_hostname(name: str) -> bool:
+    n = (name or "").strip().lower().removeprefix("www.")
+    return bool(re.fullmatch(r"[a-z0-9-]+(?:\.[a-z0-9-]+)+", n))
+
+
+def _clean_slogan(title: str | None, *, brand: str, domain: str) -> str:
+    t = (title or "").strip()
+    if not t:
+        return brand
+    host = domain.lower().removeprefix("www.")
+    t = re.sub(rf"\s*[·|—\-]\s*(?:www\.)?{re.escape(host)}\s*$", "", t, flags=re.I)
+    t = re.sub(rf"\s*[·|—\-]\s*{re.escape(brand)}\s*$", "", t, flags=re.I)
+    t = t.strip(" ·|-—")
+    return t or brand
+
+
+def _org_payload_from_node(
+    node: dict[str, Any],
+    *,
+    url: str,
+    brand: str,
+    domain: str,
+    description: str,
+    slogan: str,
+) -> dict[str, Any]:
+    """Reuse crawled Organization JSON-LD, forcing a human brand name."""
+    base = url.rstrip("/")
+    raw_name = str(node.get("name") or brand).strip()
+    if (
+        _looks_like_hostname(raw_name)
+        or raw_name.lower() in {domain.lower(), "geopulse", "geopulse.it"}
+    ):
+        raw_name = brand
+
+    org_type = node.get("@type") or "Organization"
+    if isinstance(org_type, list):
+        org_type = org_type[0] if org_type else "Organization"
+
+    payload: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": org_type,
+        "@id": node.get("@id") or f"{base}/#organization",
+        "name": raw_name,
+        "url": node.get("url") or url,
+        "description": node.get("description") or description,
+        "slogan": _clean_slogan(
+            str(node.get("slogan") or slogan or ""), brand=brand, domain=domain
+        ),
+    }
+    optional = (
+        "logo",
+        "image",
+        "email",
+        "telephone",
+        "sameAs",
+        "contactPoint",
+        "alternateName",
+        "foundingLocation",
+        "areaServed",
+        "knowsAbout",
+        "parentOrganization",
+        "founder",
+        "publishingPrinciples",
+        "isAccessibleForFree",
+        "address",
+        "brand",
+    )
+    for key in optional:
+        val = node.get(key)
+        if val not in (None, "", [], {}):
+            payload[key] = val
+    return payload
+
+
 def build_json_ld(url: str, scraped: dict[str, Any]) -> str:
-    domain = scraped.get("domain") or urlparse(url).netloc
-    brand = _clean_brand_name(str(domain), scraped.get("title"))
+    domain = str(scraped.get("domain") or urlparse(url).netloc).removeprefix("www.")
+    brand = _clean_brand_name(domain, scraped.get("title"))
     title = scraped.get("title") or brand
-    description = scraped.get("description") or (
+    description = (scraped.get("description") or "").strip() or (
         f"{brand}: contenuti e servizi ottimizzati per AIO e GEO."
     )
-    payload = {
+    slogan = _clean_slogan(str(title), brand=brand, domain=domain)
+    base = url.rstrip("/")
+
+    jsonld = scraped.get("jsonld") or {}
+    for node in jsonld.get("org_nodes") or []:
+        if isinstance(node, dict) and (node.get("name") or node.get("url")):
+            payload = _org_payload_from_node(
+                node,
+                url=url,
+                brand=brand,
+                domain=domain,
+                description=description,
+                slogan=slogan,
+            )
+            return (
+                '<script type="application/ld+json">\n'
+                + json.dumps(payload, ensure_ascii=False, indent=2)
+                + "\n</script>\n"
+            )
+
+    entity = scraped.get("entity") or {}
+    payload: dict[str, Any] = {
         "@context": "https://schema.org",
         "@type": "Organization",
+        "@id": f"{base}/#organization",
         "name": brand,
         "url": url,
         "description": description,
-        "slogan": title,
+        "slogan": slogan,
     }
+    email = (entity.get("email") or "").strip()
+    phone = (entity.get("telephone") or "").strip()
+    if not email:
+        emails = scraped.get("emails") or []
+        if emails:
+            email = str(emails[0]).strip()
+    if not phone:
+        phones = scraped.get("phones") or []
+        if phones:
+            phone = str(phones[0]).strip()
+    if email:
+        payload["email"] = email
+    if phone:
+        payload["telephone"] = phone
+    same_as = entity.get("same_as") or []
+    if same_as:
+        payload["sameAs"] = list(same_as)[:8]
+    logo = scraped.get("og_image") or scraped.get("logo_url")
+    if logo:
+        payload["logo"] = {
+            "@type": "ImageObject",
+            "url": logo,
+            "caption": brand,
+        }
+
     return (
         '<script type="application/ld+json">\n'
         + json.dumps(payload, ensure_ascii=False, indent=2)
