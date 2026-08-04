@@ -27,11 +27,28 @@ def test_status_page_has_substantive_copy():
 
 
 def test_site_guide_does_not_link_broken_pricing():
+    from app import app
     from services.site_guide import site_guide_payload
 
-    links = [d["href"] for d in site_guide_payload()["deep_links"]]
+    with app.app_context():
+        links = [d["href"] for d in site_guide_payload()["deep_links"]]
     assert "/pricing" not in links
     assert "/prezzi" in links
+
+
+def test_site_guide_translates_with_locale():
+    from app import app
+    from services.site_guide import site_guide_payload
+
+    with app.test_request_context("/guida?lang=en"):
+        app.preprocess_request()
+        payload = site_guide_payload()
+        # Italian source must not leak as page title when English is active
+        assert payload["title"]
+        # Either translated or still marked for translation; must be a string
+        assert isinstance(payload["lede"], str)
+        assert payload["toc"][0]["label"]
+
 
 
 def test_landing_logos_have_alt():

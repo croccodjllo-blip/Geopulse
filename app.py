@@ -131,7 +131,7 @@ from services.usage_billing import (
     assert_can_start_analysis,
 )
 from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
-from services.guides import GUIDES
+from services.guides import GUIDES, get_guide
 from services.growth import (
     REFERRAL_BONUS_CENTS,
     TRIAL_DAYS,
@@ -2050,7 +2050,7 @@ def resolve_competitor_urls(
 
 
 def render_guide(slug: str):
-    guide = GUIDES.get(slug)
+    guide = get_guide(slug)
     if not guide:
         return redirect(url_for("methodology"))
     date_iso = "2026-07-27"
@@ -2063,7 +2063,7 @@ def render_guide(slug: str):
         article_lede=guide["lede"],
         article_body=guide["body"],
         article_date=date_iso,
-        article_date_human="27 luglio 2026",
+        article_date_human=_("27 luglio 2026"),
     )
 
 

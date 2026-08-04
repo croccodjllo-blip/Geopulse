@@ -1,15 +1,46 @@
-"""Public evergreen GEO guides + methodology bodies."""
+"""Public evergreen GEO guides + methodology bodies (locale-aware)."""
 
 from __future__ import annotations
 
-GUIDES: dict[str, dict[str, str]] = {
-    "metodologia": {
+from typing import Any
+
+from flask_babel import gettext as _
+
+
+def get_guide(slug: str) -> dict[str, Any] | None:
+    """Return a translated guide dict for the active locale, or None."""
+    builders = {
+        "metodologia": _guide_metodologia,
+        "llms-txt": _guide_llms_txt,
+        "schema-ai": _guide_schema_ai,
+        "score-vs-sov": _guide_score_vs_sov,
+    }
+    fn = builders.get(slug)
+    return fn() if fn else None
+
+
+# Backward-compatible mapping for imports that only need slug presence.
+GUIDES = {
+    "metodologia": {"path": "/metodologia"},
+    "llms-txt": {"path": "/guide/llms-txt"},
+    "schema-ai": {"path": "/guide/schema-ai"},
+    "score-vs-sov": {"path": "/guide/score-vs-sov"},
+}
+
+
+def _guide_metodologia() -> dict[str, Any]:
+    return {
         "path": "/metodologia",
-        "eyebrow": "Metodologia",
-        "title": "Come Centropic misura AIO e GEO",
-        "description": "Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured.",
-        "lede": "Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non promettiamo.",
-        "body": """
+        "eyebrow": _("Metodologia"),
+        "title": _("Come Centropic misura AIO e GEO"),
+        "description": _(
+            "Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured."
+        ),
+        "lede": _(
+            "Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non promettiamo."
+        ),
+        "body": _(
+            """
   <section class="page-section">
     <h2 class="page-section__title">1. Cosa osserviamo (Misurato)</h2>
     <p class="lede">Probe HTTP e parsing HTML sullo stesso dominio: title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, crawl multi-pagina. Questi finding possono essere badge <em>Misurato</em>.</p>
@@ -49,15 +80,24 @@ GUIDES: dict[str, dict[str, str]] = {
       <li><a href="/prodotto">Come funziona il prodotto</a></li>
     </ul>
   </section>
-""",
-    },
-    "llms-txt": {
+"""
+        ),
+    }
+
+
+def _guide_llms_txt() -> dict[str, Any]:
+    return {
         "path": "/guide/llms-txt",
-        "eyebrow": "Guida",
-        "title": "llms.txt: guida pratica per la citabilità IA",
-        "description": "Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera e lo valida nel crawl.",
-        "lede": "Un file root machine-readable che spiega brand, topic e pagine preferite ai modelli e crawler AI.",
-        "body": """
+        "eyebrow": _("Guida"),
+        "title": _("llms.txt: guida pratica per la citabilità IA"),
+        "description": _(
+            "Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera e lo valida nel crawl."
+        ),
+        "lede": _(
+            "Un file root machine-readable che spiega brand, topic e pagine preferite ai modelli e crawler AI."
+        ),
+        "body": _(
+            """
   <section class="page-section">
     <h2 class="page-section__title">Perché conta</h2>
     <p class="lede">llms.txt riduce ambiguità entity: dice chi sei, cosa offri e quali URL citare. In Centropic la presenza e la qualità del file alimentano score AIO/GEO (probe Misurato).</p>
@@ -88,15 +128,24 @@ GUIDES: dict[str, dict[str, str]] = {
     </ul>
     <p class="lede">Vedi anche <a href="/guide/schema-ai">Schema AI</a> e <a href="/metodologia">metodologia</a>.</p>
   </section>
-""",
-    },
-    "schema-ai": {
+"""
+        ),
+    }
+
+
+def _guide_schema_ai() -> dict[str, Any]:
+    return {
         "path": "/guide/schema-ai",
-        "eyebrow": "Guida",
-        "title": "Schema.org per answer engine (AIO/GEO)",
-        "description": "Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine Optimization: Organization, WebSite, FAQPage, SoftwareApplication, Article.",
-        "lede": "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity leggibile a crawler e modelli. Aggiornato 30/07/2026.",
-        "body": """
+        "eyebrow": _("Guida"),
+        "title": _("Schema.org per answer engine (AIO/GEO)"),
+        "description": _(
+            "Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine Optimization: Organization, WebSite, FAQPage, SoftwareApplication, Article."
+        ),
+        "lede": _(
+            "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity leggibile a crawler e modelli. Aggiornato 30/07/2026."
+        ),
+        "body": _(
+            """
   <section class="page-section">
     <h2 class="page-section__title">Tipi prioritari</h2>
     <ul class="plain-list">
@@ -123,15 +172,24 @@ GUIDES: dict[str, dict[str, str]] = {
     </ul>
     <p class="lede">Vedi anche <a href="/metodologia">metodologia</a>, <a href="/guide/llms-txt">llms.txt</a> e <a href="/guide/score-vs-sov">score vs SoV</a>.</p>
   </section>
-""",
-    },
-    "score-vs-sov": {
+"""
+        ),
+    }
+
+
+def _guide_score_vs_sov() -> dict[str, Any]:
+    return {
         "path": "/guide/score-vs-sov",
-        "eyebrow": "Guida",
-        "title": "Score AIO/GEO vs Share of Voice",
-        "description": "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in Centropic.",
-        "lede": "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la presenza relativa negli engine.",
-        "body": """
+        "eyebrow": _("Guida"),
+        "title": _("Score AIO/GEO vs Share of Voice"),
+        "description": _(
+            "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in Centropic."
+        ),
+        "lede": _(
+            "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la presenza relativa negli engine."
+        ),
+        "body": _(
+            """
   <section class="page-section">
     <h2 class="page-section__title">Score AIO / GEO</h2>
     <p class="lede">Indici 0–100 da crawl e probe. Badge Stimato sul compositario; singoli check di presenza file possono essere Misurato.</p>
@@ -147,6 +205,6 @@ GUIDES: dict[str, dict[str, str]] = {
     <p class="lede">Alza prima i segnali (score), poi misura la voce (SoV). Un SoV alto con score basso è fragile; score alto senza SoV measured resta una diagnosi, non una prova di citazione.</p>
     <p class="lede">Centropic mostra sempre l’evidence badge: Stimato, Misto o Misurato. Dettagli in <a href="/metodologia">metodologia</a> e nel prodotto su <a href="/prodotto">/prodotto</a>.</p>
   </section>
-""",
-    },
-}
+"""
+        ),
+    }
