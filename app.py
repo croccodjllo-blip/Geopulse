@@ -170,6 +170,7 @@ from services.mailer import (
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
+from services.geo_ui_payload import build_geo_ui_payload
 from services.signals import compare_with_previous
 from services.sov_measured import should_run_measured
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
@@ -3529,7 +3530,19 @@ def dashboard_geo_ui():
     assets = resolve_geo_ui_assets()
     if not assets.get("js") or not assets.get("css"):
         abort(404)
-    return render_template("geo_ui.html", geo_ui_assets=assets)
+    user = current_user()
+    payload = build_geo_ui_payload(
+        user=user,
+        SiteAnalysis=SiteAnalysis,
+        SovSnapshot=SovSnapshot,
+        audit_href=url_for("dashboard") + "#analyze",
+        report_href=url_for("dashboard"),
+    )
+    return render_template(
+        "geo_ui.html",
+        geo_ui_assets=assets,
+        geo_ui_data=payload,
+    )
 
 
 @app.route("/dashboard", methods=["GET", "POST"])

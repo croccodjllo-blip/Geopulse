@@ -1,16 +1,17 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Live Charts') }}{% endblock %}
+{% block title %}{{ _('GEO Charts') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--dash site-main--geo-ui{% endblock %}
 
 {% block content %}
-<section class="geo-ui-embed" aria-label="{{ _('GEO Live Charts') }}">
+<section class="geo-ui-embed" aria-label="{{ _('GEO Charts') }}">
   {# Mount React in-page — avoids X-Frame-Options DENY / frame-ancestors none #}
   <div id="root" class="geo-ui-embed__root"></div>
 </section>
 <script>
   window.__CENTROPIC_GEO_EMBED__ = true;
+  window.__CENTROPIC_GEO_DATA__ = {{ geo_ui_data | tojson }};
 </script>
 <link
   rel="stylesheet"

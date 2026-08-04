@@ -1,18 +1,23 @@
 # Centropic GEO UI (React)
 
-Enterprise dashboard kit: Vite + React 19 + Tailwind + Recharts.
+Enterprise GEO charts kit (React 19 + Tailwind + Recharts).
 
-## Develop
+## Scripts
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
-npm run typecheck
+npm run dev          # Vite on :5173 (demo defaults when no Flask payload)
 npm run build        # → static/geo-ui/ (served by Flask)
+npm run typecheck
 ```
 
-## Flask
+## Production embed
 
-Authenticated SPA: `/dashboard/geo-ui` → `static/geo-ui/index.html`.
+Authenticated route: `/dashboard/geo-ui` → `templates/geo_ui.html`
 
-Components live in `components/`; app shell in `src/`. Brand tokens are in `tailwind.config.ts` (Deep Space Navy / Quantum Cyan / Electric Violet).
+- Sets `window.__CENTROPIC_GEO_EMBED__ = true` (hides React sidebar)
+- Injects `window.__CENTROPIC_GEO_DATA__` from `services/geo_ui_payload.py`
+  (latest analysis: SoM, engines, findings, SoV trend — **no demo KPIs**)
+- Serves hashed assets from `static/geo-ui/assets/` via `resolve_geo_ui_assets()`
+
+Standalone Vite (`npm run dev`) still uses demo defaults for design work.
