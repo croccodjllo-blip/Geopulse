@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Centropic{% endblock %} · centropic.ai</title>
+    {% set _page_title %}{% block title %}Centropic{% endblock %}{% endset %}
+    <title>{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}</title>
     <meta
       name="description"
       content="{% block meta_description %}{{ _('Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.') }}{% endblock %}"
@@ -19,7 +20,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Centropic" />
     <meta property="og:locale" content="{{ ui_locale_og }}" />
-    <meta property="og:title" content="{% block og_title %}{{ self.title() }} · centropic.ai{% endblock %}" />
+    <meta property="og:title" content="{% block og_title %}{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}{% endblock %}" />
     <meta
       property="og:description"
       content="{% block og_description %}{{ self.meta_description() }}{% endblock %}"
