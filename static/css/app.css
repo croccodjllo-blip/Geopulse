@@ -3107,6 +3107,94 @@ html.analyze-busy {
   font-size: 0.9rem;
 }
 
+/* Deep crawl / Plus options — keep checkbox out of .field input sizing */
+.analyze-option {
+  margin-top: 0.8rem;
+}
+
+.analyze-option__hit {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 150ms var(--ease), background 150ms var(--ease);
+}
+
+.analyze-option__hit:hover {
+  border-color: var(--border-str);
+}
+
+.analyze-option__hit:has(.analyze-option__check:focus-visible) {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--signal) 28%, transparent);
+}
+
+.analyze-option__hit:has(.analyze-option__check:checked) {
+  border-color: color-mix(in srgb, var(--signal) 55%, var(--border-mid));
+  background: color-mix(in srgb, var(--signal) 8%, var(--surface));
+}
+
+.analyze-option__check,
+.analyze-composer__field .analyze-option__check,
+.field .analyze-option__check {
+  appearance: auto;
+  flex: 0 0 auto;
+  width: 1.05rem;
+  height: 1.05rem;
+  min-height: 0;
+  min-width: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.2rem;
+  background: transparent;
+  box-shadow: none;
+  accent-color: var(--signal);
+  cursor: pointer;
+}
+
+.analyze-option__copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.analyze-option__title {
+  font-size: 0.88rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.analyze-option__meta {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--slate);
+  line-height: 1.45;
+}
+
+.body-dash .analyze-option__hit {
+  background: var(--void);
+  border-color: var(--border-mid);
+}
+
+.body-dash .analyze-option__hit:hover {
+  border-color: var(--border-str);
+}
+
+.body-dash .analyze-option__hit:has(.analyze-option__check:checked) {
+  background: color-mix(in srgb, var(--signal) 10%, var(--void));
+}
+
+.body-dash .analyze-option__title { color: var(--ink); }
+.body-dash .analyze-option__meta { color: var(--slate); }
+
 .comp-list {
   list-style: none;
   margin: 0;

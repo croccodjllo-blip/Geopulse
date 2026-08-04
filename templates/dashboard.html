@@ -131,14 +131,18 @@
             {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
 https://rivale2.com", class_="analyze-input") }}
           </div>
-          <label class="analyze-deep" style="display:flex;gap:0.5rem;align-items:flex-start;margin:0.65rem 0 0;font-size:0.88rem;color:var(--ink-soft)">
-            {{ form.deep_crawl(id="deep_crawl") }}
-            <span>
-              {{ _('Deep crawl') }}
-              ({{ _('fino a') }} {{ deep_crawl_pages }} {{ _('pagine — più lento') }}).
-              {{ _('Standard:') }} {{ crawl_pages_limit }} {{ _('pagine') }}.
-            </span>
-          </label>
+          <div class="analyze-option">
+            <label class="analyze-option__hit" for="deep_crawl">
+              {{ form.deep_crawl(id="deep_crawl", class_="analyze-option__check") }}
+              <span class="analyze-option__copy">
+                <span class="analyze-option__title">{{ _('Deep crawl') }}</span>
+                <span class="analyze-option__meta">
+                  {{ _('Fino a') }} {{ deep_crawl_pages }} {{ _('pagine — più lento') }}.
+                  {{ _('Standard:') }} {{ crawl_pages_limit }} {{ _('pagine') }}.
+                </span>
+              </span>
+            </label>
+          </div>
           <p class="analyze-composer__hint">{{ _('SoV measured (probe LLM) incluso nel piano Plus quando i connector sono attivi.') }}</p>
           {% else %}
           <p class="analyze-composer__hint">
