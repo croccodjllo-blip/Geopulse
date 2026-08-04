@@ -321,35 +321,110 @@ def build_meta_pack(url: str, scraped: dict[str, Any]) -> str:
     )
 
 
-def build_robots_txt(url: str) -> str:
-    sitemap = url.rstrip("/") + "/sitemap.xml"
-    return "\n".join(
+def build_robots_txt(url: str, scraped: dict[str, Any] | None = None) -> str:
+    """Bozza robots.txt allineata alla policy Edge (Allow crawler IA + sitemap)."""
+    from services.edge_signals import AI_CRAWLER_USER_AGENTS
+
+    base = url.rstrip("/")
+    parsed = urlparse(url)
+    host = (scraped or {}).get("domain") or parsed.netloc or ""
+    host = str(host).lower().removeprefix("www.")
+    sitemap = f"{base}/sitemap.xml"
+
+    lines: list[str] = [
+        "# Bozza robots.txt generata da Centropic — rivedi prima di pubblicare.",
+        "# Obiettivo: lasciare i crawler IA sulle pagine pubbliche; blocca solo le aree private.",
+        "",
+        "User-agent: *",
+        "Allow: /",
+    ]
+
+    for path in _robots_disallow_paths(host, scraped):
+        lines.append(f"Disallow: {path}")
+
+    lines.append("")
+    seen: set[str] = set()
+    for bot in AI_CRAWLER_USER_AGENTS:
+        ua = bot["ua"]
+        if ua in seen:
+            continue
+        seen.add(ua)
+        lines.extend([f"User-agent: {ua}", "Allow: /", ""])
+
+    lines.extend(
         [
-            "User-agent: *",
-            "Allow: /",
-            "",
-            "User-agent: GPTBot",
-            "Allow: /",
-            "",
-            "User-agent: ClaudeBot",
-            "Allow: /",
-            "",
-            "User-agent: PerplexityBot",
-            "Allow: /",
-            "",
-            "User-agent: Google-Extended",
-            "Allow: /",
-            "",
-            "User-agent: Applebot-Extended",
-            "Allow: /",
-            "",
-            "# Disallow: /admin",
-            "# Disallow: /app",
-            "",
+            f"# AI policy (se pubblicato): {base}/ai.txt",
+            f"# LLMs guide (se pubblicato): {base}/llms.txt",
             f"Sitemap: {sitemap}",
             "",
         ]
     )
+    return "\n".join(lines)
+
+
+# Prefissi tipici di aree non citabili (SaaS / CMS / e-commerce).
+_ROBOTS_PRIVATE_HINTS = (
+    "/admin",
+    "/admin/",
+    "/dashboard",
+    "/dashboard/",
+    "/wp-admin",
+    "/wp-login.php",
+    "/account",
+    "/account/",
+    "/cart",
+    "/checkout",
+    "/logout",
+    "/api/",
+)
+
+
+def _robots_disallow_paths(
+    host: str, scraped: dict[str, Any] | None
+) -> list[str]:
+    """Centropic: match live site. Altri: Disallow privati trovati nel crawl + /admin."""
+    if host.endswith("centropic.ai"):
+        return [
+            "/dashboard",
+            "/dashboard/",
+            "/logout",
+            "/admin",
+            "/lang",
+            "/lang/",
+            "/crediti",
+            "/crediti/",
+        ]
+
+    found: list[str] = []
+    seen: set[str] = set()
+    hrefs: list[str] = []
+    if scraped:
+        hrefs.extend(str(h) for h in (scraped.get("hrefs") or [])[:400])
+        hrefs.extend(str(h) for h in (scraped.get("internal_hrefs") or [])[:400])
+        for link in scraped.get("links") or []:
+            if isinstance(link, dict):
+                hrefs.append(str(link.get("url") or link.get("href") or ""))
+            else:
+                text = str(link)
+                hrefs.append(text.split(" -> ", 1)[-1] if " -> " in text else text)
+        for page in scraped.get("crawled_pages") or []:
+            if isinstance(page, dict):
+                hrefs.append(str(page.get("url") or ""))
+
+    blob = " ".join(hrefs).lower()
+    for path in _ROBOTS_PRIVATE_HINTS:
+        key = path.rstrip("/")
+        if key and key in blob and path not in seen:
+            # Prefer trailing form when both exist in hints; keep one per stem.
+            stem = path.rstrip("/")
+            if any(s.rstrip("/") == stem for s in seen):
+                continue
+            seen.add(path)
+            found.append(path)
+
+    if "/admin" not in seen and "/admin/" not in seen:
+        found.insert(0, "/admin")
+    return found[:12]
 
 
 def build_faq_json_ld(url: str, scraped: dict[str, Any]) -> str:
@@ -520,7 +595,7 @@ def build_optimization_pack(
         "organization.jsonld.html": build_json_ld(url, scraped),
         "faq.jsonld.html": build_faq_json_ld(url, scraped),
         "meta-pack.html": build_meta_pack(url, scraped),
-        "robots.txt": build_robots_txt(url),
+        "robots.txt": build_robots_txt(url, scraped),
         "fix-this-week.md": build_fix_checklist(findings or []),
         "before-after.md": build_before_after_report(
             current=current, previous=previous, diff=diff
