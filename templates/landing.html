@@ -16,13 +16,7 @@
     <div class="hero-visual__aurora"></div>
     <div class="hero-visual__scan"></div>
     <div class="hero-visual__field">
-      <img
-        src="{{ url_for('static', filename='img/hero-citation-field.svg') }}"
-        alt=""
-        width="960"
-        height="720"
-        decoding="async"
-      >
+      {% include "partials/hero_citation_field.html" %}
     </div>
   </div>
 
