@@ -30,7 +30,7 @@
 
     <section class="plan plan--v2 plan--featured" id="plus" role="listitem">
       <p class="plan__name">Plus</p>
-      {% if paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
+      {% if paddle_ready %}
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Include 100 token ogni mese. Per team che ottimizzano più brand in continuo.') }}</p>
       {% else %}
@@ -47,7 +47,7 @@
         <li>{{ _('API + export + white-label') }}</li>
         <li>{{ _('Storico run avanzato') }}</li>
       </ul>
-      {% if (paddle_ready or (payments_provider == 'stripe' and stripe_ready)) and current_user %}
+      {% if paddle_ready and current_user %}
         {% if paddle_overlay and paddle_ready %}
         <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
           {{ _('Passa a Plus') }}
@@ -64,7 +64,7 @@
           <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
         </form>
         {% endif %}
-        {# Only advertise yearly when a matching Paddle/Stripe price ID is configured. #}
+        {# Only advertise yearly when a matching Paddle price ID is configured. #}
         {% if plus_yearly_ready %}
         <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -74,7 +74,7 @@
           </button>
         </form>
         {% endif %}
-      {% elif paddle_ready or (payments_provider == 'stripe' and stripe_ready) %}
+      {% elif paddle_ready %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
       {% if plus_yearly_ready %}
       <p class="plan-note" style="margin-top:0.75rem">
@@ -89,7 +89,7 @@
   </div>
 
   <p class="plan-note">
-    {{ _('Pagamenti:') }} {% if payments_provider == 'paddle' %}Paddle{% elif payments_provider == 'stripe' %}Stripe{% else %}—{% endif %}.
+    {{ _('Pagamenti:') }} {% if payments_provider == 'paddle' %}Paddle{% else %}—{% endif %}.
     <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a> ·
     <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
     <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>.

@@ -9,7 +9,7 @@ Architecture
 4. CHECK     — verify the user has enough credit balance; refuse if not.
 5. DEDUCT    — after the analysis completes, consume actual token usage; issue a
                credit ledger entry.
-6. TOPUP     — Stripe Checkout can add credit top-ups (prepaid model, no
+6. TOPUP     — Paddle Checkout can add credit top-ups (prepaid model, no
                subscription required).
 
 Cost constants

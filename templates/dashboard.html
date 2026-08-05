@@ -59,7 +59,7 @@
     {% if free_exhausted or free_upsell %}
     <aside class="quota-banner" role="alert">
       <p class="quota-banner__text">{{ free_quota_banner }}</p>
-      {% if stripe_ready %}
+      {% if payments_ready %}
       <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">{{ _('Vedi piano Plus') }}</a>
       {% else %}
       <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
@@ -797,7 +797,7 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
           {% else %}
           <p class="pro-upsell">
             {{ _('Piano Free: 1 sito, ri-analisi del dominio consentita (consuma token).') }}
-            {% if stripe_ready %}
+            {% if payments_ready %}
             <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, re-scan, export e storico run.') }}
             {% else %}
             <a href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a> {{ _('per crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, re-scan, export e storico.') }}

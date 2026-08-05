@@ -31,7 +31,7 @@ Ogni fase sotto ha **deliverable concreti** e **criteri di done**. Nessuna stima
 | Free / Plus (alias `pro`) + entitlements | Operativo |
 | Async jobs, rescan, history, API key | Operativo |
 | Measured SoV (OpenAI / Perplexity / Claude) | Codice pronto; dipende da chiavi + Plus |
-| Stripe Checkout / Portal / webhook | Codice pronto; **env vuoto → pricing “In arrivo”** |
+| Paddle Checkout / webhook (Plus + top-up) | Operativo quando `PADDLE_*` configurato |
 | AI Overview / Copilot | UI “In arrivo” / pending |
 | GSC OAuth | Scaffold |
 | Postgres / Alembic / test E2E | Debito piattaforma |
@@ -49,7 +49,7 @@ Ogni fase sotto ha **deliverable concreti** e **criteri di done**. Nessuna stima
 | Edge llms + signals | ✓ | ✓ | Full robots/JSON-LD = Plus |
 | Competitors / measured SoV / prompt bank | | ✓ | Chiavi LLM |
 | Rescan schedulato / API / white-label MD | | ✓ | |
-| Stripe self-serve | | ✗ live | Blocca revenue |
+| Paddle self-serve | | ✓ | MoR; webhook Plus + top-up |
 | AI Overview / Copilot | | pending | |
 | GSC overlay | | scaffold | |
 | CMS / GitHub apply pack | | — | |
@@ -64,12 +64,12 @@ Source of truth: `services/entitlements.py`.
 
 **Perché prima:** senza monetizzazione e brand coerente il resto non è un “servizio”, è un prototipo.
 
-### 0.1 Monetizzazione Paddle (preferito) + Stripe fallback
-- [x] Integrazione codice Paddle Billing (overlay + webhook + top-up) — branch `cursor/paddle-payments-d537`
+### 0.1 Monetizzazione Paddle
+- [x] Integrazione codice Paddle Billing (overlay + webhook + top-up)
+- [x] Stripe rimosso — solo Paddle come merchant of record
 - [ ] Creare account Paddle (sandbox → live), default payment link = `centropic.ai`
 - [ ] Impostare in produzione: `PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_PRICE_PLUS_MONTHLY`, `PADDLE_PRICE_TOPUP_*`
 - [ ] Notification destination: `https://centropic.ai/billing/paddle-webhook` (`subscription.*`, `transaction.completed`, `transaction.paid`)
-- [ ] (Opzionale) Stripe fallback: `STRIPE_*` + Customer Portal in dashboard/settings
 - [ ] CTA Checkout su `/prezzi` attiva quando `payments_enabled()` (oggi mostra waitlist senza chiavi)
 
 **Done quando:** un utente Free completa il pagamento Paddle e vede subito le capability Plus senza intervento admin.
@@ -153,8 +153,8 @@ Source of truth: `services/entitlements.py`.
 **Done quando:** SPA moderne e siti lenti non producono false “pagina vuota” senza spiegazione.
 
 ### 2.3 Qualità e osservabilità
-- [ ] Test: pipeline analyze (fixture HTML), entitlements E2E, Edge 402 Free, webhook Stripe
-- [ ] Metriche: job queued/running/failed, latenza analyze, rate 429, errori Stripe
+- [ ] Test: pipeline analyze (fixture HTML), entitlements E2E, Edge 402 Free, webhook Paddle
+- [ ] Metriche: job queued/running/failed, latenza analyze, rate 429, errori Paddle
 - [ ] Alerting ops su `/health` fail, coda stale, disk, backup miss
 - [ ] Correlation già via `x-request-id` → dashboard log searchable
 
@@ -223,11 +223,11 @@ Source of truth: `services/entitlements.py`.
 
 ```mermaid
 flowchart TD
-  stripe[0.1 Stripe live] --> activation[1.x Activation loop]
+  paddle[0.1 Paddle live] --> activation[1.x Activation loop]
   brand[0.2 Brand Centropic] --> edgeDX[1.2 Edge / Worker DX]
   planClarity[0.3 Plus vs Pro] --> pricingUX[Pricing / waitlist]
   activation --> sov[1.3 Measured SoV honesty]
-  stripe --> sov
+  paddle --> sov
   llmKeys[Chiavi LLM] --> sov
   alembic[2.1 Alembic + Postgres] --> scale[Multi-worker sicuro]
   tests[2.3 Test + metrics] --> connectors[3.x GSC / CMS]
@@ -243,7 +243,7 @@ flowchart TD
 - “All-in-One” marketing suite generica
 - Training modelli proprietari
 - Mobile app nativa
-- Marketplace plugin finché API e Stripe non sono stabili
+- Marketplace plugin finché API e Paddle non sono stabili
 
 ---
 
@@ -251,7 +251,7 @@ flowchart TD
 
 Il perfezionamento è raggiunto quando tutti questi punti sono veri:
 
-1. **Self-serve revenue:** Free → Plus via Stripe senza intervento umano  
+1. **Self-serve revenue:** Free → Plus via Paddle senza intervento umano  
 2. **Time-to-value:** nuovo utente ottiene diagnosi + pack applicabile al primo sessione  
 3. **Chiusura del loop:** publish → verify → (opz.) measured SoV senza tool esterni  
 4. **Onestà:** nessuna UI “In arrivo” senza data o senza nascondere la riga  

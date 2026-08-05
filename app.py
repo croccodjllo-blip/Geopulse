@@ -81,15 +81,7 @@ from services.analyzer import (
     critical_crawl_pages,
     normalize_url,
 )
-from services.billing import (
-    construct_event as stripe_construct_event,
-    create_checkout_session,
-    create_portal_session,
-    payments_enabled,
-    payments_provider,
-    plan_from_subscription_status,
-    stripe_enabled,
-)
+from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
     client_config as paddle_client_config,
     create_plus_checkout as paddle_create_plus_checkout,
@@ -326,7 +318,7 @@ app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(BASE_DIR, "translatio
 
 # Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix solo se TRUST_PROXY=1.
 # Do NOT trust X-Forwarded-Host (x_host=0): forged Host enables
-# password-reset and Stripe return URL phishing.
+# password-reset and absolute-URL phishing.
 # Keep the app bound to 127.0.0.1 (see docker-compose) so clients cannot
 # spoof XFF by hitting Gunicorn directly.
 if os.getenv("TRUST_PROXY", "1").strip().lower() in {"1", "true", "yes", "on"}:
@@ -1426,7 +1418,6 @@ def inject_globals() -> dict[str, Any]:
         "canonical_base": base,
         "canonical_url": canonical,
         "admin_email": ADMIN_EMAIL,
-        "stripe_ready": payments_enabled(),
         "paddle_ready": paddle_enabled(),
         "payments_ready": payments_enabled(),
         "payments_provider": payments_provider(),
@@ -1731,7 +1722,7 @@ def ensure_schema() -> None:
     # Usage-based billing tables (additive — never drop)
     db.create_all()  # creates credit_ledger and usage_events if absent
 
-    # Unique payment intent (Stripe/Paddle) → prevents double-credit on webhook races.
+    # Unique payment intent (Paddle txn / legacy keys) → prevents double-credit on webhook races.
     try:
         with db.engine.begin() as conn:
             conn.execute(
@@ -2519,7 +2510,6 @@ def health():
                     ).strip()
                 ),
                 "citation_monitor": citation_monitor_available(),
-                "stripe": stripe_enabled(),
                 "paddle": paddle_enabled(),
                 "payments": payments_enabled(),
                 "payments_provider": payments_provider(),
@@ -3275,14 +3265,13 @@ def product():
 def pricing():
     return render_template(
         "pricing.html",
-        stripe_ready=payments_enabled(),
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
+        paddle_ready=paddle_enabled(),
         paddle_overlay=paddle_overlay_ready(),
         plus_yearly_eur=PLUS_YEARLY_EUR,
         plus_yearly_ready=bool(
             (os.environ.get("PADDLE_PRICE_PLUS_YEARLY") or "").strip()
-            or (os.environ.get("STRIPE_PRICE_PLUS_YEARLY") or "").strip()
         ),
         pro_crawl_pages=PRO_CRAWL_PAGES,
         deep_crawl_pages=PRO_DEEP_CRAWL_PAGES,
@@ -3311,81 +3300,54 @@ def billing_checkout():
         flash("Hai già un piano Plus attivo.", "success")
         return redirect(url_for("dashboard"))
 
-    provider = payments_provider()
-    if provider == "paddle":
-        # Overlay is preferred; server transaction is the fallback when only API key is set.
-        if paddle_overlay_ready() and request.form.get("overlay") == "1":
-            return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
-        try:
-            interval = (request.form.get("interval") or "month").strip().lower()
-            tx = paddle_create_plus_checkout(
-                user_id=user.id,
-                email=user.email,
-                customer_id=getattr(user, "paddle_customer_id", None),
-                success_url=absolute_url("billing_success"),
-                interval=interval,
-            )
-            if tx.get("customer_id") and not getattr(user, "paddle_customer_id", None):
-                user.paddle_customer_id = str(tx["customer_id"])
-                db.session.commit()
-            url = tx.get("url")
-            if not url:
-                flash(
-                    "Checkout Paddle creato ma senza URL. Verifica Default payment link "
-                    "nel dashboard Paddle.",
-                    "error",
-                )
-                return redirect(url_for("pricing"))
-            return redirect(url)
-        except Exception:
-            app.logger.exception("Paddle Plus checkout failed")
-            flash("Impossibile avviare il checkout Paddle. Riprova o contattaci.", "error")
-            return redirect(url_for("pricing"))
+    if payments_provider() != "paddle":
+        flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
+        return redirect(url_for("pro_interest"))
 
+    # Overlay is preferred; server transaction is the fallback when only API key is set.
+    if paddle_overlay_ready() and request.form.get("overlay") == "1":
+        return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
     try:
-        session_data = create_checkout_session(
+        interval = (request.form.get("interval") or "month").strip().lower()
+        if interval == "year" and not (
+            os.environ.get("PADDLE_PRICE_PLUS_YEARLY") or ""
+        ).strip():
+            flash("Il piano annuale non è ancora disponibile. Scegli Mensile.", "warning")
+            return redirect(url_for("pricing"))
+        tx = paddle_create_plus_checkout(
             user_id=user.id,
             email=user.email,
-            name=user.name,
-            customer_id=user.stripe_customer_id,
-            success_url=absolute_url("billing_success")
-            + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=absolute_url("pricing"),
+            customer_id=getattr(user, "paddle_customer_id", None),
+            success_url=absolute_url("billing_success"),
+            interval=interval,
         )
-        if session_data.get("customer_id") and not user.stripe_customer_id:
-            user.stripe_customer_id = session_data["customer_id"]
+        if tx.get("customer_id") and not getattr(user, "paddle_customer_id", None):
+            user.paddle_customer_id = str(tx["customer_id"])
             db.session.commit()
-        return redirect(session_data["url"])
+        url = tx.get("url")
+        if not url:
+            flash(
+                "Checkout Paddle creato ma senza URL. Verifica Default payment link "
+                "nel dashboard Paddle.",
+                "error",
+            )
+            return redirect(url_for("pricing"))
+        return redirect(url)
     except Exception:
-        app.logger.exception("Stripe checkout failed")
-        flash("Impossibile avviare il checkout. Riprova o contattaci.", "error")
+        app.logger.exception("Paddle Plus checkout failed")
+        flash("Impossibile avviare il checkout Paddle. Riprova o contattaci.", "error")
         return redirect(url_for("pricing"))
 
 
 @app.route("/billing/portal", methods=["POST"])
 @login_required
 def billing_portal():
-    user = current_user()
-    if payments_provider() == "paddle":
-        flash(
-            "Per gestire l’abbonamento Plus usa il link nella ricevuta Paddle "
-            "o scrivi a info@centropic.ai.",
-            "info",
-        )
-        return redirect(url_for("dashboard"))
-    if not stripe_enabled() or not user.stripe_customer_id:
-        flash("Portale abbonamento non disponibile.", "warning")
-        return redirect(url_for("pricing"))
-    try:
-        url = create_portal_session(
-            customer_id=user.stripe_customer_id,
-            return_url=absolute_url("dashboard"),
-        )
-        return redirect(url)
-    except Exception:
-        app.logger.exception("Stripe portal failed")
-        flash("Impossibile aprire il portale abbonamento.", "error")
-        return redirect(url_for("dashboard"))
+    flash(
+        "Per gestire l’abbonamento Plus usa il link nella ricevuta Paddle "
+        "o scrivi a info@centropic.ai.",
+        "info",
+    )
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/billing/success")
@@ -3564,132 +3526,8 @@ def billing_paddle_webhook():
 @app.route("/billing/webhook", methods=["POST"])
 @csrf.exempt
 def billing_webhook():
-    payload = request.get_data()
-    sig = request.headers.get("Stripe-Signature", "")
-    try:
-        event = stripe_construct_event(payload, sig)
-    except Exception as exc:
-        app.logger.warning("Stripe webhook reject: %s", exc)
-        return jsonify({"ok": False}), 400
-
-    etype = event.get("type") or ""
-    data = (event.get("data") or {}).get("object") or {}
-
-    def _user_from_meta(obj: dict) -> User | None:
-        meta = obj.get("metadata") or {}
-        for key in ("centropic_user_id", "geopulse_user_id"):
-            uid = meta.get(key)
-            if uid:
-                try:
-                    return db.session.get(User, int(uid))
-                except (TypeError, ValueError):
-                    pass
-        ref = obj.get("client_reference_id")
-        if ref:
-            try:
-                return db.session.get(User, int(ref))
-            except (TypeError, ValueError):
-                pass
-        customer = obj.get("customer")
-        if customer:
-            return User.query.filter_by(stripe_customer_id=str(customer)).first()
-        return None
-
-    try:
-        if etype == "checkout.session.completed":
-            # Subscription checkout only — never upgrade from one-time top-ups
-            # (mode=payment) or unpaid/async sessions.
-            mode = (data.get("mode") or "").strip()
-            pay_status = (data.get("payment_status") or "").strip()
-            if mode != "subscription":
-                app.logger.info(
-                    "billing webhook ignore checkout mode=%s", mode or "?"
-                )
-            elif pay_status not in {"paid", "no_payment_required"}:
-                app.logger.info(
-                    "billing webhook ignore payment_status=%s", pay_status or "?"
-                )
-            else:
-                user = _user_from_meta(data)
-                if user is not None:
-                    cust = data.get("customer")
-                    sub = data.get("subscription")
-
-                    def _apply_stripe_plus(u: User) -> None:
-                        if cust:
-                            u.stripe_customer_id = str(cust)
-                        if sub:
-                            u.stripe_subscription_id = str(sub)
-                        if (u.plan or "").lower() != "admin":
-                            u.plan = "plus"
-
-                    _apply_stripe_plus(user)
-                    session_id = str(data.get("id") or "").strip()
-                    if session_id:
-                        granted = grant_plus_monthly_tokens(
-                            user=user,
-                            idempotency_key=f"stripe-plus-tokens:{session_id}",
-                            description=(
-                                f"Plus mensile (Stripe): "
-                                f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
-                            ),
-                        )
-                        if not granted:
-                            # IntegrityError rollback may expire Plus — re-apply.
-                            user = _user_from_meta(data) or user
-                            if user is not None:
-                                _apply_stripe_plus(user)
-                    db.session.commit()
-        elif etype in {
-            "invoice.paid",
-            "invoice.payment_succeeded",
-        }:
-            # Recurring cycles only — first month credited on checkout.session.completed.
-            billing_reason = (data.get("billing_reason") or "").strip()
-            if billing_reason != "subscription_cycle":
-                return jsonify({"ok": True, "ignored": "invoice_reason"})
-            user = _user_from_meta(data)
-            if user is None and data.get("customer"):
-                user = User.query.filter_by(
-                    stripe_customer_id=str(data.get("customer"))
-                ).first()
-            if user is not None and (user.plan or "").lower() != "admin":
-                user.plan = "plus"
-                inv_id = str(data.get("id") or "").strip()
-                if inv_id:
-                    granted = grant_plus_monthly_tokens(
-                        user=user,
-                        idempotency_key=f"stripe-plus-tokens:{inv_id}",
-                        description=(
-                            f"Plus mensile (Stripe invoice): "
-                            f"{format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
-                        ),
-                    )
-                    if not granted:
-                        user = _user_from_meta(data) or user
-                        if user is not None and (user.plan or "").lower() != "admin":
-                            user.plan = "plus"
-                db.session.commit()
-        elif etype in {
-            "customer.subscription.updated",
-            "customer.subscription.deleted",
-        }:
-            user = _user_from_meta(data)
-            if user is None and data.get("customer"):
-                user = User.query.filter_by(
-                    stripe_customer_id=str(data.get("customer"))
-                ).first()
-            if user is not None and (user.plan or "").lower() != "admin":
-                user.plan = plan_from_subscription_status(data.get("status"))
-                sub_id = data.get("id")
-                if sub_id:
-                    user.stripe_subscription_id = str(sub_id)
-                db.session.commit()
-    except Exception:
-        app.logger.exception("Stripe webhook handler failed")
-        return jsonify({"ok": False}), 500
-
-    return jsonify({"ok": True})
+    """Legacy Stripe Plus webhook — payments are Paddle-only."""
+    return jsonify({"ok": False, "error": "gone", "use": "/billing/paddle-webhook"}), 410
 
 
 @app.route("/interesse-pro", methods=["GET", "POST"])
@@ -4495,7 +4333,6 @@ def dashboard():
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
-        stripe_ready=payments_enabled(),
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
     )
@@ -4745,7 +4582,7 @@ def dashboard_analyze_confirmed():
     return redirect(url_for("dashboard"))
 
 
-# ── Top-up pages & Stripe payment ──────────────────────────────────────────
+# ── Top-up pages & Paddle payment ──────────────────────────────────────────
 #
 # GEO token pricing (product unit of credit purchase):
 #   1 token == 10 EUR cents == €0.10  →  100 token = €10.00 (base rate)
@@ -4798,9 +4635,6 @@ def _topup_credit_cents(payment_cents: int) -> int:
         return int(payment_cents)
     return int(pkg["credit_cents"])
 
-STRIPE_TOPUP_SUCCESS_URL = os.getenv("STRIPE_TOPUP_SUCCESS_URL", "")
-STRIPE_TOPUP_CANCEL_URL  = os.getenv("STRIPE_TOPUP_CANCEL_URL",  "")
-
 
 @app.route("/crediti", methods=["GET"])
 @login_required
@@ -4834,8 +4668,8 @@ def topup_credit_page():
 
 @app.route("/crediti/checkout", methods=["POST"])
 @login_required
-def topup_stripe_checkout():
-    """Create a payment checkout for a credit top-up (Paddle preferred, Stripe fallback)."""
+def topup_checkout():
+    """Create a Paddle checkout for a credit top-up."""
     user = current_user()
     if not limiter.allow(f"topup-checkout:{user.id}", limit=10, window_seconds=3600):
         flash("Troppe richieste di ricarica. Riprova tra poco.", "warning")
@@ -4845,8 +4679,7 @@ def topup_stripe_checkout():
         flash("Importo non valido.", "error")
         return redirect(url_for("topup_credit_page"))
 
-    provider = payments_provider()
-    if provider == "paddle" and paddle_topup_price_id(amount_cents):
+    if payments_provider() == "paddle" and paddle_topup_price_id(amount_cents):
         if paddle_overlay_ready() and request.form.get("overlay") == "1":
             return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
         try:
@@ -4873,78 +4706,28 @@ def topup_stripe_checkout():
             flash("Errore durante la creazione del pagamento Paddle. Riprova.", "error")
             return redirect(url_for("topup_credit_page"))
 
-    if not stripe_enabled():
-        # Dev fallback: add credits directly only when FLASK_DEBUG=1
-        if os.getenv("FLASK_DEBUG", "0") == "1":
-            credit_cents = _topup_credit_cents(amount_cents)
-            topup_credit(
-                db.session,
-                CreditLedger,
-                user,
-                amount_eur_cents=credit_cents,
-                description=f"Ricarica test {credit_cents} cent",
-            )
-            db.session.commit()
-            flash(f"[DEBUG] {format_token_amount(credit_cents)} aggiunti.", "success")
-            return redirect(url_for("topup_credit_page"))
-        if provider == "paddle":
-            flash(
-                "Pacchetto non configurato su Paddle. Imposta PADDLE_PRICE_TOPUP_* "
-                "o contattaci a info@centropic.ai.",
-                "warning",
-            )
-        else:
-            flash("Pagamenti non ancora attivi. Contattaci a info@centropic.ai.", "warning")
-        return redirect(url_for("topup_credit_page"))
-
-    try:
-        import stripe as _stripe
-        _stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
-        from services.billing import ensure_customer
-        cid = ensure_customer(
-            user_id=user.id,
-            email=user.email,
-            name=user.name or user.email,
-            customer_id=user.stripe_customer_id,
+    # Dev fallback: add credits directly only when FLASK_DEBUG=1
+    if os.getenv("FLASK_DEBUG", "0") == "1":
+        credit_cents = _topup_credit_cents(amount_cents)
+        topup_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_eur_cents=credit_cents,
+            description=f"Ricarica test {credit_cents} cent",
         )
-        if cid != user.stripe_customer_id:
-            user.stripe_customer_id = cid
-            db.session.commit()
-
-        success_url = STRIPE_TOPUP_SUCCESS_URL or absolute_url("topup_success")
-        cancel_url = STRIPE_TOPUP_CANCEL_URL or absolute_url("topup_credit_page")
-
-        session_obj = _stripe.checkout.Session.create(
-            mode="payment",
-            customer=cid,
-            line_items=[{
-                "price_data": {
-                    "currency": "eur",
-                    "unit_amount": amount_cents,
-                    "product_data": {
-                        "name": (
-                            f"Centropic — "
-                            f"{format_token_amount(_topup_credit_cents(amount_cents))} "
-                            f"(€{amount_cents/100:.2f})"
-                        ),
-                    },
-                },
-                "quantity": 1,
-            }],
-            success_url=success_url + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=cancel_url,
-            client_reference_id=str(user.id),
-            metadata={
-                "centropic_user_id": str(user.id),
-                "geopulse_user_id": str(user.id),
-                "topup_cents": str(amount_cents),
-            },
-        )
-        return redirect(session_obj["url"])
-    except Exception:
-        app.logger.exception("topup checkout failed")
-        flash("Errore durante la creazione del pagamento. Riprova.", "error")
+        db.session.commit()
+        flash(f"[DEBUG] {format_token_amount(credit_cents)} aggiunti.", "success")
         return redirect(url_for("topup_credit_page"))
+    if payments_provider() == "paddle":
+        flash(
+            "Pacchetto non configurato su Paddle. Imposta PADDLE_PRICE_TOPUP_* "
+            "o contattaci a info@centropic.ai.",
+            "warning",
+        )
+    else:
+        flash("Pagamenti non ancora attivi. Contattaci a info@centropic.ai.", "warning")
+    return redirect(url_for("topup_credit_page"))
 
 
 @app.route("/crediti/successo")
@@ -4966,87 +4749,8 @@ def topup_success():
 @app.route("/billing/topup-webhook", methods=["POST"])
 @csrf.exempt
 def billing_topup_webhook():
-    """Stripe webhook for one-time payment (credit top-up)."""
-    payload = request.get_data()
-    sig = request.headers.get("Stripe-Signature", "")
-    topup_secret = (os.getenv("STRIPE_TOPUP_WEBHOOK_SECRET") or "").strip()
-    if not topup_secret:
-        return jsonify({"ok": False, "error": "webhook not configured"}), 503
-    try:
-        from services.billing import construct_event as _construct
-        event = _construct(payload, sig, webhook_secret=topup_secret)
-    except Exception as exc:
-        app.logger.warning("topup webhook sig invalid: %s", exc)
-        return jsonify({"ok": False, "error": "invalid signature"}), 400
-
-    if event["type"] == "checkout.session.completed":
-        sess = event["data"]["object"]
-        if sess.get("payment_status") == "paid":
-            meta = sess.get("metadata") or {}
-            user_id = 0
-            for key in ("centropic_user_id", "geopulse_user_id"):
-                raw = meta.get(key)
-                if raw:
-                    try:
-                        user_id = int(raw)
-                        break
-                    except (TypeError, ValueError):
-                        pass
-            if not user_id:
-                try:
-                    user_id = int(sess.get("client_reference_id") or 0)
-                except (TypeError, ValueError):
-                    user_id = 0
-            # Prefer Stripe-settled amount over client/metadata (anti-tamper).
-            amount_total = int(sess.get("amount_total") or 0)
-            meta_cents = int(meta.get("topup_cents") or 0)
-            allowed = {pkg["cents"] for pkg in _TOPUP_PACKAGES}
-            topup_cents = amount_total if amount_total in allowed else 0
-            if topup_cents == 0 and meta_cents in allowed and amount_total == meta_cents:
-                topup_cents = meta_cents
-            pi = (sess.get("payment_intent") or "").strip()
-            if not pi:
-                # Fallback to session id — still unique per Checkout session.
-                pi = f"cs:{(sess.get('id') or '').strip()}"
-            if not pi or pi == "cs:":
-                app.logger.error("topup webhook missing payment identity")
-                return jsonify({"ok": False, "error": "missing_payment_id"}), 400
-            if user_id and topup_cents:
-                credit_cents = _topup_credit_cents(int(topup_cents))
-                already = (
-                    CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
-                )
-                if already is not None:
-                    return jsonify({"ok": True, "duplicate": True})
-                u = db.session.get(User, user_id)
-                if u:
-                    try:
-                        topup_credit(
-                            db.session,
-                            CreditLedger,
-                            u,
-                            amount_eur_cents=credit_cents,
-                            description=f"Ricarica {format_token_amount(credit_cents)} via Stripe",
-                            stripe_payment_intent=pi,
-                        )
-                        db.session.commit()
-                    except IntegrityError:
-                        db.session.rollback()
-                        return jsonify({"ok": True, "duplicate": True})
-                    app.logger.info(
-                        "topup: user %s +%d credit_cents (paid %d)",
-                        user_id,
-                        credit_cents,
-                        topup_cents,
-                    )
-            elif user_id and amount_total and amount_total not in allowed:
-                app.logger.warning(
-                    "topup webhook rejected amount_total=%s user=%s",
-                    amount_total,
-                    user_id,
-                )
-
-    return jsonify({"ok": True})
+    """Legacy Stripe top-up webhook — payments are Paddle-only."""
+    return jsonify({"ok": False, "error": "gone", "use": "/billing/paddle-webhook"}), 410
 
 
 # ── Admin: top-up crediti manuale ──────────────────────────────────────────

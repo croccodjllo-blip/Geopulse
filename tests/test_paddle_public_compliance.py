@@ -35,7 +35,6 @@ def test_homepage_exposes_contact_and_legal_links():
 
 def test_pricing_hides_yearly_without_catalog_price(monkeypatch):
     monkeypatch.delenv("PADDLE_PRICE_PLUS_YEARLY", raising=False)
-    monkeypatch.delenv("STRIPE_PRICE_PLUS_YEARLY", raising=False)
     # Ensure monthly paddle path can still render.
     monkeypatch.setenv("PAYMENTS_PROVIDER", "paddle")
     monkeypatch.setenv("PADDLE_API_KEY", "test")
@@ -45,3 +44,10 @@ def test_pricing_hides_yearly_without_catalog_price(monkeypatch):
     assert "14,99" in html or "14.99" in html
     assert "143.90" not in html
     assert "143,90" not in html
+
+
+def test_legacy_stripe_webhooks_gone():
+    client = app.test_client()
+    for path in ("/billing/webhook", "/billing/topup-webhook"):
+        resp = client.post(path, data=b"{}", content_type="application/json")
+        assert resp.status_code == 410, path

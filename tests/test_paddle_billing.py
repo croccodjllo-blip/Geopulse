@@ -81,8 +81,6 @@ def test_plan_from_paddle_status():
 def test_payments_provider_prefers_paddle(monkeypatch):
     monkeypatch.setenv("PADDLE_PRICE_PLUS_MONTHLY", "pri_plus")
     monkeypatch.setenv("PADDLE_CLIENT_TOKEN", "test_token")
-    monkeypatch.delenv("STRIPE_SECRET_KEY", raising=False)
-    monkeypatch.delenv("STRIPE_PRICE_PLUS_MONTHLY", raising=False)
     # Re-bind module-level constants used by paddle_enabled
     monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus")
     monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
@@ -90,6 +88,12 @@ def test_payments_provider_prefers_paddle(monkeypatch):
     assert pb.paddle_enabled()
     assert payments_provider() == "paddle"
     assert payments_enabled()
+    assert stripe_enabled() is False
+
+
+def test_stripe_disabled_always():
+    assert stripe_enabled() is False
+    assert payments_provider() in {"paddle", "none"}
 
 
 def test_client_config_shape(monkeypatch):

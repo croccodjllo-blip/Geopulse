@@ -58,7 +58,7 @@
     <h2 class="page-section__title">{{ _('Scegli un pacchetto') }}</h2>
     <div class="topup-grid">
       {% for pkg in packages %}
-      <form method="POST" action="{{ url_for('topup_stripe_checkout') }}">
+      <form method="POST" action="{{ url_for('topup_checkout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="amount_cents" value="{{ pkg.cents }}">
         {% if paddle_overlay and paddle_config.topupPrices and paddle_config.topupPrices[pkg.cents|string] %}
