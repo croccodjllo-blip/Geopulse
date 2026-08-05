@@ -24,7 +24,13 @@
             {% if on_trial and trial_ends_at %} · {{ _('prova fino al') }} {{ trial_ends_at.strftime('%d/%m') }}{% endif %}
           {% else %}
             {% if current_user.company %}{{ current_user.company }} · {% endif %}
-            {{ _('Incolla un dominio, chiudi i gap, pubblica il pack.') }}
+            {% if dash_plan == 'business' %}
+              {{ _('Workspace agenzia: multi-cliente, API e white-label.') }}
+            {% elif dash_plan == 'plus' %}
+              {{ _('Workspace Plus: SoV measured, re-scan e Edge completo.') }}
+            {% else %}
+              {{ _('Workspace Free: diagnosi AIO/GEO, findings e pack HTML.') }}
+            {% endif %}
           {% endif %}
         </p>
       </div>
@@ -32,7 +38,7 @@
         <div>
           <dt>{{ _('Piano') }}</dt>
           <dd>
-            {{ user_plan }}
+            <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
             {% if on_trial and trial_ends_at %}
             <span class="muted">({{ _('fino al') }} {{ trial_ends_at.strftime('%d/%m') }})</span>
             {% endif %}
@@ -52,6 +58,24 @@
         </div>
       </dl>
     </div>
+    {% if plan_services %}
+    <div class="plan-services" data-plan="{{ dash_plan|default('free') }}" aria-label="{{ _('Servizi del piano') }}">
+      <p class="plan-services__label">
+        {% if dash_plan == 'business' %}
+          {{ _('Toolkit Business') }}
+        {% elif dash_plan == 'plus' %}
+          {{ _('Toolkit Plus') }}
+        {% else %}
+          {{ _('Toolkit Free') }}
+        {% endif %}
+      </p>
+      <ul class="plan-services__list">
+        {% for svc in plan_services %}
+        <li data-service="{{ svc.id }}">{{ _(svc.label) }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
   </header>
 
   <div class="workspace-body">

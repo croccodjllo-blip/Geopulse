@@ -31,7 +31,7 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="{{ url_for('static', filename='img/og-share.png', _external=True) }}" />
-    <meta name="theme-color" content="#04060A" />
+    <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#041210{% elif current_user and dash_plan == 'business' %}#120E0A{% else %}#04060A{% endif %}" />
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
@@ -85,7 +85,7 @@
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
   </head>
-  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar{% endif %}{% endif %}">
+  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
     {% block shell %}
     {# Sidebar on every authenticated page except auth flows (login/register/reset). #}
     {% set _bc = self.body_class()|default('', true)|trim %}
@@ -124,7 +124,9 @@
           {% if current_user %}
             {% if not _dash_shell %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">{{ _('Dashboard') }}</a>
+            {% if can_extended_history %}
             <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">{{ _('Storico') }}</a>
+            {% endif %}
             <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
             <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">{{ _('Impostazioni') }}</a>
             <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Token') }}</a>
@@ -226,7 +228,9 @@
           <p class="site-footer__label">{{ _('Account') }}</p>
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
+            {% if can_extended_history %}
             <a href="{{ url_for('dashboard_history') }}">{{ _('Storico') }}</a>
+            {% endif %}
             <a href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
             <a href="{{ url_for('topup_credit_page') }}">{{ _('Token') }}</a>
           {% else %}

@@ -2553,6 +2553,57 @@ def plan_entitlements(user: User | None):
 def capability_template_vars(user: User | None) -> dict[str, Any]:
     """Flags for templates: show only services available on the current plan."""
     ents = plan_entitlements(user)
+    plan_key = ents.plan if ents.plan in {"free", "plus", "business", "admin"} else "free"
+    # Visual theme: admin shares Business chrome (full toolkit).
+    dash_plan = "business" if plan_key == "admin" else plan_key
+    service_labels = {
+        "pack_email": "Pack email",
+        "multi_site": "Multi-sito",
+        "full_crawl": "Crawl esteso",
+        "competitors": "Competitor",
+        "measured_sov": "SoV measured",
+        "prompt_bank": "Prompt bank",
+        "scheduled_rescan": "Re-scan",
+        "full_edge_signals": "Edge completo",
+        "extended_history": "Storico",
+        "alerts_webhook": "Alert",
+        "api_access": "API",
+        "agency_whitelabel": "White-label",
+    }
+    # Stable order for gated capabilities in the plan strip.
+    order = (
+        "pack_email",
+        "multi_site",
+        "full_crawl",
+        "competitors",
+        "measured_sov",
+        "prompt_bank",
+        "scheduled_rescan",
+        "full_edge_signals",
+        "extended_history",
+        "alerts_webhook",
+        "api_access",
+        "agency_whitelabel",
+    )
+    gated = [
+        {"id": cap, "label": service_labels[cap]}
+        for cap in order
+        if ents.can(cap) and cap in service_labels
+    ]
+    # Diagnosis baseline is always on (not listed in CAPABILITIES).
+    if dash_plan == "free":
+        plan_services = [
+            {"id": "score", "label": "Score AIO/GEO"},
+            {"id": "findings", "label": "Findings"},
+            {"id": "pack", "label": "Pack HTML"},
+            {"id": "sov_proxy", "label": "SoV stimato"},
+        ] + gated
+    else:
+        plan_services = [
+            {"id": "score", "label": "Score AIO/GEO"},
+            {"id": "pack", "label": "Pack HTML"},
+        ] + gated
+
     return {
         "is_pro": bool(getattr(user, "is_pro", False)) if user else False,
         "is_business": bool(getattr(user, "is_business", False)) if user else False,
@@ -2566,6 +2617,10 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "can_full_edge": ents.can("full_edge_signals"),
         "can_extended_history": ents.can("extended_history"),
         "can_full_crawl": ents.can("full_crawl"),
+        "dash_plan": dash_plan,
+        "plan_key": plan_key,
+        "plan_services": plan_services,
+        "ents_label": ents.label,
     }
 
 

@@ -8373,3 +8373,162 @@ body.body-auth {
   .workspace-strip__inner { align-items: flex-start; }
   .sov-ops__links { margin-left: 0; width: 100%; }
 }
+
+/* ═══════════════════════════════════════════
+   PLAN DASHBOARDS — Free / Plus / Business
+   Three distinct workspace atmospheres.
+═══════════════════════════════════════════ */
+
+.plan-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.plan-pill[data-plan="free"] {
+  color: #B8C4D4;
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.35);
+}
+.plan-pill[data-plan="plus"] {
+  color: #6EC6C0;
+  background: rgba(110, 198, 192, 0.12);
+  border-color: rgba(110, 198, 192, 0.4);
+}
+.plan-pill[data-plan="business"] {
+  color: #D4A574;
+  background: rgba(212, 165, 116, 0.12);
+  border-color: rgba(212, 165, 116, 0.4);
+}
+
+.plan-services {
+  margin: 0.85rem 1.25rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--plan-chip-border, var(--border-mid));
+  background: var(--plan-chip-bg, rgba(8, 12, 18, 0.45));
+}
+.plan-services__label {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--plan-accent, var(--brand-muted));
+}
+.plan-services__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.plan-services__list li {
+  padding: 0.28rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--plan-chip-ink, #E8EEF5);
+  background: var(--plan-chip-item-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--plan-chip-border, rgba(255, 255, 255, 0.08));
+}
+
+/* —— Free: cool steel navy —— */
+body.dash-plan--free {
+  --plan-accent: #8BA3BD;
+  --plan-chip-border: rgba(139, 163, 189, 0.28);
+  --plan-chip-bg: rgba(12, 18, 28, 0.65);
+  --plan-chip-item-bg: rgba(139, 163, 189, 0.08);
+  --plan-chip-ink: #D7E0EA;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% -10%, rgba(100, 130, 170, 0.18), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(70, 90, 120, 0.12), transparent 50%),
+    linear-gradient(180deg, #0B1220 0%, #070B12 42%, #05070C 100%);
+  background-attachment: fixed;
+}
+body.dash-plan--free .app-sidebar {
+  background: linear-gradient(180deg, #0C1420 0%, #080C14 100%);
+  border-right-color: rgba(139, 163, 189, 0.22);
+}
+body.dash-plan--free .site-header--invert,
+body.dash-plan--free .workspace-strip {
+  background: rgba(8, 12, 20, 0.72);
+  border-color: rgba(139, 163, 189, 0.2);
+}
+body.dash-plan--free .app-sidebar__link.is-active {
+  border-left-color: #8BA3BD;
+  color: #D7E0EA;
+}
+
+/* —— Plus: teal void —— */
+body.dash-plan--plus {
+  --plan-accent: #6EC6C0;
+  --plan-chip-border: rgba(110, 198, 192, 0.32);
+  --plan-chip-bg: rgba(4, 22, 20, 0.7);
+  --plan-chip-item-bg: rgba(110, 198, 192, 0.1);
+  --plan-chip-ink: #D8F3F0;
+  background:
+    radial-gradient(ellipse 65% 48% at 8% -8%, rgba(110, 198, 192, 0.2), transparent 55%),
+    radial-gradient(ellipse 45% 35% at 100% 5%, rgba(61, 139, 154, 0.16), transparent 50%),
+    linear-gradient(180deg, #041210 0%, #030D0C 45%, #020908 100%);
+  background-attachment: fixed;
+}
+body.dash-plan--plus .app-sidebar {
+  background: linear-gradient(180deg, #051816 0%, #030F0E 100%);
+  border-right-color: rgba(110, 198, 192, 0.25);
+}
+body.dash-plan--plus .site-header--invert,
+body.dash-plan--plus .workspace-strip {
+  background: rgba(3, 16, 14, 0.75);
+  border-color: rgba(110, 198, 192, 0.22);
+}
+body.dash-plan--plus .app-sidebar__link.is-active {
+  border-left-color: #6EC6C0;
+  color: #D8F3F0;
+}
+
+/* —— Business: warm espresso / copper —— */
+body.dash-plan--business {
+  --plan-accent: #D4A574;
+  --plan-chip-border: rgba(212, 165, 116, 0.32);
+  --plan-chip-bg: rgba(28, 18, 10, 0.72);
+  --plan-chip-item-bg: rgba(212, 165, 116, 0.1);
+  --plan-chip-ink: #F3E6D6;
+  background:
+    radial-gradient(ellipse 65% 48% at 12% -10%, rgba(212, 165, 116, 0.16), transparent 55%),
+    radial-gradient(ellipse 45% 35% at 100% 0%, rgba(120, 70, 40, 0.14), transparent 50%),
+    linear-gradient(180deg, #120E0A 0%, #0C0907 45%, #080604 100%);
+  background-attachment: fixed;
+}
+body.dash-plan--business .app-sidebar {
+  background: linear-gradient(180deg, #16100C 0%, #0C0907 100%);
+  border-right-color: rgba(212, 165, 116, 0.25);
+}
+body.dash-plan--business .site-header--invert,
+body.dash-plan--business .workspace-strip {
+  background: rgba(16, 12, 8, 0.78);
+  border-color: rgba(212, 165, 116, 0.22);
+}
+body.dash-plan--business .app-sidebar__link.is-active {
+  border-left-color: #D4A574;
+  color: #F3E6D6;
+}
+
+body.dash-plan--free .workspace,
+body.dash-plan--plus .workspace,
+body.dash-plan--business .workspace {
+  position: relative;
+}
+
+@media (max-width: 720px) {
+  .plan-services { margin-inline: 0.75rem; }
+}
