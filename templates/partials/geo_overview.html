@@ -1,56 +1,44 @@
-{# GEO Overview — mirrors components/DashboardOverview.tsx
-   Expects: latest, engine_breakdown, aio, geo, findings_critical, findings_n,
-            findings_all_n, pages_analyzed_n, rating, run_diff, is_pro
-#}
+{# Compact GEO KPIs — optional; dashboard first viewport uses report-lead instead. #}
 {% set som = engine_breakdown.brand_sov if engine_breakdown else none %}
 {% set engines = (engine_breakdown.engines if engine_breakdown else []) or [] %}
-{% set n_eng = engines|length %}
+{% set engines_live = engines|rejectattr('evidence', 'equalto', 'pending')|list %}
+{% set n_eng = engines_live|length %}
 {% set delta_aio = run_diff.delta_aio if run_diff and run_diff.delta_aio is not none else none %}
 {% set findings_list = findings_critical or [] %}
 {% set findings_n_local = findings_list|length %}
 {% if findings_n_local <= 0 %}
-  {% set pressure_label = _('Clear') %}
+  {% set pressure_label = _('Sereno') %}
   {% set pressure_tone = 'is-clear' %}
 {% elif findings_n_local <= 2 %}
-  {% set pressure_label = _('Watch') %}
+  {% set pressure_label = _('Attenzione') %}
   {% set pressure_tone = 'is-watch' %}
 {% elif findings_n_local <= 5 %}
-  {% set pressure_label = _('Elevated') %}
+  {% set pressure_label = _('Elevata') %}
   {% set pressure_tone = 'is-elevated' %}
 {% else %}
-  {% set pressure_label = _('High') %}
+  {% set pressure_label = _('Alta') %}
   {% set pressure_tone = 'is-high-pressure' %}
 {% endif %}
-{% set tones = ['emerald', 'cyan', 'violet', 'amber', 'cyan', 'violet'] %}
 
-<section class="geo-overview" aria-labelledby="geo-overview-title">
+<section class="geo-overview geo-overview--compact" aria-labelledby="geo-overview-title">
   <div class="geo-overview__head">
     <div>
-      <h2 class="geo-overview__title" id="geo-overview-title">GEO Overview</h2>
+      <h2 class="geo-overview__title" id="geo-overview-title">{{ _('Panoramica GEO') }}</h2>
       <p class="geo-overview__lede">
-        {{ _('Share of Model & AI Visibility metrics.') }}
+        {{ _('Share of Model e visibilità AI.') }}
         {% if engine_breakdown and engine_breakdown.label %}
           <span class="geo-overview__evidence">· {{ engine_breakdown.label }}</span>
         {% endif %}
       </p>
     </div>
     <div class="geo-overview__actions">
-      <label class="geo-overview__range visually-hidden" for="geo-range">{{ _('Periodo') }}</label>
-      <select id="geo-range" class="geo-overview__select" disabled title="{{ _('Storico range: in arrivo') }}">
-        <option>{{ _('Last 30 Days') }}</option>
-        <option>{{ _('Last 7 Days') }}</option>
-        <option>{{ _('Quarter to Date') }}</option>
-      </select>
-      <a class="btn btn-primary geo-overview__audit" href="#analyze">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-        {{ _('Run Instant GEO Audit') }}
-      </a>
+      <a class="btn btn-ghost geo-overview__audit" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Apri grafici') }}</a>
     </div>
   </div>
 
   <div class="geo-overview__kpis">
     <article class="geo-kpi">
-      <p class="geo-kpi__label">Share of Model (SoM)</p>
+      <p class="geo-kpi__label">{{ _('Share of Model') }}</p>
       <div class="geo-kpi__row">
         <p class="geo-kpi__value">{% if som is not none %}{{ som }}%{% else %}—{% endif %}</p>
         {% if delta_aio is not none %}
@@ -59,113 +47,27 @@
         </span>
         {% endif %}
       </div>
-      <p class="geo-kpi__hint">{{ _('Across') }} {{ n_eng or '—' }} {{ _('tracked LLM platforms') }}</p>
+      <p class="geo-kpi__hint">{{ _('Su') }} {{ n_eng or '—' }} {{ _('motori tracciati') }}</p>
     </article>
 
     <article class="geo-kpi">
-      <p class="geo-kpi__label">AI Rec. Rank</p>
+      <p class="geo-kpi__label">{{ _('Grado AI') }}</p>
       <div class="geo-kpi__row">
         <p class="geo-kpi__value">{% if rating and rating.code %}{{ rating.code }}{% else %}—{% endif %}</p>
         {% if geo is number %}
         <span class="geo-kpi__delta is-neutral">GEO {{ geo }}</span>
         {% endif %}
       </div>
-      <p class="geo-kpi__hint">{{ _('Composite grade from AIO/GEO scores') }}</p>
+      <p class="geo-kpi__hint">{{ _('Composito da score AIO/GEO') }}</p>
     </article>
 
     <article class="geo-kpi">
-      <p class="geo-kpi__label">{{ _('Pages / signals') }}</p>
+      <p class="geo-kpi__label">{{ _('Pagine / segnali') }}</p>
       <div class="geo-kpi__row">
         <p class="geo-kpi__value">{{ pages_analyzed_n if pages_analyzed_n is defined else (latest.pages_analyzed or '—') }}</p>
         <span class="geo-kpi__delta is-neutral">{{ findings_all_n|default(0) }} {{ _('findings') }}</span>
       </div>
-      <p class="geo-kpi__hint">{{ _('Pages scored in last audit') }}</p>
+      <p class="geo-kpi__hint {{ pressure_tone }}">{{ _('Pressione') }}: {{ pressure_label }}</p>
     </article>
-
-    <article class="geo-kpi">
-      <p class="geo-kpi__label">{{ _('Issue pressure') }}</p>
-      <div class="geo-kpi__row">
-        <p class="geo-kpi__value">{{ findings_n_local }}</p>
-        <span class="geo-kpi__delta {{ pressure_tone }}">{{ pressure_label }}</span>
-      </div>
-      <p class="geo-kpi__hint">{{ _('Critical + warn aperti (non è sentiment del modello)') }}</p>
-    </article>
-  </div>
-
-  <div class="geo-overview__grid">
-    <div class="geo-panel geo-panel--wide">
-      <div class="geo-panel__head">
-        <h3 class="geo-panel__title">LLM Visibility Breakdown</h3>
-        <a class="geo-panel__link" href="#panel-sov">{{ _('View Detailed Report') }}</a>
-      </div>
-      <div class="geo-table-wrap">
-        <table class="geo-table">
-          <thead>
-            <tr>
-              <th>{{ _('Engine') }}</th>
-              <th>{{ _('Share of Voice') }}</th>
-              <th>{{ _('Propensity') }}</th>
-              <th>{{ _('Status') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for e in engines %}
-              {% set share = e.share if e.share is not none else e.mention_rate %}
-              {% set prop = e.propensity if e.propensity is not none else share %}
-              {% if share is not none and share >= 40 %}
-                {% set st = 'dominant' %}
-                {% set st_label = _('Dominant') %}
-              {% elif share is not none and share >= 28 %}
-                {% set st = 'optimal' %}
-                {% set st_label = _('Optimal') %}
-              {% elif share is not none %}
-                {% set st = 'needs' %}
-                {% set st_label = _('Needs Action') %}
-              {% else %}
-                {% set st = 'unknown' %}
-                {% set st_label = '—' %}
-              {% endif %}
-              {% set tone = tones[loop.index0 % tones|length] %}
-              <tr>
-                <td>
-                  <span class="geo-engine">
-                    <i class="geo-engine__dot tone-{{ tone }}" aria-hidden="true"></i>
-                    {{ e.label or e.id }}
-                  </span>
-                </td>
-                <td>{% if share is not none %}{{ share }}%{% else %}—{% endif %}</td>
-                <td class="is-muted">{% if prop is not none %}{{ prop }}{% else %}—{% endif %}</td>
-                <td><span class="geo-status geo-status--{{ st }}">{{ st_label }}</span></td>
-              </tr>
-            {% else %}
-              <tr>
-                <td colspan="4" class="is-muted">{{ _('Nessun breakdown engine — lancia un audit.') }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <aside class="geo-panel geo-panel--insights" aria-labelledby="geo-insights-title">
-      <div class="geo-panel__head geo-panel__head--violet">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-        <h3 class="geo-panel__title" id="geo-insights-title">{{ _('Actionable GEO Insights') }}</h3>
-      </div>
-      <div class="geo-insights">
-        {% for f in findings_list[:4] %}
-          {% set sev = (f.severity or '')|lower %}
-          <div class="geo-insight">
-            <p class="geo-insight__sev {% if sev == 'critical' %}is-critical{% elif sev == 'warn' or sev == 'warning' %}is-warn{% else %}is-info{% endif %}">
-              {% if sev == 'critical' %}{{ _('Critical') }}{% elif sev == 'warn' or sev == 'warning' %}{{ _('Warn') }}{% else %}{{ _('Info') }}{% endif %}
-            </p>
-            <p class="geo-insight__title">{{ f.title }}</p>
-            <p class="geo-insight__detail">{{ f.detail }}</p>
-          </div>
-        {% else %}
-          <p class="geo-insight__empty">{{ _('Nessun finding critical/warn su questa run.') }}</p>
-        {% endfor %}
-      </div>
-    </aside>
   </div>
 </section>

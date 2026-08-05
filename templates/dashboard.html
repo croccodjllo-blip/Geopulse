@@ -5,31 +5,36 @@
 {% block main_class %}site-main--dash{% endblock %}
 
 {% block content %}
+{% set onboard_email = current_user.email_verified %}
+{% set onboard_analysis = latest is not none %}
+{% set onboard_open = (not onboard_email) or (not onboard_analysis) or trial_available or on_trial %}
+{% if onboard_analysis and findings_critical %}
+  {% set onboard_open = true %}
+{% endif %}
 <section class="workspace">
-  <header class="workspace-banner workspace-banner--compact workspace-banner--void">
-    <img
-      class="workspace-banner__img"
-      src="{{ url_for('static', filename='img/hero-earth.jpg') }}"
-      alt="{{ _('Centropic — mappa Signal Intelligence') }}"
-      width="1536"
-      height="1024"
-    />
-    <div class="workspace-banner__veil"></div>
-    <div class="workspace-banner__inner">
-      <div class="workspace-banner__row">
-        <div class="workspace-banner__copy">
-          <p class="workspace-banner__brand">CENTROPIC</p>
-          <h1 class="workspace-banner__title">{{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}</h1>
-          <p class="workspace-banner__lede">
+  <header class="workspace-strip" aria-label="{{ _('Workspace') }}">
+    <div class="workspace-strip__inner">
+      <div class="workspace-strip__copy">
+        <p class="workspace-strip__brand">centropic<span>.ai</span></p>
+        <h1 class="workspace-strip__title">
+          {% if latest %}
+            {{ latest.domain }}
+          {% else %}
+            {{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}
+          {% endif %}
+        </h1>
+        <p class="workspace-strip__lede">
+          {% if latest %}
+            {{ _('Ultimo report') }}
+            {% if latest.created_at %} · {{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}
+            {% if on_trial and trial_ends_at %} · {{ _('prova fino al') }} {{ trial_ends_at.strftime('%d/%m') }}{% endif %}
+          {% else %}
             {% if current_user.company %}{{ current_user.company }} · {% endif %}
-            {{ _('Analizza, chiudi i gap, pubblica il pack.') }}
-          </p>
-        </div>
-        <nav class="workspace-banner__nav" aria-label="{{ _('Workspace') }}">
-          <a href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
-        </nav>
+            {{ _('Incolla un dominio, chiudi i gap, pubblica il pack.') }}
+          {% endif %}
+        </p>
       </div>
-      <dl class="workspace-status" aria-label="{{ _('Stato account') }}">
+      <dl class="workspace-status workspace-status--strip" aria-label="{{ _('Stato account') }}">
         <div>
           <dt>{{ _('Piano') }}</dt>
           <dd>
@@ -48,7 +53,7 @@
           <dd>{% if crawl_unlimited %}{{ _('Intero sito') }}{% else %}{{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}</dd>
         </div>
         <div>
-          <dt>{% if analysis_limit_lifetime %}{{ _('Analisi totali') }}{% else %}{{ _('Quote 24h') }}{% endif %}</dt>
+          <dt>{% if analysis_limit_lifetime %}{{ _('Analisi') }}{% else %}{{ _('Quote 24h') }}{% endif %}</dt>
           <dd>{{ analyses_used }}/{{ daily_limit }}</dd>
         </div>
       </dl>
@@ -67,45 +72,65 @@
     </aside>
     {% endif %}
 
-    <aside class="dash-block dash-block--panel" aria-labelledby="progress-title" style="margin-bottom:1.25rem">
-      <header class="dash-block__head">
-        <div>
-          <p class="dash-block__eyebrow">{{ _('Onboarding') }}</p>
-          <h2 class="dash-block__title" id="progress-title">{{ _('I tuoi prossimi passi') }}</h2>
-        </div>
-      </header>
-      <ol class="plain-list" style="margin:0;padding-left:1.25rem">
-        <li>{% if current_user.email_verified %}✓{% else %}○{% endif %} {{ _('Conferma email') }}</li>
-        <li>{% if latest %}✓{% else %}○{% endif %} {{ _('Prima analisi del dominio') }}</li>
-        <li>{% if latest and findings_critical %}○{% elif latest %}✓{% else %}○{% endif %} {{ _('Chiudi i finding critici / pubblica il pack') }}</li>
-        <li>{% if is_pro and not on_trial %}✓{% elif on_trial %}◐{% else %}○{% endif %} {{ _('Plus (SoV measured + crawl esteso)') }}</li>
+    {% if onboard_open %}
+    <aside class="dash-onboard" aria-labelledby="progress-title">
+      <p class="dash-onboard__eyebrow">{{ _('Onboarding') }}</p>
+      <h2 class="dash-onboard__title" id="progress-title">{{ _('Prossimi passi') }}</h2>
+      <ol class="dash-onboard__list">
+        {% if not onboard_email %}
+        <li>○ {{ _('Conferma email') }}</li>
+        {% endif %}
+        {% if not onboard_analysis %}
+        <li>○ {{ _('Prima analisi del dominio') }}</li>
+        {% endif %}
+        {% if onboard_analysis and findings_critical %}
+        <li>○ {{ _('Chiudi i finding critici / pubblica il pack') }}</li>
+        {% endif %}
+        {% if not is_pro or on_trial %}
+        <li>{% if on_trial %}◐{% else %}○{% endif %} {{ _('Plus (SoV measured + crawl esteso)') }}</li>
+        {% endif %}
       </ol>
       {% if trial_available %}
-      <form method="post" action="{{ url_for('dashboard_trial_start') }}" style="margin-top:0.85rem">
+      <form method="post" action="{{ url_for('dashboard_trial_start') }}" class="dash-onboard__actions">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <button type="submit" class="btn btn-ghost">{{ _('Attiva prova Plus 7 giorni') }}</button>
       </form>
       {% endif %}
       {% if referral_code %}
-      <p class="lede" style="margin-top:0.85rem;font-size:0.92rem">
+      <p class="dash-onboard__ref">
         {{ _('Invita un collega:') }}
         <code>{{ url_for('register', ref=referral_code, _external=True) }}</code>
         — {{ _('tu ricevi') }} {{ referral_bonus_tokens }} {{ _('token quando conferma l’email.') }}
       </p>
       {% endif %}
     </aside>
-
-    {% if latest %}
-      {% include "partials/geo_overview.html" %}
     {% endif %}
 
+    {% if latest %}
+    <div class="report-lead" aria-label="{{ _('Sintesi report') }}">
+      <div class="report-lead__scores">
+        <span class="grade-badge" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</span>
+        <span class="report-lead__metric"><em>AIO</em> {{ latest.aio_score if latest.aio_score is not none else '—' }}</span>
+        <span class="report-lead__metric"><em>GEO</em> {{ latest.geo_score if latest.geo_score is not none else '—' }}</span>
+      </div>
+      <div class="report-lead__actions">
+        <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica ZIP') }}</a>
+        <a class="btn btn-ghost" href="#analyze">{{ _('Nuova analisi') }}</a>
+        <a class="btn btn-ghost" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Grafici') }}</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if latest %}
+    <details class="analyze-reveal" id="analyze-panel">
+      <summary class="analyze-reveal__summary">{{ _('Nuova analisi') }}</summary>
+    {% endif %}
     <form method="post" id="analyze" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
       {{ form.hidden_tag() }}
-      <div class="analyze-composer analyze-composer--cmd">
+      <div class="analyze-composer">
         <div class="analyze-composer__head">
-          <span class="analyze-composer__prompt" aria-hidden="true">$</span>
           <div>
-            <p class="analyze-composer__label">{{ _('Nuova analisi') }}</p>
+            <p class="analyze-composer__label">{{ _('Analizza un dominio') }}</p>
             <p class="analyze-composer__sub">
               {% if free_exhausted %}
               {{ _('Quote Free esaurite · passa a Plus per continuare') }}
@@ -162,6 +187,9 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
         </div>
       </div>
     </form>
+    {% if latest %}
+    </details>
+    {% endif %}
 
     {% if pending_job and pending_job.status in ('pending', 'running') %}
     <div
@@ -552,7 +580,7 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
               <div class="sov-engines">
                 <p class="sov-compose__label">{{ _('Propensity per engine') }}</p>
                 <ul class="engine-bars" role="list">
-                  {% for e in engine_breakdown.engines %}
+                  {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
                   <li class="engine-bar" data-engine="{{ e.id }}" data-band="{{ e.band }}" style="--accent: {{ e.accent }}; --p: {{ e.propensity }};">
                     <div class="engine-bar__meta">
                       <strong>{{ e.label }}</strong>
@@ -566,8 +594,8 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
                       <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}{% if e.samples is not none %} · {{ e.samples }} {{ _('campioni') }}{% endif %}</span>
                       {% elif e.evidence == 'unavailable' %}
                       <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('Non disponibile') }}</span>
-                      {% elif e.evidence == 'pending' %}
-                      <span class="evidence-badge" data-evidence="estimated">{{ _('In arrivo') }}</span>
+                      {% else %}
+                      <span class="evidence-badge" data-evidence="estimated">{{ _('Stimato') }}</span>
                       {% endif %}
                     </div>
                     <div class="engine-bar__track" aria-hidden="true">
@@ -1022,7 +1050,7 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
         </section>
         {% else %}
         <div class="empty-state">
-          <p class="empty-state__eyebrow">{{ _('Activation loop') }}</p>
+          <p class="empty-state__eyebrow">{{ _('Attivazione') }}</p>
           <strong>{{ _('Prima diagnosi in un passo') }}</strong>
           {% if pending_job and pending_job.status in ('pending', 'running') %}
           <p class="empty-state__hint">

@@ -68,23 +68,34 @@
     });
 
     // Close drawer after navigating on small screens
-    qsa(".app-sidebar__link").forEach(function (link) {
+    qsa(".app-sidebar__link, .app-sidebar__sublink").forEach(function (link) {
       link.addEventListener("click", function () {
         if (window.matchMedia("(max-width: 960px)").matches) setOpen(false);
       });
     });
 
-    // Hash → SoV / Edge sections
+    // Hash → SoV / Edge / analyze sections
     var hash = (location.hash || "").replace(/^#/, "");
     if (hash === "panel-sov" || hash === "sov") activateDashTab("sov");
     else if (hash === "edge-signals") {
       var edge = qs("#edge-signals");
       if (edge) edge.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (hash === "analyze") {
+      var panel = qs("#analyze-panel");
+      if (panel) panel.open = true;
+      var form = qs("#analyze");
+      if (form && typeof form.scrollIntoView === "function") {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     window.addEventListener("hashchange", function () {
       var h = (location.hash || "").replace(/^#/, "");
       if (h === "panel-sov" || h === "sov") activateDashTab("sov");
+      else if (h === "analyze") {
+        var p = qs("#analyze-panel");
+        if (p) p.open = true;
+      }
     });
   });
 })();
