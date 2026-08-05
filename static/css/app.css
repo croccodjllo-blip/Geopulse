@@ -823,7 +823,7 @@ body.app-body:not(.body-dash) {
   margin: 0;
   padding: 0.35rem;
   list-style: none;
-  background: var(--bg-elev, #0f152c);
+  background: var(--brand-elevated);
   border: 1px solid var(--border-str);
   border-radius: 10px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
@@ -848,7 +848,7 @@ body.app-body:not(.body-dash) {
   color: #fff;
 }
 .site-header--invert .lang-switch__menu {
-  background: #10182f;
+  background: var(--brand-elevated);
 }
 
 .password-field {
@@ -4776,20 +4776,20 @@ html.analyze-busy {
 }
 
 .body-dash .site-header {
-  background: rgba(7, 10, 18, 0.85);
+  background: rgba(4, 6, 10, 0.85);
   border-bottom-color: var(--border);
   backdrop-filter: blur(12px);
 }
 
 .body-dash .site-footer {
-  background: #05070d;
+  background: var(--brand-bg);
   border-top-color: var(--border);
 }
 
 .body-dash .workspace-banner--void .workspace-banner__veil {
   background:
-    linear-gradient(180deg, rgba(7, 10, 18, 0.55) 0%, rgba(7, 10, 18, 0.92) 100%),
-    linear-gradient(90deg, rgba(7, 10, 18, 0.7) 0%, transparent 55%);
+    linear-gradient(180deg, rgba(4, 6, 10, 0.55) 0%, rgba(4, 6, 10, 0.92) 100%),
+    linear-gradient(90deg, rgba(4, 6, 10, 0.7) 0%, transparent 55%);
 }
 
 .body-dash .analyze-composer {
