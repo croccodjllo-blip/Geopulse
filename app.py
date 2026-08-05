@@ -84,16 +84,21 @@ from services.analyzer import (
 from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
     client_config as paddle_client_config,
+    create_business_checkout as paddle_create_business_checkout,
     create_plus_checkout as paddle_create_plus_checkout,
     create_topup_checkout as paddle_create_topup_checkout,
     extract_user_id as paddle_extract_user_id,
+    paddle_business_enabled,
     paddle_enabled,
     paddle_overlay_ready,
+    paddle_plus_enabled,
     paddle_topup_price_id,
     paddle_topups_enabled,
     parse_webhook_event as paddle_parse_webhook_event,
     plan_from_paddle_subscription_status,
+    subscription_paid_plan,
     topup_cents_for_transaction,
+    transaction_grants_business,
     transaction_grants_plus,
     transaction_gross_cents,
     transaction_is_subscription,
@@ -178,6 +183,8 @@ from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.geo_ui_payload import build_geo_ui_payload
 from services.token_units import (
+    BUSINESS_MONTHLY_CREDIT_CENTS,
+    BUSINESS_MONTHLY_TOKENS,
     GEO_TOKEN_EUR_CENTS,
     GEO_TOKENS_PER_EURO,
     PLUS_MONTHLY_CREDIT_CENTS,
@@ -232,7 +239,13 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FREE_TOTAL_ANALYSES = max(1, int(os.getenv("FREE_TOTAL_ANALYSES", "2")))
 MAX_SITES_FREE = max(1, int(os.getenv("MAX_SITES_FREE", "1")))
 PRO_DAILY_ANALYSES = max(FREE_TOTAL_ANALYSES, int(os.getenv("PRO_DAILY_ANALYSES", "200")))
-MAX_SITES_PRO = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
+# Business (agenzie) inherits historical MAX_SITES_PRO; Plus startups get a tighter cap.
+MAX_SITES_BUSINESS = max(MAX_SITES_FREE, int(os.getenv("MAX_SITES_PRO", "50")))
+MAX_SITES_PRO = MAX_SITES_BUSINESS  # alias for older call sites / env docs
+MAX_SITES_PLUS = max(
+    MAX_SITES_FREE,
+    min(MAX_SITES_BUSINESS, int(os.getenv("MAX_SITES_PLUS", "5"))),
+)
 FREE_CRAWL_PAGES = max(1, min(20, int(os.getenv("FREE_CRAWL_PAGES", "8"))))
 # Piano Plus: crawl cap di default (0 = illimitato fino ad ABS_MAX_CRAWL_PAGES).
 # Deep crawl opt-in usa PRO_DEEP_CRAWL_PAGES (max ABS_MAX).
@@ -249,6 +262,10 @@ PRO_DEEP_CRAWL_PAGES = max(
     min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
 PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "143.90"))  # ~−20% vs 12×14.99
+BUSINESS_MONTHLY_EUR = float(os.environ.get("BUSINESS_MONTHLY_EUR", "49.99"))
+BUSINESS_YEARLY_EUR = float(
+    os.environ.get("BUSINESS_YEARLY_EUR", f"{BUSINESS_MONTHLY_EUR * 12 * 0.8:.2f}")
+)
 FREE_HISTORY_LIMIT = max(5, int(os.getenv("FREE_HISTORY_LIMIT", "10")))
 PRO_HISTORY_LIMIT = max(FREE_HISTORY_LIMIT, int(os.getenv("PRO_HISTORY_LIMIT", "100")))
 PACK_EMAIL_DAILY_LIMIT = max(1, int(os.getenv("PACK_EMAIL_DAILY_LIMIT", "10")))
@@ -593,18 +610,26 @@ class User(db.Model):
 
     @property
     def is_pro(self) -> bool:
-        """Piano Plus/pro/admin oppure trial Plus attivo."""
-        if self.is_admin or (self.plan or "").lower() in {"plus", "pro"}:
+        """Piano Plus/Business/pro/admin oppure trial Plus attivo."""
+        if self.is_admin or (self.plan or "").lower() in {"plus", "pro", "business"}:
             return True
         from services.growth import trial_is_active
 
         return trial_is_active(self)
 
     @property
+    def is_business(self) -> bool:
+        """Piano Business o Admin (agenzia / full toolkit)."""
+        return self.is_admin or (self.plan or "").lower() == "business"
+
+    @property
     def plan_label(self) -> str:
         if self.is_admin:
             return "Admin"
-        if (self.plan or "").lower() in {"plus", "pro"}:
+        raw = (self.plan or "").lower()
+        if raw == "business":
+            return "Business"
+        if raw in {"plus", "pro"}:
             return "Plus"
         from services.growth import trial_is_active
 
@@ -619,12 +644,17 @@ class User(db.Model):
         return trial_is_active(self) and (self.plan or "").lower() not in {
             "plus",
             "pro",
+            "business",
             "admin",
         }
 
     @property
     def max_sites(self) -> int:
-        return MAX_SITES_PRO if self.is_pro else MAX_SITES_FREE
+        if self.is_admin or self.is_business:
+            return MAX_SITES_BUSINESS
+        if self.is_pro:
+            return MAX_SITES_PLUS
+        return MAX_SITES_FREE
 
     @property
     def daily_limit(self) -> int:
@@ -1405,6 +1435,9 @@ def inject_globals() -> dict[str, Any]:
         "current_user": user,
         "csrf_token": generate_csrf,
         "max_sites_free": MAX_SITES_FREE,
+        "max_sites_plus": MAX_SITES_PLUS,
+        "max_sites_business": MAX_SITES_BUSINESS,
+        "max_sites_pro": MAX_SITES_PRO,
         "free_daily_analyses": FREE_TOTAL_ANALYSES,
         "free_total_analyses": FREE_TOTAL_ANALYSES,
         "free_crawl_pages": FREE_CRAWL_PAGES,
@@ -1412,6 +1445,9 @@ def inject_globals() -> dict[str, Any]:
         "pro_crawl_unlimited": PRO_CRAWL_UNLIMITED,
         "deep_crawl_pages": PRO_DEEP_CRAWL_PAGES,
         "abs_max_crawl_pages": ABS_MAX_CRAWL_PAGES,
+        "plus_monthly_tokens": PLUS_MONTHLY_TOKENS,
+        "business_monthly_tokens": BUSINESS_MONTHLY_TOKENS,
+        "business_monthly_eur": BUSINESS_MONTHLY_EUR,
         "mail_ready": mail_configured(),
         "now_year": datetime.now(timezone.utc).year,
         "rating_scale": RATING_ORDER,
@@ -1419,6 +1455,8 @@ def inject_globals() -> dict[str, Any]:
         "canonical_url": canonical,
         "admin_email": ADMIN_EMAIL,
         "paddle_ready": paddle_enabled(),
+        "paddle_plus_ready": paddle_plus_enabled(),
+        "business_ready": paddle_business_enabled(),
         "payments_ready": payments_enabled(),
         "payments_provider": payments_provider(),
         "paddle_overlay": paddle_overlay_ready(),
@@ -2287,9 +2325,18 @@ def grant_plus_monthly_tokens(
     user: User,
     idempotency_key: str,
     description: str | None = None,
+    credit_cents: int | None = None,
 ) -> bool:
-    """Credit Plus monthly GEO tokens once per billing event. Returns True if granted."""
-    if PLUS_MONTHLY_CREDIT_CENTS <= 0 or not user or not idempotency_key:
+    """Credit subscription monthly GEO tokens once per billing event.
+
+    Returns True if granted. ``credit_cents`` defaults to Plus monthly grant.
+    """
+    amount = (
+        int(credit_cents)
+        if credit_cents is not None
+        else int(PLUS_MONTHLY_CREDIT_CENTS)
+    )
+    if amount <= 0 or not user or not idempotency_key:
         return False
     pi = str(idempotency_key).strip()
     if not pi:
@@ -2302,11 +2349,9 @@ def grant_plus_monthly_tokens(
             db.session,
             CreditLedger,
             user,
-            amount_eur_cents=PLUS_MONTHLY_CREDIT_CENTS,
+            amount_eur_cents=amount,
             description=description
-            or (
-                f"Plus mensile: {format_token_amount(PLUS_MONTHLY_CREDIT_CENTS)}"
-            ),
+            or (f"Plus mensile: {format_token_amount(amount)}"),
             stripe_payment_intent=pi,
         )
         return True
@@ -2316,11 +2361,12 @@ def grant_plus_monthly_tokens(
 
 
 def plan_entitlements(user: User | None):
-    """Resolved Free/Plus entitlements for the current user."""
+    """Resolved Free/Plus/Business entitlements for the current user."""
     return entitlements_for(
         user,
         max_sites_free=MAX_SITES_FREE,
-        max_sites_pro=MAX_SITES_PRO,
+        max_sites_pro=MAX_SITES_BUSINESS,
+        max_sites_plus=MAX_SITES_PLUS,
         free_total_analyses=FREE_TOTAL_ANALYSES,
         pro_daily_analyses=PRO_DAILY_ANALYSES,
         free_crawl_pages=FREE_CRAWL_PAGES,
@@ -3093,7 +3139,7 @@ def maybe_send_analysis_complete_email(user: User, analysis: SiteAnalysis) -> No
 
 def start_plus_trial(user: User) -> bool:
     """Start 7-day Plus trial once per account. Returns True if started."""
-    if user.is_admin or (user.plan or "").lower() in {"plus", "pro"}:
+    if user.is_admin or (user.plan or "").lower() in {"plus", "pro", "business"}:
         return False
     if getattr(user, "trial_started_at", None) is not None:
         return False
@@ -3268,13 +3314,24 @@ def pricing():
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
         paddle_ready=paddle_enabled(),
+        paddle_plus_ready=paddle_plus_enabled(),
+        business_ready=paddle_business_enabled(),
         paddle_overlay=paddle_overlay_ready(),
         plus_yearly_eur=PLUS_YEARLY_EUR,
         plus_yearly_ready=bool(
             (os.environ.get("PADDLE_PRICE_PLUS_YEARLY") or "").strip()
         ),
+        business_monthly_eur=BUSINESS_MONTHLY_EUR,
+        business_yearly_eur=BUSINESS_YEARLY_EUR,
+        business_yearly_ready=bool(
+            (os.environ.get("PADDLE_PRICE_BUSINESS_YEARLY") or "").strip()
+        ),
         pro_crawl_pages=PRO_CRAWL_PAGES,
         deep_crawl_pages=PRO_DEEP_CRAWL_PAGES,
+        max_sites_plus=MAX_SITES_PLUS,
+        max_sites_business=MAX_SITES_BUSINESS,
+        plus_monthly_tokens=PLUS_MONTHLY_TOKENS,
+        business_monthly_tokens=BUSINESS_MONTHLY_TOKENS,
     )
 
 
@@ -3296,25 +3353,60 @@ def billing_checkout():
     if not payments_enabled():
         flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
         return redirect(url_for("pro_interest"))
-    if user.is_pro and not user.is_admin:
-        flash("Hai già un piano Plus attivo.", "success")
-        return redirect(url_for("dashboard"))
-
     if payments_provider() != "paddle":
         flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
         return redirect(url_for("pro_interest"))
 
+    product = (request.form.get("product") or "plus").strip().lower()
+    if product not in {"plus", "business"}:
+        product = "plus"
+    plan = (user.plan or "").lower()
+
+    if not user.is_admin:
+        if product == "business" and plan == "business":
+            flash("Hai già un piano Business attivo.", "success")
+            return redirect(url_for("dashboard"))
+        if product == "plus" and plan == "business":
+            flash("Hai già Business (include tutte le funzioni Plus).", "success")
+            return redirect(url_for("dashboard"))
+        if product == "plus" and plan in {"plus", "pro"}:
+            flash(
+                "Hai già Plus. Passa a Business per API, white-label e 400 token/mese.",
+                "success",
+            )
+            return redirect(url_for("pricing") + "#business")
+
     # Overlay is preferred; server transaction is the fallback when only API key is set.
     if paddle_overlay_ready() and request.form.get("overlay") == "1":
-        return jsonify({"ok": True, "provider": "paddle", "mode": "overlay"})
+        return jsonify({"ok": True, "provider": "paddle", "mode": "overlay", "product": product})
+
+    interval = (request.form.get("interval") or "month").strip().lower()
+    yearly_env = (
+        "PADDLE_PRICE_BUSINESS_YEARLY"
+        if product == "business"
+        else "PADDLE_PRICE_PLUS_YEARLY"
+    )
+    if interval == "year" and not (os.environ.get(yearly_env) or "").strip():
+        flash("Il piano annuale non è ancora disponibile. Scegli Mensile.", "warning")
+        return redirect(url_for("pricing"))
+
+    if product == "business" and not paddle_business_enabled():
+        flash(
+            "Business non è ancora in checkout. Scrivi a info@centropic.ai o prenota interesse.",
+            "warning",
+        )
+        return redirect(url_for("pro_interest"))
+    if product == "plus" and not paddle_plus_enabled():
+        flash("Plus non è ancora in checkout. Prenota l’interesse.", "warning")
+        return redirect(url_for("pro_interest"))
+
     try:
-        interval = (request.form.get("interval") or "month").strip().lower()
-        if interval == "year" and not (
-            os.environ.get("PADDLE_PRICE_PLUS_YEARLY") or ""
-        ).strip():
-            flash("Il piano annuale non è ancora disponibile. Scegli Mensile.", "warning")
-            return redirect(url_for("pricing"))
-        tx = paddle_create_plus_checkout(
+        create_fn = (
+            paddle_create_business_checkout
+            if product == "business"
+            else paddle_create_plus_checkout
+        )
+        tx = create_fn(
             user_id=user.id,
             email=user.email,
             customer_id=getattr(user, "paddle_customer_id", None),
@@ -3334,7 +3426,7 @@ def billing_checkout():
             return redirect(url_for("pricing"))
         return redirect(url)
     except Exception:
-        app.logger.exception("Paddle Plus checkout failed")
+        app.logger.exception("Paddle %s checkout failed", product)
         flash("Impossibile avviare il checkout Paddle. Riprova o contattaci.", "error")
         return redirect(url_for("pricing"))
 
@@ -3343,7 +3435,7 @@ def billing_checkout():
 @login_required
 def billing_portal():
     flash(
-        "Per gestire l’abbonamento Plus usa il link nella ricevuta Paddle "
+        "Per gestire l’abbonamento usa il link nella ricevuta Paddle "
         "o scrivi a info@centropic.ai.",
         "info",
     )
@@ -3354,7 +3446,7 @@ def billing_portal():
 @login_required
 def billing_success():
     flash(
-        "Pagamento ricevuto. Il piano Plus si attiva entro pochi secondi via webhook.",
+        "Pagamento ricevuto. Il piano si attiva entro pochi secondi via webhook.",
         "success",
     )
     return redirect(url_for("dashboard"))
@@ -3436,8 +3528,11 @@ def billing_paddle_webhook():
                         user.paddle_past_due_since = past_due_at
                 elif status in {"active", "trialing", "canceled", "paused"}:
                     user.paddle_past_due_since = None
+                paid = subscription_paid_plan(
+                    data, current_plan=getattr(user, "plan", None)
+                )
                 user.plan = plan_from_paddle_subscription_status(
-                    status, past_due_at=past_due_at
+                    status, past_due_at=past_due_at, paid_plan=paid
                 )
                 db.session.commit()
 
@@ -3450,6 +3545,37 @@ def billing_paddle_webhook():
             # topup_cents (overlay checkout is client-controlled).
             user = _user_from_paddle(data)
 
+            if transaction_grants_business(data):
+                if user is not None and (user.plan or "").lower() != "admin":
+                    txn_id = str(data.get("id") or "").strip()
+                    customer_id = data.get("customer_id")
+                    sub = data.get("subscription_id")
+
+                    def _apply_business(u: User) -> None:
+                        if customer_id:
+                            u.paddle_customer_id = str(customer_id)
+                        if sub:
+                            u.paddle_subscription_id = str(sub)
+                        u.plan = "business"
+
+                    _apply_business(user)
+                    if txn_id and BUSINESS_MONTHLY_CREDIT_CENTS > 0:
+                        granted = grant_plus_monthly_tokens(
+                            user=user,
+                            idempotency_key=f"paddle-business-tokens:{txn_id}",
+                            credit_cents=BUSINESS_MONTHLY_CREDIT_CENTS,
+                            description=(
+                                f"Business mensile: "
+                                f"{format_token_amount(BUSINESS_MONTHLY_CREDIT_CENTS)}"
+                            ),
+                        )
+                        if not granted:
+                            user = _user_from_paddle(data) or user
+                            if user is not None and (user.plan or "").lower() != "admin":
+                                _apply_business(user)
+                    db.session.commit()
+                return jsonify({"ok": True})
+
             if transaction_grants_plus(data):
                 if user is not None and (user.plan or "").lower() != "admin":
                     txn_id = str(data.get("id") or "").strip()
@@ -3461,7 +3587,9 @@ def billing_paddle_webhook():
                             u.paddle_customer_id = str(customer_id)
                         if sub:
                             u.paddle_subscription_id = str(sub)
-                        u.plan = "plus"
+                        # Never downgrade Business → Plus on a Plus renewal race.
+                        if (u.plan or "").lower() != "business":
+                            u.plan = "plus"
 
                     _apply_plus(user)
                     if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
@@ -3470,7 +3598,7 @@ def billing_paddle_webhook():
                             idempotency_key=f"paddle-plus-tokens:{txn_id}",
                         )
                         if not granted:
-                            # Duplicate or race: keep Plus plan after possible rollback.
+                            # Duplicate or race: keep plan after possible rollback.
                             user = _user_from_paddle(data) or user
                             if user is not None and (user.plan or "").lower() != "admin":
                                 _apply_plus(user)
@@ -4326,7 +4454,7 @@ def dashboard():
         trial_ends_at=getattr(user, "trial_ends_at", None),
         trial_available=(
             not user.is_admin
-            and (user.plan or "").lower() not in {"plus", "pro"}
+            and (user.plan or "").lower() not in {"plus", "pro", "business"}
             and getattr(user, "trial_started_at", None) is None
             and not trial_is_active(user)
         ),
@@ -4335,6 +4463,9 @@ def dashboard():
         pending_job=pending_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
+        is_business=user.is_business,
+        can_agency=plan_entitlements(user).can("agency_whitelabel"),
+        can_api=plan_entitlements(user).can("api_access"),
     )
 
 
@@ -5182,9 +5313,12 @@ def dashboard_verify_rescan(analysis_id: int):
 
 @app.route("/dashboard/export/whitelabel/<int:analysis_id>.md")
 @login_required
-@pro_required
 def download_whitelabel(analysis_id: int):
     user = current_user()
+    blocked = require_capability(plan_entitlements(user), "agency_whitelabel")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing") + "#business")
     analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
     if analysis is None:
         flash("Sito non trovato.", "error")
@@ -5209,9 +5343,12 @@ def download_whitelabel(analysis_id: int):
 
 @app.route("/dashboard/export/whitelabel/<int:analysis_id>.html")
 @login_required
-@pro_required
 def download_whitelabel_html(analysis_id: int):
     user = current_user()
+    blocked = require_capability(plan_entitlements(user), "agency_whitelabel")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing") + "#business")
     analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
     if analysis is None:
         flash("Sito non trovato.", "error")
@@ -5246,8 +5383,8 @@ def api_v1_analyze():
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
-    if not user.is_pro:
-        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
     if not limiter.allow(f"api_analyze:{user.id}", limit=30, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
     payload = request.get_json(silent=True) or {}
@@ -5512,8 +5649,8 @@ def api_v1_sites():
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
-    if not user.is_pro:
-        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
     if not limiter.allow(f"api_sites:{user.id}", limit=60, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
     sites = (
@@ -5553,8 +5690,8 @@ def api_v1_site_edge(site_id: int):
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
-    if not user.is_pro:
-        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
     if not limiter.allow(f"api_edge:{user.id}", limit=120, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
     analysis = SiteAnalysis.query.filter_by(id=site_id, user_id=user.id).first()
@@ -5622,8 +5759,8 @@ def api_v1_site_edge_cms_bundle(site_id: int):
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
-    if not user.is_pro:
-        return jsonify({"ok": False, "error": "plus_required"}), 403
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
     if not limiter.allow(f"api_edge_zip:{user.id}", limit=30, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
     analysis = SiteAnalysis.query.filter_by(id=site_id, user_id=user.id).first()
@@ -5688,7 +5825,8 @@ def admin_home():
         (User.plan == "admin") | (User.role == "admin")
     ).count()
     users_plus = User.query.filter(User.plan.in_(["plus", "pro"])).count()
-    users_free = max(0, users_total - users_plus - users_admin)
+    users_business = User.query.filter(User.plan == "business").count()
+    users_free = max(0, users_total - users_plus - users_business - users_admin)
 
     sites_total = SiteAnalysis.query.count()
     runs_total = AnalysisRun.query.count()
@@ -5742,6 +5880,7 @@ def admin_home():
             "users_total": users_total,
             "users_free": users_free,
             "users_plus": users_plus,
+            "users_business": users_business,
             "users_admin": users_admin,
             "sites_total": sites_total,
             "runs_total": runs_total,
@@ -5765,7 +5904,7 @@ def admin_set_plan(user_id: int, plan: str):
     plan = (plan or "").strip().lower()
     if plan == "pro":
         plan = "plus"
-    if plan not in {"free", "plus", "admin"}:
+    if plan not in {"free", "plus", "business", "admin"}:
         flash("Piano non valido.", "error")
         return redirect(url_for("admin_home"))
     target = db.session.get(User, user_id)

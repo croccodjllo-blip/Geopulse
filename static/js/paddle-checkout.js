@@ -78,6 +78,15 @@
     );
   }
 
+  function openBusiness() {
+    var c = cfg();
+    if (!c.priceBusiness) return false;
+    return openItems(
+      [{ priceId: c.priceBusiness, quantity: 1 }],
+      { customData: { product: "business" }, successUrl: c.successPlus }
+    );
+  }
+
   function openTopup(cents) {
     var c = cfg();
     var priceId = (c.topupPrices || {})[String(cents)];
@@ -106,6 +115,14 @@
         }
         return;
       }
+      if (kind === "business") {
+        ev.preventDefault();
+        if (!openBusiness()) {
+          var formBiz = btn.closest("form");
+          if (formBiz) formBiz.submit();
+        }
+        return;
+      }
       if (kind === "topup") {
         ev.preventDefault();
         var cents = parseInt(btn.getAttribute("data-paddle-cents") || "0", 10);
@@ -120,6 +137,7 @@
   window.CentropicPaddle = {
     ready: ready,
     openPlus: openPlus,
+    openBusiness: openBusiness,
     openTopup: openTopup,
   };
 

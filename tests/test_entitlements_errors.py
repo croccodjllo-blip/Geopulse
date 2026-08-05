@@ -13,6 +13,7 @@ from services.entitlements import entitlements_for, require_capability
 def _ents(user, **overrides):
     defaults = dict(
         max_sites_free=1,
+        max_sites_plus=5,
         max_sites_pro=50,
         free_total_analyses=2,
         pro_daily_analyses=200,
@@ -27,24 +28,41 @@ def _ents(user, **overrides):
 
 
 def test_free_cannot_use_plus_capabilities():
-    free = SimpleNamespace(plan="free", is_pro=False, is_admin=False)
+    free = SimpleNamespace(plan="free", is_pro=False, is_admin=False, is_business=False)
     ents = _ents(free)
     assert ents.is_pro is False
     assert ents.can("api_access") is False
     assert ents.can("agency_whitelabel") is False
     assert ents.can("measured_sov") is False
     assert ents.can("pack_email") is True
-    msg = require_capability(ents, "api_access")
-    assert msg and "Plus" in msg
+    msg = require_capability(ents, "measured_sov")
+    assert msg and ("Plus" in msg or "Business" in msg)
+    biz_msg = require_capability(ents, "api_access")
+    assert biz_msg and "Business" in biz_msg
 
 
-def test_plus_has_full_capabilities():
-    plus = SimpleNamespace(plan="plus", is_pro=True, is_admin=False)
+def test_plus_has_ops_not_agency():
+    plus = SimpleNamespace(plan="plus", is_pro=True, is_admin=False, is_business=False)
     ents = _ents(plus)
     assert ents.is_pro is True
-    assert ents.can("api_access") is True
+    assert ents.is_business is False
+    assert ents.max_sites == 5
+    assert ents.can("measured_sov") is True
     assert ents.can("full_crawl") is True
-    assert ents.crawl_unlimited is True
+    assert ents.can("api_access") is False
+    assert ents.can("agency_whitelabel") is False
+    assert require_capability(ents, "api_access") is not None
+
+
+def test_business_has_full_capabilities():
+    biz = SimpleNamespace(plan="business", is_pro=True, is_admin=False, is_business=True)
+    ents = _ents(biz)
+    assert ents.is_pro is True
+    assert ents.is_business is True
+    assert ents.max_sites == 50
+    assert ents.can("api_access") is True
+    assert ents.can("agency_whitelabel") is True
+    assert ents.can("full_crawl") is True
     assert require_capability(ents, "api_access") is None
 
 

@@ -1098,8 +1098,12 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
           <p class="rail-card__eyebrow">{{ _('Azioni') }}</p>
           <p class="rail-card__sub">
             <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a><br />
+            {% if can_agency %}
             <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label MD') }}</a><br />
             <a href="{{ url_for('download_whitelabel_html', analysis_id=latest.id) }}">{{ _('White-label HTML') }}</a><br />
+            {% else %}
+            <a href="{{ url_for('pricing') }}#business">{{ _('White-label → Business') }}</a><br />
+            {% endif %}
             <a href="{{ url_for('dashboard_settings') }}">{{ _('GEO suite settings') }}</a>
           </p>
         </div>

@@ -98,6 +98,7 @@ def test_stripe_disabled_always():
 
 def test_client_config_shape(monkeypatch):
     monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus")
+    monkeypatch.setattr(pb, "PADDLE_PRICE_BUSINESS", "pri_biz")
     monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
     monkeypatch.setattr(pb, "PADDLE_API_KEY", "")
     monkeypatch.setattr(pb, "PADDLE_ENV", "sandbox")
@@ -106,6 +107,21 @@ def test_client_config_shape(monkeypatch):
     assert cfg["overlay"] is True
     assert cfg["environment"] == "sandbox"
     assert cfg["pricePlus"] == "pri_plus"
+    assert cfg["priceBusiness"] == "pri_biz"
+    assert cfg["businessReady"] is True
+
+
+def test_transaction_grants_business_by_price_id(monkeypatch):
+    monkeypatch.setenv("PADDLE_PRICE_BUSINESS_MONTHLY", "pri_biz_real")
+    monkeypatch.setenv("PADDLE_PRICE_PLUS_MONTHLY", "pri_plus_real")
+    data = {
+        "subscription_id": "sub_1",
+        "custom_data": {"product": "plus"},
+        "items": [{"price": {"id": "pri_biz_real", "billing_cycle": {"interval": "month"}}}],
+    }
+    assert pb.transaction_grants_business(data) is True
+    assert pb.transaction_grants_plus(data) is False
+    assert pb.paid_plan_from_price_ids(["pri_biz_real"]) == "business"
 
 
 def test_topup_price_map(monkeypatch):

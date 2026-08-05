@@ -6,7 +6,10 @@ Internal ledger stays in EUR cents. Product unit for users:
   10 token == €1.00
   100 token == €10.00 (base pack rate)
 
-Plus subscription includes ``PLUS_MONTHLY_TOKENS`` each billing cycle.
+Subscriptions:
+  Plus      → ``PLUS_MONTHLY_TOKENS`` (100) each billing cycle
+  Business  → ``BUSINESS_MONTHLY_TOKENS`` (400) each billing cycle
+
 The €50 pack grants a bonus (600 token for €50 = €60 face value).
 """
 
@@ -17,6 +20,8 @@ GEO_TOKEN_EUR_CENTS = 10
 GEO_TOKENS_PER_EURO = 10
 PLUS_MONTHLY_TOKENS = 100
 PLUS_MONTHLY_CREDIT_CENTS = PLUS_MONTHLY_TOKENS * GEO_TOKEN_EUR_CENTS
+BUSINESS_MONTHLY_TOKENS = 400
+BUSINESS_MONTHLY_CREDIT_CENTS = BUSINESS_MONTHLY_TOKENS * GEO_TOKEN_EUR_CENTS
 
 
 def cents_to_tokens(cents: int | None) -> float:

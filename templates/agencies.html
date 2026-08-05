@@ -9,7 +9,7 @@
     <p class="eyebrow">{{ _('Agenzie') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Consegna citabilità IA ai tuoi clienti') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account. Gli score restano diagnostici (Stimato); su Plus puoi aggiungere menzioni Misurate.') }}
+      {{ _('Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account. Gli score restano diagnostici (Stimato); su Business aggiungi menzioni Misurate, API e white-label sul vostro brand.') }}
     </p>
   </header>
 
@@ -21,32 +21,33 @@
     <ul class="plain-list">
       <li>{{ _('Score + findings prioritizzati in linguaggio operativo') }}</li>
       <li>{{ _('llms.txt, JSON-LD, robots e CMS connector') }}</li>
-      <li>{{ _('SoV measured (Plus) per dimostrare menzioni, non solo proxy') }}</li>
-      <li>{{ _('Export white-label MD/HTML con il vostro brand') }}</li>
+      <li>{{ _('SoV measured (Plus/Business) per dimostrare menzioni, non solo proxy') }}</li>
+      <li>{{ _('Export white-label MD/HTML con il vostro brand (Business)') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('Perché le agenzie scelgono Plus') }}</h2>
+    <h2 class="page-section__title">{{ _('Perché le agenzie scelgono Business') }}</h2>
     <p class="lede">
-      {{ _('Plus aggiunge multi-sito, crawl fino a 120 pagine (Deep 500), re-scan, API e 100 token/mese. Non promettiamo ranking: misuriamo segnali e, ove configurato, menzioni Misurate.') }}
+      {{ _('Business a 49,99€/mese include tutto: fino a 50 siti, 400 token/mese, API, white-label e re-scan. Plus resta per startup sul proprio brand (14,99€, 100 token).') }}
     </p>
     <ul class="plain-list">
-      <li>{{ _('Multi-sito + re-scan schedulato') }}</li>
-      <li>{{ _('API /api/v1 per automatizzare onboarding clienti') }}</li>
-      <li>{{ _('100 token/mese + pack ricaricabili') }}</li>
+      <li>{{ _('Multi-sito clienti + re-scan schedulato') }}</li>
+      <li>{{ _('API /api/v1 per automatizzare onboarding') }}</li>
+      <li>{{ _('400 token/mese + pack ricaricabili') }}</li>
+      <li>{{ _('Report white-label con brand agenzia') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Come iniziare') }}</h2>
     <p class="lede">
-      {{ _('Attiva Plus, importa il primo dominio cliente, pubblica il pack (o Edge Signals) e confronta lo storico run. Per un walkthrough di 15 minuti scrivi a info@centropic.ai.') }}
+      {{ _('Attiva Business, importa il primo dominio cliente, pubblica il pack (o Edge Signals) e confronta lo storico run. Per un walkthrough di 15 minuti scrivi a info@centropic.ai.') }}
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('pricing') }}#plus">{{ _('Attiva Plus') }}</a>
+    <a class="btn btn-primary" href="{{ url_for('pricing') }}#business">{{ _('Attiva Business') }}</a>
     <a class="btn btn-ghost" href="mailto:info@centropic.ai?subject=Agenzia%20Centropic">{{ _('Parla con noi (15 min)') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('sample_report') }}">{{ _('Vedi esempio report') }}</a>
   </div>

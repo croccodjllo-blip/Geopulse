@@ -17,7 +17,7 @@
   <section class="page-section">
     <h2 class="page-section__title">KPI globali</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.9rem;">
-      <div class="cost-card"><div class="muted">Utenti totali</div><strong>{{ stats.users_total }}</strong><div class="muted">Free {{ stats.users_free }} · Plus {{ stats.users_plus }} · Admin {{ stats.users_admin }}</div></div>
+      <div class="cost-card"><div class="muted">Utenti totali</div><strong>{{ stats.users_total }}</strong><div class="muted">Free {{ stats.users_free }} · Plus {{ stats.users_plus }} · Business {{ stats.users_business }} · Admin {{ stats.users_admin }}</div></div>
       <div class="cost-card"><div class="muted">Siti / Run</div><strong>{{ stats.sites_total }} / {{ stats.runs_total }}</strong><div class="muted">Run 30gg: {{ stats.runs_30d }}</div></div>
       <div class="cost-card"><div class="muted">Coda job</div><strong>P {{ stats.jobs_pending }} · R {{ stats.jobs_running }} · E {{ stats.jobs_error }}</strong><div class="muted">Stato in tempo reale da DB</div></div>
       <div class="cost-card"><div class="muted">Billing 30gg</div><strong>+{{ stats.topup_30d_cents|tok_short }}</strong><div class="muted">Addebiti: {{ stats.charged_30d_cents|tok_short }}</div></div>
@@ -50,6 +50,10 @@
           <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='plus') }}" style="display:inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Plus</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='business') }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Business</button>
           </form>
           <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='admin') }}" style="display:inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />

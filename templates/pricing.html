@@ -1,95 +1,139 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic 2026: Free senza carta; Plus con crawl fino a 120 pagine, SoV measured, 100 token/mese e export.') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic: Free, Plus 14,99€ (startup, 100 token), Business 49,99€ (agenzie, 400 token, API e white-label).') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
 <article class="page page--v2">
   <header class="page-intro page-intro--v2">
     <p class="eyebrow">{{ _('Prezzi') }}</p>
-    <h1 class="h-display page-intro__title">{{ _('Semplici. Scalabili.') }}</h1>
+    <h1 class="h-display page-intro__title">{{ _('Tre piani. Un solo upgrade chiaro.') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Free per validare readiness AIO/GEO. Plus per crawl esteso, citation monitor, alert e export.') }}
+      {{ _('Free per validare. Plus per startup sul proprio brand. Business per agenzie che devono scalare clienti.') }}
     </p>
   </header>
 
-  <div class="plan-grid plan-grid--v2" role="list">
-    <section class="plan plan--v2" role="listitem">
+  <div class="plan-grid plan-grid--v2 plan-grid--tiers" role="list">
+    <section class="plan plan--v2" role="listitem" id="free">
       <p class="plan__name">Free</p>
       <p class="plan__price">0&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Per il primo dominio e le prime ottimizzazioni.') }}</p>
+      <p class="plan__desc">{{ _('Prova la diagnosi AIO/GEO sul primo dominio — senza carta.') }}</p>
       <ul class="plan__features">
-        <li>{{ _('Massimo') }} {{ max_sites_free }} {{ _('sito') }}</li>
+        <li>{{ _('Fino a') }} {{ max_sites_free }} {{ _('sito') }}</li>
         <li>{{ _('Crawl fino a') }} {{ free_crawl_pages }} {{ _('pagine') }}</li>
-        <li>{{ free_total_analyses }} {{ _('analisi su nuovi siti; ri-analisi stesso URL (consuma token)') }}</li>
-        <li>{{ _('Score + findings (SoV stimato; Misurato solo su Plus)') }}</li>
-        <li>{{ _('Pack ZIP') }}</li>
+        <li>{{ free_total_analyses }} {{ _('analisi su nuovi siti; ri-analisi stesso URL (token)') }}</li>
+        <li>{{ _('Score AIO/GEO + findings (SoV stimato)') }}</li>
+        <li>{{ _('Pack ZIP applicabile') }}</li>
       </ul>
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
     </section>
 
-    <section class="plan plan--v2 plan--featured" id="plus" role="listitem">
+    <section class="plan plan--v2" role="listitem" id="plus">
       <p class="plan__name">Plus</p>
-      {% if paddle_ready %}
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Include 100 token ogni mese. Per team che ottimizzano più brand in continuo.') }}</p>
-      {% else %}
-      <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Include 100 token/mese. Checkout in attivazione — puoi già ricaricare token o prenotare interesse.') }}</p>
-      {% endif %}
+      <p class="plan__desc">{{ _('Per piccole startup che ottimizzano i propri brand in continuo.') }}</p>
       <ul class="plan__features">
-        <li>{{ _('100 token inclusi ogni mese') }}</li>
-        <li>{{ _('Più siti e analisi') }}</li>
+        <li><strong>{{ plus_monthly_tokens }} {{ _('token inclusi ogni mese') }}</strong></li>
+        <li>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('siti') }}</li>
         <li>{{ _('Crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine (Deep fino a') }} {{ deep_crawl_pages }})</li>
-        <li>{{ _('Citation monitor / SoV measured — solo Plus') }}</li>
+        <li>{{ _('Citation monitor / SoV measured') }}</li>
+        <li>{{ _('Competitor snapshot') }}</li>
         <li>{{ _('Prompt bank + alert email/webhook') }}</li>
         <li>{{ _('Re-scan giornaliero/settimanale') }}</li>
-        <li>{{ _('API + export + white-label') }}</li>
-        <li>{{ _('Storico run avanzato') }}</li>
+        <li>{{ _('Edge Signals completo + storico run') }}</li>
       </ul>
-      {% if paddle_ready and current_user %}
-        {% if paddle_overlay and paddle_ready %}
+      {% if paddle_plus_ready and current_user %}
+        {% if paddle_overlay %}
         <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
-          {{ _('Passa a Plus') }}
+          {{ _('Scegli Plus') }}
         </button>
         <noscript>
           <form method="post" action="{{ url_for('billing_checkout') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
+            <input type="hidden" name="product" value="plus" />
+            <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
           </form>
         </noscript>
         {% else %}
         <form method="post" action="{{ url_for('billing_checkout') }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Plus') }}</button>
+          <input type="hidden" name="product" value="plus" />
+          <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
         </form>
         {% endif %}
-        {# Only advertise yearly when a matching Paddle price ID is configured. #}
         {% if plus_yearly_ready %}
         <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="product" value="plus" />
           <input type="hidden" name="interval" value="year" />
           <button type="submit" class="btn btn-ghost-light btn-block">
             {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
           </button>
         </form>
         {% endif %}
-      {% elif paddle_ready %}
-      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing')) }}">{{ _('Accedi e passa a Plus') }}</a>
-      {% if plus_yearly_ready %}
-      <p class="plan-note" style="margin-top:0.75rem">
-        {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
-      </p>
-      {% endif %}
+      {% elif paddle_plus_ready %}
+      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#plus') }}">{{ _('Accedi e scegli Plus') }}</a>
       {% else %}
-      <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota interesse') }}</a>
-      <a class="btn btn-core btn-block" href="{{ url_for('topup_credit_page') }}" style="margin-top:0.5rem">{{ _('Ricarica token') }}</a>
+      <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
+      {% endif %}
+    </section>
+
+    <section class="plan plan--v2 plan--featured" role="listitem" id="business">
+      <p class="plan__badge">{{ _('Per agenzie') }}</p>
+      <p class="plan__name">Business</p>
+      <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="plan__desc">{{ _('Tutto incluso per agenzie e team multi-cliente: delivery, automazione e scala.') }}</p>
+      <ul class="plan__features">
+        <li><strong>{{ _('Tutto di Plus, più:') }}</strong></li>
+        <li><strong>{{ business_monthly_tokens }} {{ _('token inclusi ogni mese') }}</strong></li>
+        <li>{{ _('Fino a') }} {{ max_sites_business }} {{ _('siti / clienti') }}</li>
+        <li>{{ _('API key pubblica') }} <code>/api/v1</code></li>
+        <li>{{ _('White-label brand agenzia') }}</li>
+        <li>{{ _('Export report MD/HTML white-label') }}</li>
+        <li>{{ _('Crawl, SoV measured, re-scan, Edge, storico') }}</li>
+        <li>{{ _('Ideale per portfolio clienti e retainer') }}</li>
+      </ul>
+      {% if business_ready and current_user %}
+        {% if paddle_overlay %}
+        <button type="button" class="btn btn-core btn-block" data-paddle-checkout="business">
+          {{ _('Passa a Business') }}
+        </button>
+        <noscript>
+          <form method="post" action="{{ url_for('billing_checkout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="product" value="business" />
+            <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Business') }}</button>
+          </form>
+        </noscript>
+        {% else %}
+        <form method="post" action="{{ url_for('billing_checkout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="product" value="business" />
+          <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Business') }}</button>
+        </form>
+        {% endif %}
+        {% if business_yearly_ready %}
+        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="product" value="business" />
+          <input type="hidden" name="interval" value="year" />
+          <button type="submit" class="btn btn-ghost-light btn-block">
+            {{ _('Annuale') }} {{ '%.2f'|format(business_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+          </button>
+        </form>
+        {% endif %}
+      {% elif business_ready %}
+      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
+      {% else %}
+      <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Parla con noi — Business') }}</a>
+      <a class="btn btn-ghost-light btn-block" href="mailto:info@centropic.ai" style="margin-top:0.5rem">info@centropic.ai</a>
       {% endif %}
     </section>
   </div>
 
   <p class="plan-note">
     {{ _('Pagamenti:') }} {% if payments_provider == 'paddle' %}Paddle{% else %}—{% endif %}.
+    {{ _('I token non scadono; i pacchetti ricarica restano disponibili su tutti i piani.') }}
     <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a> ·
     <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
     <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>.

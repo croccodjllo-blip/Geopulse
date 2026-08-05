@@ -11,7 +11,8 @@
     <p class="lede page-intro__lede">
       {{ _('Alert outbound, prompt bank per SoV measured, API, white-label agenzia.') }}
       {% if not is_pro %}
-      <strong>Plus</strong> {{ _('sblocca SoV measured / citation monitor, crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, API e white-label.') }}
+      <strong>Plus</strong> {{ _('sblocca SoV measured, crawl esteso e re-scan.') }}
+      <strong>Business</strong> {{ _('aggiunge API, white-label e fino a') }} {{ max_sites_business }} {{ _('siti.') }}
       {% endif %}
     </p>
   </header>
@@ -161,7 +162,7 @@
     </form>
     {% else %}
     <p class="lede">
-      {{ _('Export white-label per agenzie riservato a') }} <a href="{{ url_for('pricing') }}">Plus</a>.
+      {{ _('Export white-label per agenzie riservato a') }} <a href="{{ url_for('pricing') }}#business">Business</a>.
     </p>
     <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi piano Plus') }}</a>
     {% endif %}

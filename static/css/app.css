@@ -1236,6 +1236,22 @@ body.app-body:not(.body-dash) {
   .plan-grid { grid-template-columns: 1fr 1fr; }
 }
 
+@media (min-width: 960px) {
+  .plan-grid.plan-grid--tiers,
+  .plan-grid--v2.plan-grid--tiers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.plan__badge {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--signal, #00f0ff);
+  font-weight: 600;
+}
+
 .plan {
   border: 1px solid var(--border-mid);
   border-radius: var(--radius-lg);

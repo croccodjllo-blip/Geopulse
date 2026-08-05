@@ -21,6 +21,8 @@ PADDLE_WEBHOOK_SECRET = (os.getenv("PADDLE_WEBHOOK_SECRET") or "").strip()
 PADDLE_ENV = (os.getenv("PADDLE_ENV") or "sandbox").strip().lower()
 PADDLE_PRICE_PLUS = (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or "").strip()
 PADDLE_PRICE_PLUS_YEARLY = (os.getenv("PADDLE_PRICE_PLUS_YEARLY") or "").strip()
+PADDLE_PRICE_BUSINESS = (os.getenv("PADDLE_PRICE_BUSINESS_MONTHLY") or "").strip()
+PADDLE_PRICE_BUSINESS_YEARLY = (os.getenv("PADDLE_PRICE_BUSINESS_YEARLY") or "").strip()
 
 # Optional per-package catalog prices (EUR cents payment → pri_…)
 # Packs: €10→100 token, €20→200 token, €50→600 token (1 token = €0.10).
@@ -42,15 +44,24 @@ def paddle_api_base() -> str:
 
 
 def paddle_enabled() -> bool:
-    """Plus checkout ready: price + (client token for overlay OR API key for hosted)."""
+    """Any subscription checkout ready: Plus and/or Business + auth."""
+    has_price = bool(PADDLE_PRICE_PLUS or PADDLE_PRICE_BUSINESS)
+    return bool(has_price and (PADDLE_CLIENT_TOKEN or PADDLE_API_KEY))
+
+
+def paddle_plus_enabled() -> bool:
     return bool(PADDLE_PRICE_PLUS and (PADDLE_CLIENT_TOKEN or PADDLE_API_KEY))
 
 
+def paddle_business_enabled() -> bool:
+    return bool(PADDLE_PRICE_BUSINESS and (PADDLE_CLIENT_TOKEN or PADDLE_API_KEY))
+
+
 def paddle_overlay_ready() -> bool:
-    """Paddle.js overlay usable for Plus and/or configured top-up prices."""
+    """Paddle.js overlay usable for subscriptions and/or configured top-ups."""
     if not PADDLE_CLIENT_TOKEN:
         return False
-    return bool(PADDLE_PRICE_PLUS or topup_price_map())
+    return bool(PADDLE_PRICE_PLUS or PADDLE_PRICE_BUSINESS or topup_price_map())
 
 
 def paddle_topup_price_id(amount_cents: int) -> str | None:
@@ -81,11 +92,14 @@ def client_config() -> dict[str, Any]:
     return {
         "enabled": paddle_enabled() or paddle_topups_enabled(),
         "overlay": overlay,
-        "plusReady": paddle_enabled(),
+        "plusReady": paddle_plus_enabled(),
+        "businessReady": paddle_business_enabled(),
         "environment": paddle_environment(),
         "clientToken": PADDLE_CLIENT_TOKEN if overlay else "",
         "pricePlus": PADDLE_PRICE_PLUS,
         "pricePlusYearly": PADDLE_PRICE_PLUS_YEARLY,
+        "priceBusiness": PADDLE_PRICE_BUSINESS,
+        "priceBusinessYearly": PADDLE_PRICE_BUSINESS_YEARLY,
         "topupPrices": {str(k): v for k, v in topup_price_map().items()},
     }
 
@@ -170,6 +184,42 @@ def create_plus_checkout(
         user_id=user_id,
         email=email,
         custom_data={"product": "plus", "interval": "year" if yearly else "month"},
+        success_url=success_url,
+        customer_id=customer_id,
+    )
+
+
+def create_business_checkout(
+    *,
+    user_id: int,
+    email: str,
+    customer_id: str | None = None,
+    success_url: str | None = None,
+    interval: str = "month",
+) -> dict[str, Any]:
+    yearly = (interval or "").lower() in {"year", "yearly", "annual", "annuale"}
+    price_id = (
+        (
+            os.getenv("PADDLE_PRICE_BUSINESS_YEARLY")
+            or PADDLE_PRICE_BUSINESS_YEARLY
+            or ""
+        ).strip()
+        if yearly
+        else (
+            os.getenv("PADDLE_PRICE_BUSINESS_MONTHLY") or PADDLE_PRICE_BUSINESS or ""
+        ).strip()
+    )
+    if not price_id:
+        raise RuntimeError(
+            "PADDLE_PRICE_BUSINESS_YEARLY non configurata"
+            if yearly
+            else "PADDLE_PRICE_BUSINESS_MONTHLY non configurata"
+        )
+    return create_transaction(
+        price_id=price_id,
+        user_id=user_id,
+        email=email,
+        custom_data={"product": "business", "interval": "year" if yearly else "month"},
         success_url=success_url,
         customer_id=customer_id,
     )
@@ -291,16 +341,23 @@ def plan_from_paddle_subscription_status(
     past_due_at: datetime | None = None,
     now: datetime | None = None,
     past_due_grace_days: int = 3,
+    paid_plan: str = "plus",
 ) -> str:
     """Map Paddle subscription status → Centropic plan.
 
-    ``past_due`` keeps Plus only within ``past_due_grace_days`` from
+    ``past_due`` keeps the paid plan only within ``past_due_grace_days`` from
     ``past_due_at`` (webhook event time). Without a timestamp, past_due
-    does not grant Plus (fail closed).
+    does not grant access (fail closed).
+
+    ``paid_plan`` should be ``plus`` or ``business`` when the subscription
+    price is known.
     """
+    target = (paid_plan or "plus").lower()
+    if target not in {"plus", "business"}:
+        target = "plus"
     status = (status or "").lower()
     if status in {"active", "trialing"}:
-        return "plus"
+        return target
     if status == "past_due":
         if past_due_at is None:
             return "free"
@@ -312,7 +369,7 @@ def plan_from_paddle_subscription_status(
             ref = ref.replace(tzinfo=timezone.utc)
         grace = timedelta(days=max(0, int(past_due_grace_days)))
         if ref <= started + grace:
-            return "plus"
+            return target
         return "free"
     return "free"
 
@@ -377,16 +434,57 @@ def plus_yearly_price_id() -> str:
     ).strip()
 
 
+def business_price_id() -> str:
+    return (
+        os.getenv("PADDLE_PRICE_BUSINESS_MONTHLY") or PADDLE_PRICE_BUSINESS or ""
+    ).strip()
+
+
+def business_yearly_price_id() -> str:
+    return (
+        os.getenv("PADDLE_PRICE_BUSINESS_YEARLY") or PADDLE_PRICE_BUSINESS_YEARLY or ""
+    ).strip()
+
+
+def paid_plan_from_price_ids(price_ids: list[str] | set[str]) -> str | None:
+    """Return ``business`` / ``plus`` if settled prices match catalog, else None."""
+    settled = {str(p).strip() for p in price_ids if p}
+    biz = {business_price_id(), business_yearly_price_id()} - {""}
+    plus = {plus_price_id(), plus_yearly_price_id()} - {""}
+    if biz & settled:
+        return "business"
+    if plus & settled:
+        return "plus"
+    return None
+
+
 def transaction_grants_plus(data: dict[str, Any]) -> bool:
-    """Grant Plus only when the settled line items include a Plus price.
+    """Grant Plus only when settled line items include a Plus price.
 
     Never trust client ``custom_data.product`` — overlay checkout can set it.
     """
-    prices = {plus_price_id(), plus_yearly_price_id()} - {""}
-    if not prices:
-        return False
-    settled = set(transaction_price_ids(data))
-    return bool(prices & settled)
+    return paid_plan_from_price_ids(transaction_price_ids(data)) == "plus"
+
+
+def transaction_grants_business(data: dict[str, Any]) -> bool:
+    """Grant Business only when settled line items include a Business price."""
+    return paid_plan_from_price_ids(transaction_price_ids(data)) == "business"
+
+
+def subscription_paid_plan(
+    data: dict[str, Any], *, current_plan: str | None = None
+) -> str:
+    """Best-effort paid plan for an active subscription payload."""
+    from_prices = paid_plan_from_price_ids(transaction_price_ids(data))
+    if from_prices:
+        return from_prices
+    cur = (current_plan or "").lower()
+    if cur == "business":
+        return "business"
+    if cur in {"plus", "pro"}:
+        return "plus"
+    # Items may nest price under subscription.items differently — check items[].price.id
+    return "plus"
 
 
 def topup_payment_cents_for_transaction(data: dict[str, Any]) -> int | None:

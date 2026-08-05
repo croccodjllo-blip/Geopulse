@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from services.token_units import (
+    BUSINESS_MONTHLY_CREDIT_CENTS,
+    BUSINESS_MONTHLY_TOKENS,
     GEO_TOKEN_EUR_CENTS,
     GEO_TOKENS_PER_EURO,
     PLUS_MONTHLY_CREDIT_CENTS,
@@ -19,6 +21,8 @@ def test_one_token_is_ten_cents():
     assert GEO_TOKENS_PER_EURO == 10
     assert PLUS_MONTHLY_TOKENS == 100
     assert PLUS_MONTHLY_CREDIT_CENTS == 1000
+    assert BUSINESS_MONTHLY_TOKENS == 400
+    assert BUSINESS_MONTHLY_CREDIT_CENTS == 4000
     assert cents_to_tokens(1000) == 100.0
     assert tokens_to_cents(100) == 1000
     assert tokens_to_cents(600) == 6000
