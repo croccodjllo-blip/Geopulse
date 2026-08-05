@@ -14,8 +14,9 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 ## Role
 
 - Own visual hierarchy, logo system, spacing rhythm, and first-viewport composition.
-- Prefer restraint: Cosmic Chrome (Deep Space Void + Chrome Silver + Platinum), nebula bloom reserved for the hero backdrop only.
-- Reject: purple/indigo AI clichés used as the *interactive* accent, neon glow stacks, cream+terracotta, broadsheet denseness, Inter/Roboto, emoji chrome, decorative abstract gradients as the main idea outside the hero visual.
+- Current direction: **Nova Violet** — near-black surfaces, vivid violet/magenta accent (`#B84FF0`/`#7C3AED`), Inter type, card-heavy SaaS dashboard energy (icon-badge stat tiles, per-engine radar chart). This explicitly supersedes the earlier "no purple" Formal Futurist / Cosmic Chrome rule — it was retired on explicit user direction, do not revert it on your own initiative.
+- Semantic state colors stay distinct from the brand accent: success green `#22C55E`, warning amber `#F59E0B`, danger red `#EF4444` — never render a delta/status pill in the brand violet.
+- Reject: cream+terracotta, broadsheet denseness, Roboto/Sora/Plus Jakarta Sans, emoji chrome, fabricated deltas/sparklines with no real underlying data.
 
 ---
 
@@ -32,10 +33,10 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 | `static/img/og-share.jpg` | Social only (1200×630) |
 
 Rules:
-1. Wordmark on hero / page-intro brand rows is **`CENTROPIC.AI`, uppercase, chrome-gradient text** (`background-clip: text`). Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight.
+1. Wordmark on hero / page-intro brand rows is **`CENTROPIC.AI`, uppercase, gradient text** (`background-clip: text`, chrome-toned to match the emblem — this is independent from the violet UI accent). Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight.
 2. Brand must win the first marketing viewport over the headline (size/weight/order).
-3. Logo is a **photoreal 3D chrome emblem** (star-shield, **C** monogram, orbital ring + satellite nodes) — do not flatten it back into a line-art SVG or swap in a generic circle-icon.
-4. Nebula blue/violet atmosphere stays behind the hero visual only — never bleed it into buttons, links, or focus states (those stay chrome silver `--brand-cyan`).
+3. Logo is a **photoreal 3D chrome emblem** (star-shield, **C** monogram, orbital ring + satellite nodes) — do not flatten it back into a line-art SVG or swap in a generic circle-icon. The emblem itself stays chrome/silver even though the surrounding UI accent (`--brand-cyan`) is now violet.
+4. Nebula blue/violet atmosphere stays behind the hero visual only — never bleed it into buttons, links, or focus states (those use the violet UI accent `--brand-cyan: #B84FF0`).
 5. Keep mark + wordmark as one lockup; no overlapping title/badge collisions.
 6. Prefer `logo-mark.svg` when the full mark would muddle at small sizes.
 7. To change the mark again: replace `logo-cosmic-emblem.png` (and re-render `logo.png`/`apple-touch-icon.png`/`favicon-*.png`/`hero-cosmic.jpg`/`og-share.jpg` from the new source) — the SVG wrappers and every template reference stay unchanged.
@@ -58,5 +59,5 @@ Before shipping UI changes, verify in code (templates + CSS), not via browser:
 ## Delivery
 
 - Fix graphic issues with focused CSS/template/asset diffs.
-- Keep Flask CSS tokens (`--brand-*`) coherent with geo-ui teal.
+- Keep Flask CSS tokens (`--brand-*`) as the single source of the accent color; the React geo-ui bundle (`components/`, `static/geo-ui/`) has its own Tailwind tokens and is not auto-synced — update it separately if asked to touch charts there.
 - Update `BRAND.md` only when assets or tokens actually change.

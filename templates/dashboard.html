@@ -155,13 +155,13 @@
           {% set geo_angle = (geo_n / 100 * 360) - 90 %}
 
           <div class="ui-grid ui-grid--3" style="margin: 1rem 0 1.25rem" aria-label="{{ _('Metriche chiave') }}">
-            {% with label='AIO', value=(aio if aio is number else '—'), hint=_('AI-Driven Visibility'), variant='cyan' %}
+            {% with label='AIO', value=(aio if aio is number else '—'), hint=_('AI-Driven Visibility'), variant='cyan', icon='aio' %}
               {% include "partials/ui_metric.html" %}
             {% endwith %}
-            {% with label='GEO', value=(geo if geo is number else '—'), hint=_('Generative Engine Opt.'), variant='violet' %}
+            {% with label='GEO', value=(geo if geo is number else '—'), hint=_('Generative Engine Opt.'), variant='violet', icon='geo' %}
               {% include "partials/ui_metric.html" %}
             {% endwith %}
-            {% with label=_('Findings'), value=findings_n, hint=_('critical + warn'), variant='cyan' %}
+            {% with label=_('Findings'), value=findings_n, hint=_('critical + warn'), variant='cyan', icon='findings' %}
               {% include "partials/ui_metric.html" %}
             {% endwith %}
           </div>
@@ -198,7 +198,7 @@
                       <stop offset="100%" stop-color="var(--pc-grad-c)" />
                     </linearGradient>
                     <linearGradient id="geoArcGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.15" />
+                      <stop offset="0%" stop-color="#B84FF0" stop-opacity="0.15" />
                       <stop offset="100%" stop-color="#3D8B9A" stop-opacity="0.85" />
                     </linearGradient>
                     <radialGradient id="coreGlow" cx="50%" cy="45%" r="55%">
@@ -376,8 +376,8 @@
                     <svg class="sov-hero__svg" viewBox="0 0 120 120" aria-hidden="true">
                       <defs>
                         <linearGradient id="sovRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stop-color="#5B6B7A"/>
-                          <stop offset="55%" stop-color="#C9D3DD"/>
+                          <stop offset="0%" stop-color="#7C3AED"/>
+                          <stop offset="55%" stop-color="#B84FF0"/>
                           <stop offset="100%" stop-color="#3D8B9A"/>
                         </linearGradient>
                       </defs>
@@ -399,6 +399,26 @@
                   </ul>
                   {% endif %}
                 </div>
+
+                {% if engine_breakdown.radar and engine_breakdown.radar.points %}
+                <div class="sov-radar" role="img" aria-label="{{ _('Propensity per engine (radar)') }}">
+                  <svg class="sov-radar__svg" viewBox="0 0 200 200">
+                    {% for ring in engine_breakdown.radar.ring_polygons %}
+                    <polygon class="sov-radar__ring" points="{{ ring }}" />
+                    {% endfor %}
+                    {% for axis in engine_breakdown.radar.axes %}
+                    <polyline class="sov-radar__axis" points="{{ axis }}" />
+                    {% endfor %}
+                    <polygon class="sov-radar__data" points="{{ engine_breakdown.radar.points }}" />
+                    {% for pt in engine_breakdown.radar.points.split(' ') %}
+                    <circle class="sov-radar__dot" cx="{{ pt.split(',')[0] }}" cy="{{ pt.split(',')[1] }}" r="2.6" />
+                    {% endfor %}
+                    {% for lbl in engine_breakdown.radar.labels %}
+                    <text class="sov-radar__label" x="{{ lbl.x }}" y="{{ lbl.y }}" text-anchor="{{ lbl.anchor }}" dy="{{ lbl.dy }}">{{ lbl.label }}</text>
+                    {% endfor %}
+                  </svg>
+                </div>
+                {% endif %}
               </header>
 
               <div class="sov-compose">

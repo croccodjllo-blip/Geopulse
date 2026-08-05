@@ -1,9 +1,11 @@
-# Centropic brand — Cosmic Chrome
+# Centropic brand — Nova Violet
 
 Production visual system for `centropic.ai`.
 
 ## Direction
-Deep space void, polished chrome-silver emblem, restrained nebula bloom (blue + violet) behind the hero only. Cinematic instrument, not neon cyberpunk, not flat corporate teal.
+Near-black surfaces, vivid violet/magenta accent (`#B84FF0` / `#7C3AED`), Inter type. Modern SaaS dashboard energy — card-heavy, icon-badged metrics, a per-engine radar chart — instead of the previous flat instrument-panel look. Nebula bloom (blue + violet) stays behind the hero backdrop only; the emblem itself is unchanged (chrome star-shield, monogram **C**).
+
+Semantic state colors are deliberately **not** the brand accent: success stays green (`--ok: #22C55E`), warning amber, danger red — so delta pills and status badges stay legible against the violet UI, matching how real dashboard templates (e.g. Landzy-style admin panels) separate "brand color" from "status color".
 
 ## Assets
 - `static/img/logo-cosmic-emblem.png` — source 3D chrome star-shield emblem, monogram **C**, orbital ring + satellite nodes (1024²)
@@ -23,26 +25,33 @@ Faceted chrome star-shield · bold metallic **C** monogram · upward arrow silho
 ## Palette
 | Token | Hex | Role |
 |---|---|---|
-| Void | `#04060A` | Page background |
-| Instrument card | `#0A0E14` | Elevated surface |
-| Border steel | `#1A222D` | Hairlines |
-| Chrome silver | `#C9D3DD` | Primary accent (was Instrument Teal `#6EC6C0`) |
-| Steel chrome | `#5B6B7A` | Secondary accent (was Steel Blue `#4A7C8C`) |
+| Void | `#0A0710` | Page background |
+| Card | `#130F1F` | Elevated surface |
+| Border | `#241D36` | Hairlines |
+| Violet | `#B84FF0` | Primary accent (buttons, links, active nav, radar/ring charts) |
+| Deep violet | `#7C3AED` | Secondary accent / gradient stop |
 | Nebula blue | `#2E4A78` | Hero atmosphere only |
 | Nebula violet | `#4A3468` | Hero atmosphere only |
-| Platinum | `#F5F7FA` | Primary text |
-| Muted steel | `#8B97A8` | Secondary text |
+| Platinum | `#F2EEF8` | Primary text |
+| Muted | `#8B8599` | Secondary text |
+| Success | `#22C55E` | Positive delta / ok state (not the brand accent) |
+| Warning | `#F59E0B` | Warn state |
+| Danger | `#EF4444` | Critical / negative delta |
 
-`--brand-violet` aliases to chrome silver for legacy class names. Nebula blue/violet are atmosphere-only tokens (hero background glow) — never used for interactive UI (buttons, links, focus rings), which stay chrome silver for contrast and consistency.
+`--brand-violet` aliases to the primary accent for legacy class names. Nebula blue/violet are atmosphere-only tokens (hero background glow) — never used for interactive UI.
 
 ## Typography
 | Role | Family |
 |---|---|
-| Display | Space Grotesk |
-| Body | IBM Plex Sans |
-| Mono | IBM Plex Mono |
+| Display / body | Inter |
+| Mono (data-dense chrome: code, IDs, tabular labels) | IBM Plex Mono |
 
-Do not use Inter, Roboto, Sora, or Plus Jakarta Sans.
+Do not use Roboto, Sora, or Plus Jakarta Sans. (Inter replaced Space Grotesk + IBM Plex Sans for the Nova Violet direction.)
+
+## Dashboard components (Nova Violet)
+- **Stat tiles** (`templates/partials/ui_metric.html`): circular gradient icon badge (`--brand-blue` → `--brand-cyan`) + big Inter number + uppercase label/hint. Pass `icon='aio'|'geo'|'findings'` when including. No fabricated deltas/sparklines — Centropic never shows a trend it hasn't actually measured.
+- **Engine radar** (`services/engine_breakdown.py::_radar_geometry`, rendered in `templates/dashboard.html` inside the SoV panel): server-computed N-axis polygon from real per-engine `propensity` — no client-side JS trig needed. Reuse this helper if another panel needs a radar/spider view over per-engine data.
+- **Sparkle decoration**: `.sov-panel::before/::after` — two small white dots, used sparingly on the SoV "overview" card only. Do not spam sparkle on every card.
 
 ## Hierarchy rules
 1. Brand (`CENTROPIC.AI`) is a hero-level signal on marketing first viewports — never overpowered by the headline.

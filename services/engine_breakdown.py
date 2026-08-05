@@ -6,6 +6,7 @@ finché non esiste polling multi-LLM reale. Sempre etichettato evidence=proxy.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from services.signals import _bot_policy
@@ -84,6 +85,71 @@ def _severity_penalty(findings: list[dict[str, Any]]) -> float:
         elif sev == "warn":
             pen += 2.0
     return min(pen, 28.0)
+
+
+def _radar_geometry(
+    engines: list[dict[str, Any]],
+    *,
+    center: float = 100.0,
+    radius: float = 78.0,
+) -> dict[str, Any]:
+    """Precompute an N-axis radar/spider chart from per-engine propensity.
+
+    Server-rendered (no client-side trig needed): each axis is one engine,
+    evenly spaced starting at 12 o'clock, radius scaled by propensity/100.
+    """
+    n = len(engines)
+    if n < 3:
+        return {"points": "", "rings": [], "axes": [], "labels": []}
+
+    def _point(angle_deg: float, r: float) -> tuple[float, float]:
+        rad = math.radians(angle_deg - 90)
+        return (center + r * math.cos(rad), center + r * math.sin(rad))
+
+    step = 360.0 / n
+    data_points: list[str] = []
+    axes: list[str] = []
+    labels: list[dict[str, Any]] = []
+    for i, eng in enumerate(engines):
+        angle = i * step
+        value = max(0.0, min(100.0, float(eng.get("propensity", 0) or 0)))
+        x, y = _point(angle, radius * (value / 100.0))
+        data_points.append(f"{x:.1f},{y:.1f}")
+
+        ax, ay = _point(angle, radius)
+        axes.append(f"{center:.1f},{center:.1f} {ax:.1f},{ay:.1f}")
+
+        lx, ly = _point(angle, radius + 20)
+        cos_a = math.cos(math.radians(angle - 90))
+        sin_a = math.sin(math.radians(angle - 90))
+        anchor = "middle" if abs(cos_a) < 0.35 else ("start" if cos_a > 0 else "end")
+        dy = "0.32em" if sin_a <= 0.35 else "0.9em"
+        labels.append(
+            {
+                "x": round(lx, 1),
+                "y": round(ly, 1),
+                "anchor": anchor,
+                "dy": dy,
+                "label": eng.get("label", ""),
+                "value": value,
+            }
+        )
+
+    ring_polygons: list[str] = []
+    for pct in (0.25, 0.5, 0.75, 1.0):
+        ring_pts = []
+        for i in range(n):
+            rx, ry = _point(i * step, radius * pct)
+            ring_pts.append(f"{rx:.1f},{ry:.1f}")
+        ring_polygons.append(" ".join(ring_pts))
+
+    return {
+        "points": " ".join(data_points),
+        "ring_polygons": ring_polygons,
+        "axes": axes,
+        "labels": labels,
+        "center": center,
+    }
 
 
 def compute_engine_breakdown(
@@ -232,6 +298,7 @@ def compute_engine_breakdown(
         "evidence": "proxy",
         "label": "Stimato (proxy)",
         "engines": engines_out,
+        "radar": _radar_geometry(engines_out),
         "composition": engines_out,  # same order for stacked bar
         "brand_sov": brand_sov,
         "rivals_sov": rivals_sov,
