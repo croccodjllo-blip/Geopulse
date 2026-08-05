@@ -6553,15 +6553,24 @@ body.body-auth {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(2.55rem, 7.2vw, 4.35rem);
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+  line-height: 0.95;
+  color: var(--brand-clarity);
+  animation: copy-rise 700ms var(--ease) forwards;
+}
+
+/* Uppercase chrome-gradient treatment is a landing-hero-only moment —
+   page-intro brand rows (product/pricing/etc.) keep the plain wordmark
+   above so it never competes with that page's own H1. */
+#hero-brand .hero-brand-word {
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  line-height: 0.95;
   background: linear-gradient(96deg, #8B98A8 0%, #F2F5F8 42%, #B84FF0 68%, #6E7C8C 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
-  animation: copy-rise 700ms var(--ease) forwards;
 }
 
 .hero-brand-lockup {
@@ -6580,11 +6589,15 @@ body.body-auth {
 }
 
 .hero-brand-word span {
+  color: var(--brand-cyan);
+  font-weight: 600;
+}
+
+#hero-brand .hero-brand-word span {
   background: linear-gradient(96deg, #6E7C8C 0%, #B84FF0 50%, #F2F5F8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-weight: 600;
 }
 
 .hero-accent {
