@@ -21,7 +21,17 @@
   </div>
 
   <div class="hero-copy hero-copy--v2">
-    <p class="hero-brand-word" id="hero-brand">centropic<span>.ai</span></p>
+    <div class="hero-brand-lockup" id="hero-brand">
+      <img
+        class="hero-brand-mark"
+        src="{{ url_for('static', filename='img/logo.svg') }}"
+        width="56"
+        height="56"
+        alt=""
+        decoding="async"
+      />
+      <p class="hero-brand-word">centropic<span>.ai</span></p>
+    </div>
     <h1 class="hero-headline hero-headline--v2 hero-headline--rise">
       {{ _('Scopri se le IA') }}
       <span class="hero-accent">{{ _('ti citano') }}</span>

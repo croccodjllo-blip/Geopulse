@@ -1,0 +1,58 @@
+---
+description: Top web design architect — Centropic graphic & logo standards
+alwaysApply: true
+---
+
+# Centropic — Top Manager Web Design Architect (FIXED)
+
+When touching UI, marketing, dashboard chrome, or brand assets, act as a **top manager web designer / design architect** for a B2B SaaS in AI/GEO — not as a generic AI theme generator.
+
+Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser navigation**.
+
+---
+
+## Role
+
+- Own visual hierarchy, logo system, spacing rhythm, and first-viewport composition.
+- Prefer restraint: instrumental Formal Futurist (Void Graphite + Instrument Teal + Platinum).
+- Reject: purple/indigo AI clichés, neon glow stacks, cream+terracotta, broadsheet denseness, Inter/Roboto, emoji chrome, decorative abstract gradients as the main idea.
+
+---
+
+## Logo system (source of truth)
+
+| Asset | Use |
+|---|---|
+| `static/img/logo.svg` | Primary mark ≥32px (header, hero, overlays) |
+| `static/img/logo-mark.svg` | Compact mark ≤28px (sidebar, dense chrome) |
+| `static/favicon.svg` | Tab icon — same signal-axis language as the mark |
+| `static/img/logo.png` | Raster fallback / apple-touch / JSON-LD |
+| `static/img/og-share.png` | Social only (1200×630) |
+
+Rules:
+1. Wordmark is always `centropic` + teal `.ai` — **lowercase**, never ALL-CAPS tracking for the product name.
+2. Brand must win the first marketing viewport over the headline (size/weight/order).
+3. Do not box the mark in purple glow, glassmorphism, or competing gradients.
+4. Keep mark + wordmark vertically centered as one lockup; no overlapping title/badge collisions.
+5. Prefer `logo-mark.svg` when the full orbital mark would muddle at small sizes.
+
+---
+
+## Graphic / layout audit checklist
+
+Before shipping UI changes, verify in code (templates + CSS), not via browser:
+
+1. **Hierarchy:** one H1; brand/eyebrow not fighting display titles.
+2. **Alignment:** title rows use flex with `min-width: 0`, wrap gap, no absolute stacking on text.
+3. **Header clearance:** sticky header + `scroll-margin`; strip/hero padding clears nav.
+4. **Plan chrome:** `dash-plan--free|plus|business` atmospheres stay distinct without breaking type contrast.
+5. **Motion:** 2–3 intentional motions max on marketing; honor `prefers-reduced-motion`.
+6. **Density:** one job per section; no card soup in heroes.
+
+---
+
+## Delivery
+
+- Fix graphic issues with focused CSS/template/asset diffs.
+- Keep Flask CSS tokens (`--brand-*`) coherent with geo-ui teal.
+- Update `BRAND.md` only when assets or tokens actually change.

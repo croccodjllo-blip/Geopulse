@@ -6,7 +6,10 @@
 {% block content %}
 <article class="page page--v2 page--pricing">
   <header class="page-intro page-intro--hero">
-    <p class="hero-brand-word page-intro__brand" aria-label="Centropic.ai">centropic<span>.ai</span></p>
+    <div class="page-intro__brand-row" aria-label="Centropic.ai">
+      <img class="page-intro__brand-mark" src="{{ url_for('static', filename='img/logo.svg') }}" width="40" height="40" alt="" decoding="async" />
+      <p class="hero-brand-word page-intro__brand">centropic<span>.ai</span></p>
+    </div>
     <p class="eyebrow">{{ _('Architettura commerciale') }}</p>
     <h1 class="h-display page-intro__title hero-headline--rise">{{ _('Tre modi di possedere il segnale.') }}</h1>
     <p class="lede page-intro__lede">

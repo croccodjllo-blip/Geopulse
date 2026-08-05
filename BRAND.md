@@ -6,12 +6,16 @@ Production visual system for `centropic.ai`.
 Void Graphite surfaces, Instrument Teal accent, Platinum type. Instrumental and quiet — not neon cyberpunk, not holographic violet.
 
 ## Assets
-- `static/img/logo.svg` — orbital instrument mark (teal / steel)
-- `static/img/logo.png` — raster mark (favicon / apple-touch)
-- `static/img/logo-mark.svg` — compact mark
+- `static/img/logo.svg` — primary orbital instrument mark (≥32px)
+- `static/img/logo-mark.svg` — compact mark (≤28px: sidebar, dense chrome)
+- `static/favicon.svg` — tab icon (same signal-axis language as the mark)
+- `static/img/logo.png` — raster fallback (apple-touch / JSON-LD)
 - `static/img/hero-citation-field.svg` — marketing hero visual
 - `static/img/og-share.png` — Open Graph / social share (1200×630)
-- Jinja lockup: `templates/partials/holo_brand.html` (name retained; styling is formal)
+- Jinja lockup: `templates/partials/holo_brand.html` (formal lockup; legacy name)
+
+## Wordmark
+Always lowercase `centropic` + teal `.ai`. Never ALL-CAPS product name in nav or hero.
 
 ## Palette
 | Token | Hex | Role |

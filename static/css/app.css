@@ -214,35 +214,38 @@ body.app-body:not(.body-dash) {
   gap: 1rem;
 }
 
-/* Brand mark */
+/* Brand mark — Formal Futurist lockup (lowercase wordmark) */
 .brand-mark {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.92rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  line-height: 1;
   transition: color 180ms var(--ease), opacity 180ms var(--ease);
 }
 
 .brand-mark__word {
   line-height: 1;
+  letter-spacing: 0.06em;
 }
 
 .brand-mark__logo {
   width: 2rem;
   height: 2rem;
-  border-radius: 0;
+  border-radius: 0.35rem;
   object-fit: contain;
   flex-shrink: 0;
-  box-shadow: none;
-  animation: core-breathe 4.8s var(--ease) infinite;
+  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.2);
+  background: #080B10;
+  animation: none;
 }
 
 .site-header--invert .brand-mark__logo {
-  box-shadow: none;
+  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.28);
 }
 
 .brand-mark__dot {
@@ -6528,7 +6531,7 @@ body.body-auth {
 }
 
 .hero-brand-word {
-  margin: 0 0 1rem;
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(2.55rem, 7.2vw, 4.35rem);
@@ -6537,6 +6540,23 @@ body.body-auth {
   line-height: 0.95;
   color: var(--brand-clarity);
   animation: copy-rise 700ms var(--ease) forwards;
+}
+
+.hero-brand-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin: 0 0 1.15rem;
+}
+
+.hero-brand-lockup .hero-brand-mark {
+  width: clamp(2.75rem, 6vw, 3.5rem);
+  height: clamp(2.75rem, 6vw, 3.5rem);
+  display: block;
+  border-radius: 0.45rem;
+  background: #080B10;
+  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.28);
 }
 
 .hero-brand-word span {
@@ -6550,7 +6570,42 @@ body.body-auth {
 }
 
 .page-intro__brand {
-  margin-bottom: 1.1rem;
+  margin: 0 0 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.page-intro__brand.hero-brand-word {
+  /* Wordmark alone inside page intros keeps display scale */
+  display: block;
+  margin: 0 0 0.75rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
+}
+
+.page-intro__brand-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 0.85rem;
+}
+
+.page-intro__brand-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: block;
+  flex-shrink: 0;
+  border-radius: 0.4rem;
+  background: #080B10;
+  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.25);
+}
+
+.page-intro__brand-row .hero-brand-word,
+.page-intro__brand-row .page-intro__brand {
+  margin: 0;
+  font-size: clamp(1.65rem, 4vw, 2.35rem);
 }
 
 .page-intro--branded .page-intro__title,
@@ -6559,6 +6614,8 @@ body.body-auth {
   font-weight: 600;
   max-width: 22ch;
   letter-spacing: -0.03em;
+  line-height: 1.18;
+  margin: 0 0 0.85rem;
 }
 
 .hero-brand--v2 {
