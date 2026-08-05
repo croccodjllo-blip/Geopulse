@@ -4,16 +4,20 @@
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
-<article class="page page--v2">
-  <header class="page-intro page-intro--v2">
+<article class="page page--v2 page--pricing">
+  <header class="page-intro page-intro--hero">
     <p class="eyebrow">{{ _('Architettura commerciale') }}</p>
-    <h1 class="h-display page-intro__title">{{ _('Tre profili. Un percorso chiaro.') }}</h1>
+    <h1 class="h-display page-intro__title hero-headline--rise">{{ _('Tre modi di possedere il segnale.') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Free per validare il segnale. Plus per gestire il proprio brand. Business per industrializzare il delivery agenziale.') }}
+      {{ _('Free per validare. Plus per il tuo brand. Business per i clienti dell’agenzia.') }}
     </p>
+    <div class="cta-row">
+      <a class="btn btn-core" href="#piani">{{ _('Confronta i piani') }}</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+    </div>
   </header>
 
-  <div class="plan-grid plan-grid--v2 plan-grid--tiers" role="list">
+  <div class="plan-grid plan-grid--v2 plan-grid--tiers plan-grid--stagger" id="piani" role="list">
     <section class="plan plan--v2" role="listitem" id="free">
       <p class="plan__name">Free</p>
       <p class="plan__price">0&nbsp;€<span>{{ _('/mese') }}</span></p>

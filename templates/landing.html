@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Centropic — {{ _('Signal Intelligence per AIO e GEO') }}{% endblock %}
-{% block meta_description %}{{ _('Centropic: diagnosi AIO/GEO, pack machine-readable e tre profili — Free, Plus 14,99€ (startup), Business 49,99€ (agenzie).') }}{% endblock %}
+{% block meta_description %}{{ _('Centropic: scopri se ChatGPT, Claude e Perplexity citano il tuo brand. Diagnosi AIO/GEO e tre profili Free, Plus, Business.') }}{% endblock %}
 {% block header_class %}site-header--invert site-header--transparent{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -11,36 +11,33 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero hero--v2" aria-labelledby="hero-brand">
-  <div class="hero-visual hero-visual--field" aria-hidden="true">
+<section class="hero hero--v2 hero--signal" aria-labelledby="hero-brand">
+  <div class="hero-visual hero-visual--cite" aria-hidden="true">
     <div class="hero-visual__aurora"></div>
-    <div class="hero-visual__grid"></div>
-    <div class="hero-visual__signal"></div>
-    <div class="hero-visual__core">
-      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Centropic" width="480" height="480" decoding="async">
+    <div class="hero-visual__scan"></div>
+    <div class="hero-visual__field">
+      <img
+        src="{{ url_for('static', filename='img/hero-citation-field.svg') }}"
+        alt=""
+        width="960"
+        height="720"
+        decoding="async"
+      >
     </div>
   </div>
 
   <div class="hero-copy hero-copy--v2">
-    <div class="hero-brand hero-brand--v2 hero-brand--holo" id="hero-brand">
-      <span class="holo-brand__emblem holo-brand__emblem--hero" aria-hidden="true">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" width="88" height="88" alt="Centropic" decoding="async">
-      </span>
-      <span class="hero-brand__lockup">
-        <span class="holo-brand__word holo-brand__word--hero">centropic<span>.ai</span></span>
-        <span class="hero-brand__ver">{{ _('Signal Architecture') }}</span>
-      </span>
-    </div>
-    <h1 class="hero-headline hero-headline--v2">
-      {{ _('Misura se le IA') }}
+    <p class="hero-brand-word" id="hero-brand">centropic<span>.ai</span></p>
+    <h1 class="hero-headline hero-headline--v2 hero-headline--rise">
+      {{ _('Scopri se le IA') }}
       <span class="text-gradient">{{ _('ti citano') }}</span>
     </h1>
     <p class="lede hero-lede">
-      {{ _('Piattaforma di Signal Intelligence per AIO e GEO: diagnosi strutturata, priorità operative e artifact machine-readable per founder, team e agenzie.') }}
+      {{ _('Misura dove ChatGPT, Claude e Perplexity menzionano il tuo brand — e cosa sistemare.') }}
     </p>
     <div class="cta-row">
       <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Inizia l’analisi') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('pricing') }}">{{ _('Esplora i profili') }}</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('sample_report') }}">{{ _('Vedi un report') }}</a>
     </div>
   </div>
 </section>
@@ -59,7 +56,7 @@
   <p class="lede">
     {{ _('Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in agenzia.') }}
   </p>
-  <div class="profile-grid" role="list">
+  <div class="profile-grid profile-grid--stagger" role="list">
     <article class="profile-card" role="listitem">
       <p class="profile-card__tier">Free</p>
       <p class="profile-card__price">0&nbsp;€</p>
