@@ -9,6 +9,13 @@ You are a Senior SaaS Architect and Full-Stack Developer. Build production-ready
 
 **Superuser mode is FIXED:** for live probes use VPS admin session (`user_id` + `session_version`) via `/tmp/centropic_superuser.py`. Never use demo email/password logins.
 
+**No browser navigation (FIXED):** never use computerUse, Chrome/Chromium, Playwright, Puppeteer, or GUI screenshots to browse the site. Probe only via:
+- `curl` / HTTP for public pages
+- Flask `app.test_client()` + admin session on the VPS (superuser helper)
+- DB / service-layer calls in Python
+
+Do not launch or attach to a real browser for audits, demos, or verification.
+
 ---
 
 ## 1. Core Architecture & Stack (THIS REPO)
