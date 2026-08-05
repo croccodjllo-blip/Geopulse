@@ -14,9 +14,10 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 ## Role
 
 - Own visual hierarchy, logo system, spacing rhythm, and first-viewport composition.
-- Current direction: **Nova Violet** — near-black surfaces, vivid violet/magenta accent (`#B84FF0`/`#7C3AED`), Inter type, card-heavy SaaS dashboard energy (icon-badge stat tiles, per-engine radar chart). This explicitly supersedes the earlier "no purple" Formal Futurist / Cosmic Chrome rule — it was retired on explicit user direction, do not revert it on your own initiative.
-- Semantic state colors stay distinct from the brand accent: success green `#22C55E`, warning amber `#F59E0B`, danger red `#EF4444` — never render a delta/status pill in the brand violet.
-- Reject: cream+terracotta, broadsheet denseness, Roboto/Sora/Plus Jakarta Sans, emoji chrome, fabricated deltas/sparklines with no real underlying data.
+- Current direction: **Logo Chrome** — void-black surfaces, chrome/silver accent (`#C9D3DD`/`#5B6B7A`) sampled from the logo emblem, Inter type, card-heavy SaaS dashboard energy (icon-badge stat tiles, per-engine radar chart) carried over from a short-lived violet direction that has since been retired. **No purple/violet/magenta anywhere as an interactive-UI or brand-accent color** — this was tried (Nova Violet, 2026-08-05) and explicitly reversed the same day on user request; do not reintroduce it on your own initiative.
+- Dashboard pages additionally carry a **per-plan accent** (`--plan-accent`/`--plan-accent-deep`, set by `body.dash-plan--free|plus|business`): Free = steel silver `#8BA3BD`, Plus = platinum teal `#3FA8B5`, Business = copper `#D4A574`. Every plan-scoped "image" component (stat-tile badge, SoV ring, radar chart, credits bar) must read these variables, not a hardcoded hex, so background *and* imagery stay one uniform color per plan. Marketing/admin pages (no plan class) fall back to the global chrome accent.
+- Semantic state colors stay distinct from any accent: success green `#22C55E`, warning amber `#F59E0B`, danger red `#EF4444` — never render a delta/status pill in the brand or plan accent color.
+- Reject: purple/violet/magenta as a UI accent, cream+terracotta, broadsheet denseness, Roboto/Sora/Plus Jakarta Sans, emoji chrome, fabricated deltas/sparklines with no real underlying data.
 
 ---
 
@@ -34,10 +35,10 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 **Do not reintroduce an SVG-wrapping-a-raster `<image>` trick for the logo.** It was tried (to avoid touching every template) and caused the logo/favicon to render blank in production (2026-08-05) — browsers treat an SVG loaded via `<img src="...">` as a restricted "image context" and the internal `<image href="other.png">` did not reliably paint. Every logo `<img>` must point directly at a PNG.
 
 Rules:
-1. Wordmark on hero / page-intro brand rows is **`CENTROPIC.AI`, uppercase, gradient text** (`background-clip: text`, chrome-toned to match the emblem — this is independent from the violet UI accent). Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight.
-2. Brand must win the first marketing viewport over the headline (size/weight/order).
-3. Logo is a **photoreal 3D chrome emblem** (star-shield, **C** monogram, orbital ring + satellite nodes) — do not flatten it back into a line-art SVG or swap in a generic circle-icon. The emblem itself stays chrome/silver even though the surrounding UI accent (`--brand-cyan`) is now violet.
-4. Nebula blue/violet atmosphere stays behind the hero visual only — never bleed it into buttons, links, or focus states (those use the violet UI accent `--brand-cyan: #B84FF0`).
+1. Wordmark on `#hero-brand` (landing hero only) is **`CENTROPIC.AI`, uppercase, chrome-gradient text** (`background-clip: text`). Everywhere else the brand row keeps the plain lowercase `centropic.ai` wordmark — do not let the dramatic hero treatment leak onto other pages' brand rows again; it visually overwrote those pages' own H1 (fixed 2026-08-05, see `#hero-brand .hero-brand-word` scoping in `app.css`).
+2. Brand must win the first marketing viewport over the headline (size/weight/order) — but only on the actual hero; on every other page the page's own H1 stays the visual lead over the brand row above it.
+3. Logo is a **photoreal 3D chrome emblem** (star-shield, **C** monogram, orbital ring + satellite nodes) — do not flatten it back into a line-art SVG or swap in a generic circle-icon.
+4. Nebula blue/violet atmosphere stays behind the landing hero visual only — never bleed it into buttons, links, or focus states (those use the chrome UI accent `--brand-cyan: #C9D3DD`, or the active plan's `--plan-accent` on dashboard pages).
 5. Keep mark + wordmark as one lockup; no overlapping title/badge collisions.
 6. Prefer `logo-mark.png` when the full mark would muddle at small sizes.
 7. To change the mark again: replace `logo-cosmic-emblem.png` and re-render every derived file (`logo.png`, `logo-mark.png`, `apple-touch-icon.png`, `favicon-*.png`, `hero-cosmic.jpg`, `og-share.jpg`) from the new source, then re-check every template `<img>` still points at a real file.
