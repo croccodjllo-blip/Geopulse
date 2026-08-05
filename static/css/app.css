@@ -6289,7 +6289,7 @@ body.body-auth {
   object-fit: contain;
   opacity: 0.95;
   filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.55));
-  animation: cite-field-rise 1.1s var(--ease) both;
+  animation: cite-field-rise 1.1s var(--ease) forwards;
   display: block;
 }
 
@@ -6364,7 +6364,7 @@ body.body-auth {
   letter-spacing: 0.08em;
   text-transform: lowercase;
   color: var(--brand-clarity);
-  animation: rise 700ms var(--ease) both;
+  animation: rise 700ms var(--ease) forwards;
 }
 
 .hero-brand-word span {
@@ -6394,19 +6394,16 @@ body.body-auth {
 }
 
 .hero-headline--rise {
-  animation: headline-rise 900ms var(--ease) both;
-  animation-delay: 80ms;
+  animation: headline-rise 900ms var(--ease) forwards;
 }
 
 .hero-lede {
   max-width: 34ch;
-  animation: rise 900ms var(--ease) both;
-  animation-delay: 160ms;
+  animation: rise 900ms var(--ease) forwards;
 }
 
 .hero--signal .cta-row {
-  animation: rise 900ms var(--ease) both;
-  animation-delay: 240ms;
+  animation: rise 900ms var(--ease) forwards;
 }
 
 .hero-headline--v2 .text-gradient {
@@ -6414,17 +6411,18 @@ body.body-auth {
   background: linear-gradient(90deg, #6EC6C0 0%, #A8C5C2 100%);
   -webkit-background-clip: text;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
 @keyframes cite-field-rise {
   from { opacity: 0; transform: translateY(18px) scale(0.985); }
-  to { opacity: 0.92; transform: translateY(0) scale(1); }
+  to { opacity: 0.95; transform: translateY(0) scale(1); }
 }
 
 @keyframes headline-rise {
-  from { opacity: 0; transform: translateY(22px); filter: blur(4px); }
-  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  from { opacity: 0.35; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .btn-ghost-light {
@@ -6599,7 +6597,7 @@ body.body-auth {
 
 .plan-grid--stagger .plan--v2,
 .profile-grid--stagger .profile-card {
-  animation: plan-rise 720ms var(--ease) both;
+  animation: plan-rise 720ms var(--ease) forwards;
 }
 
 .plan-grid--stagger .plan--v2:nth-child(1),
