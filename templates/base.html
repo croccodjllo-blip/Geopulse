@@ -43,7 +43,7 @@
     />
     {% if ga4_measurement_id or google_ads_id %}
     {# Consent Mode v2: EU default denied BEFORE any Google tags #}
-    <script>
+    <script nonce="{{ csp_nonce }}">
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('consent', 'default', {
@@ -59,11 +59,11 @@
       gtag('set', 'url_passthrough', true);
     </script>
     {% if ga4_measurement_id %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
+    <script nonce="{{ csp_nonce }}" async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
     {% elif google_ads_id %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_ads_id }}"></script>
+    <script nonce="{{ csp_nonce }}" async src="https://www.googletagmanager.com/gtag/js?id={{ google_ads_id }}"></script>
     {% endif %}
-    <script>
+    <script nonce="{{ csp_nonce }}">
       gtag('js', new Date());
       {% if ga4_measurement_id %}
       gtag('config', '{{ ga4_measurement_id }}', {
@@ -270,7 +270,7 @@
         <button type="button" class="btn btn-ghost" id="cookie-consent-reject">{{ _('Rifiuta') }}</button>
       </div>
     </aside>
-    <script>
+    <script nonce="{{ csp_nonce }}">
       window.__CENTROPIC_ANALYTICS__ = {
         ga4Id: {{ ga4_measurement_id|tojson }},
         adsId: {{ google_ads_id|tojson }},
@@ -278,14 +278,14 @@
         events: {{ analytics_events|default([])|tojson }}
       };
     </script>
-    <script src="{{ url_for('static', filename='js/analytics.js') }}" defer></script>
+    <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/analytics.js') }}" defer></script>
     {% endif %}
-    <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/shell.js') }}" defer></script>
+    <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+    <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
+    <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/shell.js') }}" defer></script>
     {% if paddle_overlay and paddle_config and paddle_config.clientToken %}
-    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}" src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script nonce="{{ csp_nonce }}">
       window.__CENTROPIC_PADDLE__ = Object.assign(
         {},
         {{ paddle_config|tojson }},
@@ -297,10 +297,10 @@
         }
       );
     </script>
-    <script src="{{ url_for('static', filename='js/paddle-checkout.js') }}" defer></script>
+    <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/paddle-checkout.js') }}" defer></script>
     {% endif %}
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
       async function copyFrom(id, btn) {
         const el = document.getElementById(id);
         if (!el) return;

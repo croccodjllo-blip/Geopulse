@@ -30,6 +30,7 @@ from flask import (
     Response,
     abort,
     flash,
+    g,
     jsonify,
     make_response,
     redirect,
@@ -357,12 +358,19 @@ def _persist_lang_query() -> None:
 if os.getenv("FLASK_DEBUG", "0") != "1":
     logging.getLogger("werkzeug").setLevel(logging.WARNING)
 
-db = SQLAlchemy(app)
-csrf = CSRFProtect(app)
+from centropic.extensions import db, csrf  # noqa: E402
+
+db.init_app(app)
+csrf.init_app(app)
 
 from services.observability import configure_app_logging  # noqa: E402
+from centropic.csp import build_csp_header, configure_csp, inject_csp_context  # noqa: E402
+from centropic import metrics as app_metrics  # noqa: E402
+from centropic.metrics import configure_metrics  # noqa: E402
 
 configure_app_logging(app)
+configure_csp(app)
+configure_metrics(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
@@ -423,64 +431,12 @@ def set_security_headers(response):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["X-XSS-Protection"] = "0"
-    script_src = ["'self'", "'unsafe-inline'"]
-    img_src = ["'self'", "data:"]
-    connect_src = ["'self'"]
-    frame_src = ["'self'"]
-    if paddle_enabled():
-        script_src.append("https://cdn.paddle.com")
-        connect_src.extend([
-            "https://api.paddle.com",
-            "https://sandbox-api.paddle.com",
-            "https://checkout.paddle.com",
-            "https://sandbox-checkout.paddle.com",
-            "https://buy.paddle.com",
-            "https://sandbox-buy.paddle.com",
-        ])
-        frame_src.extend([
-            "https://checkout.paddle.com",
-            "https://sandbox-checkout.paddle.com",
-            "https://buy.paddle.com",
-            "https://sandbox-buy.paddle.com",
-            "https://cdn.paddle.com",
-        ])
-    if GA4_MEASUREMENT_ID or GOOGLE_ADS_ID:
-        script_src.extend(["https://www.googletagmanager.com", "https://www.google-analytics.com"])
-        connect_src.extend([
-            "https://www.google-analytics.com",
-            "https://region1.google-analytics.com",
-            "https://www.google.com",
-            "https://googleads.g.doubleclick.net",
-        ])
-        img_src.extend(["https://www.google-analytics.com", "https://www.google.com"])
-    if ADSENSE_CLIENT_ID or GOOGLE_ADS_ID:
-        script_src.extend([
-            "https://pagead2.googlesyndication.com",
-            "https://partner.googleadservices.com",
-            "https://www.googleadservices.com",
-        ])
-        img_src.extend([
-            "https://googleads.g.doubleclick.net",
-            "https://pagead2.googlesyndication.com",
-            "https://www.googleadservices.com",
-        ])
-        frame_src.extend([
-            "https://googleads.g.doubleclick.net",
-            "https://tpc.googlesyndication.com",
-            "https://www.google.com",
-        ])
-    response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
-        f"script-src {' '.join(dict.fromkeys(script_src))}; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        "font-src 'self' https://fonts.gstatic.com data:; "
-        f"img-src {' '.join(dict.fromkeys(img_src))}; "
-        f"connect-src {' '.join(dict.fromkeys(connect_src))}; "
-        f"frame-src {' '.join(dict.fromkeys(frame_src))}; "
-        "object-src 'none'; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self'; "
-        "form-action 'self'"
+    nonce = getattr(g, "csp_nonce", "") or ""
+    response.headers["Content-Security-Policy"] = build_csp_header(
+        nonce=nonce,
+        paddle=paddle_enabled(),
+        analytics=bool(GA4_MEASUREMENT_ID or GOOGLE_ADS_ID),
+        adsense=bool(ADSENSE_CLIENT_ID or GOOGLE_ADS_ID),
     )
     # HSTS solo se secure; nginx può già inviarlo — ok se allineati
     if request.is_secure or app.config["SESSION_COOKIE_SECURE"]:
@@ -650,16 +606,12 @@ class User(db.Model):
 
     @property
     def max_sites(self) -> int:
-        if self.is_admin or self.is_business:
-            return MAX_SITES_BUSINESS
-        if self.is_pro:
-            return MAX_SITES_PLUS
-        return MAX_SITES_FREE
+        return int(self.entitlements.max_sites)
 
     @property
     def daily_limit(self) -> int:
         """Plus: analisi / 24h. Free: tetto lifetime (nessun reset)."""
-        return PRO_DAILY_ANALYSES if self.is_pro else FREE_TOTAL_ANALYSES
+        return int(self.entitlements.analysis_limit)
 
     @property
     def analysis_limit(self) -> int:
@@ -667,15 +619,35 @@ class User(db.Model):
 
     @property
     def analysis_limit_lifetime(self) -> bool:
-        return not self.is_pro
+        return bool(self.entitlements.analysis_limit_lifetime)
 
     @property
     def crawl_pages(self) -> int:
-        return PRO_CRAWL_PAGES if self.is_pro else FREE_CRAWL_PAGES
+        return int(self.entitlements.crawl_pages)
 
     @property
     def crawl_unlimited(self) -> bool:
-        return bool(self.is_pro and PRO_CRAWL_UNLIMITED)
+        return bool(self.entitlements.crawl_unlimited)
+
+    @property
+    def entitlements(self):
+        """Single source of truth — delegates to services.entitlements."""
+        return entitlements_for(
+            self,
+            max_sites_free=MAX_SITES_FREE,
+            max_sites_pro=MAX_SITES_BUSINESS,
+            max_sites_plus=MAX_SITES_PLUS,
+            free_total_analyses=FREE_TOTAL_ANALYSES,
+            pro_daily_analyses=PRO_DAILY_ANALYSES,
+            free_crawl_pages=FREE_CRAWL_PAGES,
+            pro_crawl_pages=PRO_CRAWL_PAGES,
+            pro_crawl_unlimited=PRO_CRAWL_UNLIMITED,
+            free_history_limit=FREE_HISTORY_LIMIT,
+            pro_history_limit=PRO_HISTORY_LIMIT,
+        )
+
+    def can(self, capability: str) -> bool:
+        return self.entitlements.can(capability)
 
 
 class SiteAnalysis(db.Model):
@@ -684,6 +656,9 @@ class SiteAnalysis(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    organization_id = db.Column(
+        db.Integer, db.ForeignKey("organizations.id"), nullable=True, index=True
+    )
     url = db.Column(db.String(500), nullable=False)
     domain = db.Column(db.String(255), nullable=False)
     page_title = db.Column(db.String(500))
@@ -939,6 +914,15 @@ class CreditLedger(db.Model):
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
     )
+
+    @property
+    def payment_idempotency_key(self) -> str | None:
+        """Canonical name for Paddle/Stripe payment idempotency (legacy column)."""
+        return self.stripe_payment_intent
+
+    @payment_idempotency_key.setter
+    def payment_idempotency_key(self, value: str | None) -> None:
+        self.stripe_payment_intent = value
 
 
 class UsageEvent(db.Model):
@@ -1485,6 +1469,7 @@ def inject_globals() -> dict[str, Any]:
         "format_token_amount": format_token_amount,
         "format_tokens_short": format_tokens_short,
         "cents_to_tokens": cents_to_tokens,
+        "csp_nonce": getattr(g, "csp_nonce", ""),
     }
 
 
@@ -1573,6 +1558,17 @@ class AlertDelivery(db.Model):
     )
 
 
+
+from centropic.tenancy import (  # noqa: E402
+    Organization,
+    OrganizationMember,
+    ensure_personal_org,
+    sites_query_for_user,
+    user_can_access_site,
+    user_can_write_site,
+)
+
+
 def ensure_schema() -> None:
     """create_all + colonne nuove su SQLite già esistente."""
     try:
@@ -1584,9 +1580,11 @@ def ensure_schema() -> None:
             raise
         app.logger.warning("ensure_schema create_all race ignored: %s", exc)
     with db.engine.begin() as conn:
-        conn.execute(text("PRAGMA journal_mode=WAL"))
-        conn.execute(text("PRAGMA synchronous=NORMAL"))
-        conn.execute(text("PRAGMA busy_timeout=5000"))
+        # SQLite-only pragmas (Postgres path must not receive these).
+        if conn.dialect.name == "sqlite":
+            conn.execute(text("PRAGMA journal_mode=WAL"))
+            conn.execute(text("PRAGMA synchronous=NORMAL"))
+            conn.execute(text("PRAGMA busy_timeout=5000"))
 
     def _add_column(table: str, name: str, col_type: str) -> None:
         """ADD COLUMN idempotente (race-safe tra worker Gunicorn)."""
@@ -1624,6 +1622,7 @@ def ensure_schema() -> None:
             "public_token": "TEXT",
             "signals_hosted": "BOOLEAN DEFAULT 0",
             "signals_version": "INTEGER DEFAULT 1",
+            "organization_id": "INTEGER",
         }
         for name, col_type in alters.items():
             if name not in existing:
@@ -2562,6 +2561,13 @@ def health():
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
+                "metrics": app_metrics.snapshot(),
+                "architecture": {
+                    "package": "centropic",
+                    "tenancy": "organization",
+                    "csp": "nonce",
+                    "schema": "dialect-aware",
+                },
             }
         )
     return jsonify(payload), status
@@ -3646,8 +3652,10 @@ def billing_paddle_webhook():
                 return jsonify({"ok": True, "duplicate": True})
     except Exception:
         app.logger.exception("Paddle webhook handler failed")
+        app_metrics.incr("billing.webhook_error")
         return jsonify({"ok": False}), 500
 
+    app_metrics.incr("billing.webhook_ok")
     return jsonify({"ok": True})
 
 
@@ -4160,7 +4168,7 @@ def dashboard():
     if request.method == "GET" and not form.url.data and user and user.website_url:
         form.url.data = user.website_url
     latest: SiteAnalysis | None = (
-        SiteAnalysis.query.filter_by(user_id=user.id)
+        sites_query_for_user(SiteAnalysis, user)
         .order_by(SiteAnalysis.created_at.desc())
         .first()
     )
@@ -5922,6 +5930,13 @@ def admin_set_plan(user_id: int, plan: str):
         # Demotion must revoke admin privileges (is_admin checks role OR plan).
         target.role = None
     db.session.commit()
+    if plan in {"business", "admin"}:
+        try:
+            ensure_personal_org(target)
+            db.session.commit()
+        except Exception:
+            app.logger.exception("ensure_personal_org failed for user %s", target.id)
+            db.session.rollback()
     flash(f"Piano di {target.email} aggiornato a {plan}.", "success")
     return redirect(url_for("admin_home"))
 
@@ -6208,6 +6223,10 @@ def export_all_sites_zip():
 # Bootstrap
 # ---------------------------------------------------------------------------
 
+from centropic.views import register_all_views  # noqa: E402
+import sys as _sys  # noqa: E402
+
+register_all_views(app, _sys.modules[__name__])
 
 with app.app_context():
     ensure_schema()
