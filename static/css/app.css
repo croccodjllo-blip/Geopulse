@@ -6283,9 +6283,9 @@ body.body-auth {
 
 .hero-visual__field img,
 .hero-cite-svg {
-  width: min(62vw, 720px);
+  width: min(52vw, 640px);
   height: auto;
-  max-height: min(78vh, 640px);
+  max-height: min(72vh, 560px);
   object-fit: contain;
   opacity: 0.95;
   filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.55));
@@ -6364,7 +6364,7 @@ body.body-auth {
   letter-spacing: 0.08em;
   text-transform: lowercase;
   color: var(--brand-clarity);
-  animation: rise 700ms var(--ease) forwards;
+  animation: copy-rise 700ms var(--ease) forwards;
 }
 
 .hero-brand-word span {
@@ -6399,11 +6399,11 @@ body.body-auth {
 
 .hero-lede {
   max-width: 34ch;
-  animation: rise 900ms var(--ease) forwards;
+  animation: copy-rise 900ms var(--ease) forwards;
 }
 
 .hero--signal .cta-row {
-  animation: rise 900ms var(--ease) forwards;
+  animation: copy-rise 900ms var(--ease) forwards;
 }
 
 .hero-headline--v2 .text-gradient {
@@ -6422,6 +6422,11 @@ body.body-auth {
 
 @keyframes headline-rise {
   from { opacity: 1; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes copy-rise {
+  from { opacity: 1; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
