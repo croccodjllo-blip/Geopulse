@@ -9,6 +9,7 @@ from flask import Flask
 # Architecture catalog: endpoints owned by this domain module.
 ROUTE_CATALOG = [
     'api_v1_analyze',
+    'api_v1_job_status',
     'api_v1_sites',
     'api_v1_site_edge',
     'api_v1_site_edge_cms_bundle'

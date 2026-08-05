@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 from typing import Any
 
 from services.analyzer import analyze_site
@@ -45,6 +46,9 @@ def run_analysis_pipeline(
     heartbeat_callback: Any | None = None,
     SovSnapshot: Any | None = None,
     AlertDelivery: Any | None = None,
+    UsageEvent: Any | None = None,
+    organization_id: int | None = None,
+    run_started_at: Any | None = None,
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     previous_run = None
@@ -67,6 +71,8 @@ def run_analysis_pipeline(
     pages = int(max_pages) if max_pages is not None else int(user.crawl_pages)
     if pages <= 0:
         pages = int(getattr(user, "crawl_pages", 8) or 8)
+
+    pipeline_started = run_started_at or datetime.now(timezone.utc)
 
     def _hb(
         phase: str | None = None,
@@ -93,10 +99,17 @@ def run_analysis_pipeline(
     def _crawl_progress(done: int, total: int) -> None:
         _hb(phase="crawl", done=int(done), total=int(total))
 
+    # Prefer capability gate over coarse is_pro when available.
+    can_competitors = True
+    try:
+        can_competitors = bool(getattr(user, "can")("competitors"))
+    except Exception:
+        can_competitors = bool(getattr(user, "is_pro", False))
+
     result = analyze_site(
         url,
         max_pages=pages,
-        competitor_urls=(competitor_urls or [])[:3] if user.is_pro else [],
+        competitor_urls=(competitor_urls or [])[:3] if can_competitors else [],
         progress_callback=_crawl_progress,
     )
 
@@ -196,10 +209,13 @@ def run_analysis_pipeline(
         diff=run_diff,
         result=result,
         usage_callback=usage_callback,
+        heartbeat_callback=lambda: _hb(
+            phase="pack", done=crawled, total=max(crawled, pages)
+        ),
     )
 
-    # Lease check before persist: avoid writing analysis if another worker
-    # already reclaimed this job.
+    # Lease / cancel check before persist: avoid writing if job was reclaimed
+    # or cancelled mid-pack.
     _hb(phase="persist", done=crawled, total=max(crawled, pages))
 
     analysis = persist_analysis(
@@ -212,7 +228,31 @@ def run_analysis_pipeline(
         result=result,
         pack=pack,
         source=source,
+        organization_id=organization_id,
+        user=user,
     )
+
+    # Attribute recent usage events to this run when possible.
+    run_id = getattr(analysis, "_last_run_id", None)
+    if UsageEvent is not None and run_id:
+        try:
+            (
+                UsageEvent.query.filter(
+                    UsageEvent.user_id == user.id,
+                    UsageEvent.analysis_run_id.is_(None),
+                    UsageEvent.created_at >= pipeline_started,
+                ).update(
+                    {"analysis_run_id": int(run_id)},
+                    synchronize_session=False,
+                )
+            )
+            db_session.commit()
+        except Exception:
+            logger.exception("usage event attribution failed")
+            try:
+                db_session.rollback()
+            except Exception:
+                pass
 
     # Persist SoV snapshot for measurement graph / agency charts
     if SovSnapshot is not None:
@@ -229,9 +269,12 @@ def run_analysis_pipeline(
                     SovSnapshot=SovSnapshot,
                     site_id=analysis.id,
                     user_id=user.id,
-                    run_id=getattr(run, "id", None),
+                    run_id=getattr(run, "id", None) or run_id,
                     snapshot=snap,
-                    source=source if source in {"manual", "scheduled"} else "analyze",
+                    source=source
+                    if source
+                    in {"manual", "scheduled", "api", "job", "verify", "onboarding"}
+                    else "analyze",
                 )
                 db_session.commit()
         except Exception:

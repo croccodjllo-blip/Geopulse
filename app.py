@@ -151,6 +151,7 @@ from services.jobs import (
     enqueue_analysis,
     fail_job,
     heartbeat_job,
+    mark_job_site,
 )
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
@@ -694,6 +695,9 @@ class SiteAnalysis(db.Model):
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
+    updated_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
 
     user = db.relationship("User", back_populates="sites")
     runs = db.relationship(
@@ -777,6 +781,8 @@ class AnalysisJob(db.Model):
     competitors_json = db.Column(db.Text, nullable=False, default="[]")
     # Persist measured SoV intent from confirm form through the async worker.
     run_measured = db.Column(db.Boolean, nullable=False, default=False)
+    # Origin: job | api | onboarding | verify (feeds AnalysisRun.source).
+    source = db.Column(db.String(20), nullable=False, default="job")
     # Live progress for overlay ETA (updated during crawl / geo / pack).
     progress_done = db.Column(db.Integer, nullable=False, default=0)
     progress_total = db.Column(db.Integer, nullable=False, default=0)
@@ -1633,6 +1639,7 @@ def ensure_schema() -> None:
             "signals_hosted": "BOOLEAN DEFAULT 0",
             "signals_version": "INTEGER DEFAULT 1",
             "organization_id": "INTEGER",
+            "updated_at": "DATETIME",
         }
         for name, col_type in alters.items():
             if name not in existing:
@@ -1743,6 +1750,7 @@ def ensure_schema() -> None:
                 "max_pages": "INTEGER DEFAULT 8",
                 "competitors_json": "TEXT DEFAULT '[]'",
                 "run_measured": "BOOLEAN DEFAULT 0",
+                "source": "TEXT DEFAULT 'job'",
                 "progress_done": "INTEGER DEFAULT 0",
                 "progress_total": "INTEGER DEFAULT 0",
                 "progress_phase": "TEXT DEFAULT ''",
@@ -2072,21 +2080,28 @@ def process_pending_analyze_jobs(
                 competitor_urls=job.competitors,
                 run_measured=run_measured_job,
                 measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
-                source="job",
+                source=(getattr(job, "source", None) or "job"),
                 public_base=PUBLIC_SITE_URL or "https://centropic.ai",
                 usage_callback=_job_usage_cb,
                 max_pages=job.max_pages,
                 heartbeat_callback=_hb,
                 SovSnapshot=SovSnapshot,
                 AlertDelivery=AlertDelivery,
+                UsageEvent=UsageEvent,
+                run_started_at=getattr(job, "started_at", None),
             )
             # Restore lease on in-memory job after pipeline commits/refreshes.
             if not getattr(job, "lease_token", None):
                 job.lease_token = lease_token
+            site_id = getattr(analysis, "id", None)
+            if site_id:
+                mark_job_site(
+                    db.session, job, site_id=int(site_id), lease_token=lease_token
+                )
             finished = complete_job(
                 db.session,
                 job,
-                site_id=getattr(analysis, "id", None),
+                site_id=site_id,
                 lease_token=lease_token,
             )
             if finished:
@@ -2512,22 +2527,33 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
         return None
 
     # Prepaid gate: welcome credit should cover basic first diagnosis.
-    if not is_unlimited_user(user):
-        est = estimate_analysis_cost(
-            openai_model=OPENAI_MODEL,
-            anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
-            perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
-            run_measured=False,
-            has_openai=bool(OPENAI_API_KEY),
-            has_perplexity=False,
-            has_anthropic=False,
+    est = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=False,
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=False,
+        has_anthropic=False,
+    )
+    if not is_unlimited_user(user) and not has_sufficient_credit(user, est):
+        app.logger.info(
+            "Onboarding analyze skipped for user %s: insufficient credit",
+            user.id,
         )
-        if not has_sufficient_credit(user, est):
-            app.logger.info(
-                "Onboarding analyze skipped for user %s: insufficient credit",
-                user.id,
-            )
-            return None
+        return None
+
+    try:
+        assert_can_start_analysis(
+            db.session,
+            user,
+            AnalysisJob=AnalysisJob,
+            required_cents=required_credit_with_grace_cents(est.service_cost_eur_cents),
+            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+        )
+    except (ConcurrentAnalysisError, InsufficientCreditError) as exc:
+        app.logger.info("Onboarding analyze skipped for user %s: %s", user.id, exc)
+        return None
 
     def _onboarding_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
         charged = record_actual_usage(
@@ -2578,6 +2604,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             competitor_urls=[],
             run_measured=False,
             held_cents=held,
+            source="onboarding",
         )
         kick_analyze_worker()
         return int(job.id)
@@ -2597,6 +2624,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             usage_callback=_onboarding_usage_cb,
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
+            UsageEvent=UsageEvent,
         )
     except Exception as exc:
         app.logger.exception("Onboarding analyze failed")
@@ -5461,13 +5489,80 @@ def dashboard_verify_rescan(analysis_id: int):
     if not user.is_pro:
         flash("Re-scan measured dopo verify è riservato a Plus.", "warning")
         return redirect(url_for("pricing"))
-    # Reuse dashboard analyze flow via redirect with prefilled URL
-    session["verify_rescan_url"] = analysis.url
-    flash(
-        "Apri Analizza in dashboard e conferma il re-scan (SoV measured attivo su Plus).",
-        "success",
+
+    url = analysis.url
+    run_meas = _should_run_measured_with_budget(
+        user=user,
+        requested=True,
+        env_enabled=MEASURED_SOV_ON_ANALYZE,
     )
-    return redirect(url_for("dashboard", url=analysis.url, measured=1))
+    cost = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=run_meas,
+        n_prompts=ANALYSIS_SOV_PROMPTS,
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+        has_gemini=bool(
+            os.getenv("GEMINI_API_KEY")
+            or os.getenv("GOOGLE_AI_API_KEY")
+            or os.getenv("GOOGLE_API_KEY")
+        ),
+        gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
+        has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
+        xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
+        has_azure=bool(
+            os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+            or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+        ),
+        azure_model=os.getenv("AZURE_AI_MODEL")
+        or os.getenv("FOUNDRY_MODEL_NAME")
+        or "gpt-4o-mini",
+    )
+    try:
+        assert_can_start_analysis(
+            db.session,
+            user,
+            AnalysisJob=AnalysisJob,
+            required_cents=required_credit_with_grace_cents(cost.service_cost_eur_cents),
+            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+        )
+    except ConcurrentAnalysisError as exc:
+        flash(str(exc), "warning")
+        return redirect(url_for("dashboard"))
+    except InsufficientCreditError:
+        flash("Token insufficienti per il re-scan measured.", "warning")
+        return redirect(url_for("topup_credit_page"))
+
+    required = required_credit_with_grace_cents(cost.service_cost_eur_cents)
+    try:
+        held = hold_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_cents=required,
+            description="Riserva verify re-scan",
+        )
+    except InsufficientCreditError:
+        flash("Token insufficienti per il re-scan measured.", "warning")
+        return redirect(url_for("topup_credit_page"))
+
+    job = enqueue_analysis(
+        db.session,
+        AnalysisJob,
+        user_id=user.id,
+        url=url,
+        max_pages=resolve_crawl_pages(user, deep_crawl=False),
+        competitor_urls=[],
+        run_measured=run_meas,
+        held_cents=held,
+        source="verify",
+    )
+    kick_analyze_worker()
+    flash("Re-scan measured in coda.", "success")
+    return redirect(url_for("dashboard", job=job.id))
 
 
 @app.route("/dashboard/export/whitelabel/<int:analysis_id>.md")
@@ -5672,138 +5767,88 @@ def api_v1_analyze():
             "credit_balance_tokens": cents_to_tokens(bal),
         }), 402
 
-    # Track remaining hold across usage callbacks; on rollback restore full api_held.
-    hold_state = {"remaining": int(api_held or 0), "released": False}
-
-    def _release_api_hold(amount: int) -> None:
-        if hold_state["released"] or amount <= 0:
-            return
-        try:
-            db.session.refresh(user)
-            release_hold(db.session, user, amount_cents=amount)
-            db.session.commit()
-            hold_state["released"] = True
-            hold_state["remaining"] = 0
-        except Exception:
-            db.session.rollback()
-            app.logger.exception("api analyze: failed to release credit hold")
-
-    def _api_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
-        charged = record_actual_usage(
-            db.session,
-            UsageEvent,
-            user_id=user.id,
-            analysis_run_id=None,
-            provider=provider,
-            model=model,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-        )
-        debit_cents = debit_cents_from_usage(charged)
-        if debit_cents <= 0:
-            return
-        _assert_current_sov_debit(user, debit_cents)
-        held_now = int(hold_state["remaining"] or 0)
-        deduct_credit(
-            db.session,
-            CreditLedger,
-            user,
-            analysis_run_id=None,
-            cost_eur_cents=debit_cents,
-            description=_usage_ledger_description(
-                "API",
-                provider=provider,
-                model=model,
-            ),
-            reserved_cents=held_now,
-        )
-        if held_now > 0:
-            consumed = consume_hold(
-                db.session, user, amount_cents=min(debit_cents, held_now)
-            )
-            hold_state["remaining"] = max(0, held_now - int(consumed or 0))
-
-    analysis = None
-    try:
-        analysis = run_analysis_pipeline(
-            db_session=db.session,
-            SiteAnalysis=SiteAnalysis,
-            AnalysisRun=AnalysisRun,
-            user=user,
-            url=url,
-            openai_api_key=OPENAI_API_KEY,
-            openai_model=OPENAI_MODEL,
-            competitor_urls=[str(c) for c in comps[:3]],
-            run_measured=want_measured,
-            measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
-            source="api",
-            public_base=public_base_url(),
-            usage_callback=_api_usage_cb,
-            SovSnapshot=SovSnapshot,
-            AlertDelivery=AlertDelivery,
-        )
-        db.session.commit()
-    except InsufficientCreditError as exc:
-        try:
-            db.session.rollback()
-        except Exception:
-            pass
-        # Rollback restores the full hold — release the original reservation.
-        _release_api_hold(int(api_held or 0))
-        return jsonify({"ok": False, "error": "insufficient_credit", "message": str(exc)}), 402
-    except Exception as exc:
-        app.logger.exception("api analyze failed")
-        try:
-            db.session.rollback()
-        except Exception:
-            pass
-        _release_api_hold(int(api_held or 0))
-        info = classify_analyze_error(exc)
-        return (
-            jsonify(
-                {
-                    "ok": False,
-                    "error": info["code"],
-                    "message": info["message"],
-                    "hint": info["hint"],
-                    "title": info["title"],
-                }
-            ),
-            502,
-        )
-
-    # Success: release unused remainder of the hold.
-    _release_api_hold(int(hold_state["remaining"] or 0))
-
-    return jsonify(
-        {
-            "ok": True,
-            "site_id": analysis.id,
-            "url": analysis.url,
-            "aio_score": analysis.aio_score,
-            "geo_score": analysis.geo_score,
-            "rating": analysis.rating,
-            "findings": analysis.findings[:50],
-            "signals": {
-                k: analysis.signals.get(k)
-                for k in (
-                    "entity_graph",
-                    "citability",
-                    "publish_verify",
-                    "sov_measured",
-                    "schema_quality",
-                )
-                if analysis.signals.get(k)
-            },
-            "billing": {
-                "cost_eur_cents": api_cost.service_cost_eur_cents,
-                "cost_eur": round(api_cost.service_cost_eur, 4),
-                "cost_tokens": cents_to_tokens(api_cost.service_cost_eur_cents),
-                "credit_balance_eur": round(get_balance_cents(user) / 100, 4),
-                "credit_balance_tokens": cents_to_tokens(get_balance_cents(user)),
-            },
-        }
+    # Always enqueue on the async job path so concurrency, lease, and billing
+    # match the dashboard worker (avoids proxy timeouts + double holds).
+    crawl_pages = resolve_crawl_pages(user, deep_crawl=False)
+    job = enqueue_analysis(
+        db.session,
+        AnalysisJob,
+        user_id=user.id,
+        url=url,
+        max_pages=crawl_pages,
+        competitor_urls=[str(c) for c in comps[:3] if isinstance(c, str)],
+        run_measured=want_measured,
+        held_cents=int(api_held or 0),
+        source="api",
     )
+    kick_analyze_worker()
+    status_url = url_for("api_v1_job_status", job_id=job.id, _external=True)
+    return (
+        jsonify(
+            {
+                "ok": True,
+                "queued": True,
+                "job_id": job.id,
+                "status": "pending",
+                "status_url": status_url,
+                "url": url,
+                "billing": {
+                    "estimate_eur_cents": api_cost.service_cost_eur_cents,
+                    "estimate_tokens": cents_to_tokens(api_cost.service_cost_eur_cents),
+                    "held_tokens": cents_to_tokens(int(api_held or 0)),
+                    "credit_balance_tokens": cents_to_tokens(get_balance_cents(user)),
+                    "note": "actual spend available on job status when done",
+                },
+            }
+        ),
+        202,
+    )
+
+
+@app.route("/api/v1/jobs/<int:job_id>", methods=["GET"])
+@csrf.exempt
+def api_v1_job_status(job_id: int):
+    """Poll async analyze job created by POST /api/v1/analyze."""
+    auth = request.headers.get("Authorization") or ""
+    raw = ""
+    if auth.lower().startswith("bearer "):
+        raw = auth[7:].strip()
+    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    user = find_user_by_api_key(User, raw)
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
+    job = AnalysisJob.query.filter_by(id=job_id, user_id=user.id).first()
+    if job is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    payload: dict[str, Any] = {
+        "ok": True,
+        "job_id": job.id,
+        "status": job.status,
+        "url": job.url,
+        "error": job.error,
+        "progress": {
+            "phase": getattr(job, "progress_phase", None) or None,
+            "done": int(getattr(job, "progress_done", 0) or 0),
+            "total": int(getattr(job, "progress_total", 0) or 0),
+        },
+        "billing": {
+            "billed_eur_cents": int(getattr(job, "billed_cents", 0) or 0),
+            "billed_tokens": cents_to_tokens(int(getattr(job, "billed_cents", 0) or 0)),
+            "held_tokens": cents_to_tokens(int(getattr(job, "held_cents", 0) or 0)),
+            "credit_balance_tokens": cents_to_tokens(get_balance_cents(user)),
+        },
+    }
+    if job.status == "done" and job.site_id:
+        site = get_accessible_site(SiteAnalysis, user, int(job.site_id))
+        if site is not None:
+            payload["site_id"] = site.id
+            payload["aio_score"] = site.aio_score
+            payload["geo_score"] = site.geo_score
+            payload["rating"] = site.rating
+            payload["findings"] = (site.findings or [])[:50]
+    return jsonify(payload)
 
 
 @app.route("/api/v1/sites", methods=["GET"])
@@ -5838,7 +5883,11 @@ def api_v1_sites():
                     "aio_score": s.aio_score,
                     "geo_score": s.geo_score,
                     "rating": (s.rating or {}).get("code"),
-                    "updated_at": s.created_at.isoformat() if s.created_at else None,
+                    "updated_at": (
+                        (getattr(s, "updated_at", None) or s.created_at).isoformat()
+                        if (getattr(s, "updated_at", None) or s.created_at)
+                        else None
+                    ),
                 }
                 for s in sites
             ],

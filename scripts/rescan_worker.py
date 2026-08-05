@@ -33,7 +33,12 @@ from services.rescan import process_due_rescans  # noqa: E402
 from services.usage_billing import (  # noqa: E402
     debit_cents_from_usage,
     deduct_credit,
+    estimate_analysis_cost,
+    get_balance_cents,
+    has_sufficient_credit,
+    is_unlimited_user,
     record_actual_usage,
+    required_credit_with_grace_cents,
 )
 
 
@@ -71,6 +76,27 @@ def make_rescan_usage_callback(user: Any):
     return _cb
 
 
+def _rescan_credit_preflight(user: Any) -> tuple[bool, str]:
+    """Skip scheduled rescan when prepaid balance cannot cover estimate."""
+    if is_unlimited_user(user):
+        return True, ""
+    est = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=bool(MEASURED_SOV_ON_ANALYZE),
+        n_prompts=8,
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+    )
+    if has_sufficient_credit(user, est):
+        return True, ""
+    need = required_credit_with_grace_cents(est.service_cost_eur_cents)
+    bal = get_balance_cents(user)
+    return False, f"credito insufficiente per rescan (saldo {bal}, richiesti ~{need})"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="GeoPulse Pro periodic re-scan worker")
     parser.add_argument(
@@ -101,8 +127,10 @@ def main() -> int:
             # Plus-only gate is inside pipeline; Free sites are already filtered.
             measured=bool(MEASURED_SOV_ON_ANALYZE),
             usage_callback_factory=make_rescan_usage_callback,
+            credit_preflight=_rescan_credit_preflight,
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
+            UsageEvent=UsageEvent,
         )
         logging.info(
             "Rescan worker done ok=%s error=%s skipped=%s measured=%s billed=1",

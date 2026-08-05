@@ -755,25 +755,50 @@ def build_optimization_pack(
     diff: dict[str, Any] | None = None,
     result: dict[str, Any] | None = None,
     usage_callback: Any | None = None,
+    heartbeat_callback: Any | None = None,
 ) -> dict[str, str]:
     from services.deep_checks import build_before_after_report, build_fix_checklist
+
+    def _hb() -> None:
+        if not callable(heartbeat_callback):
+            return
+        try:
+            heartbeat_callback()
+        except Exception:
+            # Propagate lease/cancel failures so pack aborts cleanly.
+            raise
 
     current = result or {
         "aio_score": None,
         "geo_score": None,
         "findings": findings or [],
     }
+    _hb()
+    llms = generate_llms_txt(
+        url, scraped, api_key=api_key, model=model, logger=logger,
+        usage_callback=usage_callback,
+    )
+    _hb()
+    org_ld = build_json_ld(url, scraped)
+    _hb()
+    faq_ld = build_faq_json_ld(url, scraped)
+    _hb()
+    meta = build_meta_pack(url, scraped)
+    _hb()
+    robots = build_robots_txt(url, scraped)
+    _hb()
+    checklist = build_fix_checklist(findings or [])
+    _hb()
+    before_after = build_before_after_report(
+        current=current, previous=previous, diff=diff
+    )
+    _hb()
     return {
-        "llms.txt": generate_llms_txt(
-            url, scraped, api_key=api_key, model=model, logger=logger,
-            usage_callback=usage_callback,
-        ),
-        "organization.jsonld.html": build_json_ld(url, scraped),
-        "faq.jsonld.html": build_faq_json_ld(url, scraped),
-        "meta-pack.html": build_meta_pack(url, scraped),
-        "robots.txt": build_robots_txt(url, scraped),
-        "fix-this-week.md": build_fix_checklist(findings or []),
-        "before-after.md": build_before_after_report(
-            current=current, previous=previous, diff=diff
-        ),
+        "llms.txt": llms,
+        "organization.jsonld.html": org_ld,
+        "faq.jsonld.html": faq_ld,
+        "meta-pack.html": meta,
+        "robots.txt": robots,
+        "fix-this-week.md": checklist,
+        "before-after.md": before_after,
     }

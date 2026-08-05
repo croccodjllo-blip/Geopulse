@@ -738,9 +738,8 @@ def assert_can_start_analysis(
     """Serialize billing decision: lock user row, re-check credit + job concurrency.
 
     Raises InsufficientCreditError or ConcurrentAnalysisError.
+    Unlimited users skip the credit check but still respect concurrency.
     """
-    if is_unlimited_user(user):
-        return
     UserModel = type(user)
     try:
         _begin_immediate(db_session)
@@ -772,6 +771,8 @@ def assert_can_start_analysis(
                 f"Hai già {active} analisi in coda/esecuzione. "
                 "Attendi il completamento prima di avviarne un'altra."
             )
+    if is_unlimited_user(user):
+        return
     need = max(1, int(required_cents))
     if get_balance_cents(user) < need:
         raise InsufficientCreditError(

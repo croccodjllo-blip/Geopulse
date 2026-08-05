@@ -27,6 +27,7 @@ def enqueue_analysis(
     competitor_urls: list[str] | None = None,
     run_measured: bool = False,
     held_cents: int = 0,
+    source: str = "job",
 ) -> Any:
     kwargs: dict[str, Any] = {
         "user_id": user_id,
@@ -40,6 +41,9 @@ def enqueue_analysis(
     }
     if hasattr(AnalysisJob, "run_measured"):
         kwargs["run_measured"] = bool(run_measured)
+    if hasattr(AnalysisJob, "source"):
+        src = (source or "job").strip().lower() or "job"
+        kwargs["source"] = src[:20]
     job = AnalysisJob(**kwargs)
     db_session.add(job)
     db_session.commit()
@@ -63,6 +67,11 @@ def job_lease_owns(job: Any, *, token: str | None = None) -> bool:
         getattr(job, "status", None) == "running"
         and getattr(job, "lease_token", None) == expected
     )
+
+
+def _job_already_persisted(job: Any) -> bool:
+    """True when site_id was written before complete (persist succeeded)."""
+    return bool(getattr(job, "site_id", None))
 
 
 def reclaim_stale_jobs(
@@ -122,6 +131,27 @@ def reclaim_stale_jobs(
                 "Permanently failed partially-billed stale job %s (billed=%s)",
                 job.id,
                 billed,
+            )
+            n += 1
+            continue
+        # If persist already wrote a run for this attempt, mark done instead of
+        # soft-reclaiming (avoids duplicate AnalysisRun when billed_cents==0).
+        if _job_already_persisted(job):
+            job.status = "done"
+            job.finished_at = datetime.now(timezone.utc)
+            job.lease_token = None
+            job.error = None
+            if on_abandon is not None:
+                # Release leftover hold after successful persist.
+                try:
+                    on_abandon(job)
+                except Exception:
+                    logger.exception("on_abandon failed for persisted job %s", job.id)
+            elif hasattr(job, "held_cents"):
+                job.held_cents = 0
+            logger.warning(
+                "Reconciled stale job %s as done (persist already completed)",
+                job.id,
             )
             n += 1
             continue
@@ -258,6 +288,30 @@ def heartbeat_job(
     return False
 
 
+def mark_job_site(
+    db_session,
+    job,
+    *,
+    site_id: int,
+    lease_token: str | None = None,
+) -> bool:
+    """Record site_id while lease is still owned (pre-complete safety)."""
+    Job = job.__class__
+    token = lease_token if lease_token is not None else getattr(job, "lease_token", None)
+    if not token or not site_id:
+        return False
+    updated = (
+        Job.query.filter_by(id=job.id, status="running", lease_token=token)
+        .update({"site_id": int(site_id)}, synchronize_session=False)
+    )
+    if updated == 1:
+        db_session.commit()
+        job.site_id = int(site_id)
+        return True
+    db_session.rollback()
+    return False
+
+
 def complete_job(
     db_session,
     job,
@@ -295,6 +349,35 @@ def complete_job(
         job.status = "done"
         job.lease_token = None
         return True
+    # Idempotent reconcile: persist already completed but lease was stolen.
+    if site_id and _job_already_persisted(job):
+        forced = (
+            Job.query.filter(
+                Job.id == job.id,
+                Job.status.in_(("running", "error", "pending")),
+            ).update(
+                {
+                    "status": "done",
+                    "finished_at": now,
+                    "site_id": site_id,
+                    "error": None,
+                    "lease_token": None,
+                    "heartbeat_at": now,
+                },
+                synchronize_session=False,
+            )
+        )
+        db_session.commit()
+        if forced == 1:
+            job.status = "done"
+            job.lease_token = None
+            job.site_id = site_id
+            logger.warning(
+                "complete_job reconciled job %s after lease loss (site_id=%s)",
+                getattr(job, "id", "?"),
+                site_id,
+            )
+            return True
     logger.warning(
         "complete_job lost race for job %s (lease=%s…)",
         getattr(job, "id", "?"),

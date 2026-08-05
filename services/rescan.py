@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 UsageCallback = Callable[..., None]
 UsageCallbackFactory = Callable[[Any], UsageCallback]
+EstimateFactory = Callable[[Any], Any]  # returns object with service_cost_eur_cents
 
 
 def due_sites_query(SiteAnalysis: Any, User: Any, *, now: datetime | None = None):
@@ -75,8 +76,10 @@ def process_due_rescans(
     public_base: str = "https://centropic.ai",
     SovSnapshot: Any | None = None,
     AlertDelivery: Any | None = None,
+    UsageEvent: Any | None = None,
     usage_callback: UsageCallback | None = None,
     usage_callback_factory: UsageCallbackFactory | None = None,
+    credit_preflight: Callable[[Any], tuple[bool, str]] | None = None,
 ) -> dict[str, int]:
     """Esegue i re-scan scaduti via pipeline completa (suite + alert).
 
@@ -86,6 +89,7 @@ def process_due_rescans(
       - Measured SoV requires a billing callback.
       - Pack/artifact LLM always receives the billing callback when present
         so OpenAI spend is never free on scheduled rescans.
+      - ``credit_preflight(user) -> (ok, message)`` skips when balance is low.
     """
     from services.analysis_store import mark_rescan_error
 
@@ -117,6 +121,19 @@ def process_due_rescans(
                     site.id,
                     user.id,
                 )
+                stats["skipped"] += 1
+                continue
+
+        if callable(credit_preflight):
+            ok_credit, credit_msg = credit_preflight(user)
+            if not ok_credit:
+                logger.info(
+                    "Skip rescan site_id=%s user_id=%s: %s",
+                    site.id,
+                    user.id,
+                    credit_msg,
+                )
+                mark_rescan_error(db_session, site, (credit_msg or "credito insufficiente")[:500])
                 stats["skipped"] += 1
                 continue
 
@@ -156,6 +173,8 @@ def process_due_rescans(
                 usage_callback=billing_cb,
                 SovSnapshot=SovSnapshot,
                 AlertDelivery=AlertDelivery,
+                UsageEvent=UsageEvent,
+                organization_id=getattr(site, "organization_id", None),
             )
             stats["ok"] += 1
             logger.info("Rescan ok site_id=%s url=%s", site.id, site.url)

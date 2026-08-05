@@ -76,6 +76,11 @@ def next_rescan_after(
     return slot
 
 
+ALLOWED_RUN_SOURCES = frozenset(
+    {"manual", "scheduled", "job", "api", "onboarding", "verify"}
+)
+
+
 def persist_analysis(
     db_session: Session,
     *,
@@ -87,6 +92,8 @@ def persist_analysis(
     pack: dict[str, str],
     existing: Any | None = None,
     source: str = "manual",
+    organization_id: int | None = None,
+    user: Any | None = None,
 ) -> Any:
     """Salva l’ultima analisi sul sito e crea una riga di storico."""
     scraped = result.get("scraped") or {}
@@ -97,9 +104,24 @@ def persist_analysis(
     notes = result.get("notes")
     page_title = (scraped.get("title") or "")[:500] or None
 
+    # Resolve org workspace for Business/Admin when not provided.
+    org_id = organization_id
+    if org_id is None and user is not None:
+        try:
+            from centropic.tenancy import ensure_personal_org
+
+            org = ensure_personal_org(user)
+            if org is not None:
+                org_id = int(org.id)
+        except Exception:
+            org_id = None
+
     analysis = existing
+    created_new = analysis is None
     if analysis is None:
         analysis = SiteAnalysis(user_id=user_id, url=url, domain=domain)
+        if org_id is not None and hasattr(analysis, "organization_id"):
+            analysis.organization_id = org_id
         db_session.add(analysis)
 
     pages = result.get("pages") or scraped.get("crawled_pages") or []
@@ -138,7 +160,18 @@ def persist_analysis(
     # Edge hosting: ogni re-analisi invalida la cache client (version bump).
     if getattr(analysis, "signals_hosted", False):
         analysis.signals_version = int(getattr(analysis, "signals_version", 1) or 1) + 1
-    analysis.created_at = now
+    # Attach org on remesure when missing (Business upgrade path).
+    if (
+        org_id is not None
+        and hasattr(analysis, "organization_id")
+        and not getattr(analysis, "organization_id", None)
+    ):
+        analysis.organization_id = org_id
+    # Preserve first-seen; bump updated_at when the column exists.
+    if created_new or not getattr(analysis, "created_at", None):
+        analysis.created_at = now
+    if hasattr(analysis, "updated_at"):
+        analysis.updated_at = now
 
     if source == "scheduled":
         analysis.last_rescan_at = now
@@ -153,6 +186,7 @@ def persist_analysis(
 
     db_session.flush()
 
+    run_source = source if source in ALLOWED_RUN_SOURCES else "manual"
     run = AnalysisRun(
         site_id=analysis.id,
         user_id=user_id,
@@ -172,10 +206,13 @@ def persist_analysis(
         before_after_artifact=pack.get("before-after.md") or "",
         pages_analyzed=pages_analyzed,
         crawl_pages_json=analysis.crawl_pages_json,
-        source=source if source in {"manual", "scheduled", "job"} else "manual",
+        source=run_source,
         created_at=now,
     )
     db_session.add(run)
+    db_session.flush()
+    # Expose for callers that want to attribute UsageEvents.
+    analysis._last_run_id = getattr(run, "id", None)  # type: ignore[attr-defined]
     db_session.commit()
     return analysis
 
