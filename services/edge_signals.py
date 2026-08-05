@@ -186,7 +186,7 @@ def cloudflare_worker_snippet(*, origin_edge_base: str, site_origin: str) -> str
     site_origin: https://cliente.com (documentazione)
     """
     return f"""// Centropic Edge Signals — Cloudflare Worker
-// Deploy: wrangler deploy (vedi workers/geopulse-signals/)
+// Deploy: wrangler deploy (vedi workers/centropic-signals/)
 // Sostituisci CENTROPIC_ORIGIN con il tuo endpoint Edge assegnato.
 
 const CENTROPIC_ORIGIN = "{origin_edge_base}";
@@ -197,6 +197,8 @@ const ROUTES = {{
   "/.well-known/llms.txt": "/llms.txt",
   "/robots.txt": "/robots.txt",
   "/.well-known/organization.jsonld": "/organization.jsonld",
+  "/centropic/signals.json": "/signals.json",
+  // Alias legacy: mantenuto per installazioni GeoPulse esistenti.
   "/geopulse/signals.json": "/signals.json",
 }};
 

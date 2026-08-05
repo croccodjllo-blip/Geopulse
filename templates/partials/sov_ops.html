@@ -16,6 +16,16 @@
     <span>{{ _('Saldo') }}</span>
     <strong>{{ token_balance_short }}</strong>
   </div>
+  <div class="sov-ops__item">
+    <span>{{ _('Budget SoV oggi') }}</span>
+    <strong>
+      {% if sov_budget.unlimited %}
+        {{ _('illimitato') }}
+      {% else %}
+        {{ format_tokens_short(sov_budget.spent_cents) }} / {{ format_tokens_short(sov_budget.budget_cents) }}
+      {% endif %}
+    </strong>
+  </div>
   <nav class="sov-ops__links" aria-label="{{ _('Azioni SoV') }}">
     <a href="{{ url_for('dashboard_settings') }}#connectors">{{ _('Connector') }}</a>
     <a href="{{ url_for('pricing') }}">{{ _('Piani e token') }}</a>

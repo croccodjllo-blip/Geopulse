@@ -1,0 +1,40 @@
+<section class="edge-wizard" aria-labelledby="edge-wizard-title">
+  <h4 id="edge-wizard-title">{{ _('Pubblica Edge Signals') }}</h4>
+  <ol class="edge-wizard__steps">
+    <li class="{% if latest.signals_hosted %}is-done{% endif %}">
+      <div>
+        <strong>{{ _('Attiva') }}</strong>
+        <span>
+          {% if latest.signals_hosted %}
+            {{ _('Hosting dinamico attivo.') }}
+          {% else %}
+            {{ _('Attiva gli endpoint dinamici Centropic.') }}
+          {% endif %}
+        </span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>{{ _('Scarica connector CMS ZIP') }}</strong>
+        <span>{{ _('Un bundle, scegli l’adapter del tuo stack.') }}</span>
+        <a href="{{ url_for('edge_cms_bundle', analysis_id=latest.id) }}">{{ _('Scarica connector CMS (.zip)') }}</a>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>{{ _('Pubblica sul sito') }}</strong>
+        <span><b>WordPress / Drupal:</b> {{ _('installa e attiva plugin o modulo.') }}</span>
+        <span><b>Shopify:</b> {{ _('aggiungi gli snippet Liquid al tema.') }}</span>
+        <span><b>PHP / Nginx / Apache:</b> {{ _('applica il proxy o le regole incluse.') }}</span>
+        <span><b>Netlify / Cloudflare / Vercel:</b> {{ _('pubblica rewrite o Worker del bundle.') }}</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>{{ _('Verifica publish') }}</strong>
+        <span>{{ _('Controlla che file e segnali siano pubblici sul dominio.') }}</span>
+        <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Avvia verifica') }}</a>
+      </div>
+    </li>
+  </ol>
+</section>

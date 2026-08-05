@@ -14,12 +14,22 @@ import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextvars import ContextVar
 from typing import Any
 
 from services.llm_retry import call_with_retries, http_should_retry, probe_pacing_seconds
 from services.prompt_bank import default_prompts
 
 logger = logging.getLogger(__name__)
+_SOV_USAGE_ACTIVE: ContextVar[bool] = ContextVar(
+    "sov_usage_active",
+    default=False,
+)
+
+
+def is_sov_usage_call() -> bool:
+    """True while the citation monitor invokes its billing callback."""
+    return _SOV_USAGE_ACTIVE.get()
 
 
 def _env(*names: str, default: str = "") -> str:
@@ -987,13 +997,19 @@ def run_citation_monitor(
         if not callable(usage_callback):
             return
         from services.usage_billing import InsufficientCreditError, JobLeaseLostError
+        from services.sov_budget import SovDailyBudgetExceeded
 
         with usage_lock:
             if credit_stop["exc"] is not None:
                 raise credit_stop["exc"]
+            token = _SOV_USAGE_ACTIVE.set(True)
             try:
                 usage_callback(**kwargs)
-            except (InsufficientCreditError, JobLeaseLostError) as exc:
+            except (
+                InsufficientCreditError,
+                JobLeaseLostError,
+                SovDailyBudgetExceeded,
+            ) as exc:
                 credit_stop["exc"] = exc
                 raise
             except Exception as exc:
@@ -1004,6 +1020,8 @@ def run_citation_monitor(
                     raise
                 # Session/app-context noise from worker threads must not kill the suite.
                 logger.exception("SoV usage_callback failed")
+            finally:
+                _SOV_USAGE_ACTIVE.reset(token)
 
     # Probe engines in parallel (wall-clock ~ max(engine) not sum).
     jobs: list[tuple[str, Any]] = [
@@ -1024,8 +1042,12 @@ def run_citation_monitor(
                 results[name] = fut.result() or {}
             except Exception as exc:
                 from services.usage_billing import InsufficientCreditError
+                from services.sov_budget import SovDailyBudgetExceeded
 
-                if isinstance(exc, InsufficientCreditError) or credit_stop["exc"] is not None:
+                if isinstance(
+                    exc,
+                    (InsufficientCreditError, SovDailyBudgetExceeded),
+                ) or credit_stop["exc"] is not None:
                     for pending in futures:
                         pending.cancel()
                     raise (credit_stop["exc"] or exc)

@@ -198,6 +198,12 @@ from services.token_units import (
 )
 from services.signals import compare_with_previous
 from services.sov_measured import should_run_measured
+from services.sov_budget import (
+    SovDailyBudgetExceeded,
+    assert_sov_budget_allows,
+    sov_budget_status,
+    sov_spent_today_cents,
+)
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
 from services.api_auth import find_user_by_api_key, generate_api_key
 from services.agency import (
@@ -209,7 +215,7 @@ from services.agency import (
 from services.gsc import gsc_status
 from services.js_crawl import js_crawl_available
 from services.publish_verify import verify_published_pack
-from services.citation_monitor import citation_monitor_available
+from services.citation_monitor import citation_monitor_available, is_sov_usage_call
 from services.sov_graph import list_sov_snapshots, sov_series_for_chart
 from services.edge_telemetry import record_edge_hit, top_crawlers_for_site
 from services.vertical_packs import (
@@ -1801,6 +1807,77 @@ def ensure_schema() -> None:
         )
 
 
+def _current_sov_budget(user: User) -> dict[str, int | bool]:
+    spent = sov_spent_today_cents(
+        db.session,
+        CreditLedger,
+        user.id,
+    )
+    return sov_budget_status(user, spent)
+
+
+def _should_run_measured_with_budget(
+    *,
+    user: User,
+    requested: bool,
+    env_enabled: bool,
+) -> bool:
+    enabled = should_run_measured(
+        user=user,
+        requested=requested,
+        env_enabled=env_enabled,
+    )
+    if not enabled:
+        return False
+    try:
+        status = _current_sov_budget(user)
+    except Exception:
+        app.logger.exception(
+            "SoV budget preflight failed for user=%s; measured probes skipped",
+            user.id,
+        )
+        return False
+    if not status["unlimited"] and int(status["remaining_cents"]) <= 0:
+        app.logger.info(
+            "SoV measured skipped: daily budget exhausted user=%s spent=%s budget=%s",
+            user.id,
+            status["spent_cents"],
+            status["budget_cents"],
+        )
+        return False
+    return True
+
+
+def _assert_current_sov_debit(user: User, debit_cents: int) -> None:
+    if debit_cents <= 0 or not is_sov_usage_call():
+        return
+    spent = sov_spent_today_cents(
+        db.session,
+        CreditLedger,
+        user.id,
+    )
+    try:
+        assert_sov_budget_allows(user, spent, debit_cents)
+    except SovDailyBudgetExceeded as exc:
+        app.logger.info(
+            "SoV debit stopped by daily budget user=%s spent=%s debit=%s",
+            user.id,
+            spent,
+            debit_cents,
+        )
+        raise InsufficientCreditError(str(exc)) from exc
+
+
+def _usage_ledger_description(
+    prefix: str,
+    *,
+    provider: str,
+    model: str,
+) -> str:
+    scope = "SoV citation" if is_sov_usage_call() else prefix
+    return f"{scope} usage realtime {provider}:{model}"
+
+
 def process_pending_analyze_jobs(
     *,
     limit: int = 5,
@@ -1842,7 +1919,7 @@ def process_pending_analyze_jobs(
             stats["error"] += 1
             continue
         try:
-            run_measured_job = should_run_measured(
+            run_measured_job = _should_run_measured_with_budget(
                 user=user,
                 requested=bool(getattr(job, "run_measured", False)),
                 env_enabled=MEASURED_SOV_ON_ANALYZE,
@@ -1944,6 +2021,7 @@ def process_pending_analyze_jobs(
                         debit_cents = debit_cents_from_usage(charged)
                         if debit_cents <= 0:
                             return
+                        _assert_current_sov_debit(user, debit_cents)
                         debit_leased_job_usage(
                             db.session,
                             CreditLedger,
@@ -1952,7 +2030,11 @@ def process_pending_analyze_jobs(
                             job,
                             lease_token=lease_token,
                             cost_eur_cents=debit_cents,
-                            description=f"JOB usage realtime {provider}:{model}",
+                            description=_usage_ledger_description(
+                                "JOB",
+                                provider=provider,
+                                model=model,
+                            ),
                         )
                         db.session.commit()
                     except (InsufficientCreditError, JobLeaseLostError):
@@ -4259,7 +4341,7 @@ def dashboard():
                 )
 
             # ── Usage billing: stima + pagina conferma ──────────────────────
-            run_meas = should_run_measured(
+            run_meas = _should_run_measured_with_budget(
                 user=user,
                 requested=MEASURED_SOV_ON_ANALYZE,
                 env_enabled=MEASURED_SOV_ON_ANALYZE,
@@ -4361,6 +4443,7 @@ def dashboard():
     analyses_used = analyses_used_for_quota(user)
     free_exhausted = free_analyses_exhausted(user)
     free_upsell = free_upsell_suggested(user)
+    sov_budget = _current_sov_budget(user)
     run_diff = None
     if latest is not None:
         recent_runs = (
@@ -4474,6 +4557,7 @@ def dashboard():
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,
         edge=edge_ctx,
+        sov_budget=sov_budget,
         openai_ready=bool(OPENAI_API_KEY),
         citation_ready=citation_monitor_available(),
         js_crawl_ready=js_crawl_available(),
@@ -4575,7 +4659,7 @@ def dashboard_analyze_confirmed():
         return redirect(url_for("dashboard"))
 
     # Recompute cost server-side — never trust client-supplied cost_cents.
-    run_meas = should_run_measured(
+    run_meas = _should_run_measured_with_budget(
         user=user,
         requested=run_measured_flag and MEASURED_SOV_ON_ANALYZE,
         env_enabled=MEASURED_SOV_ON_ANALYZE,
@@ -4641,13 +4725,18 @@ def dashboard_analyze_confirmed():
         debit_cents = debit_cents_from_usage(charged)
         if debit_cents <= 0:
             return
+        _assert_current_sov_debit(user, debit_cents)
         deduct_credit(
             db.session,
             CreditLedger,
             user,
             analysis_run_id=None,
             cost_eur_cents=debit_cents,
-            description=f"AI usage realtime {provider}:{model}",
+            description=_usage_ledger_description(
+                "AI",
+                provider=provider,
+                model=model,
+            ),
         )
 
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
@@ -5465,7 +5554,7 @@ def api_v1_analyze():
     comps = payload.get("competitors") or []
     if not isinstance(comps, list):
         comps = []
-    want_measured = should_run_measured(
+    want_measured = _should_run_measured_with_budget(
         user=user,
         requested=bool(payload.get("measured")),
         env_enabled=MEASURED_SOV_ON_ANALYZE,
@@ -5600,6 +5689,7 @@ def api_v1_analyze():
         debit_cents = debit_cents_from_usage(charged)
         if debit_cents <= 0:
             return
+        _assert_current_sov_debit(user, debit_cents)
         held_now = int(hold_state["remaining"] or 0)
         deduct_credit(
             db.session,
@@ -5607,7 +5697,11 @@ def api_v1_analyze():
             user,
             analysis_run_id=None,
             cost_eur_cents=debit_cents,
-            description=f"API usage realtime {provider}:{model}",
+            description=_usage_ledger_description(
+                "API",
+                provider=provider,
+                model=model,
+            ),
             reserved_cents=held_now,
         )
         if held_now > 0:

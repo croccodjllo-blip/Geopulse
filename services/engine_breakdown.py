@@ -288,6 +288,9 @@ def apply_measured_sov(
             if eng["propensity"] >= 25
             else "crit"
         )
+    # Pending connectors are configuration placeholders, not observed engines.
+    # Keep explicit unavailable engines (and their reason) visible to the UI.
+    engines = [e for e in engines if e.get("evidence") != "pending"]
     # Ricalcola share solo se almeno un engine è measured
     if any(e.get("evidence") == "measured" for e in engines):
         raw = [max(0.5, float(e.get("propensity") or 0) * 1.0) for e in engines]

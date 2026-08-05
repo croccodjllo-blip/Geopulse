@@ -147,6 +147,15 @@
             <button type="button" class="report-tabs__btn" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="false" data-tab="sov">{{ _('SoV') }}</button>
           </div>
 
+          <nav class="report-nav" aria-label="{{ _('Sezioni del report') }}">
+            <a href="#panel-score">{{ _('Score') }}</a>
+            <a href="#panel-sov" data-dash-tab="sov">{{ _('SoV') }}</a>
+            <a href="#findings">{{ _('Findings') }}</a>
+            {% if pages_analyzed_n %}<a href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
+            <a href="#edge-signals">{{ _('Edge') }}</a>
+            <a href="#pack">{{ _('Pack') }}</a>
+          </nav>
+
           <div class="report-panel is-active" id="panel-score" role="tabpanel" aria-labelledby="tab-score" data-panel="score">
           <section
             class="pulse-core"
@@ -313,6 +322,7 @@
           </div>
 
           <div class="report-panel" id="panel-sov" role="tabpanel" aria-labelledby="tab-sov" data-panel="sov" hidden>
+            {% include "partials/sov_ops.html" %}
             {% if engine_breakdown %}
             <section class="sov-panel" aria-labelledby="sov-title">
               <header class="sov-panel__head">
@@ -545,7 +555,7 @@
 
           <div class="report-split">
             {% if pages_analyzed_n %}
-            <section class="dash-block dash-block--panel" aria-labelledby="crawl-title">
+            <section class="dash-block dash-block--panel" id="critical-pages" aria-labelledby="crawl-title">
               <header class="dash-block__head">
                 <div>
                   <p class="dash-block__eyebrow">{{ _('Priorità') }}</p>
@@ -595,7 +605,7 @@
             </section>
             {% endif %}
 
-            <section class="dash-block dash-block--panel" aria-labelledby="findings-title">
+            <section class="dash-block dash-block--panel" id="findings" aria-labelledby="findings-title">
               <header class="dash-block__head">
                 <div>
                   <p class="dash-block__eyebrow">{{ _('Priorità') }}</p>
@@ -718,6 +728,13 @@
               {{ _('Plus: robots live, JSON-LD e snippet Worker/Vercel.') }}
             </p>
             {% else %}
+            {% include "partials/edge_wizard.html" %}
+            <details class="edge-advanced">
+              <summary>
+                {{ _('Snippet avanzati') }}
+                {% if is_pro %}<span>Plus</span>{% endif %}
+              </summary>
+              <div class="edge-advanced__body">
             <ul class="edge-urls">
               <li>
                 <span>llms.txt</span>
@@ -808,10 +825,12 @@
               <a href="{{ url_for('pricing') }}">{{ _('Vedi piani') }}</a>
             </p>
             {% endif %}
+              </div>
+            </details>
             {% endif %}
           </section>
 
-          <section class="dash-block dash-block--panel dash-block--pack" aria-labelledby="pack-title">
+          <section class="dash-block dash-block--panel dash-block--pack" id="pack" aria-labelledby="pack-title">
             <header class="dash-block__head">
               <div>
                 <p class="dash-block__eyebrow">{{ _('Deliverable') }}</p>
