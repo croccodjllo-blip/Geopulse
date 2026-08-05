@@ -3557,6 +3557,16 @@ def start_plus_trial(user: User) -> bool:
     return True
 
 
+def trial_available_for(user: User) -> bool:
+    """True if the account has never started (and isn't on) a Plus trial."""
+    return (
+        not user.is_admin
+        and (user.plan or "").lower() not in {"plus", "pro", "business"}
+        and getattr(user, "trial_started_at", None) is None
+        and not trial_is_active(user)
+    )
+
+
 def ensure_user_referral_code(user: User) -> str:
     code = (getattr(user, "referral_code", None) or "").strip()
     if code:
@@ -4893,12 +4903,7 @@ def dashboard():
         user_plan=user.plan_label,
         on_trial=bool(getattr(user, "on_trial", False)),
         trial_ends_at=getattr(user, "trial_ends_at", None),
-        trial_available=(
-            not user.is_admin
-            and (user.plan or "").lower() not in {"plus", "pro", "business"}
-            and getattr(user, "trial_started_at", None) is None
-            and not trial_is_active(user)
-        ),
+        trial_available=trial_available_for(user),
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
@@ -4922,7 +4927,7 @@ def dashboard_trial_start():
     user = current_user()
     if not user.email_verified:
         flash("Conferma l’email prima di attivare la prova Plus.", "error")
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard_settings"))
     if start_plus_trial(user):
         db.session.commit()
         if mail_configured():
@@ -4942,7 +4947,7 @@ def dashboard_trial_start():
         )
     else:
         flash("Prova Plus non disponibile (già usata o piano attivo).", "error")
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("dashboard_settings"))
 
 
 @app.route("/dashboard/analyze/confirmed", methods=["POST"])
@@ -5756,6 +5761,9 @@ def dashboard_settings():
                 gsc=gsc_status(),
                 js_crawl_ready=js_crawl_available(),
                 default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
+                referral_code=ensure_user_referral_code(user),
+                referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
+                trial_available=trial_available_for(user),
                 **capability_template_vars(user),
             )
 
@@ -5775,6 +5783,9 @@ def dashboard_settings():
         gsc=gsc_status(),
         js_crawl_ready=js_crawl_available(),
         default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
+        referral_code=ensure_user_referral_code(user),
+        referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
+        trial_available=trial_available_for(user),
         **capability_template_vars(user),
     )
 

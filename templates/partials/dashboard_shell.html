@@ -1,8 +1,3 @@
-{% set onboard_email = current_user.email_verified %}
-{% set onboard_analysis = latest is not none %}
-{# Keep onboarding for activation only — critical findings belong in the report, not a perpetual checklist. #}
-{% set onboard_open = (not onboard_email) or (not onboard_analysis) or trial_available or on_trial %}
-
 {% if free_exhausted or free_upsell %}
 <aside class="quota-banner" role="alert">
   <p class="quota-banner__text">{{ free_quota_banner }}</p>
@@ -10,34 +5,6 @@
   <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">{{ _('Vedi piano Plus') }}</a>
   {% else %}
   <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
-  {% endif %}
-</aside>
-{% endif %}
-
-{% if onboard_open %}
-<aside class="dash-onboard" aria-labelledby="progress-title">
-  <p class="dash-onboard__eyebrow">{{ _('Onboarding') }}</p>
-  <h2 class="dash-onboard__title" id="progress-title">{{ _('Prossimi passi') }}</h2>
-  <ol class="dash-onboard__list">
-    {% if not onboard_email %}
-    <li>○ {{ _('Conferma email') }}</li>
-    {% endif %}
-    {% if not onboard_analysis %}
-    <li>○ {{ _('Prima analisi del dominio') }}</li>
-    {% endif %}
-  </ol>
-  {% if trial_available %}
-  <form method="post" action="{{ url_for('dashboard_trial_start') }}" class="dash-onboard__actions">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <button type="submit" class="btn btn-ghost">{{ _('Attiva prova Plus 7 giorni') }}</button>
-  </form>
-  {% endif %}
-  {% if referral_code %}
-  <p class="dash-onboard__ref">
-    {{ _('Invita un collega:') }}
-    <code>{{ url_for('register', ref=referral_code, _external=True) }}</code>
-    — {{ _('tu ricevi') }} {{ referral_bonus_tokens }} {{ _('token quando conferma l’email.') }}
-  </p>
   {% endif %}
 </aside>
 {% endif %}

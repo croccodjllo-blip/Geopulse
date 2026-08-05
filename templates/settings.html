@@ -19,6 +19,28 @@
     </p>
   </header>
 
+  {% if trial_available or referral_code %}
+  <section class="page-section" id="plan-referral">
+    <h2 class="page-section__title">{{ _('Piano e referral') }}</h2>
+    {% if trial_available %}
+    <form method="post" action="{{ url_for('dashboard_trial_start') }}" class="form-grid panel">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <p class="lede">{{ _('Prova Plus gratis per 7 giorni: SoV measured e crawl esteso subito attivi.') }}</p>
+      <button type="submit" class="btn btn-ghost">{{ _('Attiva prova Plus 7 giorni') }}</button>
+    </form>
+    {% endif %}
+    {% if referral_code %}
+    <div class="form-grid panel"{% if trial_available %} style="margin-top:1rem"{% endif %}>
+      <p class="lede">
+        {{ _('Invita un collega:') }}
+        <code>{{ url_for('register', ref=referral_code, _external=True) }}</code>
+        — {{ _('tu ricevi') }} {{ referral_bonus_tokens }} {{ _('token quando conferma l’email.') }}
+      </p>
+    </div>
+    {% endif %}
+  </section>
+  {% endif %}
+
   <section class="page-section" id="connectors">
     <h2 class="page-section__title">{{ _('Connector') }}</h2>
     <ul class="plain-list">
