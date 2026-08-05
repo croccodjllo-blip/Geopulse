@@ -76,7 +76,8 @@
 
     // Hash → SoV / Edge / analyze sections
     var hash = (location.hash || "").replace(/^#/, "");
-    if (hash === "panel-sov" || hash === "sov") activateDashTab("sov");
+    if (hash === "panel-score" || hash === "score") activateDashTab("score");
+    else if (hash === "panel-sov" || hash === "sov") activateDashTab("sov");
     else if (hash === "edge-signals") {
       var edge = qs("#edge-signals");
       if (edge) edge.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -87,11 +88,17 @@
       if (form && typeof form.scrollIntoView === "function") {
         form.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+    } else if (qs("#panel-sov") && qs('.report-tabs__btn[data-tab="sov"]')) {
+      // Default view: SoV (animate bars once on load).
+      document.querySelectorAll(".engine-bar").forEach(function (row) {
+        row.classList.add("is-animated");
+      });
     }
 
     window.addEventListener("hashchange", function () {
       var h = (location.hash || "").replace(/^#/, "");
-      if (h === "panel-sov" || h === "sov") activateDashTab("sov");
+      if (h === "panel-score" || h === "score") activateDashTab("score");
+      else if (h === "panel-sov" || h === "sov") activateDashTab("sov");
       else if (h === "analyze") {
         var p = qs("#analyze-panel");
         if (p) p.open = true;

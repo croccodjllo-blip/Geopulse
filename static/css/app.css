@@ -5270,17 +5270,16 @@ html.analyze-busy {
 .engine-bar__fill {
   display: block;
   height: 100%;
-  width: 0%;
+  width: calc(var(--p, 0) * 1%);
   border-radius: inherit;
   background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 70%, #000), var(--accent));
   box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
-  transition: width 0ms;
+  transition: width 750ms var(--ease);
 }
 
 .engine-bar.is-animated .engine-bar__fill,
 .report-panel.is-active .engine-bar .engine-bar__fill {
   width: calc(var(--p) * 1%);
-  transition: width 750ms var(--ease);
 }
 
 .engine-bar__score {

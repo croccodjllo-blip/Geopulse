@@ -167,20 +167,20 @@
           </div>
 
           <div class="report-tabs" role="tablist" aria-label="{{ _('Vista report') }}">
-            <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="true" data-tab="score">{{ _('Score') }}</button>
-            <button type="button" class="report-tabs__btn" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="false" data-tab="sov">{{ _('SoV') }}</button>
+            <button type="button" class="report-tabs__btn" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="false" data-tab="score">{{ _('Score') }}</button>
+            <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="true" data-tab="sov">{{ _('SoV') }}</button>
           </div>
 
           <nav class="report-nav" aria-label="{{ _('Sezioni del report') }}">
-            <a href="#panel-score">{{ _('Score') }}</a>
             <a href="#panel-sov" data-dash-tab="sov">{{ _('SoV') }}</a>
+            <a href="#panel-score">{{ _('Score') }}</a>
             <a href="#findings">{{ _('Findings') }}</a>
             {% if pages_analyzed_n %}<a href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
             <a href="#edge-signals">{{ _('Edge') }}</a>
             <a href="#pack">{{ _('Pack') }}</a>
           </nav>
 
-          <div class="report-panel is-active" id="panel-score" role="tabpanel" aria-labelledby="tab-score" data-panel="score">
+          <div class="report-panel" id="panel-score" role="tabpanel" aria-labelledby="tab-score" data-panel="score" hidden>
           <section
             class="pulse-core"
             aria-label="AI-Driven Visibility (AIO) recommendation propensity"
@@ -345,7 +345,7 @@
           </section>
           </div>
 
-          <div class="report-panel" id="panel-sov" role="tabpanel" aria-labelledby="tab-sov" data-panel="sov" hidden>
+          <div class="report-panel is-active" id="panel-sov" role="tabpanel" aria-labelledby="tab-sov" data-panel="sov">
             {% include "partials/sov_ops.html" %}
             {% if engine_breakdown %}
             <section class="sov-panel" aria-labelledby="sov-title">
@@ -974,6 +974,13 @@
 
   const tabs = document.querySelectorAll('.report-tabs__btn');
   const panels = document.querySelectorAll('.report-panel');
+  const animateSovBars = () => {
+    document.querySelectorAll('.engine-bar').forEach((row) => {
+      row.classList.remove('is-animated');
+      void row.offsetWidth;
+      row.classList.add('is-animated');
+    });
+  };
   tabs.forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-tab');
@@ -987,15 +994,13 @@
         p.classList.toggle('is-active', on);
         p.hidden = !on;
       });
-      if (id === 'sov') {
-        document.querySelectorAll('.engine-bar').forEach((row) => {
-          row.classList.remove('is-animated');
-          void row.offsetWidth;
-          row.classList.add('is-animated');
-        });
-      }
+      if (id === 'sov') animateSovBars();
     });
   });
+  // SoV is the default panel — animate bars on first paint.
+  if (document.querySelector('#panel-sov.is-active')) {
+    animateSovBars();
+  }
 
   // Fallback poll only if the processing overlay is not present.
   const jobEl = document.getElementById('job-status');

@@ -250,16 +250,47 @@ def apply_measured_sov(
     breakdown: dict[str, Any],
     measured: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Sovrappone SoV measured (LLM probe) sul breakdown proxy, senza sostituire gli altri engine."""
+    """Sovrappone SoV measured (LLM probe) sul breakdown proxy.
+
+    P0: never let empty/near-zero measured probes wipe a healthy proxy SoV.
+    - ``mention_rate == 0`` keeps proxy propensity (annotates measured-zero).
+    - If no engine has a positive measured rate, return proxy unchanged.
+    - Weak brand_mention_rate does not replace a solid proxy brand_sov.
+    """
     if not measured or not measured.get("available"):
         return breakdown
-    out = dict(breakdown)
-    engines = [dict(e) for e in (out.get("engines") or [])]
+
     measured_engines = {
         str(e.get("id")): e for e in (measured.get("engines") or []) if isinstance(e, dict)
     }
+    positive_rates: list[float] = []
+    for m in measured_engines.values():
+        rate = m.get("mention_rate")
+        if rate is None:
+            continue
+        try:
+            rate_f = float(rate)
+        except (TypeError, ValueError):
+            continue
+        if rate_f > 0:
+            positive_rates.append(rate_f)
+
+    # Full fallback: measured available but no positive mentions → keep proxy.
+    if not positive_rates:
+        out = dict(breakdown)
+        out["measured"] = measured
+        out["note"] = (
+            (measured.get("note") or "").strip()
+            or "Probe measured senza menzioni positive: mostriamo SoV stimato (proxy)."
+        )
+        if out.get("evidence") == "proxy":
+            out["label"] = "Stimato (proxy) — measured senza hit"
+        return out
+
+    out = dict(breakdown)
+    engines = [dict(e) for e in (out.get("engines") or [])]
     for eng in engines:
-        m = measured_engines.get(eng.get("id"))
+        m = measured_engines.get(str(eng.get("id")))
         if not m:
             continue
         rate = m.get("mention_rate")
@@ -270,9 +301,22 @@ def apply_measured_sov(
                 if m.get("reason"):
                     eng["reason"] = m.get("reason")
             continue
-        eng["propensity"] = _clamp(float(rate))
+        try:
+            rate_f = float(rate)
+        except (TypeError, ValueError):
+            continue
+        if rate_f <= 0:
+            # Zero hit is observed, but do not erase proxy propensity/share.
+            eng["evidence"] = "measured"
+            eng["mention_rate"] = 0
+            eng["measured_zero"] = True
+            if m.get("samples") is not None:
+                eng["samples"] = m.get("samples")
+            continue
+        eng["propensity"] = _clamp(rate_f)
         eng["evidence"] = "measured"
         eng["mention_rate"] = eng["propensity"]
+        eng.pop("measured_zero", None)
         if m.get("samples") is not None:
             eng["samples"] = m.get("samples")
         if m.get("label"):
@@ -291,8 +335,11 @@ def apply_measured_sov(
     # Pending connectors are configuration placeholders, not observed engines.
     # Keep explicit unavailable engines (and their reason) visible to the UI.
     engines = [e for e in engines if e.get("evidence") != "pending"]
-    # Ricalcola share solo se almeno un engine è measured
-    if any(e.get("evidence") == "measured" for e in engines):
+    # Ricalcola share se abbiamo almeno un measured positivo.
+    if any(
+        e.get("evidence") == "measured" and float(e.get("mention_rate") or 0) > 0
+        for e in engines
+    ):
         raw = [max(0.5, float(e.get("propensity") or 0) * 1.0) for e in engines]
         total = sum(raw) or 1.0
         for i, eng in enumerate(engines):
@@ -300,16 +347,48 @@ def apply_measured_sov(
         drift = round(100.0 - sum(e["share"] for e in engines), 1)
         if engines:
             engines[-1]["share"] = round(engines[-1]["share"] + drift, 1)
+
+        proxy_brand = float(out.get("brand_sov") or 0)
         brand_rate = measured.get("brand_mention_rate")
-        if brand_rate is not None:
-            out["brand_sov"] = _clamp(float(brand_rate))
+        brand_f: float | None
+        try:
+            brand_f = float(brand_rate) if brand_rate is not None else None
+        except (TypeError, ValueError):
+            brand_f = None
+
+        positive_n = sum(
+            1
+            for e in engines
+            if e.get("evidence") == "measured" and float(e.get("mention_rate") or 0) > 0
+        )
+        # Weak measured brand must not collapse a healthy proxy SoV.
+        weak_brand = (
+            brand_f is None
+            or brand_f <= 0
+            or (
+                brand_f < 5
+                and positive_n < 2
+                and proxy_brand >= 15
+            )
+        )
+        if brand_f is not None and not weak_brand:
+            out["brand_sov"] = _clamp(brand_f)
             out["other_sov"] = round(100.0 - out["brand_sov"], 1)
             out["rivals_sov"] = 0.0
-        out["evidence"] = "mixed"
-        out["label"] = "Misto (proxy + measured)"
-        out["note"] = measured.get("note") or (
-            "ChatGPT: mention rate da probe LLM. Altri engine restano proxy euristico."
-        )
+            out["evidence"] = "mixed"
+            out["label"] = "Misto (proxy + measured)"
+        else:
+            out["evidence"] = "mixed"
+            out["label"] = "Misto — brand SoV da proxy"
+            out["note"] = measured.get("note") or (
+                "Probe measured con pochi hit: brand SoV resta sulla stima proxy; "
+                "gli engine con menzioni positive restano evidenza measured."
+            )
+        if not out.get("note"):
+            out["note"] = measured.get("note") or (
+                "Engine con menzioni LLM: evidence measured. "
+                "Altri engine restano proxy euristico."
+            )
     out["engines"] = engines
     out["composition"] = engines
     out["measured"] = measured
