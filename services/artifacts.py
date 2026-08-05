@@ -743,6 +743,170 @@ def _collect_faq_pairs(scraped: dict[str, Any]) -> list[dict[str, str]]:
     return deduped
 
 
+UNIFIED_FIX_FILENAME = "centropic-fix.html"
+
+
+def build_unified_fix_html(
+    *,
+    url: str,
+    domain: str,
+    llms_txt: str = "",
+    organization_jsonld_html: str = "",
+    faq_jsonld_html: str = "",
+    meta_pack_html: str = "",
+    robots_txt: str = "",
+    checklist_md: str = "",
+    before_after_md: str = "",
+    findings: list[dict[str, Any]] | None = None,
+    aio_score: Any = None,
+    geo_score: Any = None,
+) -> str:
+    """One installable HTML file that contains every pack fix.
+
+    Open in a browser, then copy the marked sections onto the live site:
+    ``<head>`` snippet, ``/llms.txt``, ``/robots.txt``, plus the priority checklist.
+    """
+    host = (domain or urlparse(url).netloc or "sito").strip()
+    brand = _clean_brand_name(host)
+    aio_s = "—" if aio_score is None else str(aio_score)
+    geo_s = "—" if geo_score is None else str(geo_score)
+    generated = datetime.now(timezone.utc).date().isoformat()
+
+    # Head snippet = meta tags + JSON-LD scripts (strip outer html/title wrappers from meta).
+    meta_body = meta_pack_html or ""
+    meta_body = re.sub(
+        r"(?is)^\s*<html[^>]*>\s*|<title>.*?</title>\s*",
+        "",
+        meta_body,
+    ).strip()
+    head_parts = [p for p in (meta_body, organization_jsonld_html, faq_jsonld_html) if p]
+    head_snippet = "\n".join(head_parts).strip() + ("\n" if head_parts else "")
+
+    crit = [
+        f
+        for f in (findings or [])
+        if str(f.get("severity") or "").lower() == "critical"
+    ]
+    warn = [
+        f
+        for f in (findings or [])
+        if str(f.get("severity") or "").lower() == "warn"
+    ]
+
+    def _esc(text: Any) -> str:
+        return (
+            str(text or "")
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+        )
+
+    finding_rows = []
+    for f in (crit + warn)[:24]:
+        sev = str(f.get("severity") or "").upper()
+        finding_rows.append(
+            "<li><strong>"
+            + _esc(sev)
+            + "</strong> — "
+            + _esc(f.get("title"))
+            + ": "
+            + _esc(f.get("detail") or f.get("fix") or "")
+            + "</li>"
+        )
+    findings_html = (
+        "<ul>" + "".join(finding_rows) + "</ul>"
+        if finding_rows
+        else "<p>Nessun finding critico/warn aperto — applica comunque gli artifact sotto.</p>"
+    )
+
+    checklist_block = _esc(checklist_md).replace("\n", "<br>\n") if checklist_md else ""
+    before_block = _esc(before_after_md).replace("\n", "<br>\n") if before_after_md else ""
+
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Centropic Fix — {_esc(host)}</title>
+<style>
+body{{font-family:IBM Plex Sans,Segoe UI,sans-serif;margin:0;background:#0A0E14;color:#F5F7FA;line-height:1.55}}
+.wrap{{max-width:820px;margin:0 auto;padding:2rem 1.25rem 3rem}}
+h1{{font-family:Space Grotesk,IBM Plex Sans,sans-serif;font-size:1.75rem;letter-spacing:-.03em;margin:0 0 .35rem}}
+h2{{font-family:Space Grotesk,IBM Plex Sans,sans-serif;font-size:1.15rem;margin:2rem 0 .65rem;color:#6EC6C0}}
+.lede{{color:#8B97A8;margin:0 0 1.25rem}}
+.meta{{font-size:.9rem;color:#8B97A8;margin-bottom:1.5rem}}
+.step{{border:1px solid #1A222D;border-radius:8px;padding:1rem 1.1rem;margin:0 0 1rem;background:#04060A}}
+.step p{{margin:.35rem 0 .75rem;color:#C5CCD6;font-size:.92rem}}
+pre{{white-space:pre-wrap;word-break:break-word;background:#11161F;border:1px solid #1A222D;border-radius:6px;padding:.85rem;font-size:.82rem;color:#E8EEF5;overflow:auto}}
+code{{font-family:IBM Plex Mono,ui-monospace,monospace}}
+ul{{padding-left:1.2rem;margin:.4rem 0}}
+li{{margin:.25rem 0}}
+footer{{margin-top:2rem;font-size:.85rem;color:#8B97A8}}
+.brand{{color:#6EC6C0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="brand">centropic.ai</p>
+  <h1>Pack ottimizzazione — un solo file</h1>
+  <p class="lede">Questo file chiude i gap AIO/GEO emersi dall’analisi. Applica le 3 sezioni sotto sul sito live, poi ri-analizza.</p>
+  <p class="meta">Dominio: <strong>{_esc(host)}</strong> · URL: {_esc(url)} · AIO {aio_s} · GEO {geo_s} · generato {generated}</p>
+
+  <h2>Problemi da chiudere</h2>
+  <div class="step">{findings_html}</div>
+
+  <h2>1 · Incolla nel &lt;head&gt; di ogni pagina chiave</h2>
+  <div class="step">
+    <p>Meta + Open Graph + JSON-LD Organization{(' + FAQ' if faq_jsonld_html else '')}. Un unico blocco da copiare nel template del sito.</p>
+    <pre id="head-fix">{_esc(head_snippet)}</pre>
+  </div>
+
+  <h2>2 · Pubblica <code>/llms.txt</code> in root</h2>
+  <div class="step">
+    <p>Crea il file alla root del dominio (<code>https://{_esc(host)}/llms.txt</code>) con questo contenuto.</p>
+    <pre id="llms-fix">{_esc(llms_txt)}</pre>
+  </div>
+
+  <h2>3 · Pubblica <code>/robots.txt</code> in root</h2>
+  <div class="step">
+    <p>Allinea la policy crawler IA. Se hai già un robots, unisci gli <code>Allow</code> per i bot elencati.</p>
+    <pre id="robots-fix">{_esc(robots_txt)}</pre>
+  </div>
+
+  {"<h2>Checklist operativa</h2><div class='step'><p>" + checklist_block + "</p></div>" if checklist_block else ""}
+  {"<h2>Before / After</h2><div class='step'><p>" + before_block + "</p></div>" if before_block else ""}
+
+  <footer>
+    Generato da <strong>Centropic</strong> (centropic.ai) per {_esc(brand)}.
+    Dopo la pubblicazione, torna in dashboard e avvia un re-scan per verificare i finding.
+  </footer>
+</div>
+</body>
+</html>
+"""
+
+
+def unified_fix_html_from_entity(entity: Any) -> str:
+    """Build the single pack file from a persisted SiteAnalysis / AnalysisRun."""
+    findings = entity.findings if hasattr(entity, "findings") else []
+    if callable(findings):
+        findings = findings()
+    return build_unified_fix_html(
+        url=getattr(entity, "url", "") or "",
+        domain=getattr(entity, "domain", "") or "",
+        llms_txt=getattr(entity, "llms_txt", "") or "",
+        organization_jsonld_html=getattr(entity, "json_ld_artifact", "") or "",
+        faq_jsonld_html=getattr(entity, "faq_artifact", "") or "",
+        meta_pack_html=getattr(entity, "meta_pack_artifact", "") or "",
+        robots_txt=getattr(entity, "robots_artifact", "") or "",
+        checklist_md=getattr(entity, "checklist_artifact", "") or "",
+        before_after_md=getattr(entity, "before_after_artifact", "") or "",
+        findings=list(findings or []),
+        aio_score=getattr(entity, "aio_score", None),
+        geo_score=getattr(entity, "geo_score", None),
+    )
+
+
 def build_optimization_pack(
     url: str,
     scraped: dict[str, Any],
@@ -757,6 +921,11 @@ def build_optimization_pack(
     usage_callback: Any | None = None,
     heartbeat_callback: Any | None = None,
 ) -> dict[str, str]:
+    """Build internal Edge artifacts + the single user-facing fix HTML.
+
+    Download/email expose only ``centropic-fix.html``. Individual keys remain
+    for Edge Signals / CMS connector injection.
+    """
     from services.deep_checks import build_before_after_report, build_fix_checklist
 
     def _hb() -> None:
@@ -793,6 +962,20 @@ def build_optimization_pack(
         current=current, previous=previous, diff=diff
     )
     _hb()
+    unified = build_unified_fix_html(
+        url=url,
+        domain=str(scraped.get("domain") or urlparse(url).netloc),
+        llms_txt=llms,
+        organization_jsonld_html=org_ld,
+        faq_jsonld_html=faq_ld,
+        meta_pack_html=meta,
+        robots_txt=robots,
+        checklist_md=checklist,
+        before_after_md=before_after,
+        findings=findings or [],
+        aio_score=(result or {}).get("aio_score") if result else None,
+        geo_score=(result or {}).get("geo_score") if result else None,
+    )
     return {
         "llms.txt": llms,
         "organization.jsonld.html": org_ld,
@@ -801,4 +984,5 @@ def build_optimization_pack(
         "robots.txt": robots,
         "fix-this-week.md": checklist,
         "before-after.md": before_after,
+        UNIFIED_FIX_FILENAME: unified,
     }

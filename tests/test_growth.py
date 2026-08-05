@@ -43,7 +43,7 @@ def test_sample_report_payload_shape():
     report = sample_report_payload()
     assert report["aio_score"] >= 0
     assert len(report["critical_findings"]) >= 3
-    assert "llms.txt" in report["pack"]
+    assert report["pack"] == ["centropic-fix.html"]
 
 
 def test_email_builders_contain_cta():

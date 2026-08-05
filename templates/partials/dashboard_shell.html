@@ -50,7 +50,7 @@
     <span class="report-lead__metric"><em>GEO</em> {{ latest.geo_score if latest.geo_score is not none else '—' }}</span>
   </div>
   <div class="report-lead__actions">
-    <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica ZIP') }}</a>
+    <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
     <a class="btn btn-ghost" href="#analyze">{{ _('Nuova analisi') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Grafici') }}</a>
     {% if findings_critical %}

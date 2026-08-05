@@ -1,6 +1,6 @@
 """
 Centropic (centropic.ai) — SaaS per ottimizzazione GEO/AIO dei siti web.
-Analisi score + findings + generazione pack artifact (llms.txt, JSON-LD, meta, robots).
+Analisi score + findings + generazione pack (singolo HTML con tutti i fix).
 """
 
 from __future__ import annotations
@@ -128,7 +128,13 @@ from services.usage_billing import (
     debit_cents_from_usage,
     assert_can_start_analysis,
 )
-from services.export import multi_site_zip, pack_zip_bytes, runs_to_csv
+from services.export import (
+    multi_site_zip,
+    pack_fix_filename as make_pack_fix_filename,
+    pack_fix_html_bytes,
+    runs_to_csv,
+)
+from services.artifacts import unified_fix_html_from_entity
 from services.guides import GUIDES, get_guide
 from services.growth import (
     REFERRAL_BONUS_CENTS,
@@ -4827,6 +4833,14 @@ def dashboard():
         pending_job=pending_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
+        pack_fix_html=(
+            unified_fix_html_from_entity(latest) if latest is not None else ""
+        ),
+        pack_fix_filename=(
+            make_pack_fix_filename(latest)
+            if latest is not None
+            else "centropic-fix.html"
+        ),
         **capability_template_vars(user),
     )
 
@@ -6568,29 +6582,30 @@ def admin_cancel_job(job_id: int):
     return redirect(url_for("admin_home"))
 
 
+@app.route("/dashboard/download/<int:analysis_id>.html")
 @app.route("/dashboard/download/<int:analysis_id>.zip")
 @login_required
 def download_pack(analysis_id: int):
+    """Serve the single unified fix HTML (``.zip`` kept as alias for old links)."""
     user = current_user()
     analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
 
-    buffer = io.BytesIO(pack_zip_bytes(analysis))
-    filename = f"centropic-{analysis.domain.replace(':', '_')}.zip"
+    buffer = io.BytesIO(pack_fix_html_bytes(analysis))
     return send_file(
         buffer,
-        mimetype="application/zip",
+        mimetype="text/html; charset=utf-8",
         as_attachment=True,
-        download_name=filename,
+        download_name=make_pack_fix_filename(analysis),
     )
 
 
 @app.route("/dashboard/email-pack/<int:analysis_id>", methods=["POST"])
 @login_required
 def email_pack(analysis_id: int):
-    """Invia il pack ZIP all’email dell’account registrato."""
+    """Invia il singolo file fix HTML all’email dell’account registrato."""
     user = current_user()
     analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
@@ -6600,7 +6615,7 @@ def email_pack(analysis_id: int):
     if not mail_configured():
         flash(
             "Invio email non ancora attivo su questo server. "
-            "Puoi scaricare lo ZIP intanto.",
+            "Puoi scaricare il file HTML intanto.",
             "error",
         )
         return redirect(url_for("dashboard"))
@@ -6616,8 +6631,8 @@ def email_pack(analysis_id: int):
         )
         return redirect(url_for("dashboard"))
 
-    zip_bytes = pack_zip_bytes(analysis)
-    filename = f"centropic-{analysis.domain.replace(':', '_')}.zip"
+    html_bytes = pack_fix_html_bytes(analysis)
+    filename = make_pack_fix_filename(analysis)
     subject, text_body, html_body = build_pack_email(
         user_name=user.name,
         domain=analysis.domain,
@@ -6631,12 +6646,12 @@ def email_pack(analysis_id: int):
             text_body=text_body,
             html_body=html_body,
             attachment_filename=filename,
-            attachment_bytes=zip_bytes,
+            attachment_bytes=html_bytes,
         )
     except Exception:
         app.logger.exception("Pack email failed user_id=%s analysis_id=%s", user.id, analysis_id)
         flash(
-            "Invio email non riuscito. Riprova tra poco o scarica lo ZIP.",
+            "Invio email non riuscito. Riprova tra poco o scarica il file HTML.",
             "error",
         )
         return redirect(url_for("dashboard"))
@@ -6733,6 +6748,7 @@ def site_history(analysis_id: int):
     )
 
 
+@app.route("/dashboard/download/run/<int:run_id>.html")
 @app.route("/dashboard/download/run/<int:run_id>.zip")
 @login_required
 @pro_required
@@ -6748,12 +6764,13 @@ def download_run_pack(run_id: int):
         flash("Run non trovata.", "error")
         return redirect(url_for("dashboard"))
 
-    buffer = io.BytesIO(pack_zip_bytes(run))
+    buffer = io.BytesIO(pack_fix_html_bytes(run))
     stamp = run.created_at.strftime("%Y%m%d-%H%M") if run.created_at else "run"
-    filename = f"centropic-{run.domain.replace(':', '_')}-{stamp}.zip"
+    domain = (run.domain or "site").replace(":", "_").replace("/", "_")
+    filename = f"centropic-{domain}-{stamp}-fix.html"
     return send_file(
         buffer,
-        mimetype="application/zip",
+        mimetype="text/html; charset=utf-8",
         as_attachment=True,
         download_name=filename,
     )

@@ -11,7 +11,7 @@
     <p class="report-meta">
       <a class="site-link" href="{{ analysis.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
       <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
-      <a class="site-link" href="{{ url_for('download_pack', analysis_id=analysis.id) }}">{{ _('ZIP corrente') }}</a>
+      <a class="site-link" href="{{ url_for('download_pack', analysis_id=analysis.id) }}">{{ _('Pack corrente') }}</a>
     </p>
 
     <section class="monitor-panel" aria-labelledby="schedule-title">
@@ -87,7 +87,7 @@
             </div>
           </div>
           <div class="history-actions">
-            <a href="{{ url_for('download_run_pack', run_id=item.id) }}">{{ _('ZIP run') }}</a>
+            <a href="{{ url_for('download_run_pack', run_id=item.id) }}">{{ _('Pack run') }}</a>
           </div>
         </li>
         {% else %}

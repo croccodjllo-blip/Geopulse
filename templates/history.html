@@ -42,12 +42,12 @@
       <div class="history-actions">
         <span class="muted">{{ item.created_at.strftime('%d/%m/%Y %H:%M') if item.created_at else '' }} UTC</span>
         {% if history_is_runs %}
-        <a href="{{ url_for('download_run_pack', run_id=item.id) }}">ZIP</a>
+        <a href="{{ url_for('download_run_pack', run_id=item.id) }}">HTML</a>
         {% if item.site_id %}
         <a href="{{ url_for('site_history', analysis_id=item.site_id) }}">{{ _('Dettaglio') }}</a>
         {% endif %}
         {% else %}
-        <a href="{{ url_for('download_pack', analysis_id=item.id) }}">ZIP</a>
+        <a href="{{ url_for('download_pack', analysis_id=item.id) }}">HTML</a>
         {% endif %}
       </div>
     </li>

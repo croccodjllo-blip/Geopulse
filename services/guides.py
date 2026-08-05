@@ -115,7 +115,7 @@ def _guide_llms_txt() -> dict[str, Any]:
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Come Centropic aiuta</h2>
-    <p class="lede">Ogni analisi genera una bozza <code>llms.txt</code> nel pack ZIP. Pubblicala in root (<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding passa a “disponibile” se il probe la trova.</p>
+    <p class="lede">Ogni analisi genera una bozza <code>llms.txt</code> nel pack HTML unico. Pubblicala in root (<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding passa a “disponibile” se il probe la trova.</p>
     <p class="lede">Esempio vivo: il llms.txt di Centropic è su <a href="/llms.txt">centropic.ai/llms.txt</a>, con preferred citation e link a metodologia.</p>
   </section>
   <section class="page-section">

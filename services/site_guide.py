@@ -306,10 +306,10 @@ def site_guide_payload() -> dict[str, Any]:
                 "title": _("Pack ottimizzazione"),
                 "image": GUIDE_IMAGES["pack"],
                 "summary": _(
-                    "Artifact pronti: llms.txt, JSON-LD, FAQ, meta, robots, before/after."
+                    "Un solo file HTML con tutti i fix (head, llms.txt, robots, checklist)."
                 ),
                 "bullets": [
-                    _("Copia dai pannelli o scarica lo ZIP"),
+                    _("Scarica un solo file HTML con tutti i fix"),
                     _("Su Plus puoi inviare il pack via email"),
                     _(
                         "La pubblicazione sul sito resta a tuo carico (o via Edge/CMS)"
@@ -536,22 +536,15 @@ def site_guide_payload() -> dict[str, Any]:
             },
         ],
         "pack_files": [
-            {"file": "llms.txt", "where": _("root del sito")},
             {
-                "file": "organization.jsonld.html",
-                "where": _("<head> o Edge /.well-known/"),
+                "file": "centropic-fix.html",
+                "where": _(
+                    "unico deliverable: apri e copia head / llms.txt / robots sul sito"
+                ),
             },
-            {"file": "faq.jsonld.html", "where": "<head>"},
-            {"file": "meta-pack.html", "where": "<head>"},
-            {"file": "robots.txt", "where": _("root del sito")},
-            {
-                "file": "fix-this-week.md",
-                "where": _("checklist operativa interna"),
-            },
-            {"file": "before-after.md", "where": _("confronto tra run")},
             {
                 "file": "signals.json",
-                "where": _("Edge /geopulse/signals.json via CMS"),
+                "where": _("Edge /geopulse/signals.json via CMS (opzionale)"),
             },
         ],
         "plans": [
@@ -561,7 +554,7 @@ def site_guide_payload() -> dict[str, Any]:
                     _(
                         "1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso URL ok, consuma token)"
                     ),
-                    _("Score, findings, pack ZIP, Edge base (llms + signals)"),
+                    _("Score, findings, pack HTML unico, Edge base (llms + signals)"),
                     _("SoV stimato (proxy)"),
                 ],
             },

@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import csv
 import io
-import json
 import zipfile
 from datetime import datetime
 from typing import Any, Iterable
 
+from services.artifacts import UNIFIED_FIX_FILENAME, unified_fix_html_from_entity
 from services.security import csv_cell
 
 
@@ -59,48 +59,27 @@ def runs_to_csv(runs: Iterable[Any]) -> bytes:
     return buffer.getvalue().encode("utf-8-sig")
 
 
+def pack_fix_html_bytes(entity: Any) -> bytes:
+    """Single HTML file that consolidates every optimization fix."""
+    return unified_fix_html_from_entity(entity).encode("utf-8")
+
+
+def pack_fix_filename(entity: Any) -> str:
+    domain = (getattr(entity, "domain", None) or "site").replace(":", "_").replace("/", "_")
+    return f"centropic-{domain}-fix.html"
+
+
 def pack_zip_bytes(entity: Any) -> bytes:
-    """ZIP pack da SiteAnalysis o AnalysisRun."""
+    """ZIP pack with exactly one file: the unified Centropic fix HTML."""
     buffer = io.BytesIO()
-    rating = entity.rating if hasattr(entity, "rating") else {}
+    html = pack_fix_html_bytes(entity)
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("llms.txt", entity.llms_txt or "")
-        zf.writestr("organization.jsonld.html", entity.json_ld_artifact or "")
-        faq = getattr(entity, "faq_artifact", None) or ""
-        if faq:
-            zf.writestr("faq.jsonld.html", faq)
-        zf.writestr("meta-pack.html", entity.meta_pack_artifact or "")
-        zf.writestr("robots.txt", entity.robots_artifact or "")
-        checklist = getattr(entity, "checklist_artifact", None) or ""
-        if checklist:
-            zf.writestr("fix-this-week.md", checklist)
-        before_after = getattr(entity, "before_after_artifact", None) or ""
-        if before_after:
-            zf.writestr("before-after.md", before_after)
-        report = {
-            "url": entity.url,
-            "domain": entity.domain,
-            "aio_score": entity.aio_score,
-            "geo_score": entity.geo_score,
-            "pages_analyzed": getattr(entity, "pages_analyzed", 1),
-            "pages": entity.crawl_pages if hasattr(entity, "crawl_pages") else [],
-            "rating": rating.get("code"),
-            "rating_score": rating.get("score"),
-            "rating_label": rating.get("label"),
-            "findings": entity.findings if hasattr(entity, "findings") else [],
-            "notes": entity.analysis_notes,
-            "source": getattr(entity, "source", "manual"),
-            "generated_at": _iso(entity.created_at) or None,
-        }
-        zf.writestr(
-            "report.json",
-            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-        )
+        zf.writestr(UNIFIED_FIX_FILENAME, html)
     return buffer.getvalue()
 
 
 def multi_site_zip(sites: Iterable[Any]) -> bytes:
-    """Un ZIP con una cartella per dominio/sito (stato corrente)."""
+    """Un ZIP con una cartella per dominio/sito (un solo fix.html ciascuno)."""
     buffer = io.BytesIO()
     used_names: set[str] = set()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -112,22 +91,8 @@ def multi_site_zip(sites: Iterable[Any]) -> bytes:
                 folder = f"{base}-{n}"
                 n += 1
             used_names.add(folder)
-            pack = pack_zip_bytes(site)
-            # Estrae i file del pack nella cartella
-            inner = io.BytesIO(pack)
-            with zipfile.ZipFile(inner, "r") as src:
-                for info in src.infolist():
-                    zf.writestr(f"{folder}/{info.filename}", src.read(info.filename))
-            # Indice leggero
             zf.writestr(
-                f"{folder}/INDEX.txt",
-                (
-                    f"GeoPulse export\n"
-                    f"URL: {site.url}\n"
-                    f"Domain: {site.domain}\n"
-                    f"AIO: {site.aio_score}\n"
-                    f"GEO: {site.geo_score}\n"
-                    f"Updated: {_iso(site.created_at)}\n"
-                ),
+                f"{folder}/{UNIFIED_FIX_FILENAME}",
+                pack_fix_html_bytes(site),
             )
     return buffer.getvalue()

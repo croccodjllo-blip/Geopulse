@@ -63,11 +63,7 @@ def sample_report_payload() -> dict[str, Any]:
             },
         ],
         "pack": [
-            "llms.txt",
-            "organization.jsonld.html",
-            "meta-pack.html",
-            "robots.txt",
-            "fix-this-week.md",
+            "centropic-fix.html",
         ],
         "next_steps": [
             "Attiva Edge Signals e scarica il CMS connector",

@@ -86,7 +86,7 @@
               </p>
             </div>
             <div class="report-top__actions">
-              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica ZIP') }}</a>
+              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="{{ _('Email non configurata sul server') }}"{% endif %}>
@@ -590,7 +590,7 @@
                 {% endfor %}
               </ul>
               {% if crawl_pages_view|length > 24 %}
-              <p class="dash-block__more">{{ _('Prime 24 criticità · elenco completo nello ZIP') }}</p>
+              <p class="dash-block__more">{{ _('Prime 24 criticità · elenco completo nel pack') }}</p>
               {% endif %}
               {% else %}
               <p class="dash-block__empty">{{ _('Nessuna pagina critica su') }} {{ pages_analyzed_n }} {{ _('analizzate.') }}</p>
@@ -812,70 +812,24 @@
               <div>
                 <p class="dash-block__eyebrow">{{ _('Deliverable') }}</p>
                 <h3 class="dash-block__title" id="pack-title">{{ _('Pack ottimizzazione') }}</h3>
+                <p class="dash-block__more">{{ _('Un solo file HTML con tutti i fix: head snippet, llms.txt, robots e checklist.') }}</p>
               </div>
-              <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="dash-block__mail">
-                  {{ _('Invia a') }} {{ current_user.email }}
-                </button>
-              </form>
+              <div class="dash-block__meta">
+                <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica') }} {{ pack_fix_filename }}</a>
+                <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <button type="submit" class="dash-block__mail">
+                    {{ _('Invia a') }} {{ current_user.email }}
+                  </button>
+                </form>
+              </div>
             </header>
-            <div class="pack-grid">
-              {% if latest.checklist_artifact %}
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>fix-this-week.md</span>
-                  <button type="button" class="linkish" onclick="copyFrom('checklist-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="checklist-box">{{ latest.checklist_artifact }}</pre>
+            <div class="code-shell">
+              <div class="code-shell__bar">
+                <span>{{ pack_fix_filename }}</span>
+                <button type="button" class="linkish" onclick="copyFrom('pack-fix-box', this)">{{ _('Copia') }}</button>
               </div>
-              {% endif %}
-              {% if latest.before_after_artifact %}
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>before-after.md</span>
-                  <button type="button" class="linkish" onclick="copyFrom('ba-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="ba-box">{{ latest.before_after_artifact }}</pre>
-              </div>
-              {% endif %}
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>/llms.txt</span>
-                  <button type="button" class="linkish" onclick="copyFrom('llms-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="llms-box">{{ latest.llms_txt }}</pre>
-              </div>
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>organization.jsonld.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('jsonld-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="jsonld-box">{{ latest.json_ld_artifact }}</pre>
-              </div>
-              {% if latest.faq_artifact %}
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>faq.jsonld.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('faq-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="faq-box">{{ latest.faq_artifact }}</pre>
-              </div>
-              {% endif %}
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>meta-pack.html</span>
-                  <button type="button" class="linkish" onclick="copyFrom('meta-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="meta-box">{{ latest.meta_pack_artifact }}</pre>
-              </div>
-              <div class="code-shell code-shell--compact">
-                <div class="code-shell__bar">
-                  <span>robots.txt</span>
-                  <button type="button" class="linkish" onclick="copyFrom('robots-box', this)">{{ _('Copia') }}</button>
-                </div>
-                <pre id="robots-box">{{ latest.robots_artifact }}</pre>
-              </div>
+              <pre id="pack-fix-box">{{ pack_fix_html }}</pre>
             </div>
           </section>
         </section>

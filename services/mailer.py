@@ -396,8 +396,9 @@ def build_pack_email(
         f"Ciao {first},\n\n"
         f"in allegato il pack di ottimizzazione GEO/AIO per {domain}.\n"
         f"Score: AIO {aio} · GEO {geo}.\n\n"
-        "Contiene llms.txt, JSON-LD, meta pack, robots e checklist.\n"
-        "Apri lo ZIP e applica gli artifact sul sito.\n\n"
+        "È un unico file HTML (centropic-fix.html) con tutti i fix: "
+        "snippet <head>, /llms.txt, /robots.txt e checklist.\n"
+        "Apri il file nel browser e applica le sezioni sul sito live.\n\n"
         "— Centropic (centropic.ai)\n"
     )
     html = (
@@ -405,8 +406,10 @@ def build_pack_email(
         f"<p>in allegato il pack di ottimizzazione GEO/AIO per "
         f"<strong>{domain}</strong>.</p>"
         f"<p>Score: AIO {aio} · GEO {geo}.</p>"
-        "<p>Contiene <code>llms.txt</code>, JSON-LD, meta pack, robots e checklist. "
-        "Apri lo ZIP e applica gli artifact sul sito.</p>"
+        "<p>È un unico file HTML (<code>centropic-fix.html</code>) con tutti i fix: "
+        "snippet <code>&lt;head&gt;</code>, <code>/llms.txt</code>, "
+        "<code>/robots.txt</code> e checklist. "
+        "Apri il file nel browser e applica le sezioni sul sito live.</p>"
         "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
     )
     return subject, text, html
