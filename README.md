@@ -1,37 +1,31 @@
-# GeoPulse (geopulse.it)
+# Centropic (`centropic.ai`)
 
-Sito e SaaS per **AI-Driven Visibility (AIO)** e **Generative Engine Optimization (GEO)**:
-registrazione utenti, analisi del dominio, pack artifact e **Edge Signals**
-(hosting dinamico `llms.txt` / `robots` / `signals.json` via `/e/<token>` + Worker CDN).
+SaaS B2B per **AI-Driven Visibility (AIO)** e **Generative Engine Optimization (GEO)**:
+registrazione, diagnosi dominio, pack artifact e **Edge Signals**
+(hosting dinamico `llms.txt` / `robots` / `signals.json` via `/e/<token>`).
 
-> Nota: in GeoPulse, **GEO ≠ GIS** (Geographic Information System) e **AIO ≠ All-in-One**.
-> Sono metriche di citabilità IA / answer engine.
+> **GEO ≠ GIS** · **AIO ≠ All-in-One** — metriche di citabilità nelle risposte IA.
+> Ex-brand GeoPulse resta solo come continuità SEO (`alternateName`) e alias legacy API (`gp_`, `X-GeoPulse-*`).
 
-Dominio pubblico: **https://geopulse.it**
+Dominio pubblico: **https://centropic.ai**
 
 ## Struttura
 
 ```
 aio-bot/
-├── app.py
-├── requirements.txt
+├── app.py                 # HTTP surface (migrazione progressiva → centropic/views)
+├── centropic/             # factory, tenancy, CSP, metrics, view catalogs
+├── services/              # analyzer, billing, jobs, entitlements, edge…
+├── migrations/            # Alembic (source of truth in produzione)
+├── workers/               # Edge / signals worker templates
+├── templates/             # Jinja (marketing + dashboard)
+├── static/                # CSS/JS + geo-ui React build
+├── tests/
 ├── ROADMAP.md
-├── database.db          # creato al primo avvio
-├── services/
-│   ├── analyzer.py      # scrape, probe, score AIO/GEO
-│   ├── artifacts.py     # llms.txt, JSON-LD, meta, robots
-│   └── edge_signals.py  # hosting dinamico + snippet Worker/Vercel
-├── workers/
-│   └── geopulse-signals/  # Cloudflare Worker template
-├── templates/
-│   ├── base.html
-│   ├── login.html
-│   ├── register.html
-│   └── dashboard.html
-└── .env.example
+└── DEPLOY.md
 ```
 
-## Setup
+## Setup locale
 
 ```bash
 cd /home/ubuntu/aio-bot
@@ -39,26 +33,26 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# Imposta FLASK_SECRET_KEY e (opzionale) OPENAI_API_KEY
+# Imposta FLASK_SECRET_KEY e (opzionale) chiavi LLM / Paddle
 python app.py
 ```
 
 Apri http://127.0.0.1:5000
 
-## Deploy su server
+## Deploy
 
-Vedi **[DEPLOY.md](./DEPLOY.md)**.
+Vedi **[DEPLOY.md](./DEPLOY.md)**. Produzione: Gunicorn + git push VPS; schema via **Alembic** (`alembic upgrade head`).
 
 ```bash
 ./scripts/deploy.sh
-# oppure remoto:
+# oppure:
 REMOTE=root@TUO_IP ./scripts/deploy.sh
 ```
 
 ## Note
 
-- Password hash con Werkzeug
-- Sessioni Flask + CSRF (Flask-WTF)
-- Database SQLite `database.db` via SQLAlchemy (in Docker: volume `/data`)
-- Senza `OPENAI_API_KEY` viene usato un generatore fallback basato sullo scraping
-- Produzione: Gunicorn + Docker (+ Nginx opzionale)
+- Sessioni Flask + CSRF (Flask-WTF); `session_version` invalida sessioni dopo reset password
+- API pubblica: Bearer `ct_…` (legacy `gp_…` ancora accettato)
+- Edge / webhook: header `X-Centropic-*` (+ alias `X-GeoPulse-*`)
+- Piani: Free / Plus / Business — source of truth `services/entitlements.py`
+- Test: `python3 -m pytest -q`

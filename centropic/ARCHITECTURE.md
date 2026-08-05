@@ -10,11 +10,11 @@ Layered Flask SaaS package under `centropic/`.
 | Extensions | `centropic.extensions` | Unbound `db`, `csrf` |
 | Tenancy | `centropic.tenancy` | Organization / membership / site ACL |
 | Security | `centropic.csp` | Per-request CSP nonces |
-| Ops | `centropic.metrics` | Counters, timings, optional Sentry |
+| Ops | `centropic.metrics`, `centropic.ops_health` | Counters, timings, job queue snapshot, optional Sentry |
 | HTTP | `centropic.views.*` | Domain route catalogs + register hooks |
 | Factory | `centropic.factory` | `create_app()` |
 | Data plane | `alembic.ini` + `migrations/` | Versioned schema (Postgres-ready) |
-| Compat | `app.py` | WSGI entry, models, route handlers |
+| Compat | `app.py` | WSGI entry, models, route handlers (progressive extraction) |
 
 ## Schema lifecycle
 

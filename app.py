@@ -2537,27 +2537,15 @@ def health():
             "stale_after_minutes": STALE_HEARTBEAT_MINUTES,
         }
         if db_ok:
-            stale_cutoff = datetime.now(timezone.utc) - timedelta(
-                minutes=STALE_HEARTBEAT_MINUTES
-            )
+            from centropic.ops_health import job_queue_snapshot
+
             jobs_detail.update(
-                {
-                    "pending": AnalysisJob.query.filter_by(status="pending").count(),
-                    "running": AnalysisJob.query.filter_by(status="running").count(),
-                    "stale_running": AnalysisJob.query.filter(
-                        AnalysisJob.status == "running",
-                        or_(
-                            AnalysisJob.lease_token.is_(None),
-                            AnalysisJob.lease_token == "",
-                            func.coalesce(
-                                AnalysisJob.heartbeat_at,
-                                AnalysisJob.started_at,
-                                AnalysisJob.created_at,
-                            )
-                            < stale_cutoff,
-                        ),
-                    ).count(),
-                }
+                job_queue_snapshot(
+                    AnalysisJob,
+                    stale_after_minutes=STALE_HEARTBEAT_MINUTES,
+                    func=func,
+                    or_=or_,
+                )
             )
         payload.update(
             {
@@ -2605,7 +2593,7 @@ def health():
                     "package": "centropic",
                     "tenancy": "organization",
                     "csp": "nonce",
-                    "schema": "dialect-aware",
+                    "schema": "alembic",
                 },
             }
         )

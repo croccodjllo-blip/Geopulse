@@ -1,9 +1,7 @@
 {% set onboard_email = current_user.email_verified %}
 {% set onboard_analysis = latest is not none %}
+{# Keep onboarding for activation only — critical findings belong in the report, not a perpetual checklist. #}
 {% set onboard_open = (not onboard_email) or (not onboard_analysis) or trial_available or on_trial %}
-{% if onboard_analysis and findings_critical %}
-  {% set onboard_open = true %}
-{% endif %}
 
 {% if free_exhausted or free_upsell %}
 <aside class="quota-banner" role="alert">
@@ -26,9 +24,6 @@
     {% endif %}
     {% if not onboard_analysis %}
     <li>○ {{ _('Prima analisi del dominio') }}</li>
-    {% endif %}
-    {% if onboard_analysis and findings_critical %}
-    <li>○ {{ _('Chiudi i finding critici / pubblica il pack') }}</li>
     {% endif %}
     {% if not is_pro or on_trial %}
     <li>{% if on_trial %}◐{% else %}○{% endif %} {{ _('Plus (SoV measured + crawl esteso)') }}</li>
@@ -61,6 +56,9 @@
     <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica ZIP') }}</a>
     <a class="btn btn-ghost" href="#analyze">{{ _('Nuova analisi') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Grafici') }}</a>
+    {% if findings_critical %}
+    <a class="btn btn-ghost" href="#findings-title">{{ _('Findings') }} ({{ findings_critical|length }})</a>
+    {% endif %}
   </div>
 </div>
 {% endif %}
