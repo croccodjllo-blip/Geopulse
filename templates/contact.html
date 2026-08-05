@@ -23,7 +23,8 @@
       </li>
       <li><strong>{{ _('Prodotto') }}</strong> — <a href="{{ url_for('product') }}">{{ _('come funziona Centropic') }}</a></li>
       <li><strong>{{ _('Account') }}</strong> — <a href="{{ url_for('register') }}">{{ _('registrati') }}</a> {{ _('o') }} <a href="{{ url_for('login') }}">{{ _('accedi') }}</a></li>
-      <li><strong>Plus</strong> — <a href="{{ url_for('pro_interest') }}">{{ _('waitlist interesse Plus') }}</a></li>
+      <li><strong>{{ _('Piani') }}</strong> — <a href="{{ url_for('pricing') }}">Free · Plus · Business</a></li>
+      <li><strong>{{ _('Interesse / waitlist') }}</strong> — <a href="{{ url_for('pro_interest') }}">{{ _('lascia i contatti') }}</a></li>
       <li><strong>{{ _('Chi siamo') }}</strong> — <a href="{{ url_for('about') }}">{{ _('missione e metodo') }}</a></li>
     </ul>
   </section>
@@ -31,7 +32,7 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Cosa includere nella mail') }}</h2>
     <p class="lede">
-      {{ _('URL del sito da analizzare, piano attuale (Free/Plus), e se possibile uno screenshot del report. Per partnership indica agenzia, verticali e volume siti gestiti.') }}
+      {{ _('URL del sito, piano attuale (Free / Plus / Business) e, se possibile, uno screenshot del report. Per partnership agenzia indica verticali e volume siti.') }}
     </p>
   </section>
 

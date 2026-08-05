@@ -52,8 +52,8 @@ def _guide_metodologia() -> dict[str, Any]:
     <p class="lede">Il breakdown per engine (ChatGPT, Gemini come proxy AI Overview, Claude, Perplexity, Grok, Azure AI) resta etichettato <em>Stimato</em> finché non gira il citation monitor Plus.</p>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">3. SoV measured (Plus)</h2>
-    <p class="lede">Sul piano Plus, con connector API configurati, Centropic invia un prompt bank al citation monitor e conta le menzioni del brand/dominio nelle risposte. È un campione probe, non un ranking garantito nelle UI consumer degli LLM.</p>
+    <h2 class="page-section__title">3. SoV measured (Plus / Business)</h2>
+    <p class="lede">Su Plus e Business, con connector API configurati, Centropic invia un prompt bank al citation monitor e conta le menzioni del brand/dominio nelle risposte. È un campione probe, non un ranking garantito nelle UI consumer degli LLM.</p>
     <ul class="plain-list">
       <li>Prompt personalizzabili in Impostazioni (prompt bank).</li>
       <li>Evidence badge <em>Misurato</em> per engine disponibili.</li>
@@ -65,7 +65,7 @@ def _guide_metodologia() -> dict[str, Any]:
     <ul class="plain-list">
       <li>Nessuna garanzia di ranking o menzione da parte di modelli di terzi.</li>
       <li>Il pack artifact è una bozza operativa: la pubblicazione resta a carico del cliente.</li>
-      <li>SoV measured è disponibile <strong>solo sul piano Plus</strong> (e Admin), quando i connector API sono configurati.</li>
+      <li>SoV measured è disponibile su <strong>Plus e Business</strong> (e Admin), quando i connector API sono configurati.</li>
       <li>GEO in Centropic non significa GIS; AIO non significa All-in-One.</li>
     </ul>
   </section>
@@ -197,7 +197,7 @@ def _guide_score_vs_sov() -> dict[str, Any]:
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Share of Voice (SoV)</h2>
-    <p class="lede"><strong>Proxy</strong>: formula su AIO/GEO + robots osservato. <strong>Measured</strong>: polling prompt su LLM (Plus) con conteggio menzioni brand. Non confondere i due.</p>
+    <p class="lede"><strong>Proxy</strong>: formula su AIO/GEO + robots osservato. <strong>Measured</strong>: polling prompt su LLM (Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>
     <p class="lede">Per alzare SoV measured: rafforza entity pubblica (llms.txt, Organization, about), pubblica contenuti citabili, amplia il prompt bank con domande che il tuo mercato pone davvero.</p>
   </section>
   <section class="page-section">

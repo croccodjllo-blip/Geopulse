@@ -48,13 +48,14 @@
       {% for s in report.next_steps %}<li>{{ s }}</li>{% endfor %}
     </ul>
     <p class="lede">
-      {{ _('Vuoi lo stesso flusso sul tuo dominio? Crea un account Free o passa a Plus per SoV measured e crawl esteso.') }}
+      {{ _('Stesso flusso sul tuo dominio: Free per validare, Plus per SoV Misurato, Business per API e white-label agenzia.') }}
     </p>
   </section>
 
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Analizza il tuo sito') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi Plus') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi i piani') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('agencies') }}">{{ _('Per agenzie') }}</a>
   </div>
 </article>
 {% endblock %}

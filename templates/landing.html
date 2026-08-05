@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Centropic — {{ _('Signal Intelligence per AIO e GEO') }}{% endblock %}
-{% block meta_description %}{{ _('Centropic — Signal Intelligence per Generative Engine Optimization: diagnosi del dominio, artifact machine-readable e citabilità nelle risposte IA.') }}{% endblock %}
+{% block meta_description %}{{ _('Centropic: diagnosi AIO/GEO, pack machine-readable e tre profili — Free, Plus 14,99€ (startup), Business 49,99€ (agenzie).') }}{% endblock %}
 {% block header_class %}site-header--invert site-header--transparent{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
@@ -36,11 +36,11 @@
       <span class="text-gradient">{{ _('ti citano') }}</span>
     </h1>
     <p class="lede hero-lede">
-      {{ _('In pochi minuti: score AIO/GEO, gap prioritizzati e pack da pubblicare (llms.txt, schema, robots) per ChatGPT, Claude e Perplexity.') }}
+      {{ _('Diagnosi AIO/GEO, gap prioritizzati e pack da pubblicare — per founder, team marketing e agenzie che governano la citabilità del brand.') }}
     </p>
     <div class="cta-row">
-      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Analizza il tuo sito') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('sample_report') }}">{{ _('Vedi esempio report') }}</a>
+      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('pricing') }}">{{ _('Vedi i tre piani') }}</a>
     </div>
   </div>
 </section>
@@ -53,11 +53,64 @@
   </p>
 </section>
 
+<section class="section-band section-band--v2 section-band--wide" id="profili">
+  <p class="eyebrow">{{ _('Profili') }}</p>
+  <h2>{{ _('Tre percorsi. Un solo prodotto.') }}</h2>
+  <p class="lede">
+    {{ _('Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in agenzia.') }}
+  </p>
+  <div class="profile-grid" role="list">
+    <article class="profile-card" role="listitem">
+      <p class="profile-card__tier">Free</p>
+      <p class="profile-card__price">0&nbsp;€</p>
+      <p class="profile-card__who">{{ _('Validare il dominio') }}</p>
+      <p class="profile-card__desc">
+        {{ _('Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta.') }}
+      </p>
+      <ul class="profile-card__list">
+        <li>{{ max_sites_free }} {{ _('sito') }} · {{ free_crawl_pages }} {{ _('pagine') }}</li>
+        <li>{{ free_total_analyses }} {{ _('analisi + ri-analisi (token)') }}</li>
+        <li>{{ _('SoV stimato · pack pubblicabile') }}</li>
+      </ul>
+      <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
+    </article>
+    <article class="profile-card" role="listitem">
+      <p class="profile-card__tier">Plus</p>
+      <p class="profile-card__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="profile-card__who">{{ _('Startup sul proprio brand') }}</p>
+      <p class="profile-card__desc">
+        {{ _('Operatività continua: measured SoV, re-scan, alert e crawl esteso.') }}
+      </p>
+      <ul class="profile-card__list">
+        <li><strong>{{ plus_monthly_tokens }} {{ _('token/mese') }}</strong></li>
+        <li>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('siti') }} · {{ _('SoV Misurato') }}</li>
+        <li>{{ _('Prompt bank · re-scan · Edge completo') }}</li>
+      </ul>
+      <a class="btn btn-core btn-block" href="{{ url_for('pricing') }}#plus">{{ _('Scegli Plus') }}</a>
+    </article>
+    <article class="profile-card profile-card--featured" role="listitem">
+      <p class="profile-card__badge">{{ _('Per agenzie') }}</p>
+      <p class="profile-card__tier">Business</p>
+      <p class="profile-card__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="profile-card__who">{{ _('Agenzie multi-cliente') }}</p>
+      <p class="profile-card__desc">
+        {{ _('Tutto incluso: API, white-label, scala siti e token per il delivery.') }}
+      </p>
+      <ul class="profile-card__list">
+        <li><strong>{{ business_monthly_tokens }} {{ _('token/mese') }}</strong></li>
+        <li>{{ _('Fino a') }} {{ max_sites_business }} {{ _('siti') }} · {{ _('API') }} <code>/api/v1</code></li>
+        <li>{{ _('White-label MD/HTML · tutto di Plus') }}</li>
+      </ul>
+      <a class="btn btn-core btn-block" href="{{ url_for('pricing') }}#business">{{ _('Passa a Business') }}</a>
+    </article>
+  </div>
+</section>
+
 <section class="section-band section-band--v2 section-band--wide" id="metodo">
   <p class="eyebrow">{{ _('Metodo') }}</p>
   <h2>{{ _('Tre fasi. Output operativo.') }}</h2>
   <p class="lede">
-    {{ _('Piano Free:') }} {{ max_sites_free }} {{ _('sito') }} · {{ free_total_analyses }} {{ _('analisi su nuovi siti (ri-analisi stesso URL ok, consuma token).') }}
+    {{ _('Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano limiti, measured SoV e toolkit agenzia.') }}
   </p>
   <ol class="step-flow step-flow--v2">
     <li>
@@ -79,7 +132,7 @@
   <p class="eyebrow">{{ _('Piattaforma') }}</p>
   <h2>{{ _('Diagnosi, priorità, artifact.') }}</h2>
   <p class="lede">
-    {{ _('Per team marketing, digital e agenzie che governano la citabilità del brand con criteri tracciabili.') }}
+    {{ _('Architettura unica: Free dimostra valore, Plus chiude il loop operativo, Business industrializza il delivery.') }}
   </p>
   <div class="feature-grid feature-grid--v2">
     <div class="feature-cell">
@@ -107,7 +160,7 @@
       <span class="feature-cell__icon">ZIP</span>
       <p class="feature-cell__title">{{ _('Pack di pubblicazione') }}</p>
       <p class="feature-cell__desc">
-        {{ _('llms.txt, JSON-LD Organization, meta-pack e robots — via ZIP o email.') }}
+        {{ _('llms.txt, JSON-LD Organization, meta-pack e robots — via ZIP, Edge o white-label Business.') }}
       </p>
     </div>
   </div>
@@ -117,7 +170,7 @@
   <p class="eyebrow">{{ _('Governance') }}</p>
   <h2>{{ _('Stimato e Misurato restano distinti.') }}</h2>
   <p class="lede">
-    {{ _('Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus, i probe LLM possono aggiungere menzioni Misurate — non è una garanzia di ranking o citazione.') }}
+    {{ _('Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus e Business, i probe LLM possono aggiungere menzioni Misurate — non è una garanzia di ranking o citazione.') }}
     <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
     ·
     <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>.
@@ -146,16 +199,16 @@
       </p>
     </details>
     <details class="faq-item">
-      <summary>{{ _('Gli score rappresentano menzioni live?') }}</summary>
+      <summary>{{ _('Quale piano mi serve?') }}</summary>
       <p>
-        {{ _('No, di default. Sono diagnostici; con citation monitor e API LLM si aggiungono menzioni Misurate.') }}
+        {{ _('Free per validare un dominio. Plus (14,99€, 100 token) per startup sul proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a') }}
+        {{ max_sites_business }} {{ _('siti.') }}
       </p>
     </details>
     <details class="faq-item">
-      <summary>{{ _('Limiti del piano Free?') }}</summary>
+      <summary>{{ _('Gli score rappresentano menzioni live?') }}</summary>
       <p>
-        {{ max_sites_free }} {{ _('sito,') }} {{ free_total_analyses }} {{ _('analisi su nuovi siti; ri-analisi dello stesso URL consuma token. Plus: crawl fino a') }}
-        {{ pro_crawl_pages }} {{ _('pagine, SoV measured e 100 token/mese.') }}
+        {{ _('No, di default. Sono diagnostici; su Plus/Business, con citation monitor e API LLM, si aggiungono menzioni Misurate.') }}
       </p>
     </details>
   </div>
@@ -164,13 +217,13 @@
 <section class="section-cta section-cta--v2" id="inizia">
   <div class="section-cta__inner">
     <p class="eyebrow">{{ _('Avvio') }}</p>
-    <h2>{{ _('Valuta la citabilità del tuo dominio.') }}</h2>
+    <h2>{{ _('Parti dal profilo giusto.') }}</h2>
     <p class="lede">
-      {{ _('Piano Free. Prima analisi in pochi minuti. Nessuna carta richiesta.') }}
+      {{ _('Free senza carta. Plus per il brand. Business per i clienti dell’agenzia.') }}
     </p>
     <div class="cta-row">
-      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('pricing') }}">{{ _('Piani e limiti') }}</a>
+      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Crea account Free') }}</a>
+      <a class="btn btn-ghost-light" href="{{ url_for('pricing') }}">{{ _('Confronta Free · Plus · Business') }}</a>
     </div>
   </div>
 </section>

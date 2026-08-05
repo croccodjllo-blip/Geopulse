@@ -13,7 +13,23 @@
       "name": "Cos’è AIO e GEO in Centropic?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "AIO = AI-Driven Visibility: quanto i modelli e i crawler IA comprendono e vedono il brand (entity, struttura, file machine-readable). GEO = Generative Engine Optimization: quanto sei ottimizzato per essere citato nelle risposte generate da answer engine (ChatGPT, Perplexity, ricerca AI). In Centropic GEO non significa Geographic Information System (GIS) e AIO non significa All-in-One: sono metriche di citabilità e visibilità IA."
+        "text": "AIO = AI-Driven Visibility; GEO = Generative Engine Optimization. Non GIS, non All-in-One."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quale piano scegliere: Free, Plus o Business?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Free valida 1 dominio. Plus a 14,99€ ({{ plus_monthly_tokens }} token) per startup sul brand con SoV Misurato. Business a 49,99€ ({{ business_monthly_tokens }} token) per agenzie: API, white-label e fino a {{ max_sites_business }} siti."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "API e white-label sono in Plus?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. API /api/v1 e white-label sono riservati a Business. Plus include SoV Misurato, re-scan ed Edge completo."
       }
     },
     {
@@ -21,15 +37,7 @@
       "name": "Gli score AIO e GEO sono misurazioni live sulle IA?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No di default. Score e Share of Voice sono diagnostici basati su probe ed euristiche (contenuto, schema, robots, llms.txt). Il badge Stimato (proxy) indica una stima; Misurato è riservato a segnali direttamente osservati sul sito o a polling LLM quando disponibile."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Cosa ricevo dopo un’analisi?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings prioritizzati e un pack con llms.txt, JSON-LD, meta pack e bozza robots.txt. Puoi copiare i file, scaricare lo ZIP oppure attivare Edge Signals per hosting dinamico degli artifact."
+        "text": "No di default. Sono diagnostici con badge Stimato. Misurato richiede Plus/Business e citation monitor."
       }
     },
     {
@@ -37,39 +45,7 @@
       "name": "Cos’è Edge Signals (hosting dinamico)?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Endpoint pubblici Centropic (/e/<token>/llms.txt, signals.json e su Plus robots.txt/JSON-LD) aggiornati quando rianalizzi il sito o quando cambia la lista crawler IA. Sul piano Plus puoi collegare un Cloudflare Worker o rewrite Vercel sul tuo dominio."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Devo sapere programmare?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito (o passali al tuo developer / CMS)."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Quali sono i limiti del piano Free?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Massimo {{ max_sites_free }} sito, {{ free_crawl_pages }} pagine per crawl, {{ free_total_analyses }} analisi su nuovi siti. Puoi ri-analizzare lo stesso dominio (consuma token). Plus: crawl fino a {{ pro_crawl_pages }} pagine (Deep fino a {{ deep_crawl_pages }}), SoV measured e 100 token/mese."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Usate OpenAI sui miei contenuti?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Se è configurata una chiave OpenAI, può essere usata per raffinare llms.txt. Altrimenti Centropic genera un fallback locale. Non pubblichiamo i tuoi dati su altri siti."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Come inizio?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Crea un account, apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il primo report."
+        "text": "Endpoint pubblici Centropic (/e/<token>/llms.txt, signals.json; su Plus/Business anche robots.txt/JSON-LD live e snippet Worker/Vercel)."
       }
     },
     {
@@ -77,7 +53,7 @@
       "name": "Come vi contatto?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Scrivi a info@centropic.ai per supporto, partnership o domande sul servizio."
+        "text": "Scrivi a info@centropic.ai per supporto, partnership o onboarding Business."
       }
     }
   ]

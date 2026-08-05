@@ -13,15 +13,38 @@
   "screenshot": "{{ canonical_base }}/static/img/hero-earth.jpg",
   "image": "{{ canonical_base }}/static/img/logo.png",
   "inLanguage": "it-IT",
-  "description": "SaaS per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): analisi euristica di segnali citabili, findings e pack artifact (llms.txt, JSON-LD, meta, robots). Non è un GIS né una suite All-in-One.",
+  "description": "SaaS di Signal Intelligence per AIO e GEO: diagnosi, findings, pack artifact. Tre profili — Free, Plus (startup) e Business (agenzie: API e white-label).",
   "isAccessibleForFree": true,
   "offers": {
-    "@type": "Offer",
-    "price": "0",
+    "@type": "AggregateOffer",
+    "lowPrice": "0",
+    "highPrice": "49.99",
     "priceCurrency": "EUR",
-    "availability": "https://schema.org/InStock",
+    "offerCount": "3",
     "url": "{{ canonical_base }}/prezzi",
-    "description": "Piano Free con 1 sito e 2 analisi su nuovi siti; Plus con crawl fino a 120 pagine, SoV measured e 100 token/mese"
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Free",
+        "price": "0",
+        "priceCurrency": "EUR",
+        "description": "1 sito, diagnosi AIO/GEO, pack ZIP, SoV stimato"
+      },
+      {
+        "@type": "Offer",
+        "name": "Plus",
+        "price": "14.99",
+        "priceCurrency": "EUR",
+        "description": "Startup: {{ plus_monthly_tokens }} token/mese, SoV measured, fino a {{ max_sites_plus }} siti"
+      },
+      {
+        "@type": "Offer",
+        "name": "Business",
+        "price": "49.99",
+        "priceCurrency": "EUR",
+        "description": "Agenzie: {{ business_monthly_tokens }} token/mese, API, white-label, fino a {{ max_sites_business }} siti"
+      }
+    ]
   },
   "provider": { "@id": "{{ canonical_base }}/#organization" },
   "creator": {
@@ -31,11 +54,11 @@
   },
   "publisher": { "@id": "{{ canonical_base }}/#organization" },
   "featureList": [
-    "Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization) basati su probe ed euristiche",
-    "Findings prioritizzati su entity, schema, robots e llms.txt",
-    "Pack pubblicabile: llms.txt, JSON-LD, meta, robots.txt",
-    "Share of Voice stimato (proxy) per answer engine",
-    "Metodologia pubblica e badge Stimato/Misurato"
+    "Score AIO e GEO basati su probe ed euristiche",
+    "Findings prioritizzati e pack pubblicabile",
+    "Plus: SoV measured, re-scan, Edge completo",
+    "Business: API /api/v1 e white-label agenzia",
+    "Metodologia pubblica Stimato/Misurato"
   ],
   "softwareHelp": {
     "@type": "WebPage",

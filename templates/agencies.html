@@ -1,55 +1,58 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Centropic per agenzie') }}{% endblock %}
-{% block meta_description %}{{ _('White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che gestiscono più brand. Diagnosi AIO/GEO e pack pronti per i clienti.') }}{% endblock %}
+{% block meta_description %}{{ _('Business 49,99€: white-label, API, 400 token e fino a 50 siti per agenzie GEO/AIO. Plus resta per startup sul proprio brand.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
 <article class="page page--v2">
   <header class="page-intro page-intro--v2">
-    <p class="eyebrow">{{ _('Agenzie') }}</p>
+    <p class="eyebrow">{{ _('Profilo Business') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Consegna citabilità IA ai tuoi clienti') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account. Gli score restano diagnostici (Stimato); su Business aggiungi menzioni Misurate, API e white-label sul vostro brand.') }}
+      {{ _('Un solo stack per onboarding, audit e retainer: diagnosi AIO/GEO, pack, Edge Signals, API e report white-label. Misurato su Plus/Business; toolkit agenzia solo su Business.') }}
     </p>
   </header>
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Cosa ottengono i vostri clienti') }}</h2>
-    <p class="lede">
-      {{ _('Un report operativo con score AIO/GEO, findings prioritizzati e artifact da pubblicare in root o via CMS connector. Ideale per kickoff, audit trimestrali e handover al team contenuto/IT.') }}
-    </p>
     <ul class="plain-list">
       <li>{{ _('Score + findings prioritizzati in linguaggio operativo') }}</li>
       <li>{{ _('llms.txt, JSON-LD, robots e CMS connector') }}</li>
       <li>{{ _('SoV measured (Plus/Business) per dimostrare menzioni, non solo proxy') }}</li>
-      <li>{{ _('Export white-label MD/HTML con il vostro brand (Business)') }}</li>
+      <li>{{ _('Export white-label MD/HTML con il vostro brand (solo Business)') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('Perché le agenzie scelgono Business') }}</h2>
+    <h2 class="page-section__title">{{ _('Perché Business, non Plus') }}</h2>
     <p class="lede">
-      {{ _('Business a 49,99€/mese include tutto: fino a 50 siti, 400 token/mese, API, white-label e re-scan. Plus resta per startup sul proprio brand (14,99€, 100 token).') }}
+      {{ _('Plus (14,99€ · 100 token) è per startup sul proprio brand. Business (49,99€ · 400 token) è il profilo agenzia: scala, automazione e brand vostro sui deliverable.') }}
     </p>
-    <ul class="plain-list">
-      <li>{{ _('Multi-sito clienti + re-scan schedulato') }}</li>
-      <li>{{ _('API /api/v1 per automatizzare onboarding') }}</li>
-      <li>{{ _('400 token/mese + pack ricaricabili') }}</li>
-      <li>{{ _('Report white-label con brand agenzia') }}</li>
-    </ul>
+    <div class="profile-grid profile-grid--compact" role="list">
+      <article class="profile-card" role="listitem">
+        <p class="profile-card__tier">Plus</p>
+        <p class="profile-card__desc">{{ _('Brand proprietario · SoV Misurato · re-scan · 5 siti') }}</p>
+      </article>
+      <article class="profile-card profile-card--featured" role="listitem">
+        <p class="profile-card__badge">{{ _('Consigliato') }}</p>
+        <p class="profile-card__tier">Business</p>
+        <p class="profile-card__desc">{{ _('Tutto Plus + API + white-label + 50 siti + 400 token') }}</p>
+      </article>
+    </div>
   </section>
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Come iniziare') }}</h2>
     <p class="lede">
-      {{ _('Attiva Business, importa il primo dominio cliente, pubblica il pack (o Edge Signals) e confronta lo storico run. Per un walkthrough di 15 minuti scrivi a info@centropic.ai.') }}
+      {{ _('Attiva Business, importa il primo dominio cliente, pubblica il pack (o Edge) e confronta lo storico. Walkthrough 15 min:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
   </section>
 
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('pricing') }}#business">{{ _('Attiva Business') }}</a>
-    <a class="btn btn-ghost" href="mailto:info@centropic.ai?subject=Agenzia%20Centropic">{{ _('Parla con noi (15 min)') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('sample_report') }}">{{ _('Vedi esempio report') }}</a>
+    <a class="btn btn-ghost" href="mailto:info@centropic.ai?subject=Agenzia%20Centropic">{{ _('Parla con noi') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('sample_report') }}">{{ _('Esempio report') }}</a>
   </div>
 </article>
 {% endblock %}

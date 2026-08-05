@@ -1,54 +1,67 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prodotto') }}{% endblock %}
-{% block meta_description %}{{ _('Come funziona Centropic: crawl, score AIO/GEO euristici, findings e pack (llms.txt, JSON-LD, robots) per answer engine — non GIS, non All-in-One.') }}{% endblock %}
+{% block meta_description %}{{ _('Centropic: crawl, score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
 {% endblock %}
+{% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
-<article class="page">
+<article class="page page--v2">
   <header class="page-intro page-intro--v2">
     <p class="eyebrow">{{ _('Prodotto') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Il segnale che le IA leggono') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Centropic valuta i segnali di') }} <strong>AI-Driven Visibility (AIO)</strong> {{ _('e') }}
-      <strong>Generative Engine Optimization (GEO)</strong> {{ _('del dominio e genera artifact pronti da pubblicare.') }}
+      {{ _('Una piattaforma di Signal Intelligence per') }} <strong>AI-Driven Visibility (AIO)</strong>
+      {{ _('e') }} <strong>Generative Engine Optimization (GEO)</strong>:
+      {{ _('diagnosi del dominio, artifact pubblicabili, loop continuo — scalato per founder, team e agenzie.') }}
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('Analisi AIO + GEO (definiti)') }}</h2>
-    <p class="lede">
-      <strong>AIO</strong> = {{ _('AI-Driven Visibility: quanto i modelli e i crawler IA comprendono e “vedono” il brand.') }}
-      <strong>GEO</strong> = {{ _('Generative Engine Optimization: quanto sei strutturato per essere citato nelle risposte generate (ChatGPT, Perplexity, ricerca AI). Non confondere con GIS (mappe geografiche) né con suite All-in-One generiche.') }}
-    </p>
+    <h2 class="page-section__title">{{ _('Come funziona') }}</h2>
     <p class="lede">
       {{ _('Crawl del dominio, probe di') }} <code>/llms.txt</code>, <code>/robots.txt</code>,
-      <code>/sitemap.xml</code>, <code>/ai.txt</code> {{ _('e valutazione euristica dei segnali usati dagli answer engine. Di default il SoV in dashboard è') }}
-      <strong>{{ _('Stimato (proxy)') }}</strong>; {{ _('su Plus, con API LLM configurata, il') }}
-      <strong>{{ _('citation monitor') }}</strong> {{ _('aggiunge menzioni Misurate (OpenAI; Perplexity se presente). Riferimenti:') }}
-      <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a>,
-      <a href="https://schema.org/" rel="noopener noreferrer" target="_blank">Schema.org</a>,
-      <a href="https://llmstxt.org/" rel="noopener noreferrer" target="_blank">llms.txt</a>.
+      <code>/sitemap.xml</code>, <code>/ai.txt</code> {{ _('e valutazione euristica dei segnali usati dagli answer engine. Di default il SoV è') }}
+      <strong>{{ _('Stimato (proxy)') }}</strong>; {{ _('su Plus e Business, con API LLM, il') }}
+      <strong>{{ _('citation monitor') }}</strong> {{ _('aggiunge menzioni Misurate.') }}
+      <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>.
     </p>
     <ul class="plain-list">
-      <li>{{ _('Indice risultato + score AIO/GEO da probe ed euristiche') }}</li>
-      <li>{{ _('Findings critici prioritizzati (entity, citability, schema, publish verify)') }}</li>
-      <li>{{ _('Pagine deboli con problema esplicito') }}</li>
-      <li>{{ _('Badge') }} <em>{{ _('Stimato') }}</em> / <em>{{ _('Misurato') }}</em> {{ _('su ogni finding') }}</li>
-      <li>{{ _('Suite Plus: prompt bank, alert, SoV measured, re-scan') }}</li>
-      <li>{{ _('Suite Business: API') }} <code>/api/v1</code>, {{ _('white-label, 400 token/mese') }}</li>
+      <li>{{ _('Score AIO/GEO da probe ed euristiche documentate') }}</li>
+      <li>{{ _('Findings prioritizzati (entity, citability, schema, publish verify)') }}</li>
+      <li>{{ _('Pack: llms.txt, JSON-LD, meta, robots — ZIP / Edge / email') }}</li>
+      <li>{{ _('Badge Stimato / Misurato su ogni finding') }}</li>
     </ul>
+  </section>
+
+  <section class="page-section" id="profili-prodotto">
+    <h2 class="page-section__title">{{ _('Tre profili di prodotto') }}</h2>
+    <p class="lede">
+      {{ _('Stesso motore. Capability diverse. Prezzi chiari.') }}
+    </p>
+    <div class="profile-grid profile-grid--compact" role="list">
+      <article class="profile-card" role="listitem">
+        <p class="profile-card__tier">Free</p>
+        <p class="profile-card__price">0&nbsp;€</p>
+        <p class="profile-card__desc">{{ _('Prova valore sul primo dominio: score, findings, pack.') }}</p>
+      </article>
+      <article class="profile-card" role="listitem">
+        <p class="profile-card__tier">Plus · 14,99&nbsp;€</p>
+        <p class="profile-card__price">{{ plus_monthly_tokens }} {{ _('tok/mese') }}</p>
+        <p class="profile-card__desc">{{ _('Startup: SoV Misurato, re-scan, alert, crawl esteso, fino a') }} {{ max_sites_plus }} {{ _('siti.') }}</p>
+      </article>
+      <article class="profile-card profile-card--featured" role="listitem">
+        <p class="profile-card__badge">{{ _('Tutto incluso') }}</p>
+        <p class="profile-card__tier">Business · 49,99&nbsp;€</p>
+        <p class="profile-card__price">{{ business_monthly_tokens }} {{ _('tok/mese') }}</p>
+        <p class="profile-card__desc">{{ _('Agenzie: tutto Plus + API, white-label, fino a') }} {{ max_sites_business }} {{ _('siti.') }}</p>
+      </article>
+    </div>
   </section>
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Pack di ottimizzazione') }}</h2>
-    <p class="lede">
-      {{ _('Output operativo: file da copiare o scaricare in ZIP / inviare via email. Guide dedicate:') }}
-      <a href="{{ url_for('guide_llms_txt') }}">llms.txt</a>,
-      <a href="{{ url_for('guide_schema_ai') }}">{{ _('Schema AI') }}</a>,
-      <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>.
-    </p>
     <ul class="artifact-list">
       <li><code>llms.txt</code> — {{ _('descrizione brand per i modelli') }}</li>
       <li><code>organization.jsonld.html</code> — {{ _('entity strutturata') }}</li>
@@ -60,15 +73,15 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Per chi è') }}</h2>
     <p class="lede">
-      {{ _('Brand, founder e agenzie che vogliono migliorare i segnali di citabilità per ChatGPT, Perplexity e ricerca generativa — con un flusso ripetibile, non fix one-off. Contatto operativo:') }}
+      {{ _('Founder e marketing sul proprio brand → Plus. Agenzie SEO/GEO multi-cliente → Business. Contatto:') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Prova gratis') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('site_guide') }}">{{ _('Guida completa') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Piani') }}</a>
+    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Prova Free') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Confronta i piani') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('agencies') }}">{{ _('Per agenzie') }}</a>
   </div>
 </article>
 {% endblock %}

@@ -18,7 +18,7 @@
     <ul class="plain-list">
       <li><strong>App</strong>: {{ detail.app }} — {{ _('processo web attivo su centropic.ai') }}</li>
       <li><strong>Database</strong>: {{ detail.database }} — {{ _('persistenza analisi, job e ledger token') }}</li>
-      <li><strong>{{ _('Pagamenti') }}</strong>: {{ detail.payments }} — {{ _('checkout Plus e pack token') }}</li>
+      <li><strong>{{ _('Pagamenti') }}</strong>: {{ detail.payments }} — {{ _('checkout Plus / Business e pack token') }}</li>
       <li>
         <strong>{{ _('Coda analisi') }}</strong>:
         {% if detail.queue is not none %}{{ detail.queue }} {{ _('job pending/running') }}{% else %}—{% endif %}

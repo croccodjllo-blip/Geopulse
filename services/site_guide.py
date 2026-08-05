@@ -192,7 +192,7 @@ def _glossary_entries() -> list[dict[str, str]]:
         (
             "api-key",
             "API key (gp_…)",
-            _("Chiave Bearer per /api/v1 (analyze, sites, edge). Solo Plus."),
+            _("Chiave Bearer per /api/v1 (analyze, sites, edge). Solo Business."),
         ),
         (
             "engine-breakdown",
@@ -346,7 +346,7 @@ def site_guide_payload() -> dict[str, Any]:
                 "title": _("Share of Voice"),
                 "image": GUIDE_IMAGES["sov"],
                 "summary": _(
-                    "Proxy (stimato) su tutti i piani; measured solo su Plus con citation monitor."
+                    "Proxy (stimato) su tutti i piani; measured su Plus/Business con citation monitor."
                 ),
                 "bullets": [
                     _("Stimato: euristiche su segnali del sito"),
@@ -417,7 +417,7 @@ def site_guide_payload() -> dict[str, Any]:
                 "bullets": [
                     _("Bearer gp_… su /api/v1/*"),
                     _("Export report MD/HTML con brand agenzia"),
-                    _("Riservato al piano Plus"),
+                    _("Riservato al piano Business"),
                 ],
             },
         ],
@@ -563,13 +563,21 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Plus",
+                "name": "Plus · €14,99",
                 "points": [
                     _(
-                        "Crawl fino a 120 pagine (Deep 500), multi-sito, competitor, storico esteso"
+                        "Fino a 5 siti, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"
                     ),
-                    _("SoV measured, prompt bank, re-scan, API, white-label"),
-                    _("Edge completo + CMS connector + 100 token/ciclo"),
+                    _("SoV measured, prompt bank, re-scan, alert, Edge completo"),
+                    _("100 token per ciclo di fatturazione"),
+                ],
+            },
+            {
+                "name": "Business · €49,99",
+                "points": [
+                    _("Tutto Plus + fino a 50 siti e 400 token/mese"),
+                    _("API /api/v1 e white-label MD/HTML con brand agenzia"),
+                    _("Profilo consigliato per portfolio clienti"),
                 ],
             },
         ],

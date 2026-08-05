@@ -1,37 +1,32 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Interesse Plus') }}{% endblock %}
-{% block meta_description %}{{ _('Prenota l’interesse per Centropic Plus: crawl fino a 120 pagine, SoV measured, più siti, re-scan e limiti agenzia. Waitlist su centropic.ai.') }}{% endblock %}
+{% block title %}{{ _('Interesse piani') }}{% endblock %}
+{% block meta_description %}{{ _('Prenota interesse Centropic Plus (startup) o Business (agenzie): SoV measured, API, white-label. Contatto info@centropic.ai.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/interesse-pro{% endblock %}
 
 {% block content %}
 <article class="page">
   <header class="page-intro">
-    <p class="eyebrow">{{ _('Piano Plus · aggiornato') }} <time datetime="2026-08-04">{{ _('4 agosto 2026') }}</time></p>
-    <h1 class="h-display page-intro__title">{{ _('Prenota l’interesse Plus') }}</h1>
+    <p class="eyebrow">{{ _('Waitlist · piani') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Dicci quale profilo ti serve') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Centropic Free: 1 sito, 2 analisi su nuovi siti, crawl limitato. Plus per team e agenzie: crawl fino a 120 pagine (Deep 500), SoV measured, re-scan e limiti più alti. Entra in waitlist se il checkout non è ancora attivo. Prodotto di') }}
-      <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">{{ site_owner_name }}</a>.
+      {{ _('Se il checkout Paddle non è ancora attivo per il piano che ti serve, lascia i contatti. Plus = startup sul brand. Business = agenzie (API, white-label, 400 token). Oppure vai subito a') }}
+      <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('Cosa chiedono i team Plus') }}</h2>
+    <h2 class="page-section__title">{{ _('Due profili a pagamento') }}</h2>
     <ul class="plain-list">
-      <li>{{ _('Crawl fino a 120 pagine (Deep fino a 500)') }}</li>
-      <li>{{ _('Più siti gestiti nello stesso account') }}</li>
-      <li>{{ _('Re-scan e storico analisi per confronto nel tempo') }}</li>
-      <li>{{ _('Pack AIO/GEO ripetibile per clienti agenzia') }}</li>
+      <li><strong>Plus · 14,99€</strong> — {{ _('100 token/mese, SoV Misurato, re-scan, fino a') }} {{ max_sites_plus }} {{ _('siti') }}</li>
+      <li><strong>Business · 49,99€</strong> — {{ _('tutto Plus + API, white-label,') }} {{ business_monthly_tokens }} {{ _('token, fino a') }} {{ max_sites_business }} {{ _('siti') }}</li>
     </ul>
     <p class="lede">
-      {{ _('Gli score restano diagnostici (probe/euristiche) con badge Stimato/Misurato — vedi') }}
-      <a href="{{ url_for('methodology') }}">{{ _('metodologia') }}</a> {{ _('e') }}
-      <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('Score vs SoV') }}</a>.
       {{ _('Urgenze:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('Modulo waitlist') }}</h2>
+    <h2 class="page-section__title">{{ _('Modulo interesse') }}</h2>
     <form method="post" class="form-grid panel" novalidate>
       {{ form.hidden_tag() }}
       <div class="field">
@@ -45,7 +40,7 @@
         {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
-        <label for="company">{{ _('Azienda / Brand') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
+        <label for="company">{{ _('Azienda / Agenzia') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
         {{ form.company(id="company", autocomplete="organization") }}
         {% for error in form.company.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
@@ -55,8 +50,8 @@
         {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
-        <label for="note">{{ _('Cosa ti serve da Plus') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
-        {{ form.note(id="note", placeholder=_('Es. crawl 120+ pagine, più siti, re-scan, team agency…')) }}
+        <label for="note">{{ _('Profilo e bisogno') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
+        {{ form.note(id="note", placeholder=_('Es. Plus per il mio brand · Business per 20 clienti, API, white-label…')) }}
         {% for error in form.note.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       {{ form.submit(class_="btn btn-signal btn-block") }}

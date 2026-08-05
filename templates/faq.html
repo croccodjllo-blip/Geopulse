@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('FAQ') }}{% endblock %}
-{% block meta_description %}{{ _('FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, pack artifact, limiti Free e contatti info@centropic.ai.') }}{% endblock %}
+{% block meta_description %}{{ _('FAQ Centropic: AIO/GEO, Free vs Plus vs Business, SoV Misurato, Edge Signals, API e white-label.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_faq.html" %}
 {% endblock %}
@@ -11,7 +11,7 @@
     <p class="eyebrow">{{ _('FAQ') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Domande frequenti') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('AI-Driven Visibility (AIO), Generative Engine Optimization (GEO), pack e piani — risposte essenziali.') }}
+      {{ _('Definizioni, piani Free / Plus / Business e come usare pack ed Edge Signals.') }}
     </p>
   </header>
 
@@ -19,88 +19,80 @@
     <details class="faq-item" open>
       <summary>{{ _('Cos’è AIO e GEO in Centropic?') }}</summary>
       <p>
-        <strong>AIO</strong> = <em>AI-Driven Visibility</em>: {{ _('quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand (entity, struttura, file machine-readable).') }}
-        <strong>GEO</strong> = <em>Generative Engine Optimization</em>: {{ _('quanto sei ottimizzato per essere citato nelle risposte generate da answer engine (ChatGPT, Perplexity, ricerca AI).') }}
+        <strong>AIO</strong> = <em>AI-Driven Visibility</em>: {{ _('quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand.') }}
+        <strong>GEO</strong> = <em>Generative Engine Optimization</em>: {{ _('quanto sei ottimizzato per essere citato nelle risposte generate.') }}
       </p>
       <p>
-        {{ _('In questo prodotto') }} <strong>{{ _('GEO non significa Geographic Information System (GIS)') }}</strong>
-        {{ _('e') }} <strong>{{ _('AIO non significa All-in-One') }}</strong>: {{ _('sono metriche di citabilità e visibilità IA.') }}
+        {{ _('GEO non è GIS; AIO non è All-in-One.') }}
+      </p>
+    </details>
+
+    <details class="faq-item">
+      <summary>{{ _('Quale piano scegliere: Free, Plus o Business?') }}</summary>
+      <p>
+        <strong>Free</strong> — {{ _('validare 1 dominio (score, findings, pack), senza carta.') }}
+      </p>
+      <p>
+        <strong>Plus · 14,99€</strong> — {{ _('startup sul proprio brand: fino a') }} {{ max_sites_plus }} {{ _('siti, SoV Misurato, re-scan, alert,') }} {{ plus_monthly_tokens }} {{ _('token/mese.') }}
+      </p>
+      <p>
+        <strong>Business · 49,99€</strong> — {{ _('agenzie: tutto Plus + API, white-label, fino a') }} {{ max_sites_business }} {{ _('siti e') }} {{ business_monthly_tokens }} {{ _('token/mese.') }}
+        <a href="{{ url_for('pricing') }}">{{ _('Vedi prezzi') }}</a>.
       </p>
     </details>
 
     <details class="faq-item">
       <summary>{{ _('Gli score AIO e GEO sono misurazioni live sulle IA?') }}</summary>
       <p>
-        {{ _('No di default. Score e Share of Voice sono') }} <strong>{{ _('diagnostici basati su probe ed euristiche') }}</strong>
-        {{ _('(contenuto, schema, robots, llms.txt). Il badge') }} <em>{{ _('Stimato (proxy)') }}</em> {{ _('indica una stima;') }} <em>{{ _('Misurato') }}</em> {{ _('è riservato a segnali direttamente osservati sul sito o a polling LLM quando disponibile.') }}
+        {{ _('No di default. Sono diagnostici (probe/euristiche) con badge Stimato. Misurato è riservato a segnali osservati o a polling LLM su Plus/Business.') }}
       </p>
     </details>
 
     <details class="faq-item">
       <summary>{{ _('Cosa ricevo dopo un’analisi?') }}</summary>
       <p>
-        {{ _('Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings prioritizzati e un pack con llms.txt, JSON-LD, meta pack e bozza robots.txt. Puoi copiare i file o scaricare lo ZIP.') }}
+        {{ _('Score AIO/GEO, findings prioritizzati e pack (llms.txt, JSON-LD, meta, robots). Su Business anche export white-label.') }}
       </p>
     </details>
 
     <details class="faq-item">
-      <summary>{{ _('Devo sapere programmare?') }}</summary>
+      <summary>{{ _('API e white-label sono in Plus?') }}</summary>
       <p>
-        {{ _('No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito (o passali al tuo developer / CMS).') }}
-      </p>
-    </details>
-
-    <details class="faq-item">
-      <summary>{{ _('Quali sono i limiti del piano Free?') }}</summary>
-      <p>
-        {{ _('Massimo') }} {{ max_sites_free }} {{ _('sito,') }} {{ free_crawl_pages }} {{ _('pagine per crawl,') }}
-        {{ free_total_analyses }} {{ _('analisi su nuovi siti. Puoi ri-analizzare lo stesso dominio (consuma token, non la quota Free). Plus: crawl fino a') }}
-        {{ pro_crawl_pages }} {{ _('pagine (Deep fino a') }} {{ deep_crawl_pages }}), {{ _('SoV measured e 100 token/mese.') }}
-      </p>
-    </details>
-
-    <details class="faq-item">
-      <summary>{{ _('Usate OpenAI sui miei contenuti?') }}</summary>
-      <p>
-        {{ _('Se è configurata una chiave OpenAI, può essere usata per raffinare') }}
-        <code>llms.txt</code>. {{ _('Altrimenti Centropic genera un fallback locale. Non pubblichiamo i tuoi dati su altri siti.') }}
+        {{ _('No. API') }} <code>/api/v1</code> {{ _('e white-label (brand agenzia + export MD/HTML) sono riservati a Business. Plus include SoV Misurato, re-scan ed Edge completo sul proprio brand.') }}
       </p>
     </details>
 
     <details class="faq-item" id="edge-signals">
-      <summary>{{ _('Cos’è Edge Signals (hosting dinamico)?') }}</summary>
+      <summary>{{ _('Cos’è Edge Signals?') }}</summary>
       <p>
-        {{ _('Invece di scaricare solo uno ZIP statico, puoi attivare endpoint pubblici Centropic') }}
-        (<code>/e/&lt;token&gt;/llms.txt</code>, <code>signals.json</code>, {{ _('e su Plus') }}
-        <code>robots.txt</code> / JSON-LD) {{ _('che si aggiornano quando rianalizzi il sito o quando aggiorniamo la lista dei crawler IA.') }}
-      </p>
-      <p>
-        {{ _('Sul piano Plus ricevi anche snippet Cloudflare Worker e rewrite Vercel per servire gli stessi artifact sul tuo dominio — dipendenza infrastrutturale, non un file da ricopiare a mano.') }}
+        {{ _('Endpoint pubblici Centropic') }}
+        (<code>/e/&lt;token&gt;/llms.txt</code>, <code>signals.json</code>;
+        {{ _('su Plus/Business anche') }} <code>robots.txt</code> / JSON-LD {{ _('live e snippet Worker/Vercel.') }}
       </p>
     </details>
 
     <details class="faq-item">
       <summary>{{ _('Come inizio?') }}</summary>
       <p>
-        <a href="{{ url_for('register') }}">{{ _('Crea un account') }}</a>,
-        {{ _('apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il primo report.') }}
+        <a href="{{ url_for('register') }}">{{ _('Crea un account Free') }}</a>,
+        {{ _('analizza un URL, poi valuta Plus o Business su') }}
+        <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
       </p>
     </details>
 
     <details class="faq-item">
       <summary>{{ _('Come vi contatto?') }}</summary>
       <p>
-        {{ _('Scrivi a') }}
         <a href="mailto:info@centropic.ai">info@centropic.ai</a>
-        {{ _('per supporto, partnership o domande sul servizio.') }}
+        {{ _('— supporto, partnership agenzie, Business onboarding.') }}
       </p>
     </details>
   </div>
 
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('site_guide') }}">{{ _('Guida completa') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('site_guide') }}#glossario">{{ _('Glossario') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Confronta i piani') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('agencies') }}">{{ _('Per agenzie') }}</a>
   </div>
 </article>
 {% endblock %}
