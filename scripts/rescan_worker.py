@@ -29,15 +29,19 @@ from app import (  # noqa: E402
     app,
     db,
 )
+from services.citation_monitor import sov_prompt_limit  # noqa: E402
 from services.rescan import process_due_rescans  # noqa: E402
 from services.usage_billing import (  # noqa: E402
+    consume_hold,
     debit_cents_from_usage,
     deduct_credit,
     estimate_analysis_cost,
     get_balance_cents,
     has_sufficient_credit,
+    hold_credit,
     is_unlimited_user,
     record_actual_usage,
+    release_hold,
     required_credit_with_grace_cents,
 )
 
@@ -71,6 +75,7 @@ def make_rescan_usage_callback(user: Any):
                     cost_eur_cents=debit,
                     description=f"RESCAN usage {provider}:{model}",
                 )
+                consume_hold(db.session, owner, amount_cents=debit)
             db.session.commit()
 
     return _cb
@@ -85,7 +90,7 @@ def _rescan_credit_preflight(user: Any) -> tuple[bool, str]:
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
         run_measured=bool(MEASURED_SOV_ON_ANALYZE),
-        n_prompts=8,
+        n_prompts=sov_prompt_limit(),
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -95,6 +100,37 @@ def _rescan_credit_preflight(user: Any) -> tuple[bool, str]:
     need = required_credit_with_grace_cents(est.service_cost_eur_cents)
     bal = get_balance_cents(user)
     return False, f"credito insufficiente per rescan (saldo {bal}, richiesti ~{need})"
+
+
+def _hold_for_user(user: Any, amount: int) -> int:
+    held = hold_credit(
+        db.session,
+        CreditLedger,
+        user,
+        amount_cents=int(amount),
+        description="Riserva rescan schedulato",
+    )
+    db.session.commit()
+    return int(held or 0)
+
+
+def _release_for_user(user: Any, amount: int) -> None:
+    release_hold(db.session, user, amount_cents=int(amount))
+    db.session.commit()
+
+
+def _estimate_cents(user: Any) -> int:
+    est = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=bool(MEASURED_SOV_ON_ANALYZE),
+        n_prompts=sov_prompt_limit(),
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+    )
+    return required_credit_with_grace_cents(est.service_cost_eur_cents)
 
 
 def main() -> int:
@@ -128,6 +164,9 @@ def main() -> int:
             measured=bool(MEASURED_SOV_ON_ANALYZE),
             usage_callback_factory=make_rescan_usage_callback,
             credit_preflight=_rescan_credit_preflight,
+            hold_credit_fn=_hold_for_user,
+            release_hold_fn=_release_for_user,
+            estimate_cents_fn=_estimate_cents,
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
             UsageEvent=UsageEvent,

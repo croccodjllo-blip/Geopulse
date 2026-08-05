@@ -145,7 +145,9 @@ def create_transaction(
         timeout=30,
     )
     if res.status_code >= 400:
-        logger.warning("Paddle create_transaction failed: %s %s", res.status_code, res.text[:400])
+        logger.warning(
+            "Paddle create_transaction failed: HTTP %s", res.status_code
+        )
         raise RuntimeError(f"Paddle transaction error HTTP {res.status_code}")
     body = res.json()
     data = body.get("data") or {}
@@ -473,18 +475,24 @@ def transaction_grants_business(data: dict[str, Any]) -> bool:
 
 def subscription_paid_plan(
     data: dict[str, Any], *, current_plan: str | None = None
-) -> str:
-    """Best-effort paid plan for an active subscription payload."""
+) -> str | None:
+    """Paid plan for an active subscription payload.
+
+    Fail closed: never invent ``plus`` when price IDs are missing/unknown.
+    Falls back to ``current_plan`` only when it is already a paid plan
+    (renewal webhooks that omit item price ids).
+    """
     from_prices = paid_plan_from_price_ids(transaction_price_ids(data))
     if from_prices:
         return from_prices
+    # Some subscription payloads nest price under items differently — already
+    # covered by transaction_price_ids; if still empty, keep current paid plan.
     cur = (current_plan or "").lower()
     if cur == "business":
         return "business"
     if cur in {"plus", "pro"}:
         return "plus"
-    # Items may nest price under subscription.items differently — check items[].price.id
-    return "plus"
+    return None
 
 
 def topup_payment_cents_for_transaction(data: dict[str, Any]) -> int | None:

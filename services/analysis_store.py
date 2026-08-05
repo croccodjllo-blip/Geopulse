@@ -184,7 +184,54 @@ def persist_analysis(
             after_completion=True,
         )
 
-    db_session.flush()
+    try:
+        db_session.flush()
+    except Exception as exc:
+        from sqlalchemy.exc import IntegrityError
+
+        if not isinstance(exc, IntegrityError):
+            raise
+        # Concurrent first-analyze race on UniqueConstraint(user_id, url).
+        db_session.rollback()
+        analysis = SiteAnalysis.query.filter_by(user_id=user_id, url=url).first()
+        if analysis is None:
+            raise
+        analysis.domain = domain
+        analysis.page_title = page_title
+        analysis.aio_score = result.get("aio_score")
+        analysis.geo_score = result.get("geo_score")
+        analysis.findings_json = findings_json
+        analysis.analysis_notes = notes
+        analysis.llms_txt = pack.get("llms.txt") or ""
+        analysis.json_ld_artifact = pack.get("organization.jsonld.html") or ""
+        analysis.faq_artifact = pack.get("faq.jsonld.html") or ""
+        analysis.meta_pack_artifact = pack.get("meta-pack.html") or ""
+        analysis.robots_artifact = pack.get("robots.txt") or ""
+        analysis.checklist_artifact = pack.get("fix-this-week.md") or ""
+        analysis.before_after_artifact = pack.get("before-after.md") or ""
+        analysis.pages_analyzed = pages_analyzed
+        analysis.crawl_pages_json = json.dumps(
+            {
+                "pages": pages_for_storage(pages, limit=CRAWL_PAGES_STORE_LIMIT),
+                "competitors": result.get("competitors") or [],
+                "signals": result.get("signals") or {},
+                "probes": {
+                    "robots": _probe_for_storage(
+                        (result.get("probes") or {}).get("robots")
+                    ),
+                    "llms": _probe_for_storage((result.get("probes") or {}).get("llms")),
+                    "sitemap": _probe_for_storage(
+                        (result.get("probes") or {}).get("sitemap"),
+                        include_snippet=False,
+                    ),
+                    "ai": _probe_for_storage((result.get("probes") or {}).get("ai")),
+                },
+            },
+            ensure_ascii=False,
+        )
+        if hasattr(analysis, "updated_at"):
+            analysis.updated_at = now
+        db_session.flush()
 
     run_source = source if source in ALLOWED_RUN_SOURCES else "manual"
     run = AnalysisRun(

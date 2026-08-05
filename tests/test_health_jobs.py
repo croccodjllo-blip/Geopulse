@@ -55,7 +55,10 @@ def test_health_detail_includes_stale_running_jobs(monkeypatch):
     assert "jobs" not in public_payload
 
     detail = client.get(f"/health?token=health-{suffix}").get_json()
-    assert detail["jobs"]["pending"] >= 1
-    assert detail["jobs"]["running"] >= 2
-    assert detail["jobs"]["stale_running"] >= 1
+    # Health detail reclaim_stale_jobs turns the abandoned lease into pending
+    # (or error), so the snapshot after reclaim must not count it as running.
+    assert detail["jobs"]["pending"] >= 2
+    assert detail["jobs"]["running"] >= 1
+    assert detail["jobs"]["stale_running"] == 0
+    assert detail.get("jobs_reclaimed", 0) >= 1
     assert detail["jobs"]["stale_after_minutes"] >= 5

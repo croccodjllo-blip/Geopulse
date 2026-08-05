@@ -51,10 +51,24 @@ def run_analysis_pipeline(
     run_started_at: Any | None = None,
 ) -> Any:
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    if existing is None:
+        # Org member remesure must update the shared site, not fork under actor.
+        try:
+            from centropic.tenancy import sites_query_for_user
+
+            existing = (
+                sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
+            )
+        except Exception:
+            existing = None
+    owner_user_id = int(getattr(existing, "user_id", None) or user.id)
+    site_org_id = organization_id
+    if site_org_id is None and existing is not None:
+        site_org_id = getattr(existing, "organization_id", None)
     previous_run = None
     if existing is not None:
         previous_run = (
-            AnalysisRun.query.filter_by(site_id=existing.id, user_id=user.id)
+            AnalysisRun.query.filter_by(site_id=existing.id, user_id=owner_user_id)
             .order_by(AnalysisRun.created_at.desc())
             .first()
         )
@@ -222,17 +236,17 @@ def run_analysis_pipeline(
         db_session,
         SiteAnalysis=SiteAnalysis,
         AnalysisRun=AnalysisRun,
-        user_id=user.id,
+        user_id=owner_user_id,
         url=url,
         existing=existing,
         result=result,
         pack=pack,
         source=source,
-        organization_id=organization_id,
+        organization_id=site_org_id,
         user=user,
     )
 
-    # Attribute recent usage events to this run when possible.
+    # Attribute recent usage events to this run when possible (spender = actor).
     run_id = getattr(analysis, "_last_run_id", None)
     if UsageEvent is not None and run_id:
         try:
@@ -260,7 +274,9 @@ def run_analysis_pipeline(
             snap = extract_sov_snapshot(result)
             if snap:
                 run = (
-                    AnalysisRun.query.filter_by(site_id=analysis.id, user_id=user.id)
+                    AnalysisRun.query.filter_by(
+                        site_id=analysis.id, user_id=owner_user_id
+                    )
                     .order_by(AnalysisRun.created_at.desc())
                     .first()
                 )
@@ -268,7 +284,7 @@ def run_analysis_pipeline(
                     db_session,
                     SovSnapshot=SovSnapshot,
                     site_id=analysis.id,
-                    user_id=user.id,
+                    user_id=owner_user_id,
                     run_id=getattr(run, "id", None) or run_id,
                     snapshot=snap,
                     source=source

@@ -80,6 +80,9 @@ def process_due_rescans(
     usage_callback: UsageCallback | None = None,
     usage_callback_factory: UsageCallbackFactory | None = None,
     credit_preflight: Callable[[Any], tuple[bool, str]] | None = None,
+    hold_credit_fn: Callable[[Any, int], int] | None = None,
+    release_hold_fn: Callable[[Any, int], None] | None = None,
+    estimate_cents_fn: Callable[[Any], int] | None = None,
 ) -> dict[str, int]:
     """Esegue i re-scan scaduti via pipeline completa (suite + alert).
 
@@ -90,6 +93,7 @@ def process_due_rescans(
       - Pack/artifact LLM always receives the billing callback when present
         so OpenAI spend is never free on scheduled rescans.
       - ``credit_preflight(user) -> (ok, message)`` skips when balance is low.
+      - Optional hold/release callbacks reserve prepaid spend for the run.
     """
     from services.analysis_store import mark_rescan_error
 
@@ -147,6 +151,16 @@ def process_due_rescans(
             stats["skipped"] += 1
             continue
 
+        held = 0
+        if callable(hold_credit_fn) and callable(estimate_cents_fn):
+            try:
+                need = max(1, int(estimate_cents_fn(user)))
+                held = int(hold_credit_fn(user, need) or 0)
+            except Exception as exc:
+                mark_rescan_error(db_session, site, f"hold fallito: {exc}"[:500])
+                stats["skipped"] += 1
+                continue
+
         if callable(usage_callback_factory):
             billing_cb: UsageCallback | None = usage_callback_factory(user)
         elif callable(usage_callback):
@@ -182,5 +196,19 @@ def process_due_rescans(
             mark_rescan_error(db_session, site, str(exc)[:500])
             stats["error"] += 1
             logger.exception("Rescan failed site_id=%s", site.id)
+        finally:
+            if held > 0 and callable(release_hold_fn):
+                try:
+                    owner = db_session.get(User, user.id)
+                    if owner is not None:
+                        # Only release leftover reservation (consume_hold may
+                        # have already reduced held during live debit).
+                        from services.usage_billing import get_held_cents
+
+                        rem = int(get_held_cents(owner) or 0)
+                        if rem > 0:
+                            release_hold_fn(owner, rem)
+                except Exception:
+                    logger.exception("rescan release_hold failed site_id=%s", site.id)
 
     return stats

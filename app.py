@@ -152,6 +152,7 @@ from services.jobs import (
     fail_job,
     heartbeat_job,
     mark_job_site,
+    reclaim_stale_jobs,
 )
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
@@ -286,6 +287,16 @@ ADMIN_BOOTSTRAP = os.getenv("ADMIN_BOOTSTRAP", "0") == "1"
 ASYNC_ANALYZE = os.getenv("ASYNC_ANALYZE", "1") == "1"
 MEASURED_SOV_ON_ANALYZE = os.getenv("MEASURED_SOV_ON_ANALYZE", "1") == "1"
 ANALYSIS_SOV_PROMPTS = 8  # must match citation_monitor / prompt_bank max
+
+
+def _estimate_sov_prompts() -> int:
+    """Align billing estimates with actual measured prompt count (fast/full)."""
+    try:
+        from services.citation_monitor import sov_prompt_limit
+
+        return int(sov_prompt_limit())
+    except Exception:
+        return int(ANALYSIS_SOV_PROMPTS)
 # Welcome credit granted only after email verification (anti-farming).
 WELCOME_CREDIT_CENTS = max(0, int(os.getenv("WELCOME_CREDIT_CENTS", "200")))
 EMAIL_VERIFY_HOURS = max(1, int(os.getenv("EMAIL_VERIFY_HOURS", "48")))
@@ -2675,6 +2686,30 @@ def health():
         if db_ok:
             from centropic.ops_health import job_queue_snapshot
 
+            # Ops reclaim: release abandoned holds even when the analyze timer
+            # is idle / queue empty (claim_next_job would otherwise never run).
+            try:
+
+                def _health_on_abandon(abandoned_job: AnalysisJob) -> None:
+                    held = int(getattr(abandoned_job, "held_cents", 0) or 0)
+                    if held <= 0:
+                        abandoned_job.held_cents = 0
+                        return
+                    owner = db.session.get(User, abandoned_job.user_id)
+                    release_job_hold(db.session, owner, abandoned_job)
+
+                reclaimed = reclaim_stale_jobs(
+                    db.session, AnalysisJob, on_abandon=_health_on_abandon
+                )
+                if reclaimed:
+                    payload["jobs_reclaimed"] = reclaimed
+            except Exception:
+                app.logger.exception("health reclaim_stale_jobs failed")
+                try:
+                    db.session.rollback()
+                except Exception:
+                    pass
+
             jobs_detail.update(
                 job_queue_snapshot(
                     AnalysisJob,
@@ -3713,9 +3748,24 @@ def billing_paddle_webhook():
                 paid = subscription_paid_plan(
                     data, current_plan=getattr(user, "plan", None)
                 )
-                user.plan = plan_from_paddle_subscription_status(
-                    status, past_due_at=past_due_at, paid_plan=paid
-                )
+                if status in {"active", "trialing"}:
+                    if paid:
+                        user.plan = paid
+                    else:
+                        app.logger.warning(
+                            "Paddle subscription %s active without known price ids; "
+                            "keeping plan=%s (fail closed)",
+                            data.get("id") or data.get("subscription_id"),
+                            user.plan,
+                        )
+                else:
+                    # past_due / canceled / paused — use status mapper.
+                    fallback = "business" if (user.plan or "").lower() == "business" else "plus"
+                    user.plan = plan_from_paddle_subscription_status(
+                        status,
+                        past_due_at=past_due_at,
+                        paid_plan=paid or fallback,
+                    )
                 db.session.commit()
 
         elif etype in {"transaction.completed", "transaction.paid"}:
@@ -4857,6 +4907,68 @@ def dashboard_analyze_confirmed():
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
 
+    # Sync path (ASYNC_ANALYZE=0): still hold so concurrent spend cannot drain balance.
+    required = required_credit_with_grace_cents(cost_cents)
+    sync_held = 0
+    try:
+        sync_held = hold_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_cents=required,
+            description="Riserva analisi sync",
+        )
+        db.session.commit()
+    except InsufficientCreditError:
+        balance = get_balance_cents(user)
+        required_with_grace = required
+        shortage = max(0, required_with_grace - balance)
+        return credit_shortage_response(
+            message=(
+                f"Token insufficienti: hai {format_token_amount(balance)}, "
+                f"servono {format_token_amount(required_with_grace)}. "
+                f"Passa a Plus (100 token/mese) o ricarica almeno "
+                f"{format_token_amount(shortage)}."
+            )
+        )
+
+    hold_remaining = {"n": int(sync_held or 0)}
+
+    def _usage_cb_sync(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+        charged = record_actual_usage(
+            db.session,
+            UsageEvent,
+            user_id=user.id,
+            analysis_run_id=None,
+            provider=provider,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+        debit_cents = debit_cents_from_usage(charged)
+        if debit_cents <= 0:
+            return
+        _assert_current_sov_debit(user, debit_cents)
+        held_now = int(hold_remaining["n"] or 0)
+        deduct_credit(
+            db.session,
+            CreditLedger,
+            user,
+            analysis_run_id=None,
+            cost_eur_cents=debit_cents,
+            description=_usage_ledger_description(
+                "AI",
+                provider=provider,
+                model=model,
+            ),
+            reserved_cents=held_now,
+        )
+        if held_now > 0:
+            consumed = consume_hold(
+                db.session, user, amount_cents=min(debit_cents, held_now)
+            )
+            hold_remaining["n"] = max(0, held_now - int(consumed or 0))
+
     try:
         latest = run_analysis_pipeline(
             db_session=db.session,
@@ -4870,35 +4982,47 @@ def dashboard_analyze_confirmed():
             run_measured=run_meas,
             measured_env_enabled=MEASURED_SOV_ON_ANALYZE,
             source="manual",
-            usage_callback=_usage_cb,
+            usage_callback=_usage_cb_sync,
             max_pages=crawl_pages,
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
+            UsageEvent=UsageEvent,
         )
         db.session.commit()
-
-        pages_n = int(latest.pages_analyzed or 1)
-        new_balance = get_balance_cents(user)
-        flash(
-            f"Analisi completata su {pages_n} pagine — score, findings e pack pronti. "
-            f"Token residui: {format_token_amount(new_balance)}.",
-            "success",
-        )
-    except InsufficientCreditError as exc:
-        try:
-            db.session.rollback()
-        except Exception:
-            pass
-        flash(str(exc), "error")
-        return redirect(url_for("topup_credit_page"))
+        rem = int(hold_remaining["n"] or 0)
+        if rem > 0:
+            release_hold(db.session, user, amount_cents=rem)
+            db.session.commit()
     except Exception as exc:
-        app.logger.exception("Confirmed analyze failed")
         try:
             db.session.rollback()
         except Exception:
             pass
+        rem = int(hold_remaining["n"] or 0)
+        if rem > 0:
+            try:
+                release_hold(db.session, user, amount_cents=rem)
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
         flash_analyze_error(exc)
+        return redirect(url_for("dashboard"))
 
+    pages_n = int(latest.pages_analyzed or 1)
+    new_balance = get_balance_cents(user)
+    flash(
+        f"Analisi completata su {pages_n} pagine — score, findings e pack pronti. "
+        f"Token residui: {format_token_amount(new_balance)}.",
+        "success",
+    )
+    try:
+        maybe_send_analysis_complete_email(user, latest)
+    except Exception:
+        app.logger.exception("post-analysis email hook failed")
+    try:
+        maybe_send_lifecycle_emails(user)
+    except Exception:
+        app.logger.exception("lifecycle email hook failed")
     return redirect(url_for("dashboard"))
 
 
@@ -5349,10 +5473,23 @@ def dashboard_settings():
             if blocked:
                 flash(blocked, "warning")
                 return redirect(url_for("pricing"))
+            logo_raw = (agency_form.logo_url.data or "").strip()
+            if logo_raw:
+                from services.ssrf import UnsafeURLError, assert_public_http_url
+
+                try:
+                    logo_safe = assert_public_http_url(logo_raw, resolve=False)
+                    if not logo_safe.startswith("https://"):
+                        flash("Logo URL: è richiesto HTTPS pubblico.", "error")
+                        return redirect(url_for("dashboard_settings"))
+                    logo_raw = logo_safe
+                except UnsafeURLError:
+                    flash("Logo URL non consentito (solo HTTPS pubblici).", "error")
+                    return redirect(url_for("dashboard_settings"))
             user.agency_brand_json = dump_agency_brand(
                 {
                     "brand_name": agency_form.brand_name.data or "",
-                    "logo_url": agency_form.logo_url.data or "",
+                    "logo_url": logo_raw,
                     "primary_color": agency_form.primary_color.data or "",
                     "footer_note": agency_form.footer_note.data or "",
                 }
@@ -6174,16 +6311,46 @@ def admin_retry_job(job_id: int):
             "error",
         )
         return redirect(url_for("admin_home"))
+    owner = db.session.get(User, job.user_id)
+    if owner is None:
+        flash("Utente del job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    # Re-hold credit before requeue (previous hold was released on fail).
+    run_meas = bool(getattr(job, "run_measured", False))
+    est = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=run_meas,
+        n_prompts=_estimate_sov_prompts(),
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+    )
+    required = required_credit_with_grace_cents(est.service_cost_eur_cents)
+    try:
+        held = hold_credit(
+            db.session,
+            CreditLedger,
+            owner,
+            amount_cents=required,
+            description=f"Riserva retry job #{job.id}",
+        )
+    except InsufficientCreditError:
+        flash("Token insufficienti per riaccodare il job.", "error")
+        return redirect(url_for("admin_home"))
     job.status = "pending"
     job.error = None
     job.started_at = None
     job.finished_at = None
     job.lease_token = None
     job.heartbeat_at = None
+    job.held_cents = int(held or 0)
     if hasattr(job, "attempt_count"):
         job.attempt_count = 0
     db.session.commit()
-    flash(f"Job #{job.id} rimesso in coda.", "success")
+    kick_analyze_worker()
+    flash(f"Job #{job.id} rimesso in coda (hold {held} cent).", "success")
     return redirect(url_for("admin_home"))
 
 

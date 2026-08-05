@@ -108,6 +108,13 @@ def upsert_profile(profile: dict, password: str) -> User:
 
 
 def main() -> None:
+    if os.getenv("ALLOW_DEMO_SEED", "0") != "1":
+        print(
+            "ERROR: set ALLOW_DEMO_SEED=1 to create unlimited demo profiles "
+            "(role=internal bypasses billing).",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
     with app.app_context():
         ensure_schema()
         print("Seed utenze profilo (role=internal, quote illimitate, gate piano fedele)")

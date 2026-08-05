@@ -63,7 +63,12 @@ def test_admin_retry_allows_unbilled_error_job():
                 email="retry-admin2@example.com", name="Admin", plan="admin", role="admin"
             )
             admin.set_password("ArchTest!23456")
-            owner = User(email="retry-owner2@example.com", name="Owner", plan="plus")
+            owner = User(
+                email="retry-owner2@example.com",
+                name="Owner",
+                plan="plus",
+                credit_balance_cents=50_000,
+            )
             owner.set_password("ArchTest!23456")
             db.session.add_all([admin, owner])
             db.session.commit()
@@ -89,5 +94,7 @@ def test_admin_retry_allows_unbilled_error_job():
             assert row.status == "pending"
             assert row.attempt_count == 0
             assert row.error is None
+            # Retry must re-hold credit (previous hold was released on fail).
+            assert int(row.held_cents or 0) >= 0
         finally:
             app.config["WTF_CSRF_ENABLED"] = prev

@@ -967,6 +967,11 @@ def _sov_prompt_limit() -> int:
     return max(1, min(8, full))
 
 
+def sov_prompt_limit() -> int:
+    """Public alias for estimate/billing alignment with measured probes."""
+    return _sov_prompt_limit()
+
+
 def run_citation_monitor(
     *,
     brand: str,
@@ -1024,6 +1029,25 @@ def run_citation_monitor(
                 _SOV_USAGE_ACTIVE.reset(token)
 
     # Probe engines in parallel (wall-clock ~ max(engine) not sum).
+    # Background pulse keeps the job lease alive during long sequential
+    # per-prompt OpenAI/Anthropic loops (can exceed STALE_HEARTBEAT alone).
+    stop_pulse = threading.Event()
+
+    def _pulse_loop() -> None:
+        while not stop_pulse.wait(25.0):
+            try:
+                _beat()
+            except Exception:
+                stop_pulse.set()
+                return
+
+    pulse_thread: threading.Thread | None = None
+    if callable(heartbeat_callback):
+        pulse_thread = threading.Thread(
+            target=_pulse_loop, name="sov-lease-pulse", daemon=True
+        )
+        pulse_thread.start()
+
     jobs: list[tuple[str, Any]] = [
         ("openai", lambda: _probe_openai(prompts, needles, usage_callback=_usage)),
         ("perplexity", lambda: _probe_perplexity(prompts, needles, usage_callback=_usage)),
@@ -1034,36 +1058,41 @@ def run_citation_monitor(
     ]
     results: dict[str, dict[str, Any]] = {}
     workers = _sov_engine_parallelism()
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(fn): name for name, fn in jobs}
-        for fut in as_completed(futures):
-            name = futures[fut]
-            try:
-                results[name] = fut.result() or {}
-            except Exception as exc:
-                from services.usage_billing import InsufficientCreditError
-                from services.sov_budget import SovDailyBudgetExceeded
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(fn): name for name, fn in jobs}
+            for fut in as_completed(futures):
+                name = futures[fut]
+                try:
+                    results[name] = fut.result() or {}
+                except Exception as exc:
+                    from services.usage_billing import InsufficientCreditError
+                    from services.sov_budget import SovDailyBudgetExceeded
 
-                if isinstance(
-                    exc,
-                    (InsufficientCreditError, SovDailyBudgetExceeded),
-                ) or credit_stop["exc"] is not None:
+                    if isinstance(
+                        exc,
+                        (InsufficientCreditError, SovDailyBudgetExceeded),
+                    ) or credit_stop["exc"] is not None:
+                        for pending in futures:
+                            pending.cancel()
+                        raise (credit_stop["exc"] or exc)
+                    logger.exception("SoV engine %s failed", name)
+                    results[name] = {"available": False, "reason": str(exc)[:160]}
+                if credit_stop["exc"] is not None:
                     for pending in futures:
                         pending.cancel()
-                    raise (credit_stop["exc"] or exc)
-                logger.exception("SoV engine %s failed", name)
-                results[name] = {"available": False, "reason": str(exc)[:160]}
-            if credit_stop["exc"] is not None:
-                for pending in futures:
-                    pending.cancel()
-                raise credit_stop["exc"]
-            try:
-                _beat()
-            except Exception:
-                # Cancel remaining work on lease loss.
-                for pending in futures:
-                    pending.cancel()
-                raise
+                    raise credit_stop["exc"]
+                try:
+                    _beat()
+                except Exception:
+                    # Cancel remaining work on lease loss.
+                    for pending in futures:
+                        pending.cancel()
+                    raise
+    finally:
+        stop_pulse.set()
+        if pulse_thread is not None:
+            pulse_thread.join(timeout=1.0)
 
     openai = results.get("openai") or {}
     if openai.get("available"):
