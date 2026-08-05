@@ -5959,7 +5959,7 @@ def download_whitelabel(analysis_id: int):
         buf,
         as_attachment=True,
         download_name=f"centropic-{analysis.domain}-report.md",
-        mimetype="text/markdown; charset=utf-8",
+        mimetype="text/markdown",
     )
 
 
@@ -5991,7 +5991,7 @@ def download_whitelabel_html(analysis_id: int):
         buf,
         as_attachment=True,
         download_name=f"centropic-{analysis.domain}-report.html",
-        mimetype="text/html; charset=utf-8",
+        mimetype="text/html",
     )
 
 
@@ -6665,7 +6665,7 @@ def download_pack(analysis_id: int):
     buffer = io.BytesIO(pack_fix_html_bytes(analysis))
     return send_file(
         buffer,
-        mimetype="text/html; charset=utf-8",
+        mimetype="text/html",
         as_attachment=True,
         download_name=make_pack_fix_filename(analysis),
     )
@@ -6839,7 +6839,7 @@ def download_run_pack(run_id: int):
     filename = f"centropic-{domain}-{stamp}-fix.html"
     return send_file(
         buffer,
-        mimetype="text/html; charset=utf-8",
+        mimetype="text/html",
         as_attachment=True,
         download_name=filename,
     )
@@ -6865,7 +6865,7 @@ def export_history_csv():
     data = runs_to_csv(runs)
     return send_file(
         io.BytesIO(data),
-        mimetype="text/csv; charset=utf-8",
+        mimetype="text/csv",
         as_attachment=True,
         download_name=f"centropic-storico-{datetime.now(timezone.utc).strftime('%Y%m%d')}.csv",
     )
