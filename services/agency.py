@@ -20,10 +20,21 @@ def dump_agency_brand(data: dict[str, Any]) -> str:
     clean = {
         "brand_name": str(data.get("brand_name") or "")[:80],
         "logo_url": str(data.get("logo_url") or "")[:300],
-        "primary_color": str(data.get("primary_color") or "")[:20],
+        "primary_color": normalize_primary_color(data.get("primary_color")),
         "footer_note": str(data.get("footer_note") or "")[:200],
     }
     return json.dumps(clean, ensure_ascii=False)
+
+
+_HEX_COLOR_RE = __import__("re").compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+
+
+def normalize_primary_color(raw: Any, *, default: str = "#0B3D2E") -> str:
+    """Allowlist CSS color to #RGB / #RRGGBB only (blocks CSS injection)."""
+    value = str(raw or "").strip()
+    if _HEX_COLOR_RE.fullmatch(value):
+        return value.upper() if len(value) == 7 else value
+    return default
 
 
 def build_whitelabel_markdown(
@@ -72,7 +83,7 @@ def build_whitelabel_html(
     """Client-ready HTML report (no Centropic chrome)."""
     agency = agency or {}
     brand = agency.get("brand_name") or "Centropic"
-    color = agency.get("primary_color") or "#0B3D2E"
+    color = normalize_primary_color(agency.get("primary_color"))
     logo = agency.get("logo_url") or ""
     domain = getattr(site, "domain", "") or ""
     url = getattr(site, "url", "") or ""
@@ -108,7 +119,7 @@ def build_whitelabel_html(
 <style>
 body{{font-family:Georgia,serif;margin:0;background:#f7f5f0;color:#1a1a1a}}
 .wrap{{max-width:720px;margin:0 auto;padding:2.5rem 1.25rem}}
-.brand{{color:{_esc(color)};font-size:1.4rem;font-weight:700;margin:0 0 .5rem}}
+.brand{{color:{color};font-size:1.4rem;font-weight:700;margin:0 0 .5rem}}
 h1{{font-size:1.75rem;margin:.25rem 0 1rem}}
 .meta{{color:#444;margin-bottom:1.5rem}}
 ul{{padding-left:1.2rem}}

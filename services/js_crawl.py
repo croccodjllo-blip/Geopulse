@@ -72,10 +72,17 @@ def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
                 return route.continue_()
 
             page.route("**/*", _on_route)
+            # Narrow DNS-rebinding TOCTOU: re-resolve immediately before goto.
+            assert_public_http_url(safe_url, resolve=True)
             page.goto(safe_url, wait_until="domcontentloaded", timeout=timeout_ms)
             # Re-validate final URL after redirects (DNS rebinding / open redirect).
             try:
-                assert_public_http_url(page.url, resolve=True)
+                final = assert_public_http_url(page.url, resolve=True)
+                # Reject host swaps after redirect (common rebinding vector).
+                from urllib.parse import urlparse
+
+                if urlparse(safe_url).hostname != urlparse(final).hostname:
+                    raise UnsafeURLError("redirect_host_mismatch")
             except UnsafeURLError as exc:
                 context.close()
                 browser.close()

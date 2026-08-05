@@ -61,7 +61,21 @@ def run_analysis_pipeline(
             )
         except Exception:
             existing = None
+    # Defense-in-depth: viewers may read shared sites but must not remesure them.
+    if existing is not None:
+        try:
+            from centropic.tenancy import user_can_write_site
+
+            if not user_can_write_site(user, existing):
+                raise PermissionError(
+                    "Ruolo viewer: non puoi modificare siti condivisi dell’organizzazione."
+                )
+        except PermissionError:
+            raise
+        except Exception:
+            pass
     owner_user_id = int(getattr(existing, "user_id", None) or user.id)
+    actor_user_id = int(user.id)
     site_org_id = organization_id
     if site_org_id is None and existing is not None:
         site_org_id = getattr(existing, "organization_id", None)
@@ -237,6 +251,7 @@ def run_analysis_pipeline(
         SiteAnalysis=SiteAnalysis,
         AnalysisRun=AnalysisRun,
         user_id=owner_user_id,
+        run_user_id=actor_user_id,
         url=url,
         existing=existing,
         result=result,

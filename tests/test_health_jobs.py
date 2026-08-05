@@ -8,7 +8,7 @@ from uuid import uuid4
 from app import AnalysisJob, User, app, db, ensure_schema
 
 
-def test_health_detail_includes_stale_running_jobs(monkeypatch):
+def test_health_detail_is_read_only_snapshot(monkeypatch):
     suffix = uuid4().hex
     now = datetime.now(timezone.utc)
     with app.app_context():
@@ -55,10 +55,57 @@ def test_health_detail_includes_stale_running_jobs(monkeypatch):
     assert "jobs" not in public_payload
 
     detail = client.get(f"/health?token=health-{suffix}").get_json()
-    # Health detail reclaim_stale_jobs turns the abandoned lease into pending
-    # (or error), so the snapshot after reclaim must not count it as running.
-    assert detail["jobs"]["pending"] >= 2
-    assert detail["jobs"]["running"] >= 1
-    assert detail["jobs"]["stale_running"] == 0
-    assert detail.get("jobs_reclaimed", 0) >= 1
+    # GET /health is read-only: stale running stays visible until ops reclaim.
+    assert detail["jobs"]["pending"] >= 1
+    assert detail["jobs"]["running"] >= 2
+    assert detail["jobs"]["stale_running"] >= 1
+    assert "jobs_reclaimed" not in detail
     assert detail["jobs"]["stale_after_minutes"] >= 5
+
+
+def test_ops_reclaim_jobs_releases_stale(monkeypatch):
+    suffix = uuid4().hex
+    now = datetime.now(timezone.utc)
+    with app.app_context():
+        ensure_schema()
+        user = User(
+            email=f"ops-reclaim-{suffix}@example.com",
+            name="Ops Reclaim",
+            plan="plus",
+            credit_balance_cents=10_000,
+            credit_held_cents=200,
+        )
+        user.set_password("HealthTest!23456")
+        db.session.add(user)
+        db.session.flush()
+        job = AnalysisJob(
+            user_id=user.id,
+            url=f"https://stale-ops-{suffix}.example.com/",
+            status="running",
+            lease_token=f"stale-ops-{suffix}",
+            heartbeat_at=now - timedelta(hours=1),
+            started_at=now - timedelta(hours=1),
+            attempt_count=99,
+            held_cents=200,
+        )
+        db.session.add(job)
+        db.session.commit()
+        job_id = job.id
+        user_id = user.id
+
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", f"ops-{suffix}")
+    client = app.test_client()
+    denied = client.post("/ops/reclaim-jobs")
+    assert denied.status_code == 403
+
+    ok = client.post(f"/ops/reclaim-jobs?token=ops-{suffix}").get_json()
+    assert ok["ok"] is True
+    assert ok["jobs_reclaimed"] >= 1
+
+    with app.app_context():
+        row = db.session.get(AnalysisJob, job_id)
+        assert row is not None
+        assert row.status == "error"
+        assert int(row.held_cents or 0) == 0
+        owner = db.session.get(User, user_id)
+        assert int(owner.credit_held_cents or 0) == 0

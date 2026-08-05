@@ -153,6 +153,7 @@ from services.jobs import (
     heartbeat_job,
     mark_job_site,
     reclaim_stale_jobs,
+    release_stranded_holds,
 )
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
@@ -1588,12 +1589,17 @@ class AlertDelivery(db.Model):
 from centropic.tenancy import (  # noqa: E402
     Organization,
     OrganizationMember,
+    assert_can_remesure_site,
     ensure_personal_org,
     get_accessible_site,
+    resolve_existing_site_for_analyze,
     sites_query_for_user,
     user_can_access_site,
     user_can_write_site,
 )
+
+
+CREDIT_LEDGER_PI_INDEX_OK = True
 
 
 def ensure_schema() -> None:
@@ -1816,12 +1822,17 @@ def ensure_schema() -> None:
                         "WHERE indexname='uq_credit_ledger_stripe_pi'"
                     )
                 ).fetchone()
+            global CREDIT_LEDGER_PI_INDEX_OK
             if row is None:
+                CREDIT_LEDGER_PI_INDEX_OK = False
                 app.logger.error(
                     "CRITICAL: credit_ledger unique index uq_credit_ledger_stripe_pi "
                     "missing — webhook double-credit possible"
                 )
+            else:
+                CREDIT_LEDGER_PI_INDEX_OK = True
     except Exception:
+        CREDIT_LEDGER_PI_INDEX_OK = False
         app.logger.exception(
             "CRITICAL: credit_ledger stripe unique index skipped — "
             "webhook double-credit possible"
@@ -2378,6 +2389,39 @@ def quota_block_response(
     return redirect(upgrade if code.startswith("free_") else url_for("pricing"))
 
 
+
+def write_forbidden_response(*, message: str | None = None) -> Any:
+    """HTTP 403 when org viewers try to mutate shared sites."""
+    msg = message or (
+        "Il tuo ruolo (viewer) non consente di modificare siti dell’organizzazione."
+    )
+    if wants_json_response():
+        return jsonify({"ok": False, "error": "forbidden_viewer", "message": msg}), 403
+    flash(msg, "error")
+    return redirect(url_for("dashboard"))
+
+
+def resolve_analyze_existing(user: User, url: str) -> tuple[SiteAnalysis | None, Any | None]:
+    """Org-scoped existing site + write ACL. Returns (existing, block_response)."""
+    existing = resolve_existing_site_for_analyze(SiteAnalysis, user, url)
+    if existing is not None and not assert_can_remesure_site(user, existing):
+        return existing, write_forbidden_response()
+    return existing, None
+
+
+def active_analyze_job_for_url(user_id: int, url: str) -> AnalysisJob | None:
+    """Pending/running job for the same user+url (dedupe enqueue)."""
+    return (
+        AnalysisJob.query.filter(
+            AnalysisJob.user_id == user_id,
+            AnalysisJob.url == url,
+            AnalysisJob.status.in_(("pending", "running")),
+        )
+        .order_by(AnalysisJob.id.desc())
+        .first()
+    )
+
+
 def enforce_analyze_limits(
     user: User,
     *,
@@ -2532,7 +2576,9 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
         url = normalize_url(website)
     except ValueError:
         return None
-    existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    existing, write_block = resolve_analyze_existing(user, url)
+    if write_block is not None:
+        return None
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return None
@@ -2566,6 +2612,8 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
         app.logger.info("Onboarding analyze skipped for user %s: %s", user.id, exc)
         return None
 
+    onboard_hold_remaining = {"n": 0}
+
     def _onboarding_usage_cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
         charged = record_actual_usage(
             db.session,
@@ -2580,6 +2628,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
         debit_cents = debit_cents_from_usage(charged)
         if debit_cents <= 0:
             return
+        held_now = int(onboard_hold_remaining["n"] or 0)
         deduct_credit(
             db.session,
             CreditLedger,
@@ -2587,7 +2636,13 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             analysis_run_id=None,
             cost_eur_cents=debit_cents,
             description=f"Onboarding usage realtime {provider}:{model}",
+            reserved_cents=held_now,
         )
+        if held_now > 0:
+            consumed = consume_hold(
+                db.session, user, amount_cents=min(debit_cents, held_now)
+            )
+            onboard_hold_remaining["n"] = max(0, held_now - int(consumed or 0))
 
     if ASYNC_ANALYZE:
         required = required_credit_with_grace_cents(est.service_cost_eur_cents)
@@ -2619,6 +2674,24 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
         )
         kick_analyze_worker()
         return int(job.id)
+    required = required_credit_with_grace_cents(est.service_cost_eur_cents)
+    sync_held = 0
+    try:
+        sync_held = hold_credit(
+            db.session,
+            CreditLedger,
+            user,
+            amount_cents=required,
+            description="Riserva onboarding sync",
+        )
+        db.session.commit()
+    except InsufficientCreditError:
+        app.logger.info(
+            "Onboarding analyze skipped for user %s: insufficient credit for hold",
+            user.id,
+        )
+        return None
+    onboard_hold_remaining["n"] = int(sync_held or 0)
     try:
         run_analysis_pipeline(
             db_session=db.session,
@@ -2637,12 +2710,32 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             AlertDelivery=AlertDelivery,
             UsageEvent=UsageEvent,
         )
+        if sync_held > 0:
+            from services.usage_billing import release_hold
+
+            rem = int(onboard_hold_remaining["n"] or 0)
+            if rem > 0:
+                release_hold(db.session, user, amount_cents=rem)
+                db.session.commit()
     except Exception as exc:
         app.logger.exception("Onboarding analyze failed")
         try:
             db.session.rollback()
         except Exception:
             pass
+        if sync_held > 0:
+            try:
+                from services.usage_billing import release_hold
+
+                release_hold(
+                    db.session,
+                    user,
+                    amount_cents=int(sync_held),
+                )
+                db.session.commit()
+            except Exception:
+                app.logger.exception("Onboarding hold release failed")
+                db.session.rollback()
         flash_analyze_error(exc)
     return None
 
@@ -2686,30 +2779,7 @@ def health():
         if db_ok:
             from centropic.ops_health import job_queue_snapshot
 
-            # Ops reclaim: release abandoned holds even when the analyze timer
-            # is idle / queue empty (claim_next_job would otherwise never run).
-            try:
-
-                def _health_on_abandon(abandoned_job: AnalysisJob) -> None:
-                    held = int(getattr(abandoned_job, "held_cents", 0) or 0)
-                    if held <= 0:
-                        abandoned_job.held_cents = 0
-                        return
-                    owner = db.session.get(User, abandoned_job.user_id)
-                    release_job_hold(db.session, owner, abandoned_job)
-
-                reclaimed = reclaim_stale_jobs(
-                    db.session, AnalysisJob, on_abandon=_health_on_abandon
-                )
-                if reclaimed:
-                    payload["jobs_reclaimed"] = reclaimed
-            except Exception:
-                app.logger.exception("health reclaim_stale_jobs failed")
-                try:
-                    db.session.rollback()
-                except Exception:
-                    pass
-
+            # GET is read-only: reclaim moved to POST /ops/reclaim-jobs.
             jobs_detail.update(
                 job_queue_snapshot(
                     AnalysisJob,
@@ -2769,6 +2839,51 @@ def health():
             }
         )
     return jsonify(payload), status
+
+
+
+@app.post("/ops/reclaim-jobs")
+@csrf.exempt
+def ops_reclaim_jobs():
+    """Admin/token-gated reclaim of stale jobs + stranded holds (not on GET /health)."""
+    detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
+    provided = (request.args.get("token") or request.headers.get("X-Ops-Token") or "").strip()
+    allowed = False
+    if detail_token and provided and secrets.compare_digest(detail_token, provided):
+        allowed = True
+    else:
+        user = current_user()
+        if user is not None and user.is_admin:
+            allowed = True
+    if not allowed:
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+
+    def _on_abandon(abandoned_job: AnalysisJob) -> None:
+        held = int(getattr(abandoned_job, "held_cents", 0) or 0)
+        if held <= 0:
+            abandoned_job.held_cents = 0
+            return
+        owner = db.session.get(User, abandoned_job.user_id)
+        if owner is None:
+            abandoned_job.held_cents = 0
+            return
+        release_job_hold(db.session, owner, abandoned_job)
+
+    try:
+        reclaimed = reclaim_stale_jobs(
+            db.session, AnalysisJob, on_abandon=_on_abandon
+        )
+        stranded = release_stranded_holds(
+            db.session, AnalysisJob, on_release=_on_abandon
+        )
+        return jsonify(
+            {"ok": True, "jobs_reclaimed": reclaimed, "holds_released": stranded}
+        )
+    except Exception:
+        app.logger.exception("ops reclaim-jobs failed")
+        db.session.rollback()
+        return jsonify({"ok": False, "error": "reclaim_failed"}), 500
+
 
 
 @app.route("/llms.txt")
@@ -3856,8 +3971,19 @@ def billing_paddle_webhook():
             if not txn_id:
                 return jsonify({"ok": False, "error": "missing_txn"}), 400
             pi = f"paddle:{txn_id}"
+            if not CREDIT_LEDGER_PI_INDEX_OK:
+                app.logger.error("Paddle top-up refused: credit ledger unique index missing")
+                app_metrics.incr("billing.topup_index_missing")
+                return jsonify({"ok": False, "error": "ledger_index_missing"}), 503
             if not user:
-                return jsonify({"ok": True, "ignored": "no_user"})
+                app.logger.error(
+                    "Paddle top-up no_user txn=%s customer=%s",
+                    txn_id,
+                    data.get("customer_id"),
+                )
+                app_metrics.incr("billing.topup_no_user")
+                # 5xx so Paddle retries after ops maps the customer.
+                return jsonify({"ok": False, "error": "no_user"}), 500
             already = CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
             if already is not None:
                 return jsonify({"ok": True, "duplicate": True})
@@ -4426,7 +4552,9 @@ def dashboard():
             return redirect(url_for("dashboard"))
         try:
             url = normalize_url(form.url.data)
-            existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+            existing, write_block = resolve_analyze_existing(user, url)
+            if write_block is not None:
+                return write_block
             blocked = enforce_analyze_limits(user, url=url, existing=existing)
             if blocked is not None:
                 return blocked
@@ -4840,10 +4968,16 @@ def dashboard_analyze_confirmed():
             ),
         )
 
-    existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    existing, write_block = resolve_analyze_existing(user, url)
+    if write_block is not None:
+        return write_block
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return blocked
+    dup = active_analyze_job_for_url(user.id, url)
+    if dup is not None:
+        flash("Analisi già in coda per questo URL.", "info")
+        return redirect(url_for("dashboard", job=dup.id))
 
     # Atomic lock: re-check credit + concurrent job cap under row lock.
     try:
@@ -5478,7 +5612,7 @@ def dashboard_settings():
                 from services.ssrf import UnsafeURLError, assert_public_http_url
 
                 try:
-                    logo_safe = assert_public_http_url(logo_raw, resolve=False)
+                    logo_safe = assert_public_http_url(logo_raw, resolve=True)
                     if not logo_safe.startswith("https://"):
                         flash("Logo URL: è richiesto HTTPS pubblico.", "error")
                         return redirect(url_for("dashboard_settings"))
@@ -5486,11 +5620,20 @@ def dashboard_settings():
                 except UnsafeURLError:
                     flash("Logo URL non consentito (solo HTTPS pubblici).", "error")
                     return redirect(url_for("dashboard_settings"))
+            from services.agency import normalize_primary_color
+            import re as _re_color
+
+            color_raw = (agency_form.primary_color.data or "").strip()
+            if color_raw and not _re_color.fullmatch(
+                r"#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})", color_raw
+            ):
+                flash("Colore primario: usa solo #RGB o #RRGGBB.", "error")
+                return redirect(url_for("dashboard_settings"))
             user.agency_brand_json = dump_agency_brand(
                 {
                     "brand_name": agency_form.brand_name.data or "",
                     "logo_url": logo_raw,
-                    "primary_color": agency_form.primary_color.data or "",
+                    "primary_color": color_raw,
                     "footer_note": agency_form.footer_note.data or "",
                 }
             )
@@ -5623,6 +5766,8 @@ def dashboard_verify_rescan(analysis_id: int):
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        return write_forbidden_response()
     if not user.is_pro:
         flash("Re-scan measured dopo verify è riservato a Plus.", "warning")
         return redirect(url_for("pricing"))
@@ -5790,12 +5935,29 @@ def api_v1_analyze():
         url = normalize_url(url_raw)
     except Exception as exc:
         return jsonify({"ok": False, "error": "invalid_url"}), 400
-    existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
+    existing, write_block = resolve_analyze_existing(user, url)
+    if write_block is not None:
+        return write_block
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         if isinstance(blocked, tuple):
             return blocked
         return jsonify({"ok": False, "error": "quota_exceeded"}), 423
+    dup = active_analyze_job_for_url(user.id, url)
+    if dup is not None:
+        return (
+            jsonify(
+                {
+                    "ok": True,
+                    "queued": True,
+                    "job_id": dup.id,
+                    "status": dup.status,
+                    "deduped": True,
+                    "status_url": url_for("api_v1_job_status", job_id=dup.id, _external=True),
+                }
+            ),
+            202,
+        )
     comps = payload.get("competitors") or []
     if not isinstance(comps, list):
         comps = []
@@ -5885,7 +6047,7 @@ def api_v1_analyze():
             amount_cents=required_hold,
             description="Riserva API analyze",
         )
-        db.session.commit()
+        # Do not commit yet — enqueue_analysis commits hold+job together.
     except InsufficientCreditError:
         db.session.rollback()
         required_with_grace = required_hold
@@ -5907,17 +6069,34 @@ def api_v1_analyze():
     # Always enqueue on the async job path so concurrency, lease, and billing
     # match the dashboard worker (avoids proxy timeouts + double holds).
     crawl_pages = resolve_crawl_pages(user, deep_crawl=False)
-    job = enqueue_analysis(
-        db.session,
-        AnalysisJob,
-        user_id=user.id,
-        url=url,
-        max_pages=crawl_pages,
-        competitor_urls=[str(c) for c in comps[:3] if isinstance(c, str)],
-        run_measured=want_measured,
-        held_cents=int(api_held or 0),
-        source="api",
-    )
+    try:
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url=url,
+            max_pages=crawl_pages,
+            competitor_urls=[str(c) for c in comps[:3] if isinstance(c, str)],
+            run_measured=want_measured,
+            held_cents=int(api_held or 0),
+            source="api",
+        )
+    except Exception:
+        db.session.rollback()
+        if int(api_held or 0) > 0:
+            try:
+                from services.usage_billing import release_hold
+
+                release_hold(
+                    db.session,
+                    user,
+                    amount_cents=int(api_held),
+                )
+                db.session.commit()
+            except Exception:
+                app.logger.exception("API analyze hold release after enqueue fail")
+                db.session.rollback()
+        raise
     kick_analyze_worker()
     status_url = url_for("api_v1_job_status", job_id=job.id, _external=True)
     return (

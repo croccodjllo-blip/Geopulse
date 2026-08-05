@@ -94,8 +94,13 @@ def persist_analysis(
     source: str = "manual",
     organization_id: int | None = None,
     user: Any | None = None,
+    run_user_id: int | None = None,
 ) -> Any:
-    """Salva l’ultima analisi sul sito e crea una riga di storico."""
+    """Salva l’ultima analisi sul sito e crea una riga di storico.
+
+    ``user_id`` owns the site row; ``run_user_id`` (default ``user_id``) is the
+    actor who spent credits — used for daily/quota accounting.
+    """
     scraped = result.get("scraped") or {}
     domain = scraped.get("domain") or urlparse(url).netloc
     now = datetime.now(timezone.utc)
@@ -185,14 +190,15 @@ def persist_analysis(
         )
 
     try:
-        db_session.flush()
+        with db_session.begin_nested():
+            db_session.flush()
     except Exception as exc:
         from sqlalchemy.exc import IntegrityError
 
         if not isinstance(exc, IntegrityError):
             raise
         # Concurrent first-analyze race on UniqueConstraint(user_id, url).
-        db_session.rollback()
+        # SAVEPOINT rollback keeps prior committed billing in other sessions.
         analysis = SiteAnalysis.query.filter_by(user_id=user_id, url=url).first()
         if analysis is None:
             raise
@@ -234,9 +240,10 @@ def persist_analysis(
         db_session.flush()
 
     run_source = source if source in ALLOWED_RUN_SOURCES else "manual"
+    run_uid = int(run_user_id if run_user_id is not None else user_id)
     run = AnalysisRun(
         site_id=analysis.id,
-        user_id=user_id,
+        user_id=run_uid,
         url=url,
         domain=domain,
         page_title=page_title,

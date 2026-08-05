@@ -74,6 +74,34 @@ def _job_already_persisted(job: Any) -> bool:
     return bool(getattr(job, "site_id", None))
 
 
+def release_stranded_holds(
+    db_session,
+    AnalysisJob,
+    *,
+    on_release: Callable[[Any], None],
+    limit: int = 50,
+) -> int:
+    """Release holds left on terminal jobs when ``on_abandon`` previously failed."""
+    stranded = (
+        AnalysisJob.query.filter(
+            AnalysisJob.status.in_(("error", "done")),
+            AnalysisJob.held_cents > 0,
+        )
+        .limit(max(1, limit))
+        .all()
+    )
+    n = 0
+    for job in stranded:
+        try:
+            on_release(job)
+            n += 1
+        except Exception:
+            logger.exception("release_stranded_holds failed for job %s", job.id)
+    if n:
+        db_session.commit()
+    return n
+
+
 def reclaim_stale_jobs(
     db_session,
     AnalysisJob,
@@ -88,7 +116,8 @@ def reclaim_stale_jobs(
     instead of looping forever.
 
     ``on_abandon(job)`` is invoked for permanent failures (e.g. release credit
-    holds) before the reclaim commit.
+    holds) before the reclaim commit. On callback failure the job keeps
+    ``held_cents`` so ``release_stranded_holds`` can retry.
     """
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(5, older_than_minutes))
     stale = (
@@ -109,6 +138,18 @@ def reclaim_stale_jobs(
             )
         attempts = int(getattr(job, "attempt_count", 0) or 0)
         billed = int(getattr(job, "billed_cents", 0) or 0)
+
+        def _call_abandon() -> None:
+            if on_abandon is not None:
+                try:
+                    on_abandon(job)
+                except Exception:
+                    logger.exception("on_abandon failed for job %s", job.id)
+                    # Keep held_cents so stranded-hold sweeper can retry.
+                    return
+            elif hasattr(job, "held_cents"):
+                job.held_cents = 0
+
         # Soft reclaim after partial billing would re-run the pipeline and
         # double-charge. Fail permanently and release remaining hold instead.
         if billed > 0 and attempts < MAX_JOB_ATTEMPTS:
@@ -119,14 +160,7 @@ def reclaim_stale_jobs(
                 "Job interrotto dopo addebito parziale "
                 "(worker perso / timeout heartbeat) — non rieseguito per evitare doppia fatturazione."
             )[:500]
-            if on_abandon is not None:
-                try:
-                    on_abandon(job)
-                except Exception:
-                    logger.exception("on_abandon failed for billed job %s", job.id)
-            else:
-                if hasattr(job, "held_cents"):
-                    job.held_cents = 0
+            _call_abandon()
             logger.error(
                 "Permanently failed partially-billed stale job %s (billed=%s)",
                 job.id,
@@ -141,14 +175,7 @@ def reclaim_stale_jobs(
             job.finished_at = datetime.now(timezone.utc)
             job.lease_token = None
             job.error = None
-            if on_abandon is not None:
-                # Release leftover hold after successful persist.
-                try:
-                    on_abandon(job)
-                except Exception:
-                    logger.exception("on_abandon failed for persisted job %s", job.id)
-            elif hasattr(job, "held_cents"):
-                job.held_cents = 0
+            _call_abandon()
             logger.warning(
                 "Reconciled stale job %s as done (persist already completed)",
                 job.id,
@@ -163,15 +190,7 @@ def reclaim_stale_jobs(
                 f"Job abbandonato dopo {attempts} tentativi "
                 "(worker perso / timeout heartbeat)."
             )[:500]
-            if on_abandon is not None:
-                try:
-                    on_abandon(job)
-                except Exception:
-                    logger.exception("on_abandon failed for job %s", job.id)
-            else:
-                # Ensure hold marker is cleared even without a release callback.
-                if hasattr(job, "held_cents"):
-                    job.held_cents = 0
+            _call_abandon()
             logger.error(
                 "Permanently failed stale job %s after %s attempts", job.id, attempts
             )
@@ -203,6 +222,8 @@ def claim_next_job(
     """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending."""
     try:
         reclaim_stale_jobs(db_session, AnalysisJob, on_abandon=on_abandon)
+        if on_abandon is not None:
+            release_stranded_holds(db_session, AnalysisJob, on_release=on_abandon)
     except Exception:
         logger.exception("reclaim_stale_jobs failed")
         db_session.rollback()

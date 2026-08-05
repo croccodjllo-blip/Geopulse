@@ -15,6 +15,21 @@ ORG_ROLES = frozenset({"owner", "admin", "member", "viewer"})
 WRITE_ROLES = frozenset({"owner", "admin", "member"})
 
 
+def resolve_existing_site_for_analyze(model: Any, user: Any, url: str) -> Any | None:
+    """Owned site first, then org-shared. Callers must enforce write ACL."""
+    existing = model.query.filter_by(user_id=user.id, url=url).first()
+    if existing is not None:
+        return existing
+    return sites_query_for_user(model, user).filter_by(url=url).first()
+
+
+def assert_can_remesure_site(user: Any, site: Any) -> bool:
+    """True when ``site`` is None (new) or the user may write it."""
+    if site is None:
+        return True
+    return user_can_write_site(user, site)
+
+
 def _slugify(name: str) -> str:
     base = re.sub(r"[^a-z0-9]+", "-", (name or "workspace").lower()).strip("-") or "workspace"
     return f"{base[:48]}-{secrets.token_hex(3)}"
