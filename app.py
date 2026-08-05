@@ -2055,10 +2055,15 @@ def process_pending_analyze_jobs(
 
                 with app.app_context():
                     try:
+                        # Re-bind to this thread's scoped session: citation probes
+                        # run in ThreadPoolExecutor threads, so the outer `user`
+                        # instance (loaded on the worker's own session/thread) is
+                        # foreign here and would blow up on session.refresh().
+                        thread_user = db.session.get(User, user.id) or user
                         charged = record_actual_usage(
                             db.session,
                             UsageEvent,
-                            user_id=user.id,
+                            user_id=thread_user.id,
                             analysis_run_id=None,
                             provider=provider,
                             model=model,
@@ -2068,12 +2073,12 @@ def process_pending_analyze_jobs(
                         debit_cents = debit_cents_from_usage(charged)
                         if debit_cents <= 0:
                             return
-                        _assert_current_sov_debit(user, debit_cents)
+                        _assert_current_sov_debit(thread_user, debit_cents)
                         debit_leased_job_usage(
                             db.session,
                             CreditLedger,
                             AnalysisJob,
-                            user,
+                            thread_user,
                             job,
                             lease_token=lease_token,
                             cost_eur_cents=debit_cents,
