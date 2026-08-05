@@ -17,7 +17,7 @@
     </p>
   </header>
 
-  <section class="page-section">
+  <section class="page-section" id="connectors">
     <h2 class="page-section__title">{{ _('Connector') }}</h2>
     <ul class="plain-list">
       <li>
@@ -33,6 +33,7 @@
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Alert outbound') }}</h2>
+    {% if can_alerts %}
     <form method="post" class="form-grid panel">
       {{ alert_form.hidden_tag() }}
       <input type="hidden" name="action" value="alerts" />
@@ -47,6 +48,15 @@
       </div>
       {{ alert_form.submit(class_="btn btn-primary") }}
     </form>
+    {% else %}
+    <div class="panel">
+      <p class="lede">
+        {{ _('Alert email e webhook firmati sono disponibili con i piani Plus e Business.') }}
+        {{ _('Sul piano Free puoi continuare a consultare score e findings dalla dashboard.') }}
+      </p>
+      <a class="btn btn-signal" href="{{ url_for('pricing') }}">{{ _('Sblocca gli alert') }}</a>
+    </div>
+    {% endif %}
   </section>
 
   <section class="page-section">

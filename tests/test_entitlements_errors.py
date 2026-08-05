@@ -34,6 +34,7 @@ def test_free_cannot_use_plus_capabilities():
     assert ents.can("api_access") is False
     assert ents.can("agency_whitelabel") is False
     assert ents.can("measured_sov") is False
+    assert ents.can("alerts_webhook") is False
     assert ents.can("pack_email") is True
     msg = require_capability(ents, "measured_sov")
     assert msg and ("Plus" in msg or "Business" in msg)
@@ -49,6 +50,7 @@ def test_plus_has_ops_not_agency():
     assert ents.max_sites == 5
     assert ents.can("measured_sov") is True
     assert ents.can("full_crawl") is True
+    assert ents.can("alerts_webhook") is True
     assert ents.can("api_access") is False
     assert ents.can("agency_whitelabel") is False
     assert require_capability(ents, "api_access") is not None
@@ -63,6 +65,7 @@ def test_business_has_full_capabilities():
     assert ents.can("api_access") is True
     assert ents.can("agency_whitelabel") is True
     assert ents.can("full_crawl") is True
+    assert ents.can("alerts_webhook") is True
     assert require_capability(ents, "api_access") is None
 
 

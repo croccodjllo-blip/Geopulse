@@ -2,7 +2,7 @@
 
 > **Prodotto:** Centropic (`centropic.ai`) — DaaS B2B per **AI-Driven Visibility (AIO)** e **Generative Engine Optimization (GEO)**  
 > **Owner:** Engineering Factory · `info@centropic.ai`  
-> **Aggiornata:** 2026-07-28  
+> **Aggiornata:** 2026-08-05
 > **Obiettivo:** chiudere i gap tecnici e di prodotto fino a un servizio self-serve affidabile, monetizzabile e scalabile.
 
 GEO ≠ GIS · AIO ≠ All-in-One · ex-brand GeoPulse solo come continuità SEO (`alternateName`).
@@ -28,31 +28,33 @@ Ogni fase sotto ha **deliverable concreti** e **criteri di done**. Nessuna stima
 | Area | Stato |
 |------|--------|
 | Diagnosi AIO/GEO + pack ZIP + Edge Signals | Operativo |
-| Free / Plus (alias `pro`) + entitlements | Operativo |
-| Async jobs, rescan, history, API key | Operativo |
+| Free / Plus (alias `pro`) / Business + entitlements | Operativo; alert gated Plus/Business |
+| Async jobs, rescan, history, API key | Operativo; API `ct_` + `gp_` legacy |
 | Measured SoV (OpenAI / Perplexity / Claude) | Codice pronto; dipende da chiavi + Plus |
 | Paddle Checkout / webhook (Plus + top-up) | Operativo quando `PADDLE_*` configurato |
 | AI Overview / Copilot | UI “In arrivo” / pending |
 | GSC OAuth | Scaffold |
-| Postgres / Alembic / test E2E | Debito piattaforma |
-| Brand Centropic in UI | Forte; docs/ops/worker ancora parzialmente GeoPulse |
+| Postgres / Alembic / test E2E | Alembic source of truth prod; Postgres/E2E restano |
+| Brand Centropic in UI | Header/API Centropic; alias GeoPulse solo compat |
 | Security (SSRF pin, CSRF, rate limit, headers) | Avanzata rispetto al polish prodotto |
 
 ---
 
 ## Matrice capacità (oggi)
 
-| Capability | Free | Plus | Note |
-|------------|:----:|:----:|------|
-| Diagnosi + score + findings | ✓ | ✓ | Crawl Free limitato |
-| Pack ZIP / email pack | ✓* | ✓* | Richiede mail config |
-| Edge llms + signals | ✓ | ✓ | Full robots/JSON-LD = Plus |
-| Competitors / measured SoV / prompt bank | | ✓ | Chiavi LLM |
-| Rescan schedulato / API / white-label MD | | ✓ | |
-| Paddle self-serve | | ✓ | MoR; webhook Plus + top-up |
-| AI Overview / Copilot | | pending | |
-| GSC overlay | | scaffold | |
-| CMS / GitHub apply pack | | — | |
+| Capability | Free | Plus | Business | Note |
+|------------|:----:|:----:|:--------:|------|
+| Diagnosi + score + findings | ✓ | ✓ | ✓ | Crawl Free limitato |
+| Pack ZIP / email pack | ✓* | ✓* | ✓* | Richiede mail config |
+| Edge llms + signals | base | full | full | robots/JSON-LD live da Plus |
+| Competitors / measured SoV / prompt bank | | ✓ | ✓ | Chiavi LLM |
+| Alert email + webhook | | ✓ | ✓ | Capability `alerts_webhook` |
+| Rescan schedulato / storico esteso | | ✓ | ✓ | |
+| API / white-label | | | ✓ | Toolkit agenzia |
+| Paddle self-serve | | ✓ | ✓ | MoR; webhook + top-up |
+| AI Overview / Copilot | | pending | pending | |
+| GSC overlay | | scaffold | scaffold | |
+| CMS / GitHub apply pack | | — | — | |
 
 \*Email pack soggetto a `PACK_EMAIL_DAILY_LIMIT` e provider SMTP/Resend.
 
@@ -78,8 +80,9 @@ Source of truth: `services/entitlements.py`.
 - [ ] `README.md` + `DEPLOY.md` → Centropic / `centropic.ai` (GeoPulse solo note legacy)
 - [ ] Default mail/admin `.env.example` → `@centropic.ai`
 - [ ] Worker `workers/geopulse-signals/` → `centropic-signals` (o dual-name documentato)
-- [ ] Header edge: preferire `X-Centropic-*`, mantenere alias `X-GeoPulse-*` per compat
-- [ ] Prefisso API key: accettare `ct_` + legacy `gp_`
+- [x] Header edge: preferire `X-Centropic-*`, mantenere alias `X-GeoPulse-*` per compat
+- [x] Header webhook: `X-Centropic-*` + alias `X-GeoPulse-*`
+- [x] Prefisso API key: generare `ct_`, accettare `ct_` + legacy `gp_`
 - [ ] Policy redirect `geopulse.it` → `centropic.ai` documentata e coerente con TLS
 
 **Done quando:** un nuovo integratore non incontra “GeoPulse” fuori da continuità SEO esplicita.
@@ -99,7 +102,8 @@ Source of truth: `services/entitlements.py`.
 
 ### 1.1 Onboarding e activation
 - [ ] Checklist post-register (sito in analisi → apri dashboard → scarica pack → abilita Edge)
-- [ ] Empty states dashboard con un solo CTA chiaro per stato (pending / running / failed / ready)
+- [x] Empty states dashboard con un solo CTA chiaro per pending e prima analisi
+- [x] Shell onboarding/report/analyze estratta in partial dedicata
 - [ ] Messaggi errore crawl già tassonomizzati: collegarli a “cosa fare adesso” in UI
 - [ ] Reminder email (opzionale) se analisi ready e utente non torna &lt;24h
 
@@ -108,7 +112,7 @@ Source of truth: `services/entitlements.py`.
 ### 1.2 Artifact applicabili
 - [ ] Pack ZIP: README operativo per IT (dove pubblicare ogni file)
 - [ ] Edge: wizard “copia snippet” (CF Worker / Vercel) con origin Centropic
-- [ ] Verify loop: dopo publish, evidenziare delta verde/rosso per file attesi
+- [x] Verify loop: delta SoV verde/rosso e check pass/fail evidenti
 - [ ] Safe Apply Plus: espandere allowlist ottimizzazioni sicure (già abbozzato) con audit log
 
 **Done quando:** il cliente applica almeno un artifact e lo verifica in-product.
@@ -116,13 +120,13 @@ Source of truth: `services/entitlements.py`.
 ### 1.3 Measured SoV onesto e sostenibile
 - [ ] Completare o **nascondere** engine “In arrivo” (AI Overview / Copilot) — niente badge vuoti
 - [ ] Budget probe per utente/giorno + cache prompt/risposta
-- [ ] Dashboard spesa/quota SoV (trasparenza Plus)
+- [x] Strip operativa SoV: evidenza Stimato/Misurato, saldo token, connector/piani
 - [ ] Documentare in metodologia cosa è Misurato vs Stimato (già parziale)
 
 **Done quando:** ogni riga SoV in UI ha evidenza reale o non compare.
 
 ### 1.4 Alert e rescan affidabili
-- [ ] Allineare entitlements: se alert sono Plus in copy, gateare settings Free
+- [x] Allineare entitlements: alert settings gated Plus/Business
 - [ ] Digest settimanale opzionale (score delta + findings nuovi)
 - [ ] Rescan: UI chiara next-run / last-run / fail reason
 - [ ] Webhook: retry con backoff + log ultimi N delivery
@@ -136,7 +140,9 @@ Source of truth: `services/entitlements.py`.
 **Perché:** senza schema versionato e storage gestito non si scala né si dorme tranquilli.
 
 ### 2.1 Schema e dati
-- [ ] Introdurre **Alembic**; migrare da `ensure_schema()` additive-only
+- [x] Alembic introdotto e documentato come fonte di verità in produzione
+- [ ] Rimuovere il bootstrap legacy `ensure_schema()` dal percorso applicativo
+- [x] ACL tenant centralizzata con `get_accessible_site()` su siti, pack, verify, Edge e API
 - [ ] Rimuovere path DROP jobs in prod (già gated); policy migrazioni only-forward
 - [ ] **Postgres managed** (sostituire SQLite single-node)
 - [ ] Backup offsite automatico + restore drill documentato
@@ -153,9 +159,11 @@ Source of truth: `services/entitlements.py`.
 **Done quando:** SPA moderne e siti lenti non producono false “pagina vuota” senza spiegazione.
 
 ### 2.3 Qualità e osservabilità
-- [ ] Test: pipeline analyze (fixture HTML), entitlements E2E, Edge 402 Free, webhook Paddle
+- [x] CI pytest + test alert settings Free/Plus, prefisso API e Edge full 402 Free
+- [ ] Test pipeline analyze (fixture HTML) e webhook Paddle
 - [ ] Metriche: job queued/running/failed, latenza analyze, rate 429, errori Paddle
-- [ ] Alerting ops su `/health` fail, coda stale, disk, backup miss
+- [x] `/health` detail: job pending/running/stale heartbeat
+- [ ] Alerting ops esterno su health fail, disk e backup miss
 - [ ] Correlation già via `x-request-id` → dashboard log searchable
 
 **Done quando:** un regressione pipeline viene presa dai test prima del deploy.

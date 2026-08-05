@@ -209,7 +209,8 @@ export default {{
     }}
     const upstream = CENTROPIC_ORIGIN.replace(/\\/$/, "") + path;
     const headers = new Headers(request.headers);
-    headers.set("X-GeoPulse-Site", SITE_ORIGIN);
+    headers.set("X-Centropic-Site", SITE_ORIGIN);
+    headers.set("X-GeoPulse-Site", SITE_ORIGIN); // Alias legacy per integrazioni esistenti.
     headers.set("Accept", "text/plain, application/json, */*");
     const res = await fetch(upstream, {{
       headers,
@@ -217,7 +218,8 @@ export default {{
     }});
     const out = new Headers(res.headers);
     out.set("Access-Control-Allow-Origin", "*");
-    out.set("X-GeoPulse-Edge", "1");
+    out.set("X-Centropic-Edge", "1");
+    out.set("X-GeoPulse-Edge", "1"); // Alias legacy.
     out.set("Cache-Control", "private, max-age=60");
     return new Response(res.body, {{ status: res.status, headers: out }});
   }},
@@ -261,6 +263,7 @@ def vercel_edge_config_snippet(*, origin_edge_base: str) -> str:
       "source": "/(llms.txt|robots.txt|geopulse/signals.json)",
       "headers": [
         {{ "key": "Cache-Control", "value": "private, max-age=60" }},
+        {{ "key": "X-Centropic-Edge", "value": "1" }},
         {{ "key": "X-GeoPulse-Edge", "value": "1" }}
       ]
     }}

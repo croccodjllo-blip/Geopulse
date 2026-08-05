@@ -32,14 +32,16 @@ che fanno proxy verso `https://centropic.ai/e/<token>/…`.
 
 ```http
 GET /api/v1/sites/<id>/edge
-Authorization: Bearer gp_…
+Authorization: Bearer ct_…
 ```
 
 Restituisce `edge_base`, `routes`, metadata adapter e URL dello ZIP.
 
 ```http
 GET /api/v1/sites/<id>/edge/cms-bundle.zip
-Authorization: Bearer gp_…
+Authorization: Bearer ct_…
 ```
+
+Le chiavi legacy con prefisso `gp_` restano accettate per compatibilità.
 
 I generatori live sono in `services/cms_connector.py` — questa cartella documenta il contratto; non usare file statici con token di esempio in produzione.

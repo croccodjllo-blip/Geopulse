@@ -24,6 +24,12 @@ DATABASE_URL=sqlite:////opt/aio-bot/data/database.db
 
 SQLite è supportato (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici), ma per crescita SaaS usare Postgres.
 
+### Migrazioni schema
+
+Alembic (`alembic.ini` + `migrations/`) è la fonte di verità dello schema in produzione. Ogni deploy che include modifiche dati deve eseguire `alembic upgrade head` prima del riavvio dell'app.
+
+`ensure_schema()` in `app.py` è mantenuto solo come bootstrap legacy additive per SQLite e ambienti di sviluppo. Non sostituisce una revisione Alembic e non è un percorso di migrazione supportato per Postgres/produzione.
+
 ## Deploy
 
 ```bash

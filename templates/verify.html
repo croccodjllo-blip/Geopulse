@@ -16,9 +16,12 @@
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Checks') }}</h2>
-    <ul class="plain-list">
+    <ul class="plain-list verify-checks">
       {% for key, ok in verify.checks.items() %}
-        <li>{% if ok %}✓{% else %}✗{% endif %} {{ key }}</li>
+        <li data-status="{% if ok %}pass{% else %}fail{% endif %}">
+          <strong>{% if ok %}✓ {{ _('Superato') }}{% else %}✗ {{ _('Non superato') }}{% endif %}</strong>
+          <span>{{ key }}</span>
+        </li>
       {% endfor %}
     </ul>
     {% if verify.live_error %}
@@ -36,12 +39,12 @@
   </section>
 
   {% if sov_delta %}
-  <section class="page-section">
+  <section class="page-section verify-delta" data-delta="{% if sov_delta['delta'] > 0 %}up{% elif sov_delta['delta'] < 0 %}down{% else %}flat{% endif %}">
     <h2 class="page-section__title">{{ _('SoV delta') }}</h2>
     <p class="lede">
       {{ _('Brand mention:') }}
       {{ '%.0f'|format(sov_delta['from']) }}% → {{ '%.0f'|format(sov_delta['to']) }}%
-      (Δ {{ '%+.0f'|format(sov_delta['delta']) }} pt)
+      <strong>Δ {{ '%+.0f'|format(sov_delta['delta']) }} pt</strong>
     </p>
   </section>
   {% endif %}

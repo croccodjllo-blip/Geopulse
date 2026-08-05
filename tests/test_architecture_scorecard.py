@@ -14,6 +14,7 @@ from centropic.metrics import incr, snapshot
 from centropic.tenancy import (
     Organization,
     ensure_personal_org,
+    get_accessible_site,
     user_can_access_site,
 )
 from centropic.views import edge, billing, admin, api
@@ -105,6 +106,10 @@ def test_organization_tenancy_acl():
         assert user_can_access_site(owner, site)
         assert user_can_access_site(member, site)
         assert not user_can_access_site(stranger, site)
+        assert get_accessible_site(SiteAnalysis, owner, site.id) is not None
+        assert get_accessible_site(SiteAnalysis, member, site.id) is not None
+        assert get_accessible_site(SiteAnalysis, stranger, site.id) is None
+        assert get_accessible_site(SiteAnalysis, owner, -1) is None
 
 
 def test_schema_pragma_is_sqlite_only():

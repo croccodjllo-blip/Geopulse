@@ -123,6 +123,14 @@ def user_can_access_site(user: Any, site: Any) -> bool:
     return membership_for(user.id, org_id) is not None
 
 
+def get_accessible_site(model: Any, user: Any, site_id: int):
+    """Return a site only when it exists and belongs to the user's tenant."""
+    site = model.query.filter_by(id=site_id).first()
+    if site is None or not user_can_access_site(user, site):
+        return None
+    return site
+
+
 def user_can_write_site(user: Any, site: Any) -> bool:
     if user is None or site is None:
         return False

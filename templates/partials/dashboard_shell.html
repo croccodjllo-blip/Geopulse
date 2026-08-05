@@ -1,0 +1,171 @@
+{% set onboard_email = current_user.email_verified %}
+{% set onboard_analysis = latest is not none %}
+{% set onboard_open = (not onboard_email) or (not onboard_analysis) or trial_available or on_trial %}
+{% if onboard_analysis and findings_critical %}
+  {% set onboard_open = true %}
+{% endif %}
+
+{% if free_exhausted or free_upsell %}
+<aside class="quota-banner" role="alert">
+  <p class="quota-banner__text">{{ free_quota_banner }}</p>
+  {% if payments_ready %}
+  <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pricing') }}">{{ _('Vedi piano Plus') }}</a>
+  {% else %}
+  <a class="btn btn-signal quota-banner__cta" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
+  {% endif %}
+</aside>
+{% endif %}
+
+{% if onboard_open %}
+<aside class="dash-onboard" aria-labelledby="progress-title">
+  <p class="dash-onboard__eyebrow">{{ _('Onboarding') }}</p>
+  <h2 class="dash-onboard__title" id="progress-title">{{ _('Prossimi passi') }}</h2>
+  <ol class="dash-onboard__list">
+    {% if not onboard_email %}
+    <li>○ {{ _('Conferma email') }}</li>
+    {% endif %}
+    {% if not onboard_analysis %}
+    <li>○ {{ _('Prima analisi del dominio') }}</li>
+    {% endif %}
+    {% if onboard_analysis and findings_critical %}
+    <li>○ {{ _('Chiudi i finding critici / pubblica il pack') }}</li>
+    {% endif %}
+    {% if not is_pro or on_trial %}
+    <li>{% if on_trial %}◐{% else %}○{% endif %} {{ _('Plus (SoV measured + crawl esteso)') }}</li>
+    {% endif %}
+  </ol>
+  {% if trial_available %}
+  <form method="post" action="{{ url_for('dashboard_trial_start') }}" class="dash-onboard__actions">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <button type="submit" class="btn btn-ghost">{{ _('Attiva prova Plus 7 giorni') }}</button>
+  </form>
+  {% endif %}
+  {% if referral_code %}
+  <p class="dash-onboard__ref">
+    {{ _('Invita un collega:') }}
+    <code>{{ url_for('register', ref=referral_code, _external=True) }}</code>
+    — {{ _('tu ricevi') }} {{ referral_bonus_tokens }} {{ _('token quando conferma l’email.') }}
+  </p>
+  {% endif %}
+</aside>
+{% endif %}
+
+{% if latest %}
+<div class="report-lead" aria-label="{{ _('Sintesi report') }}">
+  <div class="report-lead__scores">
+    <span class="grade-badge" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</span>
+    <span class="report-lead__metric"><em>AIO</em> {{ latest.aio_score if latest.aio_score is not none else '—' }}</span>
+    <span class="report-lead__metric"><em>GEO</em> {{ latest.geo_score if latest.geo_score is not none else '—' }}</span>
+  </div>
+  <div class="report-lead__actions">
+    <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica ZIP') }}</a>
+    <a class="btn btn-ghost" href="#analyze">{{ _('Nuova analisi') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Grafici') }}</a>
+  </div>
+</div>
+{% endif %}
+
+{% if is_pro and latest %}
+  {% include "partials/sov_ops.html" %}
+{% endif %}
+
+{% if latest %}
+<details class="analyze-reveal" id="analyze-panel">
+  <summary class="analyze-reveal__summary">{{ _('Nuova analisi') }}</summary>
+{% endif %}
+<form method="post" id="analyze" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
+  {{ form.hidden_tag() }}
+  <div class="analyze-composer">
+    <div class="analyze-composer__head">
+      <div>
+        <p class="analyze-composer__label">{{ _('Analizza un dominio') }}</p>
+        <p class="analyze-composer__sub">
+          {% if free_exhausted %}
+          {{ _('Quote Free esaurite · passa a Plus per continuare') }}
+          {% elif free_upsell and not is_pro %}
+          {{ _('Puoi ri-analizzare il sito già registrato · Plus per più brand') }}
+          {% elif crawl_unlimited %}
+          {{ _('Crawl BFS · intero sito') }} ({{ user_plan }})
+          {% else %}
+          {{ _('Crawl stesso dominio · max') }} {{ crawl_pages_limit }} {{ _('pagine') }} ({{ user_plan }})
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    <div class="field analyze-composer__field">
+      <label class="visually-hidden" for="url">{{ _('URL del dominio') }}</label>
+      <div class="analyze-row">
+        {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
+        {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
+      </div>
+      {% if is_pro %}
+      <div class="field analyze-competitors"
+           data-competitor-suggest
+           data-suggest-url="{{ url_for('dashboard_competitors_suggest') }}">
+        <div class="analyze-competitors__head">
+          <label for="competitors">{{ _('Competitor snapshot (Plus, max 3)') }}</label>
+          <button type="button" class="linkish analyze-competitors__suggest" data-competitor-suggest-btn>
+            {{ _('Suggerisci automatico') }}
+          </button>
+        </div>
+        {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
+https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input': '1'}) }}
+        <p class="analyze-competitors__hint" data-competitor-suggest-status hidden></p>
+      </div>
+      <div class="analyze-option">
+        <label class="analyze-option__hit" for="deep_crawl">
+          {{ form.deep_crawl(id="deep_crawl", class_="analyze-option__check") }}
+          <span class="analyze-option__copy">
+            <span class="analyze-option__title">{{ _('Deep crawl') }}</span>
+            <span class="analyze-option__meta">
+              {{ _('Fino a') }} {{ deep_crawl_pages }} {{ _('pagine — più lento') }}.
+              {{ _('Standard:') }} {{ crawl_pages_limit }} {{ _('pagine') }}.
+            </span>
+          </span>
+        </label>
+      </div>
+      <p class="analyze-composer__hint">{{ _('SoV measured (probe LLM) incluso nel piano Plus quando i connector sono attivi.') }}</p>
+      {% else %}
+      <p class="analyze-composer__hint">
+        {{ _('Free: score AIO/GEO e SoV') }} <em>{{ _('stimato') }}</em>.
+        <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca SoV measured / citation monitor.') }}
+      </p>
+      {% endif %}
+      {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+  </div>
+</form>
+{% if latest %}
+</details>
+{% endif %}
+
+{% if pending_job and pending_job.status in ('pending', 'running') %}
+<div
+  class="job-status job-status--fallback"
+  id="job-status"
+  data-job-id="{{ pending_job.id }}"
+  data-status-url="{{ url_for('dashboard_job_status', job_id=pending_job.id) }}"
+  role="status"
+  aria-live="polite"
+>
+  <p class="job-status__label">
+    {% if pending_job.status == 'pending' %}{{ _('In coda') }}{% else %}{{ _('In esecuzione') }}{% endif %}
+    · <code>{{ pending_job.url }}</code>
+  </p>
+  <p class="job-status__hint">
+    {% if pending_job.status == 'pending' %}
+    {{ _('Worker in avvio — di solito parte entro pochi secondi.') }}
+    {% else %}
+    {{ _('Crawl, probe e scoring in corso (tipicamente 30–90 secondi).') }}
+    {% endif %}
+  </p>
+</div>
+{% elif pending_job and pending_job.status == 'error' %}
+<div class="job-status job-status--error" role="alert">
+  <p class="job-status__label">{{ _('Analisi fallita') }}</p>
+  <p class="job-status__hint">{{ pending_job.error or _('Errore sconosciuto') }}</p>
+  <p class="job-status__hint">
+    {{ _('Controlla l’URL e riprova. Supporto:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+  </p>
+</div>
+{% endif %}

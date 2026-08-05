@@ -16,6 +16,10 @@ Layered Flask SaaS package under `centropic/`.
 | Data plane | `alembic.ini` + `migrations/` | Versioned schema (Postgres-ready) |
 | Compat | `app.py` | WSGI entry, models, route handlers |
 
+## Schema lifecycle
+
+Alembic è la fonte di verità per lo schema di produzione: ogni modifica persistente richiede una revisione versionata e un `alembic upgrade head` nel deploy. `app.ensure_schema()` resta esclusivamente un bootstrap legacy per SQLite/dev e non è il percorso di migrazione di produzione.
+
 ## Score targets
 
 - HTTP layering: factory + domain views

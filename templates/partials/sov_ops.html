@@ -1,0 +1,23 @@
+<aside class="sov-ops" aria-label="{{ _('Operatività Share of Voice') }}">
+  <div class="sov-ops__item">
+    <span>{{ _('Evidenza SoV') }}</span>
+    {% set sov_evidence = engine_breakdown.evidence if engine_breakdown else 'proxy' %}
+    <strong>
+      {% if sov_evidence == 'measured' %}
+        {{ _('Misurato') }}
+      {% elif sov_evidence == 'mixed' %}
+        {{ _('Misurato + Stimato') }}
+      {% else %}
+        {{ _('Stimato') }}
+      {% endif %}
+    </strong>
+  </div>
+  <div class="sov-ops__item">
+    <span>{{ _('Saldo') }}</span>
+    <strong>{{ token_balance_short }}</strong>
+  </div>
+  <nav class="sov-ops__links" aria-label="{{ _('Azioni SoV') }}">
+    <a href="{{ url_for('dashboard_settings') }}#connectors">{{ _('Connector') }}</a>
+    <a href="{{ url_for('pricing') }}">{{ _('Piani e token') }}</a>
+  </nav>
+</aside>

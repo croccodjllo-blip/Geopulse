@@ -45,7 +45,7 @@ from flask_babel import Babel, gettext as _
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
-from sqlalchemy import UniqueConstraint, func, inspect, text
+from sqlalchemy import UniqueConstraint, func, inspect, or_, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -145,6 +145,7 @@ from services.growth import (
 from services.site_guide import site_guide_payload
 from services.competitor_suggest import suggest_competitors, normalize_competitor_url
 from services.jobs import (
+    STALE_HEARTBEAT_MINUTES,
     claim_next_job,
     complete_job,
     enqueue_analysis,
@@ -1563,6 +1564,7 @@ from centropic.tenancy import (  # noqa: E402
     Organization,
     OrganizationMember,
     ensure_personal_org,
+    get_accessible_site,
     sites_query_for_user,
     user_can_access_site,
     user_can_write_site,
@@ -1570,7 +1572,7 @@ from centropic.tenancy import (  # noqa: E402
 
 
 def ensure_schema() -> None:
-    """create_all + colonne nuove su SQLite già esistente."""
+    """Bootstrap legacy per SQLite/dev; Alembic è il path migrazioni di produzione."""
     try:
         db.create_all()
     except Exception as exc:
@@ -2279,7 +2281,7 @@ def enforce_analyze_limits(
     Nota: la race residua è mitigata da UniqueConstraint(user_id,url) e
     dal rate limiter SQLite condiviso su API/dashboard.
     """
-    site_count = SiteAnalysis.query.filter_by(user_id=user.id).count()
+    site_count = sites_query_for_user(SiteAnalysis, user).count()
     max_sites = user.max_sites
     if existing is None and site_count >= max_sites:
         msg = (
@@ -2528,6 +2530,35 @@ def health():
         if user is not None and user.is_admin:
             want_detail = True
     if want_detail:
+        jobs_detail: dict[str, int | None] = {
+            "pending": None,
+            "running": None,
+            "stale_running": None,
+            "stale_after_minutes": STALE_HEARTBEAT_MINUTES,
+        }
+        if db_ok:
+            stale_cutoff = datetime.now(timezone.utc) - timedelta(
+                minutes=STALE_HEARTBEAT_MINUTES
+            )
+            jobs_detail.update(
+                {
+                    "pending": AnalysisJob.query.filter_by(status="pending").count(),
+                    "running": AnalysisJob.query.filter_by(status="running").count(),
+                    "stale_running": AnalysisJob.query.filter(
+                        AnalysisJob.status == "running",
+                        or_(
+                            AnalysisJob.lease_token.is_(None),
+                            AnalysisJob.lease_token == "",
+                            func.coalesce(
+                                AnalysisJob.heartbeat_at,
+                                AnalysisJob.started_at,
+                                AnalysisJob.created_at,
+                            )
+                            < stale_cutoff,
+                        ),
+                    ).count(),
+                }
+            )
         payload.update(
             {
                 "openai": bool(OPENAI_API_KEY),
@@ -2568,6 +2599,7 @@ def health():
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
+                "jobs": jobs_detail,
                 "metrics": app_metrics.snapshot(),
                 "architecture": {
                     "package": "centropic",
@@ -2645,9 +2677,13 @@ def _edge_response(
     resp = Response(body, mimetype=mimetype)
     resp.headers["ETag"] = etag
     resp.headers["Cache-Control"] = EDGE_CACHE_CONTROL
+    resp.headers["X-Centropic-Edge"] = "1"
+    resp.headers["X-Centropic-Version"] = str(version)
+    # Legacy aliases retained for existing GeoPulse connectors.
     resp.headers["X-GeoPulse-Edge"] = "1"
     resp.headers["X-GeoPulse-Version"] = str(version)
     if is_ai_crawler(request.headers.get("User-Agent")):
+        resp.headers["X-Centropic-Bot"] = "1"
         resp.headers["X-GeoPulse-Bot"] = "1"
     if EDGE_CORS_ORIGIN:
         resp.headers["Access-Control-Allow-Origin"] = EDGE_CORS_ORIGIN
@@ -2801,9 +2837,12 @@ def edge_meta(token: str):
 @login_required
 def edge_enable(analysis_id: int):
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash("Non hai permessi di modifica su questo sito condiviso.", "error")
         return redirect(url_for("dashboard"))
     if not analysis.public_token:
         analysis.public_token = new_public_token()
@@ -2823,9 +2862,12 @@ def edge_enable(analysis_id: int):
 @login_required
 def edge_disable(analysis_id: int):
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash("Non hai permessi di modifica su questo sito condiviso.", "error")
         return redirect(url_for("dashboard"))
     analysis.signals_hosted = False
     # Bust CDN/client caches that may still hold Plus bodies briefly.
@@ -2839,9 +2881,12 @@ def edge_disable(analysis_id: int):
 @login_required
 def edge_rotate(analysis_id: int):
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash("Non hai permessi di modifica su questo sito condiviso.", "error")
         return redirect(url_for("dashboard"))
     analysis.public_token = new_public_token()
     analysis.signals_version = int(getattr(analysis, "signals_version", 1) or 1) + 1
@@ -2857,7 +2902,7 @@ def edge_rotate(analysis_id: int):
 def edge_cms_bundle(analysis_id: int):
     """ZIP universale: WordPress, Drupal, Shopify, PHP, Netlify, CF, Vercel, embed."""
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
@@ -4311,7 +4356,7 @@ def dashboard():
 
     # Refresh latest after possible async completion
     latest = (
-        SiteAnalysis.query.filter_by(user_id=user.id)
+        sites_query_for_user(SiteAnalysis, user)
         .order_by(SiteAnalysis.created_at.desc())
         .first()
     )
@@ -4331,7 +4376,7 @@ def dashboard():
     run_diff = None
     if latest is not None:
         recent_runs = (
-            AnalysisRun.query.filter_by(site_id=latest.id, user_id=user.id)
+            AnalysisRun.query.filter_by(site_id=latest.id)
             .order_by(AnalysisRun.created_at.desc())
             .limit(2)
             .all()
@@ -4462,7 +4507,8 @@ def dashboard():
         findings_critical=findings_critical,
         findings_all_n=len(findings_all),
         findings_ok_n=findings_ok_n,
-        site_count=SiteAnalysis.query.filter_by(user_id=user.id).count(),
+        site_count=sites_query_for_user(SiteAnalysis, user).count(),
+        token_balance_short=format_tokens_short(get_balance_cents(user)),
         user_plan=user.plan_label,
         is_pro=user.is_pro,
         on_trial=bool(getattr(user, "on_trial", False)),
@@ -5113,6 +5159,12 @@ def dashboard_settings():
                 flash("Invio non riuscito. Riprova tra poco.", "error")
             return redirect(url_for("dashboard_settings"))
         if action == "alerts" and alert_form.validate_on_submit():
+            blocked = require_capability(
+                plan_entitlements(user), "alerts_webhook"
+            )
+            if blocked:
+                flash(blocked, "warning")
+                return redirect(url_for("pricing"))
             user.alert_email_enabled = bool(alert_form.alert_email_enabled.data)
             raw_hook = (alert_form.webhook_url.data or "").strip() or None
             if raw_hook:
@@ -5215,6 +5267,7 @@ def dashboard_settings():
                 can_api=ents.can("api_access"),
                 can_agency=ents.can("agency_whitelabel"),
                 can_prompt_bank=ents.can("prompt_bank"),
+                can_alerts=ents.can("alerts_webhook"),
             )
 
     ents = plan_entitlements(user)
@@ -5238,6 +5291,7 @@ def dashboard_settings():
         can_api=ents.can("api_access"),
         can_agency=ents.can("agency_whitelabel"),
         can_prompt_bank=ents.can("prompt_bank"),
+        can_alerts=ents.can("alerts_webhook"),
     )
 
 
@@ -5245,7 +5299,7 @@ def dashboard_settings():
 @login_required
 def dashboard_verify(analysis_id: int):
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
@@ -5282,7 +5336,7 @@ def dashboard_verify(analysis_id: int):
     sov_delta = None
     try:
         rows = list_sov_snapshots(
-            SovSnapshot, site_id=analysis.id, user_id=user.id, limit=2
+            SovSnapshot, site_id=analysis.id, user_id=analysis.user_id, limit=2
         )
         series = sov_series_for_chart(rows)
         if len(series) >= 2:
@@ -5310,7 +5364,7 @@ def dashboard_verify(analysis_id: int):
 def dashboard_verify_rescan(analysis_id: int):
     """Enqueue a measured re-scan after publish verify (Plus)."""
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
@@ -5334,12 +5388,14 @@ def download_whitelabel(analysis_id: int):
     if blocked:
         flash(blocked, "warning")
         return redirect(url_for("pricing") + "#business")
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
     series = sov_series_for_chart(
-        list_sov_snapshots(SovSnapshot, site_id=analysis.id, user_id=user.id, limit=30)
+        list_sov_snapshots(
+            SovSnapshot, site_id=analysis.id, user_id=analysis.user_id, limit=30
+        )
     )
     md = build_whitelabel_markdown(
         site=analysis,
@@ -5364,12 +5420,14 @@ def download_whitelabel_html(analysis_id: int):
     if blocked:
         flash(blocked, "warning")
         return redirect(url_for("pricing") + "#business")
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
     series = sov_series_for_chart(
-        list_sov_snapshots(SovSnapshot, site_id=analysis.id, user_id=user.id, limit=30)
+        list_sov_snapshots(
+            SovSnapshot, site_id=analysis.id, user_id=analysis.user_id, limit=30
+        )
     )
     html = build_whitelabel_html(
         site=analysis,
@@ -5389,7 +5447,7 @@ def download_whitelabel_html(analysis_id: int):
 @app.route("/api/v1/analyze", methods=["POST"])
 @csrf.exempt
 def api_v1_analyze():
-    """Public API: Authorization Bearer gp_xxx or X-Api-Key."""
+    """Public API: Authorization Bearer ct_xxx (or legacy gp_xxx) / X-Api-Key."""
     auth = request.headers.get("Authorization") or ""
     raw = ""
     if auth.lower().startswith("bearer "):
@@ -5669,7 +5727,7 @@ def api_v1_sites():
     if not limiter.allow(f"api_sites:{user.id}", limit=60, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
     sites = (
-        SiteAnalysis.query.filter_by(user_id=user.id)
+        sites_query_for_user(SiteAnalysis, user)
         .order_by(SiteAnalysis.created_at.desc())
         .limit(50)
         .all()
@@ -5709,7 +5767,7 @@ def api_v1_site_edge(site_id: int):
         return jsonify({"ok": False, "error": "business_required"}), 403
     if not limiter.allow(f"api_edge:{user.id}", limit=120, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
-    analysis = SiteAnalysis.query.filter_by(id=site_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
@@ -5778,7 +5836,7 @@ def api_v1_site_edge_cms_bundle(site_id: int):
         return jsonify({"ok": False, "error": "business_required"}), 403
     if not limiter.allow(f"api_edge_zip:{user.id}", limit=30, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
-    analysis = SiteAnalysis.query.filter_by(id=site_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
@@ -5807,15 +5865,21 @@ def dashboard_history():
     user = current_user()
     hist_limit = history_limit_for(user)
     if user.is_pro:
+        site_ids = [
+            row[0]
+            for row in sites_query_for_user(SiteAnalysis, user)
+            .with_entities(SiteAnalysis.id)
+            .all()
+        ]
         history = (
-            AnalysisRun.query.filter_by(user_id=user.id)
+            AnalysisRun.query.filter(AnalysisRun.site_id.in_(site_ids))
             .order_by(AnalysisRun.created_at.desc())
             .limit(hist_limit)
             .all()
         )
     else:
         history = (
-            SiteAnalysis.query.filter_by(user_id=user.id)
+            sites_query_for_user(SiteAnalysis, user)
             .order_by(SiteAnalysis.created_at.desc())
             .limit(hist_limit)
             .all()
@@ -6017,7 +6081,7 @@ def admin_cancel_job(job_id: int):
 @login_required
 def download_pack(analysis_id: int):
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
@@ -6037,7 +6101,7 @@ def download_pack(analysis_id: int):
 def email_pack(analysis_id: int):
     """Invia il pack ZIP all’email dell’account registrato."""
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
@@ -6111,9 +6175,12 @@ def set_rescan_schedule():
         flash("Frequenza non valida.", "error")
         return redirect(url_for("dashboard"))
 
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Sito non trovato.", "error")
+        return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash("Non hai permessi di modifica su questo sito condiviso.", "error")
         return redirect(url_for("dashboard"))
 
     hour = clamp_hour(form.hour.data)
@@ -6145,13 +6212,13 @@ def set_rescan_schedule():
 @pro_required
 def site_history(analysis_id: int):
     user = current_user()
-    analysis = SiteAnalysis.query.filter_by(id=analysis_id, user_id=user.id).first()
+    analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Sito non trovato.", "error")
         return redirect(url_for("dashboard"))
 
     runs = (
-        AnalysisRun.query.filter_by(site_id=analysis.id, user_id=user.id)
+        AnalysisRun.query.filter_by(site_id=analysis.id)
         .order_by(AnalysisRun.created_at.desc())
         .limit(PRO_HISTORY_LIMIT)
         .all()
@@ -6162,7 +6229,7 @@ def site_history(analysis_id: int):
         hour=str(clamp_hour(getattr(analysis, "rescan_hour", DEFAULT_RESCAN_HOUR))),
     )
     sov_rows = list_sov_snapshots(
-        SovSnapshot, site_id=analysis.id, user_id=user.id, limit=30
+        SovSnapshot, site_id=analysis.id, user_id=analysis.user_id, limit=30
     )
     sov_series = sov_series_for_chart(sov_rows)
     return render_template(
@@ -6180,8 +6247,13 @@ def site_history(analysis_id: int):
 @pro_required
 def download_run_pack(run_id: int):
     user = current_user()
-    run = AnalysisRun.query.filter_by(id=run_id, user_id=user.id).first()
-    if run is None:
+    run = AnalysisRun.query.filter_by(id=run_id).first()
+    site = (
+        get_accessible_site(SiteAnalysis, user, run.site_id)
+        if run is not None
+        else None
+    )
+    if run is None or site is None:
         flash("Run non trovata.", "error")
         return redirect(url_for("dashboard"))
 
@@ -6201,8 +6273,14 @@ def download_run_pack(run_id: int):
 @pro_required
 def export_history_csv():
     user = current_user()
+    site_ids = [
+        row[0]
+        for row in sites_query_for_user(SiteAnalysis, user)
+        .with_entities(SiteAnalysis.id)
+        .all()
+    ]
     runs = (
-        AnalysisRun.query.filter_by(user_id=user.id)
+        AnalysisRun.query.filter(AnalysisRun.site_id.in_(site_ids))
         .order_by(AnalysisRun.created_at.desc())
         .limit(PRO_HISTORY_LIMIT)
         .all()
@@ -6222,7 +6300,7 @@ def export_history_csv():
 def export_all_sites_zip():
     user = current_user()
     sites = (
-        SiteAnalysis.query.filter_by(user_id=user.id)
+        sites_query_for_user(SiteAnalysis, user)
         .order_by(SiteAnalysis.domain.asc())
         .all()
     )

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from centropic.tenancy import sites_query_for_user
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.rating import compute_rating
 from services.sov_graph import list_sov_snapshots, sov_series_for_chart
@@ -53,7 +54,7 @@ def build_geo_ui_payload(
 ) -> dict[str, Any]:
     """Session-safe payload for ``window.__CENTROPIC_GEO_DATA__``."""
     latest = (
-        SiteAnalysis.query.filter_by(user_id=user.id)
+        sites_query_for_user(SiteAnalysis, user)
         .order_by(SiteAnalysis.created_at.desc())
         .first()
     )

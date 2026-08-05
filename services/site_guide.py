@@ -191,8 +191,11 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "api-key",
-            "API key (gp_…)",
-            _("Chiave Bearer per /api/v1 (analyze, sites, edge). Solo Business."),
+            "API key (ct_…)",
+            _(
+                "Chiave Bearer ct_ per /api/v1 (analyze, sites, edge). "
+                "Le chiavi gp_ legacy restano accettate. Solo Business."
+            ),
         ),
         (
             "engine-breakdown",
@@ -415,7 +418,7 @@ def site_guide_payload() -> dict[str, Any]:
                     "Automazione agenzia: API key, analyze, sites, edge; report white-label."
                 ),
                 "bullets": [
-                    _("Bearer gp_… su /api/v1/*"),
+                    _("Bearer ct_… su /api/v1/* (gp_… legacy accettato)"),
                     _("Export report MD/HTML con brand agenzia"),
                     _("Riservato al piano Business"),
                 ],
