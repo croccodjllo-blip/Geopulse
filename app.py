@@ -371,6 +371,18 @@ if os.getenv("TRUST_PROXY", "1").strip().lower() in {"1", "true", "yes", "on"}:
 babel = Babel(app, locale_selector=select_locale)
 
 
+@app.url_defaults
+def _static_cache_bust(endpoint, values) -> None:
+    """Append ?v=<mtime> to static URLs so long-lived cache headers are safe."""
+    if endpoint != "static" or "filename" not in values or not app.static_folder:
+        return
+    filepath = os.path.join(app.static_folder, values["filename"])
+    try:
+        values["v"] = int(os.stat(filepath).st_mtime)
+    except OSError:
+        pass
+
+
 @app.before_request
 def _persist_lang_query() -> None:
     """Allow ?lang=xx on any page and remember it for the session."""
@@ -464,11 +476,8 @@ def set_security_headers(response):
         analytics=bool(GA4_MEASUREMENT_ID or GOOGLE_ADS_ID),
         adsense=bool(ADSENSE_CLIENT_ID or GOOGLE_ADS_ID),
     )
-    # HSTS solo se secure; nginx può già inviarlo — ok se allineati
-    if request.is_secure or app.config["SESSION_COOKIE_SECURE"]:
-        response.headers["Strict-Transport-Security"] = (
-            "max-age=15552000; includeSubDomains"
-        )
+    # HSTS è impostato da nginx (add_header ... always) davanti a Flask;
+    # non duplicarlo qui per evitare due header Strict-Transport-Security.
     return response
 
 
@@ -2950,7 +2959,7 @@ def ops_reclaim_jobs():
 @app.route("/llms.txt")
 def llms_txt():
     return send_from_directory(
-        app.static_folder, "llms.txt", mimetype="text/plain; charset=utf-8"
+        app.static_folder, "llms.txt", mimetype="text/plain"
     )
 
 
@@ -3040,7 +3049,7 @@ def edge_llms_txt(token: str):
     body = analysis.llms_txt or f"# {analysis.domain}\n\n_Hosted by Centropic Edge Signals_\n"
     return _edge_response(
         body,
-        mimetype="text/plain; charset=utf-8",
+        mimetype="text/plain",
         etag_seed=body[:2000],
         analysis=analysis,
         path="llms.txt",
@@ -3065,7 +3074,7 @@ def edge_robots_txt(token: str):
     body = build_live_robots_txt(analysis.url or f"https://{analysis.domain}")
     return _edge_response(
         body,
-        mimetype="text/plain; charset=utf-8",
+        mimetype="text/plain",
         etag_seed=body,
         analysis=analysis,
         path="robots.txt",
@@ -3265,14 +3274,14 @@ def edge_cms_bundle(analysis_id: int):
 @app.route("/ai.txt")
 def ai_txt():
     return send_from_directory(
-        app.static_folder, "ai.txt", mimetype="text/plain; charset=utf-8"
+        app.static_folder, "ai.txt", mimetype="text/plain"
     )
 
 
 @app.route("/humans.txt")
 def humans_txt():
     return send_from_directory(
-        app.static_folder, "humans.txt", mimetype="text/plain; charset=utf-8"
+        app.static_folder, "humans.txt", mimetype="text/plain"
     )
 
 
@@ -3280,7 +3289,7 @@ def humans_txt():
 @app.route("/security.txt")
 def security_txt():
     return send_from_directory(
-        app.static_folder, "security.txt", mimetype="text/plain; charset=utf-8"
+        app.static_folder, "security.txt", mimetype="text/plain"
     )
 
 
@@ -3346,7 +3355,7 @@ def robots_txt():
         f"# Methodology: {base}/metodologia\n"
         f"Sitemap: {base}/sitemap.xml\n"
     )
-    return Response(body, mimetype="text/plain; charset=utf-8")
+    return Response(body, mimetype="text/plain")
 
 
 @app.route("/sitemap.xml")
@@ -3403,17 +3412,17 @@ def ads_txt():
     """AdSense authorization file for crawler validation."""
     if ADS_TXT_CONTENT:
         body = ADS_TXT_CONTENT.strip() + "\n"
-        return Response(body, mimetype="text/plain; charset=utf-8")
+        return Response(body, mimetype="text/plain")
     if ADSENSE_CLIENT_ID and ADSENSE_CLIENT_ID.startswith("ca-pub-"):
         body = f"google.com, {ADSENSE_CLIENT_ID}, DIRECT, f08c47fec0942fa0\n"
-        return Response(body, mimetype="text/plain; charset=utf-8")
+        return Response(body, mimetype="text/plain")
     # 200 (not 404): empty ads.txt is valid when the site does not sell ads.
     # A 404 here becomes a crawl critical and can tank the site rating.
     body = (
         "# centropic.ai does not currently authorize third-party ad crawlers.\n"
         "# This file is intentionally published empty (HTTP 200) for crawl hygiene.\n"
     )
-    return Response(body, mimetype="text/plain; charset=utf-8")
+    return Response(body, mimetype="text/plain")
 
 
 @app.route("/privacy")
