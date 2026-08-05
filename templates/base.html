@@ -34,14 +34,15 @@
     <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#041210{% elif current_user and dash_plan == 'business' %}#120E0A{% else %}#04060A{% endif %}" />
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
-    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32.png') }}" sizes="32x32" />
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-16.png') }}" sizes="16x16" />
     <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}" sizes="any" />
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo.png') }}" />
-    <link rel="preload" as="image" href="{{ url_for('static', filename='img/logo.svg') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" />
+    <link rel="preload" as="image" href="{{ url_for('static', filename='img/logo.png') }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     {% if ga4_measurement_id or google_ads_id %}
@@ -111,7 +112,7 @@
         <a class="brand-mark brand-mark--holo" href="{{ url_for('index') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
-            src="{{ url_for('static', filename='img/logo.svg') }}"
+            src="{{ url_for('static', filename='img/logo.png') }}"
             alt="Centropic"
             width="32"
             height="32"
@@ -199,7 +200,7 @@
           <a class="brand-mark" href="{{ url_for('index') }}" aria-label="Centropic home">
             <img
               class="brand-mark__logo"
-              src="{{ url_for('static', filename='img/logo.svg') }}"
+              src="{{ url_for('static', filename='img/logo.png') }}"
               alt="Centropic"
               width="32"
               height="32"

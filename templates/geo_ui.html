@@ -9,7 +9,7 @@
   {# Mount React in-page — avoids X-Frame-Options DENY / frame-ancestors none #}
   <div id="root" class="geo-ui-embed__root"></div>
 </section>
-<script>
+<script nonce="{{ csp_nonce }}">
   window.__CENTROPIC_GEO_EMBED__ = true;
   window.__CENTROPIC_GEO_DATA__ = {{ geo_ui_data | tojson }};
 </script>

@@ -8,13 +8,15 @@ Near-black surfaces, vivid violet/magenta accent (`#B84FF0` / `#7C3AED`), Inter 
 Semantic state colors are deliberately **not** the brand accent: success stays green (`--ok: #22C55E`), warning amber, danger red — so delta pills and status badges stay legible against the violet UI, matching how real dashboard templates (e.g. Landzy-style admin panels) separate "brand color" from "status color".
 
 ## Assets
-- `static/img/logo-cosmic-emblem.png` — source 3D chrome star-shield emblem, monogram **C**, orbital ring + satellite nodes (1024²)
-- `static/img/logo.svg` / `static/img/logo-mark.svg` / `static/favicon.svg` — thin SVG wrappers around the emblem PNG (`<image>` ref), so every existing `url_for('static', filename='img/logo.svg')` call across templates renders the new mark with no template changes
-- `static/img/logo.png` — raster fallback 512² (apple-touch / JSON-LD)
-- `static/img/apple-touch-icon.png`, `favicon-32.png`, `favicon-16.png` — small icon renders cropped tight for legibility
+- `static/img/logo-cosmic-emblem.png` — source 3D chrome star-shield emblem, monogram **C**, orbital ring + satellite nodes (1024²). Edit this to change the mark, then re-render everything below from it.
+- `static/img/logo.png` — primary mark, every header/hero/page-intro/auth `<img>` points here directly (512²)
+- `static/img/logo-mark.png` — compact mark for the sidebar (128²)
+- `static/img/apple-touch-icon.png` (180²), `favicon-32.png`, `favicon-16.png` — small icon renders cropped tight for legibility
 - `static/img/hero-cosmic.jpg` — nebula backdrop used behind the landing hero
 - `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art
 - Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current)
+
+**Do not** wrap the mark in an SVG `<image href="...png">` again to avoid touching templates — it was tried and reverted (2026-08-05): browsers render an SVG loaded via `<img src="logo.svg">` in a restricted "image context", and the internal `<image>` reference to the external PNG did not reliably paint in production, making the logo (and every place reusing the same trick: favicon, sidebar mark, auth pages) go blank. Every logo `<img>` must point at a real raster file directly.
 
 ## Mark concept
 Faceted chrome star-shield · bold metallic **C** monogram · upward arrow silhouette · thin orbital ring with glowing satellite nodes. Photoreal 3D chrome render, not a flat vector icon — this is intentional; do not flatten it back into a line-art SVG.

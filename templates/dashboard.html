@@ -971,7 +971,7 @@
 {% if can_competitors %}
 <script src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
 {% endif %}
-<script>
+<script nonce="{{ csp_nonce }}">
 (() => {
   const el = document.querySelector('.pulse-core__value[data-count-to]');
   if (el) {

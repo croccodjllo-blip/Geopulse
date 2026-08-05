@@ -3697,7 +3697,9 @@ def set_language(code: str):
 
 @app.route("/favicon.svg")
 def favicon_svg():
-    return redirect(url_for("static", filename="favicon.svg"), code=302)
+    # Legacy direct-URL convenience; the real favicon is a PNG raster
+    # (SVG wrapping an <image> ref renders unreliably as a browser tab icon).
+    return redirect(url_for("static", filename="img/favicon-32.png"), code=302)
 
 
 @app.route("/favicon.ico")

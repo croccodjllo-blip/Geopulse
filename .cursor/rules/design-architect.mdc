@@ -25,12 +25,13 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 | Asset | Use |
 |---|---|
 | `static/img/logo-cosmic-emblem.png` | Source 3D chrome star-shield emblem (monogram **C**) — edit this to change the mark |
-| `static/img/logo.svg` | Primary mark ≥32px (header, hero, overlays) — thin SVG wrapper around the emblem PNG |
-| `static/img/logo-mark.svg` | Compact mark ≤28px (sidebar, dense chrome) — same emblem, smaller viewBox |
-| `static/favicon.svg` | Tab icon — same emblem |
-| `static/img/logo.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` | Raster renders / apple-touch / JSON-LD |
+| `static/img/logo.png` | Primary mark ≥32px (header, hero, overlays, page-intros, auth) — direct raster `<img>`, not an SVG wrapper |
+| `static/img/logo-mark.png` | Compact mark ≤28px (sidebar) |
+| `static/img/apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` | Apple touch / browser tab icons |
 | `static/img/hero-cosmic.jpg` | Nebula backdrop behind the landing hero |
 | `static/img/og-share.jpg` | Social only (1200×630) |
+
+**Do not reintroduce an SVG-wrapping-a-raster `<image>` trick for the logo.** It was tried (to avoid touching every template) and caused the logo/favicon to render blank in production (2026-08-05) — browsers treat an SVG loaded via `<img src="...">` as a restricted "image context" and the internal `<image href="other.png">` did not reliably paint. Every logo `<img>` must point directly at a PNG.
 
 Rules:
 1. Wordmark on hero / page-intro brand rows is **`CENTROPIC.AI`, uppercase, gradient text** (`background-clip: text`, chrome-toned to match the emblem — this is independent from the violet UI accent). Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight.
@@ -38,8 +39,9 @@ Rules:
 3. Logo is a **photoreal 3D chrome emblem** (star-shield, **C** monogram, orbital ring + satellite nodes) — do not flatten it back into a line-art SVG or swap in a generic circle-icon. The emblem itself stays chrome/silver even though the surrounding UI accent (`--brand-cyan`) is now violet.
 4. Nebula blue/violet atmosphere stays behind the hero visual only — never bleed it into buttons, links, or focus states (those use the violet UI accent `--brand-cyan: #B84FF0`).
 5. Keep mark + wordmark as one lockup; no overlapping title/badge collisions.
-6. Prefer `logo-mark.svg` when the full mark would muddle at small sizes.
-7. To change the mark again: replace `logo-cosmic-emblem.png` (and re-render `logo.png`/`apple-touch-icon.png`/`favicon-*.png`/`hero-cosmic.jpg`/`og-share.jpg` from the new source) — the SVG wrappers and every template reference stay unchanged.
+6. Prefer `logo-mark.png` when the full mark would muddle at small sizes.
+7. To change the mark again: replace `logo-cosmic-emblem.png` and re-render every derived file (`logo.png`, `logo-mark.png`, `apple-touch-icon.png`, `favicon-*.png`, `hero-cosmic.jpg`, `og-share.jpg`) from the new source, then re-check every template `<img>` still points at a real file.
+8. **Every inline `<script>` in a template must carry `nonce="{{ csp_nonce }}"`** (CSP is `script-src 'self' 'nonce-...' 'strict-dynamic'`) — an un-nonced inline script is silently dropped by the browser with no visible error, which is how the dashboard Score/SoV tab switcher went dead (2026-08-05, `templates/dashboard.html`, pre-existing since 2026-07-27). Grep `<script>` (no `nonce=`, no `src=`) before shipping any template touching `<script>` blocks.
 
 ---
 
