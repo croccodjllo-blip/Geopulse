@@ -4,14 +4,14 @@
   <desc id="d">Snapshot AIO/GEO</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#080B10"/>
-      <stop offset="55%" stop-color="#0B1220"/>
-      <stop offset="100%" stop-color="#0E1A28"/>
+      <stop offset="0%" stop-color="#04060A"/>
+      <stop offset="55%" stop-color="#0A0E14"/>
+      <stop offset="100%" stop-color="#070A10"/>
     </linearGradient>
     <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#6EC6C0" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#6EC6C0" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#6EC6C0" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#C9D3DD" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
     </linearGradient>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur stdDeviation="12" result="b"/>
@@ -19,32 +19,32 @@
     </filter>
   </defs>
   <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#6EC6C0" opacity=".06"/>
-  <circle cx="120" cy="460" r="140" fill="#00B8C4" opacity=".05"/>
-  <rect x="36" y="36" width="888" height="468" rx="22" fill="#121A2B" stroke="#1E2A3F" stroke-width="1.5"/>
+  <circle cx="820" cy="90" r="160" fill="#C9D3DD" opacity=".06"/>
+  <circle cx="120" cy="460" r="140" fill="#5B6B7A" opacity=".05"/>
+  <rect x="36" y="36" width="888" height="468" rx="22" fill="#0A0E14" stroke="#1A222D" stroke-width="1.5"/>
   <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#6EC6C0" font-family=""IBM Plex Sans", system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">COMPETITOR</text>
-  <text x="64" y="122" fill="#E8EEF7" font-family=""IBM Plex Sans", system-ui, sans-serif" font-size="28" font-weight="700">Snapshot AIO/GEO</text>
+  <text x="64" y="88" fill="#C9D3DD" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">COMPETITOR</text>
+  <text x="64" y="122" fill="#E8EEF4" font-family="'Inter', system-ui, sans-serif" font-size="28" font-weight="700">Snapshot AIO/GEO</text>
   
-  <g font-family="sans-serif">
-    <rect x="64" y="170" width="832" height="70" rx="12" fill="#0B1220" stroke="#6EC6C0" stroke-opacity=".4"/>
-    <text x="88" y="212" fill="#E8EEF7" font-size="16" font-weight="700">tuodominio.com</text>
-    <text x="420" y="212" fill="#6EC6C0" font-size="16">AIO 78 · GEO 71 · BBB</text>
-    <text x="720" y="212" fill="#8B9BB4" font-size="14">tu</text>
+  <g font-family="'Inter', system-ui, sans-serif">
+    <rect x="64" y="170" width="832" height="70" rx="12" fill="#0A0E14" stroke="#C9D3DD" stroke-opacity=".4"/>
+    <text x="88" y="212" fill="#E8EEF4" font-size="16" font-weight="700">tuodominio.com</text>
+    <text x="420" y="212" fill="#C9D3DD" font-size="16">AIO 78 · GEO 71 · BBB</text>
+    <text x="720" y="212" fill="#8B97A8" font-size="14">tu</text>
     
-    <rect x="64" y="260" width="832" height="48" rx="10" fill="#0B1220" stroke="#1E2A3F"/>
-    <text x="88" y="290" fill="#E8EEF7" font-size="15">competitor-a.com</text>
-    <text x="420" y="290" fill="#8B9BB4" font-size="15">AIO 82 · GEO 75 · A-</text>
+    <rect x="64" y="260" width="832" height="48" rx="10" fill="#0A0E14" stroke="#1A222D"/>
+    <text x="88" y="290" fill="#E8EEF4" font-size="15">competitor-a.com</text>
+    <text x="420" y="290" fill="#8B97A8" font-size="15">AIO 82 · GEO 75 · A-</text>
     
-    <rect x="64" y="315" width="832" height="48" rx="10" fill="#0B1220" stroke="#1E2A3F"/>
-    <text x="88" y="345" fill="#E8EEF7" font-size="15">competitor-b.com</text>
-    <text x="420" y="345" fill="#8B9BB4" font-size="15">AIO 64 · GEO 58 · CCC</text>
+    <rect x="64" y="315" width="832" height="48" rx="10" fill="#0A0E14" stroke="#1A222D"/>
+    <text x="88" y="345" fill="#E8EEF4" font-size="15">competitor-b.com</text>
+    <text x="420" y="345" fill="#8B97A8" font-size="15">AIO 64 · GEO 58 · CCC</text>
     
-    <rect x="64" y="370" width="832" height="48" rx="10" fill="#0B1220" stroke="#1E2A3F"/>
-    <text x="88" y="400" fill="#E8EEF7" font-size="15">competitor-c.com</text>
-    <text x="420" y="400" fill="#8B9BB4" font-size="15">AIO 71 · GEO 69 · BBB</text>
+    <rect x="64" y="370" width="832" height="48" rx="10" fill="#0A0E14" stroke="#1A222D"/>
+    <text x="88" y="400" fill="#E8EEF4" font-size="15">competitor-c.com</text>
+    <text x="420" y="400" fill="#8B97A8" font-size="15">AIO 71 · GEO 69 · BBB</text>
     
   </g>
 
-  <text x="64" y="480" fill="#8B9BB4" font-family=""IBM Plex Sans", system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <text x="64" y="480" fill="#8B97A8" font-family="'Inter', system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
 </svg>
