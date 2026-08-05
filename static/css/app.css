@@ -1716,7 +1716,10 @@ body.app-body:not(.body-dash) {
   text-overflow: ellipsis;
 }
 
-/* Workspace body */
+/* Workspace body — pulled up -2rem to tuck under .workspace-strip's edge.
+   .workspace-strip carries a matching padding-bottom: 2rem so this overlap
+   always lands in empty space, never over the (variable-height) toolkit
+   strip content. Keep the two in sync if either value changes. */
 .workspace-body {
   width: min(1160px, calc(100% - 2rem));
   margin: -2rem auto 0;
@@ -8268,6 +8271,12 @@ body.body-auth {
     radial-gradient(ellipse 50% 80% at 0% 0%, rgba(201, 211, 221, 0.08), transparent 55%),
     linear-gradient(180deg, #070A10 0%, var(--brand-bg) 100%);
   border-bottom: 1px solid var(--brand-border);
+  /* .workspace-body below pulls up by -2rem (see .workspace-body) and sits
+     at a higher z-index; this padding absorbs that overlap in empty space
+     so it never covers the last row of the (variable-height) toolkit
+     strip — e.g. Plus's 12 services wrap to 2-3 lines and were getting
+     their bottom row hidden behind the report content underneath. */
+  padding-bottom: 2rem;
 }
 
 .workspace-strip__inner {
