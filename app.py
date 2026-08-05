@@ -4925,6 +4925,9 @@ def dashboard():
 @login_required
 def dashboard_trial_start():
     user = current_user()
+    if not limiter.allow(f"trial-start:{user.id}", limit=5, window_seconds=3600):
+        flash("Troppe richieste. Riprova più tardi.", "error")
+        return redirect(url_for("dashboard_settings"))
     if not user.email_verified:
         flash("Conferma l’email prima di attivare la prova Plus.", "error")
         return redirect(url_for("dashboard_settings"))
@@ -5495,6 +5498,8 @@ def dashboard_competitors_suggest():
 @login_required
 def dashboard_job_status(job_id: int):
     user = current_user()
+    if not limiter.allow(f"job_status:{user.id}", limit=600, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
     job = AnalysisJob.query.filter_by(id=job_id, user_id=user.id).first()
     if job is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
@@ -6232,6 +6237,8 @@ def api_v1_job_status(job_id: int):
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not plan_entitlements(user).can("api_access"):
         return jsonify({"ok": False, "error": "business_required"}), 403
+    if not limiter.allow(f"api_job_status:{user.id}", limit=120, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
     job = AnalysisJob.query.filter_by(id=job_id, user_id=user.id).first()
     if job is None:
         return jsonify({"ok": False, "error": "not_found"}), 404

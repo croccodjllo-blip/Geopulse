@@ -967,9 +967,9 @@
 </section>
 
 {% include "partials/analyze_overlay.html" %}
-<script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
 {% if can_competitors %}
-<script src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
 {% endif %}
 <script nonce="{{ csp_nonce }}">
 (() => {
