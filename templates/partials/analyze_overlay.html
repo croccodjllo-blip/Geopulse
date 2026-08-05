@@ -5,6 +5,7 @@
   aria-labelledby="analyze-overlay-title"
   aria-describedby="analyze-overlay-desc"
   data-analyze-overlay
+  data-percent-label="{{ _('completato') }}"
   {% if pending_job and pending_job.status in ('pending', 'running') %}
   data-auto-open="1"
   data-status-url="{{ url_for('dashboard_job_status', job_id=pending_job.id) }}"
@@ -22,7 +23,7 @@
         <span class="analyze-orbit__core">
           <img
             src="{{ url_for('static', filename='img/logo.svg') }}"
-            alt="Centropic"
+            alt=""
             width="56"
             height="56"
             decoding="async"
@@ -35,7 +36,7 @@
       <div class="analyze-overlay__scan"></div>
     </div>
 
-    <p class="analyze-overlay__brand">CENTROPIC</p>
+    <p class="analyze-overlay__brand">centropic<span>.ai</span></p>
     <h2 class="analyze-overlay__title" id="analyze-overlay-title" data-overlay-title>
       {{ _('Elaborazione in corso') }}
     </h2>
@@ -43,6 +44,16 @@
       {{ _('Stiamo analizzando i segnali del dominio. Resta su questa pagina.') }}
     </p>
     <p class="analyze-overlay__url" data-overlay-url hidden></p>
+
+    <p
+      class="analyze-overlay__percent"
+      data-overlay-percent
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <span data-overlay-percent-value>0</span><span class="analyze-overlay__percent-unit">%</span>
+    </p>
+    <p class="analyze-overlay__percent-label">{{ _('Avanzamento') }}</p>
 
     <p class="analyze-overlay__eta" data-overlay-eta aria-live="polite">
       {{ _('Stima: 30–90 secondi') }}
@@ -56,7 +67,14 @@
       <li data-step="pack">{{ _('Pack artifact') }}</li>
     </ol>
 
-    <div class="analyze-overlay__bar" aria-hidden="true">
+    <div
+      class="analyze-overlay__bar"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      data-overlay-bar-track
+    >
       <span class="analyze-overlay__bar-fill" data-overlay-bar></span>
     </div>
 

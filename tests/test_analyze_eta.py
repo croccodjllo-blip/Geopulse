@@ -39,6 +39,7 @@ def test_compute_pending_and_crawl_progress():
     )
     assert pending["eta_seconds"] >= 20
     assert pending["hint"]
+    assert pending["progress"]["percent"] == 0
 
     started = now - timedelta(seconds=20)
     crawl = compute_analyze_eta(
@@ -55,9 +56,11 @@ def test_compute_pending_and_crawl_progress():
     assert crawl["progress"]["done"] == 10
     assert "Crawl 10/40" in (crawl["hint"] or "")
     assert crawl["eta_seconds"] > 0
+    assert 1 <= crawl["progress"]["percent"] <= 99
 
 
 def test_done_job_has_zero_eta():
     out = compute_analyze_eta(status="done", max_pages=8)
     assert out["eta_seconds"] == 0
     assert out["eta_label"] == ""
+    assert out["progress"]["percent"] == 100

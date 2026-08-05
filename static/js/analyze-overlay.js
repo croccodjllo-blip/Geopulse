@@ -34,14 +34,20 @@
     this.eta = el(root, "[data-overlay-eta]");
     this.hint = el(root, "[data-overlay-hint]");
     this.bar = el(root, "[data-overlay-bar]");
+    this.barTrack = el(root, "[data-overlay-bar-track]");
+    this.percentEl = el(root, "[data-overlay-percent]");
+    this.percentValue = el(root, "[data-overlay-percent-value]");
     this.steps = root.querySelectorAll("[data-overlay-steps] [data-step]");
     this.errorBox = el(root, "[data-overlay-error]");
     this.errorText = el(root, "[data-overlay-error-text]");
     this.closeBtn = el(root, "[data-overlay-close]");
     this._timer = null;
     this._poll = null;
+    this._stepClock = null;
     this._stepIdx = 0;
-    this._progress = 8;
+    this._progress = 0;
+    this._displayPct = 0;
+    this._serverPct = null;
     this._etaSeconds = null;
     this._doneUrl = "/dashboard";
     var self = this;
@@ -50,7 +56,6 @@
         self.hide();
       });
     }
-    // Block Escape dismiss while running (dialog cancel)
     root.addEventListener("cancel", function (ev) {
       if (!root.classList.contains("is-error")) ev.preventDefault();
     });
@@ -109,9 +114,46 @@
     if (label) {
       this.eta.hidden = false;
       this.eta.textContent =
-        label.indexOf("Stima") === 0 || label.indexOf("About") === 0 || label.indexOf("Complet") === 0
+        label.indexOf("Stima") === 0 ||
+        label.indexOf("About") === 0 ||
+        label.indexOf("Complet") === 0 ||
+        label.indexOf("Quasi") === 0 ||
+        label.indexOf("Circa") === 0
           ? label
           : "Stima: " + label;
+    }
+  };
+
+  Overlay.prototype.setPercent = function (pct, opts) {
+    opts = opts || {};
+    var n = Math.round(Number(pct) || 0);
+    if (opts.fromServer) {
+      this._serverPct = n;
+      this._progress = Math.max(this._progress, Math.min(n, 99));
+    } else {
+      // Local tick never jumps ahead of a known server value by more than a bit.
+      if (typeof this._serverPct === "number") {
+        n = Math.min(n, Math.max(this._serverPct + 3, this._serverPct));
+      }
+      this._progress = Math.max(0, Math.min(n, 99));
+    }
+    this._paintBar();
+  };
+
+  Overlay.prototype._paintBar = function () {
+    var target = Math.max(0, Math.min(100, Math.round(this._progress)));
+    // Ease the displayed number toward target for a smoother popup.
+    if (this._displayPct < target) {
+      this._displayPct = Math.min(target, this._displayPct + Math.max(1, Math.ceil((target - this._displayPct) / 4)));
+    } else if (this._displayPct > target) {
+      this._displayPct = target;
+    }
+    var shown = this._displayPct;
+    if (this.bar) this.bar.style.width = shown + "%";
+    if (this.percentValue) this.percentValue.textContent = String(shown);
+    if (this.barTrack) this.barTrack.setAttribute("aria-valuenow", String(shown));
+    if (this.percentEl) {
+      this.percentEl.setAttribute("aria-label", shown + "% " + (this.root.getAttribute("data-percent-label") || "completato"));
     }
   };
 
@@ -127,32 +169,32 @@
       li.classList.toggle("is-active", key === active);
     });
     if (hint && this.hint) this.hint.textContent = hint;
-    // Nudge progress bar toward phase target
-    var target = 12 + this._stepIdx * 18;
-    this._progress = Math.max(this._progress, Math.min(target, 88));
-    this._paintBar();
-  };
-
-  Overlay.prototype._paintBar = function () {
-    if (this.bar) this.bar.style.width = this._progress + "%";
+    // Nudge progress bar toward phase target when server percent is absent.
+    if (typeof this._serverPct !== "number") {
+      var target = 8 + this._stepIdx * 18;
+      this.setPercent(Math.max(this._progress, Math.min(target, 88)));
+    }
   };
 
   Overlay.prototype._tickProgress = function () {
-    // Slow asymptotic crawl toward 92% while waiting
-    if (this._progress < 92) {
-      this._progress += Math.max(0.15, (92 - this._progress) * 0.02);
+    if (typeof this._serverPct === "number") {
+      // Keep display easing toward server value; tiny local creep if stalled.
+      if (this._progress < Math.min(96, this._serverPct + 2) && this._progress < 96) {
+        this._progress += 0.08;
+      }
+      this._paintBar();
+    } else if (this._progress < 92) {
+      this._progress += Math.max(0.12, (92 - this._progress) * 0.018);
+      this._paintBar();
+    } else {
       this._paintBar();
     }
-    // Local countdown softens stale server ETA between polls
     if (typeof this._etaSeconds === "number" && this._etaSeconds > 5) {
       this._etaSeconds = Math.max(5, this._etaSeconds - 0.4);
     }
   };
 
   Overlay.prototype._cycleLocalSteps = function () {
-    // While the job is still "running", never jump to Pack — that stage only
-    // happens at the end and confused users when crawls/SoV took longer.
-    // Cap visual progress at "score" until the server reports done.
     if (this._stepIdx < 3) {
       this._stepIdx += 1;
       this.setPhase(PHASES[this._stepIdx]);
@@ -168,7 +210,8 @@
     }
     if (this.title) this.title.textContent = "Analisi interrotta";
     if (this.eta) this.eta.textContent = "";
-    if (this.bar) this.bar.style.width = "100%";
+    this._progress = this._displayPct;
+    this._paintBar();
   };
 
   Overlay.prototype.show = function (opts) {
@@ -187,8 +230,11 @@
         "Stiamo analizzando i segnali del dominio. Resta su questa pagina.";
     }
     this._stepIdx = 0;
-    this._progress = 8;
+    this._progress = 0;
+    this._displayPct = 0;
+    this._serverPct = null;
     this._etaSeconds = null;
+    this.setPercent(0);
     this.setEta(opts.etaLabel || "Stima: 30–90 secondi");
     this.setPhase(opts.phase || "pending", opts.hint || "Di solito 30–90 secondi.");
     this.openDialog();
@@ -196,14 +242,27 @@
     var self = this;
     this._timer = setInterval(function () {
       self._tickProgress();
-    }, 400);
-    // Local step animation every ~18s while running (stops before Pack)
+    }, 280);
     this._stepClock = setInterval(function () {
       if (!self.root.classList.contains("is-error")) self._cycleLocalSteps();
     }, 18000);
 
     var statusUrl = opts.statusUrl || this.root.getAttribute("data-status-url");
     if (statusUrl) this._startPoll(statusUrl);
+  };
+
+  Overlay.prototype._applyServerProgress = function (data) {
+    var pct = null;
+    if (typeof data.percent === "number") pct = data.percent;
+    else if (data.progress && typeof data.progress.percent === "number") pct = data.progress.percent;
+    else if (data.progress && typeof data.progress.fraction === "number") {
+      pct = Math.round(data.progress.fraction * 100);
+    }
+    if (pct !== null) {
+      if (data.status === "done") pct = 100;
+      else pct = Math.max(0, Math.min(99, pct));
+      this.setPercent(pct, { fromServer: true });
+    }
   };
 
   Overlay.prototype._startPoll = function (statusUrl) {
@@ -227,14 +286,9 @@
             data.hint
           );
           if (data.eta_label) self.setEta(data.eta_label, data.eta_seconds);
-          if (data.progress && typeof data.progress.fraction === "number") {
-            var pct = Math.round(8 + data.progress.fraction * 84);
-            self._progress = Math.max(self._progress, Math.min(pct, 92));
-            self._paintBar();
-          }
+          self._applyServerProgress(data);
           if (data.status === "running" && self._stepIdx < 1) self.setPhase("crawl", data.hint);
           if (data.status === "running") {
-            // Keep pack step reserved for completion; nudge toward score only.
             if (self._stepIdx >= 4) self._stepIdx = 3;
             if (tries > 45 && self._stepIdx < 3) self.setPhase("score", data.hint);
           }
@@ -242,7 +296,9 @@
             self._stepIdx = 4;
             self.setPhase("pack", "Completamento pack…");
             self.setEta("Completato", 0);
+            self._serverPct = 100;
             self._progress = 100;
+            self._displayPct = 100;
             self._paintBar();
             self._stopTimers();
             if (data.emit_analyze_complete && typeof window.gtag === "function") {
@@ -268,15 +324,13 @@
       } catch (e) {
         /* ignore transient */
       }
-      // Keep polling until terminal status (long Plus crawls may exceed 4 minutes).
-      // Back off slightly after 3 minutes to reduce load.
       var delay = tries < 90 ? 2000 : tries < 180 ? 4000 : 8000;
       if (tries === 90 && self.hint && !(typeof self._etaSeconds === "number")) {
         self.hint.textContent = "Analisi ancora in corso — puoi lasciare questa pagina aperta.";
       }
       self._poll = setTimeout(tick, delay);
     };
-    self._poll = setTimeout(tick, 1200);
+    self._poll = setTimeout(tick, 900);
   };
 
   function init() {
@@ -294,8 +348,6 @@
       });
     }
 
-    // Interim overlay on submit (no statusUrl until redirect with ?job=).
-    // Skip if another handler already opened with statusUrl.
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
       if (!(form instanceof HTMLFormElement)) return;

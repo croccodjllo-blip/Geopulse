@@ -107,6 +107,8 @@ def compute_analyze_eta(
                 "done": int(progress_done or 0),
                 "total": int(progress_total or 0),
                 "phase": progress_phase or status,
+                "fraction": 1.0 if status == "done" else 0.0,
+                "percent": 100 if status == "done" else 0,
             },
         }
 
@@ -181,5 +183,11 @@ def compute_analyze_eta(
         "eta_total_seconds": total,
         "elapsed_seconds": int(elapsed),
         "hint": hint,
-        "progress": {"done": done, "total": target, "phase": phase, "fraction": round(fraction, 3)},
+        "progress": {
+            "done": done,
+            "total": target,
+            "phase": phase,
+            "fraction": round(fraction, 3),
+            "percent": int(max(0, min(99, round(fraction * 100)))),
+        },
     }

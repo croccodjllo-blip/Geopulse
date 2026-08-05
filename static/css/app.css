@@ -1880,16 +1880,22 @@ body.app-body:not(.body-dash) {
 }
 .analyze-overlay__brand {
   margin: 0;
-  font-size: 0.72rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
-  color: rgba(226, 232, 240, 0.72);
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  color: var(--brand-clarity, #f5f7fa);
+}
+.analyze-overlay__brand span {
+  color: var(--brand-cyan, #6EC6C0);
+  font-weight: 600;
 }
 .analyze-overlay__title {
   margin: 0.45rem 0 0;
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #f8fafc;
 }
 .analyze-overlay__desc {
@@ -1901,17 +1907,41 @@ body.app-body:not(.body-dash) {
 .analyze-overlay__url {
   margin: 0.7rem 0 0;
   padding: 0.4rem 0.65rem;
-  border-radius: 8px;
+  border-radius: var(--radius, 8px);
   background: rgba(0, 0, 0, 0.25);
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.78rem;
-  color: var(--signal, #6EC6C0);
+  color: var(--brand-cyan, #6EC6C0);
   word-break: break-all;
 }
-.analyze-overlay__eta {
+.analyze-overlay__percent {
   margin: 0.85rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 8vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #f8fafc;
+  font-variant-numeric: tabular-nums;
+}
+.analyze-overlay__percent-unit {
+  margin-left: 0.05em;
+  font-size: 0.55em;
+  font-weight: 600;
+  color: var(--brand-cyan, #6EC6C0);
+}
+.analyze-overlay__percent-label {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.85);
+}
+.analyze-overlay__eta {
+  margin: 0.75rem 0 0;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   color: #e2e8f0;
@@ -1958,18 +1988,19 @@ body.app-body:not(.body-dash) {
 }
 .analyze-overlay__bar {
   margin: 1rem 0 0;
-  height: 0.35rem;
-  border-radius: 999px;
+  height: 0.55rem;
+  border-radius: var(--radius-sm, 6px);
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
+  border: 1px solid rgba(110, 198, 192, 0.18);
 }
 .analyze-overlay__bar-fill {
   display: block;
   height: 100%;
-  width: 8%;
+  width: 0%;
   border-radius: inherit;
   background: linear-gradient(90deg, #4A7C8C, #6EC6C0);
-  transition: width 0.45s ease;
+  transition: width 0.35s ease;
 }
 .analyze-overlay__hint {
   margin: 0.75rem 0 0;

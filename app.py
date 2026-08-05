@@ -5447,6 +5447,7 @@ def dashboard_job_status(job_id: int):
         "eta_total_seconds": eta.get("eta_total_seconds"),
         "elapsed_seconds": eta.get("elapsed_seconds"),
         "progress": eta.get("progress"),
+        "percent": (eta.get("progress") or {}).get("percent"),
         "created_at": job.created_at.isoformat() if job.created_at else None,
         "started_at": job.started_at.isoformat() if job.started_at else None,
         "finished_at": job.finished_at.isoformat() if job.finished_at else None,
