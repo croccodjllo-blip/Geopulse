@@ -21,8 +21,8 @@ export type EngineBarPoint = {
 
 const TONE: Record<NonNullable<EngineBarPoint["tone"]>, string> = {
   emerald: "#34d399",
-  cyan: "#00F0FF",
-  violet: "#7000FF",
+  cyan: "#6EC6C0",
+  violet: "#4A7C8C",
   amber: "#fbbf24",
 };
 
@@ -82,7 +82,7 @@ export function EngineVisibilityChart({
               domain={[0, 100]}
             />
             <Tooltip
-              cursor={{ fill: "rgba(0,240,255,0.06)" }}
+              cursor={{ fill: "rgba(110,198,192,0.06)" }}
               contentStyle={{
                 background: "#111827",
                 border: "1px solid #1F2937",

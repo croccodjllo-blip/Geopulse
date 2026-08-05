@@ -60,13 +60,13 @@ function LogoMark({ src }: { src?: string }) {
       viewBox="0 0 64 64"
       fill="none"
       aria-hidden
-      className="w-7 h-7 drop-shadow-[0_0_8px_rgba(0,240,255,0.45)]"
+      className="w-7 h-7"
     >
       <defs>
         <linearGradient id="sidebarLogoGrad" x1="10" y1="54" x2="54" y2="10">
-          <stop stopColor="#0066FF" />
-          <stop offset="0.5" stopColor="#00F0FF" />
-          <stop offset="1" stopColor="#8A2BE2" />
+          <stop stopColor="#4A7C8C" />
+          <stop offset="0.5" stopColor="#6EC6C0" />
+          <stop offset="1" stopColor="#3D8B9A" />
         </linearGradient>
       </defs>
       <circle cx="32" cy="32" r="26" stroke="url(#sidebarLogoGrad)" strokeOpacity="0.35" strokeWidth="1" />

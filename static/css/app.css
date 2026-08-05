@@ -104,8 +104,9 @@
   --shadow-lg:   0 20px 40px rgba(0, 0, 0, 0.48);
   --shadow-xl:   0 28px 56px rgba(0, 0, 0, 0.55);
   --shadow-signal: 0 0 0 2px var(--signal-glow);
-  --shadow-glow: 0 0 24px rgba(110, 198, 192, 0.08);
-  --shadow-glow-violet: 0 0 24px rgba(110, 198, 192, 0.06);
+  /* Quiet depth — no cyan glow stacks */
+  --shadow-glow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  --shadow-glow-violet: 0 8px 24px rgba(0, 0, 0, 0.28);
 
   /* ——— Easing ——— */
   --ease:    cubic-bezier(0.22, 1, 0.36, 1);
@@ -139,11 +140,11 @@ body.app-body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Accent wash + subtle grid on marketing pages */
+/* Accent wash + subtle grid on marketing pages (instrument teal, low chroma) */
 body.app-body:not(.body-dash) {
   background-image:
-    radial-gradient(ellipse 70% 45% at 80% -5%, rgba(0, 210, 255, 0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 40% at 10% 20%, rgba(110, 198, 192, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 45% at 80% -5%, rgba(110, 198, 192, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 10% 20%, rgba(74, 124, 140, 0.05) 0%, transparent 50%),
     var(--bg-gradient);
   background-attachment: fixed;
 }
@@ -516,12 +517,9 @@ body.app-body:not(.body-dash) {
   font-weight: 700;
 }
 .btn-signal:hover {
-  background: #3dffb3;
+  background: #7fd4ce;
   color: var(--color-chaos);
-  box-shadow:
-    0 0 0 1px rgba(110, 198, 192, 0.45),
-    0 0 28px rgba(110, 198, 192, 0.45),
-    0 0 56px rgba(0, 210, 255, 0.22);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 /* Secondary CTA on dark shell */
@@ -534,7 +532,7 @@ body.app-body:not(.body-dash) {
 .btn-primary:hover {
   background: rgba(245, 247, 250, 0.14);
   border-color: var(--color-flow);
-  box-shadow: 0 0 24px rgba(0, 210, 255, 0.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 /* Ghost */
@@ -3174,9 +3172,9 @@ html.analyze-busy {
   margin: 0;
   padding: 1.15rem 1.2rem 1.2rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius);
+  background: transparent;
+  box-shadow: none;
   animation: rise 720ms var(--ease) both;
 }
 
@@ -4142,7 +4140,7 @@ html.analyze-busy {
   --pc-grad-a: #FCD34D;
   --pc-grad-b: #6EC6C0;
   --pc-grad-c: #6EC6C0;
-  --pc-glow: #6366F1;
+  --pc-glow: #4A7C8C;
 }
 .pulse-core[data-band="low"] {
   --pc-grad-a: #FDBA74;
@@ -4366,7 +4364,7 @@ html.analyze-busy {
   align-items: center;
   min-height: 1.55rem;
   padding: 0.2rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--pc-glow) 45%, transparent);
   background: color-mix(in srgb, var(--pc-glow) 18%, rgba(11, 17, 32, 0.65));
   color: #fff;
@@ -4845,12 +4843,9 @@ html.analyze-busy {
 
 .body-dash .btn-primary:hover,
 .body-dash .btn-signal:hover {
-  background: #3dffb3;
+  background: #7fd4ce;
   color: var(--color-chaos);
-  box-shadow:
-    0 0 0 1px rgba(110, 198, 192, 0.45),
-    0 0 28px rgba(110, 198, 192, 0.45),
-    0 0 56px rgba(0, 210, 255, 0.22);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 /* Tabs Score / SoV */
@@ -5624,7 +5619,7 @@ html.analyze-busy {
 
 /* ==========================================================================
    Enterprise Dashboard UI Kit — Centropic GEO/AIO
-   Cards, CTAs, badges, metrics, panels (Deep Space / Cyan / Violet)
+   Panels, CTAs, badges, metrics (Formal Futurist · Void Graphite · Instrument Teal)
    ========================================================================== */
 
 .ui-shell {
@@ -5636,8 +5631,8 @@ html.analyze-busy {
 .ui-card {
   background: var(--brand-card);
   border: 1px solid var(--brand-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-glow);
+  border-radius: var(--radius);
+  box-shadow: none;
   padding: 1.25rem 1.35rem;
 }
 
@@ -5646,12 +5641,13 @@ html.analyze-busy {
 }
 
 .ui-card--interactive {
-  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .ui-card--interactive:hover {
-  border-color: rgba(110, 198, 192, 0.35);
-  box-shadow: var(--shadow-glow), 0 0 0 1px rgba(110, 198, 192, 0.08);
-  transform: translateY(-1px);
+  border-color: rgba(110, 198, 192, 0.28);
+  box-shadow: none;
+  transform: none;
+  background: var(--brand-elevated);
 }
 
 .ui-card__eyebrow {
@@ -5734,8 +5730,8 @@ html.analyze-busy {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -5747,7 +5743,7 @@ html.analyze-busy {
 .ui-badge--cyan {
   color: var(--brand-bg);
   background: var(--brand-cyan);
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 
 .ui-badge--violet {
@@ -5771,23 +5767,23 @@ html.analyze-busy {
 
 .btn-primary,
 .btn.btn-primary {
-  background: var(--accent-gradient) !important;
+  background: var(--brand-cyan) !important;
   color: #041018 !important;
   border: none !important;
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
   font-weight: 700;
 }
 .btn-primary:hover,
 .btn.btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 0 22px rgba(110, 198, 192, 0.28);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 .btn-signal,
 .btn.btn-signal {
   background: var(--brand-cyan) !important;
   color: var(--brand-bg) !important;
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 
 .btn-ghost,
@@ -5800,7 +5796,7 @@ html.analyze-busy {
 .btn.btn-ghost:hover {
   border-color: rgba(110, 198, 192, 0.4) !important;
   color: var(--brand-cyan) !important;
-  box-shadow: var(--shadow-glow);
+  box-shadow: none;
 }
 
 .ui-cta-group {
@@ -6419,22 +6415,23 @@ body.body-auth {
   inset: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 clamp(0.5rem, 3vw, 2rem) 0 0;
+  justify-content: center;
+  padding: 0;
   pointer-events: none;
   z-index: 0;
 }
 
 .hero-visual__field img,
 .hero-cite-svg {
-  width: min(52vw, 640px);
+  width: min(96vw, 1100px);
   height: auto;
-  max-height: min(72vh, 560px);
+  max-height: min(92vh, 780px);
   object-fit: contain;
-  opacity: 0.95;
-  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.55));
+  opacity: 0.42;
+  filter: none;
   animation: cite-field-rise 1.1s var(--ease) forwards;
   display: block;
+  margin-left: 12vw;
 }
 
 .hero-cite-svg__scan {
@@ -6501,19 +6498,37 @@ body.body-auth {
 }
 
 .hero-brand-word {
-  margin: 0 0 1.35rem;
+  margin: 0 0 1rem;
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: clamp(2.55rem, 7.2vw, 4.35rem);
+  letter-spacing: -0.03em;
   text-transform: lowercase;
+  line-height: 0.95;
   color: var(--brand-clarity);
   animation: copy-rise 700ms var(--ease) forwards;
 }
 
 .hero-brand-word span {
   color: var(--brand-cyan);
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.hero-accent {
+  color: var(--brand-cyan);
+  font-weight: inherit;
+}
+
+.page-intro__brand {
+  margin-bottom: 1.1rem;
+}
+
+.page-intro--branded .page-intro__title,
+.page-intro--hero .page-intro__title {
+  font-size: clamp(1.55rem, 3.6vw, 2.35rem);
+  font-weight: 600;
+  max-width: 22ch;
+  letter-spacing: -0.03em;
 }
 
 .hero-brand--v2 {
@@ -6528,13 +6543,14 @@ body.body-auth {
 }
 
 .hero-headline--v2 {
-  max-width: 12ch;
+  max-width: 22ch;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(2.6rem, 7.5vw, 4.75rem);
-  letter-spacing: -0.04em;
-  line-height: 1.02;
+  font-weight: 600;
+  font-size: clamp(1.55rem, 3.6vw, 2.35rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
   margin: 0 0 1.1rem;
+  color: var(--ink-soft, #c5ccd6);
 }
 
 .hero-headline--rise {
@@ -6724,10 +6740,12 @@ body.body-auth {
 
 .page-intro--hero .page-intro__title {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 6vw, 4.1rem);
-  letter-spacing: -0.035em;
-  max-width: 14ch;
+  font-size: clamp(1.55rem, 3.6vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  max-width: 22ch;
   margin: 0.35rem 0 0.85rem;
+  color: var(--ink-soft, #c5ccd6);
 }
 
 .page-intro--hero .page-intro__lede {
@@ -6762,19 +6780,17 @@ body.body-auth {
 }
 
 .plan--v2 {
-  background: rgba(10, 14, 20, 0.88);
+  background: transparent;
   border: 1px solid var(--brand-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   padding: 1.75rem;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
 }
 
 .plan--v2.plan--featured {
-  border-color: rgba(110, 198, 192, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.06), 0 20px 44px rgba(0, 0, 0, 0.45);
-  background:
-    linear-gradient(165deg, rgba(110, 198, 192, 0.06) 0%, transparent 40%),
-    rgba(8, 12, 18, 0.94);
+  border-color: rgba(110, 198, 192, 0.35);
+  box-shadow: none;
+  background: rgba(110, 198, 192, 0.04);
 }
 
 .plan--v2 .plan__name {
@@ -6832,19 +6848,16 @@ body.body-auth {
 .holo-brand__emblem {
   display: grid;
   place-items: center;
-  border-radius: 999px;
-  background: radial-gradient(circle at 40% 35%, rgba(110, 198, 192, 0.18), transparent 55%), #080B10;
-  box-shadow:
-    0 0 0 1px rgba(110, 198, 192, 0.22),
-    0 0 28px rgba(110, 198, 192, 0.22),
-    0 0 48px rgba(74, 124, 140, 0.12);
+  border-radius: var(--radius);
+  background: #080B10;
+  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.22);
   padding: 0.2rem;
 }
 .holo-brand__emblem img {
   display: block;
   width: 2rem;
   height: 2rem;
-  filter: drop-shadow(0 0 10px rgba(110, 198, 192, 0.35));
+  filter: none;
 }
 .holo-brand__emblem--hero {
   padding: 0.35rem;
@@ -6891,8 +6904,8 @@ body.body-auth {
 }
 
 .brand-mark--holo .brand-mark__logo {
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px rgba(110, 198, 192, 0.22);
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.22);
 }
 
 .brand-mark--holo .holo-brand__word--nav {
@@ -7904,24 +7917,23 @@ body.body-auth {
   align-content: start;
   padding: 1.5rem 1.35rem;
   border: 1px solid var(--brand-border, rgba(255, 255, 255, 0.12));
-  border-radius: var(--radius-lg, 0.65rem);
-  background: rgba(10, 14, 20, 0.88);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
-  transition: border-color 200ms var(--ease), transform 200ms var(--ease), box-shadow 200ms var(--ease);
+  border-radius: var(--radius);
+  background: transparent;
+  box-shadow: none;
+  transition: border-color 200ms var(--ease), background 200ms var(--ease);
 }
 
 .profile-card:hover {
-  transform: translateY(-2px);
+  transform: none;
   border-color: rgba(110, 198, 192, 0.28);
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.45);
+  box-shadow: none;
+  background: rgba(110, 198, 192, 0.03);
 }
 
 .profile-card--featured {
-  border-color: rgba(110, 198, 192, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(110, 198, 192, 0.06), 0 20px 44px rgba(0, 0, 0, 0.45);
-  background:
-    linear-gradient(165deg, rgba(110, 198, 192, 0.07) 0%, transparent 42%),
-    rgba(8, 12, 18, 0.94);
+  border-color: rgba(110, 198, 192, 0.35);
+  box-shadow: none;
+  background: rgba(110, 198, 192, 0.04);
 }
 
 .profile-card__badge {
@@ -8080,9 +8092,9 @@ body.body-auth {
 .workspace-strip__brand {
   margin: 0 0 0.35rem;
   font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   text-transform: lowercase;
   color: var(--brand-clarity);
 }

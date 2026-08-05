@@ -22,8 +22,8 @@ export type SomTrendChartProps = {
   className?: string;
 };
 
-const CYAN = "#00F0FF";
-const VIOLET = "#7000FF";
+const CYAN = "#6EC6C0";
+const VIOLET = "#4A7C8C";
 const MUTED = "#94A3B8";
 const BORDER = "#1F2937";
 

@@ -122,12 +122,12 @@ export function ShareOfModelChart({
           >
             <defs>
               <linearGradient id="colorCentropic" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#00F0FF" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#00F0FF" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#6EC6C0" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#6EC6C0" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="colorCompA" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#7000FF" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#7000FF" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#4A7C8C" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#4A7C8C" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -161,7 +161,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="centropic"
-              stroke="#00F0FF"
+              stroke="#6EC6C0"
               strokeWidth={2}
               fill="url(#colorCentropic)"
               fillOpacity={1}
@@ -169,7 +169,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="competitorA"
-              stroke="#7000FF"
+              stroke="#4A7C8C"
               strokeWidth={1.5}
               fill="url(#colorCompA)"
               fillOpacity={1}
