@@ -19,18 +19,22 @@ Each dashboard plan tier gets its own uniform accent, used consistently for both
 Marketing pages and admin (no `dash-plan--*` class) fall back to the global chrome accent (`--plan-accent: var(--brand-cyan)`). When adding a new "image"/graphic dashboard component, use `var(--plan-accent)`/`var(--plan-accent-deep)`, not a hardcoded hex — that is what makes it plan-uniform automatically.
 
 ## Assets
-- `static/img/logo-cosmic-emblem.png` — source 3D chrome star-shield emblem, monogram **C**, orbital ring + satellite nodes (1024²). Edit this to change the mark, then re-render everything below from it.
-- `static/img/logo.png` — primary mark, every header/hero/page-intro/auth `<img>` points here directly (512²)
-- `static/img/logo-mark.png` — compact mark for the sidebar (128²)
-- `static/img/apple-touch-icon.png` (180²), `favicon-32.png`, `favicon-16.png` — small icon renders cropped tight for legibility
-- `static/img/hero-cosmic.jpg` — nebula backdrop used behind the landing hero
-- `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art
-- Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current)
+- `static/img/logo.svg` — **primary mark, true self-contained vector** (paths/gradients only, no external `<image>` refs). Every header/hero/page-intro/auth `<img>` points here directly (viewBox 128×128).
+- `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility).
+- `static/favicon.svg` — same compact-mark design.
+- `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` — raster renders of the SVGs above (`cairosvg`), used only where raster is required: `<link rel="apple-touch-icon">`, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback.
+- `static/img/hero-cosmic.jpg` — nebula backdrop behind the landing hero (unrelated to the mark itself; a separate AI-generated backdrop photo).
+- `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art.
+- Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current).
 
-**Do not** wrap the mark in an SVG `<image href="...png">` again to avoid touching templates — it was tried and reverted (2026-08-05): browsers render an SVG loaded via `<img src="logo.svg">` in a restricted "image context", and the internal `<image>` reference to the external PNG did not reliably paint in production, making the logo (and every place reusing the same trick: favicon, sidebar mark, auth pages) go blank. Every logo `<img>` must point at a real raster file directly.
+**Two banned patterns, both tried and reverted on the same mark:**
+1. *Photoreal 3D raster as "the logo"* (2026-08-05, "Cosmic Chrome"/"Nova Violet" sessions) — looked good large but couldn't stay crisp at favicon/sidebar sizes and required a separate raster pipeline.
+2. *SVG wrapping that raster via `<image href="...png">`* to avoid touching templates — browsers render an SVG loaded via `<img src="logo.svg">` in a restricted "image context", and the internal `<image>` reference to the external PNG did not reliably paint in production, so the logo went blank everywhere.
+
+The current mark avoids both: `logo.svg`/`logo-mark.svg`/`favicon.svg` are genuine vector shapes (polygon/ellipse/path + linear/radial gradients, all inline, zero external refs) — safe to use directly via `<img src="...svg">` in every browser, and infinitely scalable (verified 16px favicon up to 220px auth-page render).
 
 ## Mark concept
-Faceted chrome star-shield · bold metallic **C** monogram · upward arrow silhouette · thin orbital ring with glowing satellite nodes. Photoreal 3D chrome render, not a flat vector icon — this is intentional; do not flatten it back into a line-art SVG.
+Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satellite node · bold chrome-gradient **C** monogram formed from an open ring stroke. Flat/gradient vector, not a photoreal 3D render — this is intentional; do not swap it back to a raster photo.
 
 ## Wordmark
 `CENTROPIC.AI` — **uppercase**, metallic chrome gradient text (`background-clip: text`), on the hero and page-intro brand rows. This replaced the previous lowercase `centropic.ai` treatment. Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight (`templates/partials/holo_brand.html`, `.brand-mark__word`).

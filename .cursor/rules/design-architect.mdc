@@ -25,23 +25,27 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 
 | Asset | Use |
 |---|---|
-| `static/img/logo-cosmic-emblem.png` | Source 3D chrome star-shield emblem (monogram **C**) — edit this to change the mark |
-| `static/img/logo.png` | Primary mark ≥32px (header, hero, overlays, page-intros, auth) — direct raster `<img>`, not an SVG wrapper |
-| `static/img/logo-mark.png` | Compact mark ≤28px (sidebar) |
-| `static/img/apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` | Apple touch / browser tab icons |
-| `static/img/hero-cosmic.jpg` | Nebula backdrop behind the landing hero |
-| `static/img/og-share.jpg` | Social only (1200×630) |
+| `static/img/logo.svg` | **Primary mark**, true self-contained vector (polygon/ellipse/path + inline gradients, zero external refs) — header, hero, overlays, page-intros, auth. Edit this to change the mark. |
+| `static/img/logo-mark.svg` | Compact vector mark ≤28px (sidebar) — simplified geometry, same style. |
+| `static/favicon.svg` | Same compact-mark design. |
+| `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` | Raster renders of the SVGs (`cairosvg`) — only for contexts that require raster: apple-touch-icon, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback. |
+| `static/img/hero-cosmic.jpg` | Nebula backdrop behind the landing hero (separate AI-generated photo, not the mark). |
+| `static/img/og-share.jpg` | Social only (1200×630). |
 
-**Do not reintroduce an SVG-wrapping-a-raster `<image>` trick for the logo.** It was tried (to avoid touching every template) and caused the logo/favicon to render blank in production (2026-08-05) — browsers treat an SVG loaded via `<img src="...">` as a restricted "image context" and the internal `<image href="other.png">` did not reliably paint. Every logo `<img>` must point directly at a PNG.
+**Two banned patterns for this mark, both tried and reverted the same day (2026-08-05):**
+1. *Photoreal 3D raster as "the logo"* — looked good large, unusable crisp at favicon/sidebar sizes.
+2. *SVG wrapping that raster via `<image href="other.png">`* to avoid touching templates — browsers treat an SVG loaded via `<img src="...">` as a restricted "image context", and the internal `<image>` reference to an external raster did not reliably paint, so the logo went blank everywhere.
+
+The current mark is a genuine flat/gradient vector (no external refs) — safe to reference directly via `<img src="....svg">` in every browser, and scales cleanly from a 16px favicon to a 220px auth-page render (both verified). Don't reintroduce either banned pattern.
 
 Rules:
 1. Wordmark on `#hero-brand` (landing hero only) is **`CENTROPIC.AI`, uppercase, chrome-gradient text** (`background-clip: text`). Everywhere else the brand row keeps the plain lowercase `centropic.ai` wordmark — do not let the dramatic hero treatment leak onto other pages' brand rows again; it visually overwrote those pages' own H1 (fixed 2026-08-05, see `#hero-brand .hero-brand-word` scoping in `app.css`).
 2. Brand must win the first marketing viewport over the headline (size/weight/order) — but only on the actual hero; on every other page the page's own H1 stays the visual lead over the brand row above it.
-3. Logo is a **photoreal 3D chrome emblem** (star-shield, **C** monogram, orbital ring + satellite nodes) — do not flatten it back into a line-art SVG or swap in a generic circle-icon.
+3. Logo is a **stylized flat/gradient vector hex chassis** (dashed orbital ellipse + satellite node + chrome **C** monogram) — do not swap it back to a photoreal 3D raster or a generic circle-icon.
 4. Nebula blue/violet atmosphere stays behind the landing hero visual only — never bleed it into buttons, links, or focus states (those use the chrome UI accent `--brand-cyan: #C9D3DD`, or the active plan's `--plan-accent` on dashboard pages).
 5. Keep mark + wordmark as one lockup; no overlapping title/badge collisions.
-6. Prefer `logo-mark.png` when the full mark would muddle at small sizes.
-7. To change the mark again: replace `logo-cosmic-emblem.png` and re-render every derived file (`logo.png`, `logo-mark.png`, `apple-touch-icon.png`, `favicon-*.png`, `hero-cosmic.jpg`, `og-share.jpg`) from the new source, then re-check every template `<img>` still points at a real file.
+6. Prefer `logo-mark.svg` when the full mark would muddle at small sizes.
+7. To change the mark again: edit `logo.svg` and `logo-mark.svg`/`favicon.svg` directly (both are hand-authored vector shapes, not derived from a raster source), then re-render `logo.png`/`logo-mark.png`/`apple-touch-icon.png`/`favicon-*.png` from them via `cairosvg` for the raster-only contexts.
 8. **Every inline `<script>` in a template must carry `nonce="{{ csp_nonce }}"`** (CSP is `script-src 'self' 'nonce-...' 'strict-dynamic'`) — an un-nonced inline script is silently dropped by the browser with no visible error, which is how the dashboard Score/SoV tab switcher went dead (2026-08-05, `templates/dashboard.html`, pre-existing since 2026-07-27). Grep `<script>` (no `nonce=`, no `src=`) before shipping any template touching `<script>` blocks.
 
 ---
