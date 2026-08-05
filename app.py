@@ -1903,6 +1903,7 @@ def process_pending_analyze_jobs(
 
             def _hb(phase=None, done=None, total=None):
                 # SoV engines run in worker threads; always re-enter app context.
+                # Pin claim-time lease so expire_on_commit cannot steal ownership.
                 with app.app_context():
                     ok = heartbeat_job(
                         db.session,
@@ -1910,6 +1911,7 @@ def process_pending_analyze_jobs(
                         progress_phase=phase,
                         progress_done=done,
                         progress_total=total,
+                        lease_token=lease_token,
                     )
                     if not ok:
                         raise RuntimeError("job lease lost during heartbeat")
@@ -1995,7 +1997,12 @@ def process_pending_analyze_jobs(
             # Restore lease on in-memory job after pipeline commits/refreshes.
             if not getattr(job, "lease_token", None):
                 job.lease_token = lease_token
-            finished = complete_job(db.session, job, site_id=getattr(analysis, "id", None))
+            finished = complete_job(
+                db.session,
+                job,
+                site_id=getattr(analysis, "id", None),
+                lease_token=lease_token,
+            )
             if finished:
                 release_job_hold(db.session, user, job)
                 # Analytics event can't use session flash queue in worker —
@@ -5951,10 +5958,22 @@ def admin_retry_job(job_id: int):
     if job.status not in {"error", "done"}:
         flash("Puoi riaccodare solo job completati o in errore.", "warning")
         return redirect(url_for("admin_home"))
+    billed = int(getattr(job, "billed_cents", 0) or 0)
+    if billed > 0:
+        flash(
+            "Job già parzialmente addebitato: non riaccodabile (rischio doppia fatturazione). "
+            "Crea una nuova analisi dal dashboard.",
+            "error",
+        )
+        return redirect(url_for("admin_home"))
     job.status = "pending"
     job.error = None
     job.started_at = None
     job.finished_at = None
+    job.lease_token = None
+    job.heartbeat_at = None
+    if hasattr(job, "attempt_count"):
+        job.attempt_count = 0
     db.session.commit()
     flash(f"Job #{job.id} rimesso in coda.", "success")
     return redirect(url_for("admin_home"))

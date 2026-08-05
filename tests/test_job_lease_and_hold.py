@@ -136,6 +136,40 @@ def test_zombie_complete_loses_to_new_lease():
         assert complete_job(db.session, second, site_id=None) is True
 
 
+def test_heartbeat_rejects_stolen_lease_when_token_pinned():
+    """Claim-time lease_token must win over a stale ORM reload."""
+    with app.app_context():
+        ensure_schema()
+        u = _user("hb-pin@example.com")
+        from services.jobs import enqueue_analysis
+
+        enqueue_analysis(
+            db.session, AnalysisJob, user_id=u.id, url="https://example.com/hb-pin", max_pages=2
+        )
+        claimed = claim_next_job(db.session, AnalysisJob)
+        assert claimed is not None
+        pinned = claimed.lease_token
+        job_id = claimed.id
+        AnalysisJob.query.filter_by(id=job_id).update(
+            {"lease_token": "stolen-by-other-worker"},
+            synchronize_session=False,
+        )
+        db.session.commit()
+        db.session.expire_all()
+        zombie = db.session.get(AnalysisJob, job_id)
+        assert zombie is not None
+        # Without pin, ORM would see stolen token and wrongly succeed.
+        assert (
+            heartbeat_job(db.session, zombie, lease_token=pinned) is False
+        )
+        assert (
+            complete_job(db.session, zombie, site_id=None, lease_token=pinned) is False
+        )
+        row = db.session.get(AnalysisJob, job_id)
+        assert row.lease_token == "stolen-by-other-worker"
+        assert row.status == "running"
+
+
 def test_heartbeat_prevents_reclaim():
     with app.app_context():
         ensure_schema()
@@ -154,6 +188,7 @@ def test_heartbeat_prevents_reclaim():
         assert n == 0
         db.session.refresh(claimed)
         assert claimed.status == "running"
+
 
 
 def test_reclaim_running_job_without_lease_immediately():

@@ -10,6 +10,9 @@ from services.analyze_pipeline import run_analysis_pipeline
 
 logger = logging.getLogger(__name__)
 
+UsageCallback = Callable[..., None]
+UsageCallbackFactory = Callable[[Any], UsageCallback]
+
 
 def due_sites_query(SiteAnalysis: Any, User: Any, *, now: datetime | None = None):
     """Siti Pro/admin con interval attivo e next_rescan_at scaduto."""
@@ -72,11 +75,17 @@ def process_due_rescans(
     public_base: str = "https://centropic.ai",
     SovSnapshot: Any | None = None,
     AlertDelivery: Any | None = None,
-    usage_callback: Callable[..., None] | None = None,
+    usage_callback: UsageCallback | None = None,
+    usage_callback_factory: UsageCallbackFactory | None = None,
 ) -> dict[str, int]:
     """Esegue i re-scan scaduti via pipeline completa (suite + alert).
 
-    Measured SoV is refused without a billing ``usage_callback`` (no free LLM).
+    Billing:
+      - Prefer ``usage_callback_factory(user)`` (per-owner debit).
+      - Fallback ``usage_callback`` (shared).
+      - Measured SoV requires a billing callback.
+      - Pack/artifact LLM always receives the billing callback when present
+        so OpenAI spend is never free on scheduled rescans.
     """
     from services.analysis_store import mark_rescan_error
 
@@ -84,10 +93,15 @@ def process_due_rescans(
     now = datetime.now(timezone.utc)
     sites = due_sites_query(SiteAnalysis, User, now=now).limit(max(1, limit)).all()
 
-    run_measured = bool(measured) and callable(usage_callback)
-    if measured and not run_measured:
+    has_any_billing = callable(usage_callback_factory) or callable(usage_callback)
+    if measured and not has_any_billing:
         logger.warning(
             "Scheduled measured SoV disabled: no usage_callback (refuse free LLM spend)"
+        )
+    if openai_api_key and not has_any_billing:
+        logger.warning(
+            "Scheduled rescan has OpenAI key but no usage_callback — "
+            "pack LLM calls will not be billed (callback absent)"
         )
 
     for site in sites:
@@ -116,6 +130,15 @@ def process_due_rescans(
             stats["skipped"] += 1
             continue
 
+        if callable(usage_callback_factory):
+            billing_cb: UsageCallback | None = usage_callback_factory(user)
+        elif callable(usage_callback):
+            billing_cb = usage_callback
+        else:
+            billing_cb = None
+
+        run_measured = bool(measured) and callable(billing_cb)
+
         try:
             run_analysis_pipeline(
                 db_session=db_session,
@@ -130,7 +153,7 @@ def process_due_rescans(
                 measured_env_enabled=True,
                 source="scheduled",
                 public_base=public_base,
-                usage_callback=usage_callback if run_measured else None,
+                usage_callback=billing_cb,
                 SovSnapshot=SovSnapshot,
                 AlertDelivery=AlertDelivery,
             )

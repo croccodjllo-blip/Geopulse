@@ -219,13 +219,17 @@ def heartbeat_job(
     progress_done: int | None = None,
     progress_total: int | None = None,
     progress_phase: str | None = None,
+    lease_token: str | None = None,
 ) -> bool:
     """Refresh lease heartbeat for a running job owned by this worker.
+
+    Pass ``lease_token=`` from claim time so a stale ORM reload after
+    ``expire_on_commit`` cannot heartbeat under a stolen lease.
 
     Optional crawl/stage progress fields power the overlay ETA.
     """
     Job = job.__class__
-    token = getattr(job, "lease_token", None)
+    token = lease_token if lease_token is not None else getattr(job, "lease_token", None)
     if not token:
         return False
     now = datetime.now(timezone.utc)
