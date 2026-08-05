@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Impostazioni GEO') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
-{% block meta_description %}{{ _('Impostazioni Centropic: alert, prompt bank, API key, white-label e connector SoV.') }}{% endblock %}
+{% block meta_description %}{{ _('Impostazioni Centropic per il tuo piano: connector, alert, API e white-label quando disponibili.') }}{% endblock %}
 
 {% block content %}
 <article class="page">
@@ -9,10 +9,12 @@
     <p class="eyebrow">{{ _('Account') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Impostazioni GEO/AIO') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Alert outbound, prompt bank per SoV measured, API, white-label agenzia.') }}
-      {% if not is_pro %}
-      <strong>Plus</strong> {{ _('sblocca SoV measured, crawl esteso e re-scan.') }}
-      <strong>Business</strong> {{ _('aggiunge API, white-label e fino a') }} {{ max_sites_business }} {{ _('siti.') }}
+      {% if can_agency %}
+      {{ _('Alert outbound, prompt bank SoV, API e white-label agenzia.') }}
+      {% elif can_alerts %}
+      {{ _('Alert outbound, prompt bank per SoV measured e connector.') }}
+      {% else %}
+      {{ _('Sicurezza account e stato connector sul piano Free.') }}
       {% endif %}
     </p>
   </header>
@@ -20,20 +22,20 @@
   <section class="page-section" id="connectors">
     <h2 class="page-section__title">{{ _('Connector') }}</h2>
     <ul class="plain-list">
+      {% if can_measured_sov %}
       <li>
         {{ _('Citation monitor / SoV measured:') }}
-        {% if not is_pro %}
-        {{ _('riservato a') }} <a href="{{ url_for('pricing') }}">Plus</a>
-        {% elif citation_ready %}{{ _('attivo') }}{% else %}{{ _('configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY') }}{% endif %}
+        {% if citation_ready %}{{ _('attivo') }}{% else %}{{ _('configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY') }}{% endif %}
       </li>
+      {% endif %}
       <li>{{ _('JS crawl:') }} {% if js_crawl_ready %}{{ _('Playwright pronto') }}{% else %}{{ _('disabilitato (JS_CRAWL_ENABLED=1)') }}{% endif %}</li>
       <li>{{ _('Google Search Console:') }} {{ gsc.reason if not gsc.available else gsc.note }}</li>
     </ul>
   </section>
 
+  {% if can_alerts %}
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Alert outbound') }}</h2>
-    {% if can_alerts %}
     <form method="post" class="form-grid panel">
       {{ alert_form.hidden_tag() }}
       <input type="hidden" name="action" value="alerts" />
@@ -48,28 +50,13 @@
       </div>
       {{ alert_form.submit(class_="btn btn-primary") }}
     </form>
-    {% else %}
-    <div class="panel">
-      <p class="lede">
-        {{ _('Alert email e webhook firmati sono disponibili con i piani Plus e Business.') }}
-        {{ _('Sul piano Free puoi continuare a consultare score e findings dalla dashboard.') }}
-      </p>
-      <a class="btn btn-signal" href="{{ url_for('pricing') }}">{{ _('Sblocca gli alert') }}</a>
-    </div>
-    {% endif %}
   </section>
+  {% endif %}
 
+  {% if can_prompt_bank %}
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Prompt bank') }}</h2>
-    <p class="lede">
-      {{ _('Usati dal citation monitor / SoV measured (piano Plus).') }}
-      {% if not can_prompt_bank %}
-      <a href="{{ url_for('pricing') }}">{{ _('Passa a Plus') }}</a> {{ _('per personalizzare i prompt di misurazione.') }}
-      {% else %}
-      {{ _('Lascia vuoto per i default.') }}
-      {% endif %}
-    </p>
-    {% if can_prompt_bank %}
+    <p class="lede">{{ _('Usati dal citation monitor / SoV measured. Lascia vuoto per i default.') }}</p>
     <form method="post" class="form-grid panel">
       {{ prompt_form.hidden_tag() }}
       <input type="hidden" name="action" value="prompts" />
@@ -89,21 +76,17 @@
       <p class="lede">{{ _('Applica un set di prompt e checklist per settore (SaaS, e-commerce, local, agency, media).') }}</p>
       {{ vertical_form.submit(class_="btn btn-ghost") }}
     </form>
-    {% endif %}
   </section>
+  {% endif %}
 
+  {% if can_api %}
   <section class="page-section">
     <h2 class="page-section__title">{{ _('API key') }}</h2>
     <p class="lede">
       {{ _('Endpoints:') }} <code>POST /api/v1/analyze</code>, <code>GET /api/v1/sites</code>
       (Bearer / X-Api-Key).
-      {% if can_api %}
-        {% if api_key_prefix %}{{ _('Prefisso attivo:') }} <code>{{ api_key_prefix }}…</code>{% else %}{{ _('Nessuna key.') }}{% endif %}
-      {% else %}
-        {{ _('Riservato a') }} <a href="{{ url_for('pricing') }}">Plus</a> — {{ _('genera e usa le key solo sul piano a pagamento.') }}
-      {% endif %}
+      {% if api_key_prefix %}{{ _('Prefisso attivo:') }} <code>{{ api_key_prefix }}…</code>{% else %}{{ _('Nessuna key.') }}{% endif %}
     </p>
-    {% if can_api %}
     {% if api_key_once %}
     <aside class="panel" role="status">
       <p class="lede"><strong>{{ _('API key (una sola volta)') }}</strong> — {{ _('copiala e conservala in un secret store. Non la rimostreremo per intero.') }}</p>
@@ -115,10 +98,8 @@
       <input type="hidden" name="action" value="api_key" />
       <button class="btn btn-ghost" type="submit">{{ _('Genera nuova API key') }}</button>
     </form>
-    {% else %}
-    <a class="btn btn-signal" href="{{ url_for('pricing') }}">{{ _('Sblocca API con Plus') }}</a>
-    {% endif %}
   </section>
+  {% endif %}
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Sicurezza account') }}</h2>
@@ -158,9 +139,9 @@
     </form>
   </section>
 
+  {% if can_agency %}
   <section class="page-section">
     <h2 class="page-section__title">{{ _('White-label agenzia') }}</h2>
-    {% if can_agency %}
     <form method="post" class="form-grid panel">
       {{ agency_form.hidden_tag() }}
       <input type="hidden" name="action" value="agency" />
@@ -170,13 +151,8 @@
       <div class="field"><label for="footer_note">{{ _('Nota') }}</label>{{ agency_form.footer_note(id="footer_note") }}</div>
       {{ agency_form.submit(class_="btn btn-primary") }}
     </form>
-    {% else %}
-    <p class="lede">
-      {{ _('Export white-label per agenzie riservato a') }} <a href="{{ url_for('pricing') }}#business">Business</a>.
-    </p>
-    <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi piano Plus') }}</a>
-    {% endif %}
   </section>
+  {% endif %}
 
   <div class="page-cta">
     <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">{{ _('Torna alla dashboard') }}</a>

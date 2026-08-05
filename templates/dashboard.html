@@ -93,7 +93,7 @@
                   {{ _('Invia email') }}
                 </button>
               </form>
-              {% if is_pro %}
+              {% if can_extended_history %}
               <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
               {% endif %}
             </div>
@@ -336,11 +336,10 @@
                     {% endif %}
                   </h3>
                   <p class="sov-panel__lede">
-                    {% if is_pro and engine_breakdown.evidence in ('mixed', 'measured') %}
+                    {% if can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
                     {{ _('Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine.') }}
-                    {% elif not is_pro %}
-                    {{ _('Piano Free: SoV stimato da score e robots.') }}
-                    <a href="{{ url_for('pricing') }}">{{ _('Passa a Plus') }}</a> {{ _('per SoV measured (citation monitor).') }}
+                    {% elif not can_measured_sov %}
+                    {{ _('SoV stimato da score e robots sul piano attuale.') }}
                     {% else %}
                     {{ _('Stima euristica da score e robots — non è polling live sui modelli.') }}
                     {% endif %}
@@ -507,7 +506,7 @@
                 <strong>{{ _('Locales') }}</strong>
                 <span>{{ geo_suite.locales.lang or 'n/d' }} · hreflang {{ (geo_suite.locales.hreflang or [])|length }}</span>
               </li>
-              {% if geo_suite.sov_measured and is_pro %}
+              {% if geo_suite.sov_measured and can_measured_sov %}
               <li>
                 <strong>{{ _('SoV measured') }}</strong>
                 <span>
@@ -517,11 +516,6 @@
                     {{ geo_suite.sov_measured.label or 'n/d' }}
                   {% endif %}
                 </span>
-              </li>
-              {% elif not is_pro %}
-              <li>
-                <strong>{{ _('SoV measured') }}</strong>
-                <span>Plus · <a href="{{ url_for('pricing') }}">{{ _('sblocca') }}</a></span>
               </li>
               {% endif %}
             </ul>
@@ -650,11 +644,11 @@
             </section>
           </div>
 
-          {% if is_pro %}
+          {% if can_scheduled_rescan %}
           <section class="monitor-panel" aria-labelledby="monitor-title">
             <div class="monitor-panel__head">
               <div>
-                <p class="eyebrow">Plus</p>
+                <p class="eyebrow">{{ user_plan }}</p>
                 <h3 class="monitor-panel__title" id="monitor-title">{{ _('Monitoraggio') }}</h3>
               </div>
               <div class="monitor-panel__exports">
@@ -667,18 +661,9 @@
               {% include "partials/schedule_form.html" %}
             {% endwith %}
           </section>
-          {% else %}
-          <p class="pro-upsell">
-            {{ _('Piano Free: 1 sito, ri-analisi del dominio consentita (consuma token).') }}
-            {% if payments_ready %}
-            <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, re-scan, export e storico run.') }}
-            {% else %}
-            <a href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a> {{ _('per crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine, re-scan, export e storico.') }}
-            {% endif %}
-          </p>
           {% endif %}
 
-          {% if latest.competitors %}
+          {% if can_competitors and latest.competitors %}
           <section class="dash-block dash-block--panel" aria-labelledby="comp-title">
             <header class="dash-block__head">
               <div>
@@ -724,15 +709,17 @@
               <button type="submit" class="btn btn-primary">{{ _('Attiva hosting dinamico') }}</button>
             </form>
             <p class="edge-hint">
-              {{ _('Free:') }} <code>llms.txt</code> + <code>signals.json</code>.
-              {{ _('Plus: robots live, JSON-LD e snippet Worker/Vercel.') }}
+              {{ _('Include') }} <code>llms.txt</code> + <code>signals.json</code>
+              {% if can_full_edge %}
+              · {{ _('robots live, JSON-LD e snippet Worker/Vercel.') }}
+              {% endif %}.
             </p>
             {% else %}
             {% include "partials/edge_wizard.html" %}
             <details class="edge-advanced">
               <summary>
                 {{ _('Snippet avanzati') }}
-                {% if is_pro %}<span>Plus</span>{% endif %}
+                {% if can_full_edge %}<span>{{ user_plan }}</span>{% endif %}
               </summary>
               <div class="edge-advanced__body">
             <ul class="edge-urls">
@@ -746,7 +733,7 @@
                 <a href="{{ edge.signals_url }}" target="_blank" rel="noopener noreferrer">{{ edge.signals_url }}</a>
                 <button type="button" class="linkish" data-copy="{{ edge.signals_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
               </li>
-              {% if is_pro %}
+              {% if can_full_edge %}
               <li>
                 <span>robots.txt</span>
                 <a href="{{ edge.robots_url }}" target="_blank" rel="noopener noreferrer">{{ edge.robots_url }}</a>
@@ -756,11 +743,6 @@
                 <span>organization.jsonld</span>
                 <a href="{{ edge.jsonld_url }}" target="_blank" rel="noopener noreferrer">{{ edge.jsonld_url }}</a>
                 <button type="button" class="linkish" data-copy="{{ edge.jsonld_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
-              </li>
-              {% else %}
-              <li class="edge-urls__locked">
-                <span>robots + JSON-LD</span>
-                <em>{{ _('Piano Plus — lista crawler IA live sul tuo dominio') }}</em>
               </li>
               {% endif %}
             </ul>
@@ -795,7 +777,7 @@
               {% endfor %}
             </ul>
             {% endif %}
-            {% if is_pro %}
+            {% if can_full_edge %}
             <div class="pack-grid pack-grid--edge">
               <div class="code-shell code-shell--compact">
                 <div class="code-shell__bar">
@@ -819,11 +801,6 @@
                 <pre id="edge-embed-box">{{ edge.embed }}</pre>
               </div>
             </div>
-            {% else %}
-            <p class="edge-hint">
-              {{ _('Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati automaticamente alla lista crawler Centropic.') }}
-              <a href="{{ url_for('pricing') }}">{{ _('Vedi piani') }}</a>
-            </p>
             {% endif %}
               </div>
             </details>
@@ -968,7 +945,7 @@
           <a href="#edge-signals">{{ _('Attiva Edge') }}</a>
           {% endif %}
           <a href="#findings-title">{{ _('Findings critici') }}</a>
-          {% if is_pro %}
+          {% if can_extended_history %}
           <a href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico run') }}</a>
           {% endif %}
         </div>
@@ -980,8 +957,6 @@
             {% if can_agency %}
             <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label MD') }}</a><br />
             <a href="{{ url_for('download_whitelabel_html', analysis_id=latest.id) }}">{{ _('White-label HTML') }}</a><br />
-            {% else %}
-            <a href="{{ url_for('pricing') }}#business">{{ _('White-label → Business') }}</a><br />
             {% endif %}
             <a href="{{ url_for('dashboard_settings') }}">{{ _('GEO suite settings') }}</a>
           </p>
@@ -995,7 +970,7 @@
 
 {% include "partials/analyze_overlay.html" %}
 <script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
-{% if is_pro %}
+{% if can_competitors %}
 <script src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
 {% endif %}
 <script>

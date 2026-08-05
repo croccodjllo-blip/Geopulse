@@ -25,9 +25,6 @@
     {% if not onboard_analysis %}
     <li>○ {{ _('Prima analisi del dominio') }}</li>
     {% endif %}
-    {% if not is_pro or on_trial %}
-    <li>{% if on_trial %}◐{% else %}○{% endif %} {{ _('Plus (SoV measured + crawl esteso)') }}</li>
-    {% endif %}
   </ol>
   {% if trial_available %}
   <form method="post" action="{{ url_for('dashboard_trial_start') }}" class="dash-onboard__actions">
@@ -63,7 +60,7 @@
 </div>
 {% endif %}
 
-{% if is_pro and latest %}
+{% if can_measured_sov and latest %}
   {% include "partials/sov_ops.html" %}
 {% endif %}
 
@@ -96,12 +93,12 @@
         {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
         {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
       </div>
-      {% if is_pro %}
+      {% if can_competitors %}
       <div class="field analyze-competitors"
            data-competitor-suggest
            data-suggest-url="{{ url_for('dashboard_competitors_suggest') }}">
         <div class="analyze-competitors__head">
-          <label for="competitors">{{ _('Competitor snapshot (Plus, max 3)') }}</label>
+          <label for="competitors">{{ _('Competitor snapshot (max 3)') }}</label>
           <button type="button" class="linkish analyze-competitors__suggest" data-competitor-suggest-btn>
             {{ _('Suggerisci automatico') }}
           </button>
@@ -110,6 +107,8 @@
 https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input': '1'}) }}
         <p class="analyze-competitors__hint" data-competitor-suggest-status hidden></p>
       </div>
+      {% endif %}
+      {% if can_full_crawl %}
       <div class="analyze-option">
         <label class="analyze-option__hit" for="deep_crawl">
           {{ form.deep_crawl(id="deep_crawl", class_="analyze-option__check") }}
@@ -122,11 +121,12 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
           </span>
         </label>
       </div>
-      <p class="analyze-composer__hint">{{ _('SoV measured (probe LLM) incluso nel piano Plus quando i connector sono attivi.') }}</p>
+      {% endif %}
+      {% if can_measured_sov %}
+      <p class="analyze-composer__hint">{{ _('SoV measured (probe LLM) incluso quando i connector sono attivi.') }}</p>
       {% else %}
       <p class="analyze-composer__hint">
-        {{ _('Free: score AIO/GEO e SoV') }} <em>{{ _('stimato') }}</em>.
-        <a href="{{ url_for('pricing') }}">Plus</a> {{ _('sblocca SoV measured / citation monitor.') }}
+        {{ _('Score AIO/GEO e SoV') }} <em>{{ _('stimato') }}</em> {{ _('sul dominio analizzato.') }}
       </p>
       {% endif %}
       {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}

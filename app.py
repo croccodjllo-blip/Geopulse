@@ -1422,9 +1422,11 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "dashboard"
         else:
             sidebar_active = "dashboard"
+    caps = capability_template_vars(user)
     return {
         "current_user": user,
         "csrf_token": generate_csrf,
+        **caps,
         "max_sites_free": MAX_SITES_FREE,
         "max_sites_plus": MAX_SITES_PLUS,
         "max_sites_business": MAX_SITES_BUSINESS,
@@ -2470,6 +2472,25 @@ def plan_entitlements(user: User | None):
         free_history_limit=FREE_HISTORY_LIMIT,
         pro_history_limit=PRO_HISTORY_LIMIT,
     )
+
+
+def capability_template_vars(user: User | None) -> dict[str, Any]:
+    """Flags for templates: show only services available on the current plan."""
+    ents = plan_entitlements(user)
+    return {
+        "is_pro": bool(getattr(user, "is_pro", False)) if user else False,
+        "is_business": bool(getattr(user, "is_business", False)) if user else False,
+        "can_api": ents.can("api_access"),
+        "can_agency": ents.can("agency_whitelabel"),
+        "can_prompt_bank": ents.can("prompt_bank"),
+        "can_alerts": ents.can("alerts_webhook"),
+        "can_measured_sov": ents.can("measured_sov"),
+        "can_scheduled_rescan": ents.can("scheduled_rescan"),
+        "can_competitors": ents.can("competitors"),
+        "can_full_edge": ents.can("full_edge_signals"),
+        "can_extended_history": ents.can("extended_history"),
+        "can_full_crawl": ents.can("full_crawl"),
+    }
 
 
 def flash_analyze_error(exc: BaseException) -> None:
@@ -4587,7 +4608,6 @@ def dashboard():
         site_count=sites_query_for_user(SiteAnalysis, user).count(),
         token_balance_short=format_tokens_short(get_balance_cents(user)),
         user_plan=user.plan_label,
-        is_pro=user.is_pro,
         on_trial=bool(getattr(user, "on_trial", False)),
         trial_ends_at=getattr(user, "trial_ends_at", None),
         trial_available=(
@@ -4601,9 +4621,7 @@ def dashboard():
         pending_job=pending_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
-        is_business=user.is_business,
-        can_agency=plan_entitlements(user).can("agency_whitelabel"),
-        can_api=plan_entitlements(user).can("api_access"),
+        **capability_template_vars(user),
     )
 
 
@@ -5328,7 +5346,6 @@ def dashboard_settings():
                 "success",
             )
             # One-time reveal in this response only (never via flash/session cookie).
-            ents = plan_entitlements(user)
             return render_template(
                 "settings.html",
                 alert_form=alert_form,
@@ -5345,14 +5362,9 @@ def dashboard_settings():
                 gsc=gsc_status(),
                 js_crawl_ready=js_crawl_available(),
                 default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
-                is_pro=user.is_pro,
-                can_api=ents.can("api_access"),
-                can_agency=ents.can("agency_whitelabel"),
-                can_prompt_bank=ents.can("prompt_bank"),
-                can_alerts=ents.can("alerts_webhook"),
+                **capability_template_vars(user),
             )
 
-    ents = plan_entitlements(user)
     return render_template(
         "settings.html",
         alert_form=alert_form,
@@ -5369,11 +5381,7 @@ def dashboard_settings():
         gsc=gsc_status(),
         js_crawl_ready=js_crawl_available(),
         default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
-        is_pro=user.is_pro,
-        can_api=ents.can("api_access"),
-        can_agency=ents.can("agency_whitelabel"),
-        can_prompt_bank=ents.can("prompt_bank"),
-        can_alerts=ents.can("alerts_webhook"),
+        **capability_template_vars(user),
     )
 
 
@@ -5437,7 +5445,7 @@ def dashboard_verify(analysis_id: int):
         analysis=analysis,
         verify=verify,
         sov_delta=sov_delta,
-        is_pro=user.is_pro,
+        **capability_template_vars(user),
     )
 
 
@@ -5976,7 +5984,7 @@ def dashboard_history():
         history=history,
         history_limit=hist_limit,
         history_is_runs=user.is_pro,
-        is_pro=user.is_pro,
+        **capability_template_vars(user),
     )
 
 

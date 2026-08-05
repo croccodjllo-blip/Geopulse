@@ -14,12 +14,12 @@
       {% if history_is_runs %}
         {{ _('Run manuali e schedulate (max') }} {{ history_limit }}).
       {% else %}
-        {{ _('Ultimi siti analizzati (max') }} {{ history_limit }}). {{ _('Passa a Plus per lo storico run completo.') }}
+        {{ _('Ultimi siti analizzati (max') }} {{ history_limit }}).
       {% endif %}
     </p>
     <p class="report-meta">
       <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
-      {% if is_pro %}
+      {% if can_extended_history %}
       <a class="site-link" href="{{ url_for('export_history_csv') }}">{{ _('Export CSV') }}</a>
       {% endif %}
     </p>

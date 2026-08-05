@@ -51,11 +51,13 @@
 
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
-    {% if is_pro %}
+    {% if can_scheduled_rescan or can_measured_sov %}
       <form method="post" action="{{ url_for('dashboard_verify_rescan', analysis_id=analysis.id) }}" style="display:inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <button type="submit" class="btn btn-signal">{{ _('Re-scan dopo publish') }}</button>
       </form>
+    {% endif %}
+    {% if can_agency %}
       <a class="btn btn-ghost" href="{{ url_for('download_whitelabel', analysis_id=analysis.id) }}">{{ _('Export white-label MD') }}</a>
       <a class="btn btn-ghost" href="{{ url_for('download_whitelabel_html', analysis_id=analysis.id) }}">{{ _('Export white-label HTML') }}</a>
     {% endif %}
