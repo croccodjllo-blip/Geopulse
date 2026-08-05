@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-04 21:20+0000\n"
+"POT-Creation-Date: 2026-08-05 20:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2066 templates/about.html:24 templates/contact.html:42
+#: app.py:2279 templates/about.html:24 templates/contact.html:43
 msgid "27 luglio 2026"
 msgstr ""
 
-#: services/guides.py:34 templates/about.html:57 templates/base.html:214
-#: templates/guide.html:151 templates/landing.html:121
+#: services/guides.py:34 templates/about.html:57 templates/base.html:220
+#: templates/guide.html:151 templates/landing.html:175
+#: templates/product.html:32
 msgid "Metodologia"
 msgstr ""
 
@@ -66,8 +67,9 @@ msgid ""
 "<em>Stimato</em> finché non gira il citation monitor Plus.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">3. SoV measured (Plus)</h2>\n"
-"    <p class=\"lede\">Sul piano Plus, con connector API configurati, "
+"    <h2 class=\"page-section__title\">3. SoV measured (Plus / "
+"Business)</h2>\n"
+"    <p class=\"lede\">Su Plus e Business, con connector API configurati, "
 "Centropic invia un prompt bank al citation monitor e conta le menzioni "
 "del brand/dominio nelle risposte. È un campione probe, non un ranking "
 "garantito nelle UI consumer degli LLM.</p>\n"
@@ -85,8 +87,8 @@ msgid ""
 "terzi.</li>\n"
 "      <li>Il pack artifact è una bozza operativa: la pubblicazione resta "
 "a carico del cliente.</li>\n"
-"      <li>SoV measured è disponibile <strong>solo sul piano Plus</strong>"
-" (e Admin), quando i connector API sono configurati.</li>\n"
+"      <li>SoV measured è disponibile su <strong>Plus e Business</strong> "
+"(e Admin), quando i connector API sono configurati.</li>\n"
 "      <li>GEO in Centropic non significa GIS; AIO non significa All-in-"
 "One.</li>\n"
 "    </ul>\n"
@@ -108,9 +110,8 @@ msgid ""
 msgstr ""
 
 #: services/guides.py:91 services/guides.py:139 services/guides.py:183
-#: templates/base.html:125 templates/base.html:141 templates/base.html:227
-#: templates/dashboard.html:29 templates/guide.html:10
-#: templates/partials/app_sidebar.html:58
+#: templates/base.html:131 templates/base.html:147 templates/base.html:235
+#: templates/guide.html:10 templates/partials/app_sidebar.html:68
 msgid "Guida"
 msgstr ""
 
@@ -157,7 +158,7 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Come Centropic aiuta</h2>\n"
 "    <p class=\"lede\">Ogni analisi genera una bozza <code>llms.txt</code>"
-" nel pack ZIP. Pubblicala in root "
+" nel pack HTML unico. Pubblicala in root "
 "(<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding "
 "passa a “disponibile” se il probe la trova.</p>\n"
 "    <p class=\"lede\">Esempio vivo: il llms.txt di Centropic è su <a "
@@ -272,8 +273,8 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
 "    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + robots"
-" osservato. <strong>Measured</strong>: polling prompt su LLM (Plus) con "
-"conteggio menzioni brand. Non confondere i due.</p>\n"
+" osservato. <strong>Measured</strong>: polling prompt su LLM "
+"(Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>\n"
 "    <p class=\"lede\">Per alzare SoV measured: rafforza entity pubblica "
 "(llms.txt, Organization, about), pubblica contenuti citabili, amplia il "
 "prompt bank con domande che il tuo mercato pone davvero.</p>\n"
@@ -311,8 +312,8 @@ msgid ""
 " = campionato via citation monitor (Plus)."
 msgstr ""
 
-#: services/site_guide.py:35 templates/dashboard.html:566
-#: templates/dashboard.html:762 templates/faq.html:35 templates/product.html:38
+#: services/site_guide.py:35 templates/dashboard.html:482
+#: templates/dashboard.html:673 templates/partials/sov_ops.html:7
 #: templates/termini.html:34
 msgid "Misurato"
 msgstr ""
@@ -323,7 +324,7 @@ msgid ""
 "API LLM configurate."
 msgstr ""
 
-#: services/site_guide.py:42 templates/faq.html:35 templates/product.html:28
+#: services/site_guide.py:42 templates/product.html:30
 msgid "Stimato (proxy)"
 msgstr ""
 
@@ -333,7 +334,7 @@ msgid ""
 "nella UI dell’LLM."
 msgstr ""
 
-#: services/site_guide.py:49 services/site_guide.py:493
+#: services/site_guide.py:49 services/site_guide.py:496
 msgid "Indice DDD→AAA"
 msgstr ""
 
@@ -451,506 +452,511 @@ msgstr ""
 msgid "Report esportabile con brand agenzia (logo/colori) per clienti finali."
 msgstr ""
 
-#: services/site_guide.py:195
-msgid "Chiave Bearer per /api/v1 (analyze, sites, edge). Solo Plus."
+#: services/site_guide.py:196
+msgid ""
+"Chiave Bearer ct_ per /api/v1 (analyze, sites, edge). Le chiavi gp_ "
+"legacy restano accettate. Solo Business."
 msgstr ""
 
-#: services/site_guide.py:201
+#: services/site_guide.py:204
 msgid ""
 "Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) "
 "dello Share of Voice."
 msgstr ""
 
-#: services/site_guide.py:206 templates/dashboard.html:689
+#: services/site_guide.py:209 templates/dashboard.html:600
 msgid "Pagine critiche"
 msgstr ""
 
-#: services/site_guide.py:208
+#: services/site_guide.py:211
 msgid "URL del crawl con gap gravi che trascinano score o citabilità."
 msgstr ""
 
-#: services/site_guide.py:214
+#: services/site_guide.py:217
 msgid "Documento pack che confronta due run successive dopo fix."
 msgstr ""
 
-#: services/site_guide.py:243
+#: services/site_guide.py:246
 msgid "Guida completa Centropic"
 msgstr ""
 
-#: services/site_guide.py:245
+#: services/site_guide.py:248
 msgid ""
 "Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli "
 "diagnostici, pack, Edge Signals, CMS, token, API e glossario."
 msgstr ""
 
-#: services/site_guide.py:248 templates/pro_interest.html:9
+#: services/site_guide.py:251
 msgid "4 agosto 2026"
 msgstr ""
 
-#: services/site_guide.py:250 templates/guide.html:34
+#: services/site_guide.py:253 templates/guide.html:34
 msgid "Introduzione"
 msgstr ""
 
-#: services/site_guide.py:251 templates/guide.html:47
+#: services/site_guide.py:254 templates/guide.html:47
 msgid "Servizi"
 msgstr ""
 
-#: services/site_guide.py:252 templates/guide.html:68
+#: services/site_guide.py:255 templates/guide.html:68
 msgid "Analisi e moduli"
 msgstr ""
 
-#: services/site_guide.py:253 templates/guide.html:87
+#: services/site_guide.py:256 templates/guide.html:87
 msgid "Dopo l’analisi"
 msgstr ""
 
-#: services/site_guide.py:254 templates/guide.html:100
+#: services/site_guide.py:257 templates/guide.html:100
 msgid "Pack e file"
 msgstr ""
 
-#: services/site_guide.py:255
+#: services/site_guide.py:258
 msgid "Edge e CMS"
 msgstr ""
 
-#: services/site_guide.py:256 templates/guide.html:133
+#: services/site_guide.py:259 templates/guide.html:133
+#: templates/partials/sov_ops.html:31
 msgid "Piani e token"
 msgstr ""
 
-#: services/site_guide.py:257 templates/base.html:215 templates/faq.html:103
-#: templates/guide.html:156
+#: services/site_guide.py:260 templates/base.html:221 templates/guide.html:156
 msgid "Glossario"
 msgstr ""
 
-#: services/site_guide.py:262 templates/base.html:123 templates/base.html:225
+#: services/site_guide.py:265 templates/base.html:127 templates/base.html:231
 #: templates/dashboard.html:2 templates/history.html:21
 #: templates/partials/app_sidebar.html:38 templates/site_history.html:13
-#: templates/topup.html:91 templates/verify.html:50
+#: templates/topup.html:91 templates/verify.html:53
 msgid "Dashboard"
 msgstr ""
 
-#: services/site_guide.py:265
+#: services/site_guide.py:268
 msgid "Workspace unico: ultima analisi, score, findings, SoV e azioni."
 msgstr ""
 
-#: services/site_guide.py:268
+#: services/site_guide.py:271
 msgid "Avvia o ripeti l’analisi sull’URL del sito"
 msgstr ""
 
-#: services/site_guide.py:269
+#: services/site_guide.py:272
 msgid "Vedi Indice DDD→AAA, score AIO/GEO e Share of Voice"
 msgstr ""
 
-#: services/site_guide.py:270
+#: services/site_guide.py:273
 msgid "Accedi a pack, Edge Signals, storico e crediti"
 msgstr ""
 
-#: services/site_guide.py:275
+#: services/site_guide.py:278
 msgid "Analisi AIO / GEO"
 msgstr ""
 
-#: services/site_guide.py:278
+#: services/site_guide.py:281
 msgid "Probe HTTP + parsing HTML sul dominio: misurato ciò che è osservabile."
 msgstr ""
 
-#: services/site_guide.py:281
+#: services/site_guide.py:284
 msgid "AIO = AI-Driven Visibility (quanto i modelli “vedono” il brand)"
 msgstr ""
 
-#: services/site_guide.py:283
+#: services/site_guide.py:286
 msgid "GEO = Generative Engine Optimization (citabilità nelle risposte generate)"
 msgstr ""
 
-#: services/site_guide.py:285
+#: services/site_guide.py:288
 msgid "Indice lettera DDD→AAA sintetizza la qualità complessiva"
 msgstr ""
 
-#: services/site_guide.py:290
+#: services/site_guide.py:293
 msgid "Findings e pagine critiche"
 msgstr ""
 
-#: services/site_guide.py:293
+#: services/site_guide.py:296
 msgid "Gap prioritizzati: critical, warn, ok — con azioni concrete."
 msgstr ""
 
-#: services/site_guide.py:296
+#: services/site_guide.py:299
 msgid "Chiudi prima i critical (es. bot IA bloccati in robots)"
 msgstr ""
 
-#: services/site_guide.py:297
+#: services/site_guide.py:300
 msgid "Usa fix-this-week.md come checklist operativa"
 msgstr ""
 
-#: services/site_guide.py:298
+#: services/site_guide.py:301
 msgid "Le pagine critiche evidenziano URL con gap gravi"
 msgstr ""
 
-#: services/site_guide.py:303 templates/dashboard.html:955
+#: services/site_guide.py:306 templates/dashboard.html:858
 msgid "Pack ottimizzazione"
 msgstr ""
 
-#: services/site_guide.py:306
-msgid "Artifact pronti: llms.txt, JSON-LD, FAQ, meta, robots, before/after."
-msgstr ""
-
 #: services/site_guide.py:309
-msgid "Copia dai pannelli o scarica lo ZIP"
-msgstr ""
-
-#: services/site_guide.py:310
-msgid "Su Plus puoi inviare il pack via email"
+msgid "Un solo file HTML con tutti i fix (head, llms.txt, robots, checklist)."
 msgstr ""
 
 #: services/site_guide.py:312
+msgid "Scarica un solo file HTML con tutti i fix"
+msgstr ""
+
+#: services/site_guide.py:313
+msgid "Su Plus puoi inviare il pack via email"
+msgstr ""
+
+#: services/site_guide.py:315
 msgid "La pubblicazione sul sito resta a tuo carico (o via Edge/CMS)"
 msgstr ""
 
-#: services/site_guide.py:321
+#: services/site_guide.py:324
 msgid "Hosting dinamico degli artifact su centropic.ai/e/<token>/…"
 msgstr ""
 
-#: services/site_guide.py:324
+#: services/site_guide.py:327
 msgid "Free: llms.txt + signals.json"
 msgstr ""
 
-#: services/site_guide.py:325
+#: services/site_guide.py:328
 msgid "Plus: robots live, organization.jsonld, Worker/Vercel/embed"
 msgstr ""
 
-#: services/site_guide.py:327
+#: services/site_guide.py:330
 msgid "Si aggiorna a ogni re-scan e quando cambia la lista crawler IA"
 msgstr ""
 
-#: services/site_guide.py:333
+#: services/site_guide.py:336
 msgid "CMS Connector universale"
 msgstr ""
 
-#: services/site_guide.py:336
+#: services/site_guide.py:339
 msgid "Un ZIP per WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel."
 msgstr ""
 
-#: services/site_guide.py:339
+#: services/site_guide.py:342
 msgid "Attiva Edge, poi scarica il connector dalla dashboard"
 msgstr ""
 
-#: services/site_guide.py:340
+#: services/site_guide.py:343
 msgid "Un solo adapter sul tuo host: proxy verso Edge"
 msgstr ""
 
-#: services/site_guide.py:346 templates/dashboard.html:460
-#: templates/partials/app_sidebar.html:42
-#: templates/partials/geo_overview.html:110
+#: services/site_guide.py:349 templates/dashboard.html:357
+#: templates/partials/app_sidebar.html:44
 msgid "Share of Voice"
 msgstr ""
 
-#: services/site_guide.py:349
+#: services/site_guide.py:352
 msgid ""
-"Proxy (stimato) su tutti i piani; measured solo su Plus con citation "
+"Proxy (stimato) su tutti i piani; measured su Plus/Business con citation "
 "monitor."
 msgstr ""
 
-#: services/site_guide.py:352
+#: services/site_guide.py:355
 msgid "Stimato: euristiche su segnali del sito"
 msgstr ""
 
-#: services/site_guide.py:353
+#: services/site_guide.py:356
 msgid "Misurato: prompt bank → menzioni brand nelle risposte LLM"
 msgstr ""
 
-#: services/site_guide.py:355
+#: services/site_guide.py:358
 msgid "Gemini e Azure AI restano proxy onesti (non Overview/Copilot nativi)"
 msgstr ""
 
-#: services/site_guide.py:364
+#: services/site_guide.py:367
 msgid ""
 "Moduli: entity graph, citability, schema, publish verify, llms lint, "
 "locales."
 msgstr ""
 
-#: services/site_guide.py:367
+#: services/site_guide.py:370
 msgid "Entity: Organization, sameAs, contatti"
 msgstr ""
 
-#: services/site_guide.py:368
+#: services/site_guide.py:371
 msgid "Publish verify: controlla se gli artifact sono live"
 msgstr ""
 
-#: services/site_guide.py:369
+#: services/site_guide.py:372
 msgid "Locales: hreflang e coerenza mercati"
 msgstr ""
 
-#: services/site_guide.py:374 templates/dashboard.html:813
+#: services/site_guide.py:377 templates/dashboard.html:715
+#: templates/pricing.html:49
 msgid "Competitor snapshot"
 msgstr ""
 
-#: services/site_guide.py:377
+#: services/site_guide.py:380
 msgid "Confronto rapido AIO/GEO/rating sui competitor (Plus)."
 msgstr ""
 
-#: services/site_guide.py:380
+#: services/site_guide.py:383
 msgid "Stesse metriche del tuo sito"
 msgstr ""
 
-#: services/site_guide.py:381
+#: services/site_guide.py:384
 msgid "Utile per priorità relative, non ranking assoluto"
 msgstr ""
 
-#: services/site_guide.py:386
+#: services/site_guide.py:389
 msgid "Storico e re-scan"
 msgstr ""
 
-#: services/site_guide.py:389
+#: services/site_guide.py:392
 msgid "Cronologia run, trend e schedulazione automatica (Plus)."
 msgstr ""
 
-#: services/site_guide.py:392
+#: services/site_guide.py:395
 msgid "before-after.md confronta due analisi"
 msgstr ""
 
-#: services/site_guide.py:393
+#: services/site_guide.py:396
 msgid "Imposta frequenza e orario UTC in Impostazioni"
 msgstr ""
 
-#: services/site_guide.py:394
+#: services/site_guide.py:397
 msgid "Storico esteso sul piano Plus"
 msgstr ""
 
-#: services/site_guide.py:399
+#: services/site_guide.py:402
 msgid "Token GEO e crediti"
 msgstr ""
 
-#: services/site_guide.py:402
+#: services/site_guide.py:405
 msgid "Le analisi e il SoV measured consumano token; i pack ricaricano il saldo."
 msgstr ""
 
-#: services/site_guide.py:405
+#: services/site_guide.py:408
 msgid "1 GEO token = €0,10 (ledger in centesimi)"
 msgstr ""
 
-#: services/site_guide.py:406
+#: services/site_guide.py:409
 msgid "Pack €10→100, €20→200, €50→600 (bonus)"
 msgstr ""
 
-#: services/site_guide.py:407
+#: services/site_guide.py:410
 msgid "Plus €14,99/mese include 100 token per ciclo pagato"
 msgstr ""
 
-#: services/site_guide.py:412
+#: services/site_guide.py:415
 msgid "API e white-label"
 msgstr ""
 
-#: services/site_guide.py:415
+#: services/site_guide.py:418
 msgid "Automazione agenzia: API key, analyze, sites, edge; report white-label."
 msgstr ""
 
-#: services/site_guide.py:418
-msgid "Bearer gp_… su /api/v1/*"
+#: services/site_guide.py:421
+msgid "Bearer ct_… su /api/v1/* (gp_… legacy accettato)"
 msgstr ""
 
-#: services/site_guide.py:419
+#: services/site_guide.py:422
 msgid "Export report MD/HTML con brand agenzia"
 msgstr ""
 
-#: services/site_guide.py:420
-msgid "Riservato al piano Plus"
+#: services/site_guide.py:423
+msgid "Riservato al piano Business"
 msgstr ""
 
-#: services/site_guide.py:426
+#: services/site_guide.py:429
 msgid "Crawl e probe"
 msgstr ""
 
-#: services/site_guide.py:428
+#: services/site_guide.py:431
 msgid ""
 "Centropic richiede title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, "
 "ai.txt, humans.txt e pagine del sito. Free: tetto pagine; Plus: crawl "
 "intero (con tetto operativo di piattaforma)."
 msgstr ""
 
-#: services/site_guide.py:436
+#: services/site_guide.py:439
 msgid ""
 "Vista per ChatGPT, Gemini (proxy AI Overview), Claude, Perplexity, Grok e"
 " Azure AI. Di default è Stimato; con SoV measured gli engine disponibili "
 "passano a Misurato."
 msgstr ""
 
-#: services/site_guide.py:444
+#: services/site_guide.py:447
 msgid ""
 "Valuta coerenza Organization / brand, sameAs, contatti e segnali entity "
 "riutilizzabili da crawler e modelli."
 msgstr ""
 
-#: services/site_guide.py:451
+#: services/site_guide.py:454
 msgid ""
 "Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili,"
 " meno ambiguità sul “chi siete / cosa fate”."
 msgstr ""
 
-#: services/site_guide.py:458
+#: services/site_guide.py:461
 msgid ""
 "Qualità e completezza JSON-LD (Organization, WebSite, FAQPage, "
 "SoftwareApplication, Article dove rilevante)."
 msgstr ""
 
-#: services/site_guide.py:465
+#: services/site_guide.py:468
 msgid ""
 "Verifica se llms.txt, robots e schema pubblicati sul dominio "
 "corrispondono alle bozze del pack / Edge."
 msgstr ""
 
-#: services/site_guide.py:472
+#: services/site_guide.py:475
 msgid ""
 "Controlla presenza e qualità di /llms.txt: brand, topic, URL assoluti, "
 "preferred citation."
 msgstr ""
 
-#: services/site_guide.py:479
+#: services/site_guide.py:482
 msgid ""
 "Segnali hreflang / mercati: coerenza linguistica e copertura "
 "internazionale per answer engine multi-lingua."
 msgstr ""
 
-#: services/site_guide.py:484 templates/dashboard.html:639
-#: templates/dashboard.html:650 templates/site_history.html:31
+#: services/site_guide.py:487 templates/dashboard.html:555
+#: templates/site_history.html:31
 msgid "SoV measured"
 msgstr ""
 
-#: services/site_guide.py:486
+#: services/site_guide.py:489
 msgid ""
 "Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio"
 " nelle risposte — campione probe, non garanzia di ranking nelle UI "
 "consumer."
 msgstr ""
 
-#: services/site_guide.py:495
+#: services/site_guide.py:498
 msgid ""
 "Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un "
 "grado tra un re-scan e l’altro."
 msgstr ""
 
-#: services/site_guide.py:499
+#: services/site_guide.py:502
 msgid "Score AIO / GEO"
 msgstr ""
 
-#: services/site_guide.py:501
+#: services/site_guide.py:504
 msgid ""
 "Sotto 60 = intervento prioritario. AIO e GEO vanno letti insieme al SoV, "
 "non isolati."
 msgstr ""
 
-#: services/site_guide.py:507
+#: services/site_guide.py:510
 msgid "Chiudi critical e warn; usa fix-this-week.md. Poi ripubblica e verifica."
 msgstr ""
 
-#: services/site_guide.py:511
+#: services/site_guide.py:514
 msgid "Pubblica llms.txt"
 msgstr ""
 
-#: services/site_guide.py:513
+#: services/site_guide.py:516
 msgid "Root del sito: https://tuodominio/llms.txt — oppure Edge + CMS connector."
 msgstr ""
 
-#: services/site_guide.py:519
+#: services/site_guide.py:522
 msgid ""
 "Incolla nel <head> delle pagine chiave (o lascia Edge servire "
 "organization.jsonld)."
 msgstr ""
 
-#: services/site_guide.py:525
+#: services/site_guide.py:528
 msgid ""
 "Unisci la bozza al file esistente; lascia aperti i bot IA utili (GPTBot, "
 "ClaudeBot, …)."
 msgstr ""
 
-#: services/site_guide.py:531
+#: services/site_guide.py:534
 msgid "Su Plus imposta frequenza/orario UTC e confronta before/after.md."
 msgstr ""
 
-#: services/site_guide.py:536 services/site_guide.py:543
-msgid "root del sito"
+#: services/site_guide.py:542
+msgid "unico deliverable: apri e copia head / llms.txt / robots sul sito"
 msgstr ""
 
-#: services/site_guide.py:539
-msgid "<head> o Edge /.well-known/"
+#: services/site_guide.py:547
+msgid "Edge /geopulse/signals.json via CMS (opzionale)"
 msgstr ""
 
-#: services/site_guide.py:546
-msgid "checklist operativa interna"
-msgstr ""
-
-#: services/site_guide.py:548
-msgid "confronto tra run"
-msgstr ""
-
-#: services/site_guide.py:551
-msgid "Edge /geopulse/signals.json via CMS"
-msgstr ""
-
-#: services/site_guide.py:559
+#: services/site_guide.py:555
 msgid ""
 "1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso"
 " URL ok, consuma token)"
 msgstr ""
 
-#: services/site_guide.py:561
-msgid "Score, findings, pack ZIP, Edge base (llms + signals)"
+#: services/site_guide.py:557
+msgid "Score, findings, pack HTML unico, Edge base (llms + signals)"
 msgstr ""
 
-#: services/site_guide.py:562
+#: services/site_guide.py:558
 msgid "SoV stimato (proxy)"
 msgstr ""
 
-#: services/site_guide.py:569
-msgid "Crawl fino a 120 pagine (Deep 500), multi-sito, competitor, storico esteso"
+#: services/site_guide.py:565
+msgid ""
+"Fino a 5 siti, crawl fino a 120 pagine (Deep 500), competitor, storico "
+"esteso"
 msgstr ""
 
-#: services/site_guide.py:571
-msgid "SoV measured, prompt bank, re-scan, API, white-label"
+#: services/site_guide.py:567
+msgid "SoV measured, prompt bank, re-scan, alert, Edge completo"
 msgstr ""
 
-#: services/site_guide.py:572
-msgid "Edge completo + CMS connector + 100 token/ciclo"
+#: services/site_guide.py:568
+msgid "100 token per ciclo di fatturazione"
 msgstr ""
 
-#: services/site_guide.py:580
+#: services/site_guide.py:574
+msgid "Tutto Plus + fino a 50 siti e 400 token/mese"
+msgstr ""
+
+#: services/site_guide.py:575
+msgid "API /api/v1 e white-label MD/HTML con brand agenzia"
+msgstr ""
+
+#: services/site_guide.py:576
+msgid "Profilo consigliato per portfolio clienti"
+msgstr ""
+
+#: services/site_guide.py:584
 msgid "Metodologia (Misurato vs Stimato)"
 msgstr ""
 
-#: services/site_guide.py:582 templates/base.html:216
+#: services/site_guide.py:586 templates/base.html:222
 msgid "Guida llms.txt"
 msgstr ""
 
-#: services/site_guide.py:585
+#: services/site_guide.py:589
 msgid "Schema.org per answer engine"
 msgstr ""
 
-#: services/site_guide.py:589
+#: services/site_guide.py:593
 msgid "Score AIO/GEO vs SoV"
 msgstr ""
 
-#: services/site_guide.py:592 templates/about.html:59 templates/base.html:140
-#: templates/base.html:208 templates/contact.html:24 templates/product.html:2
-#: templates/product.html:11
+#: services/site_guide.py:596 templates/about.html:59 templates/base.html:146
+#: templates/base.html:214 templates/contact.html:24 templates/product.html:2
+#: templates/product.html:16
 msgid "Prodotto"
 msgstr ""
 
-#: services/site_guide.py:593
+#: services/site_guide.py:597
 msgid "Piani e prezzi"
 msgstr ""
 
-#: services/site_guide.py:594 templates/base.html:210 templates/faq.html:102
-#: templates/product.html:69
+#: services/site_guide.py:598 templates/base.html:216
 msgid "Guida completa"
 msgstr ""
 
-#: services/site_guide.py:595 templates/base.html:211
-#: templates/sample_report.html:2
+#: services/site_guide.py:599 templates/agencies.html:55
+#: templates/base.html:217 templates/sample_report.html:2
 msgid "Esempio report"
 msgstr ""
 
-#: services/site_guide.py:596 templates/base.html:213
+#: services/site_guide.py:600 templates/base.html:219 templates/faq.html:95
+#: templates/landing.html:93 templates/pricing.html:91
+#: templates/product.html:88 templates/sample_report.html:58
 msgid "Per agenzie"
 msgstr ""
 
-#: templates/about.html:2 templates/about.html:10 templates/base.html:220
-#: templates/contact.html:27 templates/contact.html:59
+#: templates/about.html:2 templates/about.html:10 templates/base.html:226
+#: templates/contact.html:28 templates/contact.html:60
 msgid "Chi siamo"
 msgstr ""
 
@@ -984,9 +990,8 @@ msgid ""
 msgstr ""
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/dashboard.html:846 templates/faq.html:27
-#: templates/partials/auth_help.html:7 templates/partials/auth_help.html:19
-#: templates/pro_interest.html:27 templates/product.html:14
+#: templates/dashboard.html:748 templates/partials/auth_help.html:7
+#: templates/partials/auth_help.html:19 templates/product.html:20
 #: templates/termini.html:21
 msgid "e"
 msgstr ""
@@ -1081,12 +1086,12 @@ msgid "FAQ"
 msgstr ""
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:235 templates/contact.html:2 templates/contact.html:9
+#: templates/base.html:243 templates/contact.html:2 templates/contact.html:9
 #: templates/partials/auth_help.html:24 templates/status.html:69
 msgid "Contatti"
 msgstr ""
 
-#: templates/about.html:67 templates/faq.html:93 templates/status.html:60
+#: templates/about.html:67 templates/status.html:60
 msgid "Scrivi a"
 msgstr ""
 
@@ -1108,12 +1113,12 @@ msgstr ""
 
 #: templates/agencies.html:3
 msgid ""
-"White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che "
-"gestiscono più brand. Diagnosi AIO/GEO e pack pronti per i clienti."
+"Business 49,99€: white-label, API, 400 token e fino a 50 siti per agenzie"
+" GEO/AIO. Plus resta per startup sul proprio brand."
 msgstr ""
 
-#: templates/agencies.html:9 templates/base.html:144
-msgid "Agenzie"
+#: templates/agencies.html:9
+msgid "Profilo Business"
 msgstr ""
 
 #: templates/agencies.html:10
@@ -1122,9 +1127,9 @@ msgstr ""
 
 #: templates/agencies.html:12
 msgid ""
-"Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza "
-"ricostruire lo stack per ogni account. Gli score restano diagnostici "
-"(Stimato); su Plus puoi aggiungere menzioni Misurate."
+"Un solo stack per onboarding, audit e retainer: diagnosi AIO/GEO, pack, "
+"Edge Signals, API e report white-label. Misurato su Plus/Business; "
+"toolkit agenzia solo su Business."
 msgstr ""
 
 #: templates/agencies.html:17
@@ -1132,72 +1137,60 @@ msgid "Cosa ottengono i vostri clienti"
 msgstr ""
 
 #: templates/agencies.html:19
-msgid ""
-"Un report operativo con score AIO/GEO, findings prioritizzati e artifact "
-"da pubblicare in root o via CMS connector. Ideale per kickoff, audit "
-"trimestrali e handover al team contenuto/IT."
-msgstr ""
-
-#: templates/agencies.html:22
 msgid "Score + findings prioritizzati in linguaggio operativo"
 msgstr ""
 
-#: templates/agencies.html:23
+#: templates/agencies.html:20
 msgid "llms.txt, JSON-LD, robots e CMS connector"
 msgstr ""
 
-#: templates/agencies.html:24
-msgid "SoV measured (Plus) per dimostrare menzioni, non solo proxy"
+#: templates/agencies.html:21
+msgid "SoV measured (Plus/Business) per dimostrare menzioni, non solo proxy"
 msgstr ""
 
-#: templates/agencies.html:25
-msgid "Export white-label MD/HTML con il vostro brand"
+#: templates/agencies.html:22
+msgid "Export white-label MD/HTML con il vostro brand (solo Business)"
 msgstr ""
 
-#: templates/agencies.html:30
-msgid "Perché le agenzie scelgono Plus"
+#: templates/agencies.html:27
+msgid "Perché Business, non Plus"
 msgstr ""
 
-#: templates/agencies.html:32
+#: templates/agencies.html:29
 msgid ""
-"Plus aggiunge multi-sito, crawl fino a 120 pagine (Deep 500), re-scan, "
-"API e 100 token/mese. Non promettiamo ranking: misuriamo segnali e, ove "
-"configurato, menzioni Misurate."
+"Plus (14,99€ · 100 token) è per startup sul proprio brand. Business "
+"(49,99€ · 400 token) è il profilo agenzia: scala, automazione e brand "
+"vostro sui deliverable."
 msgstr ""
 
-#: templates/agencies.html:35
-msgid "Multi-sito + re-scan schedulato"
-msgstr ""
-
-#: templates/agencies.html:36
-msgid "API /api/v1 per automatizzare onboarding clienti"
+#: templates/agencies.html:34
+msgid "Brand proprietario · SoV Misurato · re-scan · 5 siti"
 msgstr ""
 
 #: templates/agencies.html:37
-msgid "100 token/mese + pack ricaricabili"
+msgid "Consigliato"
 msgstr ""
 
-#: templates/agencies.html:42
+#: templates/agencies.html:39
+msgid "Tutto Plus + API + white-label + 50 siti + 400 token"
+msgstr ""
+
+#: templates/agencies.html:45
 msgid "Come iniziare"
 msgstr ""
 
-#: templates/agencies.html:44
+#: templates/agencies.html:47
 msgid ""
-"Attiva Plus, importa il primo dominio cliente, pubblica il pack (o Edge "
-"Signals) e confronta lo storico run. Per un walkthrough di 15 minuti "
-"scrivi a info@centropic.ai."
+"Attiva Business, importa il primo dominio cliente, pubblica il pack (o "
+"Edge) e confronta lo storico. Walkthrough 15 min:"
 msgstr ""
 
-#: templates/agencies.html:49
-msgid "Attiva Plus"
+#: templates/agencies.html:53
+msgid "Attiva Business"
 msgstr ""
 
-#: templates/agencies.html:50
-msgid "Parla con noi (15 min)"
-msgstr ""
-
-#: templates/agencies.html:51 templates/landing.html:43
-msgid "Vedi esempio report"
+#: templates/agencies.html:54
+msgid "Parla con noi"
 msgstr ""
 
 #: templates/base.html:10
@@ -1207,143 +1200,146 @@ msgid ""
 "nelle risposte IA."
 msgstr ""
 
-#: templates/base.html:102
+#: templates/base.html:106
 msgid "Apri menu"
 msgstr ""
 
-#: templates/base.html:120
+#: templates/base.html:124
 msgid "Principale"
 msgstr ""
 
-#: templates/base.html:124 templates/base.html:226 templates/dashboard.html:234
-#: templates/dashboard.html:790 templates/history.html:2
-#: templates/partials/app_sidebar.html:54 templates/site_history.html:2
+#: templates/base.html:129 templates/base.html:233 templates/dashboard.html:121
+#: templates/dashboard.html:701 templates/history.html:2
+#: templates/partials/app_sidebar.html:59 templates/site_history.html:2
 msgid "Storico"
 msgstr ""
 
-#: templates/base.html:126 templates/dashboard.html:606
-#: templates/partials/app_sidebar.html:62
+#: templates/base.html:132 templates/dashboard.html:522
+#: templates/partials/app_sidebar.html:72
 msgid "Impostazioni"
 msgstr ""
 
-#: templates/base.html:127 templates/base.html:228
-#: templates/partials/app_sidebar.html:66 templates/topup.html:34
+#: templates/base.html:133 templates/base.html:236
+#: templates/partials/app_sidebar.html:76 templates/topup.html:34
 msgid "Token"
 msgstr ""
 
-#: templates/base.html:134 templates/partials/app_sidebar.html:105
-msgid "Esci"
-msgstr ""
-
-#: templates/base.html:142 templates/sample_report.html:9
-msgid "Esempio"
-msgstr ""
-
-#: templates/base.html:143 templates/base.html:212 templates/login.html:60
-#: templates/pricing.html:2 templates/pricing.html:9
-#: templates/register.html:127 templates/rimborsi.html:89
-#: templates/rimborsi.html:99
+#: templates/base.html:134 templates/base.html:149 templates/base.html:218
+#: templates/faq.html:79 templates/login.html:60 templates/pricing.html:2
+#: templates/pro_interest.html:13 templates/register.html:127
+#: templates/rimborsi.html:89 templates/rimborsi.html:99
 msgid "Prezzi"
 msgstr ""
 
-#: templates/base.html:146 templates/base.html:231 templates/guide.html:183
+#: templates/base.html:140 templates/partials/app_sidebar.html:115
+msgid "Esci"
+msgstr ""
+
+#: templates/base.html:148 templates/sample_report.html:9
+msgid "Esempio"
+msgstr ""
+
+#: templates/base.html:150
+msgid "Agenzie"
+msgstr ""
+
+#: templates/base.html:152 templates/base.html:239 templates/guide.html:183
 #: templates/login.html:2 templates/register.html:123
 msgid "Accedi"
 msgstr ""
 
-#: templates/base.html:147 templates/faq.html:101 templates/guide.html:18
-#: templates/guide.html:182 templates/pricing.html:28
+#: templates/base.html:153 templates/faq.html:93 templates/guide.html:18
+#: templates/guide.html:182 templates/pricing.html:20 templates/pricing.html:36
 msgid "Inizia gratis"
 msgstr ""
 
-#: templates/base.html:155
+#: templates/base.html:161
 msgid "Seleziona lingua"
 msgstr ""
 
-#: templates/base.html:205
+#: templates/base.html:211
 msgid ""
 "Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle "
 "risposte IA. Prodotto di"
 msgstr ""
 
-#: templates/base.html:209
+#: templates/base.html:215 templates/product.html:26
 msgid "Come funziona"
 msgstr ""
 
-#: templates/base.html:217
+#: templates/base.html:223
 msgid "Guida Schema AI"
 msgstr ""
 
-#: templates/base.html:218 templates/landing.html:123
-#: templates/pro_interest.html:28 templates/product.html:49
+#: templates/base.html:224 templates/landing.html:177
 msgid "Score vs SoV"
 msgstr ""
 
-#: templates/base.html:223 templates/contact.html:25
+#: templates/base.html:229 templates/contact.html:25
 #: templates/forgot_password.html:14 templates/history.html:9
 #: templates/reset_password.html:13 templates/settings.html:9
 msgid "Account"
 msgstr ""
 
-#: templates/base.html:230 templates/register.html:2
+#: templates/base.html:238 templates/register.html:2
 msgid "Registrati"
 msgstr ""
 
-#: templates/base.html:236
+#: templates/base.html:244
 msgid "Pagina contatti"
 msgstr ""
 
-#: templates/base.html:239 templates/base.html:247 templates/contact.html:49
-#: templates/partials/auth_help.html:26 templates/pricing.html:96
+#: templates/base.html:247 templates/base.html:255 templates/contact.html:50
+#: templates/partials/auth_help.html:26 templates/pricing.html:147
 #: templates/privacy.html:2 templates/rimborsi.html:98
 #: templates/termini.html:80
 msgid "Privacy"
 msgstr ""
 
-#: templates/base.html:240 templates/privacy.html:81 templates/rimborsi.html:87
+#: templates/base.html:248 templates/privacy.html:81 templates/rimborsi.html:87
 #: templates/termini.html:2 templates/termini.html:10
 msgid "Termini di servizio"
 msgstr ""
 
-#: templates/base.html:241 templates/base.html:251 templates/contact.html:51
-#: templates/pricing.html:97 templates/privacy.html:82
+#: templates/base.html:249 templates/base.html:259 templates/contact.html:52
+#: templates/pricing.html:148 templates/privacy.html:82
 #: templates/termini.html:81
 msgid "Rimborsi"
 msgstr ""
 
-#: templates/base.html:249 templates/contact.html:50 templates/pricing.html:95
+#: templates/base.html:257 templates/contact.html:51 templates/pricing.html:146
 #: templates/register.html:105 templates/rimborsi.html:97
 msgid "Termini"
 msgstr ""
 
-#: templates/base.html:263
+#: templates/base.html:271
 msgid "Cookie e misurazione"
 msgstr ""
 
-#: templates/base.html:265
+#: templates/base.html:273
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
 " e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
 "accettare o rifiutare. Dettagli nella"
 msgstr ""
 
-#: templates/base.html:269
+#: templates/base.html:277
 msgid "Accetta"
 msgstr ""
 
-#: templates/base.html:270
+#: templates/base.html:278
 msgid "Rifiuta"
 msgstr ""
 
-#: templates/base.html:311
+#: templates/base.html:319
 msgid "Copiato"
 msgstr ""
 
-#: templates/base.html:314
+#: templates/base.html:322
 msgid "Errore"
 msgstr ""
 
-#: templates/base.html:324
+#: templates/base.html:332
 msgid "Analisi in corso…"
 msgstr ""
 
@@ -1406,85 +1402,84 @@ msgid "Costo stim."
 msgstr ""
 
 #: templates/confirm_analyze.html:66
-msgid "Miglioramento atteso"
+msgid "Cosa fa questa analisi"
 msgstr ""
 
 #: templates/confirm_analyze.html:71
-msgid "AIO oggi"
+msgid "Baseline AIO"
 msgstr ""
 
-#: templates/confirm_analyze.html:77
-msgid "GEO oggi"
+#: templates/confirm_analyze.html:75
+msgid "Baseline GEO"
 msgstr ""
 
-#: templates/confirm_analyze.html:84
-msgid "Prima analisi"
+#: templates/confirm_analyze.html:80
+msgid "Rating"
 msgstr ""
 
-#: templates/confirm_analyze.html:101
+#: templates/confirm_analyze.html:86
+msgid "Nessuna baseline"
+msgstr ""
+
+#: templates/confirm_analyze.html:96
 msgid ""
-"Le stime di miglioramento sono indicative e calcolate sui gap rilevati "
-"nei run precedenti o sul profilo del dominio. Non costituiscono garanzia "
-"di risultato."
+"Pubblica prima i fix del pack (llms.txt, schema, robots), poi ri-misura. "
+"Lo score non sale solo perché rilanci l’analisi."
 msgstr ""
 
-#: templates/confirm_analyze.html:108
+#: templates/confirm_analyze.html:103
 msgid "I tuoi token"
 msgstr ""
 
-#: templates/confirm_analyze.html:112 templates/confirm_analyze.html:119
+#: templates/confirm_analyze.html:107 templates/confirm_analyze.html:114
 msgid "Disponibile:"
 msgstr ""
 
-#: templates/confirm_analyze.html:112
+#: templates/confirm_analyze.html:107
 msgid "Illimitato"
 msgstr ""
 
-#: templates/confirm_analyze.html:114
+#: templates/confirm_analyze.html:109
 msgid "Account admin — nessun addebito"
 msgstr ""
 
-#: templates/confirm_analyze.html:122
+#: templates/confirm_analyze.html:117
 msgid "Token sufficienti"
 msgstr ""
 
-#: templates/confirm_analyze.html:124
+#: templates/confirm_analyze.html:119
 msgid "Token insufficienti"
 msgstr ""
 
-#: templates/confirm_analyze.html:126
+#: templates/confirm_analyze.html:121
 msgid "Servono almeno"
 msgstr ""
 
-#: templates/confirm_analyze.html:127 templates/confirm_analyze.html:155
-#: templates/dashboard.html:470 templates/pricing.html:53
-#: templates/pricing.html:58 templates/pricing.html:64
-#: templates/settings.html:56
+#: templates/confirm_analyze.html:122 templates/confirm_analyze.html:150
 msgid "Passa a Plus"
 msgstr ""
 
-#: templates/confirm_analyze.html:128
+#: templates/confirm_analyze.html:123
 msgid "(100 token/mese) o"
 msgstr ""
 
-#: templates/confirm_analyze.html:129
+#: templates/confirm_analyze.html:124
 msgid "ricarica token"
 msgstr ""
 
-#: templates/confirm_analyze.html:148
+#: templates/confirm_analyze.html:143
 msgid "Avvia analisi (admin — gratuito)"
 msgstr ""
 
-#: templates/confirm_analyze.html:150
+#: templates/confirm_analyze.html:145
 msgid "Conferma e avvia analisi"
 msgstr ""
 
-#: templates/confirm_analyze.html:156 templates/pricing.html:88
-#: templates/topup.html:2
+#: templates/confirm_analyze.html:151 templates/topup.html:2
 msgid "Ricarica token"
 msgstr ""
 
-#: templates/confirm_analyze.html:158
+#: templates/confirm_analyze.html:153
 msgid "Annulla"
 msgstr ""
 
@@ -1510,7 +1505,7 @@ msgid "Canali"
 msgstr ""
 
 #: templates/contact.html:20 templates/forgot_password.html:24
-#: templates/login.html:23 templates/pro_interest.html:43
+#: templates/login.html:23 templates/pro_interest.html:38
 #: templates/register.html:33
 msgid "Email"
 msgstr ""
@@ -1535,822 +1530,692 @@ msgstr ""
 msgid "accedi"
 msgstr ""
 
-#: templates/contact.html:26
-msgid "waitlist interesse Plus"
+#: templates/contact.html:26 templates/guide.html:180
+#: templates/partials/app_sidebar.html:106
+msgid "Piani"
 msgstr ""
 
 #: templates/contact.html:27
+msgid "Interesse / waitlist"
+msgstr ""
+
+#: templates/contact.html:27
+msgid "lascia i contatti"
+msgstr ""
+
+#: templates/contact.html:28
 msgid "missione e metodo"
 msgstr ""
 
-#: templates/contact.html:32
+#: templates/contact.html:33
 msgid "Cosa includere nella mail"
 msgstr ""
 
-#: templates/contact.html:34
+#: templates/contact.html:35
 msgid ""
-"URL del sito da analizzare, piano attuale (Free/Plus), e se possibile uno"
-" screenshot del report. Per partnership indica agenzia, verticali e "
-"volume siti gestiti."
+"URL del sito, piano attuale (Free / Plus / Business) e, se possibile, uno"
+" screenshot del report. Per partnership agenzia indica verticali e volume"
+" siti."
 msgstr ""
 
-#: templates/contact.html:39
+#: templates/contact.html:40
 msgid "Orari e tempi di risposta"
 msgstr ""
 
-#: templates/contact.html:41
+#: templates/contact.html:42
 msgid ""
 "Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni"
 " lavorativi. Per incidenti di accesso account indica l’email di "
 "registrazione nell’oggetto. Aggiornato il"
 msgstr ""
 
-#: templates/contact.html:47
+#: templates/contact.html:48
 msgid "Trasparenza"
 msgstr ""
 
-#: templates/contact.html:49
+#: templates/contact.html:50
 msgid "Policy:"
 msgstr ""
 
-#: templates/contact.html:53
+#: templates/contact.html:54
 msgid "Non vendiamo liste email; usiamo i dati per erogare Centropic."
 msgstr ""
 
-#: templates/contact.html:58
+#: templates/contact.html:59
 msgid "Scrivi a info@centropic.ai"
 msgstr ""
 
-#: templates/dashboard.html:13
-msgid "Centropic — mappa Signal Intelligence"
-msgstr ""
-
-#: templates/dashboard.html:22
-msgid "Ciao"
-msgstr ""
-
-#: templates/dashboard.html:25
-msgid "Analizza, chiudi i gap, pubblica il pack."
-msgstr ""
-
-#: templates/dashboard.html:28
+#: templates/dashboard.html:9
 msgid "Workspace"
 msgstr ""
 
-#: templates/dashboard.html:32
-msgid "Stato account"
+#: templates/dashboard.html:17
+msgid "Ciao"
 msgstr ""
 
-#: templates/dashboard.html:34
-msgid "Piano"
-msgstr ""
-
-#: templates/dashboard.html:38
-msgid "fino al"
-msgstr ""
-
-#: templates/dashboard.html:43
-msgid "Siti"
-msgstr ""
-
-#: templates/dashboard.html:47
-msgid "Crawl"
-msgstr ""
-
-#: templates/dashboard.html:48
-msgid "Intero sito"
-msgstr ""
-
-#: templates/dashboard.html:48
-msgid "pag."
-msgstr ""
-
-#: templates/dashboard.html:51
-msgid "Analisi totali"
-msgstr ""
-
-#: templates/dashboard.html:51
-msgid "Quote 24h"
-msgstr ""
-
-#: templates/dashboard.html:63 templates/settings.html:166
-msgid "Vedi piano Plus"
-msgstr ""
-
-#: templates/dashboard.html:65 templates/dashboard.html:803
-msgid "Prenota Plus"
-msgstr ""
-
-#: templates/dashboard.html:73
-msgid "Onboarding"
-msgstr ""
-
-#: templates/dashboard.html:74
-msgid "I tuoi prossimi passi"
-msgstr ""
-
-#: templates/dashboard.html:78
-msgid "Conferma email"
-msgstr ""
-
-#: templates/dashboard.html:79
-msgid "Prima analisi del dominio"
-msgstr ""
-
-#: templates/dashboard.html:80
-msgid "Chiudi i finding critici / pubblica il pack"
-msgstr ""
-
-#: templates/dashboard.html:81
-msgid "Plus (SoV measured + crawl esteso)"
-msgstr ""
-
-#: templates/dashboard.html:86
-msgid "Attiva prova Plus 7 giorni"
-msgstr ""
-
-#: templates/dashboard.html:91
-msgid "Invita un collega:"
-msgstr ""
-
-#: templates/dashboard.html:93
-msgid "tu ricevi"
-msgstr ""
-
-#: templates/dashboard.html:93
-msgid "token quando conferma l’email."
-msgstr ""
-
-#: templates/dashboard.html:108
-msgid "Nuova analisi"
-msgstr ""
-
-#: templates/dashboard.html:111
-msgid "Quote Free esaurite · passa a Plus per continuare"
-msgstr ""
-
-#: templates/dashboard.html:113
-msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
-msgstr ""
-
-#: templates/dashboard.html:115
-msgid "Crawl BFS · intero sito"
-msgstr ""
-
-#: templates/dashboard.html:117
-msgid "Crawl stesso dominio · max"
-msgstr ""
-
-#: templates/dashboard.html:117 templates/dashboard.html:149
-#: templates/dashboard.html:219 templates/dashboard.html:731
-#: templates/pricing.html:23
-msgid "pagine"
-msgstr ""
-
-#: templates/dashboard.html:123
-msgid "URL del dominio"
-msgstr ""
-
-#: templates/dashboard.html:133
-msgid "Competitor snapshot (Plus, max 3)"
-msgstr ""
-
-#: templates/dashboard.html:135
-msgid "Suggerisci automatico"
-msgstr ""
-
-#: templates/dashboard.html:146
-msgid "Deep crawl"
-msgstr ""
-
-#: templates/dashboard.html:148
-msgid "Fino a"
-msgstr ""
-
-#: templates/dashboard.html:148
-msgid "pagine — più lento"
-msgstr ""
-
-#: templates/dashboard.html:149
-msgid "Standard:"
-msgstr ""
-
-#: templates/dashboard.html:154
-msgid ""
-"SoV measured (probe LLM) incluso nel piano Plus quando i connector sono "
-"attivi."
-msgstr ""
-
-#: templates/dashboard.html:157
-msgid "Free: score AIO/GEO e SoV"
-msgstr ""
-
-#: templates/dashboard.html:157
-msgid "stimato"
-msgstr ""
-
-#: templates/dashboard.html:158
-msgid "sblocca SoV measured / citation monitor."
-msgstr ""
-
-#: templates/dashboard.html:176 templates/partials/analyze_overlay.html:52
-msgid "In coda"
-msgstr ""
-
-#: templates/dashboard.html:176
-msgid "In esecuzione"
-msgstr ""
-
-#: templates/dashboard.html:181
-msgid "Worker in avvio — di solito parte entro pochi secondi."
-msgstr ""
-
-#: templates/dashboard.html:183
-msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
-msgstr ""
-
-#: templates/dashboard.html:189
-msgid "Analisi fallita"
-msgstr ""
-
-#: templates/dashboard.html:190
-msgid "Errore sconosciuto"
-msgstr ""
-
-#: templates/dashboard.html:192
-msgid "Controlla l’URL e riprova. Supporto:"
-msgstr ""
-
-#: templates/dashboard.html:211
+#: templates/dashboard.html:22 templates/dashboard.html:98
 msgid "Ultimo report"
 msgstr ""
 
-#: templates/dashboard.html:218 templates/site_history.html:12
+#: templates/dashboard.html:24
+msgid "prova fino al"
+msgstr ""
+
+#: templates/dashboard.html:28
+msgid "Workspace agenzia: multi-cliente, API e white-label."
+msgstr ""
+
+#: templates/dashboard.html:30
+msgid "Workspace Plus: SoV measured, re-scan e Edge completo."
+msgstr ""
+
+#: templates/dashboard.html:32
+msgid "Workspace Free: diagnosi AIO/GEO, findings e pack HTML."
+msgstr ""
+
+#: templates/dashboard.html:37
+msgid "Stato account"
+msgstr ""
+
+#: templates/dashboard.html:39
+msgid "Piano"
+msgstr ""
+
+#: templates/dashboard.html:43
+msgid "fino al"
+msgstr ""
+
+#: templates/dashboard.html:48
+msgid "Siti"
+msgstr ""
+
+#: templates/dashboard.html:52
+msgid "Crawl"
+msgstr ""
+
+#: templates/dashboard.html:53
+msgid "Intero sito"
+msgstr ""
+
+#: templates/dashboard.html:53
+msgid "pag."
+msgstr ""
+
+#: templates/dashboard.html:56
+msgid "Analisi"
+msgstr ""
+
+#: templates/dashboard.html:56
+msgid "Quote 24h"
+msgstr ""
+
+#: templates/dashboard.html:62
+msgid "Servizi del piano"
+msgstr ""
+
+#: templates/dashboard.html:65
+msgid "Toolkit Business"
+msgstr ""
+
+#: templates/dashboard.html:67
+msgid "Toolkit Plus"
+msgstr ""
+
+#: templates/dashboard.html:69
+msgid "Toolkit Free"
+msgstr ""
+
+#: templates/dashboard.html:105 templates/site_history.html:12
 msgid "Apri sito"
 msgstr ""
 
-#: templates/dashboard.html:226
-msgid "Scarica ZIP"
+#: templates/dashboard.html:106 templates/dashboard.html:642
+#: templates/landing.html:72 templates/partials/dashboard_shell.html:85
+#: templates/partials/dashboard_shell.html:119 templates/pricing.html:31
+msgid "pagine"
 msgstr ""
 
-#: templates/dashboard.html:229
+#: templates/dashboard.html:113 templates/dashboard.html:938
+#: templates/partials/dashboard_shell.html:53
+msgid "Scarica pack"
+msgstr ""
+
+#: templates/dashboard.html:116
 msgid "Email non configurata sul server"
 msgstr ""
 
-#: templates/dashboard.html:230
+#: templates/dashboard.html:117
 msgid "Invia email"
 msgstr ""
 
-#: templates/dashboard.html:245
+#: templates/dashboard.html:132
 msgid "Segnali AIO molto forti"
 msgstr ""
 
-#: templates/dashboard.html:246
+#: templates/dashboard.html:133
 msgid ""
 "Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. "
 "Non è una garanzia di citazione live."
 msgstr ""
 
-#: templates/dashboard.html:249
+#: templates/dashboard.html:136
 msgid "Segnali AIO solidi"
 msgstr ""
 
-#: templates/dashboard.html:250
+#: templates/dashboard.html:137
 msgid ""
 "Buona base machine-readable. Chiudi i gap rimanenti per salire. Score "
 "euristico (Stimato), non polling LLM."
 msgstr ""
 
-#: templates/dashboard.html:253
+#: templates/dashboard.html:140
 msgid "Segnali AIO moderati"
 msgstr ""
 
-#: templates/dashboard.html:254
+#: templates/dashboard.html:141
 msgid ""
 "Alcuni asset presenti, diversi gap aperti. Prioritizza findings "
 "critical/warn."
 msgstr ""
 
-#: templates/dashboard.html:257
+#: templates/dashboard.html:144
 msgid "Segnali AIO emergenti"
 msgstr ""
 
-#: templates/dashboard.html:258
+#: templates/dashboard.html:145
 msgid ""
 "Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e "
 "file AI."
 msgstr ""
 
-#: templates/dashboard.html:261
+#: templates/dashboard.html:148
 msgid "Segnali AIO critici"
 msgstr ""
 
-#: templates/dashboard.html:262
+#: templates/dashboard.html:149
 msgid ""
 "Base insufficiente: intervento prioritario su title, schema, robots/llms "
 "e contenuti citabili."
 msgstr ""
 
-#: templates/dashboard.html:270
+#: templates/dashboard.html:157
 msgid "Metriche chiave"
 msgstr ""
 
-#: templates/dashboard.html:271
+#: templates/dashboard.html:158
 msgid "AI-Driven Visibility"
 msgstr ""
 
-#: templates/dashboard.html:274
+#: templates/dashboard.html:161
 msgid "Generative Engine Opt."
 msgstr ""
 
-#: templates/dashboard.html:277 templates/verify.html:30
+#: templates/dashboard.html:164 templates/dashboard.html:177
+#: templates/partials/dashboard_shell.html:57 templates/verify.html:33
 msgid "Findings"
 msgstr ""
 
-#: templates/dashboard.html:277
+#: templates/dashboard.html:164
 msgid "critical + warn"
 msgstr ""
 
-#: templates/dashboard.html:282
+#: templates/dashboard.html:169
 msgid "Vista report"
 msgstr ""
 
-#: templates/dashboard.html:283
+#: templates/dashboard.html:170 templates/dashboard.html:176
 msgid "Score"
 msgstr ""
 
-#: templates/dashboard.html:284 templates/dashboard.html:1073
+#: templates/dashboard.html:171 templates/dashboard.html:175
+#: templates/dashboard.html:927
 msgid "SoV"
 msgstr ""
 
-#: templates/dashboard.html:376 templates/dashboard.html:385
-#: templates/dashboard.html:395 templates/dashboard.html:762
-#: templates/product.html:38
+#: templates/dashboard.html:174
+msgid "Sezioni del report"
+msgstr ""
+
+#: templates/dashboard.html:178
+msgid "Critiche"
+msgstr ""
+
+#: templates/dashboard.html:179
+msgid "Edge"
+msgstr ""
+
+#: templates/dashboard.html:180
+msgid "Pack"
+msgstr ""
+
+#: templates/dashboard.html:272 templates/dashboard.html:281
+#: templates/dashboard.html:291 templates/dashboard.html:486
+#: templates/dashboard.html:673 templates/partials/sov_ops.html:11
 msgid "Stimato"
 msgstr ""
 
-#: templates/dashboard.html:385
+#: templates/dashboard.html:281
 msgid "Signal diagnostics"
 msgstr ""
 
-#: templates/dashboard.html:386
+#: templates/dashboard.html:282
 msgid "Quanto sono solidi i segnali AIO/GEO"
 msgstr ""
 
-#: templates/dashboard.html:389
+#: templates/dashboard.html:285
 msgid ""
 "AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score "
 "da probe/euristiche, non citazioni live garantite."
 msgstr ""
 
-#: templates/dashboard.html:412 templates/dashboard.html:1050
+#: templates/dashboard.html:308 templates/dashboard.html:904
 #: templates/guide.html:25 templates/sample_report.html:18
 msgid "Indice"
 msgstr ""
 
-#: templates/dashboard.html:424
+#: templates/dashboard.html:320
 msgid "Interferenze"
 msgstr ""
 
-#: templates/dashboard.html:429
+#: templates/dashboard.html:325
 msgid "Nessuna criticità aperta"
 msgstr ""
 
-#: templates/dashboard.html:443
+#: templates/dashboard.html:339
 msgid "Scala da DDD a AAA"
 msgstr ""
 
-#: templates/dashboard.html:457
+#: templates/dashboard.html:354
 msgid "AI Engine Breakdown"
 msgstr ""
 
-#: templates/dashboard.html:462
+#: templates/dashboard.html:359
 msgid "Share of Voice stimato"
 msgstr ""
 
-#: templates/dashboard.html:467
+#: templates/dashboard.html:364
 msgid "Mix di probe LLM (Misurato) e stime euristiche (Stimato) per engine."
 msgstr ""
 
-#: templates/dashboard.html:469
-msgid "Piano Free: SoV stimato da score e robots."
+#: templates/dashboard.html:366
+msgid "SoV stimato da score e robots sul piano attuale."
 msgstr ""
 
-#: templates/dashboard.html:470
-msgid "per SoV measured (citation monitor)."
-msgstr ""
-
-#: templates/dashboard.html:472
+#: templates/dashboard.html:368
 msgid "Stima euristica da score e robots — non è polling live sui modelli."
 msgstr ""
 
-#: templates/dashboard.html:478
+#: templates/dashboard.html:374
 msgid "Brand SoV"
 msgstr ""
 
-#: templates/dashboard.html:499 templates/dashboard.html:538
+#: templates/dashboard.html:395 templates/dashboard.html:454
 msgid "Campo competitivo"
 msgstr ""
 
-#: templates/dashboard.html:500 templates/dashboard.html:545
-#: templates/settings.html:156
+#: templates/dashboard.html:396 templates/dashboard.html:461
+#: templates/settings.html:148
 msgid "Brand"
 msgstr ""
 
-#: templates/dashboard.html:501 templates/dashboard.html:546
+#: templates/dashboard.html:397 templates/dashboard.html:462
 msgid "Rivali"
 msgstr ""
 
-#: templates/dashboard.html:502 templates/dashboard.html:547
+#: templates/dashboard.html:398 templates/dashboard.html:463
 msgid "Altro"
 msgstr ""
 
-#: templates/dashboard.html:509
+#: templates/dashboard.html:404
+msgid "Propensity per engine (radar)"
+msgstr ""
+
+#: templates/dashboard.html:425
 msgid "Composizione per engine"
 msgstr ""
 
-#: templates/dashboard.html:513
+#: templates/dashboard.html:429
 msgid "Composizione SoV per engine"
 msgstr ""
 
-#: templates/dashboard.html:537
+#: templates/dashboard.html:453
 msgid "Distribuzione competitiva"
 msgstr ""
 
-#: templates/dashboard.html:553
+#: templates/dashboard.html:469
 msgid "Propensity per engine"
 msgstr ""
 
-#: templates/dashboard.html:561
+#: templates/dashboard.html:477
 msgid "bot blocked"
 msgstr ""
 
-#: templates/dashboard.html:563
+#: templates/dashboard.html:479
 msgid "bot allow"
 msgstr ""
 
-#: templates/dashboard.html:566
+#: templates/dashboard.html:482
 msgid "campioni"
 msgstr ""
 
-#: templates/dashboard.html:568
+#: templates/dashboard.html:484
 msgid "Non disponibile"
 msgstr ""
 
-#: templates/dashboard.html:570
-msgid "In arrivo"
-msgstr ""
-
-#: templates/dashboard.html:580
+#: templates/dashboard.html:496
 msgid "Share"
 msgstr ""
 
-#: templates/dashboard.html:594
+#: templates/dashboard.html:510
 msgid "Nessun breakdown disponibile."
 msgstr ""
 
-#: templates/dashboard.html:599
+#: templates/dashboard.html:515
 msgid "GEO suite"
 msgstr ""
 
-#: templates/dashboard.html:602
+#: templates/dashboard.html:518
 msgid "Suite"
 msgstr ""
 
-#: templates/dashboard.html:603
+#: templates/dashboard.html:519
 msgid "GEO / AIO avanzato"
 msgstr ""
 
-#: templates/dashboard.html:608 templates/dashboard.html:626
-#: templates/dashboard.html:1100 templates/verify.html:2
-#: templates/verify.html:8
+#: templates/dashboard.html:524 templates/dashboard.html:542
+#: templates/dashboard.html:954 templates/verify.html:2 templates/verify.html:8
 msgid "Publish verify"
 msgstr ""
 
-#: templates/dashboard.html:614
+#: templates/dashboard.html:530
 msgid "Entity graph"
 msgstr ""
 
-#: templates/dashboard.html:615
+#: templates/dashboard.html:531
 msgid "nodi"
 msgstr ""
 
-#: templates/dashboard.html:618
+#: templates/dashboard.html:534
 msgid "Citability"
 msgstr ""
 
-#: templates/dashboard.html:622
+#: templates/dashboard.html:538
 msgid "Schema quality"
 msgstr ""
 
-#: templates/dashboard.html:630
+#: templates/dashboard.html:546
 msgid "llms lint"
 msgstr ""
 
-#: templates/dashboard.html:634
+#: templates/dashboard.html:550
 msgid "Locales"
 msgstr ""
 
-#: templates/dashboard.html:651
-msgid "sblocca"
-msgstr ""
-
-#: templates/dashboard.html:659
+#: templates/dashboard.html:570
 msgid "Confronto con run precedente"
 msgstr ""
 
-#: templates/dashboard.html:661
+#: templates/dashboard.html:572
 msgid "Vs run precedente"
 msgstr ""
 
-#: templates/dashboard.html:688 templates/dashboard.html:738
+#: templates/dashboard.html:599 templates/dashboard.html:649
 msgid "Priorità"
 msgstr ""
 
-#: templates/dashboard.html:694 templates/dashboard.html:697
+#: templates/dashboard.html:605 templates/dashboard.html:608
 msgid "critiche"
 msgstr ""
 
-#: templates/dashboard.html:694
+#: templates/dashboard.html:605
 msgid "critica"
 msgstr ""
 
-#: templates/dashboard.html:695 templates/dashboard.html:699
+#: templates/dashboard.html:606 templates/dashboard.html:610
 msgid "attenzione"
 msgstr ""
 
-#: templates/dashboard.html:726
-msgid "Prime 24 criticità · elenco completo nello ZIP"
+#: templates/dashboard.html:637
+msgid "Prime 24 criticità · elenco completo nel pack"
 msgstr ""
 
-#: templates/dashboard.html:729
+#: templates/dashboard.html:640
 msgid "Nessuna pagina critica su"
 msgstr ""
 
-#: templates/dashboard.html:729
+#: templates/dashboard.html:640
 msgid "analizzate."
 msgstr ""
 
-#: templates/dashboard.html:731
+#: templates/dashboard.html:642
 msgid "Analizzate"
 msgstr ""
 
-#: templates/dashboard.html:739 templates/dashboard.html:1091
+#: templates/dashboard.html:650 templates/dashboard.html:945
 msgid "Findings critici"
 msgstr ""
 
-#: templates/dashboard.html:770
+#: templates/dashboard.html:681
 msgid "Nessuna criticità."
 msgstr ""
 
-#: templates/dashboard.html:770
+#: templates/dashboard.html:681
 msgid "check ok nascosti."
 msgstr ""
 
-#: templates/dashboard.html:775
+#: templates/dashboard.html:686
 msgid "Solo critical/warn ·"
 msgstr ""
 
-#: templates/dashboard.html:775
+#: templates/dashboard.html:686
 msgid "totali"
 msgstr ""
 
-#: templates/dashboard.html:785 templates/site_history.html:21
+#: templates/dashboard.html:696 templates/site_history.html:21
 msgid "Monitoraggio"
 msgstr ""
 
-#: templates/dashboard.html:799
-msgid "Piano Free: 1 sito, ri-analisi del dominio consentita (consuma token)."
-msgstr ""
-
-#: templates/dashboard.html:801
-msgid "sblocca crawl fino a"
-msgstr ""
-
-#: templates/dashboard.html:801
-msgid "pagine, re-scan, export e storico run."
-msgstr ""
-
-#: templates/dashboard.html:803
-msgid "per crawl fino a"
-msgstr ""
-
-#: templates/dashboard.html:803
-msgid "pagine, re-scan, export e storico."
-msgstr ""
-
-#: templates/dashboard.html:812
+#: templates/dashboard.html:714
 msgid "Confronto"
 msgstr ""
 
-#: templates/dashboard.html:835
+#: templates/dashboard.html:737
 msgid "Infrastruttura"
 msgstr ""
 
-#: templates/dashboard.html:836 templates/dashboard.html:1086
-#: templates/partials/app_sidebar.html:46
+#: templates/dashboard.html:738 templates/dashboard.html:940
+#: templates/partials/app_sidebar.html:47
 msgid "Edge Signals"
 msgstr ""
 
-#: templates/dashboard.html:839
+#: templates/dashboard.html:741
 msgid "Attivo"
 msgstr ""
 
-#: templates/dashboard.html:841
+#: templates/dashboard.html:743
 msgid "ZIP only"
 msgstr ""
 
-#: templates/dashboard.html:845
+#: templates/dashboard.html:747
 msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr ""
 
-#: templates/dashboard.html:846
+#: templates/dashboard.html:748
 msgid ""
 "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
 " tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify,"
 " PHP, Netlify, Cloudflare, Vercel)."
 msgstr ""
 
-#: templates/dashboard.html:851
+#: templates/dashboard.html:753
 msgid "Attiva hosting dinamico"
 msgstr ""
 
-#: templates/dashboard.html:854
-msgid "Free:"
+#: templates/dashboard.html:756
+msgid "Include"
 msgstr ""
 
-#: templates/dashboard.html:855
-msgid "Plus: robots live, JSON-LD e snippet Worker/Vercel."
+#: templates/dashboard.html:758
+msgid "robots live, JSON-LD e snippet Worker/Vercel."
 msgstr ""
 
-#: templates/dashboard.html:862 templates/dashboard.html:867
-#: templates/dashboard.html:873 templates/dashboard.html:878
-#: templates/dashboard.html:923 templates/dashboard.html:930
-#: templates/dashboard.html:937 templates/dashboard.html:969
-#: templates/dashboard.html:978 templates/dashboard.html:986
-#: templates/dashboard.html:993 templates/dashboard.html:1001
-#: templates/dashboard.html:1009 templates/dashboard.html:1016
+#: templates/dashboard.html:765
+msgid "Snippet avanzati"
+msgstr ""
+
+#: templates/dashboard.html:773 templates/dashboard.html:778
+#: templates/dashboard.html:784 templates/dashboard.html:789
+#: templates/dashboard.html:829 templates/dashboard.html:836
+#: templates/dashboard.html:843 templates/dashboard.html:874
 msgid "Copia"
 msgstr ""
 
-#: templates/dashboard.html:883
-msgid "Piano Plus — lista crawler IA live sul tuo dominio"
-msgstr ""
-
-#: templates/dashboard.html:889
+#: templates/dashboard.html:795
 msgid ""
 "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid "
 "Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti "
 "puntano allo stesso Edge base."
 msgstr ""
 
-#: templates/dashboard.html:892
+#: templates/dashboard.html:798 templates/partials/edge_wizard.html:20
 msgid "Scarica connector CMS (.zip)"
 msgstr ""
 
-#: templates/dashboard.html:903
+#: templates/dashboard.html:809
 msgid "Rigenera token"
 msgstr ""
 
-#: templates/dashboard.html:907
+#: templates/dashboard.html:813
 msgid "Disattiva"
 msgstr ""
 
-#: templates/dashboard.html:911
+#: templates/dashboard.html:817
 msgid "Crawler IA recenti su Edge:"
 msgstr ""
 
-#: templates/dashboard.html:914
+#: templates/dashboard.html:820
 msgid "hit"
 msgstr ""
 
-#: templates/dashboard.html:944
-msgid ""
-"Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati "
-"automaticamente alla lista crawler Centropic."
-msgstr ""
-
-#: templates/dashboard.html:945
-msgid "Vedi piani"
-msgstr ""
-
-#: templates/dashboard.html:954 templates/landing.html:128
+#: templates/dashboard.html:857 templates/landing.html:182
 msgid "Deliverable"
 msgstr ""
 
-#: templates/dashboard.html:960
+#: templates/dashboard.html:859
+msgid ""
+"Un solo file HTML con tutti i fix: head snippet, llms.txt, robots e "
+"checklist."
+msgstr ""
+
+#: templates/dashboard.html:862
+msgid "Scarica"
+msgstr ""
+
+#: templates/dashboard.html:866
 msgid "Invia a"
 msgstr ""
 
-#: templates/dashboard.html:1025
-msgid "Activation loop"
+#: templates/dashboard.html:882
+msgid "Attivazione"
 msgstr ""
 
-#: templates/dashboard.html:1026
+#: templates/dashboard.html:883
 msgid "Prima diagnosi in un passo"
 msgstr ""
 
-#: templates/dashboard.html:1029
+#: templates/dashboard.html:886
 msgid "Stiamo già elaborando"
 msgstr ""
 
-#: templates/dashboard.html:1030
-msgid "Resta su questa pagina: al termine vedrai score, findings e pack."
+#: templates/dashboard.html:887
+msgid "Al termine compariranno qui score, findings e pack."
 msgstr ""
 
-#: templates/dashboard.html:1034
-msgid "Incolla l’URL pubblico del brand nella barra sopra (https://…)"
+#: templates/dashboard.html:889
+msgid "Segui lo stato"
 msgstr ""
 
-#: templates/dashboard.html:1035
-msgid "Avvia: crawl, score AIO/GEO, findings prioritizzati"
+#: templates/dashboard.html:892
+msgid ""
+"Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, "
+"findings e pack."
 msgstr ""
 
-#: templates/dashboard.html:1036
-msgid "Attiva Edge Signals o scarica il pack da pubblicare"
-msgstr ""
-
-#: templates/dashboard.html:1039 templates/landing.html:60
+#: templates/dashboard.html:893
 msgid "Piano Free:"
 msgstr ""
 
-#: templates/dashboard.html:1039 templates/landing.html:60
-#: templates/pricing.html:22
+#: templates/dashboard.html:893 templates/landing.html:72
+#: templates/pricing.html:30
 msgid "sito"
 msgstr ""
 
-#: templates/dashboard.html:1039
-msgid "analisi iniziali, poi puoi ri-misurare lo stesso dominio."
+#: templates/dashboard.html:893
+msgid "analisi iniziali."
 msgstr ""
 
-#: templates/dashboard.html:1040
-msgid ""
-"Nessuna carta. In registrazione, se indichi il sito, la prima analisi "
-"parte da sola."
+#: templates/dashboard.html:895
+msgid "Avvia la prima analisi"
 msgstr ""
 
-#: templates/dashboard.html:1048
+#: templates/dashboard.html:902
 msgid "Contesto report"
 msgstr ""
 
-#: templates/dashboard.html:1055
+#: templates/dashboard.html:909
 msgid "Signal"
 msgstr ""
 
-#: templates/dashboard.html:1066
+#: templates/dashboard.html:920
 msgid "Gap"
 msgstr ""
 
-#: templates/dashboard.html:1076
+#: templates/dashboard.html:930
 msgid "Brand share"
 msgstr ""
 
-#: templates/dashboard.html:1083 templates/dashboard.html:1098
+#: templates/dashboard.html:937 templates/dashboard.html:952
 msgid "Azioni"
 msgstr ""
 
-#: templates/dashboard.html:1084
-msgid "Scarica pack"
-msgstr ""
-
-#: templates/dashboard.html:1087
+#: templates/dashboard.html:941
 msgid "Connector CMS"
 msgstr ""
 
-#: templates/dashboard.html:1089
+#: templates/dashboard.html:943
 msgid "Attiva Edge"
 msgstr ""
 
-#: templates/dashboard.html:1093 templates/history.html:11
+#: templates/dashboard.html:947 templates/history.html:11
 msgid "Storico run"
 msgstr ""
 
-#: templates/dashboard.html:1101
+#: templates/dashboard.html:956
 msgid "White-label MD"
 msgstr ""
 
-#: templates/dashboard.html:1102
+#: templates/dashboard.html:957
 msgid "White-label HTML"
 msgstr ""
 
-#: templates/dashboard.html:1103
+#: templates/dashboard.html:959
 msgid "GEO suite settings"
 msgstr ""
 
 #: templates/faq.html:3
 msgid ""
-"FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, "
-"pack artifact, limiti Free e contatti info@centropic.ai."
+"FAQ Centropic: AIO/GEO, Free vs Plus vs Business, SoV Misurato, Edge "
+"Signals, API e white-label."
 msgstr ""
 
-#: templates/faq.html:12 templates/landing.html:140
+#: templates/faq.html:12 templates/landing.html:194
 msgid "Domande frequenti"
 msgstr ""
 
 #: templates/faq.html:14
 msgid ""
-"AI-Driven Visibility (AIO), Generative Engine Optimization (GEO), pack e "
-"piani — risposte essenziali."
+"Definizioni, piani Free / Plus / Business e come usare pack ed Edge "
+"Signals."
 msgstr ""
 
 #: templates/faq.html:20
@@ -2358,171 +2223,122 @@ msgid "Cos’è AIO e GEO in Centropic?"
 msgstr ""
 
 #: templates/faq.html:22
-msgid ""
-"quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand "
-"(entity, struttura, file machine-readable)."
+msgid "quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand."
 msgstr ""
 
 #: templates/faq.html:23
-msgid ""
-"quanto sei ottimizzato per essere citato nelle risposte generate da "
-"answer engine (ChatGPT, Perplexity, ricerca AI)."
+msgid "quanto sei ottimizzato per essere citato nelle risposte generate."
 msgstr ""
 
 #: templates/faq.html:26
-msgid "In questo prodotto"
+msgid "GEO non è GIS; AIO non è All-in-One."
 msgstr ""
 
-#: templates/faq.html:26
-msgid "GEO non significa Geographic Information System (GIS)"
+#: templates/faq.html:31
+msgid "Quale piano scegliere: Free, Plus o Business?"
 msgstr ""
 
-#: templates/faq.html:27
-msgid "AIO non significa All-in-One"
+#: templates/faq.html:33
+msgid "validare 1 dominio (score, findings, pack), senza carta."
 msgstr ""
 
-#: templates/faq.html:27
-msgid "sono metriche di citabilità e visibilità IA."
+#: templates/faq.html:36
+msgid "startup sul proprio brand: fino a"
 msgstr ""
 
-#: templates/faq.html:32
-msgid "Gli score AIO e GEO sono misurazioni live sulle IA?"
+#: templates/faq.html:36
+msgid "siti, SoV Misurato, re-scan, alert,"
 msgstr ""
 
-#: templates/faq.html:34
-msgid "No di default. Score e Share of Voice sono"
+#: templates/faq.html:36 templates/faq.html:39
+msgid "token/mese."
 msgstr ""
 
-#: templates/faq.html:34
-msgid "diagnostici basati su probe ed euristiche"
+#: templates/faq.html:39
+msgid "agenzie: tutto Plus + API, white-label, fino a"
 msgstr ""
 
-#: templates/faq.html:35
-msgid "(contenuto, schema, robots, llms.txt). Il badge"
-msgstr ""
-
-#: templates/faq.html:35
-msgid "indica una stima;"
-msgstr ""
-
-#: templates/faq.html:35
-msgid ""
-"è riservato a segnali direttamente osservati sul sito o a polling LLM "
-"quando disponibile."
+#: templates/faq.html:39
+msgid "siti e"
 msgstr ""
 
 #: templates/faq.html:40
-msgid "Cosa ricevo dopo un’analisi?"
+msgid "Vedi prezzi"
 msgstr ""
 
-#: templates/faq.html:42
-msgid ""
-"Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), "
-"findings prioritizzati e un pack con llms.txt, JSON-LD, meta pack e bozza"
-" robots.txt. Puoi copiare i file o scaricare lo ZIP."
+#: templates/faq.html:45
+msgid "Gli score AIO e GEO sono misurazioni live sulle IA?"
 msgstr ""
 
 #: templates/faq.html:47
-msgid "Devo sapere programmare?"
+msgid ""
+"No di default. Sono diagnostici (probe/euristiche) con badge Stimato. "
+"Misurato è riservato a segnali osservati o a polling LLM su "
+"Plus/Business."
 msgstr ""
 
-#: templates/faq.html:49
-msgid ""
-"No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito (o"
-" passali al tuo developer / CMS)."
+#: templates/faq.html:52
+msgid "Cosa ricevo dopo un’analisi?"
 msgstr ""
 
 #: templates/faq.html:54
-msgid "Quali sono i limiti del piano Free?"
-msgstr ""
-
-#: templates/faq.html:56 templates/pricing.html:22
-msgid "Massimo"
-msgstr ""
-
-#: templates/faq.html:56 templates/landing.html:157
-msgid "sito,"
-msgstr ""
-
-#: templates/faq.html:56
-msgid "pagine per crawl,"
-msgstr ""
-
-#: templates/faq.html:57
 msgid ""
-"analisi su nuovi siti. Puoi ri-analizzare lo stesso dominio (consuma "
-"token, non la quota Free). Plus: crawl fino a"
+"Score AIO/GEO, findings prioritizzati e pack (llms.txt, JSON-LD, meta, "
+"robots). Su Business anche export white-label."
 msgstr ""
 
-#: templates/faq.html:58 templates/pricing.html:43
-msgid "pagine (Deep fino a"
+#: templates/faq.html:59
+msgid "API e white-label sono in Plus?"
 msgstr ""
 
-#: templates/faq.html:58
-msgid "SoV measured e 100 token/mese."
+#: templates/faq.html:61
+msgid "No. API"
 msgstr ""
 
-#: templates/faq.html:63
-msgid "Usate OpenAI sui miei contenuti?"
-msgstr ""
-
-#: templates/faq.html:65
-msgid "Se è configurata una chiave OpenAI, può essere usata per raffinare"
+#: templates/faq.html:61
+msgid ""
+"e white-label (brand agenzia + export MD/HTML) sono riservati a Business."
+" Plus include SoV Misurato, re-scan ed Edge completo sul proprio brand."
 msgstr ""
 
 #: templates/faq.html:66
-msgid ""
-"Altrimenti Centropic genera un fallback locale. Non pubblichiamo i tuoi "
-"dati su altri siti."
+msgid "Cos’è Edge Signals?"
 msgstr ""
 
-#: templates/faq.html:71
-msgid "Cos’è Edge Signals (hosting dinamico)?"
+#: templates/faq.html:68
+msgid "Endpoint pubblici Centropic"
 msgstr ""
 
-#: templates/faq.html:73
-msgid ""
-"Invece di scaricare solo uno ZIP statico, puoi attivare endpoint pubblici"
-" Centropic"
+#: templates/faq.html:70
+msgid "su Plus/Business anche"
 msgstr ""
 
-#: templates/faq.html:74
-msgid "e su Plus"
+#: templates/faq.html:70
+msgid "live e snippet Worker/Vercel."
 msgstr ""
 
 #: templates/faq.html:75
-msgid ""
-"che si aggiornano quando rianalizzi il sito o quando aggiorniamo la lista"
-" dei crawler IA."
-msgstr ""
-
-#: templates/faq.html:78
-msgid ""
-"Sul piano Plus ricevi anche snippet Cloudflare Worker e rewrite Vercel "
-"per servire gli stessi artifact sul tuo dominio — dipendenza "
-"infrastrutturale, non un file da ricopiare a mano."
-msgstr ""
-
-#: templates/faq.html:83
 msgid "Come inizio?"
 msgstr ""
 
-#: templates/faq.html:85
-msgid "Crea un account"
+#: templates/faq.html:77
+msgid "Crea un account Free"
 msgstr ""
 
-#: templates/faq.html:86
-msgid ""
-"apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il "
-"primo report."
+#: templates/faq.html:78
+msgid "analizza un URL, poi valuta Plus o Business su"
 msgstr ""
 
-#: templates/faq.html:91
+#: templates/faq.html:84
 msgid "Come vi contatto?"
 msgstr ""
 
-#: templates/faq.html:95
-msgid "per supporto, partnership o domande sul servizio."
+#: templates/faq.html:87
+msgid "— supporto, partnership agenzie, Business onboarding."
+msgstr ""
+
+#: templates/faq.html:94 templates/pricing.html:19 templates/product.html:87
+msgid "Confronta i piani"
 msgstr ""
 
 #: templates/forgot_password.html:2 templates/forgot_password.html:15
@@ -2548,14 +2364,13 @@ msgstr ""
 msgid "Torna all’accesso"
 msgstr ""
 
-#: templates/forgot_password.html:34 templates/landing.html:172
+#: templates/forgot_password.html:34 templates/landing.html:76
 #: templates/login.html:58 templates/privacy.html:83 templates/register.html:16
 #: templates/termini.html:82
 msgid "Crea account"
 msgstr ""
 
 #: templates/geo_ui.html:2 templates/geo_ui.html:8
-#: templates/partials/app_sidebar.html:50
 msgid "GEO Charts"
 msgstr ""
 
@@ -2563,7 +2378,7 @@ msgstr ""
 msgid "Aggiornato"
 msgstr ""
 
-#: templates/guide.html:16 templates/settings.html:171
+#: templates/guide.html:16 templates/settings.html:158
 msgid "Torna alla dashboard"
 msgstr ""
 
@@ -2617,7 +2432,7 @@ msgstr ""
 msgid "Ordine consigliato per chiudere i gap e pubblicare."
 msgstr ""
 
-#: templates/guide.html:102 templates/partials/analyze_overlay.html:56
+#: templates/guide.html:102 templates/partials/analyze_overlay.html:67
 msgid "Pack artifact"
 msgstr ""
 
@@ -2671,10 +2486,6 @@ msgstr ""
 msgid "Apri dashboard"
 msgstr ""
 
-#: templates/guide.html:180 templates/product.html:70
-msgid "Piani"
-msgstr ""
-
 #: templates/history.html:11
 msgid "Ultime analisi"
 msgstr ""
@@ -2685,10 +2496,6 @@ msgstr ""
 
 #: templates/history.html:17
 msgid "Ultimi siti analizzati (max"
-msgstr ""
-
-#: templates/history.html:17
-msgid "Passa a Plus per lo storico run completo."
 msgstr ""
 
 #: templates/history.html:23
@@ -2725,226 +2532,329 @@ msgstr ""
 
 #: templates/landing.html:3
 msgid ""
-"Centropic — Signal Intelligence per Generative Engine Optimization: "
-"diagnosi del dominio, artifact machine-readable e citabilità nelle "
-"risposte IA."
-msgstr ""
-
-#: templates/landing.html:31
-msgid "GEO Intelligence"
-msgstr ""
-
-#: templates/landing.html:35
-msgid "Scopri se le IA"
+"Centropic: scopri se ChatGPT, Claude e Perplexity citano il tuo brand. "
+"Diagnosi AIO/GEO e tre profili Free, Plus, Business."
 msgstr ""
 
 #: templates/landing.html:36
+msgid "Scopri se le IA"
+msgstr ""
+
+#: templates/landing.html:37
 msgid "ti citano"
 msgstr ""
 
-#: templates/landing.html:39
+#: templates/landing.html:40
 msgid ""
-"In pochi minuti: score AIO/GEO, gap prioritizzati e pack da pubblicare "
-"(llms.txt, schema, robots) per ChatGPT, Claude e Perplexity."
+"Misura dove ChatGPT, Claude e Perplexity menzionano il tuo brand — e cosa"
+" sistemare."
 msgstr ""
 
-#: templates/landing.html:42 templates/sample_report.html:56
-msgid "Analizza il tuo sito"
+#: templates/landing.html:43
+msgid "Inizia l’analisi"
 msgstr ""
 
-#: templates/landing.html:49
-msgid "Perché ora"
+#: templates/landing.html:44
+msgid "Vedi un report"
 msgstr ""
 
 #: templates/landing.html:50
-msgid "I modelli citano ciò che è chiaro e strutturato."
+msgid "Contesto"
 msgstr ""
 
-#: templates/landing.html:52
+#: templates/landing.html:51
+msgid "Le risposte generate privilegiano segnali chiari."
+msgstr ""
+
+#: templates/landing.html:53
 msgid ""
-"Centropic misura i segnali pubblici del sito rispetto ad AIO e GEO, trova"
-" i gap e produce gli artifact da pubblicare. Non è un GIS né una suite "
-"All-in-One."
+"Centropic osserva i segnali pubblici del dominio, produce score AIO/GEO "
+"tracciabili e findings prioritizzati, e consegna un pack pronto da "
+"pubblicare per crawler e modelli IA."
 msgstr ""
 
-#: templates/landing.html:57
+#: templates/landing.html:58 templates/pricing.html:13
+msgid "Architettura commerciale"
+msgstr ""
+
+#: templates/landing.html:59
+msgid "Tre profili. Una piattaforma."
+msgstr ""
+
+#: templates/landing.html:61
+msgid ""
+"Scegli il profilo giusto: validare, operare sul brand, o scalare clienti "
+"in agenzia."
+msgstr ""
+
+#: templates/landing.html:67
+msgid "Validare il dominio"
+msgstr ""
+
+#: templates/landing.html:69
+msgid "Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta."
+msgstr ""
+
+#: templates/landing.html:73
+msgid "analisi + ri-analisi (token)"
+msgstr ""
+
+#: templates/landing.html:74
+msgid "SoV stimato · pack pubblicabile"
+msgstr ""
+
+#: templates/landing.html:80 templates/landing.html:95
+#: templates/pricing.html:27 templates/pricing.html:42
+#: templates/pricing.html:93
+msgid "/mese"
+msgstr ""
+
+#: templates/landing.html:81
+msgid "Startup sul proprio brand"
+msgstr ""
+
+#: templates/landing.html:83
+msgid "Operatività continua: measured SoV, re-scan, alert e crawl esteso."
+msgstr ""
+
+#: templates/landing.html:86 templates/landing.html:101
+msgid "token/mese"
+msgstr ""
+
+#: templates/landing.html:87 templates/landing.html:102
+#: templates/partials/dashboard_shell.html:118 templates/pricing.html:30
+#: templates/pricing.html:46 templates/pricing.html:98
+msgid "Fino a"
+msgstr ""
+
+#: templates/landing.html:87 templates/landing.html:102
+#: templates/pricing.html:46 templates/pro_interest.html:20
+#: templates/pro_interest.html:21
+msgid "siti"
+msgstr ""
+
+#: templates/landing.html:87
+msgid "SoV Misurato"
+msgstr ""
+
+#: templates/landing.html:88
+msgid "Prompt bank · re-scan · Edge completo"
+msgstr ""
+
+#: templates/landing.html:90 templates/pricing.html:57
+#: templates/pricing.html:63 templates/pricing.html:70
+msgid "Scegli Plus"
+msgstr ""
+
+#: templates/landing.html:96
+msgid "Agenzie multi-cliente"
+msgstr ""
+
+#: templates/landing.html:98
+msgid "Tutto incluso: API, white-label, scala siti e token per il delivery."
+msgstr ""
+
+#: templates/landing.html:102
+msgid "API"
+msgstr ""
+
+#: templates/landing.html:103
+msgid "White-label MD/HTML · tutto di Plus"
+msgstr ""
+
+#: templates/landing.html:105 templates/pricing.html:108
+#: templates/pricing.html:114 templates/pricing.html:121
+msgid "Passa a Business"
+msgstr ""
+
+#: templates/landing.html:111
 msgid "Metodo"
 msgstr ""
 
-#: templates/landing.html:58
+#: templates/landing.html:112
 msgid "Tre fasi. Output operativo."
 msgstr ""
 
-#: templates/landing.html:60
-msgid "analisi su nuovi siti (ri-analisi stesso URL ok, consuma token)."
+#: templates/landing.html:114
+msgid ""
+"Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano"
+" limiti, measured SoV e toolkit agenzia."
 msgstr ""
 
-#: templates/landing.html:64
+#: templates/landing.html:118
 msgid "01 · Acquisizione"
 msgstr ""
 
-#: templates/landing.html:65
+#: templates/landing.html:119
 msgid ""
 "Crawl del dominio e probe sui segnali pubblici rilevanti per modelli e "
 "crawler IA."
 msgstr ""
 
-#: templates/landing.html:68
+#: templates/landing.html:122
 msgid "02 · Valutazione"
 msgstr ""
 
-#: templates/landing.html:69
+#: templates/landing.html:123
 msgid "Score AIO/GEO e findings per severità, con etichette Stimato vs Misurato."
 msgstr ""
 
-#: templates/landing.html:72
+#: templates/landing.html:126
 msgid "03 · Consegna"
 msgstr ""
 
-#: templates/landing.html:73
+#: templates/landing.html:127
 msgid "Edge Signals oppure pack (llms.txt, schema, robots) pronto da pubblicare."
 msgstr ""
 
-#: templates/landing.html:79
+#: templates/landing.html:133
 msgid "Piattaforma"
 msgstr ""
 
-#: templates/landing.html:80
+#: templates/landing.html:134
 msgid "Diagnosi, priorità, artifact."
 msgstr ""
 
-#: templates/landing.html:82
+#: templates/landing.html:136
 msgid ""
-"Per team marketing, digital e agenzie che governano la citabilità del "
-"brand con criteri tracciabili."
+"Architettura unica: Free dimostra valore, Plus chiude il loop operativo, "
+"Business industrializza il delivery."
 msgstr ""
 
-#: templates/landing.html:87
+#: templates/landing.html:141
 msgid "Score AIO e GEO"
 msgstr ""
 
-#: templates/landing.html:89
+#: templates/landing.html:143
 msgid ""
 "Indicatori di visibilità e citabilità basati su probe documentati — non "
 "una garanzia di ranking."
 msgstr ""
 
-#: templates/landing.html:94
+#: templates/landing.html:148
 msgid "Analisi multi-pagina"
 msgstr ""
 
-#: templates/landing.html:96
+#: templates/landing.html:150
 msgid ""
 "Copertura del dominio per entity, schema, contenuti citabili e accesso ai"
 " crawler IA."
 msgstr ""
 
-#: templates/landing.html:101
+#: templates/landing.html:155
 msgid "Findings prioritizzati"
 msgstr ""
 
-#: templates/landing.html:103
+#: templates/landing.html:157
 msgid ""
 "Critical / warn / ok per ordinare il backlog tra marketing, contenuto e "
 "IT."
 msgstr ""
 
-#: templates/landing.html:108
+#: templates/landing.html:162
 msgid "Pack di pubblicazione"
 msgstr ""
 
-#: templates/landing.html:110
-msgid "llms.txt, JSON-LD Organization, meta-pack e robots — via ZIP o email."
+#: templates/landing.html:164
+msgid ""
+"Un file HTML con tutti i fix (head, llms.txt, robots) — download, Edge o "
+"white-label Business."
 msgstr ""
 
-#: templates/landing.html:117
+#: templates/landing.html:171
 msgid "Governance"
 msgstr ""
 
-#: templates/landing.html:118
+#: templates/landing.html:172
 msgid "Stimato e Misurato restano distinti."
 msgstr ""
 
-#: templates/landing.html:120
+#: templates/landing.html:174
 msgid ""
 "Ogni finding deriva da un segnale osservato oppure è etichettato Stimato."
-" Su Plus, i probe LLM possono aggiungere menzioni Misurate — non è una "
-"garanzia di ranking o citazione."
+" Su Plus e Business, i probe LLM possono aggiungere menzioni Misurate — "
+"non è una garanzia di ranking o citazione."
 msgstr ""
 
-#: templates/landing.html:129
+#: templates/landing.html:183
 msgid "Artifact pronti per la pubblicazione."
 msgstr ""
 
-#: templates/landing.html:130
+#: templates/landing.html:184
 msgid "Artifact generati"
 msgstr ""
 
-#: templates/landing.html:131
+#: templates/landing.html:185
 msgid "descrizione del brand per i modelli"
 msgstr ""
 
-#: templates/landing.html:132
+#: templates/landing.html:186
 msgid "identità strutturata (Schema.org)"
 msgstr ""
 
-#: templates/landing.html:133
+#: templates/landing.html:187
 msgid "title, description e anteprime allineate"
 msgstr ""
 
-#: templates/landing.html:134
+#: templates/landing.html:188
 msgid "bozza di accesso per crawler IA"
 msgstr ""
 
-#: templates/landing.html:143
+#: templates/landing.html:197
 msgid "Cosa significano AIO e GEO in Centropic?"
 msgstr ""
 
-#: templates/landing.html:145
+#: templates/landing.html:199
 msgid ""
 "AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono "
 "interpretare il brand. GEO (Generative Engine Optimization) indica quanto"
 " il sito è strutturato per essere citato. Non GIS, non All-in-One."
 msgstr ""
 
-#: templates/landing.html:149
+#: templates/landing.html:203
+msgid "Quale piano mi serve?"
+msgstr ""
+
+#: templates/landing.html:205
+msgid ""
+"Free per validare un dominio. Plus (14,99€, 100 token) per startup sul "
+"proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie:"
+" API, white-label e fino a"
+msgstr ""
+
+#: templates/landing.html:206 templates/product.html:56
+#: templates/product.html:62
+msgid "siti."
+msgstr ""
+
+#: templates/landing.html:210
 msgid "Gli score rappresentano menzioni live?"
 msgstr ""
 
-#: templates/landing.html:151
+#: templates/landing.html:212
 msgid ""
-"No, di default. Sono diagnostici; con citation monitor e API LLM si "
-"aggiungono menzioni Misurate."
+"No, di default. Sono diagnostici; su Plus/Business, con citation monitor "
+"e API LLM, si aggiungono menzioni Misurate."
 msgstr ""
 
-#: templates/landing.html:155
-msgid "Limiti del piano Free?"
-msgstr ""
-
-#: templates/landing.html:157
-msgid ""
-"analisi su nuovi siti; ri-analisi dello stesso URL consuma token. Plus: "
-"crawl fino a"
-msgstr ""
-
-#: templates/landing.html:158
-msgid "pagine, SoV measured e 100 token/mese."
-msgstr ""
-
-#: templates/landing.html:166
+#: templates/landing.html:220
 msgid "Avvio"
 msgstr ""
 
-#: templates/landing.html:167
-msgid "Valuta la citabilità del tuo dominio."
+#: templates/landing.html:221
+msgid "Parti dal profilo giusto."
 msgstr ""
 
-#: templates/landing.html:169
-msgid "Piano Free. Prima analisi in pochi minuti. Nessuna carta richiesta."
+#: templates/landing.html:223
+msgid "Free senza carta. Plus per il brand. Business per i clienti dell’agenzia."
 msgstr ""
 
-#: templates/landing.html:173
-msgid "Piani e limiti"
+#: templates/landing.html:226
+msgid "Crea account Free"
+msgstr ""
+
+#: templates/landing.html:227
+msgid "Confronta Free · Plus · Business"
 msgstr ""
 
 #: templates/login.html:3
@@ -3003,109 +2913,138 @@ msgstr ""
 
 #: templates/pricing.html:3
 msgid ""
-"Prezzi Centropic 2026: Free senza carta; Plus con crawl fino a 120 "
-"pagine, SoV measured, 100 token/mese e export."
+"Prezzi Centropic: Free, Plus 14,99€ (startup, 100 token), Business 49,99€"
+" (agenzie, 400 token, API e white-label)."
 msgstr ""
 
-#: templates/pricing.html:10
-msgid "Semplici. Scalabili."
+#: templates/pricing.html:14
+msgid "Tre modi di possedere il segnale."
 msgstr ""
 
-#: templates/pricing.html:12
+#: templates/pricing.html:16
 msgid ""
-"Free per validare readiness AIO/GEO. Plus per crawl esteso, citation "
-"monitor, alert e export."
+"Free per validare. Plus per il tuo brand. Business per i clienti "
+"dell’agenzia."
 msgstr ""
 
-#: templates/pricing.html:19 templates/pricing.html:34
-#: templates/pricing.html:37
-msgid "/mese"
+#: templates/pricing.html:28
+msgid "Prova la diagnosi AIO/GEO sul primo dominio — senza carta."
 msgstr ""
 
-#: templates/pricing.html:20
-msgid "Per il primo dominio e le prime ottimizzazioni."
-msgstr ""
-
-#: templates/pricing.html:23 templates/pricing.html:43
+#: templates/pricing.html:31 templates/pricing.html:47
 msgid "Crawl fino a"
 msgstr ""
 
-#: templates/pricing.html:24
-msgid "analisi su nuovi siti; ri-analisi stesso URL (consuma token)"
+#: templates/pricing.html:32
+msgid "analisi su nuovi siti; ri-analisi stesso URL (token)"
 msgstr ""
 
-#: templates/pricing.html:25
-msgid "Score + findings (SoV stimato; Misurato solo su Plus)"
+#: templates/pricing.html:33
+msgid "Score AIO/GEO + findings (SoV stimato)"
 msgstr ""
 
-#: templates/pricing.html:26
-msgid "Pack ZIP"
+#: templates/pricing.html:34
+msgid "Pack ZIP applicabile"
 msgstr ""
 
-#: templates/pricing.html:35
-msgid ""
-"Include 100 token ogni mese. Per team che ottimizzano più brand in "
-"continuo."
+#: templates/pricing.html:40
+msgid "Per startup"
 msgstr ""
 
-#: templates/pricing.html:38
-msgid ""
-"Include 100 token/mese. Checkout in attivazione — puoi già ricaricare "
-"token o prenotare interesse."
+#: templates/pricing.html:43
+msgid "Per piccole startup che ottimizzano i propri brand in continuo."
 msgstr ""
 
-#: templates/pricing.html:41
-msgid "100 token inclusi ogni mese"
-msgstr ""
-
-#: templates/pricing.html:42
-msgid "Più siti e analisi"
-msgstr ""
-
-#: templates/pricing.html:44
-msgid "Citation monitor / SoV measured — solo Plus"
-msgstr ""
-
-#: templates/pricing.html:45
-msgid "Prompt bank + alert email/webhook"
-msgstr ""
-
-#: templates/pricing.html:46
-msgid "Re-scan giornaliero/settimanale"
+#: templates/pricing.html:45 templates/pricing.html:97
+msgid "token inclusi ogni mese"
 msgstr ""
 
 #: templates/pricing.html:47
-msgid "API + export + white-label"
+msgid "pagine (Deep fino a"
 msgstr ""
 
 #: templates/pricing.html:48
-msgid "Storico run avanzato"
+msgid "Citation monitor / SoV measured"
 msgstr ""
 
-#: templates/pricing.html:72 templates/pricing.html:77
-#: templates/pricing.html:84
+#: templates/pricing.html:50
+msgid "Prompt bank + alert email/webhook"
+msgstr ""
+
+#: templates/pricing.html:51
+msgid "Re-scan giornaliero/settimanale"
+msgstr ""
+
+#: templates/pricing.html:52
+msgid "Edge Signals completo + storico run"
+msgstr ""
+
+#: templates/pricing.html:79 templates/pricing.html:130
 msgid "Annuale"
 msgstr ""
 
-#: templates/pricing.html:72 templates/pricing.html:77
-#: templates/pricing.html:84
+#: templates/pricing.html:79 templates/pricing.html:130
 msgid "anno"
 msgstr ""
 
-#: templates/pricing.html:78
-msgid "richiedi attivazione"
+#: templates/pricing.html:84
+msgid "Accedi e scegli Plus"
 msgstr ""
 
-#: templates/pricing.html:82
-msgid "Accedi e passa a Plus"
-msgstr ""
-
-#: templates/pricing.html:87
-msgid "Prenota interesse"
+#: templates/partials/dashboard_shell.html:12 templates/pricing.html:86
+msgid "Prenota Plus"
 msgstr ""
 
 #: templates/pricing.html:94
+msgid ""
+"Tutto incluso per agenzie e team multi-cliente: delivery, automazione e "
+"scala."
+msgstr ""
+
+#: templates/pricing.html:96
+msgid "Tutto di Plus, più:"
+msgstr ""
+
+#: templates/pricing.html:98
+msgid "siti / clienti"
+msgstr ""
+
+#: templates/pricing.html:99
+msgid "API key pubblica"
+msgstr ""
+
+#: templates/pricing.html:100
+msgid "White-label brand agenzia"
+msgstr ""
+
+#: templates/pricing.html:101
+msgid "Export report MD/HTML white-label"
+msgstr ""
+
+#: templates/pricing.html:102
+msgid "Crawl, SoV measured, re-scan, Edge, storico"
+msgstr ""
+
+#: templates/pricing.html:103
+msgid "Ideale per portfolio clienti e retainer"
+msgstr ""
+
+#: templates/pricing.html:135
+msgid "Accedi e passa a Business"
+msgstr ""
+
+#: templates/pricing.html:137
+msgid "Parla con noi — Business"
+msgstr ""
+
+#: templates/pricing.html:144
 msgid "Pagamenti:"
+msgstr ""
+
+#: templates/pricing.html:145
+msgid ""
+"I token non scadono; i pacchetti ricarica restano disponibili su tutti i "
+"piani."
 msgstr ""
 
 #: templates/privacy.html:3
@@ -3268,235 +3207,207 @@ msgid ""
 msgstr ""
 
 #: templates/pro_interest.html:2
-msgid "Interesse Plus"
+msgid "Interesse piani"
 msgstr ""
 
 #: templates/pro_interest.html:3
 msgid ""
-"Prenota l’interesse per Centropic Plus: crawl fino a 120 pagine, SoV "
-"measured, più siti, re-scan e limiti agenzia. Waitlist su centropic.ai."
+"Prenota interesse Centropic Plus (startup) o Business (agenzie): SoV "
+"measured, API, white-label. Contatto info@centropic.ai."
 msgstr ""
 
 #: templates/pro_interest.html:9
-msgid "Piano Plus · aggiornato"
+msgid "Waitlist · piani"
 msgstr ""
 
 #: templates/pro_interest.html:10
-msgid "Prenota l’interesse Plus"
+msgid "Dicci quale profilo ti serve"
 msgstr ""
 
 #: templates/pro_interest.html:12
 msgid ""
-"Centropic Free: 1 sito, 2 analisi su nuovi siti, crawl limitato. Plus per"
-" team e agenzie: crawl fino a 120 pagine (Deep 500), SoV measured, re-"
-"scan e limiti più alti. Entra in waitlist se il checkout non è ancora "
-"attivo. Prodotto di"
+"Se il checkout Paddle non è ancora attivo per il piano che ti serve, "
+"lascia i contatti. Plus = startup sul brand. Business = agenzie (API, "
+"white-label, 400 token). Oppure vai subito a"
 msgstr ""
 
 #: templates/pro_interest.html:18
-msgid "Cosa chiedono i team Plus"
+msgid "Due profili a pagamento"
 msgstr ""
 
 #: templates/pro_interest.html:20
-msgid "Crawl fino a 120 pagine (Deep fino a 500)"
+msgid "100 token/mese, SoV Misurato, re-scan, fino a"
 msgstr ""
 
 #: templates/pro_interest.html:21
-msgid "Più siti gestiti nello stesso account"
+msgid "tutto Plus + API, white-label,"
 msgstr ""
 
-#: templates/pro_interest.html:22
-msgid "Re-scan e storico analisi per confronto nel tempo"
+#: templates/pro_interest.html:21
+msgid "token, fino a"
 msgstr ""
 
-#: templates/pro_interest.html:23
-msgid "Pack AIO/GEO ripetibile per clienti agenzia"
-msgstr ""
-
-#: templates/pro_interest.html:26
-msgid ""
-"Gli score restano diagnostici (probe/euristiche) con badge "
-"Stimato/Misurato — vedi"
-msgstr ""
-
-#: templates/partials/auth_help.html:15 templates/pro_interest.html:27
-#: templates/product.html:30 templates/status.html:38
-msgid "metodologia"
-msgstr ""
-
-#: templates/pro_interest.html:29
+#: templates/pro_interest.html:24
 msgid "Urgenze:"
 msgstr ""
 
-#: templates/pro_interest.html:34
-msgid "Modulo waitlist"
+#: templates/pro_interest.html:29
+msgid "Modulo interesse"
 msgstr ""
 
-#: templates/pro_interest.html:38 templates/register.html:27
+#: templates/pro_interest.html:33 templates/register.html:27
 msgid "Nome e cognome"
 msgstr ""
 
-#: templates/pro_interest.html:48 templates/register.html:77
-msgid "Azienda / Brand"
+#: templates/pro_interest.html:43
+msgid "Azienda / Agenzia"
 msgstr ""
 
-#: templates/pro_interest.html:48 templates/pro_interest.html:53
-#: templates/pro_interest.html:58 templates/register.html:39
+#: templates/pro_interest.html:43 templates/pro_interest.html:48
+#: templates/pro_interest.html:53 templates/register.html:39
 #: templates/register.html:77 templates/register.html:83
 #: templates/register.html:95
 msgid "(opzionale)"
 msgstr ""
 
-#: templates/pro_interest.html:53
+#: templates/pro_interest.html:48
 msgid "Sito web"
 msgstr ""
 
-#: templates/pro_interest.html:58
-msgid "Cosa ti serve da Plus"
+#: templates/pro_interest.html:53
+msgid "Profilo e bisogno"
 msgstr ""
 
-#: templates/pro_interest.html:59
-msgid "Es. crawl 120+ pagine, più siti, re-scan, team agency…"
+#: templates/pro_interest.html:54
+msgid "Es. Plus per il mio brand · Business per 20 clienti, API, white-label…"
 msgstr ""
 
-#: templates/pro_interest.html:67
+#: templates/pro_interest.html:62
 msgid "Inizia gratis ora"
 msgstr ""
 
-#: templates/pro_interest.html:68
+#: templates/pro_interest.html:63
 msgid "Torna ai prezzi"
 msgstr ""
 
 #: templates/product.html:3
 msgid ""
-"Come funziona Centropic: crawl, score AIO/GEO euristici, findings e pack "
-"(llms.txt, JSON-LD, robots) per answer engine — non GIS, non All-in-One."
+"Centropic: crawl, score AIO/GEO, findings e pack. Tre profili SaaS — "
+"Free, Plus 14,99€, Business 49,99€ con API e white-label."
 msgstr ""
 
-#: templates/product.html:12
+#: templates/product.html:17
 msgid "Il segnale che le IA leggono"
 msgstr ""
 
-#: templates/product.html:14
-msgid "Centropic valuta i segnali di"
+#: templates/product.html:19
+msgid "Una piattaforma di Signal Intelligence per"
 msgstr ""
 
-#: templates/product.html:15
-msgid "del dominio e genera artifact pronti da pubblicare."
-msgstr ""
-
-#: templates/product.html:20
-msgid "Analisi AIO + GEO (definiti)"
-msgstr ""
-
-#: templates/product.html:22
+#: templates/product.html:21
 msgid ""
-"AI-Driven Visibility: quanto i modelli e i crawler IA comprendono e "
-"“vedono” il brand."
-msgstr ""
-
-#: templates/product.html:23
-msgid ""
-"Generative Engine Optimization: quanto sei strutturato per essere citato "
-"nelle risposte generate (ChatGPT, Perplexity, ricerca AI). Non confondere"
-" con GIS (mappe geografiche) né con suite All-in-One generiche."
-msgstr ""
-
-#: templates/product.html:26
-msgid "Crawl del dominio, probe di"
-msgstr ""
-
-#: templates/product.html:27
-msgid ""
-"e valutazione euristica dei segnali usati dagli answer engine. Di default"
-" il SoV in dashboard è"
+"diagnosi del dominio, artifact pubblicabili, loop continuo — scalato per "
+"founder, team e agenzie."
 msgstr ""
 
 #: templates/product.html:28
-msgid "su Plus, con API LLM configurata, il"
+msgid "Crawl del dominio, probe di"
 msgstr ""
 
 #: templates/product.html:29
+msgid ""
+"e valutazione euristica dei segnali usati dagli answer engine. Di default"
+" il SoV è"
+msgstr ""
+
+#: templates/product.html:30
+msgid "su Plus e Business, con API LLM, il"
+msgstr ""
+
+#: templates/product.html:31
 msgid "citation monitor"
 msgstr ""
 
-#: templates/product.html:29
-msgid "aggiunge menzioni Misurate (OpenAI; Perplexity se presente). Riferimenti:"
+#: templates/product.html:31
+msgid "aggiunge menzioni Misurate."
 msgstr ""
 
 #: templates/product.html:35
-msgid "Indice risultato + score AIO/GEO da probe ed euristiche"
+msgid "Score AIO/GEO da probe ed euristiche documentate"
 msgstr ""
 
 #: templates/product.html:36
-msgid ""
-"Findings critici prioritizzati (entity, citability, schema, publish "
-"verify)"
+msgid "Findings prioritizzati (entity, citability, schema, publish verify)"
 msgstr ""
 
 #: templates/product.html:37
-msgid "Pagine deboli con problema esplicito"
+msgid "Pack: un solo HTML con tutti i fix — download / Edge / email"
 msgstr ""
 
 #: templates/product.html:38
-msgid "Badge"
+msgid "Badge Stimato / Misurato su ogni finding"
 msgstr ""
 
-#: templates/product.html:38
-msgid "su ogni finding"
+#: templates/product.html:43
+msgid "Tre profili di prodotto"
 msgstr ""
 
-#: templates/product.html:39
-msgid "Suite Plus: prompt bank, alert email/webhook, API"
+#: templates/product.html:45
+msgid "Stesso motore. Capability diverse. Prezzi chiari."
 msgstr ""
 
-#: templates/product.html:39
-msgid "white-label"
+#: templates/product.html:51
+msgid "Prova valore sul primo dominio: score, findings, pack."
 msgstr ""
 
-#: templates/product.html:44
-msgid "Pack di ottimizzazione"
+#: templates/product.html:55 templates/product.html:61
+msgid "tok/mese"
 msgstr ""
 
-#: templates/product.html:46
-msgid ""
-"Output operativo: file da copiare o scaricare in ZIP / inviare via email."
-" Guide dedicate:"
+#: templates/product.html:56
+msgid "Startup: SoV Misurato, re-scan, alert, crawl esteso, fino a"
 msgstr ""
 
-#: templates/product.html:48
-msgid "Schema AI"
-msgstr ""
-
-#: templates/product.html:52
-msgid "descrizione brand per i modelli"
-msgstr ""
-
-#: templates/product.html:53
-msgid "entity strutturata"
-msgstr ""
-
-#: templates/product.html:54
-msgid "title, description, Open Graph"
-msgstr ""
-
-#: templates/product.html:55
-msgid "bozza allineata a crawl e sitemap"
-msgstr ""
-
-#: templates/product.html:60
-msgid "Per chi è"
+#: templates/product.html:59
+msgid "Tutto incluso"
 msgstr ""
 
 #: templates/product.html:62
-msgid ""
-"Brand, founder e agenzie che vogliono migliorare i segnali di citabilità "
-"per ChatGPT, Perplexity e ricerca generativa — con un flusso ripetibile, "
-"non fix one-off. Contatto operativo:"
+msgid "Agenzie: tutto Plus + API, white-label, fino a"
 msgstr ""
 
 #: templates/product.html:68
-msgid "Prova gratis"
+msgid "Pack di ottimizzazione"
+msgstr ""
+
+#: templates/product.html:70
+msgid "descrizione brand per i modelli"
+msgstr ""
+
+#: templates/product.html:71
+msgid "entity strutturata"
+msgstr ""
+
+#: templates/product.html:72
+msgid "title, description, Open Graph"
+msgstr ""
+
+#: templates/product.html:73
+msgid "bozza allineata a crawl e sitemap"
+msgstr ""
+
+#: templates/product.html:78
+msgid "Per chi è"
+msgstr ""
+
+#: templates/product.html:80
+msgid ""
+"Founder e marketing sul proprio brand → Plus. Agenzie SEO/GEO multi-"
+"cliente → Business. Contatto:"
+msgstr ""
+
+#: templates/product.html:86
+msgid "Prova Free"
 msgstr ""
 
 #: templates/register.html:3
@@ -3525,6 +3436,10 @@ msgstr ""
 
 #: templates/register.html:61 templates/reset_password.html:37
 msgid "Conferma password"
+msgstr ""
+
+#: templates/register.html:77
+msgid "Azienda / Brand"
 msgstr ""
 
 #: templates/register.html:83
@@ -3560,7 +3475,7 @@ msgid "Hai già un account?"
 msgstr ""
 
 #: templates/reset_password.html:2 templates/reset_password.html:14
-#: templates/reset_password.html:22 templates/settings.html:133
+#: templates/reset_password.html:22 templates/settings.html:125
 msgid "Nuova password"
 msgstr ""
 
@@ -3591,8 +3506,8 @@ msgstr ""
 
 #: templates/rimborsi.html:3
 msgid ""
-"Politica di rimborso Centropic (centropic.ai): abbonamenti Plus, "
-"pacchetti crediti e diritto di recesso per i consumatori."
+"Politica di rimborso Centropic: abbonamenti Plus/Business, pacchetti "
+"crediti e diritto di recesso."
 msgstr ""
 
 #: templates/rimborsi.html:12
@@ -3606,7 +3521,7 @@ msgstr ""
 #: templates/rimborsi.html:20
 msgid ""
 "Questa politica si applica agli acquisti digitali su Centropic "
-"(centropic.ai): abbonamenti (es. piano Plus) e pacchetti di "
+"(centropic.ai): abbonamenti (Plus, Business) e pacchetti di "
 "crediti/analisi pagati tramite il checkout del nostro fornitore di "
 "pagamento (Paddle). Non riguarda servizi di terzi o costi esterni al "
 "nostro SaaS."
@@ -3793,18 +3708,22 @@ msgstr ""
 msgid "Artifact pronti da pubblicare in root o via Edge Signals / CMS connector."
 msgstr ""
 
-#: templates/sample_report.html:46
+#: templates/partials/dashboard_shell.html:20 templates/sample_report.html:46
 msgid "Prossimi passi"
 msgstr ""
 
 #: templates/sample_report.html:51
 msgid ""
-"Vuoi lo stesso flusso sul tuo dominio? Crea un account Free o passa a "
-"Plus per SoV measured e crawl esteso."
+"Stesso flusso sul tuo dominio: Free per validare, Plus per SoV Misurato, "
+"Business per API e white-label agenzia."
+msgstr ""
+
+#: templates/sample_report.html:56
+msgid "Analizza il tuo sito"
 msgstr ""
 
 #: templates/sample_report.html:57
-msgid "Vedi Plus"
+msgid "Vedi i piani"
 msgstr ""
 
 #: templates/settings.html:2
@@ -3813,198 +3732,170 @@ msgstr ""
 
 #: templates/settings.html:4
 msgid ""
-"Impostazioni Centropic: alert, prompt bank, API key, white-label e "
-"connector SoV."
+"Impostazioni Centropic per il tuo piano: connector, alert, API e white-"
+"label quando disponibili."
 msgstr ""
 
 #: templates/settings.html:10
 msgid "Impostazioni GEO/AIO"
 msgstr ""
 
-#: templates/settings.html:12
-msgid "Alert outbound, prompt bank per SoV measured, API, white-label agenzia."
+#: templates/settings.html:13
+msgid "Alert outbound, prompt bank SoV, API e white-label agenzia."
 msgstr ""
 
-#: templates/settings.html:14
-msgid "sblocca SoV measured / citation monitor, crawl fino a"
+#: templates/settings.html:15
+msgid "Alert outbound, prompt bank per SoV measured e connector."
 msgstr ""
 
-#: templates/settings.html:14
-msgid "pagine, API e white-label."
+#: templates/settings.html:17
+msgid "Sicurezza account e stato connector sul piano Free."
 msgstr ""
 
-#: templates/settings.html:20
+#: templates/partials/sov_ops.html:30 templates/settings.html:23
 msgid "Connector"
 msgstr ""
 
-#: templates/settings.html:23
+#: templates/settings.html:27
 msgid "Citation monitor / SoV measured:"
 msgstr ""
 
-#: templates/settings.html:25
-msgid "riservato a"
-msgstr ""
-
-#: templates/settings.html:26
+#: templates/settings.html:28
 msgid "attivo"
 msgstr ""
 
-#: templates/settings.html:26
+#: templates/settings.html:28
 msgid "configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY"
 msgstr ""
 
-#: templates/settings.html:28
+#: templates/settings.html:31
 msgid "JS crawl:"
 msgstr ""
 
-#: templates/settings.html:28
+#: templates/settings.html:31
 msgid "Playwright pronto"
 msgstr ""
 
-#: templates/settings.html:28
+#: templates/settings.html:31
 msgid "disabilitato (JS_CRAWL_ENABLED=1)"
 msgstr ""
 
-#: templates/settings.html:29
+#: templates/settings.html:32
 msgid "Google Search Console:"
 msgstr ""
 
-#: templates/settings.html:34
+#: templates/settings.html:38
 msgid "Alert outbound"
 msgstr ""
 
-#: templates/settings.html:38
+#: templates/settings.html:42
 msgid "Email su regressioni / llms sparito / pack verify"
 msgstr ""
 
-#: templates/settings.html:40
+#: templates/settings.html:44
 msgid "Webhook URL"
 msgstr ""
 
-#: templates/settings.html:44
+#: templates/settings.html:48
 msgid "Webhook secret (HMAC SHA-256)"
 msgstr ""
 
-#: templates/settings.html:52
+#: templates/settings.html:58
 msgid "Prompt bank"
 msgstr ""
 
-#: templates/settings.html:54
-msgid "Usati dal citation monitor / SoV measured (piano Plus)."
+#: templates/settings.html:59
+msgid "Usati dal citation monitor / SoV measured. Lascia vuoto per i default."
 msgstr ""
 
-#: templates/settings.html:56
-msgid "per personalizzare i prompt di misurazione."
-msgstr ""
-
-#: templates/settings.html:58
-msgid "Lascia vuoto per i default."
-msgstr ""
-
-#: templates/settings.html:66
+#: templates/settings.html:64
 msgid "Prompt (uno per riga)"
 msgstr ""
 
-#: templates/settings.html:75
+#: templates/settings.html:73
 msgid "Vertical pack"
 msgstr ""
 
-#: templates/settings.html:78
+#: templates/settings.html:76
 msgid ""
 "Applica un set di prompt e checklist per settore (SaaS, e-commerce, "
 "local, agency, media)."
 msgstr ""
 
-#: templates/settings.html:85
+#: templates/settings.html:84
 msgid "API key"
 msgstr ""
 
-#: templates/settings.html:87
+#: templates/settings.html:86
 msgid "Endpoints:"
 msgstr ""
 
-#: templates/settings.html:90
+#: templates/settings.html:88
 msgid "Prefisso attivo:"
 msgstr ""
 
-#: templates/settings.html:90
+#: templates/settings.html:88
 msgid "Nessuna key."
 msgstr ""
 
 #: templates/settings.html:92
-msgid "Riservato a"
-msgstr ""
-
-#: templates/settings.html:92
-msgid "genera e usa le key solo sul piano a pagamento."
-msgstr ""
-
-#: templates/settings.html:98
 msgid "API key (una sola volta)"
 msgstr ""
 
-#: templates/settings.html:98
+#: templates/settings.html:92
 msgid "copiala e conservala in un secret store. Non la rimostreremo per intero."
 msgstr ""
 
-#: templates/settings.html:105
+#: templates/settings.html:99
 msgid "Genera nuova API key"
 msgstr ""
 
-#: templates/settings.html:108
-msgid "Sblocca API con Plus"
-msgstr ""
-
-#: templates/settings.html:113
+#: templates/settings.html:105
 msgid "Sicurezza account"
 msgstr ""
 
-#: templates/settings.html:116
+#: templates/settings.html:108
 msgid "Email non ancora confermata."
 msgstr ""
 
-#: templates/settings.html:117
+#: templates/settings.html:109
 msgid "Senza conferma non ricevi il credito di benvenuto."
 msgstr ""
 
-#: templates/settings.html:122
+#: templates/settings.html:114
 msgid "Reinvia email di conferma"
 msgstr ""
 
-#: templates/settings.html:129
+#: templates/settings.html:121
 msgid "Password attuale"
 msgstr ""
 
-#: templates/settings.html:137
+#: templates/settings.html:129
 msgid "Conferma nuova password"
 msgstr ""
 
-#: templates/settings.html:145
+#: templates/settings.html:137
 msgid "Chiudi tutte le altre sessioni (altri browser / dispositivi)."
 msgstr ""
 
-#: templates/settings.html:146
+#: templates/settings.html:138
 msgid "Esci ovunque"
 msgstr ""
 
-#: templates/settings.html:151
+#: templates/settings.html:144
 msgid "White-label agenzia"
 msgstr ""
 
-#: templates/settings.html:157
+#: templates/settings.html:149
 msgid "Logo URL"
 msgstr ""
 
-#: templates/settings.html:158
+#: templates/settings.html:150
 msgid "Colore"
 msgstr ""
 
-#: templates/settings.html:159
+#: templates/settings.html:151
 msgid "Nota"
-msgstr ""
-
-#: templates/settings.html:164
-msgid "Export white-label per agenzie riservato a"
 msgstr ""
 
 #: templates/site_history.html:9
@@ -4012,7 +3903,7 @@ msgid "Storico avanzato"
 msgstr ""
 
 #: templates/site_history.html:14
-msgid "ZIP corrente"
+msgid "Pack corrente"
 msgstr ""
 
 #: templates/site_history.html:32
@@ -4036,14 +3927,14 @@ msgid "max"
 msgstr ""
 
 #: templates/site_history.html:90
-msgid "ZIP run"
+msgid "Pack run"
 msgstr ""
 
 #: templates/site_history.html:94
 msgid "Nessuna run ancora."
 msgstr ""
 
-#: templates/partials/geo_overview.html:112 templates/status.html:2
+#: templates/status.html:2
 msgid "Status"
 msgstr ""
 
@@ -4080,7 +3971,7 @@ msgid "Pagamenti"
 msgstr ""
 
 #: templates/status.html:21
-msgid "checkout Plus e pack token"
+msgid "checkout Plus / Business e pack token"
 msgstr ""
 
 #: templates/status.html:23
@@ -4107,6 +3998,10 @@ msgstr ""
 msgid "Per la metodologia Stimato/Misurato vedi"
 msgstr ""
 
+#: templates/partials/auth_help.html:15 templates/status.html:38
+msgid "metodologia"
+msgstr ""
+
 #: templates/status.html:39
 msgid "Endpoint machine (JSON, non HTML):"
 msgstr ""
@@ -4123,8 +4018,8 @@ msgstr ""
 msgid ""
 "Questa pagina conferma che l’app Flask risponde, che il database delle "
 "analisi è raggiungibile, che la coda job async è interrogabile e che il "
-"provider pagamenti (Paddle/Stripe) è configurato o in modalità interesse."
-" Non espone metriche private, token utenti o log applicativi."
+"provider pagamenti (Paddle) è configurato o in modalità interesse. Non "
+"espone metriche private, token utenti o log applicativi."
 msgstr ""
 
 #: templates/status.html:53
@@ -4141,8 +4036,7 @@ msgstr ""
 #: templates/status.html:61
 msgid ""
 "con orario UTC e URL interessato. Per incidenti di pagamento indica il "
-"provider (Paddle/Stripe) e l’email account, senza condividere chiavi o "
-"token."
+"provider (Paddle) e l’email account, senza condividere chiavi o token."
 msgstr ""
 
 #: templates/status.html:67
@@ -4230,7 +4124,7 @@ msgid ""
 msgstr ""
 
 #: templates/termini.html:45
-msgid "Rispetta i rate limit e i piani (Free / Plus quando attivo)."
+msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
 msgstr ""
 
 #: templates/termini.html:50
@@ -4252,8 +4146,8 @@ msgstr ""
 #: templates/termini.html:59
 msgid ""
 "Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza "
-"reset). Funzionalità Plus possono essere in waitlist o abilitate "
-"manualmente finché non è attivo un checkout self-serve. Il servizio è "
+"reset). Plus e Business sono abbonamenti self-serve via Paddle quando il "
+"catalogo è configurato; altrimenti interesse via waitlist. Il servizio è "
 "fornito “as is”; possiamo sospendere account in caso di abuso o rischio "
 "sicurezza."
 msgstr ""
@@ -4351,7 +4245,7 @@ msgstr ""
 msgid ""
 "Stima analisi (SoV Misurato multi-engine, hold ≈2,3–2,4 token): ~40 con "
 "100 token, ~80 con 200, ~250 con 600. Solo OpenAI: circa il doppio. I "
-"token non scadono. Plus include 100 token ogni mese."
+"token non scadono. Plus include 100 token/mese; Business 400 token/mese."
 msgstr ""
 
 #: templates/verify.html:11
@@ -4372,59 +4266,80 @@ msgstr ""
 msgid "Checks"
 msgstr ""
 
-#: templates/verify.html:25
+#: templates/verify.html:22
+msgid "Superato"
+msgstr ""
+
+#: templates/verify.html:22
+msgid "Non superato"
+msgstr ""
+
+#: templates/verify.html:28
 msgid "Errore probe:"
 msgstr ""
 
-#: templates/verify.html:40
+#: templates/verify.html:43
 msgid "SoV delta"
 msgstr ""
 
-#: templates/verify.html:42
+#: templates/verify.html:45
 msgid "Brand mention:"
 msgstr ""
 
-#: templates/verify.html:54
+#: templates/verify.html:57
 msgid "Re-scan dopo publish"
 msgstr ""
 
-#: templates/verify.html:56
+#: templates/verify.html:61
 msgid "Export white-label MD"
 msgstr ""
 
-#: templates/verify.html:57
+#: templates/verify.html:62
 msgid "Export white-label HTML"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:40
+#: templates/partials/analyze_overlay.html:8
+msgid "completato"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:41
 msgid "Elaborazione in corso"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:43
+#: templates/partials/analyze_overlay.html:44
 msgid "Stiamo analizzando i segnali del dominio. Resta su questa pagina."
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:48
+#: templates/partials/analyze_overlay.html:56
+msgid "Avanzamento"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:59
 msgid "Stima: 30–90 secondi"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:53
-msgid "Crawl del dominio"
-msgstr ""
-
-#: templates/partials/analyze_overlay.html:54
-msgid "Probe segnali"
-msgstr ""
-
-#: templates/partials/analyze_overlay.html:55
-msgid "Scoring AIO / GEO"
+#: templates/partials/analyze_overlay.html:63
+#: templates/partials/dashboard_shell.html:150
+msgid "In coda"
 msgstr ""
 
 #: templates/partials/analyze_overlay.html:64
+msgid "Crawl del dominio"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:65
+msgid "Probe segnali"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:66
+msgid "Scoring AIO / GEO"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:82
 msgid "Di solito 30–90 secondi."
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:70
+#: templates/partials/analyze_overlay.html:88
 msgid "Chiudi"
 msgstr ""
 
@@ -4432,15 +4347,36 @@ msgstr ""
 msgid "Navigazione workspace"
 msgstr ""
 
+#: templates/partials/app_sidebar.html:22
+msgid "Signal Intelligence"
+msgstr ""
+
 #: templates/partials/app_sidebar.html:29
 msgid "Chiudi menu"
 msgstr ""
 
-#: templates/partials/app_sidebar.html:80
+#: templates/partials/app_sidebar.html:41
+msgid "Sezioni report"
+msgstr ""
+
+#: templates/partials/app_sidebar.html:42
+msgid "Nel report"
+msgstr ""
+
+#: templates/partials/app_sidebar.html:51
+msgid "White-label pack"
+msgstr ""
+
+#: templates/partials/app_sidebar.html:64
+#: templates/partials/dashboard_shell.html:55
+msgid "Grafici"
+msgstr ""
+
+#: templates/partials/app_sidebar.html:90
 msgid "GEO Credits"
 msgstr ""
 
-#: templates/partials/app_sidebar.html:80
+#: templates/partials/app_sidebar.html:90
 msgid "Saldo token"
 msgstr ""
 
@@ -4508,111 +4444,272 @@ msgid ""
 "account."
 msgstr ""
 
-#: templates/partials/geo_overview.html:14
-msgid "Positive"
+#: templates/partials/dashboard_shell.html:10
+msgid "Vedi piano Plus"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:19
+msgid "Onboarding"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:23
+msgid "Conferma email"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:26
+msgid "Prima analisi del dominio"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:32
+msgid "Attiva prova Plus 7 giorni"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:37
+msgid "Invita un collega:"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:39
+msgid "tu ricevi"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:39
+msgid "token quando conferma l’email."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:46
+msgid "Sintesi report"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:54
+#: templates/partials/dashboard_shell.html:69
+msgid "Nuova analisi"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:76
+msgid "Analizza un dominio"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:79
+msgid "Quote Free esaurite · passa a Plus per continuare"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:81
+msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:83
+msgid "Crawl BFS · intero sito"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:85
+msgid "Crawl stesso dominio · max"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:91
+msgid "URL del dominio"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:101
+msgid "Competitor snapshot (max 3)"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:103
+msgid "Suggerisci automatico"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:116
+msgid "Deep crawl"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:118
+msgid "pagine — più lento"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:119
+msgid "Standard:"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:126
+msgid "SoV measured (probe LLM) incluso quando i connector sono attivi."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:129
+msgid "Score AIO/GEO e SoV"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:129
+msgid "stimato"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:129
+msgid "sul dominio analizzato."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:150
+msgid "In esecuzione"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:155
+msgid "Worker in avvio — di solito parte entro pochi secondi."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:157
+msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:163
+msgid "Analisi fallita"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:164
+msgid "Errore sconosciuto"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:166
+msgid "Controlla l’URL e riprova. Supporto:"
+msgstr ""
+
+#: templates/partials/edge_wizard.html:2
+msgid "Pubblica Edge Signals"
+msgstr ""
+
+#: templates/partials/edge_wizard.html:6
+msgid "Attiva"
+msgstr ""
+
+#: templates/partials/edge_wizard.html:9
+msgid "Hosting dinamico attivo."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:11
+msgid "Attiva gli endpoint dinamici Centropic."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:18
+msgid "Scarica connector CMS ZIP"
+msgstr ""
+
+#: templates/partials/edge_wizard.html:19
+msgid "Un bundle, scegli l’adapter del tuo stack."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:25
+msgid "Pubblica sul sito"
+msgstr ""
+
+#: templates/partials/edge_wizard.html:26
+msgid "installa e attiva plugin o modulo."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:27
+msgid "aggiungi gli snippet Liquid al tema."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:28
+msgid "applica il proxy o le regole incluse."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:29
+msgid "pubblica rewrite o Worker del bundle."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:34
+msgid "Verifica publish"
+msgstr ""
+
+#: templates/partials/edge_wizard.html:35
+msgid "Controlla che file e segnali siano pubblici sul dominio."
+msgstr ""
+
+#: templates/partials/edge_wizard.html:36
+msgid "Avvia verifica"
+msgstr ""
+
+#: templates/partials/geo_overview.html:10
+msgid "Sereno"
+msgstr ""
+
+#: templates/partials/geo_overview.html:13
+msgid "Attenzione"
 msgstr ""
 
 #: templates/partials/geo_overview.html:16
-msgid "Mixed"
+msgid "Elevata"
 msgstr ""
 
-#: templates/partials/geo_overview.html:18
-msgid "At risk"
+#: templates/partials/geo_overview.html:19
+msgid "Alta"
 msgstr ""
 
-#: templates/partials/geo_overview.html:27
-msgid "Share of Model & AI Visibility metrics."
+#: templates/partials/geo_overview.html:26
+msgid "Panoramica GEO"
 msgstr ""
 
-#: templates/partials/geo_overview.html:34
-msgid "Periodo"
+#: templates/partials/geo_overview.html:28
+msgid "Share of Model e visibilità AI."
 msgstr ""
 
 #: templates/partials/geo_overview.html:35
-msgid "Storico range: in arrivo"
+msgid "Apri grafici"
 msgstr ""
 
-#: templates/partials/geo_overview.html:36
-msgid "Last 30 Days"
+#: templates/partials/geo_overview.html:41
+msgid "Share of Model"
 msgstr ""
 
-#: templates/partials/geo_overview.html:37
-msgid "Last 7 Days"
+#: templates/partials/geo_overview.html:50
+msgid "Su"
 msgstr ""
 
-#: templates/partials/geo_overview.html:38
-msgid "Quarter to Date"
+#: templates/partials/geo_overview.html:50
+msgid "motori tracciati"
 msgstr ""
 
-#: templates/partials/geo_overview.html:42
-msgid "Run Instant GEO Audit"
+#: templates/partials/geo_overview.html:54
+msgid "Grado AI"
 msgstr ""
 
-#: templates/partials/geo_overview.html:58
-msgid "Across"
+#: templates/partials/geo_overview.html:61
+msgid "Composito da score AIO/GEO"
 msgstr ""
 
-#: templates/partials/geo_overview.html:58
-msgid "tracked LLM platforms"
+#: templates/partials/geo_overview.html:65
+msgid "Pagine / segnali"
 msgstr ""
 
-#: templates/partials/geo_overview.html:69
-msgid "Composite grade from AIO/GEO scores"
-msgstr ""
-
-#: templates/partials/geo_overview.html:73
-msgid "Pages / signals"
-msgstr ""
-
-#: templates/partials/geo_overview.html:76
+#: templates/partials/geo_overview.html:68
 msgid "findings"
 msgstr ""
 
-#: templates/partials/geo_overview.html:78
-msgid "Pages scored in last audit"
+#: templates/partials/geo_overview.html:70
+msgid "Pressione"
 msgstr ""
 
-#: templates/partials/geo_overview.html:103
-msgid "View Detailed Report"
+#: templates/partials/sov_ops.html:1
+msgid "Operatività Share of Voice"
 msgstr ""
 
-#: templates/partials/geo_overview.html:109
-msgid "Engine"
+#: templates/partials/sov_ops.html:3
+msgid "Evidenza SoV"
 msgstr ""
 
-#: templates/partials/geo_overview.html:111
-msgid "Propensity"
+#: templates/partials/sov_ops.html:9
+msgid "Misurato + Stimato"
 msgstr ""
 
-#: templates/partials/geo_overview.html:121
-msgid "Dominant"
+#: templates/partials/sov_ops.html:16
+msgid "Saldo"
 msgstr ""
 
-#: templates/partials/geo_overview.html:124
-msgid "Optimal"
+#: templates/partials/sov_ops.html:20
+msgid "Budget SoV oggi"
 msgstr ""
 
-#: templates/partials/geo_overview.html:127
-msgid "Needs Action"
+#: templates/partials/sov_ops.html:23
+msgid "illimitato"
 msgstr ""
 
-#: templates/partials/geo_overview.html:146
-msgid "Nessun breakdown engine — lancia un audit."
-msgstr ""
-
-#: templates/partials/geo_overview.html:157
-msgid "Actionable GEO Insights"
-msgstr ""
-
-#: templates/partials/geo_overview.html:164
-msgid "Gap Detected"
-msgstr ""
-
-#: templates/partials/geo_overview.html:164
-msgid "High Impact"
-msgstr ""
-
-#: templates/partials/geo_overview.html:170
-msgid "Nessun finding critical/warn su questa run."
+#: templates/partials/sov_ops.html:29
+msgid "Azioni SoV"
 msgstr ""
 
