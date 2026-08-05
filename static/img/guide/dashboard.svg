@@ -9,9 +9,9 @@
       <stop offset="100%" stop-color="#0E1A28"/>
     </linearGradient>
     <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#00F0FF" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#00F0FF" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#6EC6C0" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#6EC6C0" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#6EC6C0" stop-opacity="0"/>
     </linearGradient>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur stdDeviation="12" result="b"/>
@@ -19,29 +19,29 @@
     </filter>
   </defs>
   <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#00F0FF" opacity=".06"/>
+  <circle cx="820" cy="90" r="160" fill="#6EC6C0" opacity=".06"/>
   <circle cx="120" cy="460" r="140" fill="#00B8C4" opacity=".05"/>
   <rect x="36" y="36" width="888" height="468" rx="22" fill="#121A2B" stroke="#1E2A3F" stroke-width="1.5"/>
   <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#00F0FF" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">DASHBOARD</text>
-  <text x="64" y="122" fill="#E8EEF7" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="700">Workspace Centropic</text>
+  <text x="64" y="88" fill="#6EC6C0" font-family=""IBM Plex Sans", system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">DASHBOARD</text>
+  <text x="64" y="122" fill="#E8EEF7" font-family=""IBM Plex Sans", system-ui, sans-serif" font-size="28" font-weight="700">Workspace Centropic</text>
   
   <g font-family="sans-serif">
     <rect x="64" y="160" width="180" height="280" rx="14" fill="#0B1220" stroke="#1E2A3F"/>
-    <text x="84" y="200" fill="#00F0FF" font-size="12" font-weight="700">MENU</text>
+    <text x="84" y="200" fill="#6EC6C0" font-size="12" font-weight="700">MENU</text>
     <text x="84" y="230" fill="#E8EEF7" font-size="13">Dashboard</text><text x="84" y="258" fill="#8B9BB4" font-size="13">Storico</text><text x="84" y="286" fill="#8B9BB4" font-size="13">Crediti</text><text x="84" y="314" fill="#8B9BB4" font-size="13">Guida</text><text x="84" y="342" fill="#8B9BB4" font-size="13">Impostazioni</text><text x="84" y="370" fill="#8B9BB4" font-size="13">GEO Charts</text>
-    <rect x="270" y="160" width="420" height="130" rx="14" fill="#0B1220" stroke="#00F0FF" stroke-opacity=".35"/>
+    <rect x="270" y="160" width="420" height="130" rx="14" fill="#0B1220" stroke="#6EC6C0" stroke-opacity=".35"/>
     <text x="294" y="205" fill="#8B9BB4" font-size="12">ULTIMA ANALISI</text>
     <text x="294" y="245" fill="#E8EEF7" font-size="22" font-weight="700">example.com · BBB</text>
     <text x="294" y="275" fill="#8B9BB4" font-size="13">AIO 78 · GEO 71 · 12 findings</text>
     <rect x="710" y="160" width="186" height="130" rx="14" fill="#0B1220" stroke="#1E2A3F"/>
     <text x="734" y="210" fill="#8B9BB4" font-size="12">TOKEN</text>
-    <text x="734" y="255" fill="#00F0FF" font-size="28" font-weight="700">240</text>
+    <text x="734" y="255" fill="#6EC6C0" font-size="28" font-weight="700">240</text>
     <rect x="270" y="310" width="626" height="130" rx="14" fill="#0B1220" stroke="#1E2A3F"/>
     <text x="294" y="355" fill="#8B9BB4" font-size="12">ENGINE BREAKDOWN</text>
     <text x="294" y="395" fill="#E8EEF7" font-size="14">ChatGPT · Gemini* · Claude · Perplexity · Grok · Azure*</text>
     <text x="294" y="420" fill="#8B9BB4" font-size="12">* proxy onesti dove non esiste API nativa Overview/Copilot</text>
   </g>
 
-  <text x="64" y="480" fill="#8B9BB4" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <text x="64" y="480" fill="#8B9BB4" font-family=""IBM Plex Sans", system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
 </svg>

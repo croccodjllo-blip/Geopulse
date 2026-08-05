@@ -1,18 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="f-holo" x1="10" y1="54" x2="54" y2="10" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0066FF"/>
-      <stop offset="0.5" stop-color="#00F0FF"/>
-      <stop offset="1" stop-color="#8A2BE2"/>
+    <linearGradient id="f-core" x1="32" y1="48" x2="32" y2="14" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3D8F8A"/>
+      <stop offset="1" stop-color="#9FE8E2"/>
     </linearGradient>
-    <filter id="f-glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="1.2" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#080B10"/>
-  <circle cx="32" cy="32" r="26" stroke="url(#f-holo)" stroke-opacity="0.35" stroke-width="1" fill="none"/>
-  <path d="M32 46c9-1 14-7 13-14s-8-11-14-10c-5 1-8 6-7 11" stroke="url(#f-holo)" stroke-width="1.4" stroke-linecap="round" fill="none" filter="url(#f-glow)"/>
-  <path d="M32 48V18" stroke="url(#f-holo)" stroke-width="2.4" stroke-linecap="round" filter="url(#f-glow)"/>
-  <path d="M32 12 L40 24 L32 21 L24 24 Z" fill="url(#f-holo)" filter="url(#f-glow)"/>
+  <rect width="64" height="64" rx="12" fill="#04060A"/>
+  <circle cx="32" cy="32" r="22" stroke="#1A222D" stroke-width="1.25" fill="none"/>
+  <circle cx="32" cy="32" r="16" stroke="#6EC6C0" stroke-opacity="0.75" stroke-width="1.15" fill="none"/>
+  <path d="M32 46 V18" stroke="url(#f-core)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M32 12 L39 23 H25 Z" fill="url(#f-core)"/>
+  <circle cx="32" cy="32" r="2.4" fill="#6EC6C0"/>
 </svg>
