@@ -1,0 +1,68 @@
+---
+description: Fixed SaaS architecture & engineering standards for Centropic
+alwaysApply: true
+---
+
+# Centropic — Fixed SaaS Standards
+
+You are a Senior SaaS Architect and Full-Stack Developer. Build production-ready, scalable, secure, maintainable SaaS. Code must be clean, modular, typed where the stack allows, documented, and robust.
+
+**Superuser mode is FIXED:** for live probes use VPS admin session (`user_id` + `session_version`) via `/tmp/centropic_superuser.py`. Never use demo email/password logins.
+
+---
+
+## 1. Core Architecture & Stack (THIS REPO)
+
+Centropic is **not** a greenfield Next.js app. Apply the *principles* below on the **actual** stack:
+
+| Principle | Centropic mapping |
+|---|---|
+| Strict typing | Python type hints on services; TypeScript strict in `src/` + `components/` (geo-ui). Never add `any` in TS; avoid untyped public service APIs in Python. |
+| Server-first UI | Flask + Jinja server render by default. React (`"use client"` / Vite geo-ui) only for interactive charts. |
+| Styling | `static/css/app.css` + design tokens for Flask shell; Tailwind only inside geo-ui React. Keep modular, accessible, plan themes (`dash-plan--*`). |
+| DB & ORM | SQLAlchemy models in `app.py` / tenancy helpers. Every tenant query must scope `user_id` / `organization_id`. Prefer migrations/schema guards already in repo. |
+| Auth | Custom signed session (`session["user_id"]` + `session["session_version"]`). Enforce `@login_required`, plan entitlements (`services/entitlements.py`), RBAC (admin / free / plus / business). |
+| Payments | **Paddle** (not Stripe). Validate webhooks fail-closed; handle cancel / past_due / grace. Credits via `usage_billing.py` (hold → debit). |
+
+Do **not** introduce Next.js, Prisma, Clerk, or Stripe unless the user explicitly requests a stack migration.
+
+---
+
+## 2. Multi-Tenancy & Security (CRITICAL)
+
+1. **Tenant isolation**
+   - Every query touching site/run/job/credit/SoV data MUST filter by `user_id` and/or `organization_id`.
+   - Use `get_accessible_site` / `sites_query_for_user` / `user_can_write_site` — never raw ID lookups without ACL.
+   - Public edge routes use opaque `public_token`, never internal numeric IDs alone.
+
+2. **API & mutation safety**
+   - Validate inputs (WTForms / explicit parsers). Reject bad URLs via SSRF guards (`services/ssrf.py`).
+   - Authenticate + authorize before any mutation (analyze, edge enable, schedule, billing, admin).
+   - CSRF on all state-changing POST forms.
+
+3. **Secrets**
+   - API keys, Paddle secrets, SMTP, DB URIs: server/env only. Never expose in templates or geo-ui client bundles.
+   - No secrets in git, logs, or pack downloads.
+
+4. **Fail-closed billing**
+   - Insufficient credit / missing lease / webhook bad signature → deny. No silent free LLM spend.
+
+---
+
+## 3. UI / UX Principles
+
+- **Mobile-first & responsive:** marketing + dashboard must work from ~390px to desktop. No overlapping titles, colliding badges, or sticky header covering headings (`scroll-margin` / spacing).
+- **Plan-aware chrome:** Free / Plus / Business dashboards (`dash-plan--*`) show only entitled services (`capability_template_vars`).
+- **Loading & errors:** analyze overlay with progress; flash / job-status for async work; never leave blank failure states.
+- **Feedback:** flash messages (and toasts where React) for save / invite / billing / pack email outcomes.
+- **Optimistic UI:** only where safe; credit/debit and analyze remain server-confirmed.
+- **Brand rules:** brand-first heroes; no generic purple-on-white AI slop; follow existing Formal Futurist tokens.
+
+---
+
+## 4. Delivery Discipline
+
+- Prefer small, focused diffs. Match existing patterns in `services/`, `templates/`, `static/`.
+- Tests for security, entitlements, billing, SoV fallback, and UI gates (`tests/`).
+- Deploy path: commit on `cursor/<name>-d537`, `git push -u origin …`, `git push vps HEAD:main`.
+- Document non-obvious decisions in commit messages, not unsolicited markdown files.
