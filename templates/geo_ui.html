@@ -23,7 +23,7 @@
   href="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.recharts) }}"
 />
 {% endif %}
-<script
+<script nonce="{{ csp_nonce }}"
   type="module"
   crossorigin
   src="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.js) }}"

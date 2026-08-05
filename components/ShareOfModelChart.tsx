@@ -122,16 +122,16 @@ export function ShareOfModelChart({
           >
             <defs>
               <linearGradient id="colorCentropic" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6EC6C0" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#6EC6C0" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#C9D3DD" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#C9D3DD" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="colorCompA" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4A7C8C" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#4A7C8C" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#5B6B7A" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#5B6B7A" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <CartesianGrid
-              stroke="#1F2937"
+              stroke="#1A222D"
               strokeDasharray="3 3"
               vertical={false}
             />
@@ -140,13 +140,13 @@ export function ShareOfModelChart({
               axisLine={false}
               tickLine={false}
               fontSize={11}
-              stroke="#94A3B8"
+              stroke="#8B97A8"
             />
             <YAxis
               axisLine={false}
               tickLine={false}
               fontSize={11}
-              stroke="#94A3B8"
+              stroke="#8B97A8"
               unit="%"
             />
             <Tooltip
@@ -161,7 +161,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="centropic"
-              stroke="#6EC6C0"
+              stroke="#C9D3DD"
               strokeWidth={2}
               fill="url(#colorCentropic)"
               fillOpacity={1}
@@ -169,7 +169,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="competitorA"
-              stroke="#4A7C8C"
+              stroke="#5B6B7A"
               strokeWidth={1.5}
               fill="url(#colorCompA)"
               fillOpacity={1}

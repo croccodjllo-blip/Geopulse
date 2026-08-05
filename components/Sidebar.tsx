@@ -64,9 +64,9 @@ function LogoMark({ src }: { src?: string }) {
     >
       <defs>
         <linearGradient id="sidebarLogoGrad" x1="10" y1="54" x2="54" y2="10">
-          <stop stopColor="#4A7C8C" />
-          <stop offset="0.5" stopColor="#6EC6C0" />
-          <stop offset="1" stopColor="#3D8B9A" />
+          <stop stopColor="#5B6B7A" />
+          <stop offset="0.5" stopColor="#C9D3DD" />
+          <stop offset="1" stopColor="#8B97A8" />
         </linearGradient>
       </defs>
       <circle cx="32" cy="32" r="26" stroke="url(#sidebarLogoGrad)" strokeOpacity="0.35" strokeWidth="1" />

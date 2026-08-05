@@ -20,7 +20,7 @@ const SIZE = {
 } as const;
 
 /**
- * centropic.ai wordmark — Formal Futurist (Space Grotesk + Instrument Teal).
+ * centropic.ai wordmark — Logo Chrome (Inter + chrome/silver accent).
  */
 export function BrandLockup({
   size = "md",
@@ -43,11 +43,11 @@ export function BrandLockup({
       ) : null}
       <div className="flex flex-col gap-1 min-w-0">
         <p
-          className={`m-0 font-bold lowercase text-[#F5F7FA] ${s.text}`}
-          style={{ fontFamily: '"Space Grotesk", "IBM Plex Sans", system-ui, sans-serif' }}
+          className={`m-0 font-bold lowercase text-[#E8EEF4] ${s.text}`}
+          style={{ fontFamily: '"Inter", system-ui, sans-serif' }}
         >
           centropic
-          <span className="font-semibold text-[#6EC6C0]">.ai</span>
+          <span className="font-semibold text-[#C9D3DD]">.ai</span>
         </p>
         {showTagline ? (
           <span className="text-[0.65rem] md:text-xs uppercase tracking-[0.18em] text-[#8B97A8]">

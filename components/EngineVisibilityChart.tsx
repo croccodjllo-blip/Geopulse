@@ -21,8 +21,8 @@ export type EngineBarPoint = {
 
 const TONE: Record<NonNullable<EngineBarPoint["tone"]>, string> = {
   emerald: "#34d399",
-  cyan: "#6EC6C0",
-  violet: "#4A7C8C",
+  cyan: "#C9D3DD",
+  violet: "#5B6B7A",
   amber: "#fbbf24",
 };
 
@@ -62,7 +62,7 @@ export function EngineVisibilityChart({
             margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
           >
             <CartesianGrid
-              stroke="#1F2937"
+              stroke="#1A222D"
               strokeDasharray="3 3"
               vertical={false}
             />
@@ -71,24 +71,24 @@ export function EngineVisibilityChart({
               axisLine={false}
               tickLine={false}
               fontSize={11}
-              stroke="#94A3B8"
+              stroke="#8B97A8"
             />
             <YAxis
               axisLine={false}
               tickLine={false}
               fontSize={11}
-              stroke="#94A3B8"
+              stroke="#8B97A8"
               unit="%"
               domain={[0, 100]}
             />
             <Tooltip
-              cursor={{ fill: "rgba(110,198,192,0.06)" }}
+              cursor={{ fill: "rgba(201,211,221,0.06)" }}
               contentStyle={{
-                background: "#111827",
-                border: "1px solid #1F2937",
+                background: "#0A0E14",
+                border: "1px solid #1A222D",
                 borderRadius: 8,
                 fontSize: 12,
-                color: "#F8FAFC",
+                color: "#E8EEF4",
               }}
               formatter={(value) => [`${value}%`, "SoV"]}
             />

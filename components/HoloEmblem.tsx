@@ -57,7 +57,7 @@ export function HoloEmblem({
     let raf = 0;
     let t = 0;
     const color = (h: Particle["hue"]) =>
-      h === "violet" ? "rgba(61,139,154,0.85)" : h === "blue" ? "rgba(74,124,140,0.8)" : "rgba(110,198,192,0.9)";
+      h === "violet" ? "rgba(139,151,168,0.85)" : h === "blue" ? "rgba(91,107,122,0.8)" : "rgba(201,211,221,0.9)";
 
     const tick = () => {
       t += 1;
@@ -95,7 +95,7 @@ export function HoloEmblem({
     <div
       className={
         className ||
-        "relative inline-grid place-items-center rounded-full bg-[#080B10] shadow-[0_0_40px_rgba(110,198,192,0.22),0_0_80px_rgba(61,139,154,0.12)]"
+        "relative inline-grid place-items-center rounded-full bg-[#04060A] shadow-[0_0_40px_rgba(201,211,221,0.22),0_0_80px_rgba(139,151,168,0.12)]"
       }
       style={{ width: size, height: size }}
       role="img"
@@ -110,19 +110,19 @@ export function HoloEmblem({
       >
         <defs>
           <linearGradient id={`${uid}-holo`} x1="20" y1="110" x2="108" y2="18" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#4A7C8C" />
-            <stop offset="0.45" stopColor="#6EC6C0" />
-            <stop offset="1" stopColor="#3D8B9A" />
+            <stop stopColor="#5B6B7A" />
+            <stop offset="0.45" stopColor="#C9D3DD" />
+            <stop offset="1" stopColor="#8B97A8" />
           </linearGradient>
           <linearGradient id={`${uid}-metal`} x1="32" y1="96" x2="96" y2="28" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#7DD3FC" stopOpacity="0.15" />
-            <stop offset="0.5" stopColor="#6EC6C0" stopOpacity="0.55" />
-            <stop offset="1" stopColor="#3D8B9A" stopOpacity="0.35" />
+            <stop stopColor="#D7DEE5" stopOpacity="0.15" />
+            <stop offset="0.5" stopColor="#C9D3DD" stopOpacity="0.55" />
+            <stop offset="1" stopColor="#8B97A8" stopOpacity="0.35" />
           </linearGradient>
           <radialGradient id={`${uid}-core`} cx="50%" cy="58%" r="42%">
-            <stop stopColor="#6EC6C0" stopOpacity="0.95" />
-            <stop offset="0.45" stopColor="#4A7C8C" stopOpacity="0.55" />
-            <stop offset="1" stopColor="#3D8B9A" stopOpacity="0" />
+            <stop stopColor="#C9D3DD" stopOpacity="0.95" />
+            <stop offset="0.45" stopColor="#5B6B7A" stopOpacity="0.55" />
+            <stop offset="1" stopColor="#8B97A8" stopOpacity="0" />
           </radialGradient>
           <filter id={`${uid}-glow`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="2.2" result="b" />
@@ -133,26 +133,26 @@ export function HoloEmblem({
           </filter>
         </defs>
 
-        <circle cx="64" cy="64" r="58" fill="#080B10" stroke={`url(#${uid}-metal)`} strokeWidth="1.2" />
+        <circle cx="64" cy="64" r="58" fill="#04060A" stroke={`url(#${uid}-metal)`} strokeWidth="1.2" />
         <g className="origin-center animate-[spin_28s_linear_infinite]" style={{ transformOrigin: "64px 64px" }}>
-          <ellipse cx="64" cy="64" rx="40" ry="16" stroke="#6EC6C0" strokeOpacity="0.28" strokeWidth="0.9" transform="rotate(-28 64 64)" fill="none" />
-          <ellipse cx="64" cy="64" rx="36" ry="14" stroke="#3D8B9A" strokeOpacity="0.22" strokeWidth="0.8" transform="rotate(38 64 64)" fill="none" />
+          <ellipse cx="64" cy="64" rx="40" ry="16" stroke="#C9D3DD" strokeOpacity="0.28" strokeWidth="0.9" transform="rotate(-28 64 64)" fill="none" />
+          <ellipse cx="64" cy="64" rx="36" ry="14" stroke="#8B97A8" strokeOpacity="0.22" strokeWidth="0.8" transform="rotate(38 64 64)" fill="none" />
         </g>
 
         <g filter={`url(#${uid}-glow)`} className="origin-center animate-[spin_18s_linear_infinite_reverse]" style={{ transformOrigin: "64px 72px" }}>
           <path d="M64 92c18-2 28-14 26-28s-16-22-28-20c-10 2-16 12-14 22" stroke={`url(#${uid}-holo)`} strokeWidth="1.6" strokeLinecap="round" fill="none" />
-          <path d="M64 86c14-1 22-11 20-22s-12-17-22-15c-8 1.5-12.5 9.5-11 17" stroke="#4A7C8C" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.85" />
-          <path d="M64 80c10 0 16-8 14.5-15.5S70 54 64 55.5s-8.5 6.5-7.5 12" stroke="#3D8B9A" strokeWidth="1.1" strokeLinecap="round" fill="none" opacity="0.9" />
+          <path d="M64 86c14-1 22-11 20-22s-12-17-22-15c-8 1.5-12.5 9.5-11 17" stroke="#5B6B7A" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.85" />
+          <path d="M64 80c10 0 16-8 14.5-15.5S70 54 64 55.5s-8.5 6.5-7.5 12" stroke="#8B97A8" strokeWidth="1.1" strokeLinecap="round" fill="none" opacity="0.9" />
         </g>
 
-        <g stroke="#6EC6C0" strokeOpacity="0.35" strokeWidth="0.7" fill="none">
+        <g stroke="#C9D3DD" strokeOpacity="0.35" strokeWidth="0.7" fill="none">
           <path d="M22 48h10v6h6" />
           <path d="M106 74h-9v-5h-5" />
           <path d="M28 86h8m0 0v5m0-5h4" />
           <path d="M96 40h-7m0 0v-4m0 4h-4" />
         </g>
 
-        <g fill="#6EC6C0" fillOpacity="0.28" fontFamily="ui-monospace, monospace" fontSize="5.2">
+        <g fill="#C9D3DD" fillOpacity="0.28" fontFamily="ui-monospace, monospace" fontSize="5.2">
           <text x="18" y="34">01</text>
           <text x="102" y="30">10</text>
           <text x="16" y="102">11</text>
@@ -179,7 +179,7 @@ export function HoloEmblem({
       ) : null}
 
       <div
-        className="pointer-events-none absolute inset-[8%] z-0 rounded-full bg-[radial-gradient(circle_at_50%_40%,rgba(110,198,192,0.18),transparent_55%),radial-gradient(circle_at_60%_70%,rgba(61,139,154,0.16),transparent_50%)] animate-pulse"
+        className="pointer-events-none absolute inset-[8%] z-0 rounded-full bg-[radial-gradient(circle_at_50%_40%,rgba(201,211,221,0.18),transparent_55%),radial-gradient(circle_at_60%_70%,rgba(139,151,168,0.16),transparent_50%)] animate-pulse"
         aria-hidden
       />
     </div>

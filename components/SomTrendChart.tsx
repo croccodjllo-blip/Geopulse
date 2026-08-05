@@ -22,10 +22,10 @@ export type SomTrendChartProps = {
   className?: string;
 };
 
-const CYAN = "#6EC6C0";
-const VIOLET = "#4A7C8C";
-const MUTED = "#94A3B8";
-const BORDER = "#1F2937";
+const CYAN = "#C9D3DD";
+const VIOLET = "#5B6B7A";
+const MUTED = "#8B97A8";
+const BORDER = "#1A222D";
 
 function formatTick(value: string) {
   if (!value) return "";
@@ -97,10 +97,10 @@ export function SomTrendChart({
           />
           <Tooltip
             contentStyle={{
-              background: "#111827",
+              background: "#0A0E14",
               border: `1px solid ${BORDER}`,
               borderRadius: 8,
-              color: "#F8FAFC",
+              color: "#E8EEF4",
               fontSize: 12,
             }}
             labelFormatter={(l) => String(l)}
@@ -113,7 +113,7 @@ export function SomTrendChart({
             strokeWidth={2.5}
             fill="url(#somFill)"
             dot={{ r: 3, fill: CYAN, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: CYAN, stroke: "#0B0F19", strokeWidth: 2 }}
+            activeDot={{ r: 5, fill: CYAN, stroke: "#04060A", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>
