@@ -2293,7 +2293,7 @@ def free_site_count(user_id: int) -> int:
 
 def free_analyses_exhausted(user: User) -> bool:
     """True solo se Free non può avviare nulla di nuovo e non ha siti da ri-analizzare."""
-    if user.is_pro:
+    if is_unlimited_user(user) or user.is_pro:
         return False
     if free_site_count(user.id) > 0:
         # Può sempre ri-misurare il sito già registrato (loop attivazione).
@@ -2303,7 +2303,7 @@ def free_analyses_exhausted(user: User) -> bool:
 
 def free_upsell_suggested(user: User) -> bool:
     """Soft upsell dopo le analisi Free iniziali (senza bloccare il remesure)."""
-    if user.is_pro:
+    if is_unlimited_user(user) or user.is_pro:
         return False
     return analyses_total(user.id) >= FREE_TOTAL_ANALYSES
 
@@ -2362,7 +2362,12 @@ def enforce_analyze_limits(
     Plus: tetto giornaliero su AnalysisRun (DB).
     Nota: la race residua è mitigata da UniqueConstraint(user_id,url) e
     dal rate limiter SQLite condiviso su API/dashboard.
+    Internal/admin (is_unlimited_user): no site/analysis soft caps — feature
+    gates via entitlements still apply.
     """
+    if is_unlimited_user(user):
+        return None
+
     site_count = sites_query_for_user(SiteAnalysis, user).count()
     max_sites = user.max_sites
     if existing is None and site_count >= max_sites:
