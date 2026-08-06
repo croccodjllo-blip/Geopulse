@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-06 12:48+0000\n"
+"POT-Creation-Date: 2026-08-06 15:53+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -458,43 +458,44 @@ msgid ""
 "    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
 "(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
 "measured resta una diagnosi, non una prova di citazione.</p>\n"
-"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
-"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
-"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"    <p class=\"lede\">Centropic mostra l’evidence badge su ogni finding: "
+"Stimato, Misto o Misurato. Dettagli in <a "
+"href=\"/metodologia\">metodologia</a> e nel prodotto su <a "
+"href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
-"\n"
-"  <section class=\"page-section\">\n"
+"<section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Score AIO / GEO</h2>\n"
-"    <p class=\"lede\">Indizes 0–100 aus Crawl und Probes. Estimated-Badge"
-" auf dem Composite; einzelne Datei-Präsenzchecks können Measured "
-"sein.</p>\n"
+"    <p class=\"lede\">Indizes 0–100 von Crawl und Probe. Geschätztes "
+"Badge auf dem Komposit; einzelne Dateiprüfungen können gemessen "
+"werden.</p>\n"
 "    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> belohnt"
 " Lesbarkeit für KI-Systeme: Entity, Schema, FAQ, llms.txt, Meta. "
 "<strong>GEO (Generative Engine Optimization)</strong> belohnt "
-"Zitierbarkeit und KI-Crawler-Policy.</p>\n"
+"Zitierbarkeit und KI-Crawler-Richtlinien.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>: eine Formel auf AIO/GEO + "
-"beobachteter robots.txt. <strong>Measured</strong>: Prompt-Polling auf "
-"LLMs (Plus/Business) mit Zählung der Markenerwähnungen. Beide nicht "
-"verwechseln.</p>\n"
-"    <p class=\"lede\">Um SoV measured zu erhöhen: öffentliche Entity "
-"stärken (llms.txt, Organization, about), zitierbare Inhalte "
-"veröffentlichen und die Prompt Bank mit Fragen erweitern, die dein Markt "
-"tatsächlich stellt.</p>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: Formel zu AIO/GEO + "
+"beobachtete Robots. <strong>Measured</strong>: Umfrageaufforderung zu LLM"
+" (Plus/Business) mit Zählung der Markenmentions. Verwechsle die beiden "
+"nicht.</p>\n"
+"    <p class=\"lede\">Um SoV measured zu erhöhen: verstärke öffentliche "
+"Entities (llms.txt, Organization, about), veröffentliche zitierbare "
+"Inhalte, erweitere die Prompt-Bank mit Fragen, die dein Markt wirklich "
+"stellt.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">Wie man sie gemeinsam liest</h2>\n"
-"    <p class=\"lede\">Zuerst die Signale erhöhen (Score), dann die Stimme"
-" messen (SoV). Eine hohe SoV mit niedrigem Score ist fragil; ein hoher "
-"Score ohne SoV measured bleibt eine Diagnose, kein Zitat-Nachweis.</p>\n"
-"    <p class=\"lede\">Centropic zeigt immer das Evidence-Badge: "
-"Estimated, Mixed oder Measured. Details in der <a "
-"href=\"/metodologia\">Methodik</a> und im Produkt unter <a "
+"    <h2 class=\"page-section__title\">Wie man sie zusammen liest</h2>\n"
+"    <p class=\"lede\">Erhöhe zuerst die Signale (Score), dann messe die "
+"Stimme (SoV). Ein hoher SoV mit niedrigem Score ist fragil; ein hoher "
+"Score ohne SoV measured bleibt eine Diagnose, kein Beweis für "
+"Zitierung.</p>\n"
+"    <p class=\"lede\">Centropic zeigt das Evidence-Badge bei jedem "
+"Finding: Geschätzt, Gemischt oder Gemessen. Details in <a "
+"href=\"/metodologia\">Methodologie</a> und im Produkt auf <a "
 "href=\"/prodotto\">/prodotto</a>.</p>\n"
-"  </section>\n"
+"  </section>"
 
 #: services/site_guide.py:16
 msgid ""
@@ -1888,7 +1889,7 @@ msgid "Canali"
 msgstr "Kanäle"
 
 #: templates/contact.html:20 templates/forgot_password.html:25
-#: templates/login.html:23 templates/partials/login_modal.html:36
+#: templates/login.html:35 templates/partials/login_modal.html:36
 #: templates/pro_interest.html:38 templates/register.html:34
 msgid "Email"
 msgstr "E-Mail"
@@ -2805,7 +2806,7 @@ msgstr ""
 msgid "Torna all’accesso"
 msgstr "Zurück zur Anmeldung"
 
-#: templates/forgot_password.html:35 templates/login.html:37
+#: templates/forgot_password.html:35 templates/login.html:49
 #: templates/partials/login_modal.html:69 templates/privacy.html:83
 #: templates/register.html:17 templates/termini.html:82
 msgid "Crea account"
@@ -3178,11 +3179,11 @@ msgstr "02 · Diagnose"
 
 #: templates/landing.html:115
 msgid ""
-"Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati "
-"Stimato o Misurato."
+"Score AIO/GEO chiaro e findings ordinati per urgenza, con badge Stimato o"
+" Misurato su ogni finding."
 msgstr ""
-"Ein klarer AIO/GEO-Score und nach Dringlichkeit sortierte Findings, immer"
-" als Geschätzt oder Gemessen gekennzeichnet."
+"Score AIO/GEO klar und Findings nach Dringlichkeit geordnet, mit "
+"geschätztem oder gemessenem Badge bei jedem Finding."
 
 #: templates/landing.html:118
 msgid "03 · Pubblicazione"
@@ -3379,20 +3380,50 @@ msgstr ""
 "(Generative Engine Optimization) Scores, Ergebnisse und Paket llms.txt"
 "/JSON-LD."
 
-#: templates/login.html:18 templates/partials/login_modal.html:21
+#: templates/login.html:15 templates/login.html:30
+#: templates/partials/login_modal.html:21
 msgid "Accesso"
 msgstr "Zugang"
 
-#: templates/login.html:19 templates/partials/login_modal.html:22
+#: templates/login.html:16
+msgid "Bentornato su Centropic"
+msgstr "Willkommen zurück bei Centropic"
+
+#: templates/login.html:18
+msgid ""
+"Entra in dashboard per analizzare un dominio pubblico, leggere findings "
+"AIO/GEO prioritizzati e pubblicare il pack (llms.txt, JSON-LD, robots). "
+"Piano Free senza carta; Plus e Business aggiungono monitoraggio continuo,"
+" SoV Misurato e re-scan."
+msgstr ""
+"Gehe zum Dashboard, um eine öffentliche Domain zu analysieren, "
+"priorisierte AIO/GEO Findings zu lesen und das Paket (llms.txt, JSON-LD, "
+"Robots) zu veröffentlichen. Kostenloser Plan ohne Kreditkarte; Plus und "
+"Business fügen kontinuierliches Monitoring, gemessenen SoV und erneutes "
+"Scannen hinzu."
+
+#: templates/login.html:21
+msgid ""
+"Il popup Accedi si apre automaticamente. Se non compare, usa il link "
+"Accedi nell’header oppure abilita JavaScript."
+msgstr ""
+"Das Popup Anmelden öffnet sich automatisch. Wenn es nicht erscheint, "
+"verwende den Anmelden-Link im Header oder aktiviere JavaScript."
+
+#: templates/login.html:22
+msgid "Apri accesso"
+msgstr "Zugriff öffnen"
+
+#: templates/login.html:31 templates/partials/login_modal.html:22
 msgid "Bentornato"
 msgstr "Willkommen zurück"
 
-#: templates/login.html:27 templates/partials/login_modal.html:41
+#: templates/login.html:39 templates/partials/login_modal.html:41
 #: templates/register.html:46
 msgid "Password"
 msgstr "Passwort"
 
-#: templates/login.html:32 templates/partials/login_modal.html:58
+#: templates/login.html:44 templates/partials/login_modal.html:58
 msgid "Resta connesso su questo dispositivo (30 giorni)"
 msgstr "Auf diesem Gerät angemeldet bleiben (30 Tage)"
 

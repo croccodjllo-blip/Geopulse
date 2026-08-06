@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-06 12:48+0000\n"
+"POT-Creation-Date: 2026-08-06 15:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,9 +284,10 @@ msgid ""
 "    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
 "(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
 "measured resta una diagnosi, non una prova di citazione.</p>\n"
-"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
-"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
-"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"    <p class=\"lede\">Centropic mostra l’evidence badge su ogni finding: "
+"Stimato, Misto o Misurato. Dettagli in <a "
+"href=\"/metodologia\">metodologia</a> e nel prodotto su <a "
+"href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 
@@ -1510,7 +1511,7 @@ msgid "Canali"
 msgstr ""
 
 #: templates/contact.html:20 templates/forgot_password.html:25
-#: templates/login.html:23 templates/partials/login_modal.html:36
+#: templates/login.html:35 templates/partials/login_modal.html:36
 #: templates/pro_interest.html:38 templates/register.html:34
 msgid "Email"
 msgstr ""
@@ -2372,7 +2373,7 @@ msgstr ""
 msgid "Torna all’accesso"
 msgstr ""
 
-#: templates/forgot_password.html:35 templates/login.html:37
+#: templates/forgot_password.html:35 templates/login.html:49
 #: templates/partials/login_modal.html:69 templates/privacy.html:83
 #: templates/register.html:17 templates/termini.html:82
 msgid "Crea account"
@@ -2711,8 +2712,8 @@ msgstr ""
 
 #: templates/landing.html:115
 msgid ""
-"Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati "
-"Stimato o Misurato."
+"Score AIO/GEO chiaro e findings ordinati per urgenza, con badge Stimato o"
+" Misurato su ogni finding."
 msgstr ""
 
 #: templates/landing.html:118
@@ -2876,20 +2877,43 @@ msgid ""
 "(Generative Engine Optimization), findings e pack llms.txt/JSON-LD."
 msgstr ""
 
-#: templates/login.html:18 templates/partials/login_modal.html:21
+#: templates/login.html:15 templates/login.html:30
+#: templates/partials/login_modal.html:21
 msgid "Accesso"
 msgstr ""
 
-#: templates/login.html:19 templates/partials/login_modal.html:22
+#: templates/login.html:16
+msgid "Bentornato su Centropic"
+msgstr ""
+
+#: templates/login.html:18
+msgid ""
+"Entra in dashboard per analizzare un dominio pubblico, leggere findings "
+"AIO/GEO prioritizzati e pubblicare il pack (llms.txt, JSON-LD, robots). "
+"Piano Free senza carta; Plus e Business aggiungono monitoraggio continuo,"
+" SoV Misurato e re-scan."
+msgstr ""
+
+#: templates/login.html:21
+msgid ""
+"Il popup Accedi si apre automaticamente. Se non compare, usa il link "
+"Accedi nell’header oppure abilita JavaScript."
+msgstr ""
+
+#: templates/login.html:22
+msgid "Apri accesso"
+msgstr ""
+
+#: templates/login.html:31 templates/partials/login_modal.html:22
 msgid "Bentornato"
 msgstr ""
 
-#: templates/login.html:27 templates/partials/login_modal.html:41
+#: templates/login.html:39 templates/partials/login_modal.html:41
 #: templates/register.html:46
 msgid "Password"
 msgstr ""
 
-#: templates/login.html:32 templates/partials/login_modal.html:58
+#: templates/login.html:44 templates/partials/login_modal.html:58
 msgid "Resta connesso su questo dispositivo (30 giorni)"
 msgstr ""
 

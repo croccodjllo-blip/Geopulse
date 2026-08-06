@@ -7174,6 +7174,25 @@ body.body-auth .site-main.site-main--auth {
   opacity: 0.14;
 }
 
+.login-page-copy {
+  position: relative;
+  z-index: 1;
+  width: var(--content-rail);
+  margin: 0 auto;
+  padding: clamp(2rem, 6vh, 3.5rem) 0 3rem;
+  box-sizing: border-box;
+}
+
+.login-page-copy .auth-help {
+  margin-top: 1.75rem;
+  max-width: min(62ch, 100%);
+}
+
+.body-login-modal .login-page-copy {
+  /* Keep crawlable copy in the DOM; modal sits above */
+  padding-bottom: 4rem;
+}
+
 .body-login-modal .flash-stack {
   position: fixed;
   top: calc(var(--header-h) + 0.75rem);

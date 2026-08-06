@@ -7,10 +7,22 @@
 {% block main_class %}site-main--flush site-main--auth{% endblock %}
 
 {% block content %}
-{# Popup is rendered from base via login_modal partial (data-auto-open). #}
-<section class="login-page-shell" aria-hidden="true">
+{# Background mark + crawlable copy (anti thin-page). Popup opens from base. #}
+<section class="login-page-shell">
   <div class="auth-aside__aurora" aria-hidden="true"></div>
   <div class="auth-aside__mark" aria-hidden="true"></div>
+  <div class="login-page-copy">
+    <p class="eyebrow">{{ _('Accesso') }}</p>
+    <h1 class="h-display auth-title">{{ _('Bentornato su Centropic') }}</h1>
+    <p class="lede auth-lede">
+      {{ _('Entra in dashboard per analizzare un dominio pubblico, leggere findings AIO/GEO prioritizzati e pubblicare il pack (llms.txt, JSON-LD, robots). Piano Free senza carta; Plus e Business aggiungono monitoraggio continuo, SoV Misurato e re-scan.') }}
+    </p>
+    <p class="lede auth-lede">
+      {{ _('Il popup Accedi si apre automaticamente. Se non compare, usa il link Accedi nell’header oppure abilita JavaScript.') }}
+      <button type="button" class="btn btn-core" data-login-open>{{ _('Apri accesso') }}</button>
+    </p>
+    {% include "partials/auth_help.html" %}
+  </div>
 </section>
 
 <noscript>

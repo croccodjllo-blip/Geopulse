@@ -203,7 +203,7 @@ def _guide_score_vs_sov() -> dict[str, Any]:
   <section class="page-section">
     <h2 class="page-section__title">Come leggerli insieme</h2>
     <p class="lede">Alza prima i segnali (score), poi misura la voce (SoV). Un SoV alto con score basso è fragile; score alto senza SoV measured resta una diagnosi, non una prova di citazione.</p>
-    <p class="lede">Centropic mostra sempre l’evidence badge: Stimato, Misto o Misurato. Dettagli in <a href="/metodologia">metodologia</a> e nel prodotto su <a href="/prodotto">/prodotto</a>.</p>
+    <p class="lede">Centropic mostra l’evidence badge su ogni finding: Stimato, Misto o Misurato. Dettagli in <a href="/metodologia">metodologia</a> e nel prodotto su <a href="/prodotto">/prodotto</a>.</p>
   </section>
 """
         ),

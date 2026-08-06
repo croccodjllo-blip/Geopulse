@@ -85,7 +85,12 @@ SKIP_PATH_RE = re.compile(
     r"|(?:^|/)crediti(?:/|$)"
     r"|(?:^|/)dashboard(?:/|$)"
     r"|(?:^|/)health(?:/|$)"
-    r"|(?:^|/)api(?:/|$))",
+    r"|(?:^|/)api(?:/|$)"
+    r"|(?:^|/)login(?:/|$)"
+    r"|(?:^|/)register(?:/|$)"
+    r"|(?:^|/)recupero-password(?:/|$)"
+    r"|(?:^|/)reset-password(?:/|$)"
+    r"|(?:^|/)nuova-password(?:/|$))",
     re.I,
 )
 # Query keys that mint near-duplicate URLs (i18n switcher, login return, ads).

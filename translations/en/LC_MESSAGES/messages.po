@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-06 12:48+0000\n"
+"POT-Creation-Date: 2026-08-06 15:53+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -449,17 +449,16 @@ msgid ""
 "    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
 "(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
 "measured resta una diagnosi, non una prova di citazione.</p>\n"
-"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
-"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
-"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"    <p class=\"lede\">Centropic mostra l’evidence badge su ogni finding: "
+"Stimato, Misto o Misurato. Dettagli in <a "
+"href=\"/metodologia\">metodologia</a> e nel prodotto su <a "
+"href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
-"\n"
-"  <section class=\"page-section\">\n"
+"Score AIO / GEO\n"
 "    <h2 class=\"page-section__title\">Score AIO / GEO</h2>\n"
-"    <p class=\"lede\">0–100 indexes from crawl and probes. Estimated "
-"badge on the composite; individual file-presence checks can be "
-"Measured.</p>\n"
+"    <p class=\"lede\">Indexes 0–100 from crawl and probe. Estimated Badge"
+" on the composite; individual file presence checks can be Measured.</p>\n"
 "    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> rewards"
 " readability for AI systems: entity, schema, FAQ, llms.txt, meta. "
 "<strong>GEO (Generative Engine Optimization)</strong> rewards citability "
@@ -467,24 +466,23 @@ msgstr ""
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>: a formula on AIO/GEO + "
-"observed robots. <strong>Measured</strong>: prompt polling on LLMs "
-"(Plus/Business) counting brand mentions. Do not confuse the two.</p>\n"
-"    <p class=\"lede\">To raise measured SoV: strengthen your public "
-"entity (llms.txt, Organization, about), publish citable content, and "
-"expand the prompt bank with the questions your market actually asks.</p>"
-"\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: formula on AIO/GEO + "
+"observed robots. <strong>Measured</strong>: polling prompt on LLM "
+"(Plus/Business) with brand mention count. Do not confuse the two.</p>\n"
+"    <p class=\"lede\">To raise SoV measured: strengthen public entity "
+"(llms.txt, Organization, about), publish citably content, expand the "
+"prompt bank with questions your market really asks.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">How to read them together</h2>\n"
-"    <p class=\"lede\">Raise the signals first (score), then measure the "
+"    <p class=\"lede\">First raise the signals (score), then measure the "
 "voice (SoV). A high SoV with a low score is fragile; a high score without"
 " measured SoV remains a diagnosis, not proof of citation.</p>\n"
-"    <p class=\"lede\">Centropic always shows the evidence badge: "
-"Estimated, Mixed, or Measured. Details in the <a "
+"    <p class=\"lede\">Centropic shows the evidence badge on each finding:"
+" Estimated, Mixed or Measured. Details in <a "
 "href=\"/metodologia\">methodology</a> and in the product at <a "
-"href=\"/prodotto\">/prodotto</a>.</p>\n"
-"  </section>\n"
+"href=\"/prodotto\">/product</a>.</p>\n"
+"  </section>"
 
 #: services/site_guide.py:16
 msgid ""
@@ -1832,7 +1830,7 @@ msgid "Canali"
 msgstr "Channels"
 
 #: templates/contact.html:20 templates/forgot_password.html:25
-#: templates/login.html:23 templates/partials/login_modal.html:36
+#: templates/login.html:35 templates/partials/login_modal.html:36
 #: templates/pro_interest.html:38 templates/register.html:34
 msgid "Email"
 msgstr "Email"
@@ -2744,7 +2742,7 @@ msgstr ""
 msgid "Torna all’accesso"
 msgstr "Return to login"
 
-#: templates/forgot_password.html:35 templates/login.html:37
+#: templates/forgot_password.html:35 templates/login.html:49
 #: templates/partials/login_modal.html:69 templates/privacy.html:83
 #: templates/register.html:17 templates/termini.html:82
 msgid "Crea account"
@@ -3112,11 +3110,11 @@ msgstr "02 · Diagnosis"
 
 #: templates/landing.html:115
 msgid ""
-"Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati "
-"Stimato o Misurato."
+"Score AIO/GEO chiaro e findings ordinati per urgenza, con badge Stimato o"
+" Misurato su ogni finding."
 msgstr ""
-"A clear AIO/GEO score and findings sorted by urgency, always labeled "
-"Estimated or Measured."
+"Clear AIO/GEO score and findings sorted by urgency, with Estimated or "
+"Measured badge on each finding."
 
 #: templates/landing.html:118
 msgid "03 · Pubblicazione"
@@ -3306,20 +3304,49 @@ msgstr ""
 "(Generative Engine Optimization) scores, findings, and llms.txt/JSON-LD "
 "pack."
 
-#: templates/login.html:18 templates/partials/login_modal.html:21
+#: templates/login.html:15 templates/login.html:30
+#: templates/partials/login_modal.html:21
 msgid "Accesso"
 msgstr "Access"
 
-#: templates/login.html:19 templates/partials/login_modal.html:22
+#: templates/login.html:16
+msgid "Bentornato su Centropic"
+msgstr "Welcome back to Centropic"
+
+#: templates/login.html:18
+msgid ""
+"Entra in dashboard per analizzare un dominio pubblico, leggere findings "
+"AIO/GEO prioritizzati e pubblicare il pack (llms.txt, JSON-LD, robots). "
+"Piano Free senza carta; Plus e Business aggiungono monitoraggio continuo,"
+" SoV Misurato e re-scan."
+msgstr ""
+"Enter the dashboard to analyze a public domain, read prioritized AIO/GEO "
+"findings, and publish the pack (llms.txt, JSON-LD, robots). Free plan "
+"with no credit card; Plus and Business add continuous monitoring, "
+"Measured SoV, and re-scan."
+
+#: templates/login.html:21
+msgid ""
+"Il popup Accedi si apre automaticamente. Se non compare, usa il link "
+"Accedi nell’header oppure abilita JavaScript."
+msgstr ""
+"The Login popup opens automatically. If it doesn't appear, use the Login "
+"link in the header or enable JavaScript."
+
+#: templates/login.html:22
+msgid "Apri accesso"
+msgstr "Open access"
+
+#: templates/login.html:31 templates/partials/login_modal.html:22
 msgid "Bentornato"
 msgstr "Welcome back"
 
-#: templates/login.html:27 templates/partials/login_modal.html:41
+#: templates/login.html:39 templates/partials/login_modal.html:41
 #: templates/register.html:46
 msgid "Password"
 msgstr "Password"
 
-#: templates/login.html:32 templates/partials/login_modal.html:58
+#: templates/login.html:44 templates/partials/login_modal.html:58
 msgid "Resta connesso su questo dispositivo (30 giorni)"
 msgstr "Stay logged in on this device (30 days)"
 

@@ -11,9 +11,11 @@ STAT_RE = re.compile(
 )
 QUOTE_RE = re.compile(r"[«\"].{12,180}[»\"]")
 # Evita falsi positivi su disclaimers: "non ranking garantito", "non garantiamo", ecc.
+# Bare "sempre" is too noisy on honest methodology copy ("sempre etichettati…").
+# Keep absolute-claim stems that imply superiority / certainty.
 CLAIM_RE = re.compile(
     r"(?<!\bnon\s)(?<!\bnon\suna\s)(?<!\bnessun\s)"
-    r"\b(garantiamo|il migliore|n[°o]\s*1|sempre|100%\s*accurat|(?<!\bnon\s)ranking\s+garantito)\b",
+    r"\b(garantiamo|il migliore|n[°o]\s*1|100%\s*accurat|(?<!\bnon\s)ranking\s+garantito)\b",
     re.I,
 )
 

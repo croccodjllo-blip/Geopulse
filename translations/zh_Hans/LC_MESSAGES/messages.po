@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-06 12:48+0000\n"
+"POT-Creation-Date: 2026-08-06 15:53+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans\n"
@@ -412,37 +412,34 @@ msgid ""
 "    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
 "(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
 "measured resta una diagnosi, non una prova di citazione.</p>\n"
-"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
-"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
-"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"    <p class=\"lede\">Centropic mostra l’evidence badge su ogni finding: "
+"Stimato, Misto o Misurato. Dettagli in <a "
+"href=\"/metodologia\">metodologia</a> e nel prodotto su <a "
+"href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
-"\n"
-"  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">AIO / GEO 分数</h2>\n"
-"    <p class=\"lede\">基于 crawl 与 probe 得出的 0–100 分指数。综合指数带有 Estimated "
-"标记;单项文件存在性检查可为 Measured。</p>\n"
-"    <p class=\"lede\"><strong>AIO(AI-Driven Visibility)</strong> 关注对 AI "
-"系统的可读性:entity、schema、FAQ、llms.txt、meta。<strong>GEO(Generative Engine "
-"Optimization)</strong> 关注 citability 及 AI 爬虫策略。</p>\n"
+"<section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">得分 AIO / GEO</h2>\n"
+"    <p class=\"lede\">从爬虫和探测中得出的指数 0–100。估计徽章在组合上；单个文件存在检查可以被测量。</p>\n"
+"    <p class=\"lede\"><strong>AIO (AI驱动的可见性)</strong> 奖励 IA "
+"系统的可读性：实体、架构、常见问题、llms.txt、元数据。<strong>GEO (生成引擎优化)</strong> 奖励可引用性和 AI "
+"爬虫政策。</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">Share of Voice(SoV)</h2>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>:基于 AIO/GEO 及观察到的 robots "
-"计算得出的公式结果。<strong>Measured</strong>:通过对 LLM(Plus/Business)进行 prompt "
-"polling,统计品牌提及次数。请不要混淆这两者。</p>\n"
-"    <p class=\"lede\">要提升 measured SoV:强化您的公开 "
-"entity(llms.txt、Organization、about),发布可被引用的内容,并用您所在市场真实会提出的问题来扩充 prompt "
-"bank。</p>\n"
+"    <h2 class=\"page-section__title\">声音份额 (SoV)</h2>\n"
+"    <p class=\"lede\"><strong>代理</strong>：基于 AIO/GEO + "
+"观察到的机器人公式。<strong>测量</strong>：在 LLM (Plus/Business) "
+"上进行的投票提示，计算品牌提及次数。不要混淆这两者。</p>\n"
+"    <p class=\"lede\">要提高测量的 SoV：增强公共实体 "
+"(llms.txt、组织、关于)，发布可引用的内容，扩大提示库，提出市场真正关心的问题。</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">如何综合解读</h2>\n"
-"    <p class=\"lede\">先提升信号(分数),再衡量声量(SoV)。低分数配合高 SoV 并不稳固;高分数若没有 "
-"measured SoV,仍只是诊断结果,并非引用的证明。</p>\n"
-"    <p class=\"lede\">Centropic 始终显示 evidence 标记:Estimated、Mixed 或 "
-"Measured。详情请参见<a href=\"/metodologia\">方法论</a>及产品页面 <a "
-"href=\"/prodotto\">/prodotto</a>。</p>\n"
-"  </section>\n"
+"    <h2 class=\"page-section__title\">如何一起阅读它们</h2>\n"
+"    <p class=\"lede\">首先提高信号（得分），然后测量声音（SoV）。高 SoV 伴随低得分是脆弱的；高得分而没有测量的 "
+"SoV 仍然是一种诊断，而不是引用的证明。</p>\n"
+"    <p class=\"lede\">Centropic 在每个发现上显示证据徽章：估计、混合或测量。详细信息请参见 <a "
+"href=\"/metodologia\">方法论</a> 和产品中的 <a href=\"/prodotto\">/产品</a>。</p>\n"
+"  </section>"
 
 #: services/site_guide.py:16
 msgid ""
@@ -1676,7 +1673,7 @@ msgid "Canali"
 msgstr "渠道"
 
 #: templates/contact.html:20 templates/forgot_password.html:25
-#: templates/login.html:23 templates/partials/login_modal.html:36
+#: templates/login.html:35 templates/partials/login_modal.html:36
 #: templates/pro_interest.html:38 templates/register.html:34
 msgid "Email"
 msgstr "电子邮件"
@@ -2546,7 +2543,7 @@ msgstr "输入账户的电子邮件。如果已注册，您将收到来自的单
 msgid "Torna all’accesso"
 msgstr "返回登录"
 
-#: templates/forgot_password.html:35 templates/login.html:37
+#: templates/forgot_password.html:35 templates/login.html:49
 #: templates/partials/login_modal.html:69 templates/privacy.html:83
 #: templates/register.html:17 templates/termini.html:82
 msgid "Crea account"
@@ -2887,9 +2884,9 @@ msgstr "02·诊断"
 
 #: templates/landing.html:115
 msgid ""
-"Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati "
-"Stimato o Misurato."
-msgstr "清晰的 AIO/GEO 分数与按紧急程度排序的发现项，始终标注为「估算」或「实测」。"
+"Score AIO/GEO chiaro e findings ordinati per urgenza, con badge Stimato o"
+" Misurato su ogni finding."
+msgstr "清晰的 AIO/GEO 得分和按紧急程度排序的发现，每个发现都有估计或测量徽章。"
 
 #: templates/landing.html:118
 msgid "03 · Pubblicazione"
@@ -3056,20 +3053,45 @@ msgid ""
 "(Generative Engine Optimization), findings e pack llms.txt/JSON-LD."
 msgstr "访问 Centropic：AIO（AI 驱动的可见性）和 GEO（生成引擎优化）的仪表板，发现和 llms.txt/JSON-LD 包。"
 
-#: templates/login.html:18 templates/partials/login_modal.html:21
+#: templates/login.html:15 templates/login.html:30
+#: templates/partials/login_modal.html:21
 msgid "Accesso"
 msgstr "访问"
 
-#: templates/login.html:19 templates/partials/login_modal.html:22
+#: templates/login.html:16
+msgid "Bentornato su Centropic"
+msgstr "欢迎回到 Centropic"
+
+#: templates/login.html:18
+msgid ""
+"Entra in dashboard per analizzare un dominio pubblico, leggere findings "
+"AIO/GEO prioritizzati e pubblicare il pack (llms.txt, JSON-LD, robots). "
+"Piano Free senza carta; Plus e Business aggiungono monitoraggio continuo,"
+" SoV Misurato e re-scan."
+msgstr ""
+"进入仪表板以分析公共域，阅读优先级 AIO/GEO 发现并发布包 (llms.txt, JSON-LD, "
+"robots)。免费计划无需信用卡；Plus 和 Business 增加持续监控、测量的 SoV 和重新扫描。"
+
+#: templates/login.html:21
+msgid ""
+"Il popup Accedi si apre automaticamente. Se non compare, usa il link "
+"Accedi nell’header oppure abilita JavaScript."
+msgstr "登录弹窗会自动打开。如果没有出现，请使用页眉中的登录链接或启用 JavaScript。"
+
+#: templates/login.html:22
+msgid "Apri accesso"
+msgstr "打开访问"
+
+#: templates/login.html:31 templates/partials/login_modal.html:22
 msgid "Bentornato"
 msgstr "欢迎回来"
 
-#: templates/login.html:27 templates/partials/login_modal.html:41
+#: templates/login.html:39 templates/partials/login_modal.html:41
 #: templates/register.html:46
 msgid "Password"
 msgstr "密码"
 
-#: templates/login.html:32 templates/partials/login_modal.html:58
+#: templates/login.html:44 templates/partials/login_modal.html:58
 msgid "Resta connesso su questo dispositivo (30 giorni)"
 msgstr "在此设备上保持登录状态（30 天）"
 

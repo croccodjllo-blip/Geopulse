@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-06 12:48+0000\n"
+"POT-Creation-Date: 2026-08-06 15:53+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -434,38 +434,38 @@ msgid ""
 "    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
 "(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
 "measured resta una diagnosi, non una prova di citazione.</p>\n"
-"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
-"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
-"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"    <p class=\"lede\">Centropic mostra l’evidence badge su ogni finding: "
+"Stimato, Misto o Misurato. Dettagli in <a "
+"href=\"/metodologia\">metodologia</a> e nel prodotto su <a "
+"href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
+"<section class=\"page-section\">\n"
+"    <h2 class=\"page-section__title\">Score AIO / GEO</h2>\n"
+"    <p class=\"lede\">크롤링 및 프로브에서 0–100 지수. 구성 요소에 대한 추정 배지; 파일 존재 여부에 대한"
+" 개별 체크는 측정될 수 있습니다.</p>\n"
+"    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong>는 IA "
+"시스템의 가독성을 보상합니다: entity, schema, FAQ, llms.txt, meta. <strong>GEO "
+"(Generative Engine Optimization)</strong>는 인용 가능성과 AI 크롤러 정책을 보상합니다.</p>"
 "\n"
-"  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">AIO / GEO 점수</h2>\n"
-"    <p class=\"lede\">crawl과 probe를 기반으로 한 0~100 지수입니다. 복합 지수에는 Estimated"
-" 배지가 표시되며, 개별 파일 존재 여부 확인은 Measured일 수 있습니다.</p>\n"
-"    <p class=\"lede\"><strong>AIO(AI-Driven Visibility)</strong>는 AI 시스템에"
-" 대한 가독성(entity, schema, FAQ, llms.txt, meta)에 가중치를 둡니다. "
-"<strong>GEO(Generative Engine Optimization)</strong>는 citability와 AI 크롤러 "
-"정책에 가중치를 둡니다.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">Share of Voice(SoV)</h2>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>: AIO/GEO와 관찰된 robots를 기반으로 한"
-" 수식입니다. <strong>Measured</strong>: LLM(Plus/Business)에 대한 prompt "
-"polling으로 브랜드 언급 수를 집계합니다. 두 가지를 혼동하지 마세요.</p>\n"
-"    <p class=\"lede\">Measured SoV를 높이려면: 공개 entity(llms.txt, "
-"Organization, about)를 강화하고, 인용 가능한 콘텐츠를 게시하며, 시장에서 실제로 묻는 질문으로 prompt "
-"bank를 확장하세요.</p>\n"
+"    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: AIO/GEO + 관찰된 로봇에 대한 공식. "
+"<strong>Measured</strong>: 브랜드 언급 수로 LLM(Plus/Business)에서 여론 조사 프롬프트. 두 "
+"가지를 혼동하지 마십시오.</p>\n"
+"    <p class=\"lede\">측정된 SoV를 높이려면: 공개 엔터티를 강화하십시오 (llms.txt, "
+"Organization, about), 인용 가능한 콘텐츠를 게시하고, 시장에서 실제로 제기하는 질문으로 프롬프트 뱅크를 "
+"확장하십시오.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">두 지표를 함께 읽는 방법</h2>\n"
-"    <p class=\"lede\">먼저 신호(점수)를 높이고, 그다음 목소리(SoV)를 측정하세요. 낮은 점수에 높은 SoV는"
-" 취약하며, Measured SoV 없이 높은 점수만 있는 경우는 진단에 불과할 뿐 인용의 증거는 아닙니다.</p>\n"
-"    <p class=\"lede\">Centropic은 항상 evidence 배지를 표시합니다: Estimated, Mixed,"
-" 또는 Measured. 자세한 내용은 <a href=\"/metodologia\">methodology</a>와 제품 내 <a "
-"href=\"/prodotto\">/prodotto</a>를 참고하세요.</p>\n"
-"  </section>\n"
+"    <h2 class=\"page-section__title\">함께 읽는 방법</h2>\n"
+"    <p class=\"lede\">먼저 신호(score)를 높이고, 다음으로 목소리(SoV)를 측정하십시오. 낮은 점수로 높은"
+" SoV는 취약합니다; 측정된 SoV 없이 높은 점수는 진단일 뿐, 인용의 증거가 아닙니다.</p>\n"
+"    <p class=\"lede\">Centropic은 각 발견에 대해 증거 배지를 표시합니다: 추정, 혼합 또는 측정됨. <a"
+" href=\"/metodologia\">방법론</a> 및 <a href=\"/prodotto\">/제품</a>의 세부정보를 "
+"확인하십시오.</p>\n"
+"  </section>"
 
 #: services/site_guide.py:16
 msgid ""
@@ -1741,7 +1741,7 @@ msgid "Canali"
 msgstr "채널"
 
 #: templates/contact.html:20 templates/forgot_password.html:25
-#: templates/login.html:23 templates/partials/login_modal.html:36
+#: templates/login.html:35 templates/partials/login_modal.html:36
 #: templates/pro_interest.html:38 templates/register.html:34
 msgid "Email"
 msgstr "이메일"
@@ -2621,7 +2621,7 @@ msgstr "계정 이메일을 입력하세요. 등록되어 있으면, 에서 일�
 msgid "Torna all’accesso"
 msgstr "로그인으로 돌아가기"
 
-#: templates/forgot_password.html:35 templates/login.html:37
+#: templates/forgot_password.html:35 templates/login.html:49
 #: templates/partials/login_modal.html:69 templates/privacy.html:83
 #: templates/register.html:17 templates/termini.html:82
 msgid "Crea account"
@@ -2968,9 +2968,9 @@ msgstr "02 · 진단"
 
 #: templates/landing.html:115
 msgid ""
-"Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati "
-"Stimato o Misurato."
-msgstr "명확한 AIO/GEO 점수와 긴급도순으로 정렬된 발견 사항, 항상 추정 또는 측정으로 라벨링됩니다."
+"Score AIO/GEO chiaro e findings ordinati per urgenza, con badge Stimato o"
+" Misurato su ogni finding."
+msgstr "긴급성에 따라 정렬된 Score AIO/GEO와 각 발견에 대한 추정 또는 측정 배지."
 
 #: templates/landing.html:118
 msgid "03 · Pubblicazione"
@@ -3148,20 +3148,46 @@ msgstr ""
 "Centropic에 로그인: AIO (AI 기반 가시성) 및 GEO (생성 엔진 최적화)에 대한 대시보드, 결과 및 llms.txt"
 "/JSON-LD 패키지."
 
-#: templates/login.html:18 templates/partials/login_modal.html:21
+#: templates/login.html:15 templates/login.html:30
+#: templates/partials/login_modal.html:21
 msgid "Accesso"
 msgstr "접근"
 
-#: templates/login.html:19 templates/partials/login_modal.html:22
+#: templates/login.html:16
+msgid "Bentornato su Centropic"
+msgstr "Centropic에 다시 오신 것을 환영합니다."
+
+#: templates/login.html:18
+msgid ""
+"Entra in dashboard per analizzare un dominio pubblico, leggere findings "
+"AIO/GEO prioritizzati e pubblicare il pack (llms.txt, JSON-LD, robots). "
+"Piano Free senza carta; Plus e Business aggiungono monitoraggio continuo,"
+" SoV Misurato e re-scan."
+msgstr ""
+"공개 도메인을 분석하고, 우선 순위가 매겨진 AIO/GEO 발견을 읽고, 패키지(llms.txt, JSON-LD, robots)를 "
+"게시하려면 대시보드에 들어가십시오. 무료 플랜은 카드 없이 제공되며, Plus 및 Business는 지속적인 모니터링, 측정된 "
+"SoV 및 재스캔을 추가합니다."
+
+#: templates/login.html:21
+msgid ""
+"Il popup Accedi si apre automaticamente. Se non compare, usa il link "
+"Accedi nell’header oppure abilita JavaScript."
+msgstr "로그인 팝업이 자동으로 열립니다. 나타나지 않으면 헤더의 로그인 링크를 사용하거나 JavaScript를 활성화하십시오."
+
+#: templates/login.html:22
+msgid "Apri accesso"
+msgstr "접근 열기"
+
+#: templates/login.html:31 templates/partials/login_modal.html:22
 msgid "Bentornato"
 msgstr "환영합니다"
 
-#: templates/login.html:27 templates/partials/login_modal.html:41
+#: templates/login.html:39 templates/partials/login_modal.html:41
 #: templates/register.html:46
 msgid "Password"
 msgstr "비밀번호"
 
-#: templates/login.html:32 templates/partials/login_modal.html:58
+#: templates/login.html:44 templates/partials/login_modal.html:58
 msgid "Resta connesso su questo dispositivo (30 giorni)"
 msgstr "이 장치에서 연결 유지 (30일)"
 
