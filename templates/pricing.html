@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic: Free, Plus 14,99€ (startup, 100 token), Business 49,99€ (agenzie, 400 token, API e white-label).') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic: Free per validare; Plus e Business per monitorare il sito in continuo e ottimizzare AIO/GEO.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -8,9 +8,9 @@
   <header class="page-intro page-intro--pricing">
     <p class="hero-brand-word page-intro__brand">centropic<span>.ai</span></p>
     <p class="eyebrow">{{ _('Architettura commerciale') }}</p>
-    <h1 class="h-display page-intro__title">{{ _('Tre modi di possedere il segnale.') }}</h1>
+    <h1 class="h-display page-intro__title">{{ _('Monitora. Ottimizza. Ripeti.') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Free per validare. Plus per il tuo brand. Business per i clienti dell’agenzia.') }}
+      {{ _('Free per la prima diagnosi. Plus e Business per tenere il sito sotto controllo e migliorare la citabilità IA nel tempo.') }}
     </p>
   </header>
 
@@ -30,18 +30,18 @@
     </section>
 
     <section class="plan plan--v2" role="listitem" id="plus">
-      <p class="plan__badge">{{ _('Per startup') }}</p>
+      <p class="plan__badge">{{ _('Monitoraggio continuo') }}</p>
       <p class="plan__name">Plus</p>
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Per piccole startup che ottimizzano i propri brand in continuo.') }}</p>
+      <p class="plan__desc">{{ _('Tieni il tuo brand sotto osservazione: re-scan, alert e SoV Misurato per ottimizzare AIO/GEO a ogni ciclo.') }}</p>
       <ul class="plan__features">
         <li><strong>{{ plus_monthly_tokens }} {{ _('token inclusi ogni mese') }}</strong></li>
-        <li>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('siti') }}</li>
+        <li>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('siti monitorati') }}</li>
+        <li>{{ _('Re-scan giornaliero/settimanale automatico') }}</li>
+        <li>{{ _('Citation monitor / SoV Misurato') }}</li>
+        <li>{{ _('Alert email/webhook su regressioni') }}</li>
+        <li>{{ _('Prompt bank + competitor snapshot') }}</li>
         <li>{{ _('Crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine (Deep fino a') }} {{ deep_crawl_pages }})</li>
-        <li>{{ _('Citation monitor / SoV measured') }}</li>
-        <li>{{ _('Competitor snapshot') }}</li>
-        <li>{{ _('Prompt bank + alert email/webhook') }}</li>
-        <li>{{ _('Re-scan giornaliero/settimanale') }}</li>
         <li>{{ _('Edge Signals completo + storico run') }}</li>
       </ul>
       {% if paddle_plus_ready and current_user %}
@@ -81,19 +81,19 @@
     </section>
 
     <section class="plan plan--v2 plan--featured" role="listitem" id="business">
-      <p class="plan__badge">{{ _('Per agenzie') }}</p>
+      <p class="plan__badge">{{ _('Monitoraggio agenzia') }}</p>
       <p class="plan__name">Business</p>
       <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Tutto incluso per agenzie e team multi-cliente: delivery, automazione e scala.') }}</p>
+      <p class="plan__desc">{{ _('Stesso monitoraggio continuo di Plus su ogni cliente: ottimizzi il portfolio, consegni report white-label.') }}</p>
       <ul class="plan__features">
-        <li><strong>{{ _('Tutto di Plus, più:') }}</strong></li>
+        <li><strong>{{ _('Tutto il monitoraggio Plus, più:') }}</strong></li>
         <li><strong>{{ business_monthly_tokens }} {{ _('token inclusi ogni mese') }}</strong></li>
-        <li>{{ _('Fino a') }} {{ max_sites_business }} {{ _('siti / clienti') }}</li>
+        <li>{{ _('Fino a') }} {{ max_sites_business }} {{ _('siti / clienti monitorati') }}</li>
+        <li>{{ _('Re-scan, alert e SoV Misurato multi-cliente') }}</li>
         <li>{{ _('API key pubblica') }} <code>/api/v1</code></li>
         <li>{{ _('White-label brand agenzia') }}</li>
         <li>{{ _('Export report MD/HTML white-label') }}</li>
-        <li>{{ _('Crawl, SoV measured, re-scan, Edge, storico') }}</li>
-        <li>{{ _('Ideale per portfolio clienti e retainer') }}</li>
+        <li>{{ _('Ideale per retainer e ottimizzazione continua') }}</li>
       </ul>
       {% if business_ready and current_user %}
         {% if paddle_overlay %}

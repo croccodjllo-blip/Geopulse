@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-06 05:43+0000\n"
+"POT-Creation-Date: 2026-08-06 12:48+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2271 templates/about.html:24 templates/contact.html:43
+#: app.py:2276 templates/about.html:24 templates/contact.html:43
 msgid "27 luglio 2026"
 msgstr "2026년 7월 27일"
 
@@ -33,11 +33,17 @@ msgid "Come Centropic misura AIO e GEO"
 msgstr "Centropic이 AIO와 GEO를 측정하는 방법"
 
 #: services/guides.py:37
-msgid "Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured."
-msgstr "Centropic 방법론: 프로브 및 휴리스틱을 통한 AIO/GEO 점수, 측정됨/추정됨 배지, SoV 프록시의 한계 및 SoV 측정으로 가는 경로."
+msgid ""
+"Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge "
+"Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured."
+msgstr ""
+"Centropic 방법론: 프로브 및 휴리스틱을 통한 AIO/GEO 점수, 측정됨/추정됨 배지, SoV 프록시의 한계 및 SoV "
+"측정으로 가는 경로."
 
 #: services/guides.py:40
-msgid "Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non promettiamo."
+msgid ""
+"Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non"
+" promettiamo."
 msgstr "방법에 대한 투명성: 사이트에서 우리가 관찰하는 것, 우리가 추정하는 것, 우리가 약속하지 않는 것."
 
 #: services/guides.py:43
@@ -45,39 +51,61 @@ msgid ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">1. Cosa osserviamo (Misurato)</h2>\n"
-"    <p class=\"lede\">Probe HTTP e parsing HTML sullo stesso dominio: title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, crawl multi-pagina. Questi finding possono essere badge <em>Misurato</em>.</p>\n"
-"    <p class=\"lede\">Centropic (centropic.ai) registra anche segnali di entity (Organization, sameAs, contatti), citabilità del copy e policy verso bot AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended).</p>\n"
+"    <p class=\"lede\">Probe HTTP e parsing HTML sullo stesso dominio: "
+"title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt,"
+" crawl multi-pagina. Questi finding possono essere badge "
+"<em>Misurato</em>.</p>\n"
+"    <p class=\"lede\">Centropic (centropic.ai) registra anche segnali di "
+"entity (Organization, sameAs, contatti), citabilità del copy e policy "
+"verso bot AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">2. Cosa stimiamo (Stimato / proxy)</h2>\n"
-"    <p class=\"lede\">Score compositi AIO/GEO, indice DDD→AAA e Share of Voice per engine derivano da formule euristiche sui segnali osservati. Non sono, di default, citazioni live su ChatGPT/Perplexity/Claude.</p>\n"
-"    <p class=\"lede\">Il breakdown per engine (ChatGPT, Gemini come proxy AI Overview, Claude, Perplexity, Grok, Azure AI) resta etichettato <em>Stimato</em> finché non gira il citation monitor Plus.</p>\n"
+"    <h2 class=\"page-section__title\">2. Cosa stimiamo (Stimato / "
+"proxy)</h2>\n"
+"    <p class=\"lede\">Score compositi AIO/GEO, indice DDD→AAA e Share of "
+"Voice per engine derivano da formule euristiche sui segnali osservati. "
+"Non sono, di default, citazioni live su ChatGPT/Perplexity/Claude.</p>\n"
+"    <p class=\"lede\">Il breakdown per engine (ChatGPT, Gemini come proxy"
+" AI Overview, Claude, Perplexity, Grok, Azure AI) resta etichettato "
+"<em>Stimato</em> finché non gira il citation monitor Plus.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">3. SoV measured (Plus / Business)</h2>\n"
-"    <p class=\"lede\">Su Plus e Business, con connector API configurati, Centropic invia un prompt bank al citation monitor e conta le menzioni del brand/dominio nelle risposte. È un campione probe, non un ranking garantito nelle UI consumer degli LLM.</p>\n"
+"    <h2 class=\"page-section__title\">3. SoV measured (Plus / "
+"Business)</h2>\n"
+"    <p class=\"lede\">Su Plus e Business, con connector API configurati, "
+"Centropic invia un prompt bank al citation monitor e conta le menzioni "
+"del brand/dominio nelle risposte. È un campione probe, non un ranking "
+"garantito nelle UI consumer degli LLM.</p>\n"
 "    <ul class=\"plain-list\">\n"
 "      <li>Prompt personalizzabili in Impostazioni (prompt bank).</li>\n"
 "      <li>Evidence badge <em>Misurato</em> per engine disponibili.</li>\n"
-"      <li>Gemini e Azure AI sono proxy onesti (non Google AI Overview nativo né Copilot Bing nativo).</li>\n"
+"      <li>Gemini e Azure AI sono proxy onesti (non Google AI Overview "
+"nativo né Copilot Bing nativo).</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">4. Limiti</h2>\n"
 "    <ul class=\"plain-list\">\n"
-"      <li>Nessuna garanzia di ranking o menzione da parte di modelli di terzi.</li>\n"
-"      <li>Il pack artifact è una bozza operativa: la pubblicazione resta a carico del cliente.</li>\n"
-"      <li>SoV measured è disponibile su <strong>Plus e Business</strong> (e Admin), quando i connector API sono configurati.</li>\n"
-"      <li>GEO in Centropic non significa GIS; AIO non significa All-in-One.</li>\n"
+"      <li>Nessuna garanzia di ranking o menzione da parte di modelli di "
+"terzi.</li>\n"
+"      <li>Il pack artifact è una bozza operativa: la pubblicazione resta "
+"a carico del cliente.</li>\n"
+"      <li>SoV measured è disponibile su <strong>Plus e Business</strong> "
+"(e Admin), quando i connector API sono configurati.</li>\n"
+"      <li>GEO in Centropic non significa GIS; AIO non significa All-in-"
+"One.</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">5. Approfondimenti</h2>\n"
 "    <ul class=\"plain-list\">\n"
-"      <li><a href=\"/guida\">Guida completa Centropic (servizi, analisi, glossario)</a></li>\n"
+"      <li><a href=\"/guida\">Guida completa Centropic (servizi, analisi, "
+"glossario)</a></li>\n"
 "      <li><a href=\"/guide/llms-txt\">Guida llms.txt</a></li>\n"
-"      <li><a href=\"/guide/schema-ai\">Schema.org per answer engine</a></li>\n"
-"      <li><a href=\"/guide/score-vs-sov\">Score AIO/GEO vs Share of Voice</a></li>\n"
+"      <li><a href=\"/guide/schema-ai\">Schema.org per answer "
+"engine</a></li>\n"
+"      <li><a href=\"/guide/score-vs-sov\">Score AIO/GEO vs Share of "
+"Voice</a></li>\n"
 "      <li><a href=\"/llms.txt\">llms.txt pubblico di Centropic</a></li>\n"
 "      <li><a href=\"/prodotto\">Come funziona il prodotto</a></li>\n"
 "    </ul>\n"
@@ -86,21 +114,34 @@ msgstr ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">1. 우리가 관찰하는 것(Measured)</h2>\n"
-"    <p class=\"lede\">동일 도메인에서의 HTTP probe 및 HTML 파싱: title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, 다중 페이지 crawl. 이러한 finding에는 <em>Measured</em> 배지가 표시될 수 있습니다.</p>\n"
-"    <p class=\"lede\">Centropic(centropic.ai)는 entity 신호(Organization, sameAs, 연락처), 콘텐츠의 citability, AI 봇(GPTBot, ClaudeBot, PerplexityBot, Google-Extended)에 대한 정책도 함께 기록합니다.</p>\n"
+"    <p class=\"lede\">동일 도메인에서의 HTTP probe 및 HTML 파싱: title, meta, JSON-"
+"LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, 다중 페이지 crawl. 이러한"
+" finding에는 <em>Measured</em> 배지가 표시될 수 있습니다.</p>\n"
+"    <p class=\"lede\">Centropic(centropic.ai)는 entity 신호(Organization, "
+"sameAs, 연락처), 콘텐츠의 citability, AI 봇(GPTBot, ClaudeBot, PerplexityBot, "
+"Google-Extended)에 대한 정책도 함께 기록합니다.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">2. 우리가 추정하는 것(Estimated / proxy)</h2>\n"
-"    <p class=\"lede\">복합 AIO/GEO 점수, DDD→AAA 지수, 엔진별 Share of Voice는 관찰된 신호에 대한 heuristic 공식에서 도출됩니다. 기본적으로 ChatGPT/Perplexity/Claude에 대한 실시간 인용이 아닙니다.</p>\n"
-"    <p class=\"lede\">엔진별 breakdown(ChatGPT, AI Overview proxy로서의 Gemini, Claude, Perplexity, Grok, Azure AI)은 Plus citation monitor가 실행되기 전까지 <em>Estimated</em>로 표시됩니다.</p>\n"
+"    <h2 class=\"page-section__title\">2. 우리가 추정하는 것(Estimated / "
+"proxy)</h2>\n"
+"    <p class=\"lede\">복합 AIO/GEO 점수, DDD→AAA 지수, 엔진별 Share of Voice는 관찰된 "
+"신호에 대한 heuristic 공식에서 도출됩니다. 기본적으로 ChatGPT/Perplexity/Claude에 대한 실시간 인용이 "
+"아닙니다.</p>\n"
+"    <p class=\"lede\">엔진별 breakdown(ChatGPT, AI Overview proxy로서의 Gemini,"
+" Claude, Perplexity, Grok, Azure AI)은 Plus citation monitor가 실행되기 전까지 "
+"<em>Estimated</em>로 표시됩니다.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">3. SoV measured(Plus / Business)</h2>\n"
-"    <p class=\"lede\">Plus와 Business에서는 API connector가 구성된 경우, Centropic이 prompt bank를 citation monitor에 전송하여 응답 내 브랜드/도메인 언급 수를 집계합니다. 이는 probe 샘플이며, 일반 소비자용 LLM UI에서 보장된 순위가 아닙니다.</p>\n"
+"    <h2 class=\"page-section__title\">3. SoV measured(Plus / "
+"Business)</h2>\n"
+"    <p class=\"lede\">Plus와 Business에서는 API connector가 구성된 경우, Centropic이"
+" prompt bank를 citation monitor에 전송하여 응답 내 브랜드/도메인 언급 수를 집계합니다. 이는 probe "
+"샘플이며, 일반 소비자용 LLM UI에서 보장된 순위가 아닙니다.</p>\n"
 "    <ul class=\"plain-list\">\n"
 "      <li>설정에서 사용자 지정 가능한 prompt(prompt bank).</li>\n"
 "      <li>이용 가능한 엔진에 대한 <em>Measured</em> evidence 배지.</li>\n"
-"      <li>Gemini와 Azure AI는 정직한 proxy입니다(네이티브 Google AI Overview나 네이티브 Copilot Bing이 아님).</li>\n"
+"      <li>Gemini와 Azure AI는 정직한 proxy입니다(네이티브 Google AI Overview나 네이티브 "
+"Copilot Bing이 아님).</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
@@ -108,8 +149,10 @@ msgstr ""
 "    <ul class=\"plain-list\">\n"
 "      <li>제3자 모델에 의한 순위나 언급을 보장하지 않습니다.</li>\n"
 "      <li>pack artifact는 운영용 초안입니다: 게시는 고객의 책임입니다.</li>\n"
-"      <li>SoV measured는 API connector가 구성된 경우 <strong>Plus 및 Business</strong>(및 Admin)에서 이용 가능합니다.</li>\n"
-"      <li>Centropic에서 GEO는 GIS를 의미하지 않으며, AIO는 All-in-One을 의미하지 않습니다.</li>\n"
+"      <li>SoV measured는 API connector가 구성된 경우 <strong>Plus 및 "
+"Business</strong>(및 Admin)에서 이용 가능합니다.</li>\n"
+"      <li>Centropic에서 GEO는 GIS를 의미하지 않으며, AIO는 All-in-One을 의미하지 "
+"않습니다.</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
@@ -118,7 +161,8 @@ msgstr ""
 "      <li><a href=\"/guida\">Centropic 전체 가이드(서비스, 분석, 용어집)</a></li>\n"
 "      <li><a href=\"/guide/llms-txt\">llms.txt 가이드</a></li>\n"
 "      <li><a href=\"/guide/schema-ai\">답변 엔진을 위한 Schema.org</a></li>\n"
-"      <li><a href=\"/guide/score-vs-sov\">AIO/GEO 점수 vs Share of Voice</a></li>\n"
+"      <li><a href=\"/guide/score-vs-sov\">AIO/GEO 점수 vs Share of "
+"Voice</a></li>\n"
 "      <li><a href=\"/llms.txt\">Centropic의 공개 llms.txt</a></li>\n"
 "      <li><a href=\"/prodotto\">제품 작동 방식</a></li>\n"
 "    </ul>\n"
@@ -135,11 +179,15 @@ msgid "llms.txt: guida pratica per la citabilità IA"
 msgstr "llms.txt: AI 인용 가능성을 위한 실용 가이드"
 
 #: services/guides.py:94
-msgid "Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera e lo valida nel crawl."
+msgid ""
+"Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera "
+"e lo valida nel crawl."
 msgstr "llms.txt란 무엇이며, AIO/GEO를 위해 어떻게 구조화하고 Centropic이 이를 생성하고 크롤링에서 어떻게 검증하는지."
 
 #: services/guides.py:97
-msgid "Un file root machine-readable che spiega brand, topic e pagine preferite ai modelli e crawler AI."
+msgid ""
+"Un file root machine-readable che spiega brand, topic e pagine preferite "
+"ai modelli e crawler AI."
 msgstr "모델과 AI 크롤러에게 브랜드, 주제 및 선호하는 페이지를 설명하는 기계 판독 가능한 루트 파일."
 
 #: services/guides.py:100
@@ -147,8 +195,13 @@ msgid ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Perché conta</h2>\n"
-"    <p class=\"lede\">llms.txt riduce ambiguità entity: dice chi sei, cosa offri e quali URL citare. In Centropic la presenza e la qualità del file alimentano score AIO/GEO (probe Misurato).</p>\n"
-"    <p class=\"lede\">Answer engine e crawler AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) usano segnali pubblici; un llms.txt chiaro è un’ancora di citazione accanto a Schema.org e robots permissivi.</p>\n"
+"    <p class=\"lede\">llms.txt riduce ambiguità entity: dice chi sei, "
+"cosa offri e quali URL citare. In Centropic la presenza e la qualità del "
+"file alimentano score AIO/GEO (probe Misurato).</p>\n"
+"    <p class=\"lede\">Answer engine e crawler AI (GPTBot, ClaudeBot, "
+"PerplexityBot, Google-Extended) usano segnali pubblici; un llms.txt "
+"chiaro è un’ancora di citazione accanto a Schema.org e robots "
+"permissivi.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Sezioni utili</h2>\n"
@@ -156,14 +209,20 @@ msgid ""
 "      <li>Site / Summary / Key topics con brand e dominio canonici</li>\n"
 "      <li>Preferred citation (brand + acronimi espansi: AIO, GEO)</li>\n"
 "      <li>Important pages con URL https assoluti</li>\n"
-"      <li>Disambiguazione (cosa non siete: GIS, All-in-One generici)</li>\n"
+"      <li>Disambiguazione (cosa non siete: GIS, All-in-One generici)</li>"
+"\n"
 "      <li>Contact e owner / parent organization</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Come Centropic aiuta</h2>\n"
-"    <p class=\"lede\">Ogni analisi genera una bozza <code>llms.txt</code> nel pack HTML unico. Pubblicala in root (<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding passa a “disponibile” se il probe la trova.</p>\n"
-"    <p class=\"lede\">Esempio vivo: il llms.txt di Centropic è su <a href=\"/llms.txt\">centropic.ai/llms.txt</a>, con preferred citation e link a metodologia.</p>\n"
+"    <p class=\"lede\">Ogni analisi genera una bozza <code>llms.txt</code>"
+" nel pack HTML unico. Pubblicala in root "
+"(<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding "
+"passa a “disponibile” se il probe la trova.</p>\n"
+"    <p class=\"lede\">Esempio vivo: il llms.txt di Centropic è su <a "
+"href=\"/llms.txt\">centropic.ai/llms.txt</a>, con preferred citation e "
+"link a metodologia.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Checklist rapida</h2>\n"
@@ -173,14 +232,19 @@ msgid ""
 "      <li>Allinea llms.txt a JSON-LD Organization e alla home</li>\n"
 "      <li>Aggiorna la data quando cambi offerta o positioning</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Vedi anche <a href=\"/guide/schema-ai\">Schema AI</a> e <a href=\"/metodologia\">metodologia</a>.</p>\n"
+"    <p class=\"lede\">Vedi anche <a href=\"/guide/schema-ai\">Schema "
+"AI</a> e <a href=\"/metodologia\">metodologia</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">중요한 이유</h2>\n"
-"    <p class=\"lede\">llms.txt는 entity의 모호함을 줄여줍니다: 누구인지, 무엇을 제공하는지, 어떤 URL을 인용해야 하는지 알려줍니다. Centropic에서는 이 파일의 존재 여부와 품질이 AIO/GEO 점수(Measured probe)에 반영됩니다.</p>\n"
-"    <p class=\"lede\">답변 엔진과 AI 크롤러(GPTBot, ClaudeBot, PerplexityBot, Google-Extended)는 공개 신호를 활용합니다. 명확한 llms.txt는 Schema.org 및 허용적인 robots와 함께 인용의 기준점이 됩니다.</p>\n"
+"    <p class=\"lede\">llms.txt는 entity의 모호함을 줄여줍니다: 누구인지, 무엇을 제공하는지, 어떤 "
+"URL을 인용해야 하는지 알려줍니다. Centropic에서는 이 파일의 존재 여부와 품질이 AIO/GEO 점수(Measured "
+"probe)에 반영됩니다.</p>\n"
+"    <p class=\"lede\">답변 엔진과 AI 크롤러(GPTBot, ClaudeBot, PerplexityBot, "
+"Google-Extended)는 공개 신호를 활용합니다. 명확한 llms.txt는 Schema.org 및 허용적인 robots와 "
+"함께 인용의 기준점이 됩니다.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">유용한 섹션</h2>\n"
@@ -194,8 +258,12 @@ msgstr ""
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Centropic의 도움 방식</h2>\n"
-"    <p class=\"lede\">모든 분석은 단일 HTML pack 안에 <code>llms.txt</code> 초안을 생성합니다. 루트 경로(<code>https://귀사도메인/llms.txt</code>)에 게시한 후 재분석하세요: probe가 이를 발견하면 finding이 “사용 가능”으로 전환됩니다.</p>\n"
-"    <p class=\"lede\">실제 예시: Centropic 자체 llms.txt는 <a href=\"/llms.txt\">centropic.ai/llms.txt</a>에서 확인할 수 있으며, preferred citation과 methodology 링크가 포함되어 있습니다.</p>\n"
+"    <p class=\"lede\">모든 분석은 단일 HTML pack 안에 <code>llms.txt</code> 초안을 "
+"생성합니다. 루트 경로(<code>https://귀사도메인/llms.txt</code>)에 게시한 후 재분석하세요: probe가 "
+"이를 발견하면 finding이 “사용 가능”으로 전환됩니다.</p>\n"
+"    <p class=\"lede\">실제 예시: Centropic 자체 llms.txt는 <a "
+"href=\"/llms.txt\">centropic.ai/llms.txt</a>에서 확인할 수 있으며, preferred "
+"citation과 methodology 링크가 포함되어 있습니다.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">빠른 체크리스트</h2>\n"
@@ -205,7 +273,8 @@ msgstr ""
 "      <li>llms.txt를 JSON-LD Organization 및 홈페이지와 일치시키기</li>\n"
 "      <li>오퍼링이나 포지셔닝이 바뀔 때 날짜 업데이트하기</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\"><a href=\"/guide/schema-ai\">Schema AI</a> 및 <a href=\"/metodologia\">methodology</a>도 참고하세요.</p>\n"
+"    <p class=\"lede\"><a href=\"/guide/schema-ai\">Schema AI</a> 및 <a "
+"href=\"/metodologia\">methodology</a>도 참고하세요.</p>\n"
 "  </section>\n"
 
 #: services/guides.py:140
@@ -213,12 +282,22 @@ msgid "Schema.org per answer engine (AIO/GEO)"
 msgstr "Schema.org per answer engine (AIO/GEO)"
 
 #: services/guides.py:142
-msgid "Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine Optimization: Organization, WebSite, FAQPage, SoftwareApplication, Article."
-msgstr "Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine Optimization: Organization, WebSite, FAQPage, SoftwareApplication, Article."
+msgid ""
+"Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine "
+"Optimization: Organization, WebSite, FAQPage, SoftwareApplication, "
+"Article."
+msgstr ""
+"Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine "
+"Optimization: Organization, WebSite, FAQPage, SoftwareApplication, "
+"Article."
 
 #: services/guides.py:145
-msgid "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity leggibile a crawler e modelli. Aggiornato 30/07/2026."
-msgstr "I dati strutturati non “garantiscono” citazioni, ma rendono l’entity leggibile a crawler e modelli. Aggiornato 30/07/2026."
+msgid ""
+"I dati strutturati non “garantiscono” citazioni, ma rendono l’entity "
+"leggibile a crawler e modelli. Aggiornato 30/07/2026."
+msgstr ""
+"I dati strutturati non “garantiscono” citazioni, ma rendono l’entity "
+"leggibile a crawler e modelli. Aggiornato 30/07/2026."
 
 #: services/guides.py:148
 msgid ""
@@ -226,56 +305,86 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Tipi prioritari</h2>\n"
 "    <ul class=\"plain-list\">\n"
-"      <li><strong>Organization</strong> + <strong>WebSite</strong> collegati via @id</li>\n"
-"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate all’HTML visibile</li>\n"
-"      <li><strong>SoftwareApplication</strong> o Product se vendi software (come Centropic)</li>\n"
-"      <li><strong>Article</strong> / HowTo per guide evergreen con author e date</li>\n"
+"      <li><strong>Organization</strong> + <strong>WebSite</strong> "
+"collegati via @id</li>\n"
+"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate "
+"all’HTML visibile</li>\n"
+"      <li><strong>SoftwareApplication</strong> o Product se vendi "
+"software (come Centropic)</li>\n"
+"      <li><strong>Article</strong> / HowTo per guide evergreen con author"
+" e date</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Riferimento normativo: <a href=\"https://schema.org/\" rel=\"noopener noreferrer\" target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano score AIO/GEO (probe Misurato).</p>\n"
+"    <p class=\"lede\">Riferimento normativo: <a "
+"href=\"https://schema.org/\" rel=\"noopener noreferrer\" "
+"target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano"
+" score AIO/GEO (probe Misurato).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Errori comuni</h2>\n"
-"    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-referenziali, FAQ senza acceptedAnswer, Organization senza contatto o logo. Centropic li segnala nei findings.</p>\n"
-"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non basta: preferisci profili esterni reali (azienda madre, directory, social verificati).</p>\n"
+"    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-"
+"referenziali, FAQ senza acceptedAnswer, Organization senza contatto o "
+"logo. Centropic li segnala nei findings.</p>\n"
+"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non "
+"basta: preferisci profili esterni reali (azienda madre, directory, social"
+" verificati).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Checklist minima</h2>\n"
 "    <ul class=\"plain-list\">\n"
 "      <li>name + url + email (o telephone) su Organization</li>\n"
-"      <li>sameAs verso profili esterni reali (non pagine interne del sito)</li>\n"
+"      <li>sameAs verso profili esterni reali (non pagine interne del "
+"sito)</li>\n"
 "      <li>logo ImageObject con URL assoluto https e caption</li>\n"
 "      <li>FAQPage solo se le domande sono visibili in pagina</li>\n"
 "      <li>knowsAbout allineato a llms.txt e al copy della home</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Vedi anche <a href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs SoV</a>.</p>\n"
+"    <p class=\"lede\">Vedi anche <a "
+"href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-"
+"txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs "
+"SoV</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Tipi prioritari</h2>\n"
 "    <ul class=\"plain-list\">\n"
-"      <li><strong>Organization</strong> + <strong>WebSite</strong> collegati via @id</li>\n"
-"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate all’HTML visibile</li>\n"
-"      <li><strong>SoftwareApplication</strong> o Product se vendi software (come Centropic)</li>\n"
-"      <li><strong>Article</strong> / HowTo per guide evergreen con author e date</li>\n"
+"      <li><strong>Organization</strong> + <strong>WebSite</strong> "
+"collegati via @id</li>\n"
+"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate "
+"all’HTML visibile</li>\n"
+"      <li><strong>SoftwareApplication</strong> o Product se vendi "
+"software (come Centropic)</li>\n"
+"      <li><strong>Article</strong> / HowTo per guide evergreen con author"
+" e date</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Riferimento normativo: <a href=\"https://schema.org/\" rel=\"noopener noreferrer\" target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano score AIO/GEO (probe Misurato).</p>\n"
+"    <p class=\"lede\">Riferimento normativo: <a "
+"href=\"https://schema.org/\" rel=\"noopener noreferrer\" "
+"target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano"
+" score AIO/GEO (probe Misurato).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Errori comuni</h2>\n"
-"    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-referenziali, FAQ senza acceptedAnswer, Organization senza contatto o logo. Centropic li segnala nei findings.</p>\n"
-"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non basta: preferisci profili esterni reali (azienda madre, directory, social verificati).</p>\n"
+"    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-"
+"referenziali, FAQ senza acceptedAnswer, Organization senza contatto o "
+"logo. Centropic li segnala nei findings.</p>\n"
+"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non "
+"basta: preferisci profili esterni reali (azienda madre, directory, social"
+" verificati).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Checklist minima</h2>\n"
 "    <ul class=\"plain-list\">\n"
 "      <li>name + url + email (o telephone) su Organization</li>\n"
-"      <li>sameAs verso profili esterni reali (non pagine interne del sito)</li>\n"
+"      <li>sameAs verso profili esterni reali (non pagine interne del "
+"sito)</li>\n"
 "      <li>logo ImageObject con URL assoluto https e caption</li>\n"
 "      <li>FAQPage solo se le domande sono visibili in pagina</li>\n"
 "      <li>knowsAbout allineato a llms.txt e al copy della home</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Vedi anche <a href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs SoV</a>.</p>\n"
+"    <p class=\"lede\">Vedi anche <a "
+"href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-"
+"txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs "
+"SoV</a>.</p>\n"
 "  </section>\n"
 
 #: services/guides.py:184
@@ -283,55 +392,93 @@ msgid "Score AIO/GEO vs Share of Voice"
 msgstr "점수 vs 음성 점유율"
 
 #: services/guides.py:186
-msgid "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in Centropic."
-msgstr "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in Centropic."
+msgid ""
+"Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per "
+"answer engine (proxy o measured) in Centropic."
+msgstr ""
+"Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per "
+"answer engine (proxy o measured) in Centropic."
 
 #: services/guides.py:189
-msgid "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la presenza relativa negli engine."
-msgstr "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la presenza relativa negli engine."
+msgid ""
+"Due metriche diverse: una valuta i segnali sul sito, l’altra stima la "
+"presenza relativa negli engine."
+msgstr ""
+"Due metriche diverse: una valuta i segnali sul sito, l’altra stima la "
+"presenza relativa negli engine."
 
 #: services/guides.py:192
 msgid ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Score AIO / GEO</h2>\n"
-"    <p class=\"lede\">Indici 0–100 da crawl e probe. Badge Stimato sul compositario; singoli check di presenza file possono essere Misurato.</p>\n"
-"    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> premia leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. <strong>GEO (Generative Engine Optimization)</strong> premia citabilità e policy crawler AI.</p>\n"
+"    <p class=\"lede\">Indici 0–100 da crawl e probe. Badge Stimato sul "
+"compositario; singoli check di presenza file possono essere Misurato.</p>"
+"\n"
+"    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> premia "
+"leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. "
+"<strong>GEO (Generative Engine Optimization)</strong> premia citabilità e"
+" policy crawler AI.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Share of Voice (SoV)</h2>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + robots osservato. <strong>Measured</strong>: polling prompt su LLM (Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>\n"
-"    <p class=\"lede\">Per alzare SoV measured: rafforza entity pubblica (llms.txt, Organization, about), pubblica contenuti citabili, amplia il prompt bank con domande che il tuo mercato pone davvero.</p>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + robots"
+" osservato. <strong>Measured</strong>: polling prompt su LLM "
+"(Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>\n"
+"    <p class=\"lede\">Per alzare SoV measured: rafforza entity pubblica "
+"(llms.txt, Organization, about), pubblica contenuti citabili, amplia il "
+"prompt bank con domande che il tuo mercato pone davvero.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Come leggerli insieme</h2>\n"
-"    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce (SoV). Un SoV alto con score basso è fragile; score alto senza SoV measured resta una diagnosi, non una prova di citazione.</p>\n"
-"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"    <p class=\"lede\">Alza prima i segnali (score), poi misura la voce "
+"(SoV). Un SoV alto con score basso è fragile; score alto senza SoV "
+"measured resta una diagnosi, non una prova di citazione.</p>\n"
+"    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
+"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
+"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">AIO / GEO 점수</h2>\n"
-"    <p class=\"lede\">crawl과 probe를 기반으로 한 0~100 지수입니다. 복합 지수에는 Estimated 배지가 표시되며, 개별 파일 존재 여부 확인은 Measured일 수 있습니다.</p>\n"
-"    <p class=\"lede\"><strong>AIO(AI-Driven Visibility)</strong>는 AI 시스템에 대한 가독성(entity, schema, FAQ, llms.txt, meta)에 가중치를 둡니다. <strong>GEO(Generative Engine Optimization)</strong>는 citability와 AI 크롤러 정책에 가중치를 둡니다.</p>\n"
+"    <p class=\"lede\">crawl과 probe를 기반으로 한 0~100 지수입니다. 복합 지수에는 Estimated"
+" 배지가 표시되며, 개별 파일 존재 여부 확인은 Measured일 수 있습니다.</p>\n"
+"    <p class=\"lede\"><strong>AIO(AI-Driven Visibility)</strong>는 AI 시스템에"
+" 대한 가독성(entity, schema, FAQ, llms.txt, meta)에 가중치를 둡니다. "
+"<strong>GEO(Generative Engine Optimization)</strong>는 citability와 AI 크롤러 "
+"정책에 가중치를 둡니다.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Share of Voice(SoV)</h2>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>: AIO/GEO와 관찰된 robots를 기반으로 한 수식입니다. <strong>Measured</strong>: LLM(Plus/Business)에 대한 prompt polling으로 브랜드 언급 수를 집계합니다. 두 가지를 혼동하지 마세요.</p>\n"
-"    <p class=\"lede\">Measured SoV를 높이려면: 공개 entity(llms.txt, Organization, about)를 강화하고, 인용 가능한 콘텐츠를 게시하며, 시장에서 실제로 묻는 질문으로 prompt bank를 확장하세요.</p>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: AIO/GEO와 관찰된 robots를 기반으로 한"
+" 수식입니다. <strong>Measured</strong>: LLM(Plus/Business)에 대한 prompt "
+"polling으로 브랜드 언급 수를 집계합니다. 두 가지를 혼동하지 마세요.</p>\n"
+"    <p class=\"lede\">Measured SoV를 높이려면: 공개 entity(llms.txt, "
+"Organization, about)를 강화하고, 인용 가능한 콘텐츠를 게시하며, 시장에서 실제로 묻는 질문으로 prompt "
+"bank를 확장하세요.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">두 지표를 함께 읽는 방법</h2>\n"
-"    <p class=\"lede\">먼저 신호(점수)를 높이고, 그다음 목소리(SoV)를 측정하세요. 낮은 점수에 높은 SoV는 취약하며, Measured SoV 없이 높은 점수만 있는 경우는 진단에 불과할 뿐 인용의 증거는 아닙니다.</p>\n"
-"    <p class=\"lede\">Centropic은 항상 evidence 배지를 표시합니다: Estimated, Mixed, 또는 Measured. 자세한 내용은 <a href=\"/metodologia\">methodology</a>와 제품 내 <a href=\"/prodotto\">/prodotto</a>를 참고하세요.</p>\n"
+"    <p class=\"lede\">먼저 신호(점수)를 높이고, 그다음 목소리(SoV)를 측정하세요. 낮은 점수에 높은 SoV는"
+" 취약하며, Measured SoV 없이 높은 점수만 있는 경우는 진단에 불과할 뿐 인용의 증거는 아닙니다.</p>\n"
+"    <p class=\"lede\">Centropic은 항상 evidence 배지를 표시합니다: Estimated, Mixed,"
+" 또는 Measured. 자세한 내용은 <a href=\"/metodologia\">methodology</a>와 제품 내 <a "
+"href=\"/prodotto\">/prodotto</a>를 참고하세요.</p>\n"
 "  </section>\n"
 
 #: services/site_guide.py:16
-msgid "AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a modelli e crawler IA. Non significa All-in-One."
-msgstr "AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a modelli e crawler IA. Non significa All-in-One."
+msgid ""
+"AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a "
+"modelli e crawler IA. Non significa All-in-One."
+msgstr ""
+"AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a "
+"modelli e crawler IA. Non significa All-in-One."
 
 #: services/site_guide.py:23
-msgid "Generative Engine Optimization: ottimizzazione per essere citati nelle risposte generate da answer engine. Non significa GIS."
+msgid ""
+"Generative Engine Optimization: ottimizzazione per essere citati nelle "
+"risposte generate da answer engine. Non significa GIS."
 msgstr "답변 엔진(ChatGPT, Perplexity, AI 검색)에서 생성된 답변에 인용되도록 얼마나 최적화되어 있는지."
 
 #: services/site_guide.py:28
@@ -339,8 +486,12 @@ msgid "SoV (Share of Voice)"
 msgstr "음성 점유율"
 
 #: services/site_guide.py:30
-msgid "Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured = campionato via citation monitor (Plus)."
-msgstr "Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured = campionato via citation monitor (Plus)."
+msgid ""
+"Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured"
+" = campionato via citation monitor (Plus)."
+msgstr ""
+"Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured"
+" = campionato via citation monitor (Plus)."
 
 #: services/site_guide.py:35 templates/dashboard.html:482
 #: templates/dashboard.html:673 templates/partials/sov_ops.html:7
@@ -349,52 +500,88 @@ msgid "Misurato"
 msgstr "측정됨"
 
 #: services/site_guide.py:37
-msgid "Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via API LLM configurate."
-msgstr "Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via API LLM configurate."
+msgid ""
+"Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
+"API LLM configurate."
+msgstr ""
+"Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
+"API LLM configurate."
 
 #: services/site_guide.py:42 templates/product.html:30
 msgid "Stimato (proxy)"
 msgstr "추정(프록시)"
 
 #: services/site_guide.py:44
-msgid "Valore euristico derivato dai segnali del sito, non una citazione live nella UI dell’LLM."
-msgstr "Valore euristico derivato dai segnali del sito, non una citazione live nella UI dell’LLM."
+msgid ""
+"Valore euristico derivato dai segnali del sito, non una citazione live "
+"nella UI dell’LLM."
+msgstr ""
+"Valore euristico derivato dai segnali del sito, non una citazione live "
+"nella UI dell’LLM."
 
 #: services/site_guide.py:49 services/site_guide.py:496
 msgid "Indice DDD→AAA"
 msgstr "가이드 색인"
 
 #: services/site_guide.py:51
-msgid "Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a eccellente (AAA)."
-msgstr "Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a eccellente (AAA)."
+msgid ""
+"Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a "
+"eccellente (AAA)."
+msgstr ""
+"Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a "
+"eccellente (AAA)."
 
 #: services/site_guide.py:58
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
 msgstr "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
 
 #: services/site_guide.py:65
-msgid "Insieme di artifact generati dall’analisi (llms, schema, meta, robots, checklist)."
-msgstr "Insieme di artifact generati dall’analisi (llms, schema, meta, robots, checklist)."
+msgid ""
+"Insieme di artifact generati dall’analisi (llms, schema, meta, robots, "
+"checklist)."
+msgstr ""
+"Insieme di artifact generati dall’analisi (llms, schema, meta, robots, "
+"checklist)."
 
 #: services/site_guide.py:72
-msgid "File root machine-readable che spiega brand, topic e URL preferiti ai modelli/crawler IA."
-msgstr "File root machine-readable che spiega brand, topic e URL preferiti ai modelli/crawler IA."
+msgid ""
+"File root machine-readable che spiega brand, topic e URL preferiti ai "
+"modelli/crawler IA."
+msgstr ""
+"File root machine-readable che spiega brand, topic e URL preferiti ai "
+"modelli/crawler IA."
 
 #: services/site_guide.py:79
-msgid "Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage, …)."
-msgstr "Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage, …)."
+msgid ""
+"Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage,"
+" …)."
+msgstr ""
+"Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage,"
+" …)."
 
 #: services/site_guide.py:86
-msgid "Endpoint Centropic /e/<token>/… che servono artifact aggiornati dinamicamente."
-msgstr "Endpoint Centropic /e/<token>/… che servono artifact aggiornati dinamicamente."
+msgid ""
+"Endpoint Centropic /e/<token>/… che servono artifact aggiornati "
+"dinamicamente."
+msgstr ""
+"Endpoint Centropic /e/<token>/… che servono artifact aggiornati "
+"dinamicamente."
 
 #: services/site_guide.py:93
-msgid "Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo dominio verso Edge."
-msgstr "Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo dominio verso Edge."
+msgid ""
+"Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo "
+"dominio verso Edge."
+msgstr ""
+"Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo "
+"dominio verso Edge."
 
 #: services/site_guide.py:100
-msgid "Payload macchina con versioning e metadati Edge per discovery e integrazioni."
-msgstr "Payload macchina con versioning e metadati Edge per discovery e integrazioni."
+msgid ""
+"Payload macchina con versioning e metadati Edge per discovery e "
+"integrazioni."
+msgstr ""
+"Payload macchina con versioning e metadati Edge per discovery e "
+"integrazioni."
 
 #: services/site_guide.py:107
 msgid "Job Plus che invia prompt bank agli LLM e misura menzioni del brand."
@@ -409,15 +596,21 @@ msgid "Set di prompt/checklist per settore (es. SaaS, local, ecommerce)."
 msgstr "산업별 프롬프트 및 체크리스트 세트를 적용하세요 (SaaS, 전자상거래, 지역, 에이전시, 미디어)."
 
 #: services/site_guide.py:128
-msgid "Controllo che gli artifact pubblicati sul dominio siano raggiungibili e coerenti."
-msgstr "Controllo che gli artifact pubblicati sul dominio siano raggiungibili e coerenti."
+msgid ""
+"Controllo che gli artifact pubblicati sul dominio siano raggiungibili e "
+"coerenti."
+msgstr ""
+"Controllo che gli artifact pubblicati sul dominio siano raggiungibili e "
+"coerenti."
 
 #: services/site_guide.py:135
 msgid "Rete di segnali entity (nome, sameAs, contatti) che disambiguano il brand."
 msgstr "브랜드를 명확하게 하는 엔티티 신호 네트워크(이름, sameAs, 연락처)."
 
 #: services/site_guide.py:142
-msgid "Quanto il contenuto è facilmente citabile da un modello (chiarezza, fatti, struttura)."
+msgid ""
+"Quanto il contenuto è facilmente citabile da un modello (chiarezza, "
+"fatti, struttura)."
 msgstr "콘텐츠가 모델에서 얼마나 쉽게 인용될 수 있는지(명확성, 사실, 구조)."
 
 #: services/site_guide.py:149
@@ -429,19 +622,27 @@ msgid "Crawler IA"
 msgstr "IA 크롤러"
 
 #: services/site_guide.py:156
-msgid "Bot come GPTBot, ClaudeBot, PerplexityBot, Google-Extended che indicizzano per modelli."
+msgid ""
+"Bot come GPTBot, ClaudeBot, PerplexityBot, Google-Extended che "
+"indicizzano per modelli."
 msgstr "모델을 위해 인덱싱하는 GPTBot, ClaudeBot, PerplexityBot, Google-Extended와 같은 봇."
 
 #: services/site_guide.py:163
-msgid "Policy di accesso crawler; bozza Centropic apre i bot IA utili senza spezzare le regole esistenti."
+msgid ""
+"Policy di accesso crawler; bozza Centropic apre i bot IA utili senza "
+"spezzare le regole esistenti."
 msgstr "크롤러 접근 정책; Centropic 초안은 기존 규칙을 깨지 않고 유용한 IA 봇을 엽니다."
 
 #: services/site_guide.py:170
-msgid "Unità di credito prodotto (1 token = €0,10). Consumata da analisi e job measured."
+msgid ""
+"Unità di credito prodotto (1 token = €0,10). Consumata da analisi e job "
+"measured."
 msgstr "제품 크레딧 단위(1 토큰 = €0.10). 분석 및 측정된 작업에 소비됩니다."
 
 #: services/site_guide.py:177
-msgid "Prenotazione temporanea di credito prima di un job; rilasciata o convertita a debito a fine run."
+msgid ""
+"Prenotazione temporanea di credito prima di un job; rilasciata o "
+"convertita a debito a fine run."
 msgstr "작업 전에 크레딧을 임시로 예약합니다; 실행 종료 시 해제되거나 부채로 전환됩니다."
 
 #: services/site_guide.py:183
@@ -453,11 +654,17 @@ msgid "Report esportabile con brand agenzia (logo/colori) per clienti finali."
 msgstr "최종 고객을 위한 에이전시 브랜드(로고/색상)가 포함된 내보낼 수 있는 보고서."
 
 #: services/site_guide.py:196
-msgid "Chiave Bearer ct_ per /api/v1 (analyze, sites, edge). Le chiavi gp_ legacy restano accettate. Solo Business."
-msgstr "/api/v1(analyze, sites, edge)용 Bearer ct_ 키. 기존 gp_ 키도 계속 사용 가능합니다. Business 전용."
+msgid ""
+"Chiave Bearer ct_ per /api/v1 (analyze, sites, edge). Le chiavi gp_ "
+"legacy restano accettate. Solo Business."
+msgstr ""
+"/api/v1(analyze, sites, edge)용 Bearer ct_ 키. 기존 gp_ 키도 계속 사용 가능합니다. "
+"Business 전용."
 
 #: services/site_guide.py:204
-msgid "Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) dello Share of Voice."
+msgid ""
+"Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) "
+"dello Share of Voice."
 msgstr "음성 점유율의 ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*에 대한 엔진 보기."
 
 #: services/site_guide.py:209 templates/dashboard.html:600
@@ -477,7 +684,9 @@ msgid "Guida completa Centropic"
 msgstr "Centropic 완벽 가이드"
 
 #: services/site_guide.py:248
-msgid "Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli diagnostici, pack, Edge Signals, CMS, token, API e glossario."
+msgid ""
+"Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli "
+"diagnostici, pack, Edge Signals, CMS, token, API e glossario."
 msgstr "모든 제품이 하나의 페이지에: AIO/GEO 분석, 진단 모듈, 패키지, Edge Signals, CMS, 토큰, API 및 용어집."
 
 #: services/site_guide.py:251
@@ -638,8 +847,12 @@ msgid "Share of Voice"
 msgstr "음성 점유율"
 
 #: services/site_guide.py:352
-msgid "Proxy (stimato) su tutti i piani; measured su Plus/Business con citation monitor."
-msgstr "모든 요금제에서 Proxy(estimated) 제공; Plus/Business에서는 citation monitor를 통한 measured 제공."
+msgid ""
+"Proxy (stimato) su tutti i piani; measured su Plus/Business con citation "
+"monitor."
+msgstr ""
+"모든 요금제에서 Proxy(estimated) 제공; Plus/Business에서는 citation monitor를 통한 "
+"measured 제공."
 
 #: services/site_guide.py:355
 msgid "Stimato: euristiche su segnali del sito"
@@ -654,7 +867,9 @@ msgid "Gemini e Azure AI restano proxy onesti (non Overview/Copilot nativi)"
 msgstr "Gemini와 Azure AI는 정직한 프록시로 남아 있습니다(네이티브 Overview/Copilot 아님)."
 
 #: services/site_guide.py:367
-msgid "Moduli: entity graph, citability, schema, publish verify, llms lint, locales."
+msgid ""
+"Moduli: entity graph, citability, schema, publish verify, llms lint, "
+"locales."
 msgstr "모듈: 엔티티 그래프, 인용 가능성, 스키마, 게시 확인, llms 린트, 로케일."
 
 #: services/site_guide.py:370
@@ -670,7 +885,6 @@ msgid "Locales: hreflang e coerenza mercati"
 msgstr "로케일: hreflang 및 시장 일관성"
 
 #: services/site_guide.py:377 templates/dashboard.html:715
-#: templates/pricing.html:49
 msgid "Competitor snapshot"
 msgstr "경쟁사 스냅샷"
 
@@ -751,35 +965,57 @@ msgid "Crawl e probe"
 msgstr "크롤링 및 프로브"
 
 #: services/site_guide.py:431
-msgid "Centropic richiede title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt e pagine del sito. Free: tetto pagine; Plus: crawl intero (con tetto operativo di piattaforma)."
-msgstr "Centropic은 title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt 및 사이트 페이지를 요구합니다. Free: 페이지 한도; Plus: 전체 크롤링(플랫폼 운영 한도 포함)."
+msgid ""
+"Centropic richiede title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, "
+"ai.txt, humans.txt e pagine del sito. Free: tetto pagine; Plus: crawl "
+"intero (con tetto operativo di piattaforma)."
+msgstr ""
+"Centropic은 title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, "
+"humans.txt 및 사이트 페이지를 요구합니다. Free: 페이지 한도; Plus: 전체 크롤링(플랫폼 운영 한도 포함)."
 
 #: services/site_guide.py:439
-msgid "Vista per ChatGPT, Gemini (proxy AI Overview), Claude, Perplexity, Grok e Azure AI. Di default è Stimato; con SoV measured gli engine disponibili passano a Misurato."
-msgstr "ChatGPT, Gemini(프록시 AI 개요), Claude, Perplexity, Grok 및 Azure AI에 대한 보기. 기본적으로는 추정치입니다; SoV 측정 시 사용 가능한 엔진은 측정치로 전환됩니다."
+msgid ""
+"Vista per ChatGPT, Gemini (proxy AI Overview), Claude, Perplexity, Grok e"
+" Azure AI. Di default è Stimato; con SoV measured gli engine disponibili "
+"passano a Misurato."
+msgstr ""
+"ChatGPT, Gemini(프록시 AI 개요), Claude, Perplexity, Grok 및 Azure AI에 대한 보기. "
+"기본적으로는 추정치입니다; SoV 측정 시 사용 가능한 엔진은 측정치로 전환됩니다."
 
 #: services/site_guide.py:447
-msgid "Valuta coerenza Organization / brand, sameAs, contatti e segnali entity riutilizzabili da crawler e modelli."
+msgid ""
+"Valuta coerenza Organization / brand, sameAs, contatti e segnali entity "
+"riutilizzabili da crawler e modelli."
 msgstr "조직/브랜드의 일관성, sameAs, 연락처 및 크롤러와 모델에서 재사용 가능한 엔티티 신호를 평가합니다."
 
 #: services/site_guide.py:454
-msgid "Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili, meno ambiguità sul “chi siete / cosa fate”."
+msgid ""
+"Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili,"
+" meno ambiguità sul “chi siete / cosa fate”."
 msgstr "복사본이 얼마나 인용 가능한지: 명확한 주장, 정의, 검증 가능한 사실, '당신이 누구인지/무엇을 하는지'에 대한 모호성을 줄입니다."
 
 #: services/site_guide.py:461
-msgid "Qualità e completezza JSON-LD (Organization, WebSite, FAQPage, SoftwareApplication, Article dove rilevante)."
+msgid ""
+"Qualità e completezza JSON-LD (Organization, WebSite, FAQPage, "
+"SoftwareApplication, Article dove rilevante)."
 msgstr "JSON-LD의 품질 및 완전성(조직, 웹사이트, FAQ 페이지, 소프트웨어 애플리케이션, 관련 기사)."
 
 #: services/site_guide.py:468
-msgid "Verifica se llms.txt, robots e schema pubblicati sul dominio corrispondono alle bozze del pack / Edge."
+msgid ""
+"Verifica se llms.txt, robots e schema pubblicati sul dominio "
+"corrispondono alle bozze del pack / Edge."
 msgstr "llms.txt, robots 및 도메인에 게시된 스키마가 패키지/Edge의 초안과 일치하는지 확인합니다."
 
 #: services/site_guide.py:475
-msgid "Controlla presenza e qualità di /llms.txt: brand, topic, URL assoluti, preferred citation."
+msgid ""
+"Controlla presenza e qualità di /llms.txt: brand, topic, URL assoluti, "
+"preferred citation."
 msgstr "/llms.txt의 존재 및 품질을 확인합니다: 브랜드, 주제, 절대 URL, 선호 인용."
 
 #: services/site_guide.py:482
-msgid "Segnali hreflang / mercati: coerenza linguistica e copertura internazionale per answer engine multi-lingua."
+msgid ""
+"Segnali hreflang / mercati: coerenza linguistica e copertura "
+"internazionale per answer engine multi-lingua."
 msgstr "hreflang 신호/시장: 다국어 답변 엔진을 위한 언어 일관성 및 국제적 범위."
 
 #: services/site_guide.py:487 templates/dashboard.html:555
@@ -788,11 +1024,18 @@ msgid "SoV measured"
 msgstr "측정된 SoV"
 
 #: services/site_guide.py:489
-msgid "Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio nelle risposte — campione probe, non garanzia di ranking nelle UI consumer."
-msgstr "오직 Plus: 프롬프트 뱅크가 있는 인용 모니터. 응답에서 브랜드/도메인 언급 수를 계산합니다 — 샘플 프로브, 소비자 UI에서 순위 보장 아님."
+msgid ""
+"Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio"
+" nelle risposte — campione probe, non garanzia di ranking nelle UI "
+"consumer."
+msgstr ""
+"오직 Plus: 프롬프트 뱅크가 있는 인용 모니터. 응답에서 브랜드/도메인 언급 수를 계산합니다 — 샘플 프로브, 소비자 UI에서 "
+"순위 보장 아님."
 
 #: services/site_guide.py:498
-msgid "Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado tra un re-scan e l’altro."
+msgid ""
+"Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un "
+"grado tra un re-scan e l’altro."
 msgstr "편지를 읽으세요: DDD는 중요하고, AAA는 최고입니다. 재스캔 사이에 최소한 한 단계 상승하는 것을 목표로 하세요."
 
 #: services/site_guide.py:502
@@ -800,7 +1043,9 @@ msgid "Score AIO / GEO"
 msgstr "AIO / GEO 점수"
 
 #: services/site_guide.py:504
-msgid "Sotto 60 = intervento prioritario. AIO e GEO vanno letti insieme al SoV, non isolati."
+msgid ""
+"Sotto 60 = intervento prioritario. AIO e GEO vanno letti insieme al SoV, "
+"non isolati."
 msgstr "60 미만 = 우선 개입. AIO와 GEO는 SoV와 함께 읽어야 하며, 독립적으로 읽어서는 안 됩니다."
 
 #: services/site_guide.py:510
@@ -816,11 +1061,15 @@ msgid "Root del sito: https://tuodominio/llms.txt — oppure Edge + CMS connecto
 msgstr "사이트 루트: https://tuodominio/llms.txt — 또는 Edge + CMS 커넥터."
 
 #: services/site_guide.py:522
-msgid "Incolla nel <head> delle pagine chiave (o lascia Edge servire organization.jsonld)."
+msgid ""
+"Incolla nel <head> delle pagine chiave (o lascia Edge servire "
+"organization.jsonld)."
 msgstr "주요 페이지의 <head>에 붙여넣기(또는 Edge가 organization.jsonld를 제공하도록 둡니다)."
 
 #: services/site_guide.py:528
-msgid "Unisci la bozza al file esistente; lascia aperti i bot IA utili (GPTBot, ClaudeBot, …)."
+msgid ""
+"Unisci la bozza al file esistente; lascia aperti i bot IA utili (GPTBot, "
+"ClaudeBot, …)."
 msgstr "초안을 기존 파일에 통합하세요; 유용한 AI 봇(GPTBot, ClaudeBot 등)을 열어 두세요."
 
 #: services/site_guide.py:534
@@ -836,7 +1085,9 @@ msgid "Edge /geopulse/signals.json via CMS (opzionale)"
 msgstr "CMS를 통한 Edge /geopulse/signals.json(선택 사항)"
 
 #: services/site_guide.py:555
-msgid "1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso URL ok, consuma token)"
+msgid ""
+"1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso"
+" URL ok, consuma token)"
 msgstr "1개 사이트, 제한된 페이지 크롤링, 2개 신규 사이트 분석(동일 URL 재분석 가능, 토큰 소모)"
 
 #: services/site_guide.py:557
@@ -848,7 +1099,9 @@ msgid "SoV stimato (proxy)"
 msgstr "추정 SoV (프록시)"
 
 #: services/site_guide.py:565
-msgid "Fino a 5 siti, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"
+msgid ""
+"Fino a 5 siti, crawl fino a 120 pagine (Deep 500), competitor, storico "
+"esteso"
 msgstr "최대 5개 사이트, 최대 120페이지 crawl(Deep 500), 경쟁사, 확장된 기록"
 
 #: services/site_guide.py:567
@@ -901,14 +1154,14 @@ msgstr "계획 및 가격"
 msgid "Guida completa"
 msgstr "완전한 가이드"
 
-#: services/site_guide.py:599 templates/agencies.html:55
+#: services/site_guide.py:599 templates/agencies.html:56
 #: templates/base.html:217 templates/sample_report.html:2
 msgid "Esempio report"
 msgstr "보고서 예시"
 
 #: services/site_guide.py:600 templates/base.html:219 templates/faq.html:95
-#: templates/landing.html:85 templates/pricing.html:91
-#: templates/product.html:88 templates/sample_report.html:58
+#: templates/landing.html:85 templates/product.html:88
+#: templates/sample_report.html:58
 msgid "Per agenzie"
 msgstr "에이전시용"
 
@@ -918,24 +1171,39 @@ msgid "Chi siamo"
 msgstr "우리는 누구인가"
 
 #: templates/about.html:3
-msgid "Chi è Centropic: team e missione su AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO) per brand che vogliono essere citati dalle IA."
-msgstr "Centropic은 AI 기반 가시성(AIO) 및 생성 엔진 최적화(GEO)에 대한 팀과 사명을 가진 브랜드가 AI에 의해 인용되기를 원하는 브랜드를 위해 도구를 구축합니다."
+msgid ""
+"Chi è Centropic: team e missione su AI-Driven Visibility (AIO) e "
+"Generative Engine Optimization (GEO) per brand che vogliono essere citati"
+" dalle IA."
+msgstr ""
+"Centropic은 AI 기반 가시성(AIO) 및 생성 엔진 최적화(GEO)에 대한 팀과 사명을 가진 브랜드가 AI에 의해 "
+"인용되기를 원하는 브랜드를 위해 도구를 구축합니다."
 
 #: templates/about.html:9
 msgid "About"
 msgstr "정보"
 
 #: templates/about.html:12
-msgid "Centropic costruisce strumenti per misurare e rafforzare i segnali che i modelli generativi usano per citare un brand — con onestà metodologica e output pubblicabile."
-msgstr "Centropic은 생성 모델이 브랜드를 인용하는 데 사용하는 신호를 측정하고 강화하기 위한 도구를 구축합니다 — 방법론적 정직성과 게시 가능한 결과물로."
+msgid ""
+"Centropic costruisce strumenti per misurare e rafforzare i segnali che i "
+"modelli generativi usano per citare un brand — con onestà metodologica e "
+"output pubblicabile."
+msgstr ""
+"Centropic은 생성 모델이 브랜드를 인용하는 데 사용하는 신호를 측정하고 강화하기 위한 도구를 구축합니다 — 방법론적 정직성과"
+" 게시 가능한 결과물로."
 
 #: templates/about.html:17
 msgid "Missione"
 msgstr "사명"
 
 #: templates/about.html:19
-msgid "Le risposte di ChatGPT, Perplexity e ricerca AI non seguono il ranking classico: privilegiano entity chiare, struttura semantica e file machine-readable. Aiutiamo founder, brand e agenzie a chiudere quel gap con score"
-msgstr "ChatGPT, Perplexity 및 AI 검색의 응답은 전통적인 순위를 따르지 않습니다: 명확한 엔티티, 의미 구조 및 기계 판독 파일을 우선시합니다. 우리는 창립자, 브랜드 및 에이전시가 점수로 그 격차를 해소하도록 돕습니다."
+msgid ""
+"Le risposte di ChatGPT, Perplexity e ricerca AI non seguono il ranking "
+"classico: privilegiano entity chiare, struttura semantica e file machine-"
+"readable. Aiutiamo founder, brand e agenzie a chiudere quel gap con score"
+msgstr ""
+"ChatGPT, Perplexity 및 AI 검색의 응답은 전통적인 순위를 따르지 않습니다: 명확한 엔티티, 의미 구조 및 기계 "
+"판독 파일을 우선시합니다. 우리는 창립자, 브랜드 및 에이전시가 점수로 그 격차를 해소하도록 돕습니다."
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
 #: templates/dashboard.html:748 templates/partials/auth_help.html:7
@@ -957,7 +1225,9 @@ msgid "Fonti di metodo:"
 msgstr "방법론 출처:"
 
 #: templates/about.html:26
-msgid "policy crawler AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) e pratiche"
+msgid ""
+"policy crawler AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) e "
+"pratiche"
 msgstr "정책 크롤러 AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) 및 관행"
 
 #: templates/about.html:28
@@ -977,7 +1247,9 @@ msgid "che ne è proprietario e responsabile dei contenuti. Contatto operativo:"
 msgstr "그것의 소유자이며 콘텐츠에 대한 책임이 있습니다. 운영 연락처:"
 
 #: templates/about.html:39
-msgid "Non operiamo come LocalBusiness con sede fisica al pubblico: il rapporto con i clienti è digitale via account e email."
+msgid ""
+"Non operiamo come LocalBusiness con sede fisica al pubblico: il rapporto "
+"con i clienti è digitale via account e email."
 msgstr "우리는 대중에게 물리적 위치가 있는 로컬 비즈니스로 운영하지 않습니다: 고객과의 관계는 계정 및 이메일을 통한 디지털입니다."
 
 #: templates/about.html:44
@@ -1001,7 +1273,9 @@ msgid "probe ed euristiche"
 msgstr "프로브 및 휴리스틱"
 
 #: templates/about.html:48
-msgid "non polling live garantito sulle IA (badge Stimato / Misurato in prodotto)."
+msgid ""
+"non polling live garantito sulle IA (badge Stimato / Misurato in "
+"prodotto)."
 msgstr "AI에 대한 실시간 폴링이 보장되지 않습니다 (제품 내 추정 / 측정 배지)."
 
 #: templates/about.html:53
@@ -1013,7 +1287,9 @@ msgid "Crawl dello stesso dominio, probe di"
 msgstr "동일 도메인 크롤링, 프로브"
 
 #: templates/about.html:56
-msgid "poi un report con criticità e artifact da pubblicare. Metodologia pubblica su"
+msgid ""
+"poi un report con criticità e artifact da pubblicare. Metodologia "
+"pubblica su"
 msgstr "그런 다음 게시할 비판 및 아티팩트가 포함된 보고서. 공개 방법론은 다음과 같습니다:"
 
 #: templates/about.html:58
@@ -1052,80 +1328,105 @@ msgid "Centropic per agenzie"
 msgstr "Centropic 에이전시용"
 
 #: templates/agencies.html:3
-msgid "Business 49,99€: white-label, API, 400 token e fino a 50 siti per agenzie GEO/AIO. Plus resta per startup sul proprio brand."
-msgstr "Business 49.99€: GEO/AIO 에이전시를 위한 white-label, API, 토큰 400개, 최대 50개 사이트. Plus는 자사 브랜드용 스타트업을 위한 요금제입니다."
+msgid ""
+"Business 49,99€: monitoraggio continuo multi-cliente, white-label, API e "
+"fino a 50 siti. Plus resta il loop di ottimizzazione sul proprio brand."
+msgstr ""
+"비즈니스 49,99€: 다중 클라이언트 지속 모니터링, 화이트 라벨, API 및 최대 50개 사이트. Plus는 브랜드 최적화 "
+"루프를 유지합니다."
 
 #: templates/agencies.html:9
 msgid "Profilo Business"
 msgstr "Business 프로필"
 
 #: templates/agencies.html:10
-msgid "Consegna citabilità IA ai tuoi clienti"
-msgstr "고객에게 AI 인용 가능성 전달"
+msgid "Monitora i clienti. Ottimizza il retainer."
+msgstr "고객을 모니터링하세요. 리테이너를 최적화하세요."
 
 #: templates/agencies.html:12
-msgid "Un solo stack per onboarding, audit e retainer: diagnosi AIO/GEO, pack, Edge Signals, API e report white-label. Misurato su Plus/Business; toolkit agenzia solo su Business."
-msgstr "온보딩, 감사, 리테이너를 위한 단일 스택: AIO/GEO 진단, pack, Edge Signals, API, white-label 리포트. Plus/Business에서 Measured 제공, 에이전시 툴킷은 Business에만 제공됩니다."
+msgid ""
+"Un solo stack per audit e ottimizzazione continua: re-scan, alert, SoV "
+"Misurato, pack, API e report white-label. Il monitoraggio è su "
+"Plus/Business; il toolkit agenzia solo su Business."
+msgstr ""
+"감사 및 지속적인 최적화를 위한 단일 스택: 재스캔, 알림, 측정된 SoV, 패키지, API 및 화이트 라벨 보고서. 모니터링은 "
+"Plus/Business에서 진행되며, 에이전시 툴킷은 Business에서만 사용 가능합니다."
 
 #: templates/agencies.html:17
 msgid "Cosa ottengono i vostri clienti"
 msgstr "고객이 얻는 것"
 
 #: templates/agencies.html:19
+msgid "Monitoraggio continuo del sito con re-scan e alert su regressioni"
+msgstr "재스캔 및 회귀 알림을 통한 사이트 지속 모니터링"
+
+#: templates/agencies.html:20
 msgid "Score + findings prioritizzati in linguaggio operativo"
 msgstr "점수 + 운영 언어로 우선 순위가 매겨진 결과"
 
-#: templates/agencies.html:20
+#: templates/agencies.html:21
 msgid "llms.txt, JSON-LD, robots e CMS connector"
 msgstr "llms.txt, JSON-LD, 로봇 및 CMS 커넥터"
 
-#: templates/agencies.html:21
-msgid "SoV measured (Plus/Business) per dimostrare menzioni, non solo proxy"
-msgstr "언급을 증명하기 위한 Measured SoV(Plus/Business), 단순 proxy가 아님"
-
 #: templates/agencies.html:22
+msgid "SoV Misurato per dimostrare menzioni nel tempo, non solo proxy"
+msgstr "시간에 따른 언급을 증명하기 위한 측정된 SoV, 단순 프록시가 아닙니다."
+
+#: templates/agencies.html:23
 msgid "Export white-label MD/HTML con il vostro brand (solo Business)"
 msgstr "귀사 브랜드로 표시되는 white-label MD/HTML 내보내기(Business 전용)"
 
-#: templates/agencies.html:27
+#: templates/agencies.html:28
 msgid "Perché Business, non Plus"
 msgstr "왜 Plus가 아니라 Business인가"
 
-#: templates/agencies.html:29
-msgid "Plus (14,99€ · 100 token) è per startup sul proprio brand. Business (49,99€ · 400 token) è il profilo agenzia: scala, automazione e brand vostro sui deliverable."
-msgstr "Plus(14.99€ · 토큰 100개)는 자사 브랜드용 스타트업을 위한 요금제입니다. Business(49.99€ · 토큰 400개)는 에이전시 프로필로, 확장성과 자동화, 결과물에 귀사 브랜드를 적용할 수 있습니다."
+#: templates/agencies.html:30
+msgid ""
+"Plus (14,99€ · 100 token) monitora e ottimizza il tuo brand. Business "
+"(49,99€ · 400 token) porta lo stesso loop continuo su decine di clienti, "
+"con API e white-label."
+msgstr ""
+"Plus (14,99€ · 100 토큰)는 귀하의 브랜드를 모니터링하고 최적화합니다. Business (49,99€ · 400 "
+"토큰)는 API 및 화이트 라벨과 함께 수십 개의 고객에 대해 동일한 지속 루프를 제공합니다."
 
-#: templates/agencies.html:34
-msgid "Brand proprietario · SoV Misurato · re-scan · 5 siti"
-msgstr "자사 브랜드 · Measured SoV · 재스캔 · 사이트 5개"
+#: templates/agencies.html:35
+msgid "Monitor continuo · SoV Misurato · re-scan · 5 siti"
+msgstr "지속 모니터링 · 측정된 SoV · 재스캔 · 5개 사이트"
 
-#: templates/agencies.html:37
+#: templates/agencies.html:38
 msgid "Consigliato"
 msgstr "권장"
 
-#: templates/agencies.html:39
-msgid "Tutto Plus + API + white-label + 50 siti + 400 token"
-msgstr "Plus의 모든 기능 + API + white-label + 사이트 50개 + 토큰 400개"
+#: templates/agencies.html:40
+msgid "Monitor multi-cliente · API · white-label · 50 siti · 400 token"
+msgstr "다중 클라이언트 모니터링 · API · 화이트 라벨 · 50개 사이트 · 400 토큰"
 
-#: templates/agencies.html:45
+#: templates/agencies.html:46
 msgid "Come iniziare"
 msgstr "시작하는 방법"
 
-#: templates/agencies.html:47
-msgid "Attiva Business, importa il primo dominio cliente, pubblica il pack (o Edge) e confronta lo storico. Walkthrough 15 min:"
-msgstr "Business를 활성화하고 첫 번째 고객 도메인을 가져온 후 pack(또는 Edge)을 게시하고 기록을 비교하세요. 15분 안내:"
+#: templates/agencies.html:48
+msgid ""
+"Attiva Business, importa il primo dominio cliente, avvia il monitoraggio "
+"(re-scan) e confronta lo storico. Walkthrough 15 min:"
+msgstr "비즈니스를 활성화하고 첫 번째 고객 도메인을 가져오고 모니터링(재스캔)을 시작하고 기록을 비교하세요. 15분 가이드:"
 
-#: templates/agencies.html:53
+#: templates/agencies.html:54
 msgid "Attiva Business"
 msgstr "Business 활성화"
 
-#: templates/agencies.html:54
+#: templates/agencies.html:55
 msgid "Parla con noi"
 msgstr "문의하기"
 
 #: templates/base.html:10
-msgid "Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA."
-msgstr "Centropic — AI 기반 가시성(AIO) 및 생성 엔진 최적화(GEO)를 위한 신호 정보: 진단, 아티팩트 및 IA 응답에서의 인용 가능성."
+msgid ""
+"Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e "
+"Generative Engine Optimization (GEO): diagnosi, artifact e citabilità "
+"nelle risposte IA."
+msgstr ""
+"Centropic — AI 기반 가시성(AIO) 및 생성 엔진 최적화(GEO)를 위한 신호 정보: 진단, 아티팩트 및 IA "
+"응답에서의 인용 가능성."
 
 #: templates/base.html:106
 msgid "Apri menu"
@@ -1152,9 +1453,10 @@ msgid "Token"
 msgstr "토큰"
 
 #: templates/base.html:134 templates/base.html:149 templates/base.html:218
-#: templates/faq.html:79 templates/login.html:60 templates/pricing.html:2
-#: templates/pro_interest.html:13 templates/register.html:127
-#: templates/rimborsi.html:89 templates/rimborsi.html:99
+#: templates/faq.html:79 templates/partials/login_modal.html:71
+#: templates/pricing.html:2 templates/pro_interest.html:13
+#: templates/register.html:128 templates/rimborsi.html:89
+#: templates/rimborsi.html:99
 msgid "Prezzi"
 msgstr "가격"
 
@@ -1171,14 +1473,13 @@ msgid "Agenzie"
 msgstr "에이전시"
 
 #: templates/base.html:152 templates/base.html:239 templates/guide.html:183
-#: templates/login.html:2 templates/register.html:123
+#: templates/login.html:2 templates/register.html:124
 msgid "Accedi"
 msgstr "로그인"
 
 #: templates/base.html:153 templates/faq.html:93 templates/guide.html:18
 #: templates/guide.html:182 templates/landing.html:68
-#: templates/landing.html:218 templates/pricing.html:20
-#: templates/pricing.html:36
+#: templates/landing.html:218 templates/pricing.html:29
 msgid "Inizia gratis"
 msgstr "무료 시작"
 
@@ -1187,7 +1488,9 @@ msgid "Seleziona lingua"
 msgstr "언어 선택"
 
 #: templates/base.html:211
-msgid "Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle risposte IA. Prodotto di"
+msgid ""
+"Signal Intelligence per AIO e GEO. Ordine nei segnali, citabilità nelle "
+"risposte IA. Prodotto di"
 msgstr "AIO 및 GEO를 위한 신호 정보. 신호의 정리, IA 응답에서의 인용 가능성. 제품:"
 
 #: templates/base.html:215 templates/product.html:26
@@ -1203,8 +1506,8 @@ msgid "Score vs SoV"
 msgstr "점수 대 SoV"
 
 #: templates/base.html:229 templates/contact.html:25
-#: templates/forgot_password.html:14 templates/history.html:9
-#: templates/reset_password.html:13 templates/settings.html:9
+#: templates/forgot_password.html:15 templates/history.html:9
+#: templates/reset_password.html:14 templates/settings.html:9
 msgid "Account"
 msgstr "계정"
 
@@ -1217,7 +1520,7 @@ msgid "Pagina contatti"
 msgstr "연락처 페이지"
 
 #: templates/base.html:247 templates/base.html:255 templates/contact.html:50
-#: templates/partials/auth_help.html:26 templates/pricing.html:147
+#: templates/partials/auth_help.html:26 templates/pricing.html:140
 #: templates/privacy.html:2 templates/rimborsi.html:98
 #: templates/termini.html:80
 msgid "Privacy"
@@ -1229,41 +1532,46 @@ msgid "Termini di servizio"
 msgstr "서비스 약관"
 
 #: templates/base.html:249 templates/base.html:259 templates/contact.html:52
-#: templates/pricing.html:148 templates/privacy.html:82
+#: templates/pricing.html:141 templates/privacy.html:82
 #: templates/termini.html:81
 msgid "Rimborsi"
 msgstr "환불"
 
-#: templates/base.html:257 templates/contact.html:51 templates/pricing.html:146
-#: templates/register.html:105 templates/rimborsi.html:97
+#: templates/base.html:257 templates/contact.html:51 templates/pricing.html:139
+#: templates/register.html:106 templates/rimborsi.html:97
 msgid "Termini"
 msgstr "약관"
 
-#: templates/base.html:271
+#: templates/base.html:275
 msgid "Cookie e misurazione"
 msgstr "쿠키 및 측정"
 
-#: templates/base.html:273
-msgid "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o rifiutare. Dettagli nella"
-msgstr "우리는 기술적 쿠키와 귀하의 동의 하에 Google 도구(Analytics 및/또는 Ads/AdSense)를 사용하여 트래픽을 측정하고 광고를 표시합니다. 수락하거나 거부할 수 있습니다. 세부 사항은 다음에 있습니다."
-
 #: templates/base.html:277
+msgid ""
+"Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
+" e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
+"accettare o rifiutare. Dettagli nella"
+msgstr ""
+"우리는 기술적 쿠키와 귀하의 동의 하에 Google 도구(Analytics 및/또는 Ads/AdSense)를 사용하여 트래픽을 "
+"측정하고 광고를 표시합니다. 수락하거나 거부할 수 있습니다. 세부 사항은 다음에 있습니다."
+
+#: templates/base.html:281
 msgid "Accetta"
 msgstr "수락"
 
-#: templates/base.html:278
+#: templates/base.html:282
 msgid "Rifiuta"
 msgstr "거부"
 
-#: templates/base.html:319
+#: templates/base.html:323
 msgid "Copiato"
 msgstr "복사됨"
 
-#: templates/base.html:322
+#: templates/base.html:326
 msgid "Errore"
 msgstr "오류"
 
-#: templates/base.html:332
+#: templates/base.html:336
 msgid "Analisi in corso…"
 msgstr "분석 중…"
 
@@ -1284,7 +1592,9 @@ msgid "Prima di procedere, controlla il costo stimato e il miglioramento atteso.
 msgstr "진행하기 전에 예상 비용과 기대되는 개선 사항을 확인하세요."
 
 #: templates/confirm_analyze.html:13
-msgid "I token GEO vengono scalati in tempo reale sui token AI consumati durante l'analisi."
+msgid ""
+"I token GEO vengono scalati in tempo reale sui token AI consumati durante"
+" l'analisi."
 msgstr "GEO 토큰은 분석 중 소비된 AI 토큰에 대해 실시간으로 조정됩니다."
 
 #: templates/confirm_analyze.html:19
@@ -1344,8 +1654,12 @@ msgid "Nessuna baseline"
 msgstr "Baseline 없음"
 
 #: templates/confirm_analyze.html:96
-msgid "Pubblica prima i fix del pack (llms.txt, schema, robots), poi ri-misura. Lo score non sale solo perché rilanci l’analisi."
-msgstr "먼저 pack의 수정 사항(llms.txt, schema, robots)을 게시한 후 다시 측정하세요. 분석을 재실행하는 것만으로는 점수가 오르지 않습니다."
+msgid ""
+"Pubblica prima i fix del pack (llms.txt, schema, robots), poi ri-misura. "
+"Lo score non sale solo perché rilanci l’analisi."
+msgstr ""
+"먼저 pack의 수정 사항(llms.txt, schema, robots)을 게시한 후 다시 측정하세요. 분석을 재실행하는 것만으로는"
+" 점수가 오르지 않습니다."
 
 #: templates/confirm_analyze.html:103
 msgid "I tuoi token"
@@ -1404,24 +1718,31 @@ msgid "Annulla"
 msgstr "취소"
 
 #: templates/contact.html:3
-msgid "Contatti Centropic: supporto, partnership e domande su AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO). Email info@centropic.ai."
-msgstr "Centropic 연락처: 지원, 파트너십 및 AI 기반 가시성(AIO) 및 생성 엔진 최적화(GEO)에 대한 질문. 이메일 info@centropic.ai."
+msgid ""
+"Contatti Centropic: supporto, partnership e domande su AI-Driven "
+"Visibility (AIO) e Generative Engine Optimization (GEO). Email "
+"info@centropic.ai."
+msgstr ""
+"Centropic 연락처: 지원, 파트너십 및 AI 기반 가시성(AIO) 및 생성 엔진 최적화(GEO)에 대한 질문. 이메일 "
+"info@centropic.ai."
 
 #: templates/contact.html:10
 msgid "Parliamo"
 msgstr "이야기합시다"
 
 #: templates/contact.html:12
-msgid "Supporto prodotto, partnership agenzie e domande su score AIO/GEO. Rispondiamo da"
+msgid ""
+"Supporto prodotto, partnership agenzie e domande su score AIO/GEO. "
+"Rispondiamo da"
 msgstr "제품 지원, 에이전시 파트너십 및 AIO/GEO 점수에 대한 질문. 우리는 다음에서 응답합니다:"
 
 #: templates/contact.html:18
 msgid "Canali"
 msgstr "채널"
 
-#: templates/contact.html:20 templates/forgot_password.html:24
-#: templates/login.html:23 templates/pro_interest.html:38
-#: templates/register.html:33
+#: templates/contact.html:20 templates/forgot_password.html:25
+#: templates/login.html:23 templates/partials/login_modal.html:36
+#: templates/pro_interest.html:38 templates/register.html:34
 msgid "Email"
 msgstr "이메일"
 
@@ -1467,16 +1788,26 @@ msgid "Cosa includere nella mail"
 msgstr "이메일에 포함할 내용"
 
 #: templates/contact.html:35
-msgid "URL del sito, piano attuale (Free / Plus / Business) e, se possibile, uno screenshot del report. Per partnership agenzia indica verticali e volume siti."
-msgstr "사이트 URL, 현재 요금제(Free/Plus/Business), 가능하면 리포트 스크린샷. 에이전시 파트너십의 경우 전문 분야와 사이트 규모를 알려주세요."
+msgid ""
+"URL del sito, piano attuale (Free / Plus / Business) e, se possibile, uno"
+" screenshot del report. Per partnership agenzia indica verticali e volume"
+" siti."
+msgstr ""
+"사이트 URL, 현재 요금제(Free/Plus/Business), 가능하면 리포트 스크린샷. 에이전시 파트너십의 경우 전문 분야와 "
+"사이트 규모를 알려주세요."
 
 #: templates/contact.html:40
 msgid "Orari e tempi di risposta"
 msgstr "응답 시간 및 일정"
 
 #: templates/contact.html:42
-msgid "Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni lavorativi. Per incidenti di accesso account indica l’email di registrazione nell’oggetto. Aggiornato il"
-msgstr "주중(CET/CEST) 이메일 지원, 일반적으로 1-2 영업일 이내. 계정 접근 문제의 경우, 제목에 등록 이메일을 명시하세요. 업데이트 날짜:"
+msgid ""
+"Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni"
+" lavorativi. Per incidenti di accesso account indica l’email di "
+"registrazione nell’oggetto. Aggiornato il"
+msgstr ""
+"주중(CET/CEST) 이메일 지원, 일반적으로 1-2 영업일 이내. 계정 접근 문제의 경우, 제목에 등록 이메일을 명시하세요. "
+"업데이트 날짜:"
 
 #: templates/contact.html:48 templates/landing.html:163
 msgid "Trasparenza"
@@ -1515,8 +1846,10 @@ msgid "Workspace agenzia: multi-cliente, API e white-label."
 msgstr "에이전시 워크스페이스: 다중 고객, API 및 white-label."
 
 #: templates/dashboard.html:30
-msgid "Workspace Plus: SoV measured, re-scan e Edge completo."
-msgstr "Plus 워크스페이스: Measured SoV, 재스캔, 전체 Edge 기능."
+msgid ""
+"Workspace Plus: monitoraggio continuo, SoV Misurato, re-scan e Edge "
+"completo."
+msgstr "워크스페이스 Plus: 지속 모니터링, 측정된 SoV, 재스캔 및 전체 Edge."
 
 #: templates/dashboard.html:32
 msgid "Workspace Free: diagnosi AIO/GEO, findings e pack HTML."
@@ -1580,7 +1913,7 @@ msgstr "사이트 열기"
 
 #: templates/dashboard.html:106 templates/dashboard.html:642
 #: templates/landing.html:64 templates/partials/dashboard_shell.html:52
-#: templates/partials/dashboard_shell.html:86 templates/pricing.html:31
+#: templates/partials/dashboard_shell.html:86 templates/pricing.html:24
 msgid "pagine"
 msgstr "페이지"
 
@@ -1602,7 +1935,9 @@ msgid "Segnali AIO molto forti"
 msgstr "매우 강력한 AIO 신호"
 
 #: templates/dashboard.html:133
-msgid "Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. Non è una garanzia di citazione live."
+msgid ""
+"Diagnostica probe: alta completezza dei segnali di AI-Driven Visibility. "
+"Non è una garanzia di citazione live."
 msgstr "프로브 진단: AI 기반 가시성 신호의 높은 완전성. 라이브 인용을 보장하지 않습니다."
 
 #: templates/dashboard.html:136
@@ -1610,7 +1945,9 @@ msgid "Segnali AIO solidi"
 msgstr "견고한 AIO 신호"
 
 #: templates/dashboard.html:137
-msgid "Buona base machine-readable. Chiudi i gap rimanenti per salire. Score euristico (Stimato), non polling LLM."
+msgid ""
+"Buona base machine-readable. Chiudi i gap rimanenti per salire. Score "
+"euristico (Stimato), non polling LLM."
 msgstr "좋은 기계 판독 가능 기반. 남은 격차를 메워서 상승하세요. 휴리스틱 점수 (추정), LLM 폴링 아님."
 
 #: templates/dashboard.html:140
@@ -1618,7 +1955,9 @@ msgid "Segnali AIO moderati"
 msgstr "보통 AIO 신호"
 
 #: templates/dashboard.html:141
-msgid "Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn."
+msgid ""
+"Alcuni asset presenti, diversi gap aperti. Prioritizza findings "
+"critical/warn."
 msgstr "일부 자산이 존재하며, 여러 개의 열린 격차가 있습니다. 중요/경고 발견 사항을 우선시하세요."
 
 #: templates/dashboard.html:144
@@ -1626,7 +1965,9 @@ msgid "Segnali AIO emergenti"
 msgstr "신흥 AIO 신호"
 
 #: templates/dashboard.html:145
-msgid "Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file AI."
+msgid ""
+"Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e "
+"file AI."
 msgstr "크롤링에서 약한 신호: 엔티티, 스키마 및 AI 파일에 대한 구조적 작업이 필요합니다."
 
 #: templates/dashboard.html:148
@@ -1634,7 +1975,9 @@ msgid "Segnali AIO critici"
 msgstr "중요한 AIO 신호"
 
 #: templates/dashboard.html:149
-msgid "Base insufficiente: intervento prioritario su title, schema, robots/llms e contenuti citabili."
+msgid ""
+"Base insufficiente: intervento prioritario su title, schema, robots/llms "
+"e contenuti citabili."
 msgstr "불충분한 기반: 제목, 스키마, robots/llms 및 인용 가능한 콘텐츠에 대한 우선 개입."
 
 #: templates/dashboard.html:157
@@ -1702,7 +2045,9 @@ msgid "Quanto sono solidi i segnali AIO/GEO"
 msgstr "AIO/GEO 신호는 얼마나 견고한가요"
 
 #: templates/dashboard.html:285
-msgid "AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score da probe/euristiche, non citazioni live garantite."
+msgid ""
+"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score "
+"da probe/euristiche, non citazioni live garantite."
 msgstr "AIO = AI 기반 가시성 · GEO = 생성 엔진 최적화. 프로브/휴리스틱에서 점수, 보장된 실시간 인용 없음."
 
 #: templates/dashboard.html:308 templates/dashboard.html:904
@@ -1938,8 +2283,13 @@ msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr "정적 패키지를 재배포하는 대신 호스팅합니다."
 
 #: templates/dashboard.html:748
-msgid "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel)."
-msgstr "AI 크롤러가 변경될 때 업데이트된 Centropic 엔드포인트에서. 당신의 도메인을 범용 CMS 커넥터(WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel)로 연결하세요."
+msgid ""
+"su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
+" tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify,"
+" PHP, Netlify, Cloudflare, Vercel)."
+msgstr ""
+"AI 크롤러가 변경될 때 업데이트된 Centropic 엔드포인트에서. 당신의 도메인을 범용 CMS 커넥터(WordPress, "
+"Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel)로 연결하세요."
 
 #: templates/dashboard.html:753
 msgid "Attiva hosting dinamico"
@@ -1965,8 +2315,13 @@ msgid "Copia"
 msgstr "복사"
 
 #: templates/dashboard.html:795
-msgid "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo stesso Edge base."
-msgstr "범용 CMS: WordPress 플러그인, Drupal 모듈, Liquid Shopify, PHP 프록시, Netlify/Vercel 재작성 및 Cloudflare 워커가 포함된 ZIP — 모두 동일한 Edge 기본에 연결됩니다."
+msgid ""
+"CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid "
+"Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti "
+"puntano allo stesso Edge base."
+msgstr ""
+"범용 CMS: WordPress 플러그인, Drupal 모듈, Liquid Shopify, PHP 프록시, "
+"Netlify/Vercel 재작성 및 Cloudflare 워커가 포함된 ZIP — 모두 동일한 Edge 기본에 연결됩니다."
 
 #: templates/dashboard.html:798 templates/partials/edge_wizard.html:20
 msgid "Scarica connector CMS (.zip)"
@@ -1993,7 +2348,9 @@ msgid "Deliverable"
 msgstr "산출물"
 
 #: templates/dashboard.html:859
-msgid "Un solo file HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
+msgid ""
+"Un solo file HTML con tutti i fix: head snippet, llms.txt, robots e "
+"checklist."
 msgstr "모든 수정 사항이 담긴 단일 HTML 파일: head snippet, llms.txt, robots, checklist."
 
 #: templates/dashboard.html:862
@@ -2025,7 +2382,9 @@ msgid "Segui lo stato"
 msgstr "상태 확인하기"
 
 #: templates/dashboard.html:892
-msgid "Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, findings e pack."
+msgid ""
+"Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, "
+"findings e pack."
 msgstr "브랜드의 공개 URL을 입력하면 crawl, AIO/GEO 점수, findings, pack을 받을 수 있습니다."
 
 #: templates/dashboard.html:893
@@ -2033,7 +2392,7 @@ msgid "Piano Free:"
 msgstr "무료 플랜:"
 
 #: templates/dashboard.html:893 templates/landing.html:64
-#: templates/pricing.html:30
+#: templates/pricing.html:23
 msgid "sito"
 msgstr "사이트"
 
@@ -2090,15 +2449,21 @@ msgid "GEO suite settings"
 msgstr "GEO 스위트 설정"
 
 #: templates/faq.html:3
-msgid "FAQ Centropic: AIO/GEO, Free vs Plus vs Business, SoV Misurato, Edge Signals, API e white-label."
-msgstr "Centropic FAQ: AIO/GEO, Free vs Plus vs Business, Measured SoV, Edge Signals, API 및 white-label."
+msgid ""
+"FAQ Centropic: AIO/GEO, Free vs Plus vs Business, SoV Misurato, Edge "
+"Signals, API e white-label."
+msgstr ""
+"Centropic FAQ: AIO/GEO, Free vs Plus vs Business, Measured SoV, Edge "
+"Signals, API 및 white-label."
 
 #: templates/faq.html:12 templates/landing.html:186
 msgid "Domande frequenti"
 msgstr "자주 묻는 질문"
 
 #: templates/faq.html:14
-msgid "Definizioni, piani Free / Plus / Business e come usare pack ed Edge Signals."
+msgid ""
+"Definizioni, piani Free / Plus / Business e come usare pack ed Edge "
+"Signals."
 msgstr "정의, Free/Plus/Business 요금제, pack 및 Edge Signals 사용법."
 
 #: templates/faq.html:20
@@ -2126,8 +2491,8 @@ msgid "validare 1 dominio (score, findings, pack), senza carta."
 msgstr "카드 없이 도메인 1개 검증(score, findings, pack)."
 
 #: templates/faq.html:36
-msgid "startup sul proprio brand: fino a"
-msgstr "자사 브랜드용 스타트업: 최대"
+msgid "monitoraggio continuo del brand: fino a"
+msgstr "브랜드의 지속 모니터링: 최대"
 
 #: templates/faq.html:36
 msgid "siti, SoV Misurato, re-scan, alert,"
@@ -2138,8 +2503,8 @@ msgid "token/mese."
 msgstr "토큰/월."
 
 #: templates/faq.html:39
-msgid "agenzie: tutto Plus + API, white-label, fino a"
-msgstr "에이전시: Plus의 모든 기능 + API, white-label, 최대"
+msgid "agenzie: stesso monitoraggio su più clienti + API, white-label, fino a"
+msgstr "에이전시: 여러 고객에 대한 동일한 모니터링 + API, 화이트 라벨, 최대"
 
 #: templates/faq.html:39
 msgid "siti e"
@@ -2154,16 +2519,25 @@ msgid "Gli score AIO e GEO sono misurazioni live sulle IA?"
 msgstr "AIO 및 GEO 점수는 AI에 대한 실시간 측정값인가요?"
 
 #: templates/faq.html:47
-msgid "No di default. Sono diagnostici (probe/euristiche) con badge Stimato. Misurato è riservato a segnali osservati o a polling LLM su Plus/Business."
-msgstr "기본적으로는 아닙니다. Estimated 배지가 표시된 진단(probe/heuristic) 결과입니다. Measured는 관찰된 신호 또는 Plus/Business의 LLM polling에만 적용됩니다."
+msgid ""
+"No di default. Sono diagnostici (probe/euristiche) con badge Stimato. "
+"Misurato è riservato a segnali osservati o a polling LLM su "
+"Plus/Business."
+msgstr ""
+"기본적으로는 아닙니다. Estimated 배지가 표시된 진단(probe/heuristic) 결과입니다. Measured는 관찰된 "
+"신호 또는 Plus/Business의 LLM polling에만 적용됩니다."
 
 #: templates/faq.html:52
 msgid "Cosa ricevo dopo un’analisi?"
 msgstr "분석 후 무엇을 받나요?"
 
 #: templates/faq.html:54
-msgid "Score AIO/GEO, findings prioritizzati e pack (llms.txt, JSON-LD, meta, robots). Su Business anche export white-label."
-msgstr "AIO/GEO 점수, 우선순위가 지정된 findings, pack(llms.txt, JSON-LD, meta, robots). Business에서는 white-label 내보내기도 제공됩니다."
+msgid ""
+"Score AIO/GEO, findings prioritizzati e pack (llms.txt, JSON-LD, meta, "
+"robots). Su Business anche export white-label."
+msgstr ""
+"AIO/GEO 점수, 우선순위가 지정된 findings, pack(llms.txt, JSON-LD, meta, robots). "
+"Business에서는 white-label 내보내기도 제공됩니다."
 
 #: templates/faq.html:59
 msgid "API e white-label sono in Plus?"
@@ -2174,8 +2548,13 @@ msgid "No. API"
 msgstr "아니요. API"
 
 #: templates/faq.html:61
-msgid "e white-label (brand agenzia + export MD/HTML) sono riservati a Business. Plus include SoV Misurato, re-scan ed Edge completo sul proprio brand."
-msgstr "그리고 white-label(에이전시 브랜드 + MD/HTML 내보내기)은 Business 전용입니다. Plus에는 자사 브랜드에 대한 Measured SoV, 재스캔, 전체 Edge 기능이 포함됩니다."
+msgid ""
+"e white-label (brand agenzia + export MD/HTML) sono riservati a Business."
+" Plus è il piano di monitoraggio continuo sul proprio brand: SoV "
+"Misurato, re-scan, alert ed Edge completo."
+msgstr ""
+"화이트 라벨(에이전시 브랜드 + MD/HTML 내보내기)은 Business에만 제공됩니다. Plus는 자신의 브랜드에 대한 지속 "
+"모니터링 계획입니다: 측정된 SoV, 재스캔, 알림 및 전체 Edge."
 
 #: templates/faq.html:66
 msgid "Cos’è Edge Signals?"
@@ -2213,33 +2592,38 @@ msgstr "어떻게 연락하나요?"
 msgid "— supporto, partnership agenzie, Business onboarding."
 msgstr "— 지원, 에이전시 파트너십, Business 온보딩."
 
-#: templates/faq.html:94 templates/pricing.html:19 templates/product.html:87
+#: templates/faq.html:94 templates/product.html:87
 msgid "Confronta i piani"
 msgstr "요금제 비교하기"
 
-#: templates/forgot_password.html:2 templates/forgot_password.html:15
+#: templates/forgot_password.html:2 templates/forgot_password.html:16
 msgid "Recupero password"
 msgstr "비밀번호 복구"
 
 #: templates/forgot_password.html:3
-msgid "Recupero password Centropic: richiedi un link sicuro via email (noreply@centropic.ai) per reimpostare l’accesso ad AIO/GEO su centropic.ai."
-msgstr "Centropic 비밀번호 복구: centropic.ai에서 AIO/GEO에 대한 액세스를 재설정하기 위해 안전한 링크를 이메일(noreply@centropic.ai)로 요청하세요."
+msgid ""
+"Recupero password Centropic: richiedi un link sicuro via email "
+"(noreply@centropic.ai) per reimpostare l’accesso ad AIO/GEO su "
+"centropic.ai."
+msgstr ""
+"Centropic 비밀번호 복구: centropic.ai에서 AIO/GEO에 대한 액세스를 재설정하기 위해 안전한 링크를 "
+"이메일(noreply@centropic.ai)로 요청하세요."
 
-#: templates/forgot_password.html:10
+#: templates/forgot_password.html:11
 msgid "Reset sicuro della password. Il link scade in poche ore."
 msgstr "비밀번호의 안전한 재설정. 링크는 몇 시간 후에 만료됩니다."
 
-#: templates/forgot_password.html:17
+#: templates/forgot_password.html:18
 msgid "Inserisci l’email dell’account. Se è registrata, ricevi un link monouso da"
 msgstr "계정 이메일을 입력하세요. 등록되어 있으면, 에서 일회용 링크를 받습니다."
 
-#: templates/forgot_password.html:32 templates/reset_password.html:55
+#: templates/forgot_password.html:33 templates/reset_password.html:56
 msgid "Torna all’accesso"
 msgstr "로그인으로 돌아가기"
 
-#: templates/forgot_password.html:34 templates/login.html:58
-#: templates/privacy.html:83 templates/register.html:16
-#: templates/termini.html:82
+#: templates/forgot_password.html:35 templates/login.html:37
+#: templates/partials/login_modal.html:69 templates/privacy.html:83
+#: templates/register.html:17 templates/termini.html:82
 msgid "Crea account"
 msgstr "계정 생성"
 
@@ -2260,7 +2644,9 @@ msgid "Indice guida"
 msgstr "가이드 색인"
 
 #: templates/guide.html:36
-msgid "Centropic misura e migliora la visibilità del tuo sito nei modelli generativi."
+msgid ""
+"Centropic misura e migliora la visibilità del tuo sito nei modelli "
+"generativi."
 msgstr "Centropic은 생성 모델에서 귀하의 사이트 가시성을 측정하고 개선합니다."
 
 #: templates/guide.html:37
@@ -2268,7 +2654,9 @@ msgid "(AI-Driven Visibility) e"
 msgstr "(AI 기반 가시성) 및"
 
 #: templates/guide.html:38
-msgid "(Generative Engine Optimization) non sono GIS né “all-in-one”: sono metriche di citabilità IA."
+msgid ""
+"(Generative Engine Optimization) non sono GIS né “all-in-one”: sono "
+"metriche di citabilità IA."
 msgstr "(생성 엔진 최적화)는 GIS도 아니고 “올인원”도 아닙니다: 이는 AI 인용 가능성 메트릭입니다."
 
 #: templates/guide.html:41
@@ -2284,7 +2672,9 @@ msgid "Ogni blocco del prodotto, con illustrazione e cosa fa."
 msgstr "제품의 각 블록, 설명 및 기능."
 
 #: templates/guide.html:70
-msgid "Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per engine."
+msgid ""
+"Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per "
+"engine."
 msgstr "런이 생성하는 것: 측정된 프로브, GEO Suite 모듈 및 엔진별 세분화."
 
 #: templates/guide.html:73
@@ -2320,7 +2710,9 @@ msgid "WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel, embed."
 msgstr "WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel, 임베드."
 
 #: templates/guide.html:127
-msgid "In dashboard: Attiva hosting dinamico → Scarica connector CMS (.zip) → installa un solo adapter."
+msgid ""
+"In dashboard: Attiva hosting dinamico → Scarica connector CMS (.zip) → "
+"installa un solo adapter."
 msgstr "대시보드에서: 동적 호스팅 활성화 → CMS 커넥터 다운로드(.zip) → 단일 어댑터 설치."
 
 #: templates/guide.html:128
@@ -2396,8 +2788,13 @@ msgid "Signal Intelligence per AIO e GEO"
 msgstr "AIO 및 GEO를 위한 신호 정보"
 
 #: templates/landing.html:3
-msgid "Centropic misura se ChatGPT, Claude e Perplexity citano il tuo brand, trova i gap e pubblica i fix. Free senza carta, Plus e Business per scalare."
-msgstr "Centropic는 ChatGPT, Claude, Perplexity가 당신의 브랜드를 인용하는지 확인하고, 격차를 찾아 수정 사항을 게시합니다. 무료 플랜은 카드 없이, Plus와 Business로 확장하세요."
+msgid ""
+"Centropic misura se ChatGPT, Claude e Perplexity citano il tuo brand. "
+"Free per validare; Plus e Business per monitorare il sito in continuo e "
+"ottimizzare."
+msgstr ""
+"Centropic은 ChatGPT, Claude 및 Perplexity가 귀하의 브랜드를 언급하는지 측정합니다. 검증을 위한 무료;"
+" Plus 및 Business는 사이트를 지속적으로 모니터링하고 최적화합니다."
 
 #: templates/landing.html:28
 msgid "Le IA rispondono ai tuoi clienti."
@@ -2408,8 +2805,12 @@ msgid "Sei nella risposta?"
 msgstr "당신은 그 답변 안에 있나요?"
 
 #: templates/landing.html:32
-msgid "Misura la tua Share of Voice su ChatGPT, Claude e Perplexity, trova i gap e pubblica i fix prima del tuo competitor."
-msgstr "ChatGPT, Claude, Perplexity에서 당신의 Share of Voice를 측정하고, 격차를 찾아 경쟁사보다 먼저 수정 사항을 게시하세요."
+msgid ""
+"Misura la tua Share of Voice su ChatGPT, Claude e Perplexity, trova i gap"
+" e pubblica i fix prima del tuo competitor."
+msgstr ""
+"ChatGPT, Claude, Perplexity에서 당신의 Share of Voice를 측정하고, 격차를 찾아 경쟁사보다 먼저 "
+"수정 사항을 게시하세요."
 
 #: templates/landing.html:35
 msgid "Inizia l’analisi gratuita"
@@ -2428,23 +2829,32 @@ msgid "Le persone non cercano più. Chiedono all’IA."
 msgstr "사람들은 더 이상 검색하지 않습니다. AI에게 묻습니다."
 
 #: templates/landing.html:45
-msgid "E se le IA non ti capiscono, per loro non esisti. Centropic osserva i segnali pubblici del tuo dominio, li traduce in uno score AIO/GEO chiaro e in una lista di priorità — pronta da trasformare in fix pubblicabili."
-msgstr "AI가 당신을 이해하지 못하면, AI에게 당신은 존재하지 않습니다. Centropic는 당신의 도메인의 공개 신호를 관찰하여 명확한 AIO/GEO 점수와 우선순위 목록으로 변환합니다 — 바로 게시 가능한 수정 사항으로 전환할 준비가 된 상태로요."
+msgid ""
+"E se le IA non ti capiscono, per loro non esisti. Centropic osserva i "
+"segnali pubblici del tuo dominio, li traduce in uno score AIO/GEO chiaro "
+"e in una lista di priorità — pronta da trasformare in fix pubblicabili."
+msgstr ""
+"AI가 당신을 이해하지 못하면, AI에게 당신은 존재하지 않습니다. Centropic는 당신의 도메인의 공개 신호를 관찰하여 명확한"
+" AIO/GEO 점수와 우선순위 목록으로 변환합니다 — 바로 게시 가능한 수정 사항으로 전환할 준비가 된 상태로요."
 
 #: templates/landing.html:51
 msgid "Tre piani. Un solo motore."
 msgstr "세 가지 플랜. 하나의 엔진."
 
 #: templates/landing.html:53
-msgid "Scegli il piano giusto: valida il progetto, blinda il tuo brand, o scala i clienti in agenzia."
-msgstr "적합한 플랜을 선택하세요: 프로젝트를 검증하거나, 브랜드를 보호하거나, 에이전시 고객을 확장하세요."
+msgid ""
+"Free per la prima diagnosi. Plus e Business per monitorare il sito in "
+"continuo e ottimizzare la citabilità IA."
+msgstr "첫 진단은 무료입니다. Plus 및 Business는 사이트를 지속적으로 모니터링하고 AI 인용 가능성을 최적화합니다."
 
 #: templates/landing.html:59
 msgid "Validare il dominio"
 msgstr "도메인 검증"
 
 #: templates/landing.html:61
-msgid "La prima diagnosi è gratis: score, findings e pack pronto — nessuna carta richiesta."
+msgid ""
+"La prima diagnosi è gratis: score, findings e pack pronto — nessuna carta"
+" richiesta."
 msgstr "첫 진단은 무료입니다: 점수, 발견 사항, 완성된 팩까지 — 카드 등록 없이."
 
 #: templates/landing.html:65
@@ -2456,66 +2866,73 @@ msgid "SoV stimato · pack pubblicabile"
 msgstr "Estimated SoV · 게시 가능한 pack"
 
 #: templates/landing.html:72 templates/landing.html:87
-#: templates/pricing.html:27 templates/pricing.html:42
-#: templates/pricing.html:93
+#: templates/pricing.html:20 templates/pricing.html:35
+#: templates/pricing.html:86
 msgid "/mese"
 msgstr "/월"
 
 #: templates/landing.html:73
-msgid "Startup sul proprio brand"
-msgstr "자사 브랜드용 스타트업"
+msgid "Monitoraggio continuo del brand"
+msgstr "브랜드의 지속 모니터링"
 
 #: templates/landing.html:75
-msgid "Il loop completo per il tuo brand: SoV Misurato, re-scan automatico, alert in tempo reale."
-msgstr "브랜드를 위한 완전한 루프: 측정된 SoV, 자동 재스캔, 실시간 알림."
+msgid ""
+"Osserva il sito nel tempo: re-scan automatico, alert e SoV Misurato per "
+"ottimizzare ogni ciclo."
+msgstr "시간에 따라 사이트를 관찰하세요: 자동 재스캔, 알림 및 측정된 SoV로 각 사이클을 최적화합니다."
 
 #: templates/landing.html:78 templates/landing.html:93
 msgid "token/mese"
 msgstr "토큰/월"
 
 #: templates/landing.html:79 templates/landing.html:94
-#: templates/partials/dashboard_shell.html:85 templates/pricing.html:30
-#: templates/pricing.html:46 templates/pricing.html:98
+#: templates/partials/dashboard_shell.html:85 templates/pricing.html:23
+#: templates/pricing.html:39 templates/pricing.html:91
 msgid "Fino a"
 msgstr "최대"
 
 #: templates/landing.html:79 templates/landing.html:94
-#: templates/pricing.html:46 templates/pro_interest.html:20
-#: templates/pro_interest.html:21
+#: templates/pro_interest.html:20 templates/pro_interest.html:21
 msgid "siti"
 msgstr "사이트"
 
 #: templates/landing.html:79
-msgid "SoV Misurato"
-msgstr "Measured SoV"
+msgid "monitor + SoV Misurato"
+msgstr "모니터 + 측정된 SoV"
 
 #: templates/landing.html:80
-msgid "Prompt bank · re-scan · Edge completo"
-msgstr "Prompt bank · 재스캔 · 전체 Edge 기능"
+msgid "Re-scan · alert · Edge completo"
+msgstr "재스캔 · 알림 · 전체 Edge"
 
-#: templates/landing.html:82 templates/pricing.html:57
-#: templates/pricing.html:63 templates/pricing.html:70
+#: templates/landing.html:82 templates/pricing.html:50
+#: templates/pricing.html:56 templates/pricing.html:63
 msgid "Scegli Plus"
 msgstr "Plus 선택하기"
 
 #: templates/landing.html:88
-msgid "Agenzie multi-cliente"
-msgstr "다중 고객 에이전시"
+msgid "Monitoraggio multi-cliente"
+msgstr "다중 클라이언트 모니터링"
 
 #: templates/landing.html:90
-msgid "Tutto incluso per l’agenzia: API, white-label e token per servire ogni cliente."
-msgstr "에이전시를 위한 모든 것: API, 화이트 라벨, 모든 고객을 위한 토큰까지."
+msgid ""
+"Stesso monitoraggio continuo di Plus, su tutto il portfolio: ottimizza "
+"ogni cliente, consegna white-label."
+msgstr "모든 포트폴리오에 걸쳐 Plus의 동일한 지속 모니터링: 각 고객을 최적화하고 화이트 라벨로 제공합니다."
 
 #: templates/landing.html:94
+msgid "monitor continuo"
+msgstr "지속 모니터링"
+
+#: templates/landing.html:95
 msgid "API"
 msgstr "API"
 
 #: templates/landing.html:95
-msgid "White-label MD/HTML · tutto di Plus"
-msgstr "White-label MD/HTML · Plus의 모든 기능"
+msgid "white-label MD/HTML"
+msgstr "화이트 라벨 MD/HTML"
 
-#: templates/landing.html:97 templates/pricing.html:108
-#: templates/pricing.html:114 templates/pricing.html:121
+#: templates/landing.html:97 templates/pricing.html:101
+#: templates/pricing.html:107 templates/pricing.html:114
 msgid "Passa a Business"
 msgstr "Business로 업그레이드"
 
@@ -2528,15 +2945,21 @@ msgid "Analisi in minuti. Fix pronti da pubblicare."
 msgstr "몇 분 만에 분석. 바로 게시할 수 있는 수정 사항."
 
 #: templates/landing.html:106
-msgid "Stesso motore per tutti i piani: acquisisci, valuta, consegna. Cambiano limiti, SoV Misurato e toolkit agenzia."
-msgstr "모든 플랜에 동일한 엔진: 수집, 평가, 제공. 달라지는 것은 한도, 측정된 SoV, 에이전시 툴킷뿐입니다."
+msgid ""
+"Stesso motore per tutti i piani: acquisisci, valuta, consegna. Su Plus e "
+"Business il loop diventa continuo: monitora, correggi, rimisura."
+msgstr ""
+"모든 계획에 대한 동일한 엔진: 획득, 평가, 제공. Plus 및 Business에서는 루프가 지속적으로 변합니다: 모니터링, "
+"수정, 재측정."
 
 #: templates/landing.html:110
 msgid "01 · Scansione"
 msgstr "01 · 스캔"
 
 #: templates/landing.html:111
-msgid "Crawl del dominio e verifica dei segnali pubblici che modelli e crawler IA leggono davvero."
+msgid ""
+"Crawl del dominio e verifica dei segnali pubblici che modelli e crawler "
+"IA leggono davvero."
 msgstr "도메인 크롤링과 AI 모델·크롤러가 실제로 읽는 공개 신호 점검."
 
 #: templates/landing.html:114
@@ -2544,7 +2967,9 @@ msgid "02 · Diagnosi"
 msgstr "02 · 진단"
 
 #: templates/landing.html:115
-msgid "Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati Stimato o Misurato."
+msgid ""
+"Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati "
+"Stimato o Misurato."
 msgstr "명확한 AIO/GEO 점수와 긴급도순으로 정렬된 발견 사항, 항상 추정 또는 측정으로 라벨링됩니다."
 
 #: templates/landing.html:118
@@ -2552,7 +2977,9 @@ msgid "03 · Pubblicazione"
 msgstr "03 · 게시"
 
 #: templates/landing.html:119
-msgid "Un pack pronto — llms.txt, schema, robots — oppure Edge Signals in un clic."
+msgid ""
+"Un pack pronto — llms.txt, schema, robots — oppure Edge Signals in un "
+"clic."
 msgstr "완성된 팩 — llms.txt, 스키마, robots — 또는 클릭 한 번으로 Edge Signals."
 
 #: templates/landing.html:125
@@ -2564,15 +2991,21 @@ msgid "Diagnosi chiara. Priorità vere. Fix pronti."
 msgstr "명확한 진단. 진짜 우선순위. 준비된 수정 사항."
 
 #: templates/landing.html:128
-msgid "Architettura unica: Free dimostra valore, Plus chiude il loop operativo, Business industrializza il delivery."
-msgstr "하나의 아키텍처: Free는 가치를 입증하고, Plus는 운영 루프를 완성하며, Business는 딜리버리를 산업화합니다."
+msgid ""
+"Architettura unica: Free dimostra valore, Plus monitora e ottimizza in "
+"continuo, Business scala lo stesso loop su ogni cliente."
+msgstr ""
+"독특한 아키텍처: 무료는 가치를 증명하고, Plus는 지속적으로 모니터링하고 최적화하며, Business는 모든 고객에 대해 동일한"
+" 루프를 확장합니다."
 
 #: templates/landing.html:133
 msgid "Score AIO e GEO"
 msgstr "AIO 및 GEO 점수"
 
 #: templates/landing.html:135
-msgid "Un numero chiaro per la tua visibilità IA, costruito su probe documentati — non un numero a caso."
+msgid ""
+"Un numero chiaro per la tua visibilità IA, costruito su probe documentati"
+" — non un numero a caso."
 msgstr "무작위 숫자가 아닌, 문서화된 프로브를 기반으로 한 AI 가시성의 명확한 지표."
 
 #: templates/landing.html:140
@@ -2580,7 +3013,9 @@ msgid "Crawl multi-pagina"
 msgstr "다중 페이지 크롤링"
 
 #: templates/landing.html:142
-msgid "Copriamo tutto il dominio: entity, schema, contenuti citabili e accesso ai crawler IA."
+msgid ""
+"Copriamo tutto il dominio: entity, schema, contenuti citabili e accesso "
+"ai crawler IA."
 msgstr "도메인 전체를 다룹니다: 엔티티, 스키마, 인용 가능한 콘텐츠, AI 크롤러 접근까지."
 
 #: templates/landing.html:147
@@ -2588,7 +3023,9 @@ msgid "Findings prioritizzati"
 msgstr "우선 순위가 지정된 결과"
 
 #: templates/landing.html:149
-msgid "Sai cosa fare per primo: critical, warn, ok — un solo backlog tra marketing, contenuto e IT."
+msgid ""
+"Sai cosa fare per primo: critical, warn, ok — un solo backlog tra "
+"marketing, contenuto e IT."
 msgstr "무엇을 먼저 해야 할지 알 수 있습니다: critical, warn, ok — 마케팅, 콘텐츠, IT를 아우르는 단일 백로그."
 
 #: templates/landing.html:154
@@ -2596,16 +3033,25 @@ msgid "Pack di pubblicazione"
 msgstr "게시 패키지"
 
 #: templates/landing.html:156
-msgid "Un solo file con tutti i fix — head, llms.txt, robots — da scaricare, pubblicare via Edge o white-label su Business."
-msgstr "모든 수정 사항이 담긴 단일 파일 — head, llms.txt, robots — 다운로드하거나 Edge로 게시하거나 Business에서 화이트 라벨로 사용하세요."
+msgid ""
+"Un solo file con tutti i fix — head, llms.txt, robots — da scaricare, "
+"pubblicare via Edge o white-label su Business."
+msgstr ""
+"모든 수정 사항이 담긴 단일 파일 — head, llms.txt, robots — 다운로드하거나 Edge로 게시하거나 "
+"Business에서 화이트 라벨로 사용하세요."
 
 #: templates/landing.html:164
 msgid "Non inventiamo numeri. Li marchiamo Stimato o Misurato."
 msgstr "숫자를 지어내지 않습니다. 추정 또는 측정으로 명확히 표시합니다."
 
 #: templates/landing.html:166
-msgid "Ogni finding nasce da un segnale osservato o è etichettato Stimato in modo esplicito. Su Plus e Business, i probe LLM aggiungono menzioni Misurate — mai una promessa di ranking o citazione garantita."
-msgstr "모든 발견 사항은 관찰된 신호에서 나오거나 명시적으로 추정으로 표시됩니다. Plus와 Business에서는 LLM 프로브가 측정된 언급을 추가합니다 — 순위나 인용을 보장하는 약속은 결코 아닙니다."
+msgid ""
+"Ogni finding nasce da un segnale osservato o è etichettato Stimato in "
+"modo esplicito. Su Plus e Business, i probe LLM aggiungono menzioni "
+"Misurate — mai una promessa di ranking o citazione garantita."
+msgstr ""
+"모든 발견 사항은 관찰된 신호에서 나오거나 명시적으로 추정으로 표시됩니다. Plus와 Business에서는 LLM 프로브가 측정된 "
+"언급을 추가합니다 — 순위나 인용을 보장하는 약속은 결코 아닙니다."
 
 #: templates/landing.html:175
 msgid "I file che mancano al tuo sito — pronti all’uso."
@@ -2636,16 +3082,28 @@ msgid "Cosa significano AIO e GEO in Centropic?"
 msgstr "Centropic에서 AIO와 GEO는 무엇을 의미합니까?"
 
 #: templates/landing.html:191
-msgid "AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono interpretare il brand. GEO (Generative Engine Optimization) indica quanto il sito è strutturato per essere citato. Non GIS, non All-in-One."
-msgstr "AIO (AI 기반 가시성)는 AI 모델과 크롤러가 브랜드를 얼마나 해석할 수 있는지를 나타냅니다. GEO (생성 엔진 최적화)는 사이트가 인용되기 위해 얼마나 구조화되어 있는지를 나타냅니다. GIS도 아니고 올인원도 아닙니다."
+msgid ""
+"AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono "
+"interpretare il brand. GEO (Generative Engine Optimization) indica quanto"
+" il sito è strutturato per essere citato. Non GIS, non All-in-One."
+msgstr ""
+"AIO (AI 기반 가시성)는 AI 모델과 크롤러가 브랜드를 얼마나 해석할 수 있는지를 나타냅니다. GEO (생성 엔진 최적화)는 "
+"사이트가 인용되기 위해 얼마나 구조화되어 있는지를 나타냅니다. GIS도 아니고 올인원도 아닙니다."
 
 #: templates/landing.html:195
 msgid "Quale piano mi serve?"
 msgstr "어떤 요금제가 필요할까요?"
 
 #: templates/landing.html:197
-msgid "Free per validare un dominio senza rischio. Plus (14,99€, 100 token) per blindare il proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a"
-msgstr "무료: 위험 없이 도메인 검증. Plus (14.99€, 토큰 100개): 측정된 SoV로 브랜드 보호. Business (49.99€, 토큰 400개): 에이전시를 위한 API, 화이트 라벨, 최대"
+msgid ""
+"Free per validare un dominio senza rischio. Plus (14,99€, 100 token) per "
+"monitorare e ottimizzare il brand in continuo. Business (49,99€, 400 "
+"token) per agenzie: stesso monitoraggio su più clienti, API, white-label "
+"e fino a"
+msgstr ""
+"위험 없이 도메인을 검증하기 위한 무료. Plus (14,99€, 100 토큰)는 브랜드를 지속적으로 모니터링하고 최적화합니다. "
+"Business (49,99€, 400 토큰)는 에이전시를 위한 것으로: 여러 고객에 대한 동일한 모니터링, API, 화이트 라벨 "
+"및 최대"
 
 #: templates/landing.html:198 templates/product.html:56
 #: templates/product.html:62
@@ -2657,8 +3115,12 @@ msgid "Gli score rappresentano menzioni live?"
 msgstr "점수는 실시간 언급을 나타내나요?"
 
 #: templates/landing.html:204
-msgid "No, di default. Sono diagnostici; su Plus/Business, con citation monitor e API LLM, si aggiungono menzioni Misurate."
-msgstr "기본적으로는 아닙니다. 이는 진단 결과이며, Plus/Business에서 citation monitor와 LLM API를 사용하면 Measured 언급이 추가됩니다."
+msgid ""
+"No, di default. Sono diagnostici; su Plus/Business, con citation monitor "
+"e API LLM, si aggiungono menzioni Misurate."
+msgstr ""
+"기본적으로는 아닙니다. 이는 진단 결과이며, Plus/Business에서 citation monitor와 LLM API를 사용하면 "
+"Measured 언급이 추가됩니다."
 
 #: templates/landing.html:212
 msgid "Prossimo passo"
@@ -2669,208 +3131,217 @@ msgid "Scopri la tua Share of Voice, oggi."
 msgstr "오늘, 당신의 Share of Voice를 확인하세요."
 
 #: templates/landing.html:215
-msgid "Free senza carta. Plus per blindare il brand. Business per scalare l’agenzia."
-msgstr "카드 없이 무료. 브랜드 보호를 위한 Plus. 에이전시 확장을 위한 Business."
+msgid ""
+"Free senza carta. Plus e Business per monitorare il sito in continuo e "
+"ottimizzare la citabilità."
+msgstr "카드 없이 무료. Plus 및 Business는 사이트를 지속적으로 모니터링하고 인용 가능성을 최적화합니다."
 
 #: templates/landing.html:219
 msgid "Confronta Free · Plus · Business"
 msgstr "Free · Plus · Business 비교하기"
 
 #: templates/login.html:3
-msgid "Accedi a Centropic: dashboard per score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings e pack llms.txt/JSON-LD."
-msgstr "Centropic에 로그인: AIO (AI 기반 가시성) 및 GEO (생성 엔진 최적화)에 대한 대시보드, 결과 및 llms.txt/JSON-LD 패키지."
+msgid ""
+"Accedi a Centropic: dashboard per score AIO (AI-Driven Visibility) e GEO "
+"(Generative Engine Optimization), findings e pack llms.txt/JSON-LD."
+msgstr ""
+"Centropic에 로그인: AIO (AI 기반 가시성) 및 GEO (생성 엔진 최적화)에 대한 대시보드, 결과 및 llms.txt"
+"/JSON-LD 패키지."
 
-#: templates/login.html:10
-msgid "Signal Intelligence per AIO e GEO. Findings prioritizzati. Pack da pubblicare."
-msgstr "AIO 및 GEO를 위한 신호 인텔리전스. 우선 순위가 매겨진 결과. 게시할 패키지."
-
-#: templates/login.html:14
+#: templates/login.html:18 templates/partials/login_modal.html:21
 msgid "Accesso"
 msgstr "접근"
 
-#: templates/login.html:15
+#: templates/login.html:19 templates/partials/login_modal.html:22
 msgid "Bentornato"
 msgstr "환영합니다"
 
-#: templates/login.html:17
-msgid "Entra in dashboard, analizza il dominio e scarica il pack. Piano Free senza carta."
-msgstr "대시보드에 들어가서 도메인을 분석하고 패키지를 다운로드하세요. 카드 없이 무료 요금제."
-
-#: templates/login.html:28 templates/register.html:45
+#: templates/login.html:27 templates/partials/login_modal.html:41
+#: templates/register.html:46
 msgid "Password"
 msgstr "비밀번호"
 
-#: templates/login.html:36 templates/register.html:53
-#: templates/register.html:69 templates/reset_password.html:30
-#: templates/reset_password.html:45
-msgid "Mostra password"
-msgstr "비밀번호 표시"
-
-#: templates/login.html:38 templates/register.html:55
-#: templates/register.html:71 templates/reset_password.html:32
-#: templates/reset_password.html:47
-msgid "Mostra"
-msgstr "표시"
-
-#: templates/login.html:45
+#: templates/login.html:32 templates/partials/login_modal.html:58
 msgid "Resta connesso su questo dispositivo (30 giorni)"
 msgstr "이 장치에서 연결 유지 (30일)"
 
-#: templates/login.html:49 templates/register.html:125
-msgid "Password dimenticata?"
-msgstr "비밀번호를 잊으셨습니까?"
-
-#: templates/login.html:57
-msgid "Nuovo su Centropic?"
-msgstr "Centropic에 처음이신가요?"
-
 #: templates/pricing.html:3
-msgid "Prezzi Centropic: Free, Plus 14,99€ (startup, 100 token), Business 49,99€ (agenzie, 400 token, API e white-label)."
-msgstr "Centropic 요금: Free, Plus 14.99€(스타트업, 토큰 100개), Business 49.99€(에이전시, 토큰 400개, API 및 white-label)."
+msgid ""
+"Prezzi Centropic: Free per validare; Plus e Business per monitorare il "
+"sito in continuo e ottimizzare AIO/GEO."
+msgstr ""
+"Centropic 가격: 검증을 위한 무료; Plus 및 Business는 사이트를 지속적으로 모니터링하고 AIO/GEO를 "
+"최적화합니다."
 
-#: templates/pricing.html:13
+#: templates/pricing.html:10
 msgid "Architettura commerciale"
 msgstr "상업적 아키텍처"
 
-#: templates/pricing.html:14
-msgid "Tre modi di possedere il segnale."
-msgstr "신호를 소유하는 세 가지 방법."
+#: templates/pricing.html:11
+msgid "Monitora. Ottimizza. Ripeti."
+msgstr "모니터링하세요. 최적화하세요. 반복하세요."
 
-#: templates/pricing.html:16
-msgid "Free per validare. Plus per il tuo brand. Business per i clienti dell’agenzia."
-msgstr "Free는 검증용. Plus는 귀사 브랜드용. Business는 에이전시 고객용."
+#: templates/pricing.html:13
+msgid ""
+"Free per la prima diagnosi. Plus e Business per tenere il sito sotto "
+"controllo e migliorare la citabilità IA nel tempo."
+msgstr "첫 진단은 무료입니다. Plus 및 Business는 사이트를 통제하고 시간에 따라 AI 인용 가능성을 개선합니다."
 
-#: templates/pricing.html:28
+#: templates/pricing.html:21
 msgid "Prova la diagnosi AIO/GEO sul primo dominio — senza carta."
 msgstr "카드 없이 첫 번째 도메인에서 AIO/GEO 진단을 체험해 보세요."
 
-#: templates/pricing.html:31 templates/pricing.html:47
+#: templates/pricing.html:24 templates/pricing.html:44
 msgid "Crawl fino a"
 msgstr "최대 크롤"
 
-#: templates/pricing.html:32
+#: templates/pricing.html:25
 msgid "analisi su nuovi siti; ri-analisi stesso URL (token)"
 msgstr "신규 사이트 분석; 동일 URL 재분석(토큰)"
 
-#: templates/pricing.html:33
+#: templates/pricing.html:26
 msgid "Score AIO/GEO + findings (SoV stimato)"
 msgstr "AIO/GEO 점수 + findings(SoV estimated)"
 
-#: templates/pricing.html:34
+#: templates/pricing.html:27
 msgid "Pack ZIP applicabile"
 msgstr "적용 가능한 ZIP pack"
 
-#: templates/pricing.html:40
-msgid "Per startup"
-msgstr "스타트업용"
+#: templates/pricing.html:33
+msgid "Monitoraggio continuo"
+msgstr "지속 모니터링"
 
-#: templates/pricing.html:43
-msgid "Per piccole startup che ottimizzano i propri brand in continuo."
-msgstr "자사 브랜드를 지속적으로 최적화하는 소규모 스타트업을 위한 요금제입니다."
+#: templates/pricing.html:36
+msgid ""
+"Tieni il tuo brand sotto osservazione: re-scan, alert e SoV Misurato per "
+"ottimizzare AIO/GEO a ogni ciclo."
+msgstr "귀하의 브랜드를 관찰하세요: 재스캔, 알림 및 측정된 SoV로 AIO/GEO를 각 사이클에서 최적화합니다."
 
-#: templates/pricing.html:45 templates/pricing.html:97
+#: templates/pricing.html:38 templates/pricing.html:90
 msgid "token inclusi ogni mese"
 msgstr "매월 포함되는 토큰"
 
-#: templates/pricing.html:47
+#: templates/pricing.html:39
+msgid "siti monitorati"
+msgstr "모니터링된 사이트"
+
+#: templates/pricing.html:40
+msgid "Re-scan giornaliero/settimanale automatico"
+msgstr "일일/주간 자동 재스캔"
+
+#: templates/pricing.html:41
+msgid "Citation monitor / SoV Misurato"
+msgstr "인용 모니터 / 측정된 SoV"
+
+#: templates/pricing.html:42
+msgid "Alert email/webhook su regressioni"
+msgstr "회귀에 대한 알림 이메일/웹후크"
+
+#: templates/pricing.html:43
+msgid "Prompt bank + competitor snapshot"
+msgstr "프롬프트 뱅크 + 경쟁사 스냅샷"
+
+#: templates/pricing.html:44
 msgid "pagine (Deep fino a"
 msgstr "페이지 (딥 최대"
 
-#: templates/pricing.html:48
-msgid "Citation monitor / SoV measured"
-msgstr "Citation monitor / Measured SoV"
-
-#: templates/pricing.html:50
-msgid "Prompt bank + alert email/webhook"
-msgstr "프롬프트 뱅크 + 알림 이메일/웹훅"
-
-#: templates/pricing.html:51
-msgid "Re-scan giornaliero/settimanale"
-msgstr "일일/주간 재스캔"
-
-#: templates/pricing.html:52
+#: templates/pricing.html:45
 msgid "Edge Signals completo + storico run"
 msgstr "전체 Edge Signals + 실행 기록"
 
-#: templates/pricing.html:79 templates/pricing.html:130
+#: templates/pricing.html:72 templates/pricing.html:123
 msgid "Annuale"
 msgstr "연간"
 
-#: templates/pricing.html:79 templates/pricing.html:130
+#: templates/pricing.html:72 templates/pricing.html:123
 msgid "anno"
 msgstr "년"
 
-#: templates/pricing.html:84
+#: templates/pricing.html:77
 msgid "Accedi e scegli Plus"
 msgstr "로그인 후 Plus 선택"
 
-#: templates/partials/dashboard_shell.html:7 templates/pricing.html:86
+#: templates/partials/dashboard_shell.html:7 templates/pricing.html:79
 msgid "Prenota Plus"
 msgstr "플러스 예약"
 
-#: templates/pricing.html:94
-msgid "Tutto incluso per agenzie e team multi-cliente: delivery, automazione e scala."
-msgstr "에이전시 및 다중 고객 팀을 위한 모든 기능: 딜리버리, 자동화, 확장성."
+#: templates/pricing.html:84
+msgid "Monitoraggio agenzia"
+msgstr "에이전시 모니터링"
 
-#: templates/pricing.html:96
-msgid "Tutto di Plus, più:"
-msgstr "Plus의 모든 기능에 더해:"
+#: templates/pricing.html:87
+msgid ""
+"Stesso monitoraggio continuo di Plus su ogni cliente: ottimizzi il "
+"portfolio, consegni report white-label."
+msgstr "모든 고객에 대한 Plus의 지속적인 모니터링: 포트폴리오를 최적화하고 화이트 라벨 보고서를 제공합니다."
 
-#: templates/pricing.html:98
-msgid "siti / clienti"
-msgstr "사이트 / 고객"
+#: templates/pricing.html:89
+msgid "Tutto il monitoraggio Plus, più:"
+msgstr "모든 Plus 모니터링, 추가:"
 
-#: templates/pricing.html:99
+#: templates/pricing.html:91
+msgid "siti / clienti monitorati"
+msgstr "모니터링된 사이트/고객"
+
+#: templates/pricing.html:92
+msgid "Re-scan, alert e SoV Misurato multi-cliente"
+msgstr "재스캔, 알림 및 다중 고객 SoV 측정"
+
+#: templates/pricing.html:93
 msgid "API key pubblica"
 msgstr "공개 API 키"
 
-#: templates/pricing.html:100
+#: templates/pricing.html:94
 msgid "White-label brand agenzia"
 msgstr "White-label 에이전시 브랜드"
 
-#: templates/pricing.html:101
+#: templates/pricing.html:95
 msgid "Export report MD/HTML white-label"
 msgstr "White-label MD/HTML 리포트 내보내기"
 
-#: templates/pricing.html:102
-msgid "Crawl, SoV measured, re-scan, Edge, storico"
-msgstr "Crawl, Measured SoV, 재스캔, Edge, 기록"
+#: templates/pricing.html:96
+msgid "Ideale per retainer e ottimizzazione continua"
+msgstr "유지 보수 및 지속적인 최적화에 이상적입니다."
 
-#: templates/pricing.html:103
-msgid "Ideale per portfolio clienti e retainer"
-msgstr "고객 포트폴리오 및 리테이너에 적합"
-
-#: templates/pricing.html:135
+#: templates/pricing.html:128
 msgid "Accedi e passa a Business"
 msgstr "로그인 후 Business로 업그레이드"
 
-#: templates/pricing.html:137
+#: templates/pricing.html:130
 msgid "Parla con noi — Business"
 msgstr "문의하기 — Business"
 
-#: templates/pricing.html:144
+#: templates/pricing.html:137
 msgid "Pagamenti:"
 msgstr "결제:"
 
-#: templates/pricing.html:145
-msgid "I token non scadono; i pacchetti ricarica restano disponibili su tutti i piani."
+#: templates/pricing.html:138
+msgid ""
+"I token non scadono; i pacchetti ricarica restano disponibili su tutti i "
+"piani."
 msgstr "토큰은 만료되지 않으며, 충전 패키지는 모든 요금제에서 계속 이용할 수 있습니다."
 
 #: templates/privacy.html:3
-msgid "Informativa privacy di Centropic (centropic.ai): dati trattati per account, analisi siti e contatti. Titolare e diritti dell’interessato."
-msgstr "Centropic (centropic.ai)의 개인정보 보호정책: 계정, 사이트 분석 및 연락처에 대한 처리 데이터. 소유자 및 데이터 주체의 권리."
+msgid ""
+"Informativa privacy di Centropic (centropic.ai): dati trattati per "
+"account, analisi siti e contatti. Titolare e diritti dell’interessato."
+msgstr ""
+"Centropic (centropic.ai)의 개인정보 보호정책: 계정, 사이트 분석 및 연락처에 대한 처리 데이터. 소유자 및 "
+"데이터 주체의 권리."
 
 #: templates/privacy.html:9 templates/rimborsi.html:9 templates/termini.html:9
 msgid "Legale"
 msgstr "법적"
 
-#: templates/privacy.html:10 templates/register.html:107
+#: templates/privacy.html:10 templates/register.html:108
 #: templates/rimborsi.html:88
 msgid "Informativa privacy"
 msgstr "개인정보 보호정책"
 
 #: templates/privacy.html:12
-msgid "Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · Contatti:"
+msgid ""
+"Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai)"
+" · Contatti:"
 msgstr "최종 업데이트: 2026년 7월 27일 · 소유자: Centropic (centropic.ai) · 연락처:"
 
 #: templates/privacy.html:18
@@ -2878,8 +3349,16 @@ msgid "1. Cosa trattiamo"
 msgstr "1. 우리가 처리하는 것"
 
 #: templates/privacy.html:20
-msgid "Per erogare il servizio SaaS trattiamo: dati di account (nome, email, password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL dei siti analizzati, risultati di analisi (score, findings, artifact generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati volontariamente (es. waitlist Plus)."
-msgstr "SaaS 서비스를 제공하기 위해 우리는 다음을 처리합니다: 계정 데이터(이름, 이메일, 해시된 비밀번호, 선택적 회사/역할, 전화번호 및 제공된 경우 국가), 분석된 사이트의 URL, 분석 결과(점수, 발견 사항, 생성된 아티팩트), 보안 기술 로그(IP, 타임스탬프) 및 자발적으로 전송된 메시지(예: waitlist Plus)."
+msgid ""
+"Per erogare il servizio SaaS trattiamo: dati di account (nome, email, "
+"password hashata, azienda/ruolo opzionali, telefono e paese se forniti), "
+"URL dei siti analizzati, risultati di analisi (score, findings, artifact "
+"generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati "
+"volontariamente (es. waitlist Plus)."
+msgstr ""
+"SaaS 서비스를 제공하기 위해 우리는 다음을 처리합니다: 계정 데이터(이름, 이메일, 해시된 비밀번호, 선택적 회사/역할, "
+"전화번호 및 제공된 경우 국가), 분석된 사이트의 URL, 분석 결과(점수, 발견 사항, 생성된 아티팩트), 보안 기술 로그(IP,"
+" 타임스탬프) 및 자발적으로 전송된 메시지(예: waitlist Plus)."
 
 #: templates/privacy.html:25
 msgid "2. Finalità e basi giuridiche"
@@ -2922,35 +3401,62 @@ msgid "3. Analisi dei siti"
 msgstr "3. 사이트 분석"
 
 #: templates/privacy.html:37
-msgid "Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato (pagine pubbliche raggiungibili) e probe di file come"
+msgid ""
+"Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato"
+" (pagine pubbliche raggiungibili) e probe di file come"
 msgstr "URL을 입력하면 Centropic이 지정된 도메인에서 크롤링을 수행합니다(접근 가능한 공개 페이지) 및 파일 프로브와 같은"
 
 #: templates/privacy.html:39
-msgid "Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati restano nel tuo account finché non li elimini o chiudi l’account."
-msgstr "우리는 귀하의 사이트의 인증된 영역에 접근할 필요가 없습니다. 생성된 아티팩트는 귀하가 삭제하거나 계정을 종료할 때까지 귀하의 계정에 남아 있습니다."
+msgid ""
+"Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact "
+"generati restano nel tuo account finché non li elimini o chiudi "
+"l’account."
+msgstr ""
+"우리는 귀하의 사이트의 인증된 영역에 접근할 필요가 없습니다. 생성된 아티팩트는 귀하가 삭제하거나 계정을 종료할 때까지 귀하의 "
+"계정에 남아 있습니다."
 
 #: templates/privacy.html:44
 msgid "4. Pagamenti"
 msgstr "4. 결제"
 
 #: templates/privacy.html:46
-msgid "I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da Paddle.com Market Limited in qualità di merchant of record. Centropic non memorizza i dati completi della carta. Paddle tratta i dati di fatturazione necessari all’incasso e alla fiscalità secondo la propria informativa; riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e importi per attivare il piano e accreditare il saldo."
-msgstr "결제(Plus 구독 및 크레딧 충전)는 기록 상의 상인으로서 Paddle.com Market Limited에 의해 처리됩니다. Centropic은 카드의 전체 데이터를 저장하지 않습니다. Paddle은 수금 및 세금에 필요한 청구 데이터를 자신의 정책에 따라 처리합니다. 우리는 Paddle로부터 고객/거래 식별자, 구독 상태 및 요금을 받아 계획을 활성화하고 잔액을 적립합니다."
+msgid ""
+"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
+"Paddle.com Market Limited in qualità di merchant of record. Centropic non"
+" memorizza i dati completi della carta. Paddle tratta i dati di "
+"fatturazione necessari all’incasso e alla fiscalità secondo la propria "
+"informativa; riceviamo da Paddle identificativi cliente/transazione, "
+"stato abbonamento e importi per attivare il piano e accreditare il saldo."
+msgstr ""
+"결제(Plus 구독 및 크레딧 충전)는 기록 상의 상인으로서 Paddle.com Market Limited에 의해 처리됩니다. "
+"Centropic은 카드의 전체 데이터를 저장하지 않습니다. Paddle은 수금 및 세금에 필요한 청구 데이터를 자신의 정책에 따라"
+" 처리합니다. 우리는 Paddle로부터 고객/거래 식별자, 구독 상태 및 요금을 받아 계획을 활성화하고 잔액을 적립합니다."
 
 #: templates/privacy.html:51
 msgid "5. Conservazione e trasferimenti"
 msgstr "5. 보관 및 전송"
 
 #: templates/privacy.html:53
-msgid "I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati solo per conto del servizio o come autonomi titolari ove indicato (es. Paddle)."
-msgstr "데이터는 계정이 활성 상태인 동안 유지되며 종료 후 필요한 기술적 시간(백업, 보안) 동안 보관됩니다. 인프라는 소유자가 관리합니다. 호스팅, 거래 이메일, 결제를 위한 Paddle, OpenAI 및 분석/패키징을 위해 구성된 기타 LLM 공급자와 같은 공급자는 서비스의 명의로 또는 명시된 대로 독립적인 소유자로서만 데이터를 처리합니다(예: Paddle)."
+msgid ""
+"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
+"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
+"titolare; eventuali fornitori (hosting, email transazionale, Paddle per i"
+" pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) "
+"trattano dati solo per conto del servizio o come autonomi titolari ove "
+"indicato (es. Paddle)."
+msgstr ""
+"데이터는 계정이 활성 상태인 동안 유지되며 종료 후 필요한 기술적 시간(백업, 보안) 동안 보관됩니다. 인프라는 소유자가 "
+"관리합니다. 호스팅, 거래 이메일, 결제를 위한 Paddle, OpenAI 및 분석/패키징을 위해 구성된 기타 LLM 공급자와 같은"
+" 공급자는 서비스의 명의로 또는 명시된 대로 독립적인 소유자로서만 데이터를 처리합니다(예: Paddle)."
 
 #: templates/privacy.html:58
 msgid "6. Diritti"
 msgstr "6. 권리"
 
 #: templates/privacy.html:60
-msgid "Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo a"
+msgid ""
+"Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità"
+" e opposizione scrivendo a"
 msgstr "다음 주소로 연락하여 접근, 수정, 삭제, 제한, 이식 및 반대할 수 있습니다:"
 
 #: templates/privacy.html:62
@@ -2962,19 +3468,33 @@ msgid "7. Cookie"
 msgstr "7. 쿠키"
 
 #: templates/privacy.html:69
-msgid "Usiamo cookie tecnici necessari al funzionamento del sito (sessione, protezione CSRF, preferenza lingua)."
+msgid ""
+"Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
+"protezione CSRF, preferenza lingua)."
 msgstr "우리는 사이트의 작동에 필요한 기술적 쿠키를 사용합니다(세션, CSRF 보호, 언어 선호)."
 
 #: templates/privacy.html:71
-msgid "Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è gestito con"
-msgstr "귀하의 동의(쿠키 배너)를 통해 Google Analytics 4를 활성화하고, 구성된 경우 Google Ads / AdSense를 측정 및 광고를 위해 활성화할 수 있습니다. 동의는 다음과 같이 관리됩니다:"
+msgid ""
+"Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 "
+"e, se configurati, Google Ads / AdSense per misurazione e annunci. Il "
+"consenso è gestito con"
+msgstr ""
+"귀하의 동의(쿠키 배너)를 통해 Google Analytics 4를 활성화하고, 구성된 경우 Google Ads / AdSense를"
+" 측정 및 광고를 위해 활성화할 수 있습니다. 동의는 다음과 같이 관리됩니다:"
 
 #: templates/privacy.html:73
-msgid "di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non attiviamo AdSense senza consenso pubblicitario."
-msgstr "기본적으로 저장 분석/광고는 거부됩니다(UE); 사이트 데이터를 삭제하고 페이지를 새로 고침하여 언제든지 수락하거나 거부할 수 있습니다. 우리는 광고 동의 없이 AdSense를 활성화하지 않습니다."
+msgid ""
+"di default storage analytics/ads è negato (UE); puoi accettare o "
+"rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando "
+"la pagina. Non attiviamo AdSense senza consenso pubblicitario."
+msgstr ""
+"기본적으로 저장 분석/광고는 거부됩니다(UE); 사이트 데이터를 삭제하고 페이지를 새로 고침하여 언제든지 수락하거나 거부할 수 "
+"있습니다. 우리는 광고 동의 없이 AdSense를 활성화하지 않습니다."
 
 #: templates/privacy.html:75
-msgid "Attualmente non sono attivi cookie di misurazione o pubblicitari di terze parti su questo sito."
+msgid ""
+"Attualmente non sono attivi cookie di misurazione o pubblicitari di terze"
+" parti su questo sito."
 msgstr "현재 이 사이트에서는 제3자의 측정 또는 광고 쿠키가 활성화되어 있지 않습니다."
 
 #: templates/pro_interest.html:2
@@ -2982,8 +3502,12 @@ msgid "Interesse piani"
 msgstr "요금제 관심 등록"
 
 #: templates/pro_interest.html:3
-msgid "Prenota interesse Centropic Plus (startup) o Business (agenzie): SoV measured, API, white-label. Contatto info@centropic.ai."
-msgstr "Centropic Plus(스타트업) 또는 Business(에이전시)에 관심을 등록하세요: Measured SoV, API, white-label. 문의: info@centropic.ai."
+msgid ""
+"Prenota interesse Centropic Plus (startup) o Business (agenzie): SoV "
+"measured, API, white-label. Contatto info@centropic.ai."
+msgstr ""
+"Centropic Plus(스타트업) 또는 Business(에이전시)에 관심을 등록하세요: Measured SoV, API, "
+"white-label. 문의: info@centropic.ai."
 
 #: templates/pro_interest.html:9
 msgid "Waitlist · piani"
@@ -2994,16 +3518,21 @@ msgid "Dicci quale profilo ti serve"
 msgstr "필요한 프로필을 알려주세요"
 
 #: templates/pro_interest.html:12
-msgid "Se il checkout Paddle non è ancora attivo per il piano che ti serve, lascia i contatti. Plus = startup sul brand. Business = agenzie (API, white-label, 400 token). Oppure vai subito a"
-msgstr "필요한 요금제의 Paddle 결제가 아직 활성화되지 않았다면 연락처를 남겨주세요. Plus = 브랜드용 스타트업. Business = 에이전시(API, white-label, 토큰 400개). 또는 바로 이동하세요:"
+msgid ""
+"Se il checkout Paddle non è ancora attivo per il piano che ti serve, "
+"lascia i contatti. Plus = startup sul brand. Business = agenzie (API, "
+"white-label, 400 token). Oppure vai subito a"
+msgstr ""
+"필요한 요금제의 Paddle 결제가 아직 활성화되지 않았다면 연락처를 남겨주세요. Plus = 브랜드용 스타트업. Business "
+"= 에이전시(API, white-label, 토큰 400개). 또는 바로 이동하세요:"
 
 #: templates/pro_interest.html:18
 msgid "Due profili a pagamento"
 msgstr "두 가지 유료 프로필"
 
 #: templates/pro_interest.html:20
-msgid "100 token/mese, SoV Misurato, re-scan, fino a"
-msgstr "월 토큰 100개, Measured SoV, 재스캔, 최대"
+msgid "100 token/mese, monitoraggio continuo, SoV Misurato, re-scan, fino a"
+msgstr "월 100 토큰, 지속적인 모니터링, SoV 측정, 재스캔, 최대"
 
 #: templates/pro_interest.html:21
 msgid "tutto Plus + API, white-label,"
@@ -3021,7 +3550,7 @@ msgstr "긴급:"
 msgid "Modulo interesse"
 msgstr "관심 등록 양식"
 
-#: templates/pro_interest.html:33 templates/register.html:27
+#: templates/pro_interest.html:33 templates/register.html:28
 msgid "Nome e cognome"
 msgstr "이름과 성"
 
@@ -3030,9 +3559,9 @@ msgid "Azienda / Agenzia"
 msgstr "회사 / 에이전시"
 
 #: templates/pro_interest.html:43 templates/pro_interest.html:48
-#: templates/pro_interest.html:53 templates/register.html:39
-#: templates/register.html:77 templates/register.html:83
-#: templates/register.html:95
+#: templates/pro_interest.html:53 templates/register.html:40
+#: templates/register.html:78 templates/register.html:84
+#: templates/register.html:96
 msgid "(opzionale)"
 msgstr "(선택 사항)"
 
@@ -3057,8 +3586,12 @@ msgid "Torna ai prezzi"
 msgstr "가격으로 돌아가기"
 
 #: templates/product.html:3
-msgid "Centropic: crawl, score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label."
-msgstr "Centropic: crawl, AIO/GEO 점수, findings, pack. 세 가지 SaaS 프로필 — Free, Plus 14.99€, API 및 white-label을 포함한 Business 49.99€."
+msgid ""
+"Centropic: crawl, score AIO/GEO, findings e pack. Tre profili SaaS — "
+"Free, Plus 14,99€, Business 49,99€ con API e white-label."
+msgstr ""
+"Centropic: crawl, AIO/GEO 점수, findings, pack. 세 가지 SaaS 프로필 — Free, Plus "
+"14.99€, API 및 white-label을 포함한 Business 49.99€."
 
 #: templates/product.html:17
 msgid "Il segnale che le IA leggono"
@@ -3069,7 +3602,9 @@ msgid "Una piattaforma di Signal Intelligence per"
 msgstr "다음을 위한 Signal Intelligence 플랫폼:"
 
 #: templates/product.html:21
-msgid "diagnosi del dominio, artifact pubblicabili, loop continuo — scalato per founder, team e agenzie."
+msgid ""
+"diagnosi del dominio, artifact pubblicabili, loop continuo — scalato per "
+"founder, team e agenzie."
 msgstr "도메인 진단, 게시 가능한 artifact, 지속적인 루프 — 창업자, 팀, 에이전시를 위해 확장 가능합니다."
 
 #: templates/product.html:28
@@ -3077,7 +3612,9 @@ msgid "Crawl del dominio, probe di"
 msgstr "도메인 크롤링, 프로브"
 
 #: templates/product.html:29
-msgid "e valutazione euristica dei segnali usati dagli answer engine. Di default il SoV è"
+msgid ""
+"e valutazione euristica dei segnali usati dagli answer engine. Di default"
+" il SoV è"
 msgstr "그리고 답변 엔진이 사용하는 신호에 대한 heuristic 평가입니다. 기본적으로 SoV는"
 
 #: templates/product.html:30
@@ -3125,16 +3662,16 @@ msgid "tok/mese"
 msgstr "토큰/월"
 
 #: templates/product.html:56
-msgid "Startup: SoV Misurato, re-scan, alert, crawl esteso, fino a"
-msgstr "스타트업: Measured SoV, 재스캔, 알림, 확장된 crawl, 최대"
+msgid "Monitoraggio continuo: SoV Misurato, re-scan, alert, fino a"
+msgstr "지속적인 모니터링: SoV 측정, 재스캔, 알림, 최대"
 
 #: templates/product.html:59
 msgid "Tutto incluso"
 msgstr "모든 것 포함"
 
 #: templates/product.html:62
-msgid "Agenzie: tutto Plus + API, white-label, fino a"
-msgstr "에이전시: Plus의 모든 기능 + API, white-label, 최대"
+msgid "Monitoraggio multi-cliente: tutto Plus + API, white-label, fino a"
+msgstr "다중 고객 모니터링: 모든 Plus + API, 화이트 라벨, 최대"
 
 #: templates/product.html:68
 msgid "Pack di ottimizzazione"
@@ -3161,91 +3698,119 @@ msgid "Per chi è"
 msgstr "대상"
 
 #: templates/product.html:80
-msgid "Founder e marketing sul proprio brand → Plus. Agenzie SEO/GEO multi-cliente → Business. Contatto:"
-msgstr "자사 브랜드용 창업자 및 마케터 → Plus. 다중 고객 SEO/GEO 에이전시 → Business. 문의:"
+msgid ""
+"Founder e marketing che monitorano il proprio brand → Plus. Agenzie che "
+"ottimizzano portfolio clienti in continuo → Business. Contatto:"
+msgstr "자신의 브랜드를 모니터링하는 창립자 및 마케팅 → Plus. 지속적으로 고객 포트폴리오를 최적화하는 에이전시 → 비즈니스. 연락처:"
 
 #: templates/product.html:86
 msgid "Prova Free"
 msgstr "Free 체험하기"
 
 #: templates/register.html:3
-msgid "Crea un account Free Centropic: analizza AIO/GEO del tuo sito, ricevi findings e pack (llms.txt, JSON-LD, robots) senza carta di credito."
-msgstr "무료 Centropic 계정을 생성하세요: 귀하의 사이트의 AIO/GEO를 분석하고, 발견 사항 및 팩 (llms.txt, JSON-LD, robots)을 신용 카드 없이 받으세요."
+msgid ""
+"Crea un account Free Centropic: analizza AIO/GEO del tuo sito, ricevi "
+"findings e pack (llms.txt, JSON-LD, robots) senza carta di credito."
+msgstr ""
+"무료 Centropic 계정을 생성하세요: 귀하의 사이트의 AIO/GEO를 분석하고, 발견 사항 및 팩 (llms.txt, "
+"JSON-LD, robots)을 신용 카드 없이 받으세요."
 
-#: templates/register.html:11
+#: templates/register.html:12
 msgid "Analizza i segnali. Chiudi le criticità. Pubblica il pack."
 msgstr "신호를 분석하세요. 문제를 해결하세요. 팩을 게시하세요."
 
-#: templates/register.html:15
+#: templates/register.html:16
 msgid "Registrazione"
 msgstr "등록"
 
-#: templates/register.html:18
-msgid "Nome, email e password. Conferma l’email per il credito di benvenuto. Azienda e URL sono opzionali."
+#: templates/register.html:19
+msgid ""
+"Nome, email e password. Conferma l’email per il credito di benvenuto. "
+"Azienda e URL sono opzionali."
 msgstr "이름, 이메일 및 비밀번호. 환영 크레딧을 위해 이메일을 확인하세요. 회사 및 URL은 선택 사항입니다."
 
-#: templates/register.html:39
+#: templates/register.html:40
 msgid "Telefono"
 msgstr "전화번호"
 
-#: templates/register.html:61 templates/reset_password.html:37
+#: templates/partials/login_modal.html:49 templates/register.html:54
+#: templates/register.html:70 templates/reset_password.html:31
+#: templates/reset_password.html:46
+msgid "Mostra password"
+msgstr "비밀번호 표시"
+
+#: templates/partials/login_modal.html:51 templates/register.html:56
+#: templates/register.html:72 templates/reset_password.html:33
+#: templates/reset_password.html:48
+msgid "Mostra"
+msgstr "표시"
+
+#: templates/register.html:62 templates/reset_password.html:38
 msgid "Conferma password"
 msgstr "비밀번호 확인"
 
-#: templates/register.html:77
+#: templates/register.html:78
 msgid "Azienda / Brand"
 msgstr "회사 / 브랜드"
 
-#: templates/register.html:83
+#: templates/register.html:84
 msgid "Ruolo"
 msgstr "역할"
 
-#: templates/register.html:89
+#: templates/register.html:90
 msgid "Sito web principale"
 msgstr "주요 웹사이트"
 
-#: templates/register.html:89
+#: templates/register.html:90
 msgid "(opzionale — se lo indichi, la prima diagnosi parte subito)"
 msgstr "(선택 사항 — 입력하면 첫 번째 진단이 즉시 시작됩니다)"
 
-#: templates/register.html:95
+#: templates/register.html:96
 msgid "Paese"
 msgstr "국가"
 
-#: templates/register.html:104
+#: templates/register.html:105
 msgid "Accetto i"
 msgstr "나는 동의합니다"
 
-#: templates/register.html:106
+#: templates/register.html:107
 msgid "e l’"
 msgstr "및"
 
-#: templates/register.html:108
+#: templates/register.html:109
 msgid "di Centropic (centropic.ai)."
 msgstr "Centropic (centropic.ai)의"
 
-#: templates/register.html:122
+#: templates/register.html:123
 msgid "Hai già un account?"
 msgstr "이미 계정이 있습니까?"
 
-#: templates/reset_password.html:2 templates/reset_password.html:14
-#: templates/reset_password.html:22 templates/settings.html:147
+#: templates/partials/login_modal.html:62 templates/register.html:126
+msgid "Password dimenticata?"
+msgstr "비밀번호를 잊으셨습니까?"
+
+#: templates/reset_password.html:2 templates/reset_password.html:15
+#: templates/reset_password.html:23 templates/settings.html:147
 msgid "Nuova password"
 msgstr "새 비밀번호"
 
 #: templates/reset_password.html:3
-msgid "Imposta una nuova password Centropic dal link di reset: accesso sicuro alla dashboard AIO/GEO su centropic.ai."
+msgid ""
+"Imposta una nuova password Centropic dal link di reset: accesso sicuro "
+"alla dashboard AIO/GEO su centropic.ai."
 msgstr "Centropic의 새 비밀번호를 재설정 링크에서 설정하세요: centropic.ai의 AIO/GEO 대시보드에 안전하게 접근합니다."
 
-#: templates/reset_password.html:9
+#: templates/reset_password.html:10
 msgid "Scegli una password di almeno 10 caratteri, con lettere e numeri."
 msgstr "10자 이상의 문자와 숫자로 된 비밀번호를 선택하세요."
 
-#: templates/reset_password.html:16
-msgid "Imposta la nuova password per tornare alla dashboard AIO/GEO. Usa una password unica."
+#: templates/reset_password.html:17
+msgid ""
+"Imposta la nuova password per tornare alla dashboard AIO/GEO. Usa una "
+"password unica."
 msgstr "AIO/GEO 대시보드로 돌아가기 위해 새 비밀번호를 설정하세요. 고유한 비밀번호를 사용하세요."
 
-#: templates/reset_password.html:57
+#: templates/reset_password.html:58
 msgid "Richiedi un nuovo link"
 msgstr "새 링크 요청"
 
@@ -3255,7 +3820,9 @@ msgid "Politica di rimborso"
 msgstr "환불 정책"
 
 #: templates/rimborsi.html:3
-msgid "Politica di rimborso Centropic: abbonamenti Plus/Business, pacchetti crediti e diritto di recesso."
+msgid ""
+"Politica di rimborso Centropic: abbonamenti Plus/Business, pacchetti "
+"crediti e diritto di recesso."
 msgstr "Centropic 환불 정책: Plus/Business 구독, 크레딧 패키지 및 철회권."
 
 #: templates/rimborsi.html:12
@@ -3267,8 +3834,16 @@ msgid "1. Ambito"
 msgstr "1. 범위"
 
 #: templates/rimborsi.html:20
-msgid "Questa politica si applica agli acquisti digitali su Centropic (centropic.ai): abbonamenti (Plus, Business) e pacchetti di crediti/analisi pagati tramite il checkout del nostro fornitore di pagamento (Paddle). Non riguarda servizi di terzi o costi esterni al nostro SaaS."
-msgstr "이 정책은 Centropic(centropic.ai)에서의 디지털 구매, 즉 구독(Plus, Business) 및 결제 제공업체(Paddle)의 체크아웃을 통해 결제한 크레딧/분석 패키지에 적용됩니다. 제3자 서비스나 당사 SaaS와 무관한 비용에는 적용되지 않습니다."
+msgid ""
+"Questa politica si applica agli acquisti digitali su Centropic "
+"(centropic.ai): abbonamenti (Plus, Business) e pacchetti di "
+"crediti/analisi pagati tramite il checkout del nostro fornitore di "
+"pagamento (Paddle). Non riguarda servizi di terzi o costi esterni al "
+"nostro SaaS."
+msgstr ""
+"이 정책은 Centropic(centropic.ai)에서의 디지털 구매, 즉 구독(Plus, Business) 및 결제 "
+"제공업체(Paddle)의 체크아웃을 통해 결제한 크레딧/분석 패키지에 적용됩니다. 제3자 서비스나 당사 SaaS와 무관한 비용에는 "
+"적용되지 않습니다."
 
 #: templates/rimborsi.html:25
 msgid "2. Consumatori (UE / SEE)"
@@ -3283,15 +3858,25 @@ msgid "14 giorni"
 msgstr "14일"
 
 #: templates/rimborsi.html:29
-msgid "dalla conclusione del contratto, senza dover indicare un motivo, salvo le eccezioni previste dalla legge per i contenuti e i servizi digitali."
+msgid ""
+"dalla conclusione del contratto, senza dover indicare un motivo, salvo le"
+" eccezioni previste dalla legge per i contenuti e i servizi digitali."
 msgstr "계약 종료일로부터 이유를 밝히지 않고, 디지털 콘텐츠 및 서비스에 대한 법률에 따른 예외를 제외하고."
 
 #: templates/rimborsi.html:33
-msgid "Se richiedi l’erogazione immediata del servizio (accesso al piano o accredito crediti) e riconosci di perdere il diritto di recesso una volta iniziata l’erogazione, il recesso non si applica dopo che il servizio è stato avviato."
-msgstr "서비스의 즉각적인 제공(요금제 접근 또는 크레딧 적립)을 요청하고 제공이 시작된 후 철회 권리를 잃는 것을 인정하는 경우, 서비스가 시작된 후에는 철회가 적용되지 않습니다."
+msgid ""
+"Se richiedi l’erogazione immediata del servizio (accesso al piano o "
+"accredito crediti) e riconosci di perdere il diritto di recesso una volta"
+" iniziata l’erogazione, il recesso non si applica dopo che il servizio è "
+"stato avviato."
+msgstr ""
+"서비스의 즉각적인 제공(요금제 접근 또는 크레딧 적립)을 요청하고 제공이 시작된 후 철회 권리를 잃는 것을 인정하는 경우, 서비스가"
+" 시작된 후에는 철회가 적용되지 않습니다."
 
 #: templates/rimborsi.html:36
-msgid "Se non hai ancora usato crediti né usufruito di funzionalità a pagamento, puoi chiedere il rimborso entro 14 giorni scrivendo a"
+msgid ""
+"Se non hai ancora usato crediti né usufruito di funzionalità a pagamento,"
+" puoi chiedere il rimborso entro 14 giorni scrivendo a"
 msgstr "아직 크레딧을 사용하지 않았거나 유료 기능을 이용하지 않았다면, 다음 주소로 14일 이내에 환불을 요청할 수 있습니다:"
 
 #: templates/rimborsi.html:43
@@ -3299,16 +3884,30 @@ msgid "3. Crediti e analisi"
 msgstr "3. 크레딧 및 분석"
 
 #: templates/rimborsi.html:45
-msgid "I pacchetti di crediti sono beni digitali a consumo. I crediti già utilizzati per analisi o funzionalità a pagamento non sono rimborsabili. I crediti non usati possono essere rimborsati entro 14 giorni dall’acquisto se ne fai richiesta entro quel termine e non risultano consumi sul tuo account."
-msgstr "크레딧 패키지는 소비용 디지털 자산입니다. 분석이나 유료 기능에 이미 사용된 크레딧은 환불되지 않습니다. 사용되지 않은 크레딧은 구매일로부터 14일 이내에 요청하면 환불될 수 있으며, 귀하의 계정에서 소비가 없음을 확인해야 합니다."
+msgid ""
+"I pacchetti di crediti sono beni digitali a consumo. I crediti già "
+"utilizzati per analisi o funzionalità a pagamento non sono rimborsabili. "
+"I crediti non usati possono essere rimborsati entro 14 giorni "
+"dall’acquisto se ne fai richiesta entro quel termine e non risultano "
+"consumi sul tuo account."
+msgstr ""
+"크레딧 패키지는 소비용 디지털 자산입니다. 분석이나 유료 기능에 이미 사용된 크레딧은 환불되지 않습니다. 사용되지 않은 크레딧은 "
+"구매일로부터 14일 이내에 요청하면 환불될 수 있으며, 귀하의 계정에서 소비가 없음을 확인해야 합니다."
 
 #: templates/rimborsi.html:50
 msgid "4. Abbonamenti"
 msgstr "4. 구독"
 
 #: templates/rimborsi.html:52
-msgid "Puoi disdire un abbonamento in qualsiasi momento per evitare il rinnovo successivo (dalla dashboard di fatturazione o contattandoci). La disdetta non genera di per sé un rimborso per il periodo già pagato e già iniziato, salvo diritto di recesso nei termini di cui sopra o un errore di addebito dimostrato."
-msgstr "구독은 언제든지 취소할 수 있으며, 이후 갱신을 방지할 수 있습니다(청구 대시보드에서 또는 저희에게 연락하여). 취소는 이미 지불하고 시작된 기간에 대한 환불을 자동으로 생성하지 않으며, 위의 철회 권리 또는 입증된 청구 오류를 제외합니다."
+msgid ""
+"Puoi disdire un abbonamento in qualsiasi momento per evitare il rinnovo "
+"successivo (dalla dashboard di fatturazione o contattandoci). La disdetta"
+" non genera di per sé un rimborso per il periodo già pagato e già "
+"iniziato, salvo diritto di recesso nei termini di cui sopra o un errore "
+"di addebito dimostrato."
+msgstr ""
+"구독은 언제든지 취소할 수 있으며, 이후 갱신을 방지할 수 있습니다(청구 대시보드에서 또는 저희에게 연락하여). 취소는 이미 "
+"지불하고 시작된 기간에 대한 환불을 자동으로 생성하지 않으며, 위의 철회 권리 또는 입증된 청구 오류를 제외합니다."
 
 #: templates/rimborsi.html:57
 msgid "5. Come richiedere un rimborso"
@@ -3319,8 +3918,15 @@ msgid "Invia una email a"
 msgstr "다음 주소로 이메일을 보내세요:"
 
 #: templates/rimborsi.html:61
-msgid "con: indirizzo email dell’account, data/importo dell’addebito e motivo della richiesta. Esaminiamo le richieste in genere entro pochi giorni lavorativi. I rimborsi approvati vengono elaborati tramite il fornitore di pagamento sullo stesso metodo usato per l’acquisto; i tempi di accredito dipendono dalla banca o dal circuito della carta."
-msgstr "계정 이메일 주소, 청구 날짜/금액 및 요청 사유를 포함하여. 일반적으로 요청은 몇 영업일 이내에 검토됩니다. 승인된 환불은 구매에 사용된 동일한 방법으로 결제 제공업체를 통해 처리됩니다; 입금 시간은 은행이나 카드 네트워크에 따라 다릅니다."
+msgid ""
+"con: indirizzo email dell’account, data/importo dell’addebito e motivo "
+"della richiesta. Esaminiamo le richieste in genere entro pochi giorni "
+"lavorativi. I rimborsi approvati vengono elaborati tramite il fornitore "
+"di pagamento sullo stesso metodo usato per l’acquisto; i tempi di "
+"accredito dipendono dalla banca o dal circuito della carta."
+msgstr ""
+"계정 이메일 주소, 청구 날짜/금액 및 요청 사유를 포함하여. 일반적으로 요청은 몇 영업일 이내에 검토됩니다. 승인된 환불은 구매에"
+" 사용된 동일한 방법으로 결제 제공업체를 통해 처리됩니다; 입금 시간은 은행이나 카드 네트워크에 따라 다릅니다."
 
 #: templates/rimborsi.html:66
 msgid "6. Casi esclusi"
@@ -3335,7 +3941,9 @@ msgid "Crediti o funzionalità già consumati dopo l’avvio del servizio digita
 msgstr "디지털 서비스 시작 후 이미 사용된 크레딧 또는 기능."
 
 #: templates/rimborsi.html:70
-msgid "Richieste oltre i termini di legge o di questa politica, salvo errore nostro."
+msgid ""
+"Richieste oltre i termini di legge o di questa politica, salvo errore "
+"nostro."
 msgstr "법률 또는 이 정책의 기한을 초과한 요청, 단 우리의 오류는 제외."
 
 #: templates/rimborsi.html:75
@@ -3343,8 +3951,15 @@ msgid "7. Tempi e modalità di accredito"
 msgstr "7. 적립 시간 및 방법"
 
 #: templates/rimborsi.html:77
-msgid "Dopo l’approvazione, il rimborso viene istruito sul merchant of record (Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 giorni lavorativi). Ti confermiamo via email quando la pratica è stata inviata al processore."
-msgstr "승인 후, 환불은 기록 상의 상인(Paddle)을 통해 동일한 결제 방법으로 처리됩니다. 계좌에 표시되는 시간은 은행이나 카드 네트워크에 따라 다릅니다(종종 5-10 영업일). 프로세서에 요청이 전송되면 이메일로 확인해 드립니다."
+msgid ""
+"Dopo l’approvazione, il rimborso viene istruito sul merchant of record "
+"(Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione "
+"sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 "
+"giorni lavorativi). Ti confermiamo via email quando la pratica è stata "
+"inviata al processore."
+msgstr ""
+"승인 후, 환불은 기록 상의 상인(Paddle)을 통해 동일한 결제 방법으로 처리됩니다. 계좌에 표시되는 시간은 은행이나 카드 "
+"네트워크에 따라 다릅니다(종종 5-10 영업일). 프로세서에 요청이 전송되면 이메일로 확인해 드립니다."
 
 #: templates/rimborsi.html:82
 msgid "8. Contatti e documenti correlati"
@@ -3367,23 +3982,36 @@ msgid "e la pagina"
 msgstr "및 페이지"
 
 #: templates/rimborsi.html:92
-msgid "Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di terzi."
-msgstr "Centropic (centropic.ai)는 Engineering Factory의 제품입니다: 환불은 AIO/GEO SaaS의 디지털 구매에만 해당되며 제3자의 서비스에는 해당되지 않습니다."
+msgid ""
+"Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi"
+" riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di "
+"terzi."
+msgstr ""
+"Centropic (centropic.ai)는 Engineering Factory의 제품입니다: 환불은 AIO/GEO SaaS의 "
+"디지털 구매에만 해당되며 제3자의 서비스에는 해당되지 않습니다."
 
 #: templates/rimborsi.html:100
 msgid "Contattaci"
 msgstr "문의하기"
 
 #: templates/sample_report.html:3
-msgid "Esempio di report Centropic: score AIO/GEO, finding critici e pack artifact per essere citati dalle IA. Report anonimizzato, stessi moduli della dashboard."
-msgstr "Centropic 보고서 예: AIO/GEO 점수, 중요한 발견 사항 및 AI에 의해 인용될 패키지 아티팩트. 익명화된 보고서, 대시보드와 동일한 양식."
+msgid ""
+"Esempio di report Centropic: score AIO/GEO, finding critici e pack "
+"artifact per essere citati dalle IA. Report anonimizzato, stessi moduli "
+"della dashboard."
+msgstr ""
+"Centropic 보고서 예: AIO/GEO 점수, 중요한 발견 사항 및 AI에 의해 인용될 패키지 아티팩트. 익명화된 보고서, "
+"대시보드와 동일한 양식."
 
 #: templates/sample_report.html:10
 msgid "Come appare un report Centropic"
 msgstr "Centropic 보고서의 모습"
 
 #: templates/sample_report.html:12
-msgid "Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo la diagnosi. Gli score sono diagnostici (Stimato) salvo dove indicato Misurato."
+msgid ""
+"Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo"
+" la diagnosi. Gli score sono diagnostici (Stimato) salvo dove indicato "
+"Misurato."
 msgstr "예시 익명화 보고서 — 진단 후 대시보드에서 보는 것과 동일한 양식. 점수는 진단적입니다(추정) 단, 측정된 경우를 제외합니다."
 
 #: templates/sample_report.html:17
@@ -3395,7 +4023,9 @@ msgid "3 gap critici"
 msgstr "3가지 주요 격차"
 
 #: templates/sample_report.html:25
-msgid "Priorità tipiche dopo il primo crawl: segnali machine-readable, accesso crawler IA e entity Schema.org."
+msgid ""
+"Priorità tipiche dopo il primo crawl: segnali machine-readable, accesso "
+"crawler IA e entity Schema.org."
 msgstr "첫 번째 크롤링 후 일반적인 우선 순위: 기계 판독 가능한 신호, AI 크롤러 접근 및 Schema.org 엔터티."
 
 #: templates/sample_report.html:31
@@ -3415,8 +4045,13 @@ msgid "Prossimi passi"
 msgstr "다음 단계"
 
 #: templates/sample_report.html:51
-msgid "Stesso flusso sul tuo dominio: Free per validare, Plus per SoV Misurato, Business per API e white-label agenzia."
-msgstr "귀사 도메인에서 동일한 흐름: 검증은 Free, Measured SoV는 Plus, API 및 에이전시 white-label은 Business."
+msgid ""
+"Stesso flusso sul tuo dominio: Free per validare, Plus per monitorare e "
+"ottimizzare in continuo, Business per portfolio clienti con API e white-"
+"label."
+msgstr ""
+"귀하의 도메인에서 동일한 흐름: 유효성을 검사하기 위한 무료, 지속적으로 모니터링하고 최적화하기 위한 Plus, API 및 화이트 "
+"라벨이 포함된 고객 포트폴리오를 위한 비즈니스."
 
 #: templates/sample_report.html:56
 msgid "Analizza il tuo sito"
@@ -3431,7 +4066,9 @@ msgid "Impostazioni GEO"
 msgstr "GEO 설정"
 
 #: templates/settings.html:4
-msgid "Impostazioni Centropic per il tuo piano: connector, alert, API e white-label quando disponibili."
+msgid ""
+"Impostazioni Centropic per il tuo piano: connector, alert, API e white-"
+"label quando disponibili."
 msgstr "요금제에 맞는 Centropic 설정: connector, 알림, API 및 이용 가능한 경우 white-label."
 
 #: templates/settings.html:10
@@ -3539,7 +4176,9 @@ msgid "Vertical pack"
 msgstr "수직 패키지"
 
 #: templates/settings.html:98
-msgid "Applica un set di prompt e checklist per settore (SaaS, e-commerce, local, agency, media)."
+msgid ""
+"Applica un set di prompt e checklist per settore (SaaS, e-commerce, "
+"local, agency, media)."
 msgstr "산업별 프롬프트 및 체크리스트 세트를 적용하세요 (SaaS, 전자상거래, 지역, 에이전시, 미디어)."
 
 #: templates/settings.html:106
@@ -3659,7 +4298,9 @@ msgid "Status"
 msgstr "상태"
 
 #: templates/status.html:3
-msgid "Stato operativo di Centropic.ai: app, database, coda analisi e pagamenti. Heartbeat pubblico senza dati sensibili."
+msgid ""
+"Stato operativo di Centropic.ai: app, database, coda analisi e pagamenti."
+" Heartbeat pubblico senza dati sensibili."
 msgstr "Centropic.ai의 운영 상태: 앱, 데이터베이스, 분석 대기열 및 결제. 민감한 데이터가 없는 공개 하트비트."
 
 #: templates/status.html:10
@@ -3667,7 +4308,9 @@ msgid "Stato del servizio"
 msgstr "서비스 상태"
 
 #: templates/status.html:12
-msgid "Heartbeat pubblico di Centropic: verifica rapida di app, database, coda analisi e provider pagamenti. Nessun dato account o segreto operativo."
+msgid ""
+"Heartbeat pubblico di Centropic: verifica rapida di app, database, coda "
+"analisi e provider pagamenti. Nessun dato account o segreto operativo."
 msgstr "Centropic의 공개 하트비트: 앱, 데이터베이스, 분석 대기열 및 결제 제공자의 빠른 확인. 계정 데이터나 운영 비밀 없음."
 
 #: templates/status.html:17
@@ -3703,8 +4346,15 @@ msgid "Cosa significa questa pagina"
 msgstr "이 페이지의 의미"
 
 #: templates/status.html:34
-msgid "Centropic diagnostica la citabilità AIO/GEO dei siti pubblici e produce artifact machine-readable (llms.txt, JSON-LD, robots). Lo status conferma che la piattaforma risponde; non sostituisce il report di analisi né garantisce ranking o menzioni sui modelli."
-msgstr "Centropic은 공개 사이트의 AIO/GEO 인용 가능성을 진단하고 기계 판독 가능한 아티팩트(llms.txt, JSON-LD, robots)를 생성합니다. 상태는 플랫폼이 응답하고 있음을 확인합니다; 분석 보고서를 대체하지 않으며 순위나 모델에 대한 언급을 보장하지 않습니다."
+msgid ""
+"Centropic diagnostica la citabilità AIO/GEO dei siti pubblici e produce "
+"artifact machine-readable (llms.txt, JSON-LD, robots). Lo status conferma"
+" che la piattaforma risponde; non sostituisce il report di analisi né "
+"garantisce ranking o menzioni sui modelli."
+msgstr ""
+"Centropic은 공개 사이트의 AIO/GEO 인용 가능성을 진단하고 기계 판독 가능한 아티팩트(llms.txt, JSON-LD,"
+" robots)를 생성합니다. 상태는 플랫폼이 응답하고 있음을 확인합니다; 분석 보고서를 대체하지 않으며 순위나 모델에 대한 언급을"
+" 보장하지 않습니다."
 
 #: templates/status.html:37
 msgid "Per la metodologia Stimato/Misurato vedi"
@@ -3727,31 +4377,54 @@ msgid "Segnali che monitoriamo qui"
 msgstr "여기에서 모니터링하는 신호"
 
 #: templates/status.html:50
-msgid "Questa pagina conferma che l’app Flask risponde, che il database delle analisi è raggiungibile, che la coda job async è interrogabile e che il provider pagamenti (Paddle) è configurato o in modalità interesse. Non espone metriche private, token utenti o log applicativi."
-msgstr "이 페이지는 Flask 앱이 응답하고, 분석 데이터베이스에 접근 가능하며, 비동기 job 큐를 조회할 수 있고, 결제 제공업체(Paddle)가 구성되었거나 관심 등록 모드인지 확인합니다. 비공개 메트릭, 사용자 토큰, 애플리케이션 로그는 노출하지 않습니다."
+msgid ""
+"Questa pagina conferma che l’app Flask risponde, che il database delle "
+"analisi è raggiungibile, che la coda job async è interrogabile e che il "
+"provider pagamenti (Paddle) è configurato o in modalità interesse. Non "
+"espone metriche private, token utenti o log applicativi."
+msgstr ""
+"이 페이지는 Flask 앱이 응답하고, 분석 데이터베이스에 접근 가능하며, 비동기 job 큐를 조회할 수 있고, 결제 "
+"제공업체(Paddle)가 구성되었거나 관심 등록 모드인지 확인합니다. 비공개 메트릭, 사용자 토큰, 애플리케이션 로그는 노출하지 "
+"않습니다."
 
 #: templates/status.html:53
-msgid "Uno status verde non implica che i tuoi score AIO/GEO siano alti: per quello serve un’analisi di dominio dalla dashboard, con findings e pack artifact da pubblicare."
-msgstr "녹색 상태는 귀하의 AIO/GEO 점수가 높다는 것을 의미하지 않습니다: 이를 위해서는 대시보드에서 도메인 분석이 필요하며, 발견 사항 및 게시할 패키지 아티팩트가 필요합니다."
+msgid ""
+"Uno status verde non implica che i tuoi score AIO/GEO siano alti: per "
+"quello serve un’analisi di dominio dalla dashboard, con findings e pack "
+"artifact da pubblicare."
+msgstr ""
+"녹색 상태는 귀하의 AIO/GEO 점수가 높다는 것을 의미하지 않습니다: 이를 위해서는 대시보드에서 도메인 분석이 필요하며, 발견 "
+"사항 및 게시할 패키지 아티팩트가 필요합니다."
 
 #: templates/status.html:58
 msgid "Se qualcosa non risponde"
 msgstr "무언가 응답하지 않으면"
 
 #: templates/status.html:61
-msgid "con orario UTC e URL interessato. Per incidenti di pagamento indica il provider (Paddle) e l’email account, senza condividere chiavi o token."
-msgstr "UTC 시간과 관련 URL을 포함해 주세요. 결제 관련 문제의 경우 제공업체(Paddle)와 계정 이메일을 알려주시되, 키나 토큰은 공유하지 마세요."
+msgid ""
+"con orario UTC e URL interessato. Per incidenti di pagamento indica il "
+"provider (Paddle) e l’email account, senza condividere chiavi o token."
+msgstr ""
+"UTC 시간과 관련 URL을 포함해 주세요. 결제 관련 문제의 경우 제공업체(Paddle)와 계정 이메일을 알려주시되, 키나 토큰은"
+" 공유하지 마세요."
 
 #: templates/status.html:67
 msgid "Analizza un sito"
 msgstr "사이트 분석"
 
 #: templates/termini.html:3
-msgid "Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO), limiti e responsabilità."
-msgstr "Centropic 서비스 약관 (centropic.ai): AI 기반 가시성 (AIO) 및 생성 엔진 최적화 (GEO) SaaS 사용, 제한 및 책임."
+msgid ""
+"Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven "
+"Visibility (AIO) e Generative Engine Optimization (GEO), limiti e "
+"responsabilità."
+msgstr ""
+"Centropic 서비스 약관 (centropic.ai): AI 기반 가시성 (AIO) 및 생성 엔진 최적화 (GEO) SaaS "
+"사용, 제한 및 책임."
 
 #: templates/termini.html:12
-msgid "Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti questi termini. Contatti:"
+msgid ""
+"Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione "
+"accetti questi termini. Contatti:"
 msgstr "최종 업데이트: 2026년 7월 27일 · 등록을 수락함으로써 이 약관에 동의합니다. 연락처:"
 
 #: templates/termini.html:18
@@ -3759,7 +4432,9 @@ msgid "1. Servizio"
 msgstr "1. 서비스"
 
 #: templates/termini.html:20
-msgid "Centropic è un software-as-a-service che analizza siti web pubblici e genera score"
+msgid ""
+"Centropic è un software-as-a-service che analizza siti web pubblici e "
+"genera score"
 msgstr "Centropic은 공개 웹사이트를 분석하고 점수를 생성하는 서비스형 소프트웨어입니다."
 
 #: templates/termini.html:23
@@ -3771,7 +4446,9 @@ msgid "bozza"
 msgstr "초안"
 
 #: templates/termini.html:24
-msgid "Non è un Geographic Information System (GIS) né una suite All-in-One generica."
+msgid ""
+"Non è un Geographic Information System (GIS) né una suite All-in-One "
+"generica."
 msgstr "지리 정보 시스템(GIS)도 아니고 일반적인 올인원 스위트도 아닙니다."
 
 #: templates/termini.html:29
@@ -3787,11 +4464,18 @@ msgid "segnali probe ed euristiche"
 msgstr "프로브 신호 및 휴리스틱"
 
 #: templates/termini.html:33
-msgid "(contenuto, schema, robots, llms, struttura). Non costituiscono polling live garantito su ChatGPT, Perplexity, Claude o altri answer engine, salvo diversa indicazione esplicita in prodotto con badge"
-msgstr "(콘텐츠, 스키마, 로봇, llms, 구조). ChatGPT, Perplexity, Claude 또는 기타 답변 엔진에 대한 보장된 실시간 폴링을 구성하지 않으며, 배지가 있는 제품에서 명시적으로 다른 지침이 없는 한 그렇습니다."
+msgid ""
+"(contenuto, schema, robots, llms, struttura). Non costituiscono polling "
+"live garantito su ChatGPT, Perplexity, Claude o altri answer engine, "
+"salvo diversa indicazione esplicita in prodotto con badge"
+msgstr ""
+"(콘텐츠, 스키마, 로봇, llms, 구조). ChatGPT, Perplexity, Claude 또는 기타 답변 엔진에 대한 보장된"
+" 실시간 폴링을 구성하지 않으며, 배지가 있는 제품에서 명시적으로 다른 지침이 없는 한 그렇습니다."
 
 #: templates/termini.html:35
-msgid "I risultati sono strumenti di diagnosi, non garanzia di citazione da parte di terzi."
+msgid ""
+"I risultati sono strumenti di diagnosi, non garanzia di citazione da "
+"parte di terzi."
 msgstr "결과는 진단 도구이며, 제3자의 인용 보장을 의미하지 않습니다."
 
 #: templates/termini.html:40
@@ -3807,7 +4491,9 @@ msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
 msgstr "기술 감사 요청 권한이 있는 사이트만 분석하십시오."
 
 #: templates/termini.html:44
-msgid "Non usare il servizio per scansioni abusive, attacchi o accesso a reti private."
+msgid ""
+"Non usare il servizio per scansioni abusive, attacchi o accesso a reti "
+"private."
 msgstr "서비스를 남용 스캔, 공격 또는 개인 네트워크 접근에 사용하지 마십시오."
 
 #: templates/termini.html:45
@@ -3819,16 +4505,30 @@ msgid "4. Artifact e responsabilità"
 msgstr "4. 아티팩트 및 책임"
 
 #: templates/termini.html:52
-msgid "Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la conformità legale/SEO e l’impatto sulle performance restano a tuo carico. Centropic non risponde di decisioni di crawler o modelli di terzi."
-msgstr "생성된 아티팩트는 운영 초안입니다: 귀하의 사이트에 게시, 법적/SEO 준수 및 성능에 미치는 영향은 귀하의 책임입니다. Centropic은 크롤러 또는 제3자 모델의 결정에 대해 책임을 지지 않습니다."
+msgid ""
+"Gli artifact generati sono bozze operative: la pubblicazione sul tuo "
+"sito, la conformità legale/SEO e l’impatto sulle performance restano a "
+"tuo carico. Centropic non risponde di decisioni di crawler o modelli di "
+"terzi."
+msgstr ""
+"생성된 아티팩트는 운영 초안입니다: 귀하의 사이트에 게시, 법적/SEO 준수 및 성능에 미치는 영향은 귀하의 책임입니다. "
+"Centropic은 크롤러 또는 제3자 모델의 결정에 대해 책임을 지지 않습니다."
 
 #: templates/termini.html:57
 msgid "5. Piani e disponibilità"
 msgstr "5. 요금제 및 가용성"
 
 #: templates/termini.html:59
-msgid "Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza reset). Plus e Business sono abbonamenti self-serve via Paddle quando il catalogo è configurato; altrimenti interesse via waitlist. Il servizio è fornito “as is”; possiamo sospendere account in caso di abuso o rischio sicurezza."
-msgstr "Free 요금제는 사이트(1개) 및 총 분석 횟수(2회, 리셋 없음)에 엄격한 제한이 있습니다. Plus와 Business는 카탈로그가 구성되면 Paddle을 통한 self-serve 구독으로 제공되며, 그렇지 않은 경우 대기자 명단을 통해 관심을 등록할 수 있습니다. 서비스는 “있는 그대로” 제공되며, 남용이나 보안 위험이 있는 경우 계정을 정지할 수 있습니다."
+msgid ""
+"Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza "
+"reset). Plus e Business sono abbonamenti self-serve via Paddle quando il "
+"catalogo è configurato; altrimenti interesse via waitlist. Il servizio è "
+"fornito “as is”; possiamo sospendere account in caso di abuso o rischio "
+"sicurezza."
+msgstr ""
+"Free 요금제는 사이트(1개) 및 총 분석 횟수(2회, 리셋 없음)에 엄격한 제한이 있습니다. Plus와 Business는 "
+"카탈로그가 구성되면 Paddle을 통한 self-serve 구독으로 제공되며, 그렇지 않은 경우 대기자 명단을 통해 관심을 등록할 "
+"수 있습니다. 서비스는 “있는 그대로” 제공되며, 남용이나 보안 위험이 있는 경우 계정을 정지할 수 있습니다."
 
 #: templates/termini.html:64
 msgid "6. Pagamenti e rimborsi"
@@ -3847,12 +4547,19 @@ msgid "7. Legge applicabile"
 msgstr "7. 적용 법률"
 
 #: templates/termini.html:75
-msgid "Salvo norme imperative diverse, si applica la legge italiana. Per controversie è competente il foro del titolare, fatti salvi i diritti del consumatore."
+msgid ""
+"Salvo norme imperative diverse, si applica la legge italiana. Per "
+"controversie è competente il foro del titolare, fatti salvi i diritti del"
+" consumatore."
 msgstr "다른 강행 규정이 없는 한 이탈리아 법이 적용됩니다. 분쟁의 경우 소유자의 관할권이 있으며 소비자의 권리는 보장됩니다."
 
 #: templates/topup.html:4
-msgid "Ricarica token Centropic: €10 = 100 token, €20 = 200, €50 = 600. Plus €14,99/mese con 100 token. Analisi AIO/GEO su centropic.ai."
-msgstr "Centropic 토큰 충전: €10 = 100 토큰, €20 = 200, €50 = 600. Plus €14.99/월에 100 토큰. centropic.ai에서 AIO/GEO 분석."
+msgid ""
+"Ricarica token Centropic: €10 = 100 token, €20 = 200, €50 = 600. Plus "
+"€14,99/mese con 100 token. Analisi AIO/GEO su centropic.ai."
+msgstr ""
+"Centropic 토큰 충전: €10 = 100 토큰, €20 = 200, €50 = 600. Plus €14.99/월에 100 "
+"토큰. centropic.ai에서 AIO/GEO 분석."
 
 #: templates/topup.html:9
 msgid "Token prepagati"
@@ -3863,11 +4570,15 @@ msgid "Ricarica i tuoi token"
 msgstr "토큰 충전하기"
 
 #: templates/topup.html:12
-msgid "Tariffa base: €10 = 100 token (1 token = €0,10). Il pack da €50 include un bonus."
+msgid ""
+"Tariffa base: €10 = 100 token (1 token = €0,10). Il pack da €50 include "
+"un bonus."
 msgstr "기본 요금: €10 = 100 토큰 (1 토큰 = €0.10). €50 패키지에는 보너스가 포함되어 있습니다."
 
 #: templates/topup.html:13
-msgid "Il costo pre-analisi stima ogni chiamata AI (arrotondamento per call). Con SoV Misurato tipicamente 0,6–2 token a run."
+msgid ""
+"Il costo pre-analisi stima ogni chiamata AI (arrotondamento per call). "
+"Con SoV Misurato tipicamente 0,6–2 token a run."
 msgstr "사전 분석 비용은 각 AI 호출을 추정합니다 (호출당 반올림). SoV 측정 시 일반적으로 실행당 0.6–2 토큰입니다."
 
 #: templates/topup.html:18
@@ -3911,11 +4622,19 @@ msgid "analisi"
 msgstr "분석"
 
 #: templates/topup.html:86
-msgid "Stima analisi (SoV Misurato multi-engine, hold ≈2,3–2,4 token): ~40 con 100 token, ~80 con 200, ~250 con 600. Solo OpenAI: circa il doppio. I token non scadono. Plus include 100 token/mese; Business 400 token/mese."
-msgstr "분석 예상치(멀티 엔진 Measured SoV, hold ≈2.3–2.4 토큰): 토큰 100개로 약 40회, 200개로 약 80회, 600개로 약 250회. OpenAI만 사용 시 약 2배. 토큰은 만료되지 않습니다. Plus는 월 100토큰, Business는 월 400토큰을 포함합니다."
+msgid ""
+"Stima analisi (SoV Misurato multi-engine, hold ≈2,3–2,4 token): ~40 con "
+"100 token, ~80 con 200, ~250 con 600. Solo OpenAI: circa il doppio. I "
+"token non scadono. Plus include 100 token/mese; Business 400 token/mese."
+msgstr ""
+"분석 예상치(멀티 엔진 Measured SoV, hold ≈2.3–2.4 토큰): 토큰 100개로 약 40회, 200개로 약 "
+"80회, 600개로 약 250회. OpenAI만 사용 시 약 2배. 토큰은 만료되지 않습니다. Plus는 월 100토큰, "
+"Business는 월 400토큰을 포함합니다."
 
 #: templates/verify.html:11
-msgid "Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio."
+msgid ""
+"Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul "
+"dominio."
 msgstr "실시간 검사: llms.txt / robots / ai.txt / sitemap / JSON-LD 도메인에서."
 
 #: templates/verify.html:12
@@ -4004,6 +4723,7 @@ msgid "Di solito 30–90 secondi."
 msgstr "보통 30–90초입니다."
 
 #: templates/partials/analyze_overlay.html:88
+#: templates/partials/login_modal.html:18
 msgid "Chiudi"
 msgstr "닫기"
 
@@ -4044,7 +4764,7 @@ msgstr "GEO 크레딧"
 msgid "Saldo token"
 msgstr "토큰 잔액"
 
-#: templates/partials/auth_aside.html:16
+#: templates/partials/auth_aside.html:9
 msgid "Signal Intelligence per AIO e GEO."
 msgstr "AIO 및 GEO를 위한 신호 정보."
 
@@ -4065,7 +4785,9 @@ msgid "per"
 msgstr "에 대한"
 
 #: templates/partials/auth_help.html:9
-msgid "Dopo l’accesso analizzi un dominio pubblico, leggi findings prioritizzati e scarichi il pack"
+msgid ""
+"Dopo l’accesso analizzi un dominio pubblico, leggi findings prioritizzati"
+" e scarichi il pack"
 msgstr "로그인 후 공개 도메인을 분석하고 우선 순위가 매겨진 findings를 읽고 pack을 다운로드합니다."
 
 #: templates/partials/auth_help.html:13
@@ -4089,15 +4811,21 @@ msgid "Supporto:"
 msgstr "지원:"
 
 #: templates/partials/auth_help.html:29
-msgid "GEO ≠ GIS · AIO ≠ All-in-One: metriche di citabilità nelle risposte generative."
+msgid ""
+"GEO ≠ GIS · AIO ≠ All-in-One: metriche di citabilità nelle risposte "
+"generative."
 msgstr "GEO ≠ GIS · AIO ≠ 올인원: 생성적 응답에서 인용 가능성 메트릭."
 
 #: templates/partials/auth_help.html:30
-msgid "Gli score di default sono probe/euristiche (badge Stimato); Misurato solo su segnali osservati."
+msgid ""
+"Gli score di default sono probe/euristiche (badge Stimato); Misurato solo"
+" su segnali osservati."
 msgstr "기본 점수는 probe/휴리스틱(예상 배지)입니다; 관찰된 신호에 대해서만 측정됩니다."
 
 #: templates/partials/auth_help.html:31
-msgid "Non chiediamo la carta sul piano Free; i dati di analisi restano nel tuo account."
+msgid ""
+"Non chiediamo la carta sul piano Free; i dati di analisi restano nel tuo "
+"account."
 msgstr "무료 요금제에서는 카드 정보를 요구하지 않습니다; 분석 데이터는 귀하의 계정에 남아 있습니다."
 
 #: templates/partials/dashboard_shell.html:5
@@ -4313,6 +5041,16 @@ msgstr "발견 사항"
 msgid "Pressione"
 msgstr "압박도"
 
+#: templates/partials/login_modal.html:24
+msgid ""
+"Entra in dashboard, analizza il dominio e scarica il pack. Piano Free "
+"senza carta."
+msgstr "대시보드에 들어가서 도메인을 분석하고 패키지를 다운로드하세요. 카드 없이 무료 요금제."
+
+#: templates/partials/login_modal.html:68
+msgid "Nuovo su Centropic?"
+msgstr "Centropic에 처음이신가요?"
+
 #: templates/partials/sov_ops.html:1
 msgid "Operatività Share of Voice"
 msgstr "Share of Voice 운영"
@@ -4340,607 +5078,4 @@ msgstr "무제한"
 #: templates/partials/sov_ops.html:29
 msgid "Azioni SoV"
 msgstr "SoV 작업"
-
-#~ msgid "Artifact pronti: llms.txt, JSON-LD, FAQ, meta, robots, before/after."
-#~ msgstr "준비된 아티팩트: llms.txt, JSON-LD, FAQ, 메타, 로봇, 전후."
-
-#~ msgid "Copia dai pannelli o scarica lo ZIP"
-#~ msgstr "패널에서 복사하거나 ZIP 파일을 다운로드하세요."
-
-#~ msgid "root del sito"
-#~ msgstr "사이트 루트"
-
-#~ msgid "<head> o Edge /.well-known/"
-#~ msgstr "<head> 또는 Edge /.well-known/"
-
-#~ msgid "checklist operativa interna"
-#~ msgstr "내부 운영 체크리스트"
-
-#~ msgid "Edge completo + CMS connector + 100 token/ciclo"
-#~ msgstr "전체 Edge + CMS 커넥터 + 100 토큰/주기"
-
-#~ msgid "White-label, multi-sito, API e SoV measured per agenzie SEO/GEO che gestiscono più brand. Diagnosi AIO/GEO e pack pronti per i clienti."
-#~ msgstr "화이트 라벨, 다중 사이트, API 및 여러 브랜드를 관리하는 SEO/GEO 에이전시를 위한 측정된 SoV. 고객을 위한 AIO/GEO 진단 및 준비된 패키지."
-
-#~ msgid "Diagnosi AIO/GEO, pack pronti, Edge Signals e report white-label — senza ricostruire lo stack per ogni account. Gli score restano diagnostici (Stimato); su Plus puoi aggiungere menzioni Misurate."
-#~ msgstr "AIO/GEO 진단, 준비된 패키지, Edge Signals 및 화이트 라벨 보고서 — 각 계정에 대해 스택을 재구성하지 않고. 점수는 진단적(추정치)으로 유지됩니다; Plus에서는 측정된 언급을 추가할 수 있습니다."
-
-#~ msgid "Un report operativo con score AIO/GEO, findings prioritizzati e artifact da pubblicare in root o via CMS connector. Ideale per kickoff, audit trimestrali e handover al team contenuto/IT."
-#~ msgstr "AIO/GEO 점수가 포함된 운영 보고서, 우선 순위가 매겨진 발견 사항 및 루트 또는 CMS 커넥터를 통해 게시할 아티팩트. 킥오프, 분기 감사 및 콘텐츠/IT 팀에 대한 인수인계에 이상적입니다."
-
-#~ msgid "Plus aggiunge multi-sito, crawl fino a 120 pagine (Deep 500), re-scan, API e 100 token/mese. Non promettiamo ranking: misuriamo segnali e, ove configurato, menzioni Misurate."
-#~ msgstr "Plus는 다중 사이트, 최대 120페이지 크롤링(Deep 500), 재스캔, API 및 월 100개의 토큰을 추가합니다. 우리는 순위를 약속하지 않습니다: 신호를 측정하고, 설정된 경우 측정된 언급을 측정합니다."
-
-#~ msgid "Multi-sito + re-scan schedulato"
-#~ msgstr "다중 사이트 + 예약된 재스캔"
-
-#~ msgid "API /api/v1 per automatizzare onboarding clienti"
-#~ msgstr "고객 온보딩 자동화를 위한 API /api/v1"
-
-#~ msgid "100 token/mese + pack ricaricabili"
-#~ msgstr "100 토큰/월 + 재충전 가능한 패키지"
-
-#~ msgid "Miglioramento atteso"
-#~ msgstr "기대되는 개선"
-
-#~ msgid "AIO oggi"
-#~ msgstr "오늘의 AIO"
-
-#~ msgid "Prima analisi"
-#~ msgstr "첫 번째 분석"
-
-#~ msgid "Le stime di miglioramento sono indicative e calcolate sui gap rilevati nei run precedenti o sul profilo del dominio. Non costituiscono garanzia di risultato."
-#~ msgstr "개선 추정치는 지표로 사용되며 이전 실행에서 발견된 격차 또는 도메인 프로필을 기반으로 계산됩니다. 결과를 보장하지 않습니다."
-
-#~ msgid "waitlist interesse Plus"
-#~ msgstr "Plus 대기자 명단"
-
-#~ msgid "Analizza, chiudi i gap, pubblica il pack."
-#~ msgstr "분석하고, 격차를 해소하고, 패키지를 게시하세요."
-
-#~ msgid "I tuoi prossimi passi"
-#~ msgstr "다음 단계"
-
-#~ msgid "Chiudi i finding critici / pubblica il pack"
-#~ msgstr "중요한 발견을 닫거나 패키지를 게시하세요."
-
-#~ msgid "Plus (SoV measured + crawl esteso)"
-#~ msgstr "Plus (측정된 SoV + 확장 크롤링)"
-
-#~ msgid "Free: score AIO/GEO e SoV"
-#~ msgstr "무료: AIO/GEO 및 SoV 점수"
-
-#~ msgid "sblocca SoV measured / citation monitor."
-#~ msgstr "SoV 측정 / 인용 모니터를 잠금 해제하세요."
-
-#~ msgid "per SoV measured (citation monitor)."
-#~ msgstr "측정된 SoV에 대해 (인용 모니터)."
-
-#~ msgid "In arrivo"
-#~ msgstr "곧 출시 예정"
-
-#~ msgid "sblocca"
-#~ msgstr "잠금 해제"
-
-#~ msgid "Piano Free: 1 sito, ri-analisi del dominio consentita (consuma token)."
-#~ msgstr "무료 플랜: 1개 사이트, 도메인 재분석 허용 (토큰 소모)."
-
-#~ msgid "sblocca crawl fino a"
-#~ msgstr "크롤링을 해제하여까지"
-
-#~ msgid "pagine, re-scan, export e storico run."
-#~ msgstr "페이지, 재스캔, 내보내기 및 기록 실행."
-
-#~ msgid "per crawl fino a"
-#~ msgstr "크롤링을 위해까지"
-
-#~ msgid "pagine, re-scan, export e storico."
-#~ msgstr "페이지, 재스캔, 내보내기 및 기록."
-
-#~ msgid "Free:"
-#~ msgstr "무료:"
-
-#~ msgid "Piano Plus — lista crawler IA live sul tuo dominio"
-#~ msgstr "Plus 플랜 — 도메인에서 라이브 IA 크롤러 목록"
-
-#~ msgid "Passa a Plus per proxy Worker sul tuo dominio e robots aggiornati automaticamente alla lista crawler Centropic."
-#~ msgstr "도메인에서 Worker 프록시를 위해 Plus로 전환하고 Centropic 크롤러 목록에 자동으로 업데이트되는 로봇을 사용하세요."
-
-#~ msgid "Activation loop"
-#~ msgstr "활성화 루프"
-
-#~ msgid "Incolla l’URL pubblico del brand nella barra sopra (https://…)"
-#~ msgstr "상단 바에 브랜드의 공개 URL을 붙여넣으세요 (https://…)"
-
-#~ msgid "Avvia: crawl, score AIO/GEO, findings prioritizzati"
-#~ msgstr "시작: 크롤링, AIO/GEO 점수, 우선 순위가 매겨진 발견"
-
-#~ msgid "Attiva Edge Signals o scarica il pack da pubblicare"
-#~ msgstr "Edge Signals를 활성화하거나 게시할 패키지를 다운로드하세요."
-
-#~ msgid "analisi iniziali, poi puoi ri-misurare lo stesso dominio."
-#~ msgstr "초기 분석 후 동일한 도메인을 다시 측정할 수 있습니다."
-
-#~ msgid "Nessuna carta. In registrazione, se indichi il sito, la prima analisi parte da sola."
-#~ msgstr "카드 없음. 등록 시 사이트를 지정하면 첫 번째 분석이 자동으로 시작됩니다."
-
-#~ msgid "FAQ Centropic aggiornata: differenza AIO/GEO, score probe vs Misurato, pack artifact, limiti Free e contatti info@centropic.ai."
-#~ msgstr "업데이트된 Centropic FAQ: AIO/GEO의 차이, 스코어 프로브 vs 측정된 값, 패키지 아티팩트, Free의 한계 및 연락처 info@centropic.ai."
-
-#~ msgid "AI-Driven Visibility (AIO), Generative Engine Optimization (GEO), pack e piani — risposte essenziali."
-#~ msgstr "AI 기반 가시성(AIO), 생성 엔진 최적화(GEO), 패키지 및 계획 — 필수 답변."
-
-#~ msgid "quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand (entity, struttura, file machine-readable)."
-#~ msgstr "AI 모델과 크롤러가 귀하의 브랜드(entity, 구조, 기계 판독 파일)를 얼마나 이해하고 '보고' 있는지."
-
-#~ msgid "In questo prodotto"
-#~ msgstr "이 제품에서"
-
-#~ msgid "GEO non significa Geographic Information System (GIS)"
-#~ msgstr "GEO는 지리 정보 시스템(GIS)을 의미하지 않습니다."
-
-#~ msgid "AIO non significa All-in-One"
-#~ msgstr "AIO는 올인원(All-in-One)을 의미하지 않습니다."
-
-#~ msgid "sono metriche di citabilità e visibilità IA."
-#~ msgstr "이는 인용 가능성과 AI 가시성의 메트릭입니다."
-
-#~ msgid "No di default. Score e Share of Voice sono"
-#~ msgstr "기본적으로 아닙니다. 점수와 음성 점유율은"
-
-#~ msgid "diagnostici basati su probe ed euristiche"
-#~ msgstr "프로브 및 휴리스틱을 기반으로 한 진단입니다."
-
-#~ msgid "(contenuto, schema, robots, llms.txt). Il badge"
-#~ msgstr "(콘텐츠, 스키마, 로봇, llms.txt). 배지"
-
-#~ msgid "indica una stima;"
-#~ msgstr "추정을 나타냅니다;"
-
-#~ msgid "è riservato a segnali direttamente osservati sul sito o a polling LLM quando disponibile."
-#~ msgstr "사이트에서 직접 관찰된 신호 또는 사용 가능한 경우 LLM의 폴링에 예약되어 있습니다."
-
-#~ msgid "Score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings prioritizzati e un pack con llms.txt, JSON-LD, meta pack e bozza robots.txt. Puoi copiare i file o scaricare lo ZIP."
-#~ msgstr "AIO(AI 기반 가시성) 및 GEO(생성 엔진 최적화) 점수, 우선 순위가 매겨진 발견 사항 및 llms.txt, JSON-LD, 메타 패키지 및 robots.txt 초안이 포함된 패키지를 받습니다. 파일을 복사하거나 ZIP 파일을 다운로드할 수 있습니다."
-
-#~ msgid "Devo sapere programmare?"
-#~ msgstr "프로그래밍을 알아야 하나요?"
-
-#~ msgid "No. Inserisci l’URL, leggi i findings e pubblica gli artifact sul sito (o passali al tuo developer / CMS)."
-#~ msgstr "아니요. URL을 입력하고 발견 사항을 읽고 사이트에 아티팩트를 게시하세요(또는 개발자/CMS에 전달하세요)."
-
-#~ msgid "Quali sono i limiti del piano Free?"
-#~ msgstr "Free 플랜의 한계는 무엇인가요?"
-
-#~ msgid "Massimo"
-#~ msgstr "최대"
-
-#~ msgid "sito,"
-#~ msgstr "사이트,"
-
-#~ msgid "pagine per crawl,"
-#~ msgstr "크롤링할 페이지,"
-
-#~ msgid "analisi su nuovi siti. Puoi ri-analizzare lo stesso dominio (consuma token, non la quota Free). Plus: crawl fino a"
-#~ msgstr "새로운 사이트에 대한 분석. 동일한 도메인을 다시 분석할 수 있습니다(토큰 소모, 무료 할당량 아님). Plus: 최대 크롤링"
-
-#~ msgid "SoV measured e 100 token/mese."
-#~ msgstr "측정된 SoV 및 100 토큰/월."
-
-#~ msgid "Usate OpenAI sui miei contenuti?"
-#~ msgstr "내 콘텐츠에 OpenAI를 사용하시나요?"
-
-#~ msgid "Se è configurata una chiave OpenAI, può essere usata per raffinare"
-#~ msgstr "OpenAI 키가 설정되어 있으면 이를 사용하여 개선할 수 있습니다."
-
-#~ msgid "Altrimenti Centropic genera un fallback locale. Non pubblichiamo i tuoi dati su altri siti."
-#~ msgstr "그렇지 않으면 Centropic은 로컬 폴백을 생성합니다. 우리는 당신의 데이터를 다른 사이트에 게시하지 않습니다."
-
-#~ msgid "Cos’è Edge Signals (hosting dinamico)?"
-#~ msgstr "Edge Signals(동적 호스팅)란 무엇인가요?"
-
-#~ msgid "Invece di scaricare solo uno ZIP statico, puoi attivare endpoint pubblici Centropic"
-#~ msgstr "정적 ZIP 파일만 다운로드하는 대신 Centropic의 공개 엔드포인트를 활성화할 수 있습니다."
-
-#~ msgid "e su Plus"
-#~ msgstr "그리고 Plus에서"
-
-#~ msgid "che si aggiornano quando rianalizzi il sito o quando aggiorniamo la lista dei crawler IA."
-#~ msgstr "사이트를 재분석하거나 AI 크롤러 목록을 업데이트할 때 업데이트됩니다."
-
-#~ msgid "Sul piano Plus ricevi anche snippet Cloudflare Worker e rewrite Vercel per servire gli stessi artifact sul tuo dominio — dipendenza infrastrutturale, non un file da ricopiare a mano."
-#~ msgstr "Plus 플랜에서는 동일한 아티팩트를 귀하의 도메인에 제공하기 위해 Cloudflare Worker 스니펫과 Vercel 리라이트도 받습니다 — 인프라 종속성으로, 수동으로 복사할 파일이 아닙니다."
-
-#~ msgid "apri la dashboard e inserisci l’URL del sito. In pochi secondi hai il primo report."
-#~ msgstr "대시보드를 열고 사이트의 URL을 입력하세요. 몇 초 안에 첫 번째 보고서를 받을 수 있습니다."
-
-#~ msgid "per supporto, partnership o domande sul servizio."
-#~ msgstr "지원, 파트너십 또는 서비스에 대한 질문을 위해."
-
-#~ msgid "Passa a Plus per lo storico run completo."
-#~ msgstr "전체 실행 기록을 보려면 Plus로 업그레이드하세요."
-
-#~ msgid "Centropic — Signal Intelligence per Generative Engine Optimization: diagnosi del dominio, artifact machine-readable e citabilità nelle risposte IA."
-#~ msgstr "Centropic — 생성 엔진 최적화를 위한 신호 정보: 도메인 진단, 기계 판독 가능한 아티팩트 및 IA 응답에서의 인용 가능성."
-
-#~ msgid "In pochi minuti: score AIO/GEO, gap prioritizzati e pack da pubblicare (llms.txt, schema, robots) per ChatGPT, Claude e Perplexity."
-#~ msgstr "몇 분 안에: AIO/GEO 점수, 우선 순위가 매겨진 갭 및 ChatGPT, Claude 및 Perplexity에 게시할 패키지 (llms.txt, schema, robots)."
-
-#~ msgid "Perché ora"
-#~ msgstr "왜 지금인가"
-
-#~ msgid "I modelli citano ciò che è chiaro e strutturato."
-#~ msgstr "모델은 명확하고 구조화된 내용을 인용합니다."
-
-#~ msgid "Centropic misura i segnali pubblici del sito rispetto ad AIO e GEO, trova i gap e produce gli artifact da pubblicare. Non è un GIS né una suite All-in-One."
-#~ msgstr "Centropic은 AIO 및 GEO에 대한 사이트의 공개 신호를 측정하고, 갭을 찾아 게시할 아티팩트를 생성합니다. GIS도 아니고 올인원 스위트도 아닙니다."
-
-#~ msgid "analisi su nuovi siti (ri-analisi stesso URL ok, consuma token)."
-#~ msgstr "새 사이트에 대한 분석 (동일 URL 재분석 가능, 토큰 소모)."
-
-#~ msgid "Per team marketing, digital e agenzie che governano la citabilità del brand con criteri tracciabili."
-#~ msgstr "추적 가능한 기준으로 브랜드의 인용 가능성을 관리하는 마케팅, 디지털 및 에이전시 팀을 위해."
-
-#~ msgid "llms.txt, JSON-LD Organization, meta-pack e robots — via ZIP o email."
-#~ msgstr "llms.txt, JSON-LD 조직, 메타 패키지 및 로봇 — ZIP 또는 이메일로."
-
-#~ msgid "analisi su nuovi siti; ri-analisi dello stesso URL consuma token. Plus: crawl fino a"
-#~ msgstr "새 사이트에 대한 분석; 동일 URL 재분석은 토큰을 소모합니다. Plus: 최대 크롤링"
-
-#~ msgid "pagine, SoV measured e 100 token/mese."
-#~ msgstr "페이지, SoV 측정 및 월 100 토큰."
-
-#~ msgid "Valuta la citabilità del tuo dominio."
-#~ msgstr "귀하의 도메인 인용 가능성을 평가하세요."
-
-#~ msgid "Piano Free. Prima analisi in pochi minuti. Nessuna carta richiesta."
-#~ msgstr "무료 요금제. 몇 분 안에 첫 번째 분석. 카드 필요 없음."
-
-#~ msgid "Piani e limiti"
-#~ msgstr "플랜 및 한도"
-
-#~ msgid "Prezzi Centropic 2026: Free senza carta; Plus con crawl fino a 120 pagine, SoV measured, 100 token/mese e export."
-#~ msgstr "Centropic 2026 가격: 카드 없이 무료; Plus는 최대 120페이지 크롤링, SoV 측정, 월 100토큰 및 내보내기를 포함합니다."
-
-#~ msgid "Semplici. Scalabili."
-#~ msgstr "간단합니다. 확장 가능합니다."
-
-#~ msgid "Free per validare readiness AIO/GEO. Plus per crawl esteso, citation monitor, alert e export."
-#~ msgstr "AIO/GEO 준비 상태를 검증하기 위한 무료. Plus는 확장된 크롤링, 인용 모니터, 알림 및 내보내기를 제공합니다."
-
-#~ msgid "Per il primo dominio e le prime ottimizzazioni."
-#~ msgstr "첫 번째 도메인 및 첫 번째 최적화를 위한 것입니다."
-
-#~ msgid "Include 100 token/mese. Checkout in attivazione — puoi già ricaricare token o prenotare interesse."
-#~ msgstr "매달 100 토큰 포함. 활성화 중 체크아웃 — 이미 토큰을 재충전하거나 관심을 예약할 수 있습니다."
-
-#~ msgid "Più siti e analisi"
-#~ msgstr "더 많은 사이트 및 분석"
-
-#~ msgid "Citation monitor / SoV measured — solo Plus"
-#~ msgstr "인용 모니터 / SoV 측정 — Plus에서만"
-
-#~ msgid "API + export + white-label"
-#~ msgstr "API + 내보내기 + 화이트 라벨"
-
-#~ msgid "Storico run avanzato"
-#~ msgstr "고급 실행 기록"
-
-#~ msgid "richiedi attivazione"
-#~ msgstr "활성화 요청"
-
-#~ msgid "Prenota interesse"
-#~ msgstr "관심 예약"
-
-#~ msgid "Piano Plus · aggiornato"
-#~ msgstr "Plus 플랜 · 업데이트됨"
-
-#~ msgid "Prenota l’interesse Plus"
-#~ msgstr "Plus 관심 예약"
-
-#~ msgid "Centropic Free: 1 sito, 2 analisi su nuovi siti, crawl limitato. Plus per team e agenzie: crawl fino a 120 pagine (Deep 500), SoV measured, re-scan e limiti più alti. Entra in waitlist se il checkout non è ancora attivo. Prodotto di"
-#~ msgstr "Centropic Free: 1개 사이트, 2개 새 사이트 분석, 제한된 크롤링. 팀 및 에이전시를 위한 Plus: 최대 120페이지 크롤링 (Deep 500), SoV 측정, 재스캔 및 더 높은 한도. 체크아웃이 아직 활성화되지 않았다면 대기자 명단에 들어가세요. 제품:"
-
-#~ msgid "Cosa chiedono i team Plus"
-#~ msgstr "Plus 팀이 요청하는 것"
-
-#~ msgid "Crawl fino a 120 pagine (Deep fino a 500)"
-#~ msgstr "최대 120페이지 크롤링 (최대 500 Deep)"
-
-#~ msgid "Più siti gestiti nello stesso account"
-#~ msgstr "동일 계정에서 관리되는 여러 사이트"
-
-#~ msgid "Re-scan e storico analisi per confronto nel tempo"
-#~ msgstr "시간에 따른 비교를 위한 재스캔 및 분석 기록"
-
-#~ msgid "Pack AIO/GEO ripetibile per clienti agenzia"
-#~ msgstr "에이전시 고객을 위한 반복 가능한 AIO/GEO 패키지"
-
-#~ msgid "Gli score restano diagnostici (probe/euristiche) con badge Stimato/Misurato — vedi"
-#~ msgstr "점수는 추정/측정 배지와 함께 진단적입니다 — 참조"
-
-#~ msgid "Modulo waitlist"
-#~ msgstr "대기자 명단 양식"
-
-#~ msgid "Cosa ti serve da Plus"
-#~ msgstr "Plus에서 필요한 것"
-
-#~ msgid "Es. crawl 120+ pagine, più siti, re-scan, team agency…"
-#~ msgstr "예: 120페이지 이상 크롤링, 더 많은 사이트, 재스캔, 팀 에이전시…"
-
-#~ msgid "Come funziona Centropic: crawl, score AIO/GEO euristici, findings e pack (llms.txt, JSON-LD, robots) per answer engine — non GIS, non All-in-One."
-#~ msgstr "Centropic 작동 방식: 크롤링, AIO/GEO 휴리스틱 점수, 결과 및 패키지 (llms.txt, JSON-LD, 로봇) 답변 엔진을 위한 — GIS 아님, 올인원 아님."
-
-#~ msgid "Centropic valuta i segnali di"
-#~ msgstr "Centropic은 신호를 평가합니다."
-
-#~ msgid "del dominio e genera artifact pronti da pubblicare."
-#~ msgstr "도메인에서 게시할 준비가 된 아티팩트를 생성합니다."
-
-#~ msgid "Analisi AIO + GEO (definiti)"
-#~ msgstr "AIO + GEO 분석 (정의됨)"
-
-#~ msgid "Generative Engine Optimization: quanto sei strutturato per essere citato nelle risposte generate (ChatGPT, Perplexity, ricerca AI). Non confondere con GIS (mappe geografiche) né con suite All-in-One generiche."
-#~ msgstr "생성 엔진 최적화: 생성된 답변에서 인용되기 위해 얼마나 구조화되어 있는지 (ChatGPT, Perplexity, AI 검색). GIS(지리 정보 시스템) 또는 일반적인 올인원 스위트와 혼동하지 마십시오."
-
-#~ msgid "aggiunge menzioni Misurate (OpenAI; Perplexity se presente). Riferimenti:"
-#~ msgstr "측정된 언급을 추가합니다 (OpenAI; Perplexity가 있는 경우). 참조:"
-
-#~ msgid "Pagine deboli con problema esplicito"
-#~ msgstr "명시적인 문제가 있는 약한 페이지"
-
-#~ msgid "su ogni finding"
-#~ msgstr "모든 발견에 대해"
-
-#~ msgid "Suite Plus: prompt bank, alert email/webhook, API"
-#~ msgstr "Suite Plus: 프롬프트 뱅크, 알림 이메일/웹훅, API"
-
-#~ msgid "Output operativo: file da copiare o scaricare in ZIP / inviare via email. Guide dedicate:"
-#~ msgstr "운영 출력: 복사하거나 ZIP으로 다운로드할 파일 / 이메일로 전송. 전용 가이드:"
-
-#~ msgid "Schema AI"
-#~ msgstr "AI 스키마"
-
-#~ msgid "Brand, founder e agenzie che vogliono migliorare i segnali di citabilità per ChatGPT, Perplexity e ricerca generativa — con un flusso ripetibile, non fix one-off. Contatto operativo:"
-#~ msgstr "ChatGPT, Perplexity 및 생성 검색을 위한 인용 가능 신호를 개선하고자 하는 브랜드, 창립자 및 에이전시 — 반복 가능한 흐름으로, 일회성 수정이 아닙니다. 운영 연락처:"
-
-#~ msgid "Prova gratis"
-#~ msgstr "무료 체험"
-
-#~ msgid "Vuoi lo stesso flusso sul tuo dominio? Crea un account Free o passa a Plus per SoV measured e crawl esteso."
-#~ msgstr "귀하의 도메인에서 동일한 흐름을 원하십니까? 무료 계정을 만들거나 Plus로 업그레이드하여 측정된 SoV 및 확장된 크롤링을 이용하세요."
-
-#~ msgid "Impostazioni Centropic: alert, prompt bank, API key, white-label e connector SoV."
-#~ msgstr "Centropic 설정: 알림, 프롬프트 뱅크, API 키, 화이트 라벨 및 SoV 커넥터."
-
-#~ msgid "sblocca SoV measured / citation monitor, crawl fino a"
-#~ msgstr "SoV 측정 / 인용 모니터 해제, 최대"
-
-#~ msgid "riservato a"
-#~ msgstr "전용"
-
-#~ msgid "per personalizzare i prompt di misurazione."
-#~ msgstr "측정 프롬프트를 사용자 정의하기 위해."
-
-#~ msgid "Lascia vuoto per i default."
-#~ msgstr "기본값을 위해 비워 두세요."
-
-#~ msgid "Riservato a"
-#~ msgstr "전용"
-
-#~ msgid "genera e usa le key solo sul piano a pagamento."
-#~ msgstr "유료 요금제에서만 키를 생성하고 사용하세요."
-
-#~ msgid "Sblocca API con Plus"
-#~ msgstr "Plus로 API 해제"
-
-#~ msgid "Export white-label per agenzie riservato a"
-#~ msgstr "에이전시 전용 화이트 라벨 내보내기"
-
-#~ msgid "Positive"
-#~ msgstr "긍정적"
-
-#~ msgid "Mixed"
-#~ msgstr "혼합"
-
-#~ msgid "At risk"
-#~ msgstr "위험에 처한"
-
-#~ msgid "Periodo"
-#~ msgstr "기간"
-
-#~ msgid "Storico range: in arrivo"
-#~ msgstr "히스토리 범위: 곧 도착"
-
-#~ msgid "Last 30 Days"
-#~ msgstr "지난 30일"
-
-#~ msgid "Last 7 Days"
-#~ msgstr "지난 7일"
-
-#~ msgid "Quarter to Date"
-#~ msgstr "현재 분기"
-
-#~ msgid "Run Instant GEO Audit"
-#~ msgstr "즉시 GEO 감사 실행"
-
-#~ msgid "Across"
-#~ msgstr "전역"
-
-#~ msgid "tracked LLM platforms"
-#~ msgstr "추적된 LLM 플랫폼"
-
-#~ msgid "Composite grade from AIO/GEO scores"
-#~ msgstr "AIO/GEO 점수의 복합 등급"
-
-#~ msgid "Pages scored in last audit"
-#~ msgstr "마지막 감사에서 점수를 받은 페이지"
-
-#~ msgid "View Detailed Report"
-#~ msgstr "상세 보고서 보기"
-
-#~ msgid "Engine"
-#~ msgstr "엔진"
-
-#~ msgid "Propensity"
-#~ msgstr "성향"
-
-#~ msgid "Dominant"
-#~ msgstr "지배적"
-
-#~ msgid "Optimal"
-#~ msgstr "최적"
-
-#~ msgid "Needs Action"
-#~ msgstr "조치 필요"
-
-#~ msgid "Nessun breakdown engine — lancia un audit."
-#~ msgstr "분석 엔진 없음 — 감사를 시작하세요."
-
-#~ msgid "Actionable GEO Insights"
-#~ msgstr "실행 가능한 GEO 통찰력"
-
-#~ msgid "Gap Detected"
-#~ msgstr "감지된 격차"
-
-#~ msgid "High Impact"
-#~ msgstr "높은 영향"
-
-#~ msgid "Nessun finding critical/warn su questa run."
-#~ msgstr "이번 실행에서 중요한/경고 발견 사항 없음."
-
-#~ msgid "Centropic: scopri se ChatGPT, Claude e Perplexity citano il tuo brand. Diagnosi AIO/GEO e tre profili Free, Plus, Business."
-#~ msgstr "Centropic: ChatGPT, Claude, Perplexity가 귀사의 브랜드를 인용하는지 확인하세요. AIO/GEO 진단과 Free, Plus, Business 세 가지 프로필."
-
-#~ msgid "Scopri se le IA"
-#~ msgstr "AI가"
-
-#~ msgid "ti citano"
-#~ msgstr "당신을 인용하는지 확인하세요"
-
-#~ msgid "Misura dove ChatGPT, Claude e Perplexity menzionano il tuo brand — e cosa sistemare."
-#~ msgstr "ChatGPT, Claude, Perplexity가 귀사의 브랜드를 언급하는 위치를 측정하고 무엇을 수정해야 할지 확인하세요."
-
-#~ msgid "Inizia l’analisi"
-#~ msgstr "분석 시작하기"
-
-#~ msgid "Vedi un report"
-#~ msgstr "리포트 보기"
-
-#~ msgid "Contesto"
-#~ msgstr "배경"
-
-#~ msgid "Le risposte generate privilegiano segnali chiari."
-#~ msgstr "생성된 답변은 명확한 신호를 우선시합니다."
-
-#~ msgid "Centropic osserva i segnali pubblici del dominio, produce score AIO/GEO tracciabili e findings prioritizzati, e consegna un pack pronto da pubblicare per crawler e modelli IA."
-#~ msgstr "Centropic는 도메인의 공개 신호를 관찰하여 추적 가능한 AIO/GEO 점수와 우선순위가 지정된 findings를 생성하고, AI 크롤러와 모델을 위해 게시할 준비가 된 pack을 제공합니다."
-
-#~ msgid "Tre profili. Una piattaforma."
-#~ msgstr "세 가지 프로필. 하나의 플랫폼."
-
-#~ msgid "Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in agenzia."
-#~ msgstr "적합한 프로필을 선택하세요: 검증, 브랜드 운영, 또는 에이전시 고객 확장."
-
-#~ msgid "Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta."
-#~ msgstr "카드 없이 첫 AIO/GEO 진단, findings, ZIP pack 제공."
-
-#~ msgid "Operatività continua: measured SoV, re-scan, alert e crawl esteso."
-#~ msgstr "지속적인 운영: Measured SoV, 재스캔, 알림, 확장된 crawl."
-
-#~ msgid "Tutto incluso: API, white-label, scala siti e token per il delivery."
-#~ msgstr "모든 것 포함: API, white-label, 확장 가능한 사이트, 딜리버리용 토큰."
-
-#~ msgid "Tre fasi. Output operativo."
-#~ msgstr "세 단계. 운영 출력."
-
-#~ msgid "Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano limiti, measured SoV e toolkit agenzia."
-#~ msgstr "모든 프로필에 동일한 엔진: 수집, 평가, 전달. 한도, Measured SoV, 에이전시 툴킷만 달라집니다."
-
-#~ msgid "01 · Acquisizione"
-#~ msgstr "01 · 획득"
-
-#~ msgid "Crawl del dominio e probe sui segnali pubblici rilevanti per modelli e crawler IA."
-#~ msgstr "도메인 크롤링 및 AI 모델 및 크롤러에 대한 관련 공개 신호 조사."
-
-#~ msgid "02 · Valutazione"
-#~ msgstr "02 · 평가"
-
-#~ msgid "Score AIO/GEO e findings per severità, con etichette Stimato vs Misurato."
-#~ msgstr "AIO/GEO 점수 및 심각도에 대한 결과, 추정 vs 측정 레이블과 함께."
-
-#~ msgid "03 · Consegna"
-#~ msgstr "03 · 전달"
-
-#~ msgid "Edge Signals oppure pack (llms.txt, schema, robots) pronto da pubblicare."
-#~ msgstr "Edge Signals 또는 게시할 준비가 된 패키지 (llms.txt, schema, robots)."
-
-#~ msgid "Diagnosi, priorità, artifact."
-#~ msgstr "진단, 우선 순위, 아티팩트."
-
-#~ msgid "Indicatori di visibilità e citabilità basati su probe documentati — non una garanzia di ranking."
-#~ msgstr "문서화된 프로브를 기반으로 한 가시성 및 인용 가능성 지표 — 순위 보장은 아닙니다."
-
-#~ msgid "Analisi multi-pagina"
-#~ msgstr "다중 페이지 분석"
-
-#~ msgid "Copertura del dominio per entity, schema, contenuti citabili e accesso ai crawler IA."
-#~ msgstr "엔티티, 스키마, 인용 가능한 콘텐츠 및 AI 크롤러에 대한 도메인 커버리지."
-
-#~ msgid "Critical / warn / ok per ordinare il backlog tra marketing, contenuto e IT."
-#~ msgstr "마케팅, 콘텐츠 및 IT 간의 백로그를 정리하기 위한 중요 / 경고 / 괜찮음."
-
-#~ msgid "Un file HTML con tutti i fix (head, llms.txt, robots) — download, Edge o white-label Business."
-#~ msgstr "모든 수정 사항이 담긴 HTML 파일(head, llms.txt, robots) — 다운로드, Edge, 또는 Business white-label."
-
-#~ msgid "Governance"
-#~ msgstr "거버넌스"
-
-#~ msgid "Stimato e Misurato restano distinti."
-#~ msgstr "추정 및 측정은 별개로 유지됩니다."
-
-#~ msgid "Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus e Business, i probe LLM possono aggiungere menzioni Misurate — non è una garanzia di ranking o citazione."
-#~ msgstr "모든 finding은 관찰된 신호에서 도출되거나 Estimated로 표시됩니다. Plus 및 Business에서는 LLM probe가 Measured 언급을 추가할 수 있지만, 이는 순위나 인용을 보장하지 않습니다."
-
-#~ msgid "Artifact pronti per la pubblicazione."
-#~ msgstr "게시 준비가 완료된 아티팩트."
-
-#~ msgid "descrizione del brand per i modelli"
-#~ msgstr "모델에 대한 브랜드 설명"
-
-#~ msgid "bozza di accesso per crawler IA"
-#~ msgstr "AI 크롤러를 위한 접근 초안"
-
-#~ msgid "Free per validare un dominio. Plus (14,99€, 100 token) per startup sul proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a"
-#~ msgstr "Free는 도메인 검증용입니다. Plus(14.99€, 토큰 100개)는 Measured SoV를 갖춘 자사 브랜드용 스타트업을 위한 요금제입니다. Business(49.99€, 토큰 400개)는 에이전시를 위한 요금제로 API, white-label, 최대"
-
-#~ msgid "Avvio"
-#~ msgstr "시작"
-
-#~ msgid "Parti dal profilo giusto."
-#~ msgstr "올바른 프로필로 시작하세요."
-
-#~ msgid "Free senza carta. Plus per il brand. Business per i clienti dell’agenzia."
-#~ msgstr "Free는 카드 없이. Plus는 브랜드용. Business는 에이전시 고객용."
-
-#~ msgid "Crea account Free"
-#~ msgstr "Free 계정 만들기"
-
-#~ msgid "Onboarding"
-#~ msgstr "온보딩"
-
-#~ msgid "Conferma email"
-#~ msgstr "이메일 확인"
-
-#~ msgid "Prima analisi del dominio"
-#~ msgstr "첫 번째 도메인 분석"
-
-#~ msgid "Il problema"
-#~ msgstr "문제"
-
-#~ msgid "Se le IA non ti capiscono, per le IA non esisti."
-#~ msgstr "AI가 당신을 이해하지 못하면, AI에게 당신은 존재하지 않는 것입니다."
-
-#~ msgid "Centropic osserva i segnali pubblici del tuo dominio, li traduce in uno score AIO/GEO chiaro e in una lista di priorità — e ti consegna il pack pronto da pubblicare per crawler e modelli IA."
-#~ msgstr "Centropic는 당신의 도메인의 공개 신호를 관찰하여 명확한 AIO/GEO 점수와 우선순위 목록으로 변환하고, AI 크롤러와 모델에 바로 게시할 수 있는 팩을 제공합니다."
 
