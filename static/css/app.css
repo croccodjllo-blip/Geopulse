@@ -6917,7 +6917,7 @@ body.body-auth .site-main.site-main--auth {
   min-height: calc(100svh - var(--header-h));
   box-sizing: border-box;
   align-items: center;
-  justify-items: center;
+  justify-items: stretch;
   overflow: hidden;
 }
 
@@ -6977,7 +6977,7 @@ body.body-auth .site-main.site-main--auth {
 .auth-shell--v2 .auth-wrap {
   position: relative;
   z-index: 1;
-  width: min(440px, calc(100% - 2.5rem));
+  width: var(--content-rail);
   max-width: 100%;
   margin: 0 auto;
   padding: clamp(2rem, 6vh, 3.25rem) 0;
@@ -6990,7 +6990,7 @@ body.body-auth .site-main.site-main--auth {
 }
 
 .auth-shell--v2 .auth-wrap--wide {
-  width: min(640px, calc(100% - 2.5rem));
+  width: var(--content-rail);
 }
 
 .auth-shell--v2 .auth-title {
@@ -7000,7 +7000,7 @@ body.body-auth .site-main.site-main--auth {
 }
 
 .auth-shell--v2 .auth-lede {
-  max-width: min(42ch, 100%);
+  max-width: min(54ch, 100%);
   overflow-wrap: break-word;
 }
 
@@ -7021,7 +7021,7 @@ body.body-auth .site-main.site-main--auth {
     margin: 0;
     min-height: calc(100svh - var(--header-h));
     align-items: center;
-    justify-items: center;
+    justify-items: stretch;
     gap: 0;
   }
 
@@ -7044,14 +7044,10 @@ body.body-auth .site-main.site-main--auth {
 
   .auth-shell--v2 .auth-wrap,
   .auth-shell--v2 .auth-wrap--wide {
-    width: min(460px, var(--content-rail));
+    width: var(--content-rail);
     margin: 0 auto;
     padding: clamp(2.5rem, 8vh, 4rem) 0;
     min-height: 0;
-  }
-
-  .auth-shell--v2 .auth-wrap--wide {
-    width: min(640px, var(--content-rail));
   }
 }
 
