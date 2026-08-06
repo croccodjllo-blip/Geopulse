@@ -741,7 +741,7 @@ def analyze_crawl_aggregate(
                 "severity": "critical",
                 "title": f"{len(errors)} URL con errore HTTP",
                 "detail": (
-                    f"Correggi 4xx/5xx nel campione crawl"
+                    "Correggi 4xx/5xx nel campione crawl"
                     + (f": {sample}" if sample.strip() else ".")
                 ),
             }
@@ -817,7 +817,7 @@ def build_before_after_report(
     lines = [
         "# Before / After — Centropic",
         "",
-        f"## After (questa run)",
+        "## After (questa run)",
         f"- AIO: {cur_aio}",
         f"- GEO: {cur_geo}",
         f"- Rating: {rating.get('code')} ({rating.get('score')}/100)",

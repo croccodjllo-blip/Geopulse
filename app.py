@@ -9,7 +9,6 @@ import hashlib
 import io
 import json
 import logging
-import math
 import os
 import re
 import secrets
@@ -19,7 +18,6 @@ from functools import wraps
 from typing import Any
 from urllib.parse import urlparse
 
-import requests
 from dotenv import load_dotenv
 
 # Carica .env PRIMA di qualsiasi import services che legge os.getenv a livello modulo.
@@ -42,8 +40,7 @@ from flask import (
     url_for,
 )
 from flask_babel import Babel, gettext as _
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import CSRFProtect, FlaskForm
+from flask_wtf import FlaskForm
 from flask_wtf.csrf import generate_csrf
 from sqlalchemy import UniqueConstraint, func, inspect, or_, text
 from sqlalchemy.exc import IntegrityError
@@ -102,7 +99,6 @@ from services.paddle_billing import (
     transaction_grants_business,
     transaction_grants_plus,
     transaction_gross_cents,
-    transaction_is_subscription,
     verify_webhook_signature as paddle_verify_webhook_signature,
 )
 from services.usage_billing import (
@@ -135,7 +131,7 @@ from services.export import (
     runs_to_csv,
 )
 from services.artifacts import unified_fix_html_from_entity
-from services.guides import GUIDES, get_guide
+from services.guides import get_guide
 from services.growth import (
     REFERRAL_BONUS_CENTS,
     TRIAL_DAYS,
@@ -203,7 +199,6 @@ from services.token_units import (
     cents_to_tokens,
     format_token_amount,
     format_tokens_short,
-    tokens_to_cents,
 )
 from services.signals import compare_with_previous
 from services.sov_measured import should_run_measured
@@ -402,7 +397,7 @@ db.init_app(app)
 csrf.init_app(app)
 
 from services.observability import configure_app_logging  # noqa: E402
-from centropic.csp import build_csp_header, configure_csp, inject_csp_context  # noqa: E402
+from centropic.csp import build_csp_header, configure_csp  # noqa: E402
 from centropic import metrics as app_metrics  # noqa: E402
 from centropic.metrics import configure_metrics  # noqa: E402
 
@@ -1602,14 +1597,11 @@ class AlertDelivery(db.Model):
 
 
 from centropic.tenancy import (  # noqa: E402
-    Organization,
-    OrganizationMember,
     assert_can_remesure_site,
     ensure_personal_org,
     get_accessible_site,
     resolve_existing_site_for_analyze,
     sites_query_for_user,
-    user_can_access_site,
     user_can_write_site,
 )
 
@@ -5716,7 +5708,6 @@ def dashboard_settings():
                 except UnsafeURLError:
                     flash("Logo URL non consentito (solo HTTPS pubblici).", "error")
                     return redirect(url_for("dashboard_settings"))
-            from services.agency import normalize_primary_color
             import re as _re_color
 
             color_raw = (agency_form.primary_color.data or "").strip()
@@ -6035,7 +6026,7 @@ def api_v1_analyze():
         return jsonify({"ok": False, "error": "url_required"}), 400
     try:
         url = normalize_url(url_raw)
-    except Exception as exc:
+    except Exception:
         return jsonify({"ok": False, "error": "invalid_url"}), 400
     existing, write_block = resolve_analyze_existing(user, url)
     if write_block is not None:

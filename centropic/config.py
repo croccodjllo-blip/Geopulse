@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 
 from services.analyzer import ABS_MAX_CRAWL_PAGES
-from services.analysis_store import DEFAULT_RESCAN_HOUR
 
 _PKG_DIR = Path(__file__).resolve().parent
 BASE_DIR = str(_PKG_DIR.parent)

@@ -5,7 +5,7 @@ from __future__ import annotations
 import secrets
 from typing import Any
 
-from flask import Flask, g, request
+from flask import Flask, g
 
 
 def new_csp_nonce() -> str:
