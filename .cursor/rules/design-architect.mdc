@@ -29,8 +29,9 @@ Pair with `saas-standards.mdc`. Still: **superuser probes only**, **no browser n
 | `static/img/logo-mark.svg` | Compact vector mark ≤28px (sidebar) — simplified geometry, same style. |
 | `static/favicon.svg` | Same compact-mark design. |
 | `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` | Raster renders of the SVGs (`cairosvg`) — only for contexts that require raster: apple-touch-icon, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback. |
-| `static/img/hero-cosmic.jpg` | Nebula backdrop behind the landing hero (separate AI-generated photo, not the mark). |
 | `static/img/og-share.jpg` | Social only (1200×630). |
+
+The landing hero background is now CSS-only (dark diagonal wash + chrome radial glow + void-black gradient, see `.hero-visual--cite` in `app.css`) — the old `hero-cosmic.jpg` photoreal 3D emblem backdrop was removed 2026-08-06 (same banned-pattern reason as the raster logo below). Don't reintroduce a photo/raster emblem behind the hero.
 
 **Two banned patterns for this mark, both tried and reverted the same day (2026-08-05):**
 1. *Photoreal 3D raster as "the logo"* — looked good large, unusable crisp at favicon/sidebar sizes.

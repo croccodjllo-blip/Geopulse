@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-05 20:49+0000\n"
+"POT-Creation-Date: 2026-08-06 05:24+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2279 templates/about.html:24 templates/contact.html:43
+#: app.py:2271 templates/about.html:24 templates/contact.html:43
 msgid "27 luglio 2026"
 msgstr "2026년 7월 27일"
 
 #: services/guides.py:34 templates/about.html:57 templates/base.html:220
-#: templates/guide.html:151 templates/landing.html:175
+#: templates/guide.html:151 templates/landing.html:167
 #: templates/product.html:32
 msgid "Metodologia"
 msgstr "방법론"
@@ -907,7 +907,7 @@ msgid "Esempio report"
 msgstr "보고서 예시"
 
 #: services/site_guide.py:600 templates/base.html:219 templates/faq.html:95
-#: templates/landing.html:93 templates/pricing.html:91
+#: templates/landing.html:85 templates/pricing.html:91
 #: templates/product.html:88 templates/sample_report.html:58
 msgid "Per agenzie"
 msgstr "에이전시용"
@@ -1176,7 +1176,9 @@ msgid "Accedi"
 msgstr "로그인"
 
 #: templates/base.html:153 templates/faq.html:93 templates/guide.html:18
-#: templates/guide.html:182 templates/pricing.html:20 templates/pricing.html:36
+#: templates/guide.html:182 templates/landing.html:68
+#: templates/landing.html:218 templates/pricing.html:20
+#: templates/pricing.html:36
 msgid "Inizia gratis"
 msgstr "무료 시작"
 
@@ -1196,7 +1198,7 @@ msgstr "작동 방식"
 msgid "Guida Schema AI"
 msgstr "AI 스키마 가이드"
 
-#: templates/base.html:224 templates/landing.html:177
+#: templates/base.html:224 templates/landing.html:169
 msgid "Score vs SoV"
 msgstr "점수 대 SoV"
 
@@ -1443,7 +1445,7 @@ msgstr "또는"
 msgid "accedi"
 msgstr "로그인"
 
-#: templates/contact.html:26 templates/guide.html:180
+#: templates/contact.html:26 templates/guide.html:180 templates/landing.html:50
 #: templates/partials/app_sidebar.html:106
 msgid "Piani"
 msgstr "요금제"
@@ -1476,7 +1478,7 @@ msgstr "응답 시간 및 일정"
 msgid "Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni lavorativi. Per incidenti di accesso account indica l’email di registrazione nell’oggetto. Aggiornato il"
 msgstr "주중(CET/CEST) 이메일 지원, 일반적으로 1-2 영업일 이내. 계정 접근 문제의 경우, 제목에 등록 이메일을 명시하세요. 업데이트 날짜:"
 
-#: templates/contact.html:48
+#: templates/contact.html:48 templates/landing.html:163
 msgid "Trasparenza"
 msgstr "투명성"
 
@@ -1577,13 +1579,13 @@ msgid "Apri sito"
 msgstr "사이트 열기"
 
 #: templates/dashboard.html:106 templates/dashboard.html:642
-#: templates/landing.html:72 templates/partials/dashboard_shell.html:85
-#: templates/partials/dashboard_shell.html:119 templates/pricing.html:31
+#: templates/landing.html:64 templates/partials/dashboard_shell.html:52
+#: templates/partials/dashboard_shell.html:86 templates/pricing.html:31
 msgid "pagine"
 msgstr "페이지"
 
 #: templates/dashboard.html:113 templates/dashboard.html:938
-#: templates/partials/dashboard_shell.html:53
+#: templates/partials/dashboard_shell.html:20
 msgid "Scarica pack"
 msgstr "팩 다운로드"
 
@@ -1648,7 +1650,7 @@ msgid "Generative Engine Opt."
 msgstr "생성 엔진 최적화"
 
 #: templates/dashboard.html:164 templates/dashboard.html:177
-#: templates/partials/dashboard_shell.html:57 templates/verify.html:33
+#: templates/partials/dashboard_shell.html:24 templates/verify.html:33
 msgid "Findings"
 msgstr "발견"
 
@@ -1749,7 +1751,7 @@ msgid "Campo competitivo"
 msgstr "경쟁 분야"
 
 #: templates/dashboard.html:396 templates/dashboard.html:461
-#: templates/settings.html:148
+#: templates/settings.html:170
 msgid "Brand"
 msgstr "브랜드"
 
@@ -1986,7 +1988,7 @@ msgstr "Edge의 최신 AI 크롤러:"
 msgid "hit"
 msgstr "히트"
 
-#: templates/dashboard.html:857 templates/landing.html:182
+#: templates/dashboard.html:857 templates/landing.html:174
 msgid "Deliverable"
 msgstr "산출물"
 
@@ -2030,7 +2032,7 @@ msgstr "브랜드의 공개 URL을 입력하면 crawl, AIO/GEO 점수, findings,
 msgid "Piano Free:"
 msgstr "무료 플랜:"
 
-#: templates/dashboard.html:893 templates/landing.html:72
+#: templates/dashboard.html:893 templates/landing.html:64
 #: templates/pricing.html:30
 msgid "sito"
 msgstr "사이트"
@@ -2091,7 +2093,7 @@ msgstr "GEO 스위트 설정"
 msgid "FAQ Centropic: AIO/GEO, Free vs Plus vs Business, SoV Misurato, Edge Signals, API e white-label."
 msgstr "Centropic FAQ: AIO/GEO, Free vs Plus vs Business, Measured SoV, Edge Signals, API 및 white-label."
 
-#: templates/faq.html:12 templates/landing.html:194
+#: templates/faq.html:12 templates/landing.html:186
 msgid "Domande frequenti"
 msgstr "자주 묻는 질문"
 
@@ -2235,8 +2237,8 @@ msgstr "계정 이메일을 입력하세요. 등록되어 있으면, 에서 일�
 msgid "Torna all’accesso"
 msgstr "로그인으로 돌아가기"
 
-#: templates/forgot_password.html:34 templates/landing.html:76
-#: templates/login.html:58 templates/privacy.html:83 templates/register.html:16
+#: templates/forgot_password.html:34 templates/login.html:58
+#: templates/privacy.html:83 templates/register.html:16
 #: templates/termini.html:82
 msgid "Crea account"
 msgstr "계정 생성"
@@ -2249,7 +2251,7 @@ msgstr "GEO 차트"
 msgid "Aggiornato"
 msgstr "업데이트됨"
 
-#: templates/guide.html:16 templates/settings.html:158
+#: templates/guide.html:16 templates/settings.html:180
 msgid "Torna alla dashboard"
 msgstr "대시보드로 돌아가기"
 
@@ -2394,295 +2396,283 @@ msgid "Signal Intelligence per AIO e GEO"
 msgstr "AIO 및 GEO를 위한 신호 정보"
 
 #: templates/landing.html:3
-msgid "Centropic: scopri se ChatGPT, Claude e Perplexity citano il tuo brand. Diagnosi AIO/GEO e tre profili Free, Plus, Business."
-msgstr "Centropic: ChatGPT, Claude, Perplexity가 귀사의 브랜드를 인용하는지 확인하세요. AIO/GEO 진단과 Free, Plus, Business 세 가지 프로필."
+msgid "Centropic misura se ChatGPT, Claude e Perplexity citano il tuo brand, trova i gap e pubblica i fix. Free senza carta, Plus e Business per scalare."
+msgstr "Centropic는 ChatGPT, Claude, Perplexity가 당신의 브랜드를 인용하는지 확인하고, 격차를 찾아 수정 사항을 게시합니다. 무료 플랜은 카드 없이, Plus와 Business로 확장하세요."
+
+#: templates/landing.html:28
+msgid "Le IA rispondono ai tuoi clienti."
+msgstr "AI가 당신의 고객에게 답하고 있습니다."
+
+#: templates/landing.html:29
+msgid "Sei nella risposta?"
+msgstr "당신은 그 답변 안에 있나요?"
+
+#: templates/landing.html:32
+msgid "Misura la tua Share of Voice su ChatGPT, Claude e Perplexity, trova i gap e pubblica i fix prima del tuo competitor."
+msgstr "ChatGPT, Claude, Perplexity에서 당신의 Share of Voice를 측정하고, 격차를 찾아 경쟁사보다 먼저 수정 사항을 게시하세요."
+
+#: templates/landing.html:35
+msgid "Inizia l’analisi gratuita"
+msgstr "무료 분석 시작하기"
 
 #: templates/landing.html:36
-msgid "Scopri se le IA"
-msgstr "AI가"
+msgid "Guarda un report di esempio"
+msgstr "샘플 리포트 보기"
 
-#: templates/landing.html:37
-msgid "ti citano"
-msgstr "당신을 인용하는지 확인하세요"
-
-#: templates/landing.html:40
-msgid "Misura dove ChatGPT, Claude e Perplexity menzionano il tuo brand — e cosa sistemare."
-msgstr "ChatGPT, Claude, Perplexity가 귀사의 브랜드를 언급하는 위치를 측정하고 무엇을 수정해야 할지 확인하세요."
+#: templates/landing.html:42
+msgid "Il problema"
+msgstr "문제"
 
 #: templates/landing.html:43
-msgid "Inizia l’analisi"
-msgstr "분석 시작하기"
+msgid "Se le IA non ti capiscono, per le IA non esisti."
+msgstr "AI가 당신을 이해하지 못하면, AI에게 당신은 존재하지 않는 것입니다."
 
-#: templates/landing.html:44
-msgid "Vedi un report"
-msgstr "리포트 보기"
-
-#: templates/landing.html:50
-msgid "Contesto"
-msgstr "배경"
+#: templates/landing.html:45
+msgid "Centropic osserva i segnali pubblici del tuo dominio, li traduce in uno score AIO/GEO chiaro e in una lista di priorità — e ti consegna il pack pronto da pubblicare per crawler e modelli IA."
+msgstr "Centropic는 당신의 도메인의 공개 신호를 관찰하여 명확한 AIO/GEO 점수와 우선순위 목록으로 변환하고, AI 크롤러와 모델에 바로 게시할 수 있는 팩을 제공합니다."
 
 #: templates/landing.html:51
-msgid "Le risposte generate privilegiano segnali chiari."
-msgstr "생성된 답변은 명확한 신호를 우선시합니다."
+msgid "Tre piani. Un solo motore."
+msgstr "세 가지 플랜. 하나의 엔진."
 
 #: templates/landing.html:53
-msgid "Centropic osserva i segnali pubblici del dominio, produce score AIO/GEO tracciabili e findings prioritizzati, e consegna un pack pronto da pubblicare per crawler e modelli IA."
-msgstr "Centropic는 도메인의 공개 신호를 관찰하여 추적 가능한 AIO/GEO 점수와 우선순위가 지정된 findings를 생성하고, AI 크롤러와 모델을 위해 게시할 준비가 된 pack을 제공합니다."
-
-#: templates/landing.html:58 templates/pricing.html:13
-msgid "Architettura commerciale"
-msgstr "상업적 아키텍처"
+msgid "Scegli il piano giusto: valida il progetto, blinda il tuo brand, o scala i clienti in agenzia."
+msgstr "적합한 플랜을 선택하세요: 프로젝트를 검증하거나, 브랜드를 보호하거나, 에이전시 고객을 확장하세요."
 
 #: templates/landing.html:59
-msgid "Tre profili. Una piattaforma."
-msgstr "세 가지 프로필. 하나의 플랫폼."
-
-#: templates/landing.html:61
-msgid "Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in agenzia."
-msgstr "적합한 프로필을 선택하세요: 검증, 브랜드 운영, 또는 에이전시 고객 확장."
-
-#: templates/landing.html:67
 msgid "Validare il dominio"
 msgstr "도메인 검증"
 
-#: templates/landing.html:69
-msgid "Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta."
-msgstr "카드 없이 첫 AIO/GEO 진단, findings, ZIP pack 제공."
+#: templates/landing.html:61
+msgid "La prima diagnosi è gratis: score, findings e pack pronto — nessuna carta richiesta."
+msgstr "첫 진단은 무료입니다: 점수, 발견 사항, 완성된 팩까지 — 카드 등록 없이."
 
-#: templates/landing.html:73
+#: templates/landing.html:65
 msgid "analisi + ri-analisi (token)"
 msgstr "분석 + 재분석(토큰)"
 
-#: templates/landing.html:74
+#: templates/landing.html:66
 msgid "SoV stimato · pack pubblicabile"
 msgstr "Estimated SoV · 게시 가능한 pack"
 
-#: templates/landing.html:80 templates/landing.html:95
+#: templates/landing.html:72 templates/landing.html:87
 #: templates/pricing.html:27 templates/pricing.html:42
 #: templates/pricing.html:93
 msgid "/mese"
 msgstr "/월"
 
-#: templates/landing.html:81
+#: templates/landing.html:73
 msgid "Startup sul proprio brand"
 msgstr "자사 브랜드용 스타트업"
 
-#: templates/landing.html:83
-msgid "Operatività continua: measured SoV, re-scan, alert e crawl esteso."
-msgstr "지속적인 운영: Measured SoV, 재스캔, 알림, 확장된 crawl."
+#: templates/landing.html:75
+msgid "Il loop completo per il tuo brand: SoV Misurato, re-scan automatico, alert in tempo reale."
+msgstr "브랜드를 위한 완전한 루프: 측정된 SoV, 자동 재스캔, 실시간 알림."
 
-#: templates/landing.html:86 templates/landing.html:101
+#: templates/landing.html:78 templates/landing.html:93
 msgid "token/mese"
 msgstr "토큰/월"
 
-#: templates/landing.html:87 templates/landing.html:102
-#: templates/partials/dashboard_shell.html:118 templates/pricing.html:30
+#: templates/landing.html:79 templates/landing.html:94
+#: templates/partials/dashboard_shell.html:85 templates/pricing.html:30
 #: templates/pricing.html:46 templates/pricing.html:98
 msgid "Fino a"
 msgstr "최대"
 
-#: templates/landing.html:87 templates/landing.html:102
+#: templates/landing.html:79 templates/landing.html:94
 #: templates/pricing.html:46 templates/pro_interest.html:20
 #: templates/pro_interest.html:21
 msgid "siti"
 msgstr "사이트"
 
-#: templates/landing.html:87
+#: templates/landing.html:79
 msgid "SoV Misurato"
 msgstr "Measured SoV"
 
-#: templates/landing.html:88
+#: templates/landing.html:80
 msgid "Prompt bank · re-scan · Edge completo"
 msgstr "Prompt bank · 재스캔 · 전체 Edge 기능"
 
-#: templates/landing.html:90 templates/pricing.html:57
+#: templates/landing.html:82 templates/pricing.html:57
 #: templates/pricing.html:63 templates/pricing.html:70
 msgid "Scegli Plus"
 msgstr "Plus 선택하기"
 
-#: templates/landing.html:96
+#: templates/landing.html:88
 msgid "Agenzie multi-cliente"
 msgstr "다중 고객 에이전시"
 
-#: templates/landing.html:98
-msgid "Tutto incluso: API, white-label, scala siti e token per il delivery."
-msgstr "모든 것 포함: API, white-label, 확장 가능한 사이트, 딜리버리용 토큰."
+#: templates/landing.html:90
+msgid "Tutto incluso per l’agenzia: API, white-label e token per servire ogni cliente."
+msgstr "에이전시를 위한 모든 것: API, 화이트 라벨, 모든 고객을 위한 토큰까지."
 
-#: templates/landing.html:102
+#: templates/landing.html:94
 msgid "API"
 msgstr "API"
 
-#: templates/landing.html:103
+#: templates/landing.html:95
 msgid "White-label MD/HTML · tutto di Plus"
 msgstr "White-label MD/HTML · Plus의 모든 기능"
 
-#: templates/landing.html:105 templates/pricing.html:108
+#: templates/landing.html:97 templates/pricing.html:108
 #: templates/pricing.html:114 templates/pricing.html:121
 msgid "Passa a Business"
 msgstr "Business로 업그레이드"
 
-#: templates/landing.html:111
+#: templates/landing.html:103
 msgid "Metodo"
 msgstr "방법"
 
-#: templates/landing.html:112
-msgid "Tre fasi. Output operativo."
-msgstr "세 단계. 운영 출력."
+#: templates/landing.html:104
+msgid "Analisi in minuti. Fix pronti da pubblicare."
+msgstr "몇 분 만에 분석. 바로 게시할 수 있는 수정 사항."
+
+#: templates/landing.html:106
+msgid "Stesso motore per tutti i piani: acquisisci, valuta, consegna. Cambiano limiti, SoV Misurato e toolkit agenzia."
+msgstr "모든 플랜에 동일한 엔진: 수집, 평가, 제공. 달라지는 것은 한도, 측정된 SoV, 에이전시 툴킷뿐입니다."
+
+#: templates/landing.html:110
+msgid "01 · Scansione"
+msgstr "01 · 스캔"
+
+#: templates/landing.html:111
+msgid "Crawl del dominio e verifica dei segnali pubblici che modelli e crawler IA leggono davvero."
+msgstr "도메인 크롤링과 AI 모델·크롤러가 실제로 읽는 공개 신호 점검."
 
 #: templates/landing.html:114
-msgid "Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano limiti, measured SoV e toolkit agenzia."
-msgstr "모든 프로필에 동일한 엔진: 수집, 평가, 전달. 한도, Measured SoV, 에이전시 툴킷만 달라집니다."
+msgid "02 · Diagnosi"
+msgstr "02 · 진단"
+
+#: templates/landing.html:115
+msgid "Score AIO/GEO chiaro e findings ordinati per urgenza, sempre etichettati Stimato o Misurato."
+msgstr "명확한 AIO/GEO 점수와 긴급도순으로 정렬된 발견 사항, 항상 추정 또는 측정으로 라벨링됩니다."
 
 #: templates/landing.html:118
-msgid "01 · Acquisizione"
-msgstr "01 · 획득"
+msgid "03 · Pubblicazione"
+msgstr "03 · 게시"
 
 #: templates/landing.html:119
-msgid "Crawl del dominio e probe sui segnali pubblici rilevanti per modelli e crawler IA."
-msgstr "도메인 크롤링 및 AI 모델 및 크롤러에 대한 관련 공개 신호 조사."
+msgid "Un pack pronto — llms.txt, schema, robots — oppure Edge Signals in un clic."
+msgstr "완성된 팩 — llms.txt, 스키마, robots — 또는 클릭 한 번으로 Edge Signals."
 
-#: templates/landing.html:122
-msgid "02 · Valutazione"
-msgstr "02 · 평가"
-
-#: templates/landing.html:123
-msgid "Score AIO/GEO e findings per severità, con etichette Stimato vs Misurato."
-msgstr "AIO/GEO 점수 및 심각도에 대한 결과, 추정 vs 측정 레이블과 함께."
-
-#: templates/landing.html:126
-msgid "03 · Consegna"
-msgstr "03 · 전달"
-
-#: templates/landing.html:127
-msgid "Edge Signals oppure pack (llms.txt, schema, robots) pronto da pubblicare."
-msgstr "Edge Signals 또는 게시할 준비가 된 패키지 (llms.txt, schema, robots)."
-
-#: templates/landing.html:133
+#: templates/landing.html:125
 msgid "Piattaforma"
 msgstr "플랫폼"
 
-#: templates/landing.html:134
-msgid "Diagnosi, priorità, artifact."
-msgstr "진단, 우선 순위, 아티팩트."
+#: templates/landing.html:126
+msgid "Diagnosi chiara. Priorità vere. Fix pronti."
+msgstr "명확한 진단. 진짜 우선순위. 준비된 수정 사항."
 
-#: templates/landing.html:136
+#: templates/landing.html:128
 msgid "Architettura unica: Free dimostra valore, Plus chiude il loop operativo, Business industrializza il delivery."
 msgstr "하나의 아키텍처: Free는 가치를 입증하고, Plus는 운영 루프를 완성하며, Business는 딜리버리를 산업화합니다."
 
-#: templates/landing.html:141
+#: templates/landing.html:133
 msgid "Score AIO e GEO"
 msgstr "AIO 및 GEO 점수"
 
-#: templates/landing.html:143
-msgid "Indicatori di visibilità e citabilità basati su probe documentati — non una garanzia di ranking."
-msgstr "문서화된 프로브를 기반으로 한 가시성 및 인용 가능성 지표 — 순위 보장은 아닙니다."
+#: templates/landing.html:135
+msgid "Un numero chiaro per la tua visibilità IA, costruito su probe documentati — non un numero a caso."
+msgstr "무작위 숫자가 아닌, 문서화된 프로브를 기반으로 한 AI 가시성의 명확한 지표."
 
-#: templates/landing.html:148
-msgid "Analisi multi-pagina"
-msgstr "다중 페이지 분석"
+#: templates/landing.html:140
+msgid "Crawl multi-pagina"
+msgstr "다중 페이지 크롤링"
 
-#: templates/landing.html:150
-msgid "Copertura del dominio per entity, schema, contenuti citabili e accesso ai crawler IA."
-msgstr "엔티티, 스키마, 인용 가능한 콘텐츠 및 AI 크롤러에 대한 도메인 커버리지."
+#: templates/landing.html:142
+msgid "Copriamo tutto il dominio: entity, schema, contenuti citabili e accesso ai crawler IA."
+msgstr "도메인 전체를 다룹니다: 엔티티, 스키마, 인용 가능한 콘텐츠, AI 크롤러 접근까지."
 
-#: templates/landing.html:155
+#: templates/landing.html:147
 msgid "Findings prioritizzati"
 msgstr "우선 순위가 지정된 결과"
 
-#: templates/landing.html:157
-msgid "Critical / warn / ok per ordinare il backlog tra marketing, contenuto e IT."
-msgstr "마케팅, 콘텐츠 및 IT 간의 백로그를 정리하기 위한 중요 / 경고 / 괜찮음."
+#: templates/landing.html:149
+msgid "Sai cosa fare per primo: critical, warn, ok — un solo backlog tra marketing, contenuto e IT."
+msgstr "무엇을 먼저 해야 할지 알 수 있습니다: critical, warn, ok — 마케팅, 콘텐츠, IT를 아우르는 단일 백로그."
 
-#: templates/landing.html:162
+#: templates/landing.html:154
 msgid "Pack di pubblicazione"
 msgstr "게시 패키지"
 
+#: templates/landing.html:156
+msgid "Un solo file con tutti i fix — head, llms.txt, robots — da scaricare, pubblicare via Edge o white-label su Business."
+msgstr "모든 수정 사항이 담긴 단일 파일 — head, llms.txt, robots — 다운로드하거나 Edge로 게시하거나 Business에서 화이트 라벨로 사용하세요."
+
 #: templates/landing.html:164
-msgid "Un file HTML con tutti i fix (head, llms.txt, robots) — download, Edge o white-label Business."
-msgstr "모든 수정 사항이 담긴 HTML 파일(head, llms.txt, robots) — 다운로드, Edge, 또는 Business white-label."
+msgid "Non inventiamo numeri. Li marchiamo Stimato o Misurato."
+msgstr "숫자를 지어내지 않습니다. 추정 또는 측정으로 명확히 표시합니다."
 
-#: templates/landing.html:171
-msgid "Governance"
-msgstr "거버넌스"
+#: templates/landing.html:166
+msgid "Ogni finding nasce da un segnale osservato o è etichettato Stimato in modo esplicito. Su Plus e Business, i probe LLM aggiungono menzioni Misurate — mai una promessa di ranking o citazione garantita."
+msgstr "모든 발견 사항은 관찰된 신호에서 나오거나 명시적으로 추정으로 표시됩니다. Plus와 Business에서는 LLM 프로브가 측정된 언급을 추가합니다 — 순위나 인용을 보장하는 약속은 결코 아닙니다."
 
-#: templates/landing.html:172
-msgid "Stimato e Misurato restano distinti."
-msgstr "추정 및 측정은 별개로 유지됩니다."
+#: templates/landing.html:175
+msgid "I file che mancano al tuo sito — pronti all’uso."
+msgstr "당신의 사이트에 없던 파일들 — 바로 사용 가능."
 
-#: templates/landing.html:174
-msgid "Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus e Business, i probe LLM possono aggiungere menzioni Misurate — non è una garanzia di ranking o citazione."
-msgstr "모든 finding은 관찰된 신호에서 도출되거나 Estimated로 표시됩니다. Plus 및 Business에서는 LLM probe가 Measured 언급을 추가할 수 있지만, 이는 순위나 인용을 보장하지 않습니다."
-
-#: templates/landing.html:183
-msgid "Artifact pronti per la pubblicazione."
-msgstr "게시 준비가 완료된 아티팩트."
-
-#: templates/landing.html:184
+#: templates/landing.html:176
 msgid "Artifact generati"
 msgstr "생성된 아티팩트"
 
-#: templates/landing.html:185
-msgid "descrizione del brand per i modelli"
-msgstr "모델에 대한 브랜드 설명"
+#: templates/landing.html:177
+msgid "come i modelli capiscono chi sei"
+msgstr "모델이 당신이 누구인지 이해하는 방법"
 
-#: templates/landing.html:186
+#: templates/landing.html:178
 msgid "identità strutturata (Schema.org)"
 msgstr "구조화된 아이덴티티 (Schema.org)"
 
-#: templates/landing.html:187
+#: templates/landing.html:179
 msgid "title, description e anteprime allineate"
 msgstr "제목, 설명 및 미리보기가 정렬됨"
 
-#: templates/landing.html:188
-msgid "bozza di accesso per crawler IA"
-msgstr "AI 크롤러를 위한 접근 초안"
+#: templates/landing.html:180
+msgid "accesso chiaro per i crawler IA"
+msgstr "AI 크롤러를 위한 명확한 접근 권한"
 
-#: templates/landing.html:197
+#: templates/landing.html:189
 msgid "Cosa significano AIO e GEO in Centropic?"
 msgstr "Centropic에서 AIO와 GEO는 무엇을 의미합니까?"
 
-#: templates/landing.html:199
+#: templates/landing.html:191
 msgid "AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono interpretare il brand. GEO (Generative Engine Optimization) indica quanto il sito è strutturato per essere citato. Non GIS, non All-in-One."
 msgstr "AIO (AI 기반 가시성)는 AI 모델과 크롤러가 브랜드를 얼마나 해석할 수 있는지를 나타냅니다. GEO (생성 엔진 최적화)는 사이트가 인용되기 위해 얼마나 구조화되어 있는지를 나타냅니다. GIS도 아니고 올인원도 아닙니다."
 
-#: templates/landing.html:203
+#: templates/landing.html:195
 msgid "Quale piano mi serve?"
 msgstr "어떤 요금제가 필요할까요?"
 
-#: templates/landing.html:205
-msgid "Free per validare un dominio. Plus (14,99€, 100 token) per startup sul proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a"
-msgstr "Free는 도메인 검증용입니다. Plus(14.99€, 토큰 100개)는 Measured SoV를 갖춘 자사 브랜드용 스타트업을 위한 요금제입니다. Business(49.99€, 토큰 400개)는 에이전시를 위한 요금제로 API, white-label, 최대"
+#: templates/landing.html:197
+msgid "Free per validare un dominio senza rischio. Plus (14,99€, 100 token) per blindare il proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a"
+msgstr "무료: 위험 없이 도메인 검증. Plus (14.99€, 토큰 100개): 측정된 SoV로 브랜드 보호. Business (49.99€, 토큰 400개): 에이전시를 위한 API, 화이트 라벨, 최대"
 
-#: templates/landing.html:206 templates/product.html:56
+#: templates/landing.html:198 templates/product.html:56
 #: templates/product.html:62
 msgid "siti."
 msgstr "사이트."
 
-#: templates/landing.html:210
+#: templates/landing.html:202
 msgid "Gli score rappresentano menzioni live?"
 msgstr "점수는 실시간 언급을 나타내나요?"
 
-#: templates/landing.html:212
+#: templates/landing.html:204
 msgid "No, di default. Sono diagnostici; su Plus/Business, con citation monitor e API LLM, si aggiungono menzioni Misurate."
 msgstr "기본적으로는 아닙니다. 이는 진단 결과이며, Plus/Business에서 citation monitor와 LLM API를 사용하면 Measured 언급이 추가됩니다."
 
-#: templates/landing.html:220
-msgid "Avvio"
-msgstr "시작"
+#: templates/landing.html:212
+msgid "Prossimo passo"
+msgstr "다음 단계"
 
-#: templates/landing.html:221
-msgid "Parti dal profilo giusto."
-msgstr "올바른 프로필로 시작하세요."
+#: templates/landing.html:213
+msgid "Scopri la tua Share of Voice, oggi."
+msgstr "오늘, 당신의 Share of Voice를 확인하세요."
 
-#: templates/landing.html:223
-msgid "Free senza carta. Plus per il brand. Business per i clienti dell’agenzia."
-msgstr "Free는 카드 없이. Plus는 브랜드용. Business는 에이전시 고객용."
+#: templates/landing.html:215
+msgid "Free senza carta. Plus per blindare il brand. Business per scalare l’agenzia."
+msgstr "카드 없이 무료. 브랜드 보호를 위한 Plus. 에이전시 확장을 위한 Business."
 
-#: templates/landing.html:226
-msgid "Crea account Free"
-msgstr "Free 계정 만들기"
-
-#: templates/landing.html:227
+#: templates/landing.html:219
 msgid "Confronta Free · Plus · Business"
 msgstr "Free · Plus · Business 비교하기"
 
@@ -2737,6 +2727,10 @@ msgstr "Centropic에 처음이신가요?"
 #: templates/pricing.html:3
 msgid "Prezzi Centropic: Free, Plus 14,99€ (startup, 100 token), Business 49,99€ (agenzie, 400 token, API e white-label)."
 msgstr "Centropic 요금: Free, Plus 14.99€(스타트업, 토큰 100개), Business 49.99€(에이전시, 토큰 400개, API 및 white-label)."
+
+#: templates/pricing.html:13
+msgid "Architettura commerciale"
+msgstr "상업적 아키텍처"
 
 #: templates/pricing.html:14
 msgid "Tre modi di possedere il segnale."
@@ -2810,7 +2804,7 @@ msgstr "년"
 msgid "Accedi e scegli Plus"
 msgstr "로그인 후 Plus 선택"
 
-#: templates/partials/dashboard_shell.html:12 templates/pricing.html:86
+#: templates/partials/dashboard_shell.html:7 templates/pricing.html:86
 msgid "Prenota Plus"
 msgstr "플러스 예약"
 
@@ -3235,7 +3229,7 @@ msgid "Hai già un account?"
 msgstr "이미 계정이 있습니까?"
 
 #: templates/reset_password.html:2 templates/reset_password.html:14
-#: templates/reset_password.html:22 templates/settings.html:125
+#: templates/reset_password.html:22 templates/settings.html:147
 msgid "Nuova password"
 msgstr "새 비밀번호"
 
@@ -3416,7 +3410,7 @@ msgstr "포함된 패키지"
 msgid "Artifact pronti da pubblicare in root o via Edge Signals / CMS connector."
 msgstr "루트 또는 Edge Signals / CMS 커넥터를 통해 게시할 준비가 된 아티팩트."
 
-#: templates/partials/dashboard_shell.html:20 templates/sample_report.html:46
+#: templates/sample_report.html:46
 msgid "Prossimi passi"
 msgstr "다음 단계"
 
@@ -3456,147 +3450,171 @@ msgstr "발신 알림, Measured SoV용 prompt bank 및 connector."
 msgid "Sicurezza account e stato connector sul piano Free."
 msgstr "Free 요금제의 계정 보안 및 connector 상태."
 
-#: templates/partials/sov_ops.html:30 templates/settings.html:23
+#: templates/settings.html:24
+msgid "Piano e referral"
+msgstr "플랜 및 추천"
+
+#: templates/settings.html:28
+msgid "Prova Plus gratis per 7 giorni: SoV measured e crawl esteso subito attivi."
+msgstr "Plus 7일 무료 체험: 측정 SoV와 확장 크롤링이 즉시 활성화됩니다."
+
+#: templates/settings.html:29
+msgid "Attiva prova Plus 7 giorni"
+msgstr "Plus 7일 무료 체험 활성화"
+
+#: templates/settings.html:35
+msgid "Invita un collega:"
+msgstr "동료 초대:"
+
+#: templates/settings.html:37
+msgid "tu ricevi"
+msgstr "당신은 받습니다"
+
+#: templates/settings.html:37
+msgid "token quando conferma l’email."
+msgstr "이메일을 확인할 때 토큰을 받습니다."
+
+#: templates/partials/sov_ops.html:30 templates/settings.html:45
 msgid "Connector"
 msgstr "커넥터"
 
-#: templates/settings.html:27
+#: templates/settings.html:49
 msgid "Citation monitor / SoV measured:"
 msgstr "인용 모니터 / SoV 측정:"
 
-#: templates/settings.html:28
+#: templates/settings.html:50
 msgid "attivo"
 msgstr "활성"
 
-#: templates/settings.html:28
+#: templates/settings.html:50
 msgid "configura OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY"
 msgstr "OPENAI_API_KEY / PERPLEXITY_API_KEY / ANTHROPIC_API_KEY 설정"
 
-#: templates/settings.html:31
+#: templates/settings.html:53
 msgid "JS crawl:"
 msgstr "JS 크롤링:"
 
-#: templates/settings.html:31
+#: templates/settings.html:53
 msgid "Playwright pronto"
 msgstr "Playwright 준비 완료"
 
-#: templates/settings.html:31
+#: templates/settings.html:53
 msgid "disabilitato (JS_CRAWL_ENABLED=1)"
 msgstr "비활성화됨 (JS_CRAWL_ENABLED=1)"
 
-#: templates/settings.html:32
+#: templates/settings.html:54
 msgid "Google Search Console:"
 msgstr "Google Search Console:"
 
-#: templates/settings.html:38
+#: templates/settings.html:60
 msgid "Alert outbound"
 msgstr "아웃바운드 알림"
 
-#: templates/settings.html:42
+#: templates/settings.html:64
 msgid "Email su regressioni / llms sparito / pack verify"
 msgstr "회귀 / llms 사라짐 / 패키지 검증에 대한 이메일"
 
-#: templates/settings.html:44
+#: templates/settings.html:66
 msgid "Webhook URL"
 msgstr "웹훅 URL"
 
-#: templates/settings.html:48
+#: templates/settings.html:70
 msgid "Webhook secret (HMAC SHA-256)"
 msgstr "웹훅 비밀 (HMAC SHA-256)"
 
-#: templates/settings.html:58
+#: templates/settings.html:80
 msgid "Prompt bank"
 msgstr "프롬프트 뱅크"
 
-#: templates/settings.html:59
+#: templates/settings.html:81
 msgid "Usati dal citation monitor / SoV measured. Lascia vuoto per i default."
 msgstr "citation monitor / Measured SoV에서 사용됩니다. 기본값을 사용하려면 빈칸으로 두세요."
 
-#: templates/settings.html:64
+#: templates/settings.html:86
 msgid "Prompt (uno per riga)"
 msgstr "프롬프트 (한 줄에 하나)"
 
-#: templates/settings.html:73
+#: templates/settings.html:95
 msgid "Vertical pack"
 msgstr "수직 패키지"
 
-#: templates/settings.html:76
+#: templates/settings.html:98
 msgid "Applica un set di prompt e checklist per settore (SaaS, e-commerce, local, agency, media)."
 msgstr "산업별 프롬프트 및 체크리스트 세트를 적용하세요 (SaaS, 전자상거래, 지역, 에이전시, 미디어)."
 
-#: templates/settings.html:84
+#: templates/settings.html:106
 msgid "API key"
 msgstr "API 키"
 
-#: templates/settings.html:86
+#: templates/settings.html:108
 msgid "Endpoints:"
 msgstr "엔드포인트:"
 
-#: templates/settings.html:88
+#: templates/settings.html:110
 msgid "Prefisso attivo:"
 msgstr "활성 접두사:"
 
-#: templates/settings.html:88
+#: templates/settings.html:110
 msgid "Nessuna key."
 msgstr "키가 없습니다."
 
-#: templates/settings.html:92
+#: templates/settings.html:114
 msgid "API key (una sola volta)"
 msgstr "API 키 (한 번만)"
 
-#: templates/settings.html:92
+#: templates/settings.html:114
 msgid "copiala e conservala in un secret store. Non la rimostreremo per intero."
 msgstr "복사하여 비밀 저장소에 보관하세요. 전체를 다시 표시하지 않습니다."
 
-#: templates/settings.html:99
+#: templates/settings.html:121
 msgid "Genera nuova API key"
 msgstr "새 API 키 생성"
 
-#: templates/settings.html:105
+#: templates/settings.html:127
 msgid "Sicurezza account"
 msgstr "계정 보안"
 
-#: templates/settings.html:108
+#: templates/settings.html:130
 msgid "Email non ancora confermata."
 msgstr "아직 확인되지 않은 이메일입니다."
 
-#: templates/settings.html:109
+#: templates/settings.html:131
 msgid "Senza conferma non ricevi il credito di benvenuto."
 msgstr "확인 없이는 환영 크레딧을 받을 수 없습니다."
 
-#: templates/settings.html:114
+#: templates/settings.html:136
 msgid "Reinvia email di conferma"
 msgstr "확인 이메일 재전송"
 
-#: templates/settings.html:121
+#: templates/settings.html:143
 msgid "Password attuale"
 msgstr "현재 비밀번호"
 
-#: templates/settings.html:129
+#: templates/settings.html:151
 msgid "Conferma nuova password"
 msgstr "새 비밀번호 확인"
 
-#: templates/settings.html:137
+#: templates/settings.html:159
 msgid "Chiudi tutte le altre sessioni (altri browser / dispositivi)."
 msgstr "모든 다른 세션 닫기 (다른 브라우저 / 장치)."
 
-#: templates/settings.html:138
+#: templates/settings.html:160
 msgid "Esci ovunque"
 msgstr "모든 곳에서 로그아웃"
 
-#: templates/settings.html:144
+#: templates/settings.html:166
 msgid "White-label agenzia"
 msgstr "화이트 라벨 에이전시"
 
-#: templates/settings.html:149
+#: templates/settings.html:171
 msgid "Logo URL"
 msgstr "로고 URL"
 
-#: templates/settings.html:150
+#: templates/settings.html:172
 msgid "Colore"
 msgstr "색상"
 
-#: templates/settings.html:151
+#: templates/settings.html:173
 msgid "Nota"
 msgstr "노트"
 
@@ -3965,7 +3983,7 @@ msgid "Stima: 30–90 secondi"
 msgstr "예상: 30–90초"
 
 #: templates/partials/analyze_overlay.html:63
-#: templates/partials/dashboard_shell.html:150
+#: templates/partials/dashboard_shell.html:117
 msgid "In coda"
 msgstr "대기 중"
 
@@ -4014,7 +4032,7 @@ msgid "White-label pack"
 msgstr "White-label pack"
 
 #: templates/partials/app_sidebar.html:64
-#: templates/partials/dashboard_shell.html:55
+#: templates/partials/dashboard_shell.html:22
 msgid "Grafici"
 msgstr "차트"
 
@@ -4082,128 +4100,100 @@ msgstr "기본 점수는 probe/휴리스틱(예상 배지)입니다; 관찰된 �
 msgid "Non chiediamo la carta sul piano Free; i dati di analisi restano nel tuo account."
 msgstr "무료 요금제에서는 카드 정보를 요구하지 않습니다; 분석 데이터는 귀하의 계정에 남아 있습니다."
 
-#: templates/partials/dashboard_shell.html:10
+#: templates/partials/dashboard_shell.html:5
 msgid "Vedi piano Plus"
 msgstr "플러스 플랜 보기"
 
-#: templates/partials/dashboard_shell.html:19
-msgid "Onboarding"
-msgstr "온보딩"
-
-#: templates/partials/dashboard_shell.html:23
-msgid "Conferma email"
-msgstr "이메일 확인"
-
-#: templates/partials/dashboard_shell.html:26
-msgid "Prima analisi del dominio"
-msgstr "첫 번째 도메인 분석"
-
-#: templates/partials/dashboard_shell.html:32
-msgid "Attiva prova Plus 7 giorni"
-msgstr "Plus 7일 무료 체험 활성화"
-
-#: templates/partials/dashboard_shell.html:37
-msgid "Invita un collega:"
-msgstr "동료 초대:"
-
-#: templates/partials/dashboard_shell.html:39
-msgid "tu ricevi"
-msgstr "당신은 받습니다"
-
-#: templates/partials/dashboard_shell.html:39
-msgid "token quando conferma l’email."
-msgstr "이메일을 확인할 때 토큰을 받습니다."
-
-#: templates/partials/dashboard_shell.html:46
+#: templates/partials/dashboard_shell.html:13
 msgid "Sintesi report"
 msgstr "리포트 요약"
 
-#: templates/partials/dashboard_shell.html:54
-#: templates/partials/dashboard_shell.html:69
+#: templates/partials/dashboard_shell.html:21
+#: templates/partials/dashboard_shell.html:36
 msgid "Nuova analisi"
 msgstr "새 분석"
 
-#: templates/partials/dashboard_shell.html:76
+#: templates/partials/dashboard_shell.html:43
 msgid "Analizza un dominio"
 msgstr "도메인 분석하기"
 
-#: templates/partials/dashboard_shell.html:79
+#: templates/partials/dashboard_shell.html:46
 msgid "Quote Free esaurite · passa a Plus per continuare"
 msgstr "Quote Free가 소진되었습니다 · 계속하려면 Plus로 전환하세요"
 
-#: templates/partials/dashboard_shell.html:81
+#: templates/partials/dashboard_shell.html:48
 msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
 msgstr "이미 등록된 사이트를 다시 분석할 수 있습니다 · 더 많은 브랜드를 위해 Plus"
 
-#: templates/partials/dashboard_shell.html:83
+#: templates/partials/dashboard_shell.html:50
 msgid "Crawl BFS · intero sito"
 msgstr "크롤링 BFS · 전체 사이트"
 
-#: templates/partials/dashboard_shell.html:85
+#: templates/partials/dashboard_shell.html:52
 msgid "Crawl stesso dominio · max"
 msgstr "동일 도메인 크롤링 · 최대"
 
-#: templates/partials/dashboard_shell.html:91
+#: templates/partials/dashboard_shell.html:58
 msgid "URL del dominio"
 msgstr "도메인 URL"
 
-#: templates/partials/dashboard_shell.html:101
+#: templates/partials/dashboard_shell.html:68
 msgid "Competitor snapshot (max 3)"
 msgstr "경쟁사 스냅샷(최대 3개)"
 
-#: templates/partials/dashboard_shell.html:103
+#: templates/partials/dashboard_shell.html:70
 msgid "Suggerisci automatico"
 msgstr "자동 제안"
 
-#: templates/partials/dashboard_shell.html:116
+#: templates/partials/dashboard_shell.html:83
 msgid "Deep crawl"
 msgstr "딥 크롤링"
 
-#: templates/partials/dashboard_shell.html:118
+#: templates/partials/dashboard_shell.html:85
 msgid "pagine — più lento"
 msgstr "페이지 — 더 느림"
 
-#: templates/partials/dashboard_shell.html:119
+#: templates/partials/dashboard_shell.html:86
 msgid "Standard:"
 msgstr "표준:"
 
-#: templates/partials/dashboard_shell.html:126
+#: templates/partials/dashboard_shell.html:93
 msgid "SoV measured (probe LLM) incluso quando i connector sono attivi."
 msgstr "connector가 활성화된 경우 Measured SoV(LLM probe)가 포함됩니다."
 
-#: templates/partials/dashboard_shell.html:129
+#: templates/partials/dashboard_shell.html:96
 msgid "Score AIO/GEO e SoV"
 msgstr "AIO/GEO 점수 및 SoV"
 
-#: templates/partials/dashboard_shell.html:129
+#: templates/partials/dashboard_shell.html:96
 msgid "stimato"
 msgstr "추정됨"
 
-#: templates/partials/dashboard_shell.html:129
+#: templates/partials/dashboard_shell.html:96
 msgid "sul dominio analizzato."
 msgstr "분석된 도메인에서."
 
-#: templates/partials/dashboard_shell.html:150
+#: templates/partials/dashboard_shell.html:117
 msgid "In esecuzione"
 msgstr "실행 중"
 
-#: templates/partials/dashboard_shell.html:155
+#: templates/partials/dashboard_shell.html:122
 msgid "Worker in avvio — di solito parte entro pochi secondi."
 msgstr "작업자가 시작 중입니다 — 일반적으로 몇 초 이내에 시작됩니다."
 
-#: templates/partials/dashboard_shell.html:157
+#: templates/partials/dashboard_shell.html:124
 msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
 msgstr "크롤링, 프로브 및 점수가 진행 중입니다 (일반적으로 30–90초)."
 
-#: templates/partials/dashboard_shell.html:163
+#: templates/partials/dashboard_shell.html:130
 msgid "Analisi fallita"
 msgstr "분석 실패"
 
-#: templates/partials/dashboard_shell.html:164
+#: templates/partials/dashboard_shell.html:131
 msgid "Errore sconosciuto"
 msgstr "알 수 없는 오류"
 
-#: templates/partials/dashboard_shell.html:166
+#: templates/partials/dashboard_shell.html:133
 msgid "Controlla l’URL e riprova. Supporto:"
 msgstr "URL을 확인하고 다시 시도하세요. 지원:"
 
@@ -4350,14 +4340,6 @@ msgstr "무제한"
 #: templates/partials/sov_ops.html:29
 msgid "Azioni SoV"
 msgstr "SoV 작업"
-
-#: templates/settings.html:24
-msgid "Piano e referral"
-msgstr "플랜 및 추천"
-
-#: templates/settings.html:26
-msgid "Prova Plus gratis per 7 giorni: SoV measured e crawl esteso subito attivi."
-msgstr "Plus 7일 무료 체험: 측정 SoV와 확장 크롤링이 즉시 활성화됩니다."
 
 #~ msgid "Artifact pronti: llms.txt, JSON-LD, FAQ, meta, robots, before/after."
 #~ msgstr "준비된 아티팩트: llms.txt, JSON-LD, FAQ, 메타, 로봇, 전후."
@@ -4826,4 +4808,130 @@ msgstr "Plus 7일 무료 체험: 측정 SoV와 확장 크롤링이 즉시 활성
 
 #~ msgid "Nessun finding critical/warn su questa run."
 #~ msgstr "이번 실행에서 중요한/경고 발견 사항 없음."
+
+#~ msgid "Centropic: scopri se ChatGPT, Claude e Perplexity citano il tuo brand. Diagnosi AIO/GEO e tre profili Free, Plus, Business."
+#~ msgstr "Centropic: ChatGPT, Claude, Perplexity가 귀사의 브랜드를 인용하는지 확인하세요. AIO/GEO 진단과 Free, Plus, Business 세 가지 프로필."
+
+#~ msgid "Scopri se le IA"
+#~ msgstr "AI가"
+
+#~ msgid "ti citano"
+#~ msgstr "당신을 인용하는지 확인하세요"
+
+#~ msgid "Misura dove ChatGPT, Claude e Perplexity menzionano il tuo brand — e cosa sistemare."
+#~ msgstr "ChatGPT, Claude, Perplexity가 귀사의 브랜드를 언급하는 위치를 측정하고 무엇을 수정해야 할지 확인하세요."
+
+#~ msgid "Inizia l’analisi"
+#~ msgstr "분석 시작하기"
+
+#~ msgid "Vedi un report"
+#~ msgstr "리포트 보기"
+
+#~ msgid "Contesto"
+#~ msgstr "배경"
+
+#~ msgid "Le risposte generate privilegiano segnali chiari."
+#~ msgstr "생성된 답변은 명확한 신호를 우선시합니다."
+
+#~ msgid "Centropic osserva i segnali pubblici del dominio, produce score AIO/GEO tracciabili e findings prioritizzati, e consegna un pack pronto da pubblicare per crawler e modelli IA."
+#~ msgstr "Centropic는 도메인의 공개 신호를 관찰하여 추적 가능한 AIO/GEO 점수와 우선순위가 지정된 findings를 생성하고, AI 크롤러와 모델을 위해 게시할 준비가 된 pack을 제공합니다."
+
+#~ msgid "Tre profili. Una piattaforma."
+#~ msgstr "세 가지 프로필. 하나의 플랫폼."
+
+#~ msgid "Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in agenzia."
+#~ msgstr "적합한 프로필을 선택하세요: 검증, 브랜드 운영, 또는 에이전시 고객 확장."
+
+#~ msgid "Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta."
+#~ msgstr "카드 없이 첫 AIO/GEO 진단, findings, ZIP pack 제공."
+
+#~ msgid "Operatività continua: measured SoV, re-scan, alert e crawl esteso."
+#~ msgstr "지속적인 운영: Measured SoV, 재스캔, 알림, 확장된 crawl."
+
+#~ msgid "Tutto incluso: API, white-label, scala siti e token per il delivery."
+#~ msgstr "모든 것 포함: API, white-label, 확장 가능한 사이트, 딜리버리용 토큰."
+
+#~ msgid "Tre fasi. Output operativo."
+#~ msgstr "세 단계. 운영 출력."
+
+#~ msgid "Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano limiti, measured SoV e toolkit agenzia."
+#~ msgstr "모든 프로필에 동일한 엔진: 수집, 평가, 전달. 한도, Measured SoV, 에이전시 툴킷만 달라집니다."
+
+#~ msgid "01 · Acquisizione"
+#~ msgstr "01 · 획득"
+
+#~ msgid "Crawl del dominio e probe sui segnali pubblici rilevanti per modelli e crawler IA."
+#~ msgstr "도메인 크롤링 및 AI 모델 및 크롤러에 대한 관련 공개 신호 조사."
+
+#~ msgid "02 · Valutazione"
+#~ msgstr "02 · 평가"
+
+#~ msgid "Score AIO/GEO e findings per severità, con etichette Stimato vs Misurato."
+#~ msgstr "AIO/GEO 점수 및 심각도에 대한 결과, 추정 vs 측정 레이블과 함께."
+
+#~ msgid "03 · Consegna"
+#~ msgstr "03 · 전달"
+
+#~ msgid "Edge Signals oppure pack (llms.txt, schema, robots) pronto da pubblicare."
+#~ msgstr "Edge Signals 또는 게시할 준비가 된 패키지 (llms.txt, schema, robots)."
+
+#~ msgid "Diagnosi, priorità, artifact."
+#~ msgstr "진단, 우선 순위, 아티팩트."
+
+#~ msgid "Indicatori di visibilità e citabilità basati su probe documentati — non una garanzia di ranking."
+#~ msgstr "문서화된 프로브를 기반으로 한 가시성 및 인용 가능성 지표 — 순위 보장은 아닙니다."
+
+#~ msgid "Analisi multi-pagina"
+#~ msgstr "다중 페이지 분석"
+
+#~ msgid "Copertura del dominio per entity, schema, contenuti citabili e accesso ai crawler IA."
+#~ msgstr "엔티티, 스키마, 인용 가능한 콘텐츠 및 AI 크롤러에 대한 도메인 커버리지."
+
+#~ msgid "Critical / warn / ok per ordinare il backlog tra marketing, contenuto e IT."
+#~ msgstr "마케팅, 콘텐츠 및 IT 간의 백로그를 정리하기 위한 중요 / 경고 / 괜찮음."
+
+#~ msgid "Un file HTML con tutti i fix (head, llms.txt, robots) — download, Edge o white-label Business."
+#~ msgstr "모든 수정 사항이 담긴 HTML 파일(head, llms.txt, robots) — 다운로드, Edge, 또는 Business white-label."
+
+#~ msgid "Governance"
+#~ msgstr "거버넌스"
+
+#~ msgid "Stimato e Misurato restano distinti."
+#~ msgstr "추정 및 측정은 별개로 유지됩니다."
+
+#~ msgid "Ogni finding deriva da un segnale osservato oppure è etichettato Stimato. Su Plus e Business, i probe LLM possono aggiungere menzioni Misurate — non è una garanzia di ranking o citazione."
+#~ msgstr "모든 finding은 관찰된 신호에서 도출되거나 Estimated로 표시됩니다. Plus 및 Business에서는 LLM probe가 Measured 언급을 추가할 수 있지만, 이는 순위나 인용을 보장하지 않습니다."
+
+#~ msgid "Artifact pronti per la pubblicazione."
+#~ msgstr "게시 준비가 완료된 아티팩트."
+
+#~ msgid "descrizione del brand per i modelli"
+#~ msgstr "모델에 대한 브랜드 설명"
+
+#~ msgid "bozza di accesso per crawler IA"
+#~ msgstr "AI 크롤러를 위한 접근 초안"
+
+#~ msgid "Free per validare un dominio. Plus (14,99€, 100 token) per startup sul proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a"
+#~ msgstr "Free는 도메인 검증용입니다. Plus(14.99€, 토큰 100개)는 Measured SoV를 갖춘 자사 브랜드용 스타트업을 위한 요금제입니다. Business(49.99€, 토큰 400개)는 에이전시를 위한 요금제로 API, white-label, 최대"
+
+#~ msgid "Avvio"
+#~ msgstr "시작"
+
+#~ msgid "Parti dal profilo giusto."
+#~ msgstr "올바른 프로필로 시작하세요."
+
+#~ msgid "Free senza carta. Plus per il brand. Business per i clienti dell’agenzia."
+#~ msgstr "Free는 카드 없이. Plus는 브랜드용. Business는 에이전시 고객용."
+
+#~ msgid "Crea account Free"
+#~ msgstr "Free 계정 만들기"
+
+#~ msgid "Onboarding"
+#~ msgstr "온보딩"
+
+#~ msgid "Conferma email"
+#~ msgstr "이메일 확인"
+
+#~ msgid "Prima analisi del dominio"
+#~ msgstr "첫 번째 도메인 분석"
 
