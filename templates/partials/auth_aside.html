@@ -1,15 +1,8 @@
-{# Brand field for auth pages — CSS aurora + logo, no photo dependency #}
+{# Brand field for auth pages — CSS aurora + logo as background (no <img>) #}
 <aside class="auth-aside auth-aside--v2" aria-hidden="true">
   <div class="auth-aside__field">
     <div class="auth-aside__aurora"></div>
-    <img
-      class="auth-aside__logo"
-      src="{{ url_for('static', filename='img/logo.svg') }}"
-      alt=""
-      width="220"
-      height="220"
-      decoding="async"
-    />
+    <div class="auth-aside__mark"></div>
   </div>
   <div class="auth-aside__copy">
     <p class="brand holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></p>
