@@ -6904,24 +6904,36 @@ body.body-auth .site-main.site-main--auth {
   padding: 0;
 }
 
+/* One composition: logo background + access card stacked/centered (no side split) */
 .auth-shell--v2 {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr;
   width: 100%;
   max-width: none;
   margin: 0;
   gap: 0;
   min-height: calc(100svh - var(--header-h));
   box-sizing: border-box;
-  align-items: stretch;
+  align-items: center;
+  justify-items: center;
+  overflow: hidden;
 }
 
 .auth-aside--v2 {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
   overflow: hidden;
   background: var(--brand-bg);
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  min-height: 0;
+  min-height: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .auth-aside--v2 .auth-aside__img { display: none; }
@@ -6938,47 +6950,43 @@ body.body-auth .site-main.site-main--auth {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 40% 30%, rgba(201, 211, 221, 0.16) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 45% at 70% 75%, rgba(91, 107, 122, 0.18) 0%, transparent 50%);
+    radial-gradient(ellipse 70% 50% at 50% 28%, rgba(201, 211, 221, 0.14) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 45% at 50% 78%, rgba(91, 107, 122, 0.16) 0%, transparent 55%);
   animation: glow-drift 14s ease-in-out infinite alternate;
 }
 
-/* Logo as background watermark — no <img> */
+/* Logo as full-shell background watermark — aligned behind the card */
 .auth-aside__mark {
   position: absolute;
   inset: 0;
   background-image: url("../img/logo.svg");
   background-repeat: no-repeat;
-  background-position: center 42%;
-  background-size: min(72%, 340px);
-  opacity: 0.2;
-  filter: drop-shadow(0 0 48px rgba(201, 211, 221, 0.18));
+  background-position: center center;
+  background-size: min(62vw, 420px);
+  opacity: 0.14;
+  filter: drop-shadow(0 0 48px rgba(201, 211, 221, 0.16));
   animation: core-breathe 6s var(--ease) infinite;
   z-index: 1;
 }
 
+/* Brand line lives in the header; aside copy would fight the centered card */
 .auth-aside--v2 .auth-aside__copy {
-  position: relative;
-  z-index: 2;
-  background: linear-gradient(180deg, transparent 0%, rgba(4, 6, 10, 0.78) 38%, rgba(4, 6, 10, 0.94) 100%);
-  padding: 1.75rem 1.5rem 1.5rem;
-}
-
-.auth-aside--v2 .auth-aside__copy .brand {
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  font-size: 1.05rem;
+  display: none;
 }
 
 .auth-shell--v2 .auth-wrap {
+  position: relative;
+  z-index: 1;
   width: min(440px, calc(100% - 2.5rem));
+  max-width: 100%;
   margin: 0 auto;
   padding: clamp(2rem, 6vh, 3.25rem) 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: stretch;
+  text-align: left;
 }
 
 .auth-shell--v2 .auth-wrap--wide {
@@ -6997,72 +7005,69 @@ body.body-auth .site-main.site-main--auth {
 }
 
 .panel--auth {
-  background: rgba(17, 24, 39, 0.72);
+  background: rgba(10, 14, 20, 0.78);
   border: 1px solid var(--brand-border);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   width: 100%;
   box-sizing: border-box;
 }
 
 @media (min-width: 960px) {
-  .auth-shell--v2 {
-    grid-template-columns: minmax(280px, 0.92fr) minmax(360px, 1.08fr);
+  /* Override legacy two-column .auth-shell rule */
+  .auth-shell.auth-shell--v2 {
+    grid-template-columns: 1fr;
     width: 100%;
     max-width: none;
     margin: 0;
     min-height: calc(100svh - var(--header-h));
-    align-items: stretch;
+    align-items: center;
+    justify-items: center;
     gap: 0;
   }
 
   .auth-shell--v2 .auth-aside--v2 {
     display: block;
-    min-height: calc(100svh - var(--header-h));
-    height: 100%;
-    border-right: 1px solid var(--brand-border);
+    position: absolute;
+    inset: 0;
+    min-height: 100%;
+    height: auto;
+    border: 0;
     border-radius: 0;
     box-shadow: none;
   }
 
   .auth-shell--v2 .auth-aside__mark {
-    background-position: center 38%;
-    background-size: min(78%, 420px);
-    opacity: 0.22;
+    background-position: center center;
+    background-size: min(48vw, 520px);
+    opacity: 0.15;
   }
 
   .auth-shell--v2 .auth-wrap,
   .auth-shell--v2 .auth-wrap--wide {
-    width: min(460px, calc(100% - 4rem));
+    width: min(460px, var(--content-rail));
     margin: 0 auto;
     padding: clamp(2.5rem, 8vh, 4rem) 0;
-    min-height: calc(100svh - var(--header-h));
+    min-height: 0;
   }
 
   .auth-shell--v2 .auth-wrap--wide {
-    width: min(640px, calc(100% - 4rem));
+    width: min(640px, var(--content-rail));
   }
 }
 
 @media (max-width: 959px) {
-  /* Compact brand strip with logo background on small screens */
   .auth-shell--v2 .auth-aside--v2 {
     display: block;
-    min-height: clamp(9.5rem, 28vw, 12rem);
-    border-bottom: 1px solid var(--brand-border);
+    position: absolute;
+    inset: 0;
+    min-height: 100%;
+    border: 0;
   }
 
   .auth-shell--v2 .auth-aside__mark {
-    background-position: center 28%;
-    background-size: min(42%, 160px);
-    opacity: 0.28;
-  }
-
-  .auth-shell--v2 .auth-aside__copy {
-    padding: 1rem 1.25rem 1.1rem;
-  }
-
-  .auth-shell--v2 .auth-aside__copy p:not(.brand) {
-    display: none;
+    background-position: center 36%;
+    background-size: min(70vw, 280px);
+    opacity: 0.16;
   }
 }
 
