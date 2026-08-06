@@ -6473,18 +6473,23 @@ body.body-auth {
   inset: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
+  justify-content: flex-end;
+  padding: 0 clamp(1rem, 4vw, 4rem) 0 0;
   pointer-events: none;
   z-index: 0;
 }
 
 .hero-visual__field img,
 .hero-cite-svg {
-  /* Width + margin-left must stay <= container width or the centered
-     flex item overflows/clips past the right edge instead of sitting
-     right-of-center as intended (was 96vw + 12vw = 108vw). */
-  width: min(80vw, 1000px);
+  /* justify-content: flex-end + the field's own padding keeps this
+     inside the container at any viewport width — no separate
+     width + margin-left arithmetic that can silently overflow again
+     (previous versions did: 96vw + 12vw = 108vw, then 80vw + 12vw = 92vw
+     of a container narrower than the assumed 100vw, both clipped past
+     the right edge). Cap the width well under 100% of the field so it
+     never touches the edge even before the padding is applied. */
+  width: min(62vw, 820px);
+  max-width: 100%;
   height: auto;
   max-height: min(92vh, 780px);
   object-fit: contain;
@@ -6492,7 +6497,6 @@ body.body-auth {
   filter: none;
   animation: cite-field-rise 1.1s var(--ease) forwards;
   display: block;
-  margin-left: 12vw;
 }
 
 .hero-cite-svg__scan {
@@ -6529,14 +6533,14 @@ body.body-auth {
   .hero-visual__field {
     justify-content: center;
     align-items: flex-start;
-    padding-top: 4.5rem;
+    padding: 4.5rem 0 0 0;
   }
   .hero-visual__field img,
   .hero-cite-svg {
     width: min(96vw, 480px);
+    max-width: 100%;
     max-height: 46vh;
     opacity: 0.72;
-    margin-left: 0;
   }
   .hero-visual__core {
     right: 50%;
