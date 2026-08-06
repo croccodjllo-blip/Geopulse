@@ -5,20 +5,13 @@
 
 {% block content %}
 <article class="page page--v2 page--pricing">
-  <header class="page-intro page-intro--hero">
-    <div class="page-intro__brand-row" aria-label="Centropic.ai">
-      <img class="page-intro__brand-mark" src="{{ url_for('static', filename='img/logo.svg') }}" width="40" height="40" alt="" decoding="async" />
-      <p class="hero-brand-word page-intro__brand">centropic<span>.ai</span></p>
-    </div>
+  <header class="page-intro page-intro--pricing">
+    <p class="hero-brand-word page-intro__brand">centropic<span>.ai</span></p>
     <p class="eyebrow">{{ _('Architettura commerciale') }}</p>
-    <h1 class="h-display page-intro__title hero-headline--rise">{{ _('Tre modi di possedere il segnale.') }}</h1>
+    <h1 class="h-display page-intro__title">{{ _('Tre modi di possedere il segnale.') }}</h1>
     <p class="lede page-intro__lede">
       {{ _('Free per validare. Plus per il tuo brand. Business per i clienti dell’agenzia.') }}
     </p>
-    <div class="cta-row">
-      <a class="btn btn-core" href="#piani">{{ _('Confronta i piani') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
-    </div>
   </header>
 
   <div class="plan-grid plan-grid--v2 plan-grid--tiers plan-grid--stagger" id="piani" role="list">
@@ -71,7 +64,7 @@
         </form>
         {% endif %}
         {% if plus_yearly_ready %}
-        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
+        <form method="post" action="{{ url_for('billing_checkout') }}" class="plan__yearly">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <input type="hidden" name="product" value="plus" />
           <input type="hidden" name="interval" value="year" />
@@ -122,7 +115,7 @@
         </form>
         {% endif %}
         {% if business_yearly_ready %}
-        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
+        <form method="post" action="{{ url_for('billing_checkout') }}" class="plan__yearly">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <input type="hidden" name="product" value="business" />
           <input type="hidden" name="interval" value="year" />
@@ -135,7 +128,7 @@
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
       {% else %}
       <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Parla con noi — Business') }}</a>
-      <a class="btn btn-ghost-light btn-block" href="mailto:info@centropic.ai" style="margin-top:0.5rem">info@centropic.ai</a>
+      <a class="btn btn-ghost-light btn-block plan__yearly" href="mailto:info@centropic.ai">info@centropic.ai</a>
       {% endif %}
     </section>
   </div>
