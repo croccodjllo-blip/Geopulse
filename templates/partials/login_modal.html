@@ -1,0 +1,75 @@
+{# Accedi popup — shown to guests from any marketing page #}
+{% if not current_user and login_modal_form is defined %}
+{% set lf = form if (request.endpoint == 'login' and form is defined) else login_modal_form %}
+{% set login_next = request.args.get('next', '') if request.endpoint == 'login' else (request.path if request.endpoint not in ('login', 'register', 'forgot_password', 'reset_password') else '') %}
+<dialog
+  class="login-modal"
+  id="login-modal"
+  aria-labelledby="login-modal-title"
+  aria-describedby="login-modal-desc"
+  data-login-modal
+  {% if request.endpoint == 'login' %}data-auto-open="1"{% endif %}
+>
+  <div class="login-modal__panel panel panel--auth">
+    <button
+      type="button"
+      class="login-modal__close"
+      data-login-close
+      aria-label="{{ _('Chiudi') }}"
+    >×</button>
+
+    <p class="eyebrow">{{ _('Accesso') }}</p>
+    <h2 class="login-modal__title auth-title" id="login-modal-title">{{ _('Bentornato') }}</h2>
+    <p class="lede login-modal__lede" id="login-modal-desc">
+      {{ _('Entra in dashboard, analizza il dominio e scarica il pack. Piano Free senza carta.') }}
+    </p>
+
+    <form
+      method="post"
+      class="form-grid login-modal__form"
+      action="{{ url_for('login', next=login_next) if login_next else url_for('login') }}"
+      novalidate
+      data-login-form
+    >
+      {{ lf.hidden_tag() }}
+      <div class="field">
+        <label for="login-modal-email">{{ _('Email') }}</label>
+        {{ lf.email(id="login-modal-email", autocomplete="email") }}
+        {% for error in lf.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="login-modal-password">{{ _('Password') }}</label>
+        <div class="password-field">
+          {{ lf.password(id="login-modal-password", autocomplete="current-password", class_="password-field__input") }}
+          <button
+            type="button"
+            class="password-field__toggle"
+            data-password-toggle
+            aria-controls="login-modal-password"
+            aria-label="{{ _('Mostra password') }}"
+            aria-pressed="false"
+          >{{ _('Mostra') }}</button>
+        </div>
+        {% for error in lf.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="span-1">
+        <label class="checkline">
+          {{ lf.remember_me(id="login-modal-remember") }}
+          <span>{{ _('Resta connesso su questo dispositivo (30 giorni)') }}</span>
+        </label>
+      </div>
+      <p class="switch-line login-modal__forgot">
+        <a href="{{ url_for('forgot_password') }}">{{ _('Password dimenticata?') }}</a>
+      </p>
+      {{ lf.submit(class_="btn btn-core btn-block") }}
+    </form>
+
+    <p class="switch-line login-modal__switch">
+      {{ _('Nuovo su Centropic?') }}
+      <a href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
+      ·
+      <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
+    </p>
+  </div>
+</dialog>
+{% endif %}

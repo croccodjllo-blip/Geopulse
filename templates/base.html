@@ -149,7 +149,7 @@
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
             <a href="{{ url_for('agencies') }}" class="{% if request.endpoint == 'agencies' %}is-active{% endif %}">{{ _('Agenzie') }}</a>
             <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
-            <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
+            <a href="{{ url_for('login') }}" data-login-open>{{ _('Accedi') }}</a>
             <a class="nav-cta" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
           {% endif %}
           <div class="lang-switch" data-lang-switch>
@@ -236,7 +236,7 @@
             <a href="{{ url_for('topup_credit_page') }}">{{ _('Token') }}</a>
           {% else %}
             <a href="{{ url_for('register') }}">{{ _('Registrati') }}</a>
-            <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
+            <a href="{{ url_for('login') }}" data-login-open>{{ _('Accedi') }}</a>
           {% endif %}
         </div>
         <div class="site-footer__col">
@@ -265,6 +265,10 @@
       </div>
     </footer>
     {% endblock %}
+
+    {% if not current_user %}
+      {% include "partials/login_modal.html" %}
+    {% endif %}
 
     {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
     <aside id="cookie-consent" class="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc" hidden>

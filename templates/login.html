@@ -2,64 +2,40 @@
 {% block title %}{{ _('Accedi') }}{% endblock %}
 {% block meta_description %}{{ _('Accedi a Centropic: dashboard per score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings e pack llms.txt/JSON-LD.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/login{% endblock %}
-{% block body_class %}body-auth{% endblock %}
+{% block body_class %}body-auth body-login-modal{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--flush site-main--auth{% endblock %}
 
 {% block content %}
-<section class="auth-shell auth-shell--v2 auth-shell--login">
-  {% set auth_aside_line = _('Signal Intelligence per AIO e GEO. Findings prioritizzati. Pack da pubblicare.') %}
-  {% include "partials/auth_aside.html" %}
+{# Popup is rendered from base via login_modal partial (data-auto-open). #}
+<section class="login-page-shell" aria-hidden="true">
+  <div class="auth-aside__aurora" aria-hidden="true"></div>
+  <div class="auth-aside__mark" aria-hidden="true"></div>
+</section>
 
-  <div class="auth-wrap">
+<noscript>
+  <div class="auth-wrap" style="position:relative;z-index:1;margin:2rem auto;width:min(28rem,calc(100% - 2rem))">
     <p class="eyebrow">{{ _('Accesso') }}</p>
     <h1 class="h-display auth-title">{{ _('Bentornato') }}</h1>
-    <p class="lede auth-lede">
-      {{ _('Entra in dashboard, analizza il dominio e scarica il pack. Piano Free senza carta.') }}
-    </p>
-
     <form method="post" class="form-grid panel panel--auth" novalidate>
       {{ form.hidden_tag() }}
       <div class="field">
         <label for="email">{{ _('Email') }}</label>
         {{ form.email(id="email", autocomplete="email") }}
-        {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">
         <label for="password">{{ _('Password') }}</label>
-        <div class="password-field">
-          {{ form.password(id="password", autocomplete="current-password", class_="password-field__input") }}
-          <button
-            type="button"
-            class="password-field__toggle"
-            data-password-toggle
-            aria-controls="password"
-            aria-label="{{ _('Mostra password') }}"
-            aria-pressed="false"
-          >{{ _('Mostra') }}</button>
-        </div>
-        {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        {{ form.password(id="password", autocomplete="current-password") }}
       </div>
-      <div class="span-1">
-        <label class="checkline">
-          {{ form.remember_me(id="remember_me") }}
-          <span>{{ _('Resta connesso su questo dispositivo (30 giorni)') }}</span>
-        </label>
-      </div>
-      <p class="switch-line" style="margin: -0.35rem 0 0.25rem">
-        <a href="{{ url_for('forgot_password') }}">{{ _('Password dimenticata?') }}</a>
-      </p>
+      <label class="checkline">
+        {{ form.remember_me(id="remember_me") }}
+        <span>{{ _('Resta connesso su questo dispositivo (30 giorni)') }}</span>
+      </label>
       {{ form.submit(class_="btn btn-core btn-block") }}
     </form>
-
-    {% include "partials/auth_help.html" %}
-
     <p class="switch-line">
-      {{ _('Nuovo su Centropic?') }}
       <a href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
-      ·
-      <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
     </p>
   </div>
-</section>
+</noscript>
 {% endblock %}

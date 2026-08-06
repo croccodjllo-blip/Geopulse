@@ -7067,6 +7067,133 @@ body.body-auth .site-main.site-main--auth {
   }
 }
 
+/* ——— Accedi popup ——— */
+.login-modal {
+  border: 0;
+  padding: 0;
+  max-width: none;
+  max-height: none;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  color: inherit;
+}
+
+.login-modal::backdrop {
+  background: rgba(4, 6, 10, 0.72);
+  backdrop-filter: blur(12px);
+}
+
+.login-modal__panel {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: min(92vh, 44rem);
+  overflow: auto;
+  padding: 1.5rem 1.35rem 1.35rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--brand-border);
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(201, 211, 221, 0.10), transparent 55%),
+    rgba(10, 14, 20, 0.94);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+  text-align: left;
+  animation: login-modal-rise 320ms var(--ease) both;
+}
+
+.login-modal__close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--slate-light);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.login-modal__close:hover,
+.login-modal__close:focus-visible {
+  color: var(--brand-clarity);
+  background: rgba(201, 211, 221, 0.08);
+}
+
+.login-modal__title {
+  margin: 0.15rem 0 0.45rem;
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  padding-right: 1.5rem;
+}
+
+.login-modal__lede {
+  margin: 0 0 0.35rem !important;
+  max-width: none;
+  font-size: 0.92rem;
+}
+
+.login-modal__form {
+  margin-top: 1rem;
+}
+
+.login-modal__forgot {
+  margin: -0.25rem 0 0.15rem !important;
+}
+
+.login-modal__switch {
+  margin: 1rem 0 0;
+}
+
+@keyframes login-modal-rise {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 12px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.login-page-shell {
+  position: relative;
+  min-height: calc(100svh - var(--header-h));
+  background: var(--brand-bg);
+  overflow: hidden;
+}
+
+.login-page-shell .auth-aside__aurora,
+.login-page-shell .auth-aside__mark {
+  position: absolute;
+  inset: 0;
+}
+
+.login-page-shell .auth-aside__mark {
+  background-image: url("../img/logo.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: min(48vw, 420px);
+  opacity: 0.14;
+}
+
+.body-login-modal .flash-stack {
+  position: fixed;
+  top: calc(var(--header-h) + 0.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  width: min(28rem, calc(100% - 2rem));
+  margin: 0;
+}
+
+.body-login-modal .site-footer {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-modal__panel {
+    animation: none;
+  }
+}
+
 /* ——— Pricing / page v2 ——— */
 .page--v2 {
   padding-top: 1rem;

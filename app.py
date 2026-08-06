@@ -1451,7 +1451,7 @@ def inject_globals() -> dict[str, Any]:
         else:
             sidebar_active = "dashboard"
     caps = capability_template_vars(user)
-    return {
+    out = {
         "current_user": user,
         "csrf_token": generate_csrf,
         **caps,
@@ -1508,6 +1508,11 @@ def inject_globals() -> dict[str, Any]:
         "cents_to_tokens": cents_to_tokens,
         "csp_nonce": getattr(g, "csp_nonce", ""),
     }
+    if user is None:
+        # Fresh form for the Accedi popup on marketing pages; login view
+        # overrides with the validated form (errors) via template logic.
+        out["login_modal_form"] = LoginForm()
+    return out
 
 
 @app.template_filter("tok")

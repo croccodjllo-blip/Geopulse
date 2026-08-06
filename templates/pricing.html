@@ -74,7 +74,7 @@
         </form>
         {% endif %}
       {% elif paddle_plus_ready %}
-      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#plus') }}">{{ _('Accedi e scegli Plus') }}</a>
+      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#plus') }}" data-login-open data-login-next="{{ url_for('pricing') }}#plus">{{ _('Accedi e scegli Plus') }}</a>
       {% else %}
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
       {% endif %}
@@ -125,7 +125,7 @@
         </form>
         {% endif %}
       {% elif business_ready %}
-      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
+      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}" data-login-open data-login-next="{{ url_for('pricing') }}#business">{{ _('Accedi e passa a Business') }}</a>
       {% else %}
       <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Parla con noi — Business') }}</a>
       <a class="btn btn-ghost-light btn-block plan__yearly" href="mailto:info@centropic.ai">info@centropic.ai</a>
