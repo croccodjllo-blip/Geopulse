@@ -1,123 +1,125 @@
 <svg class="hero-cite-svg" viewBox="0 0 920 560" role="img" aria-label="Mappa citazioni AI: i modelli citano il tuo dominio">
   <defs>
-    <radialGradient id="hcf-void" cx="58%" cy="46%" r="62%">
-      <stop offset="0%" stop-color="#141A22" stop-opacity="0.55"/>
-      <stop offset="55%" stop-color="#0A0E14" stop-opacity="0.2"/>
+    <radialGradient id="hcf-bloom" cx="62%" cy="48%" r="58%">
+      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.14"/>
+      <stop offset="35%" stop-color="#8BA3BD" stop-opacity="0.05"/>
       <stop offset="100%" stop-color="#04060A" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="hcf-core" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="#E8EEF4" stop-opacity="0.16"/>
-      <stop offset="40%" stop-color="#C9D3DD" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
+    <radialGradient id="hcf-corefill" cx="42%" cy="38%" r="68%">
+      <stop offset="0%" stop-color="#1A222D"/>
+      <stop offset="55%" stop-color="#0C1118"/>
+      <stop offset="100%" stop-color="#070A10"/>
     </radialGradient>
-    <linearGradient id="hcf-ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#E8EEF4" stop-opacity="0.55"/>
-      <stop offset="45%" stop-color="#C9D3DD" stop-opacity="0.28"/>
-      <stop offset="100%" stop-color="#5B6B7A" stop-opacity="0.12"/>
+    <linearGradient id="hcf-chrome" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F2F4F7"/>
+      <stop offset="40%" stop-color="#C9D3DD"/>
+      <stop offset="100%" stop-color="#5B6B7A"/>
     </linearGradient>
-    <linearGradient id="hcf-link" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.08"/>
-      <stop offset="50%" stop-color="#C9D3DD" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0.12"/>
-    </linearGradient>
-    <linearGradient id="hcf-scan" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="hcf-arc" x1="0" y1="0.5" x2="1" y2="0.5">
       <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#C9D3DD" stop-opacity="0.28"/>
+      <stop offset="35%" stop-color="#C9D3DD" stop-opacity="0.45"/>
+      <stop offset="70%" stop-color="#C9D3DD" stop-opacity="0.2"/>
       <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
     </linearGradient>
-    <filter id="hcf-soft" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="1.1" result="b"/>
+    <linearGradient id="hcf-beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#E8EEF4" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="hcf-soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.4" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="hcf-glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="4" result="g"/>
+    <filter id="hcf-halo" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="g"/>
       <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
 
-  <!-- Atmosphere -->
   <rect width="920" height="560" fill="#04060A" fill-opacity="0"/>
-  <rect width="920" height="560" fill="url(#hcf-void)"/>
+  <rect width="920" height="560" fill="url(#hcf-bloom)"/>
 
-  <!-- Orbital rings around brand -->
-  <g transform="translate(455 250)" fill="none" stroke="url(#hcf-ring)">
-    <ellipse cx="0" cy="0" rx="168" ry="98" stroke-width="1" opacity="0.55" stroke-dasharray="3 7"/>
-    <ellipse cx="0" cy="0" rx="230" ry="138" stroke-width="0.8" opacity="0.28" stroke-dasharray="1.5 9"/>
-    <ellipse cx="0" cy="0" rx="292" ry="176" stroke-width="0.7" opacity="0.16"/>
+  <!-- Horizon arc — editorial, not a dashboard grid -->
+  <g fill="none" stroke="url(#hcf-arc)" stroke-linecap="round">
+    <path d="M80 390 C 220 250, 380 180, 520 170 C 660 160, 780 200, 860 280" stroke-width="1.1" opacity="0.9"/>
+    <path d="M110 420 C 260 290, 400 220, 540 210 C 680 200, 790 240, 870 320" stroke-width="0.7" opacity="0.35"/>
   </g>
 
-  <!-- Fine tick marks (radar, not newspaper grid) -->
-  <g transform="translate(455 250)" stroke="#5B6B7A" stroke-width="0.7" opacity="0.28">
-    <line x1="-8" y1="-168" x2="8" y2="-168"/>
-    <line x1="-8" y1="168" x2="8" y2="168"/>
-    <line x1="-230" y1="-6" x2="-218" y2="-6"/>
-    <line x1="218" y1="-6" x2="230" y2="-6"/>
+  <!-- Faint constellation dust -->
+  <g fill="#C9D3DD" opacity="0.35">
+    <circle cx="160" cy="140" r="1.1"/>
+    <circle cx="240" cy="100" r="0.8"/>
+    <circle cx="700" cy="90" r="1"/>
+    <circle cx="780" cy="130" r="0.7"/>
+    <circle cx="820" cy="400" r="0.9"/>
+    <circle cx="120" cy="360" r="0.7"/>
+    <circle cx="860" cy="220" r="0.8"/>
   </g>
 
-  <!-- Scan sweep accent -->
-  <g class="hero-cite-svg__scan" opacity="0.45">
-    <rect x="170" y="0" width="570" height="36" fill="url(#hcf-scan)"/>
+  <!-- Beams from brand to engines -->
+  <g filter="url(#hcf-soft)" stroke="url(#hcf-beam)" stroke-width="1.15" fill="none" stroke-linecap="round">
+    <path d="M520 230 C 430 250, 320 290, 250 340"/>
+    <path d="M520 230 C 480 290, 450 340, 430 400"/>
+    <path d="M520 230 C 560 290, 600 340, 640 395"/>
+    <path d="M520 230 C 620 250, 700 270, 760 300"/>
+    <path d="M520 230 C 400 200, 300 180, 220 170"/>
   </g>
 
-  <!-- Signal links -->
-  <g filter="url(#hcf-soft)" fill="none" stroke="url(#hcf-link)" stroke-linecap="round">
-    <path d="M455 250 C 390 290, 300 330, 214 372" stroke-width="1.35"/>
-    <path d="M455 250 C 455 310, 455 350, 455 398" stroke-width="1.2"/>
-    <path d="M455 250 C 520 290, 610 330, 696 372" stroke-width="1.2"/>
-    <path d="M455 250 C 360 220, 280 200, 198 188" stroke-width="1.15"/>
-    <path d="M455 250 C 550 220, 640 200, 722 188" stroke-width="1.15"/>
-  </g>
-
-  <!-- Engine nodes -->
+  <!-- Engine capsules — stylized chips, not generic dots -->
   <g font-family="Inter, ui-sans-serif, system-ui, sans-serif">
-    <!-- ChatGPT -->
-    <g transform="translate(214 372)">
-      <circle r="28" fill="#0A0E14" stroke="#C9D3DD" stroke-width="1.35"/>
-      <circle r="28" fill="#C9D3DD" opacity="0.05"/>
-      <circle r="4.5" fill="#C9D3DD" filter="url(#hcf-glow)"/>
-      <text x="0" y="46" text-anchor="middle" fill="#C8CDD5" font-size="11.5" letter-spacing="0.04em">ChatGPT</text>
-    </g>
-    <!-- Perplexity -->
-    <g transform="translate(455 398)">
-      <circle r="24" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.1"/>
-      <circle r="3.8" fill="#8BA3BD"/>
-      <text x="0" y="42" text-anchor="middle" fill="#8B97A8" font-size="11" letter-spacing="0.03em">Perplexity</text>
-    </g>
-    <!-- Gemini -->
-    <g transform="translate(696 372)">
-      <circle r="24" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.1"/>
-      <circle r="3.8" fill="#8BA3BD"/>
-      <text x="0" y="42" text-anchor="middle" fill="#8B97A8" font-size="11" letter-spacing="0.03em">Gemini</text>
+    <!-- ChatGPT (primary) -->
+    <g transform="translate(250 340)">
+      <rect x="-52" y="-16" width="104" height="32" rx="16" fill="#0A0E14" stroke="url(#hcf-chrome)" stroke-width="1.2"/>
+      <circle cx="-34" cy="0" r="4" fill="#C9D3DD" filter="url(#hcf-halo)"/>
+      <text x="4" y="4" text-anchor="middle" fill="#E8EEF4" font-size="12" font-weight="500" letter-spacing="0.02em">ChatGPT</text>
     </g>
     <!-- Claude -->
-    <g transform="translate(198 188)">
-      <circle r="22" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.05"/>
-      <circle r="3.4" fill="#8BA3BD"/>
-      <text x="0" y="40" text-anchor="middle" fill="#8B97A8" font-size="10.5" letter-spacing="0.03em">Claude</text>
+    <g transform="translate(220 170)">
+      <rect x="-44" y="-14" width="88" height="28" rx="14" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
+      <circle cx="-28" cy="0" r="3.2" fill="#8BA3BD"/>
+      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500">Claude</text>
+    </g>
+    <!-- Perplexity -->
+    <g transform="translate(430 400)">
+      <rect x="-50" y="-14" width="100" height="28" rx="14" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
+      <circle cx="-32" cy="0" r="3.2" fill="#8BA3BD"/>
+      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500">Perplexity</text>
+    </g>
+    <!-- Gemini -->
+    <g transform="translate(640 395)">
+      <rect x="-44" y="-14" width="88" height="28" rx="14" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
+      <circle cx="-28" cy="0" r="3.2" fill="#8BA3BD"/>
+      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500">Gemini</text>
     </g>
     <!-- Copilot -->
-    <g transform="translate(722 188)">
-      <circle r="22" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.05"/>
-      <circle r="3.4" fill="#8BA3BD"/>
-      <text x="0" y="40" text-anchor="middle" fill="#8B97A8" font-size="10.5" letter-spacing="0.03em">Copilot</text>
+    <g transform="translate(760 300)">
+      <rect x="-46" y="-14" width="92" height="28" rx="14" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
+      <circle cx="-30" cy="0" r="3.2" fill="#8BA3BD"/>
+      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500">Copilot</text>
     </g>
 
-    <!-- Brand core -->
-    <g transform="translate(455 250)" filter="url(#hcf-glow)">
-      <circle r="62" fill="url(#hcf-core)"/>
-      <circle r="54" fill="#0A0E14" stroke="#C9D3DD" stroke-width="1.8"/>
-      <circle r="54" fill="#C9D3DD" opacity="0.04"/>
-      <circle r="46" fill="none" stroke="#5B6B7A" stroke-width="0.7" stroke-dasharray="2 5" opacity="0.55"/>
-      <text x="0" y="-6" text-anchor="middle" fill="#F2F4F7" font-size="14" font-weight="600" letter-spacing="0.01em">tuodominio.it</text>
-      <text x="0" y="14" text-anchor="middle" fill="#C9D3DD" font-size="11" font-weight="500" letter-spacing="0.08em">CITATO · 34%</text>
+    <!-- Brand focal — hex-inspired chrome plate -->
+    <g transform="translate(520 230)">
+      <circle r="78" fill="#C9D3DD" opacity="0.04" filter="url(#hcf-halo)"/>
+      <circle r="64" fill="none" stroke="#C9D3DD" stroke-width="0.6" opacity="0.22" stroke-dasharray="2 8"/>
+      <!-- faceted plate -->
+      <path d="M0 -52 L45 -26 L45 26 L0 52 L-45 26 L-45 -26 Z"
+            fill="url(#hcf-corefill)"
+            stroke="url(#hcf-chrome)"
+            stroke-width="1.6"/>
+      <path d="M0 -40 L34 -20 L34 20 L0 40 L-34 20 L-34 -20 Z"
+            fill="none"
+            stroke="#5B6B7A"
+            stroke-width="0.7"
+            opacity="0.55"/>
+      <text x="0" y="-4" text-anchor="middle" fill="#F2F4F7" font-size="13.5" font-weight="600" letter-spacing="0.01em">tuodominio.it</text>
+      <text x="0" y="16" text-anchor="middle" fill="#C9D3DD" font-size="10" font-weight="500" letter-spacing="0.16em">CITATO  ·  34%</text>
     </g>
   </g>
 
-  <!-- Eyebrow chrome -->
-  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif" fill="#8B97A8" font-size="10.5" letter-spacing="0.14em">
-    <text x="72" y="40" style="text-transform:uppercase">SHARE OF VOICE</text>
-    <text x="848" y="40" text-anchor="end" style="text-transform:uppercase">LIVE SCAN</text>
+  <!-- Minimal chrome captions — one job, quiet -->
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+    <text x="72" y="56" fill="#8B97A8" font-size="11" letter-spacing="0.22em">VISIBILITÀ NEI MODELLI</text>
+    <line x1="72" y1="68" x2="210" y2="68" stroke="url(#hcf-chrome)" stroke-width="0.9" opacity="0.45"/>
   </g>
-  <line x1="72" y1="50" x2="168" y2="50" stroke="#5B6B7A" stroke-width="0.8" opacity="0.55"/>
-  <line x1="752" y1="50" x2="848" y2="50" stroke="#5B6B7A" stroke-width="0.8" opacity="0.55"/>
 </svg>
