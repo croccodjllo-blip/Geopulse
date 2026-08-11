@@ -27,7 +27,7 @@ DATABASE_URL=postgresql+psycopg://USER:PASS@HOST:5432/centropic
 WEB_CONCURRENCY=2
 ```
 
-SQLite è supportato (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici), ma in Docker l’entrypoint forza un solo worker Gunicorn. Per crescita SaaS usare Postgres.
+SQLite è supportato in dev (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici), ma in produzione Centropic gira su **Postgres**. Cutover da SQLite: `scripts/migrate_sqlite_to_postgres.py` (dopo `create_all`/`alembic upgrade head` sul target). `ALLOW_SQLITE_PROD=1` è solo escape d’emergenza per i prod guards.
 
 ### Migrazioni schema
 
