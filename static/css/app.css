@@ -1022,15 +1022,25 @@ body.app-body:not(.body-dash) {
 
 .section-band--wide { width: min(820px, calc(100% - 2.5rem)); }
 
-/* Full marketing page width (align with --max-w shell) */
-.section-band--page {
+/* Contesto / full-band marketing: same shell width as hero (--max-w), text uncapped */
+.section-band.section-band--page {
   width: min(var(--max-w), calc(100% - 2.5rem));
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
-.section-band--page h2 {
-  max-width: 34ch;
+#segnale.section-band--page > .eyebrow,
+#segnale.section-band--page > h2,
+#segnale.section-band--page > .lede,
+#segnale.section-band--page > .lede--page,
+.section-band.section-band--page > .eyebrow,
+.section-band.section-band--page > h2,
+.section-band.section-band--page > .lede,
+.section-band.section-band--page > .lede--page {
+  max-width: none !important;
+  width: 100%;
 }
-.section-band--page .lede--page {
-  max-width: 72ch;
+.section-band.section-band--page .lede--page {
   font-size: clamp(1.05rem, 1.35vw, 1.2rem);
   line-height: 1.55;
   color: var(--ink-soft, rgba(245, 247, 250, 0.72));
