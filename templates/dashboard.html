@@ -401,35 +401,37 @@
                 </div>
               </header>
 
-              {% if engine_breakdown.columns and engine_breakdown.columns.bars %}
-              <div class="sov-columns" role="img" aria-label="{{ _('Propensity per engine') }}">
-                <p class="sov-compose__label">{{ _('Propensity snapshot') }}</p>
-                <svg
-                  class="sov-columns__svg"
-                  viewBox="0 0 {{ engine_breakdown.columns.width }} {{ engine_breakdown.columns.height }}"
-                  preserveAspectRatio="xMidYMid meet"
-                >
-                  <line
-                    class="sov-columns__baseline"
-                    x1="{{ engine_breakdown.columns.pad_x }}"
-                    x2="{{ engine_breakdown.columns.width - engine_breakdown.columns.pad_x }}"
-                    y1="{{ engine_breakdown.columns.baseline }}"
-                    y2="{{ engine_breakdown.columns.baseline }}"
-                  />
-                  {% for b in engine_breakdown.columns.bars %}
-                  <rect
-                    class="sov-columns__bar"
-                    x="{{ b.x }}"
-                    y="{{ b.y }}"
-                    width="{{ b.w }}"
-                    height="{{ b.h }}"
-                    rx="3"
-                    style="--accent: {{ b.accent }};"
-                  />
-                  <text class="sov-columns__value" x="{{ b.cx }}" y="{{ b.vy }}" text-anchor="middle">{{ b.value }}</text>
-                  <text class="sov-columns__label" x="{{ b.cx }}" y="{{ b.ly }}" text-anchor="middle">{{ b.label }}</text>
-                  {% endfor %}
-                </svg>
+              {% if engine_breakdown.engines %}
+              <div class="sov-columns" aria-label="{{ _('Propensity snapshot per engine') }}">
+                <div class="sov-columns__toolbar">
+                  <p class="sov-compose__label">{{ _('Propensity snapshot') }}</p>
+                  <p class="sov-columns__scale" aria-hidden="true">0–100</p>
+                </div>
+                <div class="sov-columns__frame">
+                  <div class="sov-columns__grid" aria-hidden="true">
+                    <span data-y="100"></span>
+                    <span data-y="75"></span>
+                    <span data-y="50"></span>
+                    <span data-y="25"></span>
+                    <span data-y="0"></span>
+                  </div>
+                  <ul class="sov-columns__plot" role="list">
+                    {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
+                    <li
+                      class="sov-columns__col"
+                      data-engine="{{ e.id }}"
+                      style="--accent: {{ e.accent }}; --p: {{ e.propensity if e.propensity is not none else 0 }};"
+                      title="{{ e.label }} · {{ e.propensity }}/100"
+                    >
+                      <span class="sov-columns__value">{{ e.propensity }}</span>
+                      <div class="sov-columns__track">
+                        <span class="sov-columns__bar"></span>
+                      </div>
+                      <span class="sov-columns__name">{{ e.label }}</span>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
               {% endif %}
 
@@ -1040,6 +1042,11 @@
       row.classList.remove('is-animated');
       void row.offsetWidth;
       row.classList.add('is-animated');
+    });
+    document.querySelectorAll('.sov-columns').forEach((chart) => {
+      chart.classList.remove('is-animated');
+      void chart.offsetWidth;
+      chart.classList.add('is-animated');
     });
   };
   tabs.forEach((btn) => {

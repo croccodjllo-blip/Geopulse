@@ -90,16 +90,16 @@ def _severity_penalty(findings: list[dict[str, Any]]) -> float:
 def _column_geometry(
     engines: list[dict[str, Any]],
     *,
-    width: float = 280.0,
-    height: float = 168.0,
-    pad_x: float = 18.0,
-    pad_top: float = 22.0,
-    pad_bottom: float = 34.0,
+    width: float = 720.0,
+    height: float = 200.0,
+    pad_x: float = 28.0,
+    pad_top: float = 28.0,
+    pad_bottom: float = 40.0,
 ) -> dict[str, Any]:
-    """Precompute a vertical column chart from per-engine propensity.
+    """Precompute column-chart metrics from per-engine propensity.
 
-    Server-rendered SVG bars — clearer than a spider/radar when many engines
-    sit near the same high band (the old radar looked like a filled blob).
+    Dashboard UI renders a fluid HTML/CSS chart at table width; this helper
+    remains for API/tests and any SVG consumers (wider default canvas).
     """
     n = len(engines)
     if n < 1:
@@ -107,8 +107,8 @@ def _column_geometry(
 
     plot_w = width - (2 * pad_x)
     plot_h = height - pad_top - pad_bottom
-    gap = 10.0 if n <= 6 else 6.0
-    bar_w = max(12.0, (plot_w - gap * (n - 1)) / n)
+    gap = 14.0 if n <= 6 else 8.0
+    bar_w = max(18.0, (plot_w - gap * (n - 1)) / n)
     baseline = pad_top + plot_h
     bars: list[dict[str, Any]] = []
     for i, eng in enumerate(engines):
@@ -127,8 +127,8 @@ def _column_geometry(
                 "label": eng.get("label", ""),
                 "value": int(round(value)),
                 "accent": eng.get("accent") or "var(--plan-accent)",
-                "ly": round(height - 12, 1),
-                "vy": round(max(10.0, y - 6), 1),
+                "ly": round(height - 14, 1),
+                "vy": round(max(12.0, y - 8), 1),
             }
         )
 
