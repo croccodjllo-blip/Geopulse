@@ -1,6 +1,7 @@
 [Unit]
-Description=GeoPulse SQLite database backup
-After=network.target aio-bot.service
+Description=Centropic database backup (Postgres pg_dump / SQLite)
+After=network.target postgresql.service aio-bot.service
+Wants=postgresql.service
 
 [Service]
 Type=oneshot

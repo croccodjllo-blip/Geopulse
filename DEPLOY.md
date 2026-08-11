@@ -29,6 +29,8 @@ WEB_CONCURRENCY=2
 
 SQLite è supportato in dev (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici), ma in produzione Centropic gira su **Postgres**. Cutover da SQLite: `scripts/migrate_sqlite_to_postgres.py` (dopo `create_all`/`alembic upgrade head` sul target). `ALLOW_SQLITE_PROD=1` è solo escape d’emergenza per i prod guards.
 
+Backup giornaliero (`aio-bot-backup.timer` @ 03:15 UTC): `scripts/backup_db.py` usa `pg_dump -Fc` quando `DATABASE_URL` è Postgres (file `database-YYYYMMDD….dump`), altrimenti la copia online SQLite. Restore: `pg_restore -d centropic --no-owner database-….dump`.
+
 ### Migrazioni schema
 
 Alembic (`alembic.ini` + `migrations/`) è la fonte di verità dello schema in produzione. Ogni deploy che include modifiche dati deve eseguire `alembic upgrade head` prima del riavvio dell'app.
