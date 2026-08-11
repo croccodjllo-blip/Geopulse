@@ -934,7 +934,7 @@ class AnalysisRun(db.Model):
 
 
 class ProInterest(db.Model):
-    """Waitlist interesse piano Pro (da Prenota l'interesse)."""
+    """Waitlist interesse piani Plus / Business (tabella storica ``pro_interests``)."""
 
     __tablename__ = "pro_interests"
 
@@ -1484,7 +1484,13 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "settings"
         elif ep in {"dashboard_history", "site_history", "export_history_csv"}:
             sidebar_active = "history"
-        elif ep in {"topup_credit_page", "pricing", "pro_interest", "billing_checkout"}:
+        elif ep in {
+            "topup_credit_page",
+            "pricing",
+            "pro_interest",
+            "pro_interest_legacy",
+            "billing_checkout",
+        }:
             sidebar_active = "billing"
         elif ep in {"dashboard_guide", "site_guide"}:
             sidebar_active = "guide"
@@ -3592,7 +3598,7 @@ def sitemap_xml():
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
         ("/rimborsi", "0.4", "yearly"),
-        ("/interesse-pro", "0.5", "monthly"),
+        ("/interesse-plus", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
         pages.insert(12, ("/ads.txt", "0.5", "monthly"))
@@ -4344,9 +4350,9 @@ def billing_webhook():
     return jsonify({"ok": False, "error": "gone", "use": "/billing/paddle-webhook"}), 410
 
 
-@app.route("/interesse-pro", methods=["GET", "POST"])
+@app.route("/interesse-plus", methods=["GET", "POST"])
 def pro_interest():
-    """Raccoglie interesse piano Pro nella tabella pro_interests."""
+    """Raccoglie interesse Plus/Business (tabella storica ``pro_interests``)."""
     form = ProInterestForm()
     if current_user():
         user = current_user()
@@ -4383,7 +4389,7 @@ def pro_interest():
                 created = created.replace(tzinfo=timezone.utc)
             if datetime.now(timezone.utc) - created < timedelta(hours=24):
                 flash(
-                    "Abbiamo già ricevuto il tuo interesse Pro nelle ultime 24 ore. "
+                    "Abbiamo già ricevuto il tuo interesse Plus/Business nelle ultime 24 ore. "
                     "Ti contatteremo a breve.",
                     "success",
                 )
@@ -4400,20 +4406,28 @@ def pro_interest():
         db.session.add(lead)
         db.session.commit()
         app.logger.info(
-            "Pro interest saved id=%s email=%s company=%s",
+            "Plus/Business interest saved id=%s email=%s company=%s",
             lead.id,
             lead.email,
             lead.company,
         )
         flash(
-            "Interesse Plus registrato. Ti contatteremo a "
-            f"{email} appena il piano sarà disponibile "
+            "Interesse Plus/Business registrato. Ti contatteremo a "
+            f"{email} appena il checkout sarà disponibile "
             "(o scrivici a info@centropic.ai).",
             "success",
         )
         return redirect(url_for("pricing"))
 
     return render_template("pro_interest.html", form=form)
+
+
+@app.route("/interesse-pro", methods=["GET", "POST"])
+def pro_interest_legacy():
+    """Legacy waitlist URL — SEO 301 to `/interesse-plus`; POST still accepted."""
+    if request.method == "GET":
+        return redirect(url_for("pro_interest"), code=301)
+    return pro_interest()
 
 
 @app.route("/faq")
