@@ -124,7 +124,7 @@ def build_analysis_complete_email(
         [
             "",
             f"Apri il report: {dashboard_url}",
-            f"Passa a Plus (SoV measured + 100 token/mese): {pricing_url}",
+            f"Passa a Plus (più domini, re-scan, SoV Misurato): {pricing_url}",
             "",
             "— Team Centropic",
             "https://centropic.ai",
@@ -137,12 +137,12 @@ def build_analysis_complete_email(
 def build_low_balance_email(
     *, to_email: str, name: str, balance_tokens: float, topup_url: str, pricing_url: str
 ) -> tuple[str, str, str]:
-    subject = "Centropic: token in esaurimento"
+    subject = "Centropic: copertura in esaurimento"
     body = (
         f"Ciao {name.split()[0] if name else 'ciao'},\n\n"
-        f"Il tuo saldo è basso ({balance_tokens:g} token).\n"
-        f"Ricarica: {topup_url}\n"
-        f"Oppure passa a Plus (100 token/mese): {pricing_url}\n\n"
+        f"La copertura residua sta per esaurirsi (saldo ≈ {balance_tokens:g}).\n"
+        f"Amplia la copertura: {topup_url}\n"
+        f"Oppure passa a Plus (più domini, re-scan, SoV Misurato): {pricing_url}\n\n"
         "— Team Centropic\n"
     )
     return to_email, subject, body
@@ -154,8 +154,8 @@ def build_free_exhausted_email(
     subject = "Hai usato le analisi Free — continua con Plus"
     body = (
         f"Ciao {name.split()[0] if name else 'ciao'},\n\n"
-        "Hai completato le analisi Free iniziali. Puoi ancora ri-analizzare lo stesso sito "
-        "(consuma token). Per più brand, SoV measured e crawl più ampio:\n"
+        "Hai completato le analisi Free iniziali. Puoi ancora ri-analizzare lo stesso sito. "
+        "Per più domini, re-scan schedulato, SoV Misurato e crawl più ampio:\n"
         f"{pricing_url}\n\n"
         "Prova Plus 7 giorni gratis dal dashboard se non l’hai già attivata.\n\n"
         "— Team Centropic\n"

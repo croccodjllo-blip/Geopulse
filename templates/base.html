@@ -130,7 +130,7 @@
             {% endif %}
             <a href="{{ url_for('dashboard_guide') }}" class="{% if request.endpoint == 'dashboard_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
             <a href="{{ url_for('dashboard_settings') }}" class="{% if request.endpoint == 'dashboard_settings' %}is-active{% endif %}">{{ _('Impostazioni') }}</a>
-            <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Token') }}</a>
+            <a href="{{ url_for('topup_credit_page') }}" class="{% if request.endpoint == 'topup_credit_page' %}is-active{% endif %}">{{ _('Copertura') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
@@ -233,7 +233,7 @@
             <a href="{{ url_for('dashboard_history') }}">{{ _('Storico') }}</a>
             {% endif %}
             <a href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
-            <a href="{{ url_for('topup_credit_page') }}">{{ _('Token') }}</a>
+            <a href="{{ url_for('topup_credit_page') }}">{{ _('Copertura') }}</a>
           {% else %}
             <a href="{{ url_for('register') }}">{{ _('Registrati') }}</a>
             <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>

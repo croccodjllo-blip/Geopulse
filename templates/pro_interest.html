@@ -9,7 +9,7 @@
     <p class="eyebrow">{{ _('Waitlist · piani') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Dicci quale profilo ti serve') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Se il checkout Paddle non è ancora attivo per il piano che ti serve, lascia i contatti. Plus = startup sul brand. Business = agenzie (API, white-label, 400 token). Oppure vai subito a') }}
+      {{ _('Se il checkout Paddle non è ancora attivo per il piano che ti serve, lascia i contatti. Plus = startup sul brand (domini + re-scan). Business = agenzie (API, white-label). Oppure vai subito a') }}
       <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
     </p>
   </header>
@@ -17,8 +17,8 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Due profili a pagamento') }}</h2>
     <ul class="plain-list">
-      <li><strong>Plus · 14,99€</strong> — {{ _('100 token/mese, SoV Misurato, re-scan, fino a') }} {{ max_sites_plus }} {{ _('siti') }}</li>
-      <li><strong>Business · 49,99€</strong> — {{ _('tutto Plus + API, white-label,') }} {{ business_monthly_tokens }} {{ _('token, fino a') }} {{ max_sites_business }} {{ _('siti') }}</li>
+      <li><strong>Plus · 14,99€</strong> — {{ _('fino a') }} {{ max_sites_plus }} {{ _('domini, re-scan, SoV Misurato') }}</li>
+      <li><strong>Business · 49,99€</strong> — {{ _('API, white-label, fino a') }} {{ max_sites_business }} {{ _('domini clienti + tutto Plus') }}</li>
     </ul>
     <p class="lede">
       {{ _('Urgenze:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>.

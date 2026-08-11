@@ -165,9 +165,9 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "geo-token",
-            "GEO token",
+            "Quota operativa",
             _(
-                "Unità di credito prodotto (1 token = €0,10). Consumata da analisi e job measured."
+                "Credito incluso nel piano (e nei pacchetti extra) che copre analisi e job measured. In dashboard compare come copertura residua in euro — non serve calcolare “token” API."
             ),
         ),
         (
@@ -256,7 +256,7 @@ def site_guide_payload() -> dict[str, Any]:
             {"id": "dopo-analisi", "label": _("Dopo l’analisi")},
             {"id": "pack", "label": _("Pack e file")},
             {"id": "edge-cms", "label": _("Edge e CMS")},
-            {"id": "piani", "label": _("Piani e token")},
+            {"id": "piani", "label": _("Piani: domini, re-scan, API")},
             {"id": "glossario", "label": _("Glossario")},
         ],
         "services": [
@@ -399,15 +399,15 @@ def site_guide_payload() -> dict[str, Any]:
             },
             {
                 "id": "svc-tokens",
-                "title": _("Token GEO e crediti"),
+                "title": _("Quota operativa e copertura"),
                 "image": GUIDE_IMAGES["tokens"],
                 "summary": _(
-                    "Le analisi e il SoV measured consumano token; i pack ricaricano il saldo."
+                    "Ogni piano include una quota operativa mensile. I pacchetti extra ampliano la copertura senza cambiare piano."
                 ),
                 "bullets": [
-                    _("1 GEO token = €0,10 (ledger in centesimi)"),
-                    _("Pack €10→100, €20→200, €50→600 (bonus)"),
-                    _("Plus €14,99/mese include 100 token per ciclo pagato"),
+                    _("Scegli il piano per domini, frequenza di re-scan e API/white-label"),
+                    _("Pacchetti extra in euro per picchi di ri-analisi o clienti"),
+                    _("La quota del rinnovo mensile è inclusa nel canone Plus/Business"),
                 ],
             },
             {
@@ -552,28 +552,28 @@ def site_guide_payload() -> dict[str, Any]:
                 "name": "Free",
                 "points": [
                     _(
-                        "1 sito, crawl pagine limitate, 2 analisi su nuovi siti (ri-analisi stesso URL ok, consuma token)"
+                        "1 dominio monitorato, crawl limitato, analisi iniziali incluse"
                     ),
                     _("Score, findings, pack HTML unico, Edge base (llms + signals)"),
-                    _("SoV stimato (proxy)"),
+                    _("Re-scan: manuale · SoV stimato (proxy)"),
                 ],
             },
             {
                 "name": "Plus · €14,99",
                 "points": [
                     _(
-                        "Fino a 5 siti, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"
+                        "Fino a 5 domini, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"
                     ),
-                    _("SoV measured, prompt bank, re-scan, alert, Edge completo"),
-                    _("100 token per ciclo di fatturazione"),
+                    _("Re-scan giornaliero/settimanale, SoV measured, prompt bank, alert, Edge completo"),
+                    _("API / white-label: non inclusi"),
                 ],
             },
             {
                 "name": "Business · €49,99",
                 "points": [
-                    _("Tutto Plus + fino a 50 siti e 400 token/mese"),
+                    _("Tutto Plus + fino a 50 domini / clienti"),
                     _("API /api/v1 e white-label MD/HTML con brand agenzia"),
-                    _("Profilo consigliato per portfolio clienti"),
+                    _("Profilo consigliato per portfolio multi-cliente"),
                 ],
             },
         ],

@@ -39,7 +39,7 @@
     </p>
     <figure class="guide-figure">
       <img src="{{ url_for('static', filename=guide.services[0].image) }}" width="960" height="540" alt="{{ _('Panoramica dashboard Centropic') }}" loading="eager" />
-      <figcaption>{{ _('Workspace: score, findings, token e azioni in un’unica dashboard.') }}</figcaption>
+      <figcaption>{{ _('Workspace: score, findings e azioni in un’unica dashboard.') }}</figcaption>
     </figure>
   </section>
 
@@ -130,9 +130,9 @@
   </section>
 
   <section class="guide-section" id="piani" aria-labelledby="piani-title">
-    <h2 class="guide-section__title" id="piani-title">{{ _('Piani e token') }}</h2>
+    <h2 class="guide-section__title" id="piani-title">{{ _('Piani: domini, re-scan, API') }}</h2>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/token-crediti.svg') }}" width="960" height="540" alt="{{ _('Token GEO') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename='img/guide/token-crediti.svg') }}" width="960" height="540" alt="{{ _('Piani Centropic') }}" loading="lazy" />
     </figure>
     <div class="guide-plans">
       {% for plan in guide.plans %}

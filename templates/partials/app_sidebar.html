@@ -73,7 +73,7 @@
       </a>
       <a href="{{ url_for('topup_credit_page') }}" class="app-sidebar__link{% if nav == 'billing' %} is-active{% endif %}" {% if nav == 'billing' %}aria-current="page"{% endif %}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-        <span class="app-sidebar__link-label">{{ _('Token') }}</span>
+        <span class="app-sidebar__link-label">{{ _('Copertura') }}</span>
       </a>
       {% if current_user and current_user.is_admin %}
       <a href="{{ url_for('admin_home') }}" class="app-sidebar__link{% if nav == 'admin' %} is-active{% endif %}" {% if nav == 'admin' %}aria-current="page"{% endif %}>
@@ -87,7 +87,7 @@
   <div class="app-sidebar__foot">
     <div class="app-sidebar__credits">
       <div class="app-sidebar__credits-row">
-        <span>{{ _('GEO Credits') if cap else _('Saldo token') }}</span>
+        <span>{{ _('GEO Credits') if cap else _('Quota piano') }}</span>
         <strong>
           {% if cap %}
             {{ used }} / {{ cap }}

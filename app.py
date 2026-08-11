@@ -2454,8 +2454,8 @@ def wants_json_response() -> bool:
 
 
 FREE_QUOTA_BANNER = (
-    "Hai usato le 2 analisi Free su nuovi siti. Puoi ancora ri-analizzare lo stesso dominio "
-    "(consuma token). Passa a Plus per più brand, SoV measured, crawl 120+ pagine e 100 token/mese"
+    "Hai usato le 2 analisi Free su nuovi siti. Puoi ancora ri-analizzare lo stesso dominio. "
+    "Passa a Plus per più domini, re-scan schedulato, SoV Misurato e crawl 120+ pagine"
 )
 
 
@@ -3991,7 +3991,7 @@ def billing_checkout():
             return redirect(url_for("dashboard"))
         if product == "plus" and plan in {"plus", "pro"}:
             flash(
-                "Hai già Plus. Passa a Business per API, white-label e 400 token/mese.",
+                "Hai già Plus. Passa a Business per API, white-label e più domini clienti.",
                 "success",
             )
             return redirect(url_for("pricing") + "#business")
@@ -5374,10 +5374,9 @@ def dashboard_analyze_confirmed():
         shortage = max(0, required_with_grace - balance)
         return credit_shortage_response(
             message=(
-                f"Token insufficienti: hai {format_token_amount(balance)}, "
-                f"servono {format_token_amount(required_with_grace)}. "
-                f"Passa a Plus (100 token/mese) o ricarica almeno "
-                f"{format_token_amount(shortage)}."
+                "Copertura insufficiente per questa analisi. "
+                "Passa a Plus (più domini, re-scan, SoV Misurato) "
+                "o amplia la copertura con un pacchetto extra."
             )
         )
 
@@ -5398,10 +5397,9 @@ def dashboard_analyze_confirmed():
             shortage = max(0, required_with_grace - balance)
             return credit_shortage_response(
                 message=(
-                    f"Token insufficienti: hai {format_token_amount(balance)}, "
-                    f"servono {format_token_amount(required_with_grace)}. "
-                    f"Passa a Plus (100 token/mese) o ricarica almeno "
-                    f"{format_token_amount(shortage)}."
+                    "Copertura insufficiente per questa analisi. "
+                    "Passa a Plus (più domini, re-scan, SoV Misurato) "
+                    "o amplia la copertura con un pacchetto extra."
                 )
             )
         try:
@@ -5446,10 +5444,9 @@ def dashboard_analyze_confirmed():
         shortage = max(0, required_with_grace - balance)
         return credit_shortage_response(
             message=(
-                f"Token insufficienti: hai {format_token_amount(balance)}, "
-                f"servono {format_token_amount(required_with_grace)}. "
-                f"Passa a Plus (100 token/mese) o ricarica almeno "
-                f"{format_token_amount(shortage)}."
+                "Copertura insufficiente per questa analisi. "
+                "Passa a Plus (più domini, re-scan, SoV Misurato) "
+                "o amplia la copertura con un pacchetto extra."
             )
         )
 

@@ -1,26 +1,25 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Ricarica token') }}{% endblock %}
+{% block title %}{{ _('Amplia copertura') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
-{% block meta_description %}{{ _('Ricarica token Centropic: €10 = 100 token, €20 = 200, €50 = 600. Plus €14,99/mese con 100 token. Analisi AIO/GEO su centropic.ai.') }}{% endblock %}
+{% block meta_description %}{{ _('Amplia la copertura Centropic con pacchetti in euro: utile per picchi di ri-analisi o clienti extra senza cambiare piano.') }}{% endblock %}
 
 {% block content %}
 <div class="page" style="max-width: 620px; padding: 3rem 0 5rem;">
   <div class="page-intro">
-    <p class="eyebrow">{{ _('Token prepagati') }}</p>
-    <h1 class="page-intro__title">{{ _('Ricarica i tuoi token') }}</h1>
+    <p class="eyebrow">{{ _('Copertura extra') }}</p>
+    <h1 class="page-intro__title">{{ _('Amplia la copertura del mese') }}</h1>
     <p class="page-intro__lede">
-      {{ _('Tariffa base: €10 = 100 token (1 token = €0,10). Il pack da €50 include un bonus.') }}
-      {{ _('Il costo pre-analisi stima ogni chiamata AI (arrotondamento per call). Con SoV Misurato tipicamente 0,6–2 token a run.') }}
+      {{ _('Aggiungi credito operativo senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (IVA esclusa); il credito si applica subito al saldo.') }}
     </p>
   </div>
 
   <div class="page-section">
-    <h2 class="page-section__title">{{ _('Saldo attuale') }}</h2>
+    <h2 class="page-section__title">{{ _('Copertura residua') }}</h2>
     <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
       {% if current_user.is_admin %}
-        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Token illimitati (account admin)') }}</span>
+        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Illimitata (account admin)') }}</span>
       {% else %}
-        {{ balance_cents|tok }}
+        ≈ {{ '%.2f'|format((balance_cents or 0) / 100) }}&nbsp;€
       {% endif %}
     </p>
     {% if ledger %}
@@ -31,7 +30,7 @@
           <tr>
             <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Data') }}</th>
             <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Descrizione') }}</th>
-            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Token') }}</th>
+            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">€</th>
             <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Saldo dopo') }}</th>
           </tr>
         </thead>
@@ -41,10 +40,10 @@
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.created_at.strftime('%d/%m %H:%M') }}</td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.description[:60] }}</td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; {% if entry.amount_cents > 0 %}color:#00c97a{% else %}color:#e84040{% endif %}; font-family:var(--font-mono);">
-              {{ format_token_amount(entry.amount_cents, signed=True, with_unit=False) }}
+              {{ '%+.2f'|format(entry.amount_cents / 100) }}
             </td>
             <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; font-family:var(--font-mono);">
-              {{ entry.balance_after_cents|tok_short }}
+              {{ '%.2f'|format(entry.balance_after_cents / 100) }}&nbsp;€
             </td>
           </tr>
           {% endfor %}
@@ -68,22 +67,23 @@
           data-paddle-checkout="topup"
           data-paddle-cents="{{ pkg.cents }}"
         >
-          <span class="topup-btn__amount">{{ pkg.tokens }} {{ _('token') }}</span>
-          <span class="topup-btn__desc">{{ pkg.label }} · {{ _('paga') }} €&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
-          <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
+          <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }}</span>
+          <span class="topup-btn__approx">{{ _('credito operativo') }}</span>
         </button>
         {% else %}
         <button class="topup-btn" type="submit">
-          <span class="topup-btn__amount">{{ pkg.tokens }} {{ _('token') }}</span>
-          <span class="topup-btn__desc">{{ pkg.label }} · {{ _('paga') }} €&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
-          <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
+          <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }}</span>
+          <span class="topup-btn__approx">{{ _('credito operativo') }}</span>
         </button>
         {% endif %}
       </form>
       {% endfor %}
     </div>
     <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
-      {{ _('Stima analisi (SoV Misurato multi-engine, hold ≈2,3–2,4 token): ~40 con 100 token, ~80 con 200, ~250 con 600. Solo OpenAI: circa il doppio. I token non scadono. Plus include 100 token/mese; Business 400 token/mese.') }}
+      {{ _('Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-label vai su') }}
+      <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
     </p>
   </div>
 

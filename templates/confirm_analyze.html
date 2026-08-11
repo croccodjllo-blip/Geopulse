@@ -9,8 +9,7 @@
     <p class="eyebrow">{{ _('Stima analisi') }}</p>
     <h1 class="page-intro__title">{{ _('Rivedi e conferma') }}</h1>
     <p class="page-intro__lede">
-      {{ _('Prima di procedere, controlla il costo stimato e il miglioramento atteso.') }}
-      {{ _("I token GEO vengono scalati in tempo reale sui token AI consumati durante l'analisi.") }}
+      {{ _('Prima di procedere, controlla copertura del piano e miglioramento atteso. Nessun calcolo astratto: avvii l’analisi sul dominio selezionato.') }}
     </p>
   </div>
 
@@ -24,16 +23,16 @@
 
   {# ── Costo stimato ── #}
   <div class="page-section">
-    <h2 class="page-section__title">{{ _('Costo stimato') }}</h2>
+    <h2 class="page-section__title">{{ _('Copertura stimata') }}</h2>
     <div class="cost-card">
       <div class="cost-card__main">
-        <span class="cost-card__amount">{{ cost.service_cost_eur_cents|tok }}</span>
-        <span class="cost-card__label">{{ _('stimati per questa analisi') }}</span>
+        <span class="cost-card__amount">≈ {{ '%.2f'|format((cost.service_cost_eur_cents or 0) / 100) }}&nbsp;€</span>
+        <span class="cost-card__label">{{ _('valore operativo stimato per questa analisi (incluso nella quota del piano)') }}</span>
       </div>
 
       {% if cost.breakdown %}
       <details class="cost-breakdown">
-        <summary>{{ _('Dettaglio voci di costo') }}</summary>
+        <summary>{{ _('Dettaglio tecnico (opzionale)') }}</summary>
         <table class="cost-table">
           <thead>
             <tr>
@@ -41,7 +40,7 @@
               <th>{{ _('Provider') }}</th>
               <th>{{ _('Modello') }}</th>
               <th>{{ _('Call') }}</th>
-              <th>{{ _('Costo stim.') }}</th>
+              <th>€</th>
             </tr>
           </thead>
           <tbody>
@@ -51,7 +50,7 @@
               <td>{{ row.provider }}</td>
               <td><code>{{ row.model }}</code></td>
               <td>{{ row.estimated_calls or '—' }}</td>
-              <td>{{ (row.estimated_debit_cents or 0)|tok }}</td>
+              <td>{{ '%.2f'|format((row.estimated_debit_cents or 0) / 100) }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -100,7 +99,7 @@
 
   {# ── Credito disponibile ── #}
   <div class="page-section">
-    <h2 class="page-section__title">{{ _('I tuoi token') }}</h2>
+    <h2 class="page-section__title">{{ _('Copertura del piano') }}</h2>
     {% if current_user.is_admin %}
     <div class="credit-status credit-status--ok">
       <span class="credit-status__balance">
@@ -111,17 +110,23 @@
     {% else %}
     <div class="credit-status {% if balance_cents >= required_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
       <span class="credit-status__balance">
-        {{ _('Disponibile:') }} <strong>{{ balance_cents|tok }}</strong>
+        {{ _('Stato:') }}
+        <strong>
+          {% if balance_cents >= required_cents %}
+            {{ _('Pronto ad avviare') }}
+          {% else %}
+            {{ _('Copertura insufficiente') }}
+          {% endif %}
+        </strong>
       </span>
       {% if balance_cents >= required_cents %}
-        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Token sufficienti') }}</span>
+        <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Incluso nella quota del piano') }}</span>
       {% else %}
-        <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Token insufficienti') }}</span>
+        <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Serve un piano superiore') }}</span>
         <p class="credit-status__hint">
-          {{ _('Servono almeno') }} {{ (required_cents - balance_cents)|tok }}.
           <a href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
-          {{ _('(100 token/mese) o') }}
-          <a href="{{ url_for('topup_credit_page') }}">{{ _('ricarica token') }} →</a>
+          {{ _('(domini + re-scan + SoV Misurato) o') }}
+          <a href="{{ url_for('topup_credit_page') }}">{{ _('amplia la copertura') }} →</a>
         </p>
       {% endif %}
     </div>
@@ -142,13 +147,13 @@
         {% if current_user.is_admin %}
           {{ _('Avvia analisi (admin — gratuito)') }}
         {% else %}
-          {{ _('Conferma e avvia analisi') }} ({{ cost.service_cost_eur_cents|tok }})
+          {{ _('Conferma e avvia analisi') }}
         {% endif %}
       </button>
     </form>
     {% else %}
     <a class="btn btn-core" href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('topup_credit_page') }}">{{ _('Ricarica token') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('topup_credit_page') }}">{{ _('Amplia copertura') }}</a>
     {% endif %}
     <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">{{ _('Annulla') }}</a>
   </div>

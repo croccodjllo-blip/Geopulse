@@ -6,7 +6,7 @@ templates and workers do not drift.
 Ladder (sales):
   Free      — prove AIO/GEO on one domain
   Plus      — startups running their own brands continuously
-  Business  — agencies: everything (API, white-label, scale, 400 token)
+  Business  — agencies: everything (API, white-label, scale sites)
 """
 
 from __future__ import annotations

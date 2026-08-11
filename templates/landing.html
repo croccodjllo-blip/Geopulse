@@ -82,9 +82,9 @@
         {{ _('Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta.') }}
       </p>
       <ul class="profile-card__list">
-        <li>{{ max_sites_free }} {{ _('sito') }} · {{ free_crawl_pages }} {{ _('pagine') }}</li>
-        <li>{{ free_total_analyses }} {{ _('analisi + ri-analisi (token)') }}</li>
-        <li>{{ _('SoV stimato · pack pubblicabile') }}</li>
+        <li><strong>{{ _('1 dominio monitorato') }}</strong></li>
+        <li>{{ free_total_analyses }} {{ _('analisi iniziali · pack pubblicabile') }}</li>
+        <li>{{ _('Re-scan: manuale') }}</li>
       </ul>
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
     </article>
@@ -96,9 +96,9 @@
         {{ _('Operatività continua: measured SoV, re-scan, alert e crawl esteso.') }}
       </p>
       <ul class="profile-card__list">
-        <li><strong>{{ plus_monthly_tokens }} {{ _('token/mese') }}</strong></li>
-        <li>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('siti') }} · {{ _('SoV Misurato') }}</li>
-        <li>{{ _('Prompt bank · re-scan · Edge completo') }}</li>
+        <li><strong>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('domini') }}</strong></li>
+        <li>{{ _('Re-scan giornaliero/settimanale · SoV Misurato') }}</li>
+        <li>{{ _('Alert · Edge completo · no API/WL') }}</li>
       </ul>
       <a class="btn btn-core btn-block" href="{{ url_for('pricing') }}#plus">{{ _('Scegli Plus') }}</a>
     </article>
@@ -108,12 +108,12 @@
       <p class="profile-card__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
       <p class="profile-card__who">{{ _('Agenzie multi-cliente') }}</p>
       <p class="profile-card__desc">
-        {{ _('Tutto incluso: API, white-label, scala siti e token per il delivery.') }}
+        {{ _('Tutto incluso: API, white-label e scala domini per il delivery in agenzia.') }}
       </p>
       <ul class="profile-card__list">
-        <li><strong>{{ business_monthly_tokens }} {{ _('token/mese') }}</strong></li>
-        <li>{{ _('Fino a') }} {{ max_sites_business }} {{ _('siti') }} · {{ _('API') }} <code>/api/v1</code></li>
-        <li>{{ _('White-label MD/HTML · tutto di Plus') }}</li>
+        <li><strong>{{ _('Fino a') }} {{ max_sites_business }} {{ _('domini / clienti') }}</strong></li>
+        <li>{{ _('API') }} <code>/api/v1</code> {{ _('· white-label MD/HTML') }}</li>
+        <li>{{ _('Re-scan + SoV Misurato · tutto di Plus') }}</li>
       </ul>
       <a class="btn btn-core btn-block" href="{{ url_for('pricing') }}#business">{{ _('Passa a Business') }}</a>
     </article>
@@ -243,8 +243,8 @@
     <details class="faq-item">
       <summary>{{ _('Quale piano mi serve?') }}</summary>
       <p>
-        {{ _('Free per validare un dominio. Plus (14,99€, 100 token) per startup sul proprio brand con SoV Misurato. Business (49,99€, 400 token) per agenzie: API, white-label e fino a') }}
-        {{ max_sites_business }} {{ _('siti.') }}
+        {{ _('Free: 1 dominio. Plus (14,99€): fino a') }} {{ max_sites_plus }} {{ _('domini, re-scan e SoV Misurato. Business (49,99€): API, white-label e fino a') }}
+        {{ max_sites_business }} {{ _('domini clienti.') }}
       </p>
     </details>
     <details class="faq-item">

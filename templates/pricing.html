@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic: Free, Plus 14,99€ (startup, 100 token), Business 49,99€ (agenzie, 400 token, API e white-label).') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic: Free (1 dominio), Plus 14,99€ (domini, re-scan, SoV Misurato), Business 49,99€ (API, white-label, portfolio clienti).') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
     <p class="eyebrow">{{ _('Architettura commerciale') }}</p>
     <h1 class="h-display page-intro__title hero-headline--rise">{{ _('Tre modi di possedere il segnale.') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Free per validare. Plus per il tuo brand. Business per i clienti dell’agenzia.') }}
+      {{ _('Scegli per domini monitorati, frequenza di re-scan e toolkit agenzia — senza calcoli astratti in fase di checkout.') }}
     </p>
     <div class="cta-row">
       <a class="btn btn-core" href="#piani">{{ _('Confronta i piani') }}</a>
@@ -27,11 +27,12 @@
       <p class="plan__price">0&nbsp;€<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Prova la diagnosi AIO/GEO sul primo dominio — senza carta.') }}</p>
       <ul class="plan__features">
-        <li>{{ _('Fino a') }} {{ max_sites_free }} {{ _('sito') }}</li>
+        <li><strong>{{ _('1 dominio monitorato') }}</strong></li>
         <li>{{ _('Crawl fino a') }} {{ free_crawl_pages }} {{ _('pagine') }}</li>
-        <li>{{ free_total_analyses }} {{ _('analisi su nuovi siti; ri-analisi stesso URL (token)') }}</li>
+        <li>{{ free_total_analyses }} {{ _('analisi iniziali incluse') }}</li>
         <li>{{ _('Score AIO/GEO + findings (SoV stimato)') }}</li>
         <li>{{ _('Pack HTML con tutti i fix') }}</li>
+        <li>{{ _('Re-scan: manuale') }}</li>
       </ul>
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
     </section>
@@ -40,16 +41,15 @@
       <p class="plan__badge">{{ _('Per startup') }}</p>
       <p class="plan__name">Plus</p>
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Per piccole startup che ottimizzano i propri brand in continuo.') }}</p>
+      <p class="plan__desc">{{ _('Operatività continua sul tuo brand: monitoraggio, re-scan e SoV Misurato.') }}</p>
       <ul class="plan__features">
-        <li><strong>{{ plus_monthly_tokens }} {{ _('token inclusi ogni mese') }}</strong></li>
-        <li>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('siti') }}</li>
-        <li>{{ _('Crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine (Deep fino a') }} {{ deep_crawl_pages }})</li>
-        <li>{{ _('Citation monitor / SoV measured') }}</li>
-        <li>{{ _('Competitor snapshot') }}</li>
+        <li><strong>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('domini monitorati') }}</strong></li>
+        <li><strong>{{ _('Re-scan giornaliero o settimanale') }}</strong></li>
+        <li>{{ _('SoV Misurato + citation monitor') }}</li>
+        <li>{{ _('Crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine (Deep') }} {{ deep_crawl_pages }})</li>
         <li>{{ _('Prompt bank + alert email/webhook') }}</li>
-        <li>{{ _('Re-scan giornaliero/settimanale') }}</li>
         <li>{{ _('Edge Signals completo + storico run') }}</li>
+        <li>{{ _('API / white-label: non inclusi') }}</li>
       </ul>
       {% if paddle_plus_ready and current_user %}
         {% if paddle_overlay %}
@@ -91,16 +91,14 @@
       <p class="plan__badge">{{ _('Per agenzie') }}</p>
       <p class="plan__name">Business</p>
       <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Tutto incluso per agenzie e team multi-cliente: delivery, automazione e scala.') }}</p>
+      <p class="plan__desc">{{ _('Portfolio clienti: API, white-label e scala siti per il delivery in agenzia.') }}</p>
       <ul class="plan__features">
-        <li><strong>{{ _('Tutto di Plus, più:') }}</strong></li>
-        <li><strong>{{ business_monthly_tokens }} {{ _('token inclusi ogni mese') }}</strong></li>
-        <li>{{ _('Fino a') }} {{ max_sites_business }} {{ _('siti / clienti') }}</li>
-        <li>{{ _('API key pubblica') }} <code>/api/v1</code></li>
-        <li>{{ _('White-label brand agenzia') }}</li>
+        <li><strong>{{ _('Fino a') }} {{ max_sites_business }} {{ _('domini / clienti') }}</strong></li>
+        <li><strong>{{ _('API') }} <code>/api/v1</code> {{ _('+ white-label') }}</strong></li>
+        <li><strong>{{ _('Re-scan giornaliero o settimanale') }}</strong></li>
         <li>{{ _('Export report MD/HTML white-label') }}</li>
-        <li>{{ _('Crawl, SoV measured, re-scan, Edge, storico') }}</li>
-        <li>{{ _('Ideale per portfolio clienti e retainer') }}</li>
+        <li>{{ _('Tutto di Plus: SoV Misurato, Edge, alert, storico') }}</li>
+        <li>{{ _('Ideale per retainer multi-cliente') }}</li>
       </ul>
       {% if business_ready and current_user %}
         {% if paddle_overlay %}
@@ -142,7 +140,7 @@
 
   <p class="plan-note">
     {{ _('Pagamenti:') }} {% if payments_provider == 'paddle' %}Paddle{% else %}—{% endif %}.
-    {{ _('I token non scadono; i pacchetti ricarica restano disponibili su tutti i piani.') }}
+    {{ _('I piani si confrontano su domini, re-scan e capability (API / white-label). La quota operativa è inclusa nel canone; eventuali top-up restano opzionali.') }}
     <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a> ·
     <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
     <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>.
