@@ -13,6 +13,15 @@
 {% block content %}
 <section class="hero hero--v2 hero--signal" aria-labelledby="hero-brand">
   <div class="hero-visual hero-visual--cite" aria-hidden="true">
+    <img
+      class="hero-visual__photo"
+      src="{{ url_for('static', filename='img/hero-signal-field.jpg') }}"
+      alt=""
+      width="2560"
+      height="1080"
+      decoding="async"
+      fetchpriority="high"
+    />
     <div class="hero-visual__aurora"></div>
     <div class="hero-visual__scan"></div>
     <div class="hero-visual__field">
