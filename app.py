@@ -2327,22 +2327,37 @@ def kick_analyze_worker() -> None:
     aio-bot`` / deploy and leave partially-billed jobs stuck in ``running`` until
     the heartbeat reclaim path permanently fails them.
     """
-    worker = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "analyze_worker.py")
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    worker = os.path.join(root_dir, "scripts", "analyze_worker.py")
     if os.path.isfile(worker):
         try:
             env = os.environ.copy()
+            log_dir = os.path.join(root_dir, "logs")
+            try:
+                os.makedirs(log_dir, exist_ok=True)
+            except OSError:
+                log_dir = "/tmp"
+            log_path = os.path.join(log_dir, "analyze-kick.log")
+            log_fh = open(log_path, "a", encoding="utf-8")
             # Detach from the gunicorn worker session so SIGTERM on reload does
             # not tear down an in-flight measured SoV / pack run.
-            subprocess.Popen(
+            proc = subprocess.Popen(
                 [sys.executable, worker, "--limit", "1"],
-                cwd=os.path.dirname(os.path.abspath(__file__)),
+                cwd=root_dir,
                 env=env,
                 start_new_session=True,
                 stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stdout=log_fh,
+                stderr=subprocess.STDOUT,
                 close_fds=True,
             )
+            log_fh.close()
+            # Reap the child so gunicorn does not accumulate <defunct> zombies.
+            threading.Thread(
+                target=proc.wait,
+                daemon=True,
+                name=f"analyze-kick-reap-{proc.pid}",
+            ).start()
             return
         except Exception:
             app.logger.exception(

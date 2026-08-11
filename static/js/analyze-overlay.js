@@ -8,7 +8,7 @@
  *   window.CentropicAnalyzeOverlay.fail(message)
  */
 (function () {
-  var PHASES = ["queue", "crawl", "probe", "score", "pack"];
+  var PHASES = ["queue", "crawl", "sov", "score", "pack"];
   var PHASE_INDEX = {
     pending: 0,
     queue: 0,
@@ -17,9 +17,11 @@
     crawl: 1,
     in_esecuzione: 1,
     probe: 2,
-    geo: 3,
+    geo: 2,
+    sov: 2,
     score: 3,
     pack: 4,
+    persist: 4,
   };
 
   function el(root, sel) {
@@ -301,10 +303,6 @@
           if (data.eta_label) self.setEta(data.eta_label, data.eta_seconds);
           self._applyServerProgress(data);
           if (data.status === "running" && self._stepIdx < 1) self.setPhase("crawl", data.hint);
-          if (data.status === "running") {
-            if (self._stepIdx >= 4) self._stepIdx = 3;
-            if (tries > 45 && self._stepIdx < 3) self.setPhase("score", data.hint);
-          }
           if (data.status === "done") {
             self._stepIdx = 4;
             self.setPhase("pack", "Completamento pack…");

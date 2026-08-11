@@ -951,6 +951,15 @@ def _sov_engine_parallelism() -> int:
     return max(1, min(6, n))
 
 
+def _sov_monitor_timeout_seconds() -> int:
+    """Hard wall-clock for the whole multi-engine probe (keeps analyze moving)."""
+    try:
+        n = int(os.getenv("SOV_MONITOR_TIMEOUT_SECONDS", "90") or "90")
+    except (TypeError, ValueError):
+        n = 90
+    return max(30, min(300, n))
+
+
 def _sov_prompt_limit() -> int:
     """Full pack size (default 8). Fast mode uses SOV_FAST_PROMPTS when set."""
     try:
@@ -994,6 +1003,9 @@ def run_citation_monitor(
         if not callable(heartbeat_callback):
             return
         try:
+            # Prefer phase=sov so job status / overlay leave the Score step.
+            heartbeat_callback(phase="sov")
+        except TypeError:
             heartbeat_callback()
         except Exception:
             raise
@@ -1058,41 +1070,79 @@ def run_citation_monitor(
     ]
     results: dict[str, dict[str, Any]] = {}
     workers = _sov_engine_parallelism()
+    pool: ThreadPoolExecutor | None = None
     try:
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            futures = {pool.submit(fn): name for name, fn in jobs}
-            for fut in as_completed(futures):
-                name = futures[fut]
-                try:
-                    results[name] = fut.result() or {}
-                except Exception as exc:
-                    from services.usage_billing import InsufficientCreditError
-                    from services.sov_budget import SovDailyBudgetExceeded
-
-                    if isinstance(
-                        exc,
-                        (InsufficientCreditError, SovDailyBudgetExceeded),
-                    ) or credit_stop["exc"] is not None:
-                        for pending in futures:
-                            pending.cancel()
-                        raise (credit_stop["exc"] or exc)
-                    logger.exception("SoV engine %s failed", name)
-                    results[name] = {"available": False, "reason": str(exc)[:160]}
-                if credit_stop["exc"] is not None:
-                    for pending in futures:
-                        pending.cancel()
-                    raise credit_stop["exc"]
+        wall = _sov_monitor_timeout_seconds()
+        deadline = time.monotonic() + wall
+        pool = ThreadPoolExecutor(max_workers=workers)
+        futures = {pool.submit(fn): name for name, fn in jobs}
+        pending = set(futures)
+        while pending:
+            if time.monotonic() >= deadline:
+                logger.warning(
+                    "SoV monitor wall timeout after %ss — continuing with partial engines",
+                    wall,
+                )
+                for fut in pending:
+                    fut.cancel()
+                    name = futures[fut]
+                    results.setdefault(
+                        name,
+                        {
+                            "available": False,
+                            "reason": f"timeout after {wall}s",
+                        },
+                    )
+                break
+            remaining = max(0.1, deadline - time.monotonic())
+            try:
+                done = next(as_completed(pending, timeout=min(5.0, remaining)))
+            except TimeoutError:
                 try:
                     _beat()
                 except Exception:
-                    # Cancel remaining work on lease loss.
-                    for pending in futures:
-                        pending.cancel()
+                    for fut in pending:
+                        fut.cancel()
                     raise
+                continue
+            pending.discard(done)
+            name = futures[done]
+            try:
+                results[name] = done.result() or {}
+            except Exception as exc:
+                from services.usage_billing import InsufficientCreditError
+                from services.sov_budget import SovDailyBudgetExceeded
+
+                if isinstance(
+                    exc,
+                    (InsufficientCreditError, SovDailyBudgetExceeded),
+                ) or credit_stop["exc"] is not None:
+                    for fut in pending:
+                        fut.cancel()
+                    raise (credit_stop["exc"] or exc)
+                logger.exception("SoV engine %s failed", name)
+                results[name] = {"available": False, "reason": str(exc)[:160]}
+            if credit_stop["exc"] is not None:
+                for fut in pending:
+                    fut.cancel()
+                raise credit_stop["exc"]
+            try:
+                _beat()
+            except Exception:
+                # Cancel remaining work on lease loss.
+                for fut in pending:
+                    fut.cancel()
+                raise
     finally:
         stop_pulse.set()
         if pulse_thread is not None:
             pulse_thread.join(timeout=1.0)
+        if pool is not None:
+            # Do not block analyze on a hung engine after wall timeout.
+            try:
+                pool.shutdown(wait=False, cancel_futures=True)
+            except TypeError:
+                pool.shutdown(wait=False)
 
     openai = results.get("openai") or {}
     if openai.get("available"):

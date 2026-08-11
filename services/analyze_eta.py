@@ -134,9 +134,13 @@ def compute_analyze_eta(
     elif phase == "pack":
         remaining = max(5, int(12 - elapsed * 0.05))
         fraction = 0.92
-    elif phase in {"geo", "score", "probe"}:
-        remaining = max(8, int(total * 0.22))
-        fraction = 0.75
+    elif phase in {"sov", "geo"}:
+        # Measured SoV is the long middle of Plus runs.
+        remaining = max(15, int(total * 0.35))
+        fraction = 0.55
+    elif phase in {"score", "probe"}:
+        remaining = max(8, int(total * 0.18))
+        fraction = 0.78
     elif target > 0 and done >= 0:
         # Crawl in progress: blend page fraction with wall clock.
         crawl_frac = min(0.95, done / max(target, 1))
@@ -170,10 +174,14 @@ def compute_analyze_eta(
         hint = f"Crawl {done}/{target} · {label} rimanenti"
         if lang != "it":
             hint = f"Crawl {done}/{target} · {label} remaining"
-    elif phase in {"geo", "score", "probe"}:
-        hint = f"Scoring / SoV · {label}"
+    elif phase in {"sov", "geo"}:
+        hint = f"SoV measured sugli engine · {label}"
         if lang != "it":
-            hint = f"Scoring / SoV · {label}"
+            hint = f"Measured SoV across engines · {label}"
+    elif phase in {"score", "probe"}:
+        hint = f"Scoring · {label}"
+        if lang != "it":
+            hint = f"Scoring · {label}"
     elif phase == "pack":
         hint = f"Pack artifact · {label}"
     else:

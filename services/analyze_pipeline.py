@@ -172,9 +172,17 @@ def run_analysis_pipeline(
     )
 
     # Suite GEO/AIO (entity, citability, schema, locale, publish verify).
-    # SoV measured / citation monitor: solo Plus.
-    def _geo_hb() -> None:
-        _hb(phase="geo", done=crawled, total=max(crawled, pages))
+    # SoV measured / citation monitor: solo Plus — surface as phase "sov"
+    # so the overlay does not look stuck on Score during the long probe.
+    def _suite_hb(phase: str | None = None, done: int | None = None, total: int | None = None) -> None:
+        _hb(
+            phase=phase or ("sov" if measured_ok else "geo"),
+            done=crawled if done is None else done,
+            total=max(crawled, pages) if total is None else total,
+        )
+
+    if measured_ok:
+        _hb(phase="sov", done=crawled, total=max(crawled, pages))
 
     run_geo_suite(
         result=result,
@@ -183,7 +191,7 @@ def run_analysis_pipeline(
         run_measured=measured_ok,
         prompts=prompts,
         usage_callback=usage_callback,
-        heartbeat_callback=_geo_hb,
+        heartbeat_callback=_suite_hb,
     )
 
     _hb(phase="score", done=crawled, total=max(crawled, pages))
