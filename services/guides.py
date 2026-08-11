@@ -34,38 +34,39 @@ def _guide_metodologia() -> dict[str, Any]:
         "eyebrow": _("Metodologia"),
         "title": _("Come Centropic misura AIO e GEO"),
         "description": _(
-            "Metodologia Centropic: score AIO/GEO da probe ed euristiche, badge Misurato/Stimato, limiti del SoV proxy e percorso verso SoV measured."
+            "Metodologia Centropic: predisposizione strutturale del brand per i crawler generativi, score AIO/GEO, badge Misurato/Stimato e SoV measured."
         ),
         "lede": _(
-            "Trasparenza sul metodo: cosa osserviamo sul sito, cosa stimiamo, cosa non promettiamo."
+            "L’IA non può citare ciò che non riesce a leggere. Centropic rende il brand visibile e interpretabile "
+            "dai crawler generativi: chiudiamo gap di informazione e ambiguità entity prima che diventino allucinazioni."
         ),
         "body": _(
             """
   <section class="page-section">
-    <h2 class="page-section__title">1. Cosa osserviamo (Misurato)</h2>
+    <h2 class="page-section__title">1. Cosa controlliamo (predisposizione strutturale)</h2>
     <p class="lede">Probe HTTP e parsing HTML sullo stesso dominio: title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, crawl multi-pagina. Questi finding possono essere badge <em>Misurato</em>.</p>
-    <p class="lede">Centropic (centropic.ai) registra anche segnali di entity (Organization, sameAs, contatti), citabilità del copy e policy verso bot AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended).</p>
+    <p class="lede">Centropic registra entity (Organization, sameAs, contatti), citabilità del copy e policy verso bot AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) — il perimetro che i modelli devono poter leggere senza ambiguità.</p>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">2. Cosa stimiamo (Stimato / proxy)</h2>
-    <p class="lede">Score compositi AIO/GEO, indice DDD→AAA e Share of Voice per engine derivano da formule euristiche sui segnali osservati. Non sono, di default, citazioni live su ChatGPT/Perplexity/Claude.</p>
-    <p class="lede">Il breakdown per engine (ChatGPT, Gemini come proxy AI Overview, Claude, Perplexity, Grok, Azure AI) resta etichettato <em>Stimato</em> finché non gira il citation monitor Plus.</p>
+    <h2 class="page-section__title">2. Score AIO / GEO (diagnostica di leggibilità)</h2>
+    <p class="lede">Score compositi AIO/GEO e indice DDD→AAA quantificano quanto il sito è machine-readable: non “promettono” un posto in classifica, misurano se i crawler generativi trovano segnali chiari da usare.</p>
+    <p class="lede">Il breakdown per engine (ChatGPT, Gemini, Claude, Perplexity, Grok, Azure AI) parte come <em>Stimato</em> sulla struttura osservata; su Plus/Business il citation monitor può aggiungere menzioni <em>Misurate</em>.</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">3. SoV measured (Plus / Business)</h2>
-    <p class="lede">Su Plus e Business, con connector API configurati, Centropic invia un prompt bank al citation monitor e conta le menzioni del brand/dominio nelle risposte. È un campione probe, non un ranking garantito nelle UI consumer degli LLM.</p>
+    <p class="lede">Con connector API configurati, Centropic invia un prompt bank e conta le menzioni del brand nelle risposte — un campione operativo per vedere se la struttura sta entrando nelle risposte, oltre alla sola diagnosi sul sito.</p>
     <ul class="plain-list">
       <li>Prompt personalizzabili in Impostazioni (prompt bank).</li>
       <li>Evidence badge <em>Misurato</em> per engine disponibili.</li>
-      <li>Gemini e Azure AI sono proxy onesti (non Google AI Overview nativo né Copilot Bing nativo).</li>
+      <li>Gemini e Azure AI sono proxy documentati (non Google AI Overview nativo né Copilot Bing nativo).</li>
     </ul>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">4. Limiti</h2>
+    <h2 class="page-section__title">4. Trasparenza: la nostra promessa</h2>
     <ul class="plain-list">
-      <li>Nessuna garanzia di ranking o menzione da parte di modelli di terzi.</li>
-      <li>Il pack artifact è una bozza operativa: la pubblicazione resta a carico del cliente.</li>
-      <li>SoV measured è disponibile su <strong>Plus e Business</strong> (e Admin), quando i connector API sono configurati.</li>
+      <li><strong>Garantiamo la predisposizione:</strong> brand e pagine rese leggibili, strutturate e raggiungibili dai crawler generativi — così l’IA ha materiale vero da citare, non vuoti da inventare.</li>
+      <li>Il pack artifact è pronto per la pubblicazione; il go-live sul tuo stack resta sotto il tuo controllo (download, Edge o connector).</li>
+      <li>SoV measured è su <strong>Plus e Business</strong> (e Admin) con connector API attivi: misura campioni di menzione, non vende “posizione garantita” nelle UI di terzi.</li>
       <li>GEO in Centropic non significa GIS; AIO non significa All-in-One.</li>
     </ul>
   </section>
@@ -183,26 +184,26 @@ def _guide_score_vs_sov() -> dict[str, Any]:
         "eyebrow": _("Guida"),
         "title": _("Score AIO/GEO vs Share of Voice"),
         "description": _(
-            "Differenza tra score AIO/GEO (diagnostica probe) e Share of Voice per answer engine (proxy o measured) in Centropic."
+            "Differenza tra score AIO/GEO (predisposizione strutturale) e Share of Voice per answer engine (proxy o measured) in Centropic."
         ),
         "lede": _(
-            "Due metriche diverse: una valuta i segnali sul sito, l’altra stima la presenza relativa negli engine."
+            "Due metriche: prima rendi il brand leggibile (score), poi misuri se la voce entra nelle risposte (SoV)."
         ),
         "body": _(
             """
   <section class="page-section">
     <h2 class="page-section__title">Score AIO / GEO</h2>
-    <p class="lede">Indici 0–100 da crawl e probe. Badge Stimato sul compositario; singoli check di presenza file possono essere Misurato.</p>
+    <p class="lede">Indici 0–100 di predisposizione strutturale da crawl e probe. Badge Stimato sul compositario; i check di presenza file possono essere Misurato.</p>
     <p class="lede"><strong>AIO (AI-Driven Visibility)</strong> premia leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. <strong>GEO (Generative Engine Optimization)</strong> premia citabilità e policy crawler AI.</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Share of Voice (SoV)</h2>
-    <p class="lede"><strong>Proxy</strong>: formula su AIO/GEO + robots osservato. <strong>Measured</strong>: polling prompt su LLM (Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>
+    <p class="lede"><strong>Proxy</strong>: formula su AIO/GEO + robots osservato. <strong>Measured</strong>: campioni prompt su LLM (Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>
     <p class="lede">Per alzare SoV measured: rafforza entity pubblica (llms.txt, Organization, about), pubblica contenuti citabili, amplia il prompt bank con domande che il tuo mercato pone davvero.</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Come leggerli insieme</h2>
-    <p class="lede">Alza prima i segnali (score), poi misura la voce (SoV). Un SoV alto con score basso è fragile; score alto senza SoV measured resta una diagnosi, non una prova di citazione.</p>
+    <p class="lede">Prima chiudi i gap di leggibilità (score): l’IA non cita ciò che non legge. Poi misura la voce (SoV). Score alto è controllo del dato; SoV measured è il campione sulle risposte.</p>
     <p class="lede">Centropic mostra sempre l’evidence badge: Stimato, Misto o Misurato. Dettagli in <a href="/metodologia">metodologia</a> e nel prodotto su <a href="/prodotto">/prodotto</a>.</p>
   </section>
 """

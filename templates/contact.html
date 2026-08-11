@@ -47,6 +47,10 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Trasparenza') }}</h2>
     <p class="lede">
+      {{ _('L’IA non può citare ciò che non riesce a leggere. La nostra promessa è strutturale: brand al 100% visibile e interpretabile dai crawler generativi, con gap di informazione chiusi prima che diventino allucinazioni.') }}
+      <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>.
+    </p>
+    <p class="lede">
       {{ _('Policy:') }} <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
       <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a> ·
       <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a> ·
