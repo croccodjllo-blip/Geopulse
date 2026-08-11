@@ -177,8 +177,8 @@ body.app-body:not(.body-dash) {
 }
 
 .site-header--invert {
-  background: rgba(10, 15, 36, 0.55);
-  border-bottom-color: rgba(245, 247, 250, 0.1);
+  background: color-mix(in srgb, var(--brand-bg) 78%, transparent);
+  border-bottom-color: var(--brand-border);
   color: var(--color-clarity);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -247,8 +247,8 @@ body.app-body:not(.body-dash) {
   border-radius: 0.35rem;
   object-fit: contain;
   flex-shrink: 0;
-  box-shadow: inset 0 0 0 1px rgba(201, 211, 221, 0.2);
-  background: #080B10;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent) 22%, transparent);
+  background: var(--brand-bg);
   animation: none;
 }
 
@@ -623,8 +623,8 @@ body.app-body:not(.body-dash) {
 .field-error { margin: 0; color: var(--danger); font-size: 0.8rem; font-weight: 500; }
 
 .panel {
-  border: 1px solid var(--border);
-  background: rgba(18, 26, 58, 0.55);
+  border: 1px solid var(--brand-border);
+  background: color-mix(in srgb, var(--brand-card) 88%, transparent);
   border-radius: var(--radius-md);
   padding: 1.4rem;
   box-shadow: var(--shadow);
@@ -1156,10 +1156,10 @@ body.app-body:not(.body-dash) {
 
 /* Section CTA */
 .section-cta {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--brand-border);
   background:
-    radial-gradient(ellipse 70% 80% at 50% 110%, rgba(201, 211, 221, 0.08), transparent 60%),
-    rgba(18, 26, 58, 0.45);
+    radial-gradient(ellipse 70% 80% at 50% 110%, color-mix(in srgb, var(--plan-accent) 10%, transparent), transparent 60%),
+    color-mix(in srgb, var(--brand-card) 55%, var(--brand-bg));
   padding: 5rem 0 5.5rem;
 }
 
@@ -1578,8 +1578,8 @@ body.app-body:not(.body-dash) {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(110deg, rgba(11, 17, 32, 0.97) 0%, rgba(201, 211, 221, 0.28) 60%, rgba(11, 17, 32, 0.75) 100%),
-    linear-gradient(180deg, transparent 15%, rgba(11, 17, 32, 0.65) 100%);
+    linear-gradient(110deg, color-mix(in srgb, var(--brand-bg) 97%, transparent) 0%, color-mix(in srgb, var(--plan-accent) 28%, var(--brand-bg)) 60%, color-mix(in srgb, var(--brand-bg) 75%, transparent) 100%),
+    linear-gradient(180deg, transparent 15%, color-mix(in srgb, var(--brand-bg) 65%, transparent) 100%);
 }
 
 .workspace-banner__inner {
@@ -1693,8 +1693,8 @@ body.app-body:not(.body-dash) {
   min-height: 1.65rem;
   padding: 0.18rem 0.6rem;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(11, 17, 32, 0.35);
+  border: 1px solid var(--brand-border);
+  background: color-mix(in srgb, var(--brand-card) 55%, transparent);
   font-size: 0.72rem;
 }
 
@@ -1705,9 +1705,9 @@ body.app-body:not(.body-dash) {
   gap: 0.5rem 0.75rem;
   margin: 1.2rem 0 0;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--brand-border);
   border-radius: var(--radius);
-  background: rgba(11, 17, 32, 0.45);
+  background: color-mix(in srgb, var(--brand-card) 72%, transparent);
   backdrop-filter: blur(8px);
   animation: rise 860ms var(--ease) both;
   animation-delay: 155ms;
@@ -4208,9 +4208,9 @@ html.analyze-busy {
   border: 1px solid var(--border-mid);
   border-radius: var(--radius-lg);
   background:
-    radial-gradient(ellipse 80% 70% at 22% 40%, rgba(201, 211, 221, 0.10), transparent 55%),
-    radial-gradient(ellipse 60% 50% at 90% 10%, rgba(201, 211, 221, 0.08), transparent 50%),
-    linear-gradient(165deg, rgba(18, 26, 58, 0.9) 0%, rgba(10, 15, 36, 0.95) 100%);
+    radial-gradient(ellipse 80% 70% at 22% 40%, color-mix(in srgb, var(--plan-accent) 12%, transparent), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 10%, color-mix(in srgb, var(--plan-accent-deep) 10%, transparent), transparent 50%),
+    var(--brand-card);
   box-shadow: var(--shadow-md);
   overflow: hidden;
   animation: rise 720ms var(--ease) both;
@@ -4814,30 +4814,26 @@ html.analyze-busy {
   --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
 
   color: var(--color-clarity);
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  background-image:
-    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(201, 211, 221, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 30% at 90% 20%, rgba(91, 107, 122, 0.06) 0%, transparent 50%),
-    var(--bg-gradient);
+  background-color: var(--brand-bg);
+  background-image: var(--bg-gradient);
   background-attachment: fixed;
 }
 
 .body-dash .site-header {
-  background: rgba(7, 10, 18, 0.85);
-  border-bottom-color: var(--border);
+  background: color-mix(in srgb, var(--brand-bg) 82%, transparent);
+  border-bottom-color: var(--brand-border);
   backdrop-filter: blur(12px);
 }
 
 .body-dash .site-footer {
-  background: #05070d;
-  border-top-color: var(--border);
+  background: var(--brand-bg);
+  border-top-color: var(--brand-border);
 }
 
 .body-dash .workspace-banner--void .workspace-banner__veil {
   background:
-    linear-gradient(180deg, rgba(7, 10, 18, 0.55) 0%, rgba(7, 10, 18, 0.92) 100%),
-    linear-gradient(90deg, rgba(7, 10, 18, 0.7) 0%, transparent 55%);
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-bg) 55%, transparent) 0%, color-mix(in srgb, var(--brand-bg) 92%, transparent) 100%),
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-bg) 70%, transparent) 0%, transparent 55%);
 }
 
 .body-dash .analyze-composer {
@@ -4878,8 +4874,8 @@ html.analyze-busy {
 .body-dash .diff-strip,
 .body-dash .empty-state,
 .body-dash .code-shell {
-  background: var(--surface);
-  border-color: var(--border-mid);
+  background: var(--brand-card);
+  border-color: var(--brand-border);
   box-shadow: var(--shadow-sm);
 }
 
@@ -5616,19 +5612,19 @@ html.analyze-busy {
 .diff-strip,
 .engine-breakdown,
 .geo-suite-card {
-  background: rgba(18, 26, 58, 0.55);
-  border-color: var(--border);
+  background: color-mix(in srgb, var(--brand-card) 88%, transparent);
+  border-color: var(--brand-border);
   backdrop-filter: blur(8px);
 }
 
 .plan--featured {
-  border-color: rgba(201, 211, 221, 0.45);
-  box-shadow: 0 0 0 1px rgba(201, 211, 221, 0.2), 0 0 40px rgba(201, 211, 221, 0.12);
+  border-color: color-mix(in srgb, var(--plan-accent) 45%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--plan-accent) 20%, transparent), 0 0 40px color-mix(in srgb, var(--plan-accent) 12%, transparent);
 }
 
 .flash {
   border-color: var(--border-mid);
-  background: rgba(18, 26, 58, 0.85);
+  background: color-mix(in srgb, var(--brand-card) 92%, transparent);
   color: var(--color-clarity);
 }
 
@@ -5651,8 +5647,8 @@ html.analyze-busy {
 }
 
 .site-footer {
-  background: rgba(7, 11, 22, 0.92);
-  border-top-color: var(--border);
+  background: var(--brand-bg);
+  border-top-color: var(--brand-border);
 }
 
 .workspace-banner__brand {
@@ -5988,7 +5984,8 @@ html.analyze-busy {
   flex-direction: column;
   justify-content: space-between;
   padding: 1rem;
-  background: var(--brand-card);
+  /* Same canvas as body — slight elevate only, never a second hue family */
+  background: color-mix(in srgb, var(--brand-bg) 92%, var(--brand-card));
   border-right: 1px solid var(--brand-border);
 }
 
@@ -7063,8 +7060,8 @@ body.body-auth {
   display: block;
   flex-shrink: 0;
   border-radius: 0.4rem;
-  background: #080B10;
-  box-shadow: inset 0 0 0 1px rgba(201, 211, 221, 0.25);
+  background: var(--brand-bg);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent) 25%, transparent);
 }
 
 .page-intro__brand-row .hero-brand-word,
@@ -7529,8 +7526,8 @@ body.body-auth {
   display: grid;
   place-items: center;
   border-radius: var(--radius);
-  background: #080B10;
-  box-shadow: inset 0 0 0 1px rgba(201, 211, 221, 0.22);
+  background: var(--brand-bg);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent) 22%, transparent);
   padding: 0.2rem;
 }
 .holo-brand__emblem img {
@@ -8751,10 +8748,10 @@ body.body-auth {
 
 .guide-figure {
   margin: 0 0 1.25rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--brand-border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: #080b10;
+  background: var(--brand-card);
 }
 
 .guide-figure img {
@@ -9070,9 +9067,10 @@ body.body-auth {
   position: relative;
   isolation: isolate;
   color: var(--brand-clarity);
+  /* One canvas with body: soft plan-accent bloom only, no second base hue */
   background:
-    radial-gradient(ellipse 50% 80% at 0% 0%, rgba(201, 211, 221, 0.08), transparent 55%),
-    linear-gradient(180deg, #070A10 0%, var(--brand-bg) 100%);
+    radial-gradient(ellipse 50% 80% at 0% 0%, color-mix(in srgb, var(--plan-accent) 10%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-elevated) 55%, var(--brand-bg)) 0%, var(--brand-bg) 100%);
   border-bottom: 1px solid var(--brand-border);
   /* .workspace-body below pulls up by -2rem (see .workspace-body) and sits
      at a higher z-index; this padding absorbs that overlap in empty space
@@ -9127,7 +9125,7 @@ body.body-auth {
   padding: 0.65rem 0.85rem;
   border: 1px solid var(--brand-border);
   border-radius: var(--radius);
-  background: rgba(10, 14, 20, 0.72);
+  background: color-mix(in srgb, var(--brand-card) 88%, transparent);
   backdrop-filter: none;
   animation: none;
   min-width: min(100%, 18rem);
@@ -9415,87 +9413,164 @@ body.body-auth {
   border: 1px solid var(--plan-chip-border, rgba(255, 255, 255, 0.08));
 }
 
-/* —— Free: cool steel navy —— */
+/* —— Per-plan UNIFIED CANVAS ————————————————————————————————
+   One hue family per plan for body + shell + cards. Accents stay on
+   interactive/image chrome only; surfaces remapped via --brand-* so
+   sidebar/header/strip/footer/panels cannot drift into a second palette.
+   ———————————————————————————————————————————————————————————— */
+
+/* Free: cool steel */
 body.dash-plan--free {
   --plan-accent: #8BA3BD;
-  --plan-accent-deep: #4A5C70;
+  --plan-accent-deep: #6B849E;
   --plan-chip-border: rgba(139, 163, 189, 0.28);
-  --plan-chip-bg: rgba(12, 18, 28, 0.65);
-  --plan-chip-item-bg: rgba(139, 163, 189, 0.08);
+  --plan-chip-bg: rgba(14, 22, 32, 0.72);
+  --plan-chip-item-bg: rgba(139, 163, 189, 0.10);
   --plan-chip-ink: #D7E0EA;
-  background:
-    radial-gradient(ellipse 70% 50% at 10% -10%, rgba(100, 130, 170, 0.18), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(70, 90, 120, 0.12), transparent 50%),
-    linear-gradient(180deg, #0B1220 0%, #070B12 42%, #05070C 100%);
+
+  --brand-bg: #0A1018;
+  --brand-card: #0E1620;
+  --brand-elevated: #121C28;
+  --brand-border: rgba(139, 163, 189, 0.18);
+  --border: var(--brand-border);
+  --border-mid: rgba(139, 163, 189, 0.26);
+  --ink-soft-bg: var(--brand-card);
+  --surface-solid: var(--brand-card);
+  --bg-deep: var(--brand-bg);
+  --color-chaos: var(--brand-bg);
+  --bg-gradient:
+    radial-gradient(ellipse 80% 55% at 50% -12%, rgba(139, 163, 189, 0.12), transparent 58%),
+    linear-gradient(180deg, #0A1018 0%, #0A1018 100%);
+
+  color: var(--brand-clarity);
+  background-color: var(--brand-bg);
+  background-image: var(--bg-gradient);
   background-attachment: fixed;
 }
-body.dash-plan--free .app-sidebar {
-  background: linear-gradient(180deg, #0C1420 0%, #080C14 100%);
-  border-right-color: rgba(139, 163, 189, 0.22);
-}
-body.dash-plan--free .site-header--invert,
-body.dash-plan--free .workspace-strip {
-  background: rgba(8, 12, 20, 0.72);
-  border-color: rgba(139, 163, 189, 0.2);
-}
-body.dash-plan--free .app-sidebar__link.is-active {
-  border-left-color: #8BA3BD;
-  color: #D7E0EA;
-}
 
-/* —— Plus: platinum teal —— */
+/* Plus: platinum teal */
 body.dash-plan--plus {
   --plan-accent: #3FA8B5;
-  --plan-accent-deep: #246772;
-  --plan-chip-border: rgba(63, 168, 181, 0.32);
-  --plan-chip-bg: rgba(4, 22, 20, 0.7);
+  --plan-accent-deep: #2A7F8A;
+  --plan-chip-border: rgba(63, 168, 181, 0.30);
+  --plan-chip-bg: rgba(10, 26, 24, 0.72);
   --plan-chip-item-bg: rgba(63, 168, 181, 0.12);
   --plan-chip-ink: #CFF3F0;
-  background:
-    radial-gradient(ellipse 65% 48% at 8% -8%, rgba(63, 168, 181, 0.20), transparent 55%),
-    radial-gradient(ellipse 45% 35% at 100% 5%, rgba(36, 103, 114, 0.16), transparent 50%),
-    linear-gradient(180deg, #041210 0%, #030D0C 45%, #020908 100%);
+
+  --brand-bg: #061210;
+  --brand-card: #0A1A18;
+  --brand-elevated: #0E2220;
+  --brand-border: rgba(63, 168, 181, 0.18);
+  --border: var(--brand-border);
+  --border-mid: rgba(63, 168, 181, 0.26);
+  --ink-soft-bg: var(--brand-card);
+  --surface-solid: var(--brand-card);
+  --bg-deep: var(--brand-bg);
+  --color-chaos: var(--brand-bg);
+  --bg-gradient:
+    radial-gradient(ellipse 80% 55% at 50% -12%, rgba(63, 168, 181, 0.13), transparent 58%),
+    linear-gradient(180deg, #061210 0%, #061210 100%);
+
+  color: var(--brand-clarity);
+  background-color: var(--brand-bg);
+  background-image: var(--bg-gradient);
   background-attachment: fixed;
-}
-body.dash-plan--plus .app-sidebar {
-  background: linear-gradient(180deg, #051816 0%, #030F0E 100%);
-  border-right-color: rgba(63, 168, 181, 0.25);
-}
-body.dash-plan--plus .site-header--invert,
-body.dash-plan--plus .workspace-strip {
-  background: rgba(3, 16, 14, 0.75);
-  border-color: rgba(63, 168, 181, 0.22);
-}
-body.dash-plan--plus .app-sidebar__link.is-active {
-  border-left-color: #3FA8B5;
-  color: #CFF3F0;
 }
 
-/* —— Business: warm espresso / copper —— */
+/* Business: warm copper */
 body.dash-plan--business {
   --plan-accent: #D4A574;
-  --plan-accent-deep: #8A6438;
-  --plan-chip-border: rgba(212, 165, 116, 0.32);
-  --plan-chip-bg: rgba(28, 18, 10, 0.72);
-  --plan-chip-item-bg: rgba(212, 165, 116, 0.1);
+  --plan-accent-deep: #A67A4A;
+  --plan-chip-border: rgba(212, 165, 116, 0.30);
+  --plan-chip-bg: rgba(22, 18, 12, 0.72);
+  --plan-chip-item-bg: rgba(212, 165, 116, 0.10);
   --plan-chip-ink: #F3E6D6;
-  background:
-    radial-gradient(ellipse 65% 48% at 12% -10%, rgba(212, 165, 116, 0.16), transparent 55%),
-    radial-gradient(ellipse 45% 35% at 100% 0%, rgba(120, 70, 40, 0.14), transparent 50%),
-    linear-gradient(180deg, #120E0A 0%, #0C0907 45%, #080604 100%);
+
+  --brand-bg: #100C08;
+  --brand-card: #16120C;
+  --brand-elevated: #1C1610;
+  --brand-border: rgba(212, 165, 116, 0.18);
+  --border: var(--brand-border);
+  --border-mid: rgba(212, 165, 116, 0.26);
+  --ink-soft-bg: var(--brand-card);
+  --surface-solid: var(--brand-card);
+  --bg-deep: var(--brand-bg);
+  --color-chaos: var(--brand-bg);
+  --bg-gradient:
+    radial-gradient(ellipse 80% 55% at 50% -12%, rgba(212, 165, 116, 0.11), transparent 58%),
+    linear-gradient(180deg, #100C08 0%, #100C08 100%);
+
+  color: var(--brand-clarity);
+  background-color: var(--brand-bg);
+  background-image: var(--bg-gradient);
   background-attachment: fixed;
 }
-body.dash-plan--business .app-sidebar {
-  background: linear-gradient(180deg, #16100C 0%, #0C0907 100%);
-  border-right-color: rgba(212, 165, 116, 0.25);
-}
+
+/* Shell chrome: same canvas as body (no second solid hue) */
+body.dash-plan--free .app-sidebar,
+body.dash-plan--plus .app-sidebar,
+body.dash-plan--business .app-sidebar,
+body.dash-plan--free .site-header,
+body.dash-plan--plus .site-header,
+body.dash-plan--business .site-header,
+body.dash-plan--free .site-header--invert,
+body.dash-plan--plus .site-header--invert,
 body.dash-plan--business .site-header--invert,
+body.dash-plan--free .site-footer,
+body.dash-plan--plus .site-footer,
+body.dash-plan--business .site-footer {
+  background: color-mix(in srgb, var(--brand-bg) 88%, transparent);
+  border-color: var(--brand-border);
+  box-shadow: none;
+}
+
+body.dash-plan--free .workspace-strip,
+body.dash-plan--plus .workspace-strip,
 body.dash-plan--business .workspace-strip {
-  background: rgba(16, 12, 8, 0.78);
-  border-color: rgba(212, 165, 116, 0.22);
+  background:
+    radial-gradient(ellipse 50% 80% at 0% 0%, color-mix(in srgb, var(--plan-accent) 10%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-elevated) 40%, var(--brand-bg)) 0%, var(--brand-bg) 100%);
+  border-color: var(--brand-border);
+}
+
+body.dash-plan--free .card,
+body.dash-plan--plus .card,
+body.dash-plan--business .card,
+body.dash-plan--free .dash-block--panel,
+body.dash-plan--plus .dash-block--panel,
+body.dash-plan--business .dash-block--panel,
+body.dash-plan--free .monitor-panel,
+body.dash-plan--plus .monitor-panel,
+body.dash-plan--business .monitor-panel,
+body.dash-plan--free .panel,
+body.dash-plan--plus .panel,
+body.dash-plan--business .panel,
+body.dash-plan--free .report-lead,
+body.dash-plan--plus .report-lead,
+body.dash-plan--business .report-lead,
+body.dash-plan--free .code-shell,
+body.dash-plan--plus .code-shell,
+body.dash-plan--business .code-shell,
+body.dash-plan--free .empty-state,
+body.dash-plan--plus .empty-state,
+body.dash-plan--business .empty-state,
+body.dash-plan--free .workspace-status--strip,
+body.dash-plan--plus .workspace-status--strip,
+body.dash-plan--business .workspace-status--strip {
+  background: var(--brand-card);
+  border-color: var(--brand-border);
+}
+
+body.dash-plan--free .app-sidebar__link.is-active {
+  border-left-color: var(--plan-accent);
+  color: #D7E0EA;
+}
+body.dash-plan--plus .app-sidebar__link.is-active {
+  border-left-color: var(--plan-accent);
+  color: #CFF3F0;
 }
 body.dash-plan--business .app-sidebar__link.is-active {
-  border-left-color: #D4A574;
+  border-left-color: var(--plan-accent);
   color: #F3E6D6;
 }
 
@@ -9503,6 +9578,7 @@ body.dash-plan--free .workspace,
 body.dash-plan--plus .workspace,
 body.dash-plan--business .workspace {
   position: relative;
+  background: transparent;
 }
 
 @media (max-width: 720px) {

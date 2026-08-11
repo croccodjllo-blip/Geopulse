@@ -7,16 +7,16 @@ Void-black surfaces, chrome/silver accent (`#C9D3DD` / `#5B6B7A`) sampled direct
 
 Semantic state colors are deliberately **not** the brand accent: success stays green (`--ok: #22C55E`), warning amber, danger red.
 
-### Per-plan accent (dashboard only)
-Each dashboard plan tier gets its own uniform accent, used consistently for both the background atmosphere *and* every "image" component (stat-tile badge, SoV ring, radar chart, credits bar) — driven by `--plan-accent` / `--plan-accent-deep`, set per `body.dash-plan--*` class in `static/css/app.css`:
+### Per-plan canvas + accent (logged-in shell)
+When a user is logged in, `body.dash-plan--free|plus|business` remaps the **entire surface canvas** (`--brand-bg`, `--brand-card`, `--brand-elevated`, `--brand-border`, `--bg-gradient`) to one hue family per plan — body, sidebar, header, workspace strip, footer, and panels all read the same tokens. Accents (`--plan-accent` / `--plan-accent-deep`) color interactive/image chrome only (stat-tile badge, SoV ring, radar, credits bar, active nav). Do **not** paint sidebar/header/strip with a second solid gradient hue.
 
-| Plan | Accent | Hex |
+| Plan | Accent | Canvas base (`--brand-bg`) |
 |---|---|---|
-| Free | Cool steel silver | `#8BA3BD` |
-| Plus | Platinum teal | `#3FA8B5` |
-| Business | Copper / bronze | `#D4A574` |
+| Free | Steel `#8BA3BD` | `#0A1018` |
+| Plus | Platinum teal `#3FA8B5` | `#061210` |
+| Business | Copper `#D4A574` | `#100C08` |
 
-Marketing pages and admin (no `dash-plan--*` class) fall back to the global chrome accent (`--plan-accent: var(--brand-cyan)`). When adding a new "image"/graphic dashboard component, use `var(--plan-accent)`/`var(--plan-accent-deep)`, not a hardcoded hex — that is what makes it plan-uniform automatically.
+Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04060A`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/copper hex.
 
 ## Assets
 - `static/img/logo.svg` — **primary mark, true self-contained vector** (paths/gradients only, no external `<image>` refs). Every header/hero/page-intro/auth `<img>` points here directly (viewBox 128×128).
