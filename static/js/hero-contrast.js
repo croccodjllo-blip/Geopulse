@@ -1,5 +1,5 @@
 /**
- * Landing hero contrast demo: Invisible-to-AI ↔ Centropic-Optimized.
+ * Sample dashboard contrast demo: Invisible-to-AI ↔ Centropic-Optimized.
  */
 (function () {
   function init(root) {

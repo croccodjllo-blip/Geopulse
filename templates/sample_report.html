@@ -13,6 +13,16 @@
     </p>
   </header>
 
+  <section class="page-section sample-dash-section" aria-labelledby="sample-dash-title">
+    <h2 class="page-section__title" id="sample-dash-title">{{ _('Dashboard di esempio') }}</h2>
+    <p class="lede">
+      {{ _('Passa da “invisibile all’IA” a Centropic-Optimized: stessi score e findings che vedi dopo un’analisi reale.') }}
+    </p>
+    <div class="sample-dash" aria-label="{{ _('Anteprima dashboard: sito invisibile vs Centropic-Optimized') }}">
+      {% include "partials/hero_contrast_demo.html" %}
+    </div>
+  </section>
+
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Sintesi') }}</h2>
     <p class="lede"><strong>{{ report.domain }}</strong> · {{ _('Indice') }} <code>{{ report.rating }}</code>
@@ -53,9 +63,10 @@
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Analizza il tuo sito') }}</a>
+    <a class="btn btn-primary" href="{{ url_for('index') }}#hero-brand">{{ _('Analizza il tuo sito') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi i piani') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('agencies') }}">{{ _('Per agenzie') }}</a>
   </div>
 </article>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/hero-contrast.js') }}" defer></script>
 {% endblock %}

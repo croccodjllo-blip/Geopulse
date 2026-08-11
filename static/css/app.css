@@ -6476,6 +6476,16 @@ body.body-auth {
   animation-delay: 180ms;
 }
 
+/* Sample report page: same dashboard mockup, page-width (not hero grid) */
+.sample-dash-section .sample-dash {
+  margin-top: 1.25rem;
+  width: min(100%, 40rem);
+  animation: hero-dash-rise 900ms var(--ease) both;
+}
+.sample-dash .hero-dash {
+  width: 100%;
+}
+
 .hero-dash {
   border-radius: 18px;
   border: 1px solid rgba(201, 211, 221, 0.22);

@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero hero--v2 hero--signal hero--contrast" aria-labelledby="hero-brand">
+<section class="hero hero--v2 hero--signal" aria-labelledby="hero-brand">
   <div class="hero-visual hero-visual--cite" aria-hidden="true">
     <img
       class="hero-visual__photo"
@@ -46,11 +46,7 @@
       <span class="hero-accent">{{ _('ti citano') }}</span>
     </h1>
     <p class="lede hero-lede">
-<<<<<<< HEAD
-      {{ _('Dal sito invisibile al brand leggibile dai crawler generativi — score, findings e pack in un’unica dashboard.') }}
-=======
       {{ _('Inserisci il tuo dominio: vedi subito lo score AIO e le criticità. Account solo per sbloccare il report completo e i file di fix.') }}
->>>>>>> fe4be45 (feat(plg): hero URL input → guest preview → register to unlock pack)
     </p>
     <form
       class="hero-url-form"
@@ -81,10 +77,6 @@
         <a href="{{ url_for('sample_report') }}">{{ _('Vedi un report di esempio') }}</a>
       </p>
     </form>
-  </div>
-
-  <div class="hero-contrast" aria-label="{{ _('Anteprima dashboard: sito invisibile vs Centropic-Optimized') }}">
-    {% include "partials/hero_contrast_demo.html" %}
   </div>
 </section>
 
@@ -298,5 +290,4 @@
     </div>
   </div>
 </section>
-<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/hero-contrast.js') }}" defer></script>
 {% endblock %}
