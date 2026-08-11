@@ -293,18 +293,45 @@
               <div class="signal-diag" role="table" aria-label="{{ _('Signal diagnostics') }}">
                 <div class="signal-diag__head" role="row">
                   <span class="signal-diag__h" role="columnheader">{{ _('Segnale') }}</span>
-                  <span class="signal-diag__h signal-diag__h--read" role="columnheader">{{ _('Lettura') }}</span>
+                  <span class="signal-diag__h" role="columnheader">{{ _('Evidence') }}</span>
+                  <span class="signal-diag__h signal-diag__h--bar" role="columnheader">{{ _('Lettura') }}</span>
                   <span class="signal-diag__h signal-diag__h--num" role="columnheader">{{ _('Valore') }}</span>
                 </div>
 
                 <div class="signal-diag__body" role="rowgroup">
+                  <article class="signal-diag__row" role="row" data-tone="aio">
+                    <div class="signal-diag__signal" role="cell">
+                      <span class="signal-diag__swatch" aria-hidden="true"></span>
+                      <div class="signal-diag__copy">
+                        <strong>AIO</strong>
+                        <em>AI-Driven Visibility</em>
+                      </div>
+                    </div>
+                    <div class="signal-diag__status" role="cell">
+                      <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
+                    </div>
+                    <div class="signal-diag__reading" role="cell">
+                      <div class="signal-diag__meter" style="--p: {{ aio_n }};" aria-hidden="true">
+                        <i></i>
+                      </div>
+                      <span class="signal-diag__meta">0–100 · {{ propensity }}</span>
+                    </div>
+                    <div class="signal-diag__value" role="cell">
+                      <strong>{{ aio_n }}</strong>
+                      <span class="signal-diag__unit">{{ _('score') }}</span>
+                    </div>
+                  </article>
+
                   <article class="signal-diag__row" role="row" data-tone="geo">
                     <div class="signal-diag__signal" role="cell">
                       <span class="signal-diag__swatch" aria-hidden="true"></span>
                       <div class="signal-diag__copy">
-                        <strong>GEO <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></strong>
+                        <strong>GEO</strong>
                         <em>Generative Engine Optimization</em>
                       </div>
+                    </div>
+                    <div class="signal-diag__status" role="cell">
+                      <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
                     </div>
                     <div class="signal-diag__reading" role="cell">
                       <div class="signal-diag__meter" style="--p: {{ geo_n }};" aria-hidden="true">
@@ -314,6 +341,7 @@
                     </div>
                     <div class="signal-diag__value" role="cell">
                       <strong>{{ geo_n }}</strong>
+                      <span class="signal-diag__unit">{{ _('score') }}</span>
                     </div>
                   </article>
 
@@ -325,6 +353,9 @@
                         <em>{{ _('Centropic Visibility Index') }} · {{ rating.label.split('—')[0].strip() }}</em>
                       </div>
                     </div>
+                    <div class="signal-diag__status" role="cell">
+                      <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
+                    </div>
                     <div class="signal-diag__reading" role="cell">
                       <div class="signal-diag__meter signal-diag__meter--grade" style="--p: {{ rating.score }};" aria-hidden="true">
                         <i></i>
@@ -333,6 +364,7 @@
                     </div>
                     <div class="signal-diag__value" role="cell">
                       <span class="signal-diag__grade" data-chars="{{ rating.code|length }}">{{ rating.code }}</span>
+                      <span class="signal-diag__unit">{{ _('grade') }}</span>
                     </div>
                   </article>
 
@@ -350,8 +382,8 @@
                         </em>
                       </div>
                     </div>
-                    <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__sev" aria-hidden="true">
+                    <div class="signal-diag__status" role="cell">
+                      <div class="signal-diag__sev">
                         {% if crit_n %}
                         <span class="signal-diag__chip" data-sev="critical">{{ crit_n }} crit</span>
                         {% endif %}
@@ -363,18 +395,30 @@
                         {% endif %}
                       </div>
                     </div>
+                    <div class="signal-diag__reading" role="cell">
+                      <div class="signal-diag__risk-rail" aria-hidden="true">
+                        {% for _ in range([crit_n, 6]|min) %}<i data-sev="critical"></i>{% endfor %}
+                        {% for _ in range([warn_n, 6]|min) %}<i data-sev="warn"></i>{% endfor %}
+                        {% if not crit_n and not warn_n %}<i data-sev="ok"></i>{% endif %}
+                      </div>
+                      <span class="signal-diag__meta">{{ _('open findings') }}</span>
+                    </div>
                     <div class="signal-diag__value" role="cell">
                       <strong class="signal-diag__findings">{{ findings_n }}</strong>
+                      <span class="signal-diag__unit">{{ _('findings') }}</span>
                     </div>
                   </article>
                 </div>
-              </div>
 
-              <ol class="pulse-scale" aria-label="{{ _('Scala da DDD a AAA') }}">
-                {% for code in rating.scale %}
-                <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
-                {% endfor %}
-              </ol>
+                <footer class="signal-diag__foot">
+                  <span class="signal-diag__foot-label">{{ _('Scala CVI') }}</span>
+                  <ol class="pulse-scale" aria-label="{{ _('Scala da DDD a AAA') }}">
+                    {% for code in rating.scale %}
+                    <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
+                    {% endfor %}
+                  </ol>
+                </footer>
+              </div>
             </div>
           </section>
           </div>
