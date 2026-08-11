@@ -90,6 +90,7 @@ from services.paddle_billing import (
     create_plus_checkout as paddle_create_plus_checkout,
     create_topup_checkout as paddle_create_topup_checkout,
     extract_user_id as paddle_extract_user_id,
+    resolve_webhook_user as paddle_resolve_webhook_user,
     paddle_business_enabled,
     paddle_enabled,
     paddle_overlay_ready,
@@ -153,6 +154,7 @@ from services.site_guide import site_guide_payload
 from services.competitor_suggest import suggest_competitors, normalize_competitor_url
 from services.jobs import (
     STALE_HEARTBEAT_MINUTES,
+    DuplicateAnalyzeJobError,
     claim_next_job,
     complete_job,
     enqueue_analysis,
@@ -212,6 +214,7 @@ from services.sov_budget import (
     SovDailyBudgetExceeded,
     assert_sov_budget_allows,
     sov_budget_status,
+    sov_ledger_description,
     sov_spent_today_cents,
 )
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
@@ -1360,11 +1363,14 @@ def _establish_session(user: User, *, permanent: bool = True) -> None:
 
 
 def ensure_admin_user() -> User | None:
-    """Crea l’admin solo se ADMIN_PASSWORD è impostata.
+    """Crea o mantiene l’admin solo in modo fail-closed.
 
-    - Nuovo utente: richiede ADMIN_PASSWORD.
-    - Utente esistente: aggiorna metadati; reset password solo se
-      ADMIN_BOOTSTRAP=1 (evita overwrite a ogni restart).
+    - Nuovo utente: richiede ``ADMIN_PASSWORD``.
+    - Utente già admin: aggiorna metadati; reset password solo con
+      ``ADMIN_BOOTSTRAP=1`` (evita overwrite a ogni restart).
+    - Utente esistente non-admin con ``ADMIN_EMAIL``: **non** promuovere
+      senza ``ADMIN_BOOTSTRAP=1`` (mitiga pre-claim via registrazione pubblica).
+      Con bootstrap attivo, promuove e forza reset password.
     """
     if not ADMIN_PASSWORD:
         app.logger.warning(
@@ -1394,6 +1400,16 @@ def ensure_admin_user() -> User | None:
         db.session.add(user)
         app.logger.info("Admin creato: %s", ADMIN_EMAIL)
     else:
+        already_admin = (user.role or "").lower() == "admin" or (
+            user.plan or ""
+        ).lower() == "admin"
+        if not already_admin and not ADMIN_BOOTSTRAP:
+            app.logger.error(
+                "Refusing to promote existing non-admin %s without "
+                "ADMIN_BOOTSTRAP=1 (possible email pre-claim).",
+                ADMIN_EMAIL,
+            )
+            return None
         user.name = ADMIN_NAME
         user.company = user.company or "Centropic"
         user.website_url = user.website_url or "https://centropic.ai/"
@@ -1404,7 +1420,8 @@ def ensure_admin_user() -> User | None:
         if ADMIN_BOOTSTRAP:
             user.set_password(ADMIN_PASSWORD)
             app.logger.warning(
-                "ADMIN_BOOTSTRAP=1: password admin resettata per %s", ADMIN_EMAIL
+                "ADMIN_BOOTSTRAP=1: password admin resettata / claim per %s",
+                ADMIN_EMAIL,
             )
     db.session.commit()
     return user
@@ -1934,8 +1951,9 @@ def _usage_ledger_description(
     provider: str,
     model: str,
 ) -> str:
-    scope = "SoV citation" if is_sov_usage_call() else prefix
-    return f"{scope} usage realtime {provider}:{model}"
+    if is_sov_usage_call():
+        return sov_ledger_description("SoV citation", provider=provider, model=model)
+    return f"{prefix} usage realtime {provider}:{model}"
 
 
 def process_pending_analyze_jobs(
@@ -1964,7 +1982,12 @@ def process_pending_analyze_jobs(
         )
 
     for _ in range(max(1, limit)):
-        job = claim_next_job(db.session, AnalysisJob, on_abandon=_on_abandon)
+        job = claim_next_job(
+            db.session,
+            AnalysisJob,
+            on_abandon=_on_abandon,
+            SiteAnalysis=SiteAnalysis,
+        )
         if job is None:
             stats["empty"] += 1
             break
@@ -2801,17 +2824,26 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
                 user.id,
             )
             return None
-        job = enqueue_analysis(
-            db.session,
-            AnalysisJob,
-            user_id=user.id,
-            url=url,
-            max_pages=resolve_crawl_pages(user, deep_crawl=False),
-            competitor_urls=[],
-            run_measured=False,
-            held_cents=held,
-            source="onboarding",
-        )
+        try:
+            job = enqueue_analysis(
+                db.session,
+                AnalysisJob,
+                user_id=user.id,
+                url=url,
+                max_pages=resolve_crawl_pages(user, deep_crawl=False),
+                competitor_urls=[],
+                run_measured=False,
+                held_cents=held,
+                source="onboarding",
+                active_check=lambda: active_analyze_job_for_url(
+                    user.id, url, site=None
+                ),
+            )
+        except DuplicateAnalyzeJobError as dup:
+            if held:
+                release_hold(db.session, user, amount_cents=held)
+                db.session.commit()
+            return int(dup.job.id)
         kick_analyze_worker()
         return int(job.id)
     required = required_credit_with_grace_cents(est.service_cost_eur_cents)
@@ -2909,17 +2941,42 @@ def health():
 
     env_guards = evaluate_env_guards()
     enforce_env = prod_guards_enforced()
+    jobs_public: dict[str, int] | None = None
+    if db_ok:
+        try:
+            from centropic.ops_health import job_queue_snapshot
+
+            jobs_public = job_queue_snapshot(
+                AnalysisJob,
+                stale_after_minutes=STALE_HEARTBEAT_MINUTES,
+                func=func,
+                or_=or_,
+            )
+        except Exception:
+            app.logger.exception("health job snapshot failed")
+            jobs_public = None
+    stale_n = int((jobs_public or {}).get("stale_running") or 0)
+    fail_on_stale = (os.getenv("HEALTH_FAIL_ON_STALE_JOBS") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
     healthy = (
         db_ok
         and CREDIT_LEDGER_PI_INDEX_OK
         and (env_guards["ok"] if enforce_env else True)
+        and (not fail_on_stale or stale_n == 0)
     )
     status = 200 if healthy else 503
     payload: dict[str, Any] = {
         "ok": healthy,
         "service": "centropic",
         "time": datetime.now(timezone.utc).isoformat(),
+        "degraded": bool(stale_n > 0),
     }
+    if stale_n > 0:
+        payload["degraded_reasons"] = ["stale_jobs"]
     if not healthy:
         reasons: list[str] = []
         if not db_ok:
@@ -2928,6 +2985,8 @@ def health():
             reasons.append("credit_ledger_pi_index")
         if enforce_env and not env_guards["ok"]:
             reasons.extend(f"env:{name}" for name in env_guards["failures"])
+        if fail_on_stale and stale_n > 0:
+            reasons.append("stale_jobs")
         payload["failures"] = reasons
     # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
@@ -2946,18 +3005,8 @@ def health():
             "stale_running": None,
             "stale_after_minutes": STALE_HEARTBEAT_MINUTES,
         }
-        if db_ok:
-            from centropic.ops_health import job_queue_snapshot
-
-            # GET is read-only: reclaim moved to POST /ops/reclaim-jobs.
-            jobs_detail.update(
-                job_queue_snapshot(
-                    AnalysisJob,
-                    stale_after_minutes=STALE_HEARTBEAT_MINUTES,
-                    func=func,
-                    or_=or_,
-                )
-            )
+        if jobs_public is not None:
+            jobs_detail.update(jobs_public)
         payload.update(
             {
                 "openai": bool(OPENAI_API_KEY),
@@ -3044,7 +3093,10 @@ def ops_reclaim_jobs():
 
     try:
         reclaimed = reclaim_stale_jobs(
-            db.session, AnalysisJob, on_abandon=_on_abandon
+            db.session,
+            AnalysisJob,
+            on_abandon=_on_abandon,
+            SiteAnalysis=SiteAnalysis,
         )
         stranded = release_stranded_holds(
             db.session, AnalysisJob, on_release=_on_abandon
@@ -3978,16 +4030,22 @@ def billing_paddle_webhook():
     data = event.get("data") or {}
 
     def _user_from_paddle(obj: dict) -> User | None:
-        uid = paddle_extract_user_id(obj.get("custom_data"))
-        if uid:
-            return db.session.get(User, uid)
-        cust = obj.get("customer_id") or (obj.get("customer") or {}).get("id")
-        if cust:
-            return User.query.filter_by(paddle_customer_id=str(cust)).first()
-        sub = obj.get("subscription_id") or obj.get("id")
-        if sub and etype.startswith("subscription."):
-            return User.query.filter_by(paddle_subscription_id=str(sub)).first()
-        return None
+        """Resolve tenant for a signed Paddle event (customer/sub first)."""
+        return paddle_resolve_webhook_user(
+            obj,
+            event_type=etype,
+            by_customer_id=lambda cid: User.query.filter_by(
+                paddle_customer_id=cid
+            ).first(),
+            by_subscription_id=lambda sid: User.query.filter_by(
+                paddle_subscription_id=sid
+            ).first(),
+            by_user_id=lambda uid: db.session.get(User, uid),
+            customer_taken_by_other=lambda cid, uid: User.query.filter(
+                User.paddle_customer_id == cid,
+                User.id != uid,
+            ).first(),
+        )
 
     try:
         if etype in {
@@ -4313,6 +4371,10 @@ def register():
             "Controlla la casella email per confermare l’indirizzo "
             "(richiesto per il credito di benvenuto)."
         )
+        # Block public registration of the bootstrap admin mailbox (pre-claim).
+        if email == ADMIN_EMAIL:
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
         if User.query.filter_by(email=email).first():
             flash(generic_ok, "success")
             return redirect(url_for("login"))
@@ -5232,16 +5294,26 @@ def dashboard_analyze_confirmed():
                     f"{format_token_amount(shortage)}."
                 )
             )
-        job = enqueue_analysis(
-            db.session,
-            AnalysisJob,
-            user_id=user.id,
-            url=url,
-            max_pages=crawl_pages,
-            competitor_urls=competitor_urls[:3],
-            run_measured=run_meas,
-            held_cents=held,
-        )
+        try:
+            job = enqueue_analysis(
+                db.session,
+                AnalysisJob,
+                user_id=user.id,
+                url=url,
+                max_pages=crawl_pages,
+                competitor_urls=competitor_urls[:3],
+                run_measured=run_meas,
+                held_cents=held,
+                active_check=lambda: active_analyze_job_for_url(
+                    user.id, url, site=existing
+                ),
+            )
+        except DuplicateAnalyzeJobError as dup:
+            if held:
+                release_hold(db.session, user, amount_cents=held)
+                db.session.commit()
+            flash("Analisi già in coda per questo URL.", "info")
+            return redirect(url_for("dashboard", job=dup.job.id))
         kick_analyze_worker()
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
@@ -6141,17 +6213,27 @@ def dashboard_verify_rescan(analysis_id: int):
         flash("Token insufficienti per il re-scan measured.", "warning")
         return redirect(url_for("topup_credit_page"))
 
-    job = enqueue_analysis(
-        db.session,
-        AnalysisJob,
-        user_id=user.id,
-        url=url,
-        max_pages=resolve_crawl_pages(user, deep_crawl=False),
-        competitor_urls=[],
-        run_measured=run_meas,
-        held_cents=held,
-        source="verify",
-    )
+    try:
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url=url,
+            max_pages=resolve_crawl_pages(user, deep_crawl=False),
+            competitor_urls=[],
+            run_measured=run_meas,
+            held_cents=held,
+            source="verify",
+            active_check=lambda: active_analyze_job_for_url(
+                user.id, url, site=analysis
+            ),
+        )
+    except DuplicateAnalyzeJobError as dup:
+        if held:
+            release_hold(db.session, user, amount_cents=held)
+            db.session.commit()
+        flash("Re-scan già in coda per questo URL.", "info")
+        return redirect(url_for("dashboard", job=dup.job.id))
     kick_analyze_worker()
     flash("Re-scan measured in coda.", "success")
     return redirect(url_for("dashboard", job=job.id))
@@ -6390,13 +6472,37 @@ def api_v1_analyze():
             run_measured=want_measured,
             held_cents=int(api_held or 0),
             source="api",
+            active_check=lambda: active_analyze_job_for_url(
+                user.id, url, site=existing
+            ),
+        )
+    except DuplicateAnalyzeJobError as dup:
+        if int(api_held or 0) > 0:
+            try:
+                release_hold(db.session, user, amount_cents=int(api_held))
+                db.session.commit()
+            except Exception:
+                app.logger.exception("API analyze hold release after dedupe")
+                db.session.rollback()
+        return (
+            jsonify(
+                {
+                    "ok": True,
+                    "queued": True,
+                    "job_id": dup.job.id,
+                    "status": dup.job.status,
+                    "deduped": True,
+                    "status_url": url_for(
+                        "api_v1_job_status", job_id=dup.job.id, _external=True
+                    ),
+                }
+            ),
+            202,
         )
     except Exception:
         db.session.rollback()
         if int(api_held or 0) > 0:
             try:
-                from services.usage_billing import release_hold
-
                 release_hold(
                     db.session,
                     user,

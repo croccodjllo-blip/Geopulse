@@ -41,12 +41,19 @@ def evaluate_env_guards() -> dict[str, Any]:
     allow_drop = _truthy(os.getenv("ALLOW_DROP_ANALYSIS_JOBS"), "0")
     trust_proxy = _truthy(os.getenv("TRUST_PROXY"), "1")
     behind_nginx = _truthy(os.getenv("BEHIND_NGINX"), "0")
+    database_url = (os.getenv("DATABASE_URL") or "").strip()
     try:
         sov_budget = int(os.getenv("SOV_DAILY_BUDGET_CENTS", "5000") or "5000")
     except ValueError:
         sov_budget = -1
 
     checks = {
+        "DATABASE_URL": {
+            # Prod must not silently fall back to local SQLite under BASE_DIR.
+            "ok": bool(database_url),
+            "value": "set" if database_url else "missing",
+            "required": "set",
+        },
         "ASYNC_ANALYZE": {
             "ok": async_analyze,
             "value": "1" if async_analyze else "0",

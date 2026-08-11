@@ -419,6 +419,82 @@ def extract_user_id(custom_data: Any) -> int | None:
         return None
 
 
+def resolve_webhook_user(
+    data: dict[str, Any],
+    *,
+    by_customer_id,
+    by_subscription_id,
+    by_user_id,
+    customer_taken_by_other=None,
+    event_type: str = "",
+):
+    """Resolve the Centropic user for a signed Paddle webhook payload.
+
+    Prefers durable Paddle ids. ``custom_data`` user id is only a first-bind
+    hint and is refused when it would steal/rebind another account's customer.
+    """
+    cust = data.get("customer_id") or (data.get("customer") or {}).get("id")
+    cust_s = str(cust).strip() if cust else ""
+    sub = data.get("subscription_id")
+    if not sub and str(event_type or "").startswith("subscription."):
+        sub = data.get("id")
+    sub_s = str(sub).strip() if sub else ""
+
+    by_cust = by_customer_id(cust_s) if cust_s else None
+    by_sub = by_subscription_id(sub_s) if sub_s else None
+    if by_cust is not None and by_sub is not None and getattr(by_cust, "id", None) != getattr(
+        by_sub, "id", None
+    ):
+        logger.error(
+            "Paddle webhook user conflict customer=%s sub=%s users=%s/%s",
+            cust_s,
+            sub_s,
+            getattr(by_cust, "id", None),
+            getattr(by_sub, "id", None),
+        )
+        return None
+    if by_cust is not None:
+        return by_cust
+    if by_sub is not None:
+        return by_sub
+
+    uid = extract_user_id(data.get("custom_data"))
+    if not uid:
+        return None
+    candidate = by_user_id(uid)
+    if candidate is None:
+        return None
+    existing_cust = (getattr(candidate, "paddle_customer_id", None) or "").strip()
+    existing_sub = (getattr(candidate, "paddle_subscription_id", None) or "").strip()
+    if existing_cust and cust_s and existing_cust != cust_s:
+        logger.warning(
+            "Paddle custom_data user_id=%s refuses rebound customer %s→%s",
+            uid,
+            existing_cust,
+            cust_s,
+        )
+        return None
+    if existing_sub and sub_s and existing_sub != sub_s:
+        logger.warning(
+            "Paddle custom_data user_id=%s refuses rebound sub %s→%s",
+            uid,
+            existing_sub,
+            sub_s,
+        )
+        return None
+    if cust_s and customer_taken_by_other is not None:
+        taken = customer_taken_by_other(cust_s, getattr(candidate, "id", None))
+        if taken is not None:
+            logger.warning(
+                "Paddle custom_data user_id=%s ignored; customer %s owned by %s",
+                uid,
+                cust_s,
+                getattr(taken, "id", None),
+            )
+            return None
+    return candidate
+
+
 def transaction_is_subscription(data: dict[str, Any]) -> bool:
     """Heuristic: subscription id present or origin subscription."""
     if data.get("subscription_id"):

@@ -17,6 +17,25 @@ STALE_HEARTBEAT_MINUTES = max(5, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "1
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 
 
+class DuplicateAnalyzeJobError(RuntimeError):
+    """Raised when an active job already covers the same tenant URL."""
+
+    def __init__(self, job: Any):
+        self.job = job
+        super().__init__(f"active analyze job already exists id={getattr(job, 'id', '?')}")
+
+
+def _begin_immediate(db_session: Any) -> None:
+    """Take a reserved write lock early (critical on SQLite under concurrency)."""
+    try:
+        from sqlalchemy import text
+
+        db_session.execute(text("BEGIN IMMEDIATE"))
+    except Exception:
+        # Postgres / already-in-transaction: best-effort only.
+        pass
+
+
 def enqueue_analysis(
     db_session,
     AnalysisJob,
@@ -28,7 +47,19 @@ def enqueue_analysis(
     run_measured: bool = False,
     held_cents: int = 0,
     source: str = "job",
+    active_check: Callable[[], Any | None] | None = None,
 ) -> Any:
+    """Enqueue a pending analyze job.
+
+    When ``active_check`` is provided it runs under a reserved write lock and
+    must return an existing active job (or ``None``). A non-None result raises
+    ``DuplicateAnalyzeJobError`` so callers can release holds and reuse the job.
+    """
+    _begin_immediate(db_session)
+    if active_check is not None:
+        dup = active_check()
+        if dup is not None:
+            raise DuplicateAnalyzeJobError(dup)
     kwargs: dict[str, Any] = {
         "user_id": user_id,
         "url": url,
@@ -102,12 +133,47 @@ def release_stranded_holds(
     return n
 
 
+def _resolve_persisted_site_id(
+    job: Any,
+    *,
+    SiteAnalysis: Any | None,
+) -> int | None:
+    """If persist committed but ``job.site_id`` was never marked, recover it."""
+    if SiteAnalysis is None:
+        return None
+    started = _as_utc(getattr(job, "started_at", None) or getattr(job, "created_at", None))
+    if started is None:
+        return None
+    try:
+        site = (
+            SiteAnalysis.query.filter_by(
+                user_id=int(job.user_id),
+                url=str(job.url),
+            )
+            .order_by(SiteAnalysis.updated_at.desc())
+            .first()
+        )
+    except Exception:
+        logger.exception("resolve persisted site failed for job %s", getattr(job, "id", "?"))
+        return None
+    if site is None:
+        return None
+    updated = _as_utc(getattr(site, "updated_at", None) or getattr(site, "created_at", None))
+    if updated is None:
+        return None
+    # Allow a small clock skew; persist must have happened during/after this attempt.
+    if updated + timedelta(seconds=30) < started:
+        return None
+    return int(site.id)
+
+
 def reclaim_stale_jobs(
     db_session,
     AnalysisJob,
     *,
     older_than_minutes: int = STALE_HEARTBEAT_MINUTES,
     on_abandon: Callable[[Any], None] | None = None,
+    SiteAnalysis: Any | None = None,
 ) -> int:
     """Re-queue jobs whose lease heartbeat expired (lost worker).
 
@@ -118,6 +184,9 @@ def reclaim_stale_jobs(
     ``on_abandon(job)`` is invoked for permanent failures (e.g. release credit
     holds) before the reclaim commit. On callback failure the job keeps
     ``held_cents`` so ``release_stranded_holds`` can retry.
+
+    When ``SiteAnalysis`` is provided, reclaim reconciles the crash window
+    after ``persist_analysis`` committed but before ``mark_job_site``.
     """
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(5, older_than_minutes))
     stale = (
@@ -150,9 +219,16 @@ def reclaim_stale_jobs(
             elif hasattr(job, "held_cents"):
                 job.held_cents = 0
 
+        # Recover site_id when persist won the race against mark_job_site.
+        if not _job_already_persisted(job):
+            recovered = _resolve_persisted_site_id(job, SiteAnalysis=SiteAnalysis)
+            if recovered is not None:
+                job.site_id = recovered
+
         # Soft reclaim after partial billing would re-run the pipeline and
-        # double-charge. Fail permanently and release remaining hold instead.
-        if billed > 0 and attempts < MAX_JOB_ATTEMPTS:
+        # double-charge. Fail permanently and release remaining hold instead —
+        # unless persist already completed (deliverable exists).
+        if billed > 0 and attempts < MAX_JOB_ATTEMPTS and not _job_already_persisted(job):
             job.status = "error"
             job.finished_at = datetime.now(timezone.utc)
             job.lease_token = None
@@ -218,10 +294,16 @@ def claim_next_job(
     AnalysisJob,
     *,
     on_abandon: Callable[[Any], None] | None = None,
+    SiteAnalysis: Any | None = None,
 ) -> Any | None:
     """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending."""
     try:
-        reclaim_stale_jobs(db_session, AnalysisJob, on_abandon=on_abandon)
+        reclaim_stale_jobs(
+            db_session,
+            AnalysisJob,
+            on_abandon=on_abandon,
+            SiteAnalysis=SiteAnalysis,
+        )
         if on_abandon is not None:
             release_stranded_holds(db_session, AnalysisJob, on_release=on_abandon)
     except Exception:

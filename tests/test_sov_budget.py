@@ -54,13 +54,19 @@ def test_spent_today_counts_only_matching_debits():
         _ledger(
             user,
             amount_cents=-7,
-            description="SoV citation usage realtime OpenAI:gpt-4o-mini",
+            description="[sov] SoV citation usage openai:gpt-4o-mini",
             created_at=now,
         )
         _ledger(
             user,
             amount_cents=-3,
             description="API usage realtime ANTHROPIC:claude-haiku",
+            created_at=now,
+        )
+        _ledger(
+            user,
+            amount_cents=-9,
+            description="JOB usage realtime openai:gpt-4o-mini",
             created_at=now,
         )
         _ledger(
@@ -78,12 +84,13 @@ def test_spent_today_counts_only_matching_debits():
         _ledger(
             user,
             amount_cents=-13,
-            description="Citation probe storico",
+            description="[sov] Citation probe storico",
             created_at=now - timedelta(days=1),
         )
         db.session.commit()
 
-        assert sov_spent_today_cents(db.session, CreditLedger, user.id) == 10
+        # Only today's tagged SoV row (7). Provider-named pack/job usage excluded.
+        assert sov_spent_today_cents(db.session, CreditLedger, user.id) == 7
 
 
 def test_budget_status_zero_is_unlimited(monkeypatch):

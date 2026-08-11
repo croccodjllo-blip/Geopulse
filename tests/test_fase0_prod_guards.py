@@ -13,6 +13,7 @@ def test_evaluate_env_guards_defaults_ok(monkeypatch):
     monkeypatch.delenv("ADMIN_BOOTSTRAP", raising=False)
     monkeypatch.delenv("ALLOW_DROP_ANALYSIS_JOBS", raising=False)
     monkeypatch.delenv("SOV_DAILY_BUDGET_CENTS", raising=False)
+    monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
     monkeypatch.setenv("TRUST_PROXY", "1")
     monkeypatch.setenv("BEHIND_NGINX", "1")
     result = evaluate_env_guards()
@@ -20,7 +21,21 @@ def test_evaluate_env_guards_defaults_ok(monkeypatch):
     assert result["failures"] == []
 
 
+def test_evaluate_env_guards_rejects_missing_database_url(monkeypatch):
+    monkeypatch.setenv("ASYNC_ANALYZE", "1")
+    monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
+    monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
+    monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "5000")
+    monkeypatch.setenv("TRUST_PROXY", "0")
+    monkeypatch.setenv("BEHIND_NGINX", "0")
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    result = evaluate_env_guards()
+    assert result["ok"] is False
+    assert "DATABASE_URL" in result["failures"]
+
+
 def test_evaluate_env_guards_rejects_trust_without_nginx(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
     monkeypatch.setenv("ASYNC_ANALYZE", "1")
     monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
     monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
@@ -33,6 +48,7 @@ def test_evaluate_env_guards_rejects_trust_without_nginx(monkeypatch):
 
 
 def test_evaluate_env_guards_rejects_zero_sov_budget(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
     monkeypatch.setenv("ASYNC_ANALYZE", "1")
     monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
     monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
@@ -64,6 +80,7 @@ def test_health_hard_fails_without_credit_ledger_index(monkeypatch):
 def test_health_hard_fails_on_env_when_enforced(monkeypatch):
     with app.app_context():
         ensure_schema()
+    monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
     monkeypatch.setenv("HEALTH_REQUIRE_PROD_GUARDS", "1")
     monkeypatch.setenv("CENTROPIC_SKIP_PROD_GUARDS", "0")
     monkeypatch.setenv("ASYNC_ANALYZE", "0")
