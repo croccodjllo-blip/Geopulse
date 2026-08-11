@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero hero--v2 hero--signal" aria-labelledby="hero-brand">
+<section class="hero hero--v2 hero--signal hero--contrast" aria-labelledby="hero-brand">
   <div class="hero-visual hero-visual--cite" aria-hidden="true">
     <img
       class="hero-visual__photo"
@@ -46,12 +46,16 @@
       <span class="hero-accent">{{ _('ti citano') }}</span>
     </h1>
     <p class="lede hero-lede">
-      {{ _('Misura dove ChatGPT, Claude e Perplexity menzionano il tuo brand — e cosa sistemare.') }}
+      {{ _('Dal sito invisibile al brand leggibile dai crawler generativi — score, findings e pack in un’unica dashboard.') }}
     </p>
     <div class="cta-row">
       <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Inizia l’analisi') }}</a>
       <a class="btn btn-ghost-light" href="{{ url_for('sample_report') }}">{{ _('Vedi un report') }}</a>
     </div>
+  </div>
+
+  <div class="hero-contrast" aria-label="{{ _('Anteprima dashboard: sito invisibile vs Centropic-Optimized') }}">
+    {% include "partials/hero_contrast_demo.html" %}
   </div>
 </section>
 
@@ -140,39 +144,67 @@
 
 <section class="section-band section-band--v2 section-band--wide" id="piattaforma">
   <p class="eyebrow">{{ _('Piattaforma') }}</p>
-  <h2>{{ _('Diagnosi, priorità, artifact.') }}</h2>
+  <h2>{{ _('La dashboard che i buyer MarTech vogliono vedere.') }}</h2>
   <p class="lede">
-    {{ _('Architettura unica: Free dimostra valore, Plus chiude il loop operativo, Business industrializza il delivery.') }}
+    {{ _('Metriche chiare, findings prioritizzati e pack pubblicabile — stessa energia Logo Chrome del prodotto live.') }}
   </p>
-  <div class="feature-grid feature-grid--v2">
-    <div class="feature-cell">
-      <span class="feature-cell__icon">AIO</span>
-      <p class="feature-cell__title">{{ _('Score AIO e GEO') }}</p>
-      <p class="feature-cell__desc">
-        {{ _('Indicatori di predisposizione: quanto il brand è leggibile e citabile dai crawler generativi — la base senza cui nessuna IA può nominarti.') }}
-      </p>
-    </div>
-    <div class="feature-cell">
-      <span class="feature-cell__icon">MAP</span>
-      <p class="feature-cell__title">{{ _('Analisi multi-pagina') }}</p>
-      <p class="feature-cell__desc">
-        {{ _('Copertura del dominio per entity, schema, contenuti citabili e accesso ai crawler IA.') }}
-      </p>
-    </div>
-    <div class="feature-cell">
-      <span class="feature-cell__icon">PRI</span>
-      <p class="feature-cell__title">{{ _('Findings prioritizzati') }}</p>
-      <p class="feature-cell__desc">
-        {{ _('Critical / warn / ok per ordinare il backlog tra marketing, contenuto e IT.') }}
-      </p>
-    </div>
-    <div class="feature-cell">
-      <span class="feature-cell__icon">ZIP</span>
-      <p class="feature-cell__title">{{ _('Pack di pubblicazione') }}</p>
-      <p class="feature-cell__desc">
-        {{ _('Un file HTML con tutti i fix (head, llms.txt, robots) — download, Edge o white-label Business.') }}
-      </p>
-    </div>
+  <div class="product-shots" role="list">
+    <figure class="product-shot" role="listitem">
+      <img
+        src="{{ url_for('static', filename='img/guide/dashboard.svg') }}"
+        alt="{{ _('Anteprima dashboard Centropic con score e workspace') }}"
+        width="960"
+        height="540"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <strong>{{ _('Score AIO / GEO') }}</strong>
+        <span>{{ _('Predisposizione strutturale leggibile a colpo d’occhio.') }}</span>
+      </figcaption>
+    </figure>
+    <figure class="product-shot" role="listitem">
+      <img
+        src="{{ url_for('static', filename='img/guide/sov-citation.svg') }}"
+        alt="{{ _('Anteprima Share of Voice e citazioni per engine') }}"
+        width="960"
+        height="540"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <strong>{{ _('SoV per engine') }}</strong>
+        <span>{{ _('ChatGPT, Claude, Perplexity e gli altri — Stimato o Misurato.') }}</span>
+      </figcaption>
+    </figure>
+    <figure class="product-shot" role="listitem">
+      <img
+        src="{{ url_for('static', filename='img/guide/findings.svg') }}"
+        alt="{{ _('Anteprima findings prioritizzati critical warn ok') }}"
+        width="960"
+        height="540"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <strong>{{ _('Findings prioritizzati') }}</strong>
+        <span>{{ _('Critical / warn / ok per marketing, contenuto e IT.') }}</span>
+      </figcaption>
+    </figure>
+    <figure class="product-shot" role="listitem">
+      <img
+        src="{{ url_for('static', filename='img/guide/pack-artifact.svg') }}"
+        alt="{{ _('Anteprima pack artifact llms schema robots') }}"
+        width="960"
+        height="540"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <strong>{{ _('Pack di pubblicazione') }}</strong>
+        <span>{{ _('llms.txt, schema, robots — download, Edge o white-label.') }}</span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -218,7 +250,7 @@
     <details class="faq-item">
       <summary>{{ _('Gli score rappresentano menzioni live?') }}</summary>
       <p>
-        {{ _('No, di default. Sono diagnostici; su Plus/Business, con citation monitor e API LLM, si aggiungono menzioni Misurate.') }}
+        {{ _('Misurano la predisposizione strutturale del sito. Su Plus/Business puoi aggiungere menzioni Misurate dal citation monitor.') }}
       </p>
     </details>
   </div>
@@ -237,4 +269,5 @@
     </div>
   </div>
 </section>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/hero-contrast.js') }}" defer></script>
 {% endblock %}

@@ -1,0 +1,92 @@
+{# Dominant hero product surface: Invisible-to-AI vs Centropic-Optimized.
+   Single composition (not a card grid); labels live in chrome, not as stickers. #}
+<div class="hero-dash" data-hero-contrast>
+  <div class="hero-dash__chrome">
+    <span class="hero-dash__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="hero-dash__url">app.centropic.ai / dashboard</span>
+    <div class="hero-dash__toggle" role="group" aria-label="{{ _('Anteprima contrasto') }}">
+      <button type="button" class="hero-dash__tab is-active" data-hero-state="before" aria-pressed="true">
+        {{ _('Invisibile all’IA') }}
+      </button>
+      <button type="button" class="hero-dash__tab" data-hero-state="after" aria-pressed="false">
+        {{ _('Centropic-Optimized') }}
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-dash__stage">
+    {# BEFORE — sparse / broken readiness #}
+    <div class="hero-dash__pane is-active" data-pane="before">
+      <header class="hero-dash__head">
+        <p class="hero-dash__domain">tuobrand.com</p>
+        <p class="hero-dash__grade" data-tone="crit">DDD</p>
+      </header>
+      <div class="hero-dash__metrics">
+        <div class="hero-dash__metric">
+          <span>{{ _('AIO') }}</span>
+          <strong>18</strong>
+          <em class="hero-dash__bar" style="--p: 18" data-tone="crit"></em>
+        </div>
+        <div class="hero-dash__metric">
+          <span>{{ _('GEO') }}</span>
+          <strong>12</strong>
+          <em class="hero-dash__bar" style="--p: 12" data-tone="crit"></em>
+        </div>
+        <div class="hero-dash__metric">
+          <span>{{ _('Brand SoV') }}</span>
+          <strong>3%</strong>
+          <em class="hero-dash__bar" style="--p: 3" data-tone="crit"></em>
+        </div>
+      </div>
+      <ul class="hero-dash__findings">
+        <li data-sev="critical">{{ _('llms.txt assente') }}</li>
+        <li data-sev="critical">{{ _('JSON-LD Organization mancante') }}</li>
+        <li data-sev="warn">{{ _('GPTBot / ClaudeBot bloccati') }}</li>
+        <li data-sev="warn">{{ _('Entity ambigua — rischio allucinazione') }}</li>
+      </ul>
+      <div class="hero-dash__engines" aria-hidden="true">
+        <span style="--p: 8">ChatGPT</span>
+        <span style="--p: 5">Claude</span>
+        <span style="--p: 6">Perplexity</span>
+        <span style="--p: 4">Gemini</span>
+      </div>
+    </div>
+
+    {# AFTER — Centropic-optimized dashboard energy #}
+    <div class="hero-dash__pane" data-pane="after" hidden>
+      <header class="hero-dash__head">
+        <p class="hero-dash__domain">tuobrand.com</p>
+        <p class="hero-dash__grade" data-tone="peak">AAA</p>
+      </header>
+      <div class="hero-dash__metrics">
+        <div class="hero-dash__metric">
+          <span>{{ _('AIO') }}</span>
+          <strong>92</strong>
+          <em class="hero-dash__bar" style="--p: 92" data-tone="peak"></em>
+        </div>
+        <div class="hero-dash__metric">
+          <span>{{ _('GEO') }}</span>
+          <strong>88</strong>
+          <em class="hero-dash__bar" style="--p: 88" data-tone="peak"></em>
+        </div>
+        <div class="hero-dash__metric">
+          <span>{{ _('Brand SoV') }}</span>
+          <strong>41%</strong>
+          <em class="hero-dash__bar" style="--p: 41" data-tone="peak"></em>
+        </div>
+      </div>
+      <ul class="hero-dash__findings">
+        <li data-sev="ok">{{ _('llms.txt pubblicato') }}</li>
+        <li data-sev="ok">{{ _('Organization + sameAs allineati') }}</li>
+        <li data-sev="ok">{{ _('Crawler IA in allow') }}</li>
+        <li data-sev="ok">{{ _('Pack Edge Signals live') }}</li>
+      </ul>
+      <div class="hero-dash__engines" aria-hidden="true">
+        <span style="--p: 86">ChatGPT</span>
+        <span style="--p: 79">Claude</span>
+        <span style="--p: 74">Perplexity</span>
+        <span style="--p: 71">Gemini</span>
+      </div>
+    </div>
+  </div>
+</div>
