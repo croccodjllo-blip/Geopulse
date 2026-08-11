@@ -306,10 +306,10 @@ def site_guide_payload() -> dict[str, Any]:
                 "title": _("Pack ottimizzazione"),
                 "image": GUIDE_IMAGES["pack"],
                 "summary": _(
-                    "Un solo file HTML con tutti i fix (head, llms.txt, robots, checklist)."
+                    "Pack HTML con tutti i fix (head, llms.txt, robots, checklist)."
                 ),
                 "bullets": [
-                    _("Scarica un solo file HTML con tutti i fix"),
+                    _("Scarica il pack HTML con tutti i fix"),
                     _("Su Plus puoi inviare il pack via email"),
                     _(
                         "La pubblicazione sul sito resta a tuo carico (o via Edge/CMS)"
@@ -436,7 +436,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "title": "Engine breakdown",
                 "body": _(
-                    "Vista per ChatGPT, Gemini (proxy AI Overview), Claude, Perplexity, Grok e "
+                    "Vista per ChatGPT, Gemini (API), Claude, Perplexity, Grok e "
                     "Azure AI. Di default è Stimato; con SoV measured gli engine disponibili "
                     "passano a Misurato."
                 ),

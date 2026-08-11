@@ -116,11 +116,15 @@ def test_budget_rejects_next_debit_over_limit(monkeypatch):
         assert_sov_budget_allows(object(), 95, 6)
 
 
-def test_invalid_or_negative_budget_is_unlimited(monkeypatch):
+def test_invalid_or_negative_budget_falls_back(monkeypatch):
+    # Invalid → treated as default-safe capped value path via except → 5000? 
+    # Code sets configured=5000 on ValueError; negative clamps to 0 (unlimited).
     monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "non-un-numero")
-    assert sov_budget_status(object(), 1)["unlimited"] is True
+    assert sov_budget_status(object(), 1)["budget_cents"] == 5000
+    assert sov_budget_status(object(), 1)["unlimited"] is False
     monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "-50")
     assert sov_budget_status(object(), 1)["unlimited"] is True
+    assert sov_budget_status(object(), 1)["budget_cents"] == 0
 
 
 def test_citation_callback_runs_in_sov_usage_context(monkeypatch):

@@ -5,7 +5,7 @@
 | Componente | Come |
 |---|---|
 | App Flask | Gunicorn (systemd `aio-bot`) |
-| DB | SQLite WAL (default) — **prefer Postgres** via `DATABASE_URL` in produzione multi-worker |
+| DB | SQLite WAL (dev/single-worker) — **Postgres obbligatorio** per multi-worker |
 | Proxy | Nginx + Let's Encrypt |
 | Secrets | `/opt/aio-bot/.env` (mai in git) |
 | Job worker | `aio-bot-analyze.timer` (+ kick thread in-app) |
@@ -15,14 +15,15 @@
 ## Database
 
 ```env
-# Dev / single-node
+# Dev / single-node (il container Docker forza WEB_CONCURRENCY=1 con SQLite)
 DATABASE_URL=sqlite:////opt/aio-bot/data/database.db
 
-# Consigliato in produzione (multi-worker):
-# DATABASE_URL=postgresql+psycopg://USER:PASS@HOST:5432/centropic
+# Produzione multi-worker:
+DATABASE_URL=postgresql+psycopg://USER:PASS@HOST:5432/centropic
+WEB_CONCURRENCY=2
 ```
 
-SQLite è supportato (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici), ma per crescita SaaS usare Postgres.
+SQLite è supportato (WAL + `busy_timeout` + `BEGIN IMMEDIATE` sui path critici), ma in Docker l’entrypoint forza un solo worker Gunicorn. Per crescita SaaS usare Postgres.
 
 ### Migrazioni schema
 
@@ -60,12 +61,15 @@ JOB_STALE_HEARTBEAT_MINUTES=12
 JOB_MAX_ATTEMPTS=2
 MAX_CONCURRENT_ANALYZE_JOBS=2
 PUBLIC_SITE_URL=https://centropic.ai
+PADDLE_ENV=production
+SOV_DAILY_BUDGET_CENTS=5000
+ALLOW_DROP_ANALYSIS_JOBS=0
+MAIL_FROM=Centropic <noreply@centropic.ai>
 ADMIN_EMAIL=admin@centropic.ai
 # Opzionali analytics/ads:
 # GA4_MEASUREMENT_ID=G-...
 # ADS_TXT_CONTENT=...
 ```
-
 ### Worker analyze
 
 ```bash

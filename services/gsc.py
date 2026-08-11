@@ -14,14 +14,18 @@ def gsc_configured() -> bool:
 
 
 def gsc_status() -> dict[str, Any]:
+    """Honesty: never claim available until an end-to-end OAuth connect exists."""
     if not gsc_configured():
         return {
             "available": False,
+            "connected": False,
             "reason": "Imposta GOOGLE_OAUTH_CLIENT_ID e GOOGLE_OAUTH_CLIENT_SECRET.",
-            "note": "Scaffold pronto: OAuth → Search Analytics + sitemap coverage.",
+            "note": "Integrazione GSC non ancora collegabile end-to-end.",
         }
+    # Client credentials alone do not mean the product can connect a property.
     return {
-        "available": True,
+        "available": False,
         "connected": False,
-        "note": "OAuth client presente: collega la property Search Console dal dashboard Plus.",
+        "reason": "OAuth client configurato, ma il flusso di collegamento GSC non è ancora attivo.",
+        "note": "Nascondiamo il connector finché non esiste connect end-to-end.",
     }

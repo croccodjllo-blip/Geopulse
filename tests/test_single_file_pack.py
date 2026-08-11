@@ -1,4 +1,4 @@
-"""Pack ottimizzazione = un solo file HTML che consolida tutti i fix."""
+"""Pack ottimizzazione = HTML che consolida tutti i fix."""
 
 from __future__ import annotations
 
@@ -40,7 +40,8 @@ def test_unified_fix_html_contains_all_sections():
         aio_score=41,
         geo_score=38,
     )
-    assert "Pack ottimizzazione — un solo file" in html
+    assert "Pack ottimizzazione" in html
+    assert "un solo file" not in html.lower()
     assert "llms.txt assente" in html
     assert "# Acme" in html
     assert "User-agent: *" in html

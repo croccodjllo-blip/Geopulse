@@ -24,7 +24,7 @@ ENGINES: tuple[dict[str, Any], ...] = (
     {
         "id": "google",
         "label": "Gemini",
-        "vendor": "Google (proxy AI Overview)",
+        "vendor": "Google Gemini (API)",
         "bot": "Google-Extended",
         "accent": "#4285F4",
         "weight": 1.05,
