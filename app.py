@@ -3291,6 +3291,10 @@ def health():
                 "paddle": paddle_enabled(),
                 "payments": payments_enabled(),
                 "payments_provider": payments_provider(),
+                "sentry": bool(
+                    (os.getenv("SENTRY_DSN") or "").strip()
+                    and app.extensions.get("sentry_active")
+                ),
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
