@@ -357,8 +357,8 @@ def compute_engine_breakdown(
         "top_engine": top["label"] if top else None,
         "measured": None,
         "note": (
-            "Stima derivata da score AIO/GEO, policy robots osservata in probe e findings. "
-            "Non è polling live su ChatGPT/Perplexity/Claude."
+            "Stima di predisposizione strutturale da score AIO/GEO, robots osservato e findings. "
+            "Con Plus puoi aggiungere campioni Misurati sul citation monitor."
         ),
     }
 
