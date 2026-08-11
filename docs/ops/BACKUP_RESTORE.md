@@ -15,10 +15,15 @@ sudo -u aio-bot .venv/bin/python scripts/backup_db.py
 Creates a **temporary** database from the newest dump, counts users, drops it.
 Never writes into production `DATABASE_URL`.
 
+Default admin path uses local peer auth (`sudo -u postgres`) because the app
+role `centropic` does **not** have `CREATEDB`. Run as root (or any user that
+can `sudo -u postgres`):
+
 ```bash
 cd /opt/aio-bot
-sudo -u aio-bot .venv/bin/python scripts/restore_db_drill.py
+.venv/bin/python scripts/restore_db_drill.py
 # optional: --dump /path/to/database-….dump
+# optional: --use-app-role  # only if that role has CREATEDB
 ```
 
 Exit `0` = OK. Exit `2` = not Postgres (skip). Exit `1` = failure.
