@@ -136,7 +136,7 @@
             {% if current_user.is_admin %}
               <a href="{{ url_for('admin_home') }}" class="{% if request.endpoint == 'admin_home' %}is-active{% endif %}">Admin</a>
             {% endif %}
-            <form method="post" action="{{ url_for('logout') }}" style="display:inline">
+            <form method="post" action="{{ url_for('logout') }}" class="u-inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit">{{ _('Esci') }}</button>
             </form>

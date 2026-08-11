@@ -97,8 +97,11 @@
         </strong>
       </div>
       {% if cap %}
+      <style nonce="{{ csp_nonce }}">
+        .app-sidebar__bar-fill[data-credits-bar] { --credits-bar-pct: {{ '%.1f'|format(pct) }}%; }
+      </style>
       <div class="app-sidebar__bar" aria-hidden="true">
-        <div class="app-sidebar__bar-fill" style="width: {{ '%.1f'|format(pct) }}%"></div>
+        <div class="app-sidebar__bar-fill" data-credits-bar></div>
       </div>
       {% endif %}
       <div class="app-sidebar__credits-foot">

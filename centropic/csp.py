@@ -27,10 +27,9 @@ def build_csp_header(
 ) -> str:
     """Prefer nonce-based script-src; keep strict-dynamic for modern browsers.
 
-    Styles use CSP3 split directives:
-    - ``style-src-elem``: ``<style>`` / linked stylesheets require nonce/'self'
-    - ``style-src-attr``: keep ``'unsafe-inline'`` for dynamic CSS variables
-      (``style="--aio: …"``) until those move to data-attrs + stylesheet rules
+    Styles: CSP3 ``style-src-elem`` requires nonce/'self'. No ``style-src-attr``
+    allowlist — templates must not use HTML ``style=`` (dynamic CSS vars go in
+    nonced ``<style>`` blocks or data-* + stylesheet rules).
     """
     script_src = [
         "'self'",
@@ -43,8 +42,6 @@ def build_csp_header(
         "https://fonts.googleapis.com",
     ]
     style_src_elem = list(style_src)
-    # Attribute styles (dashboard meters, SoV rings) still need this.
-    style_src_attr = ["'unsafe-inline'"]
     img_src = ["'self'", "data:"]
     connect_src = ["'self'"]
     frame_src = ["'self'"]
@@ -115,7 +112,7 @@ def build_csp_header(
         f"script-src {uniq(script_src)}; "
         f"style-src {uniq(style_src)}; "
         f"style-src-elem {uniq(style_src_elem)}; "
-        f"style-src-attr {uniq(style_src_attr)}; "
+        "style-src-attr 'none'; "
         f"font-src {uniq(font_src)}; "
         f"img-src {uniq(img_src)}; "
         f"connect-src {uniq(connect_src)}; "

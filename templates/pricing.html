@@ -71,7 +71,7 @@
         </form>
         {% endif %}
         {% if plus_yearly_ready %}
-        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
+        <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <input type="hidden" name="product" value="plus" />
           <input type="hidden" name="interval" value="year" />
@@ -120,7 +120,7 @@
         </form>
         {% endif %}
         {% if business_yearly_ready %}
-        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
+        <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <input type="hidden" name="product" value="business" />
           <input type="hidden" name="interval" value="year" />
@@ -132,9 +132,9 @@
       {% elif business_ready %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
       {% else %}
-      <p class="plan__desc" style="margin-top:0.75rem">{{ _('In arrivo per agenzie. Oggi vendiamo Plus; lascia i contatti per la waitlist Business.') }}</p>
+      <p class="plan__desc u-mt-075">{{ _('In arrivo per agenzie. Oggi vendiamo Plus; lascia i contatti per la waitlist Business.') }}</p>
       <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Waitlist Business') }}</a>
-      <a class="btn btn-ghost-light btn-block" href="mailto:info@centropic.ai" style="margin-top:0.5rem">info@centropic.ai</a>
+      <a class="btn btn-ghost-light btn-block u-mt-05" href="mailto:info@centropic.ai">info@centropic.ai</a>
       {% endif %}
     </section>
   </div>

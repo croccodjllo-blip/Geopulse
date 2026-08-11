@@ -4,7 +4,7 @@
 {% block meta_description %}{{ _('Amplia la copertura Centropic con pacchetti in euro: utile per picchi di ri-analisi o clienti extra senza cambiare piano.') }}{% endblock %}
 
 {% block content %}
-<div class="page" style="max-width: 620px; padding: 3rem 0 5rem;">
+<div class="page page--topup">
   <div class="page-intro">
     <p class="eyebrow">{{ _('Copertura extra') }}</p>
     <h1 class="page-intro__title">{{ _('Amplia la copertura del mese') }}</h1>
@@ -15,34 +15,34 @@
 
   <div class="page-section">
     <h2 class="page-section__title">{{ _('Copertura residua') }}</h2>
-    <p style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--color-core);">
+    <p class="topup-balance">
       {% if current_user.is_admin %}
-        ∞ &nbsp;<span style="font-size:0.8rem; font-weight:400; color:var(--ink-soft);">{{ _('Illimitata (account admin)') }}</span>
+        ∞ &nbsp;<span class="topup-balance__note">{{ _('Illimitata (account admin)') }}</span>
       {% else %}
         ≈ {{ '%.2f'|format((balance_cents or 0) / 100) }}&nbsp;€
       {% endif %}
     </p>
     {% if ledger %}
-    <details style="margin-top: 1rem;">
-      <summary style="cursor: pointer; font-size: 0.85rem; color: var(--ink-soft);">{{ _('Ultime transazioni') }}</summary>
-      <table style="width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:0.75rem;">
+    <details class="topup-ledger">
+      <summary>{{ _('Ultime transazioni') }}</summary>
+      <table class="topup-ledger__table">
         <thead>
           <tr>
-            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Data') }}</th>
-            <th style="text-align:left; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Descrizione') }}</th>
-            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">€</th>
-            <th style="text-align:right; padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); color:var(--ink-soft);">{{ _('Saldo dopo') }}</th>
+            <th>{{ _('Data') }}</th>
+            <th>{{ _('Descrizione') }}</th>
+            <th>€</th>
+            <th>{{ _('Saldo dopo') }}</th>
           </tr>
         </thead>
         <tbody>
           {% for entry in ledger %}
           <tr>
-            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.created_at.strftime('%d/%m %H:%M') }}</td>
-            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border);">{{ entry.description[:60] }}</td>
-            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; {% if entry.amount_cents > 0 %}color:#00c97a{% else %}color:#e84040{% endif %}; font-family:var(--font-mono);">
+            <td>{{ entry.created_at.strftime('%d/%m %H:%M') }}</td>
+            <td>{{ entry.description[:60] }}</td>
+            <td class="{% if entry.amount_cents > 0 %}is-credit{% else %}is-debit{% endif %}">
               {{ '%+.2f'|format(entry.amount_cents / 100) }}
             </td>
-            <td style="padding:0.4rem 0.6rem; border-bottom:1px solid var(--border); text-align:right; font-family:var(--font-mono);">
+            <td>
               {{ '%.2f'|format(entry.balance_after_cents / 100) }}&nbsp;€
             </td>
           </tr>
@@ -81,7 +81,7 @@
       </form>
       {% endfor %}
     </div>
-    <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:1rem;">
+    <p class="topup-footnote">
       {{ _('Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-label vai su') }}
       <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
     </p>

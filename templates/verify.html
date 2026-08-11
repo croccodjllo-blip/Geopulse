@@ -52,7 +52,7 @@
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
     {% if can_scheduled_rescan or can_measured_sov %}
-      <form method="post" action="{{ url_for('dashboard_verify_rescan', analysis_id=analysis.id) }}" style="display:inline">
+      <form method="post" action="{{ url_for('dashboard_verify_rescan', analysis_id=analysis.id) }}" class="u-inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <button type="submit" class="btn btn-signal">{{ _('Re-scan dopo publish') }}</button>
       </form>

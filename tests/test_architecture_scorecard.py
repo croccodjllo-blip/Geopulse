@@ -61,8 +61,8 @@ def test_csp_style_src_split_no_blanket_unsafe_inline():
     assert "'unsafe-inline'" not in style_part
     assert "'unsafe-inline'" not in elem_part
     assert "nonce-styleNonce99" in elem_part
-    # Dynamic CSS variables (dashboard meters) still need attr allow — scoped.
-    assert "'unsafe-inline'" in attr_part
+    assert "'none'" in attr_part
+    assert "'unsafe-inline'" not in attr_part
 
 
 def test_metrics_counters():

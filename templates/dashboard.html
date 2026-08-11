@@ -154,7 +154,9 @@
           {% set geo_offset = geo_c * (1 - geo_n / 100) %}
           {% set geo_angle = (geo_n / 100 * 360) - 90 %}
 
-          <div class="ui-grid ui-grid--3" style="margin: 1rem 0 1.25rem" aria-label="{{ _('Metriche chiave') }}">
+          {% include "partials/dash_dynamic_styles.html" %}
+
+          <div class="ui-grid ui-grid--3 u-my-metrics" aria-label="{{ _('Metriche chiave') }}">
             {% with label='AIO', value=(aio if aio is number else '—'), hint=_('AI-Driven Visibility'), variant='cyan', icon='aio' %}
               {% include "partials/ui_metric.html" %}
             {% endwith %}
@@ -185,7 +187,7 @@
             class="pulse-core"
             aria-label="AI-Driven Visibility (AIO) recommendation propensity"
             data-band="{{ band }}"
-            style="--aio: {{ aio_n }}; --geo: {{ geo_n }}; --health: {{ health }}; --aio-c: {{ '%.2f'|format(aio_c) }}; --aio-offset: {{ '%.2f'|format(aio_offset) }}; --geo-c: {{ '%.2f'|format(geo_c) }}; --geo-offset: {{ '%.2f'|format(geo_offset) }}; --geo-angle: {{ '%.1f'|format(geo_angle) }}deg;"
+            data-pulse-core
           >
             <div class="pulse-core__stage">
               <div class="pulse-core__aura" aria-hidden="true"></div>
@@ -230,7 +232,7 @@
                   />
 
                   <!-- GEO satellite -->
-                  <g class="pc-satellite" style="--orbit-r: 150px; --orbit-a: {{ '%.1f'|format(geo_angle) }}deg;">
+                  <g class="pc-satellite">
                     <circle class="pc-satellite__glow" r="10" />
                     <circle class="pc-satellite__dot" r="3.5" />
                   </g>
@@ -247,7 +249,7 @@
                   />
 
                   <!-- Sweep needle at AIO tip -->
-                  <g class="pc-needle" style="--needle: {{ aio_n }};">
+                  <g class="pc-needle">
                     <line x1="180" y1="180" x2="180" y2="62" />
                     <circle cx="180" cy="62" r="4.5" />
                   </g>
@@ -311,7 +313,7 @@
                       <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
                     </div>
                     <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__meter" style="--p: {{ aio_n }};" aria-hidden="true">
+                      <div class="signal-diag__meter" data-meter="aio" aria-hidden="true">
                         <i></i>
                       </div>
                       <span class="signal-diag__meta">0–100 · {{ propensity }}</span>
@@ -334,7 +336,7 @@
                       <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
                     </div>
                     <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__meter" style="--p: {{ geo_n }};" aria-hidden="true">
+                      <div class="signal-diag__meter" data-meter="geo" aria-hidden="true">
                         <i></i>
                       </div>
                       <span class="signal-diag__meta">0–100</span>
@@ -357,7 +359,7 @@
                       <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
                     </div>
                     <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__meter signal-diag__meter--grade" style="--p: {{ rating.score }};" aria-hidden="true">
+                      <div class="signal-diag__meter signal-diag__meter--grade" data-meter="grade" aria-hidden="true">
                         <i></i>
                       </div>
                       <span class="signal-diag__meta">{{ rating.score }}/100</span>
@@ -452,13 +454,13 @@
                 </div>
 
                 <div class="sov-hero" aria-label="{{ _('Citation share brand') }}">
-                  <div class="sov-hero__ring" style="--sov: {{ engine_breakdown.brand_sov }};">
+                  <div class="sov-hero__ring" data-sov-ring>
                     <svg class="sov-hero__svg" viewBox="0 0 120 120" aria-hidden="true">
                       <defs>
                         <linearGradient id="sovRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color: var(--plan-accent-deep)"/>
-                          <stop offset="55%" style="stop-color: var(--plan-accent)"/>
-                          <stop offset="100%" style="stop-color: var(--plan-accent-deep)"/>
+                          <stop offset="0%" stop-color="var(--plan-accent-deep)"/>
+                          <stop offset="55%" stop-color="var(--plan-accent)"/>
+                          <stop offset="100%" stop-color="var(--plan-accent-deep)"/>
                         </linearGradient>
                       </defs>
                       <circle class="sov-hero__track" cx="60" cy="60" r="52" fill="none" stroke-width="8"/>
@@ -500,7 +502,6 @@
                     <li
                       class="sov-columns__col"
                       data-engine="{{ e.id }}"
-                      style="--accent: {{ e.accent }}; --p: {{ e.propensity if e.propensity is not none else 0 }};"
                       title="{{ e.label }} · {{ e.propensity }}/100"
                     >
                       <span class="sov-columns__value">{{ e.propensity }}</span>
@@ -521,21 +522,20 @@
                   class="sov-stack"
                   role="img"
                   aria-label="{{ _('Composizione SoV per engine') }}"
-                  style="--segments: {{ engine_breakdown.engines|length }};"
+                  data-sov-stack
                 >
                   {% for e in engine_breakdown.engines %}
                   <span
                     class="sov-stack__seg"
                     data-engine="{{ e.id }}"
-                    style="--share: {{ e.share }}; --accent: {{ e.accent }};"
                     title="{{ e.label }} {{ e.share }}%"
                   ></span>
                   {% endfor %}
                 </div>
                 <ul class="sov-stack__legend">
                   {% for e in engine_breakdown.engines %}
-                  <li>
-                    <i style="--accent: {{ e.accent }};" aria-hidden="true"></i>
+                  <li data-engine="{{ e.id }}">
+                    <i aria-hidden="true"></i>
                     <span>{{ e.label }}</span>
                     <em>{{ e.share }}%</em>
                   </li>
@@ -547,9 +547,9 @@
               <div class="sov-field" aria-label="{{ _('Distribuzione competitiva') }}">
                 <p class="sov-compose__label">{{ _('Campo competitivo') }}</p>
                 <div class="sov-field__bar">
-                  <span style="--w: {{ engine_breakdown.brand_sov }};" data-tone="brand"></span>
-                  <span style="--w: {{ engine_breakdown.rivals_sov }};" data-tone="rivals"></span>
-                  <span style="--w: {{ engine_breakdown.other_sov }};" data-tone="other"></span>
+                  <span data-tone="brand"></span>
+                  <span data-tone="rivals"></span>
+                  <span data-tone="other"></span>
                 </div>
                 <ul class="sov-field__legend">
                   <li data-tone="brand"><i aria-hidden="true"></i>{{ _('Brand') }} <em>{{ engine_breakdown.brand_sov }}%</em></li>
@@ -580,7 +580,6 @@
                       role="row"
                       data-engine="{{ e.id }}"
                       data-band="{{ e.band }}"
-                      style="--accent: {{ e.accent }}; --p: {{ e.propensity }};"
                     >
                       <div class="sov-table__engine" role="cell">
                         <span class="sov-table__swatch" aria-hidden="true"></span>
@@ -914,7 +913,7 @@
               {% endif %}
             </ul>
             <div class="edge-cms">
-              <p class="edge-hint" style="margin-top:1rem">
+              <p class="edge-hint u-mt-1">
                 {{ _('CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo stesso Edge base.') }}
               </p>
               <div class="edge-actions edge-actions--row">
@@ -937,7 +936,7 @@
               </form>
             </div>
             {% if edge.crawlers %}
-            <p class="edge-hint" style="margin-top:1rem">{{ _('Crawler IA recenti su Edge:') }}</p>
+            <p class="edge-hint u-mt-1">{{ _('Crawler IA recenti su Edge:') }}</p>
             <ul class="plain-list">
               {% for row in edge.crawlers %}
               <li><code>{{ row.crawler }}</code> — {{ row.hits }} {{ _('hit') }}</li>

@@ -16,7 +16,7 @@
 
   <section class="page-section">
     <h2 class="page-section__title">KPI globali</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.9rem;">
+    <div class="admin-kpi-grid">
       <div class="cost-card"><div class="muted">Utenti totali</div><strong>{{ stats.users_total }}</strong><div class="muted">Free {{ stats.users_free }} · Plus {{ stats.users_plus }} · Business {{ stats.users_business }} · Admin {{ stats.users_admin }}</div></div>
       <div class="cost-card"><div class="muted">Siti / Run</div><strong>{{ stats.sites_total }} / {{ stats.runs_total }}</strong><div class="muted">Run 30gg: {{ stats.runs_30d }}</div></div>
       <div class="cost-card"><div class="muted">Coda job</div><strong>P {{ stats.jobs_pending }} · R {{ stats.jobs_running }} · E {{ stats.jobs_error }}</strong><div class="muted">Stato in tempo reale da DB</div></div>
@@ -39,34 +39,34 @@
             <span>Token {{ u.credit_balance_cents|tok_short if u.credit_balance_cents < 2000000000 else "∞" }}</span>
             <span>{{ u.company or '—' }}</span>
           </div>
-          {% if u.website_url %}<div class="muted" style="margin-top:0.35rem">{{ u.website_url }}</div>{% endif %}
+          {% if u.website_url %}<div class="muted u-mt-035">{{ u.website_url }}</div>{% endif %}
         </div>
         <div class="history-actions">
           {% if u.email != admin_email %}
-          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='free') }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='free') }}" class="u-inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Free</button>
+            <button type="submit" class="site-link u-btn-reset">Free</button>
           </form>
-          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='plus') }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='plus') }}" class="u-inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Plus</button>
+            <button type="submit" class="site-link u-btn-reset">Plus</button>
           </form>
-          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='business') }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='business') }}" class="u-inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Business</button>
+            <button type="submit" class="site-link u-btn-reset">Business</button>
           </form>
-          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='admin') }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id, plan='admin') }}" class="u-inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Admin</button>
+            <button type="submit" class="site-link u-btn-reset">Admin</button>
           </form>
-          <form method="post" action="{{ url_for('admin_topup_user', user_id=u.id) }}" style="display:inline-flex;gap:0.4rem;align-items:center">
+          <form method="post" action="{{ url_for('admin_topup_user', user_id=u.id) }}" class="u-inline-flex">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <select name="amount_cents" style="font-size:0.75rem">
+            <select name="amount_cents" class="u-select-sm">
               <option value="1000">+100 token (€10)</option>
               <option value="2000">+200 token (€20)</option>
               <option value="6000">+600 token (€50 pack)</option>
             </select>
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Topup</button>
+            <button type="submit" class="site-link u-btn-reset">Topup</button>
           </form>
           {% else %}
           <span class="muted">admin principale</span>
@@ -90,23 +90,23 @@
             <span>Addebitato {{ job.billed_cents or 0 }} cent</span>
             <span>{{ job.created_at.strftime('%Y-%m-%d %H:%M') if job.created_at else '' }}</span>
           </div>
-          {% if job.error %}<div class="muted" style="margin-top:0.35rem">{{ job.error }}</div>{% endif %}
+          {% if job.error %}<div class="muted u-mt-035">{{ job.error }}</div>{% endif %}
         </div>
         <div class="history-actions">
           {% if job.status in ('pending', 'running') %}
-          <form method="post" action="{{ url_for('admin_cancel_job', job_id=job.id) }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_cancel_job', job_id=job.id) }}" class="u-inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Annulla</button>
+            <button type="submit" class="site-link u-btn-reset">Annulla</button>
           </form>
           {% elif job.status in ('error', 'done') %}
-          <form method="post" action="{{ url_for('admin_retry_job', job_id=job.id) }}" style="display:inline">
+          <form method="post" action="{{ url_for('admin_retry_job', job_id=job.id) }}" class="u-inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Riprova</button>
+            <button type="submit" class="site-link u-btn-reset">Riprova</button>
           </form>
           {% if job.status == 'error' and (job.billed_cents or 0) > 0 %}
-          <form method="post" action="{{ url_for('admin_refund_job', job_id=job.id) }}" style="display:inline;margin-left:0.5rem">
+          <form method="post" action="{{ url_for('admin_refund_job', job_id=job.id) }}" class="u-inline u-ml-05">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Rimborsa</button>
+            <button type="submit" class="site-link u-btn-reset">Rimborsa</button>
           </form>
           {% endif %}
           {% else %}
@@ -172,7 +172,7 @@
             <span>{{ lead.company or '—' }}</span>
             {% if lead.website_url %}<span>{{ lead.website_url }}</span>{% endif %}
           </div>
-          {% if lead.note %}<div class="muted" style="margin-top:0.35rem">{{ lead.note }}</div>{% endif %}
+          {% if lead.note %}<div class="muted u-mt-035">{{ lead.note }}</div>{% endif %}
         </div>
         <div class="history-actions">
           <span class="muted">{{ lead.created_at.strftime('%Y-%m-%d %H:%M') if lead.created_at else '' }}</span>

@@ -1,5 +1,6 @@
 {# Dominant hero product surface: Invisible-to-AI vs Centropic-Optimized.
-   Single composition (not a card grid); labels live in chrome, not as stickers. #}
+   Single composition (not a card grid); labels live in chrome, not as stickers.
+   Percent fills via data-p + CSS ladder in app.css (CSP: no style=). #}
 <div class="hero-dash" data-hero-contrast>
   <div class="hero-dash__chrome">
     <span class="hero-dash__dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -25,17 +26,17 @@
         <div class="hero-dash__metric">
           <span>{{ _('AIO') }}</span>
           <strong>18</strong>
-          <em class="hero-dash__bar" style="--p: 18" data-tone="crit"></em>
+          <em class="hero-dash__bar" data-p="18" data-tone="crit"></em>
         </div>
         <div class="hero-dash__metric">
           <span>{{ _('GEO') }}</span>
           <strong>12</strong>
-          <em class="hero-dash__bar" style="--p: 12" data-tone="crit"></em>
+          <em class="hero-dash__bar" data-p="12" data-tone="crit"></em>
         </div>
         <div class="hero-dash__metric">
           <span>{{ _('Brand SoV') }}</span>
           <strong>3%</strong>
-          <em class="hero-dash__bar" style="--p: 3" data-tone="crit"></em>
+          <em class="hero-dash__bar" data-p="3" data-tone="crit"></em>
         </div>
       </div>
       <ul class="hero-dash__findings">
@@ -45,10 +46,10 @@
         <li data-sev="warn">{{ _('Entity ambigua — rischio allucinazione') }}</li>
       </ul>
       <div class="hero-dash__engines" aria-hidden="true">
-        <span style="--p: 8">ChatGPT</span>
-        <span style="--p: 5">Claude</span>
-        <span style="--p: 6">Perplexity</span>
-        <span style="--p: 4">Gemini</span>
+        <span data-p="8">ChatGPT</span>
+        <span data-p="5">Claude</span>
+        <span data-p="6">Perplexity</span>
+        <span data-p="4">Gemini</span>
       </div>
     </div>
 
@@ -62,17 +63,17 @@
         <div class="hero-dash__metric">
           <span>{{ _('AIO') }}</span>
           <strong>92</strong>
-          <em class="hero-dash__bar" style="--p: 92" data-tone="peak"></em>
+          <em class="hero-dash__bar" data-p="92" data-tone="peak"></em>
         </div>
         <div class="hero-dash__metric">
           <span>{{ _('GEO') }}</span>
           <strong>88</strong>
-          <em class="hero-dash__bar" style="--p: 88" data-tone="peak"></em>
+          <em class="hero-dash__bar" data-p="88" data-tone="peak"></em>
         </div>
         <div class="hero-dash__metric">
           <span>{{ _('Brand SoV') }}</span>
           <strong>41%</strong>
-          <em class="hero-dash__bar" style="--p: 41" data-tone="peak"></em>
+          <em class="hero-dash__bar" data-p="41" data-tone="peak"></em>
         </div>
       </div>
       <ul class="hero-dash__findings">
@@ -82,10 +83,10 @@
         <li data-sev="ok">{{ _('Pack Edge Signals live') }}</li>
       </ul>
       <div class="hero-dash__engines" aria-hidden="true">
-        <span style="--p: 86">ChatGPT</span>
-        <span style="--p: 79">Claude</span>
-        <span style="--p: 74">Perplexity</span>
-        <span style="--p: 71">Gemini</span>
+        <span data-p="86">ChatGPT</span>
+        <span data-p="79">Claude</span>
+        <span data-p="74">Perplexity</span>
+        <span data-p="71">Gemini</span>
       </div>
     </div>
   </div>

@@ -73,7 +73,7 @@
       </div>
       {{ prompt_form.submit(class_="btn btn-primary") }}
     </form>
-    <form method="post" class="form-grid panel" style="margin-top:1rem">
+    <form method="post" class="form-grid panel u-mt-1">
       {{ vertical_form.hidden_tag() }}
       <input type="hidden" name="action" value="vertical" />
       <div class="field">
@@ -115,7 +115,7 @@
       {{ _('Email non ancora confermata.') }}
       {{ _('Senza conferma non ricevi il credito di benvenuto.') }}
     </p>
-    <form method="post" class="form-grid panel" style="margin-bottom:1.25rem">
+    <form method="post" class="form-grid panel u-mb-125">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <input type="hidden" name="action" value="resend_verify" />
       <button class="btn btn-ghost" type="submit">{{ _('Reinvia email di conferma') }}</button>
@@ -138,7 +138,7 @@
       </div>
       {{ password_form.submit(class_="btn btn-primary") }}
     </form>
-    <form method="post" class="form-grid panel" style="margin-top:1rem">
+    <form method="post" class="form-grid panel u-mt-1">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <input type="hidden" name="action" value="logout_all" />
       <p class="lede">{{ _('Chiudi tutte le altre sessioni (altri browser / dispositivi).') }}</p>
@@ -154,7 +154,7 @@
       <p class="lede">{{ _('Scarica un export JSON con profilo e siti (portabilità).') }}</p>
       <button class="btn btn-ghost" type="submit">{{ _('Esporta i miei dati') }}</button>
     </form>
-    <form method="post" class="form-grid panel" style="margin-top:1rem">
+    <form method="post" class="form-grid panel u-mt-1">
       {{ delete_form.hidden_tag() }}
       <input type="hidden" name="action" value="delete_account" />
       <p class="lede">{{ _('Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal billing.') }}</p>
