@@ -121,6 +121,10 @@ Senza questo, overlay/API tornano `transaction_default_checkout_url_not_set` e i
 
 Il dominio deve essere approved in Paddle (Website approval). Webhook: `https://centropic.ai/billing/paddle-webhook`.
 
+La `PADDLE_API_KEY` live deve includere **`transaction.write`** (oltre a read catalogo).
+Senza write, il fallback server `/billing/checkout` torna 403 `forbidden`; l’overlay
+Paddle.js usa solo `PADDLE_CLIENT_TOKEN` e non dipende da quel permesso.
+
 Opzionali analytics/ads (env):
 
 ```env

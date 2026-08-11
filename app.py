@@ -4057,6 +4057,13 @@ def billing_checkout():
                 "poi riprova.",
                 "error",
             )
+        elif "paddle_api_key_forbidden" in detail or "forbidden" in detail.lower():
+            flash(
+                "Chiave API Paddle senza permesso Transactions write. "
+                "In Paddle → Developer tools → Authentication aggiorna PADDLE_API_KEY "
+                "con transaction.write, poi riprova (l’overlay Paddle.js non usa questa chiave).",
+                "error",
+            )
         else:
             flash(
                 "Impossibile avviare il checkout Paddle. Riprova o contattaci.",
@@ -5669,6 +5676,12 @@ def topup_checkout():
                     "Checkout Paddle non configurato: in Paddle Dashboard → Checkout → "
                     "Checkout settings imposta Default payment link = https://centropic.ai, "
                     "poi riprova.",
+                    "error",
+                )
+            elif "paddle_api_key_forbidden" in detail or "forbidden" in detail.lower():
+                flash(
+                    "Chiave API Paddle senza permesso Transactions write. "
+                    "Aggiorna PADDLE_API_KEY in Paddle → Authentication, poi riprova.",
                     "error",
                 )
             else:

@@ -198,3 +198,25 @@ def test_create_transaction_surfaces_missing_default_payment_link(monkeypatch):
         assert False, "expected RuntimeError"
     except RuntimeError as exc:
         assert "paddle_default_payment_link_missing" in str(exc)
+
+
+def test_create_transaction_surfaces_api_key_forbidden(monkeypatch):
+    class _Resp:
+        status_code = 403
+        text = "forbidden"
+
+        def json(self):
+            return {
+                "error": {
+                    "code": "forbidden",
+                    "detail": "not authorized to create|read transaction",
+                }
+            }
+
+    monkeypatch.setattr(pb, "PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setattr(pb.requests, "post", lambda *a, **k: _Resp())
+    try:
+        pb.create_transaction(price_id="pri_x", user_id=1, email="a@b.c")
+        assert False, "expected RuntimeError"
+    except RuntimeError as exc:
+        assert "paddle_api_key_forbidden" in str(exc)

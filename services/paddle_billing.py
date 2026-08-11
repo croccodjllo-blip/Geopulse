@@ -198,6 +198,14 @@ def create_transaction(
                 "(https://vendors.paddle.com/checkout-settings) to "
                 "https://centropic.ai"
             )
+        if res.status_code == 403 or err_code == "forbidden":
+            raise RuntimeError(
+                "paddle_api_key_forbidden: "
+                "Live API key lacks transaction.write (or account cannot "
+                "create transactions). In Paddle → Developer tools → "
+                "Authentication, edit/create a key with Transactions write, "
+                "update PADDLE_API_KEY on the server, then retry."
+            )
         raise RuntimeError(
             f"Paddle transaction error HTTP {res.status_code}"
             + (f" ({err_code})" if err_code else "")
