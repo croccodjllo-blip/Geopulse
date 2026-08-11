@@ -1046,7 +1046,10 @@
         const data = await res.json();
         if (!data.ok) return;
         if (data.status === 'done') {
-          window.location.href = '{{ url_for("dashboard") }}';
+          const base = '{{ url_for("dashboard") }}';
+          window.location.href = data.site_id
+            ? (base + (base.indexOf('?') >= 0 ? '&' : '?') + 'site=' + encodeURIComponent(data.site_id))
+            : base;
           return;
         }
         if (data.status === 'error') {

@@ -1713,6 +1713,7 @@ from centropic.tenancy import (  # noqa: E402
     assert_can_remesure_site,
     ensure_personal_org,
     get_accessible_site,
+    latest_site_for_user,
     resolve_existing_site_for_analyze,
     sites_query_for_user,
     user_can_access_site,
@@ -5189,10 +5190,9 @@ def dashboard():
                 flash("Report completo e file di fix sbloccati dalla tua anteprima.", "success")
         except Exception:
             app.logger.exception("dashboard claim preview failed user=%s", user.id)
-    latest: SiteAnalysis | None = (
-        sites_query_for_user(SiteAnalysis, user)
-        .order_by(SiteAnalysis.created_at.desc())
-        .first()
+    prefer_site_id = request.args.get("site", type=int)
+    latest: SiteAnalysis | None = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
     )
     pending_job = (
         AnalysisJob.query.filter(
@@ -5316,21 +5316,26 @@ def dashboard():
             flash_analyze_error(exc)
 
     job_id_q = request.args.get("job", type=int)
-    if job_id_q and (
-        pending_job is None
-        or pending_job.id != job_id_q
-    ):
+    qjob = None
+    if job_id_q:
         qjob = AnalysisJob.query.filter_by(id=job_id_q, user_id=user.id).first()
         if qjob is not None and qjob.status in {"pending", "running"}:
             pending_job = qjob
-        elif pending_job is None:
+        elif pending_job is None and qjob is not None:
             pending_job = qjob
+        # Completed job → show the site that was just analyzed (not an older
+        # preview that happens to have a newer created_at).
+        if (
+            qjob is not None
+            and qjob.status == "done"
+            and qjob.site_id
+            and prefer_site_id is None
+        ):
+            prefer_site_id = int(qjob.site_id)
 
-    # Refresh latest after possible async completion
-    latest = (
-        sites_query_for_user(SiteAnalysis, user)
-        .order_by(SiteAnalysis.created_at.desc())
-        .first()
+    # Refresh latest after possible async completion / job preference.
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
     )
 
     schedule_form = RescanScheduleForm()

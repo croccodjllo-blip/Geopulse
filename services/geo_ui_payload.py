@@ -55,7 +55,7 @@ def build_geo_ui_payload(
     """Session-safe payload for ``window.__CENTROPIC_GEO_DATA__``."""
     latest = (
         sites_query_for_user(SiteAnalysis, user)
-        .order_by(SiteAnalysis.created_at.desc())
+        .order_by(SiteAnalysis.updated_at.desc(), SiteAnalysis.created_at.desc())
         .first()
     )
     empty: dict[str, Any] = {

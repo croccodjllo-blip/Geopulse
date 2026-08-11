@@ -171,3 +171,33 @@ def sites_query_for_user(model: Any, user: Any):
             model.organization_id.in_(org_ids),
         )
     )
+
+
+def latest_site_for_user(
+    model: Any,
+    user: Any,
+    *,
+    prefer_site_id: int | None = None,
+):
+    """Most recently *analyzed* site (updated_at), not first-seen (created_at).
+
+    Re-scans bump ``updated_at`` while keeping the original ``created_at``. Ordering
+    by created_at alone makes a newer preview/site (e.g. google.it claim) stick as
+    dashboard ``latest`` forever, even after re-analyzing an older domain.
+    """
+    if prefer_site_id is not None:
+        try:
+            preferred = get_accessible_site(model, user, int(prefer_site_id))
+        except (TypeError, ValueError):
+            preferred = None
+        if preferred is not None:
+            return preferred
+    return (
+        sites_query_for_user(model, user)
+        .order_by(
+            model.updated_at.desc(),
+            model.created_at.desc(),
+            model.id.desc(),
+        )
+        .first()
+    )

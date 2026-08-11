@@ -320,7 +320,14 @@
                 });
               } catch (e) { /* ignore */ }
             }
-            window.location.href = self._doneUrl;
+            var doneUrl = self._doneUrl || "/dashboard";
+            if (data.site_id) {
+              doneUrl +=
+                (doneUrl.indexOf("?") >= 0 ? "&" : "?") +
+                "site=" +
+                encodeURIComponent(String(data.site_id));
+            }
+            window.location.href = doneUrl;
             return;
           }
           if (data.status === "error") {
