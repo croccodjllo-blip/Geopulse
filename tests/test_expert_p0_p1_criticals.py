@@ -262,6 +262,30 @@ def test_dispatch_alerts_skips_free_after_downgrade():
     assert result.get("webhook") is None
 
 
+def test_grant_plus_monthly_tokens_fails_closed_without_ledger_index(monkeypatch):
+    from app import LedgerIndexMissingError, grant_plus_monthly_tokens
+
+    with app.app_context():
+        ensure_schema()
+        user = User(
+            email=f"grant-{uuid4().hex}@example.com",
+            name="Grant",
+            plan="plus",
+            credit_balance_cents=0,
+        )
+        user.set_password("x" * 12)
+        db.session.add(user)
+        db.session.commit()
+        monkeypatch.setattr("app.CREDIT_LEDGER_PI_INDEX_OK", False, raising=False)
+        with pytest.raises(LedgerIndexMissingError):
+            grant_plus_monthly_tokens(
+                user=user,
+                idempotency_key=f"paddle-plus-tokens:test-{uuid4().hex}",
+            )
+        db.session.refresh(user)
+        assert int(user.credit_balance_cents or 0) == 0
+
+
 def test_health_marks_degraded_on_stale_jobs(monkeypatch):
     with app.app_context():
         ensure_schema()

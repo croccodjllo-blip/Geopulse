@@ -168,6 +168,30 @@ def process_due_rescans(
         else:
             billing_cb = None
 
+        # Track leftover of THIS rescan hold only — never release concurrent
+        # dashboard/API holds that share the user's global credit_held_cents.
+        held_left = held
+
+        def _track_hold(cb: UsageCallback | None) -> UsageCallback | None:
+            if cb is None or held <= 0:
+                return cb
+
+            def _wrapped(**kwargs: Any) -> None:
+                nonlocal held_left
+                from services.usage_billing import get_held_cents
+
+                owner_before = db_session.get(User, user.id)
+                before = int(get_held_cents(owner_before) or 0) if owner_before else 0
+                cb(**kwargs)
+                owner_after = db_session.get(User, user.id)
+                after = int(get_held_cents(owner_after) or 0) if owner_after else before
+                dropped = max(0, before - after)
+                if dropped:
+                    held_left = max(0, int(held_left) - dropped)
+
+            return _wrapped
+
+        billing_cb = _track_hold(billing_cb)
         run_measured = bool(measured) and callable(billing_cb)
 
         try:
@@ -197,17 +221,18 @@ def process_due_rescans(
             stats["error"] += 1
             logger.exception("Rescan failed site_id=%s", site.id)
         finally:
-            if held > 0 and callable(release_hold_fn):
+            if held_left > 0 and callable(release_hold_fn):
                 try:
                     owner = db_session.get(User, user.id)
                     if owner is not None:
-                        # Only release leftover reservation (consume_hold may
-                        # have already reduced held during live debit).
                         from services.usage_billing import get_held_cents
 
-                        rem = int(get_held_cents(owner) or 0)
-                        if rem > 0:
-                            release_hold_fn(owner, rem)
+                        # Cap by global held so we never drive held negative,
+                        # but never release more than this rescan still owns.
+                        rem_global = int(get_held_cents(owner) or 0)
+                        to_release = min(int(held_left), rem_global)
+                        if to_release > 0:
+                            release_hold_fn(owner, to_release)
                 except Exception:
                     logger.exception("rescan release_hold failed site_id=%s", site.id)
 

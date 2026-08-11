@@ -151,6 +151,37 @@ def test_cms_bundle_basic_omits_plus_routes():
     vercel = basic["adapters"]["vercel"]["files"]["vercel.json"]
     assert "/robots.txt" not in vercel
 
+    wp = basic["adapters"]["wordpress"]["files"][
+        "centropic-edge/centropic-edge.php"
+    ]
+    assert "/robots.txt" not in wp
+    assert "organization.jsonld" not in wp
+    assert "/llms.txt" in wp
+
+    drupal_routes = basic["adapters"]["drupal"]["files"][
+        "centropic_edge/centropic_edge.routing.yml"
+    ]
+    assert "/robots.txt" not in drupal_routes
+    assert "organization.jsonld" not in drupal_routes
+
+    php = basic["adapters"]["generic_php"]["files"]["centropic-proxy.php"]
+    assert "'/robots.txt'" not in php
+    assert "organization.jsonld" not in php
+
+    htaccess = basic["adapters"]["generic_php"]["files"][".htaccess.centropic"]
+    assert "robots" not in htaccess
+    assert "jsonld" not in htaccess
+
+    nginx = basic["adapters"]["generic_php"]["files"]["nginx-centropic.conf"]
+    assert "/robots.txt" not in nginx
+    assert "organization.jsonld" not in nginx
+
+    netlify = basic["adapters"]["netlify"]["files"]["netlify.toml"]
+    assert "/robots.txt" not in netlify
+    assert "organization.jsonld" not in netlify
+    redirects = basic["adapters"]["netlify"]["files"]["_redirects"]
+    assert "/robots.txt" not in redirects
+
     full = build_cms_bundle(
         origin_edge_base="https://centropic.ai/e/tok",
         site_origin="https://example.com",
@@ -158,3 +189,8 @@ def test_cms_bundle_basic_omits_plus_routes():
     )
     assert full["tier"] == "full"
     assert "/robots.txt" in full["routes"]
+    full_wp = full["adapters"]["wordpress"]["files"][
+        "centropic-edge/centropic-edge.php"
+    ]
+    assert "robots.txt" in full_wp
+    assert "organization.jsonld" in full_wp

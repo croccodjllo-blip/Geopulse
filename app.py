@@ -2626,6 +2626,10 @@ def resolve_crawl_pages(user: User, *, deep_crawl: bool = False) -> int:
     return int(PRO_CRAWL_PAGES)
 
 
+class LedgerIndexMissingError(RuntimeError):
+    """Raised when payment idempotency unique index is absent (fail closed)."""
+
+
 def grant_plus_monthly_tokens(
     *,
     user: User,
@@ -2636,7 +2640,14 @@ def grant_plus_monthly_tokens(
     """Credit subscription monthly GEO tokens once per billing event.
 
     Returns True if granted. ``credit_cents`` defaults to Plus monthly grant.
+    Fail-closed when the credit_ledger payment-idempotency unique index is
+    missing (same policy as Paddle top-ups).
     """
+    if not CREDIT_LEDGER_PI_INDEX_OK:
+        app.logger.error(
+            "Plus/Business token grant refused: credit ledger unique index missing"
+        )
+        raise LedgerIndexMissingError("ledger_index_missing")
     amount = (
         int(credit_cents)
         if credit_cents is not None
@@ -4199,15 +4210,22 @@ def billing_paddle_webhook():
 
                     _apply_business(user)
                     if txn_id and BUSINESS_MONTHLY_CREDIT_CENTS > 0:
-                        granted = grant_plus_monthly_tokens(
-                            user=user,
-                            idempotency_key=f"paddle-business-tokens:{txn_id}",
-                            credit_cents=BUSINESS_MONTHLY_CREDIT_CENTS,
-                            description=(
-                                f"Business mensile: "
-                                f"{format_token_amount(BUSINESS_MONTHLY_CREDIT_CENTS)}"
-                            ),
-                        )
+                        try:
+                            granted = grant_plus_monthly_tokens(
+                                user=user,
+                                idempotency_key=f"paddle-business-tokens:{txn_id}",
+                                credit_cents=BUSINESS_MONTHLY_CREDIT_CENTS,
+                                description=(
+                                    f"Business mensile: "
+                                    f"{format_token_amount(BUSINESS_MONTHLY_CREDIT_CENTS)}"
+                                ),
+                            )
+                        except LedgerIndexMissingError:
+                            app_metrics.incr("billing.plan_grant_index_missing")
+                            return (
+                                jsonify({"ok": False, "error": "ledger_index_missing"}),
+                                503,
+                            )
                         if not granted:
                             user = _user_from_paddle(data) or user
                             if user is not None and (user.plan or "").lower() != "admin":
@@ -4241,10 +4259,17 @@ def billing_paddle_webhook():
 
                     _apply_plus(user)
                     if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
-                        granted = grant_plus_monthly_tokens(
-                            user=user,
-                            idempotency_key=f"paddle-plus-tokens:{txn_id}",
-                        )
+                        try:
+                            granted = grant_plus_monthly_tokens(
+                                user=user,
+                                idempotency_key=f"paddle-plus-tokens:{txn_id}",
+                            )
+                        except LedgerIndexMissingError:
+                            app_metrics.incr("billing.plan_grant_index_missing")
+                            return (
+                                jsonify({"ok": False, "error": "ledger_index_missing"}),
+                                503,
+                            )
                         if not granted:
                             # Duplicate or race: keep plan after possible rollback.
                             user = _user_from_paddle(data) or user
