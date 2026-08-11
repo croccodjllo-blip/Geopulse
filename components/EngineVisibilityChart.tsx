@@ -20,10 +20,10 @@ export type EngineBarPoint = {
 };
 
 const TONE: Record<NonNullable<EngineBarPoint["tone"]>, string> = {
-  emerald: "#34d399",
-  cyan: "#6EC6C0",
-  violet: "#4A7C8C",
-  amber: "#fbbf24",
+  emerald: "#10A37F",
+  cyan: "#3FA8B5",
+  violet: "#8BA3BD",
+  amber: "#D4A574",
 };
 
 const DEFAULT: EngineBarPoint[] = [
@@ -42,6 +42,8 @@ export function EngineVisibilityChart({
   data = DEFAULT,
   className,
 }: EngineVisibilityChartProps) {
+  const rows = [...data].sort((a, b) => b.share - a.share);
+
   return (
     <div
       className={
@@ -55,34 +57,38 @@ export function EngineVisibilityChart({
           Relative Share of Voice by generative engine
         </p>
       </div>
-      <div className="h-56 w-full">
+      <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
-            margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
+            layout="vertical"
+            data={rows}
+            margin={{ top: 4, right: 16, left: 8, bottom: 0 }}
           >
             <CartesianGrid
               stroke="#1F2937"
               strokeDasharray="3 3"
-              vertical={false}
+              horizontal={false}
             />
             <XAxis
-              dataKey="label"
-              axisLine={false}
-              tickLine={false}
-              fontSize={11}
-              stroke="#94A3B8"
-            />
-            <YAxis
+              type="number"
+              domain={[0, 100]}
               axisLine={false}
               tickLine={false}
               fontSize={11}
               stroke="#94A3B8"
               unit="%"
-              domain={[0, 100]}
+            />
+            <YAxis
+              type="category"
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              fontSize={11}
+              stroke="#94A3B8"
+              width={88}
             />
             <Tooltip
-              cursor={{ fill: "rgba(110,198,192,0.06)" }}
+              cursor={{ fill: "rgba(201,211,221,0.06)" }}
               contentStyle={{
                 background: "#111827",
                 border: "1px solid #1F2937",
@@ -92,8 +98,8 @@ export function EngineVisibilityChart({
               }}
               formatter={(value) => [`${value}%`, "SoV"]}
             />
-            <Bar dataKey="share" radius={[6, 6, 0, 0]}>
-              {data.map((entry) => (
+            <Bar dataKey="share" radius={[0, 6, 6, 0]} barSize={18}>
+              {rows.map((entry) => (
                 <Cell
                   key={entry.id}
                   fill={TONE[entry.tone || "cyan"]}

@@ -400,21 +400,32 @@
                   {% endif %}
                 </div>
 
-                {% if engine_breakdown.radar and engine_breakdown.radar.points %}
-                <div class="sov-radar" role="img" aria-label="{{ _('Propensity per engine (radar)') }}">
-                  <svg class="sov-radar__svg" viewBox="0 0 200 200">
-                    {% for ring in engine_breakdown.radar.ring_polygons %}
-                    <polygon class="sov-radar__ring" points="{{ ring }}" />
-                    {% endfor %}
-                    {% for axis in engine_breakdown.radar.axes %}
-                    <polyline class="sov-radar__axis" points="{{ axis }}" />
-                    {% endfor %}
-                    <polygon class="sov-radar__data" points="{{ engine_breakdown.radar.points }}" />
-                    {% for pt in engine_breakdown.radar.points.split(' ') %}
-                    <circle class="sov-radar__dot" cx="{{ pt.split(',')[0] }}" cy="{{ pt.split(',')[1] }}" r="2.6" />
-                    {% endfor %}
-                    {% for lbl in engine_breakdown.radar.labels %}
-                    <text class="sov-radar__label" x="{{ lbl.x }}" y="{{ lbl.y }}" text-anchor="{{ lbl.anchor }}" dy="{{ lbl.dy }}">{{ lbl.label }}</text>
+                {% if engine_breakdown.columns and engine_breakdown.columns.bars %}
+                <div class="sov-columns" role="img" aria-label="{{ _('Propensity per engine') }}">
+                  <svg
+                    class="sov-columns__svg"
+                    viewBox="0 0 {{ engine_breakdown.columns.width }} {{ engine_breakdown.columns.height }}"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    <line
+                      class="sov-columns__baseline"
+                      x1="{{ engine_breakdown.columns.pad_x }}"
+                      x2="{{ engine_breakdown.columns.width - engine_breakdown.columns.pad_x }}"
+                      y1="{{ engine_breakdown.columns.baseline }}"
+                      y2="{{ engine_breakdown.columns.baseline }}"
+                    />
+                    {% for b in engine_breakdown.columns.bars %}
+                    <rect
+                      class="sov-columns__bar"
+                      x="{{ b.x }}"
+                      y="{{ b.y }}"
+                      width="{{ b.w }}"
+                      height="{{ b.h }}"
+                      rx="3"
+                      style="--accent: {{ b.accent }};"
+                    />
+                    <text class="sov-columns__value" x="{{ b.cx }}" y="{{ b.vy }}" text-anchor="middle">{{ b.value }}</text>
+                    <text class="sov-columns__label" x="{{ b.cx }}" y="{{ b.ly }}" text-anchor="middle">{{ b.label }}</text>
                     {% endfor %}
                   </svg>
                 </div>
@@ -967,9 +978,9 @@
 </section>
 
 {% include "partials/analyze_overlay.html" %}
-<script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
 {% if can_competitors %}
-<script src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
 {% endif %}
 <script nonce="{{ csp_nonce }}">
 (() => {

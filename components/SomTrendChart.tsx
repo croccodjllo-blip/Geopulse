@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  Area,
-  AreaChart,
+  Line,
+  LineChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -22,14 +22,13 @@ export type SomTrendChartProps = {
   className?: string;
 };
 
-const CYAN = "#6EC6C0";
-const VIOLET = "#4A7C8C";
+const CHROME = "#C9D3DD";
+const CHROME_DEEP = "#8BA3BD";
 const MUTED = "#94A3B8";
 const BORDER = "#1F2937";
 
 function formatTick(value: string) {
   if (!value) return "";
-  // Prefer YYYY-MM-DD → DD/MM
   const m = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return `${m[3]}/${m[2]}`;
   return value.slice(0, 10);
@@ -66,18 +65,7 @@ export function SomTrendChart({
       style={{ height }}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-          <defs>
-            <linearGradient id="somFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={CYAN} stopOpacity={0.35} />
-              <stop offset="55%" stopColor={VIOLET} stopOpacity={0.12} />
-              <stop offset="100%" stopColor={VIOLET} stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="somStroke" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor={CYAN} />
-              <stop offset="100%" stopColor={VIOLET} />
-            </linearGradient>
-          </defs>
+        <LineChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid stroke={BORDER} strokeDasharray="3 6" vertical={false} />
           <XAxis
             dataKey="t"
@@ -106,16 +94,15 @@ export function SomTrendChart({
             labelFormatter={(l) => String(l)}
             formatter={(value) => [`${value}%`, "SoM"]}
           />
-          <Area
+          <Line
             type="monotone"
             dataKey="rate"
-            stroke="url(#somStroke)"
+            stroke={CHROME}
             strokeWidth={2.5}
-            fill="url(#somFill)"
-            dot={{ r: 3, fill: CYAN, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: CYAN, stroke: "#0B0F19", strokeWidth: 2 }}
+            dot={{ r: 3.5, fill: CHROME_DEEP, strokeWidth: 0 }}
+            activeDot={{ r: 5, fill: CHROME, stroke: "#0B0F19", strokeWidth: 2 }}
           />
-        </AreaChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );

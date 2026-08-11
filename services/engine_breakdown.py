@@ -58,7 +58,7 @@ ENGINES: tuple[dict[str, Any], ...] = (
         "label": "Azure AI",
         "vendor": "Microsoft Azure",
         "bot": None,
-        "accent": "#7B83EB",
+        "accent": "#5B6B7A",
         "weight": 0.85,
     },
 )
@@ -87,17 +87,68 @@ def _severity_penalty(findings: list[dict[str, Any]]) -> float:
     return min(pen, 28.0)
 
 
+def _column_geometry(
+    engines: list[dict[str, Any]],
+    *,
+    width: float = 280.0,
+    height: float = 168.0,
+    pad_x: float = 18.0,
+    pad_top: float = 22.0,
+    pad_bottom: float = 34.0,
+) -> dict[str, Any]:
+    """Precompute a vertical column chart from per-engine propensity.
+
+    Server-rendered SVG bars — clearer than a spider/radar when many engines
+    sit near the same high band (the old radar looked like a filled blob).
+    """
+    n = len(engines)
+    if n < 1:
+        return {"bars": [], "width": width, "height": height, "baseline": height - pad_bottom}
+
+    plot_w = width - (2 * pad_x)
+    plot_h = height - pad_top - pad_bottom
+    gap = 10.0 if n <= 6 else 6.0
+    bar_w = max(12.0, (plot_w - gap * (n - 1)) / n)
+    baseline = pad_top + plot_h
+    bars: list[dict[str, Any]] = []
+    for i, eng in enumerate(engines):
+        value = max(0.0, min(100.0, float(eng.get("propensity", 0) or 0)))
+        h = plot_h * (value / 100.0)
+        x = pad_x + i * (bar_w + gap)
+        y = baseline - h
+        cx = x + bar_w / 2.0
+        bars.append(
+            {
+                "x": round(x, 1),
+                "y": round(y, 1),
+                "w": round(bar_w, 1),
+                "h": round(max(h, 1.5 if value > 0 else 0.0), 1),
+                "cx": round(cx, 1),
+                "label": eng.get("label", ""),
+                "value": int(round(value)),
+                "accent": eng.get("accent") or "var(--plan-accent)",
+                "ly": round(height - 12, 1),
+                "vy": round(max(10.0, y - 6), 1),
+            }
+        )
+
+    return {
+        "bars": bars,
+        "width": width,
+        "height": height,
+        "baseline": round(baseline, 1),
+        "pad_x": pad_x,
+        "plot_h": round(plot_h, 1),
+    }
+
+
 def _radar_geometry(
     engines: list[dict[str, Any]],
     *,
     center: float = 100.0,
     radius: float = 78.0,
 ) -> dict[str, Any]:
-    """Precompute an N-axis radar/spider chart from per-engine propensity.
-
-    Server-rendered (no client-side trig needed): each axis is one engine,
-    evenly spaced starting at 12 o'clock, radius scaled by propensity/100.
-    """
+    """Legacy spider helper (kept for tests/import stability; UI uses columns)."""
     n = len(engines)
     if n < 3:
         return {"points": "", "rings": [], "axes": [], "labels": []}
@@ -115,10 +166,8 @@ def _radar_geometry(
         value = max(0.0, min(100.0, float(eng.get("propensity", 0) or 0)))
         x, y = _point(angle, radius * (value / 100.0))
         data_points.append(f"{x:.1f},{y:.1f}")
-
         ax, ay = _point(angle, radius)
         axes.append(f"{center:.1f},{center:.1f} {ax:.1f},{ay:.1f}")
-
         lx, ly = _point(angle, radius + 20)
         cos_a = math.cos(math.radians(angle - 90))
         sin_a = math.sin(math.radians(angle - 90))
@@ -298,7 +347,8 @@ def compute_engine_breakdown(
         "evidence": "proxy",
         "label": "Stimato (proxy)",
         "engines": engines_out,
-        "radar": _radar_geometry(engines_out),
+        "columns": _column_geometry(engines_out),
+        "radar": _radar_geometry(engines_out),  # legacy; UI prefers columns
         "composition": engines_out,  # same order for stacked bar
         "brand_sov": brand_sov,
         "rivals_sov": rivals_sov,
@@ -458,6 +508,8 @@ def apply_measured_sov(
             )
     out["engines"] = engines
     out["composition"] = engines
+    out["columns"] = _column_geometry(engines)
+    out["radar"] = _radar_geometry(engines)
     out["measured"] = measured
     top = max(engines, key=lambda e: e.get("propensity") or 0) if engines else None
     out["top_engine"] = top["label"] if top else out.get("top_engine")

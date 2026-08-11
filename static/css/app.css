@@ -7489,7 +7489,7 @@ body.body-auth {
   box-shadow: var(--shadow-glow);
   display: grid;
   gap: 1.5rem;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sov-panel::before,
@@ -7590,53 +7590,51 @@ body.body-auth {
   gap: 0.1rem;
 }
 
-.sov-radar {
-  width: clamp(11rem, 16vw, 14rem);
+.sov-columns {
+  width: clamp(14rem, 28vw, 18rem);
+  min-width: 12.5rem;
   filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
 }
 
-.sov-radar__svg {
+.sov-columns__svg {
   width: 100%;
   height: auto;
   display: block;
   overflow: visible;
 }
 
-.sov-radar__ring {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.10);
+.sov-columns__baseline {
+  stroke: rgba(255, 255, 255, 0.14);
   stroke-width: 1;
 }
 
-.sov-radar__axis {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.08);
+.sov-columns__bar {
+  fill: color-mix(in srgb, var(--accent, var(--plan-accent)) 88%, #0b0f19);
+  stroke: var(--accent, var(--plan-accent));
   stroke-width: 1;
 }
 
-.sov-radar__data {
-  fill: color-mix(in srgb, var(--plan-accent) 28%, transparent);
-  stroke: var(--plan-accent);
-  stroke-width: 1.75;
-  stroke-linejoin: round;
+.sov-columns__value {
+  fill: #fff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
 }
 
-.sov-radar__dot {
-  fill: var(--brand-clarity);
-  stroke: var(--plan-accent);
-  stroke-width: 1.5;
-}
-
-.sov-radar__label {
+.sov-columns__label {
   fill: var(--brand-muted);
   font-family: var(--font-display);
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 600;
 }
 
 @media (max-width: 900px) {
-  .sov-radar { width: min(90vw, 16rem); margin: 0 auto; }
+  .sov-columns { width: min(92vw, 20rem); margin: 0 auto; }
 }
+
+/* Legacy radar selectors kept inert if old markup cached */
+.sov-radar { width: clamp(11rem, 16vw, 14rem); }
+.sov-radar__svg { width: 100%; height: auto; display: block; }
 
 .sov-hero__n {
   font-family: var(--font-display);
@@ -7687,8 +7685,8 @@ body.body-auth {
   color: #fff;
 }
 
-.sov-hero__split li[data-tone="brand"] strong { color: var(--brand-cyan); }
-.sov-hero__split li[data-tone="rivals"] strong { color: #a78bfa; }
+.sov-hero__split li[data-tone="brand"] strong { color: var(--plan-accent, var(--brand-cyan)); }
+.sov-hero__split li[data-tone="rivals"] strong { color: #8BA3BD; }
 .sov-hero__split li[data-tone="other"] strong { color: #94a3b8; }
 
 .sov-compose,
