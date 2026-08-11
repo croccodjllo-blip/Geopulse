@@ -1850,31 +1850,15 @@ def ensure_schema() -> None:
                 )
             )
         # Fail-loud if the index is still missing (double-credit risk).
-        dialect = db.engine.dialect.name
-        with db.engine.connect() as conn:
-            if dialect == "sqlite":
-                row = conn.execute(
-                    text(
-                        "SELECT 1 FROM sqlite_master "
-                        "WHERE type='index' AND name='uq_credit_ledger_stripe_pi'"
-                    )
-                ).fetchone()
-            else:
-                row = conn.execute(
-                    text(
-                        "SELECT 1 FROM pg_indexes "
-                        "WHERE indexname='uq_credit_ledger_stripe_pi'"
-                    )
-                ).fetchone()
-            global CREDIT_LEDGER_PI_INDEX_OK
-            if row is None:
-                CREDIT_LEDGER_PI_INDEX_OK = False
-                app.logger.error(
-                    "CRITICAL: credit_ledger unique index uq_credit_ledger_stripe_pi "
-                    "missing — webhook double-credit possible"
-                )
-            else:
-                CREDIT_LEDGER_PI_INDEX_OK = True
+        from centropic.prod_guards import refresh_credit_ledger_index_ok
+
+        global CREDIT_LEDGER_PI_INDEX_OK
+        CREDIT_LEDGER_PI_INDEX_OK = refresh_credit_ledger_index_ok(db.engine)
+        if not CREDIT_LEDGER_PI_INDEX_OK:
+            app.logger.error(
+                "CRITICAL: credit_ledger unique index uq_credit_ledger_stripe_pi "
+                "missing — webhook double-credit possible"
+            )
     except Exception:
         CREDIT_LEDGER_PI_INDEX_OK = False
         app.logger.exception(
@@ -2904,17 +2888,47 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
 @app.get("/health")
 @csrf.exempt
 def health():
+    from centropic.prod_guards import (
+        evaluate_env_guards,
+        prod_guards_enforced,
+        refresh_credit_ledger_index_ok,
+    )
+
     db_ok = True
     try:
         db.session.execute(text("SELECT 1"))
     except Exception:
         db_ok = False
-    status = 200 if db_ok else 503
+
+    # Re-check every probe so a dropped index fails closed without restart.
+    global CREDIT_LEDGER_PI_INDEX_OK
+    if db_ok:
+        CREDIT_LEDGER_PI_INDEX_OK = refresh_credit_ledger_index_ok(db.engine)
+    else:
+        CREDIT_LEDGER_PI_INDEX_OK = False
+
+    env_guards = evaluate_env_guards()
+    enforce_env = prod_guards_enforced()
+    healthy = (
+        db_ok
+        and CREDIT_LEDGER_PI_INDEX_OK
+        and (env_guards["ok"] if enforce_env else True)
+    )
+    status = 200 if healthy else 503
     payload: dict[str, Any] = {
-        "ok": db_ok,
+        "ok": healthy,
         "service": "centropic",
         "time": datetime.now(timezone.utc).isoformat(),
     }
+    if not healthy:
+        reasons: list[str] = []
+        if not db_ok:
+            reasons.append("db")
+        if not CREDIT_LEDGER_PI_INDEX_OK:
+            reasons.append("credit_ledger_pi_index")
+        if enforce_env and not env_guards["ok"]:
+            reasons.extend(f"env:{name}" for name in env_guards["failures"])
+        payload["failures"] = reasons
     # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     want_detail = False
@@ -2984,6 +2998,9 @@ def health():
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
+                "credit_ledger_pi_index_ok": CREDIT_LEDGER_PI_INDEX_OK,
+                "prod_guards": env_guards,
+                "prod_guards_enforced": enforce_env,
                 "jobs": jobs_detail,
                 "metrics": app_metrics.snapshot(),
                 "architecture": {
