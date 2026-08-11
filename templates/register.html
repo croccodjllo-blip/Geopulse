@@ -15,13 +15,20 @@
     <p class="eyebrow">{{ _('Registrazione') }}</p>
     <h1 class="h-display auth-title">{{ _('Crea account') }}</h1>
     <p class="lede auth-lede">
+      {% if preview_token %}
+      {{ _('Hai già un’anteprima pronta: crea l’account Free per sbloccare findings completi e i file di fix (llms.txt, schema, pack).') }}
+      {% else %}
       {{ _('Nome, email e password. Conferma l’email per il credito di benvenuto. Azienda e URL sono opzionali.') }}
+      {% endif %}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
 
     <form method="post" class="form-grid form-grid--2 panel" novalidate>
       {{ form.hidden_tag() }}
       <input type="hidden" name="ref" value="{{ request.args.get('ref', '') }}" />
+      {% if preview_token %}
+      <input type="hidden" name="preview" value="{{ preview_token }}" />
+      {% endif %}
 
       <div class="field span-2">
         <label for="name">{{ _('Nome e cognome') }}</label>

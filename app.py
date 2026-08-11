@@ -150,6 +150,17 @@ from services.growth import (
     trial_ends_at,
     trial_is_active,
 )
+from services.preview_analyze import (
+    PREVIEW_IP_DAY,
+    PREVIEW_IP_HOUR,
+    claim_guest_preview,
+    domain_from_url as preview_domain_from_url,
+    hash_client_ip,
+    new_preview_token,
+    preview_expires_at,
+    public_preview_payload,
+    run_guest_preview,
+)
 from services.site_guide import site_guide_payload
 from services.competitor_suggest import suggest_competitors, normalize_competitor_url
 from services.jobs import (
@@ -805,6 +816,32 @@ class SiteAnalysis(db.Model):
     @property
     def rescan_active(self) -> bool:
         return (self.rescan_interval or "off").lower() in {"daily", "weekly"}
+
+
+class GuestPreview(db.Model):
+    """Anonymous PLG preview: structural score before registration."""
+
+    __tablename__ = "guest_previews"
+
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(48), unique=True, nullable=False, index=True)
+    url = db.Column(db.String(500), nullable=False)
+    domain = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="pending", index=True)
+    error = db.Column(db.String(500))
+    aio_score = db.Column(db.Integer)
+    geo_score = db.Column(db.Integer)
+    findings_json = db.Column(db.Text, nullable=False, default="[]")
+    result_json = db.Column(db.Text, nullable=False, default="{}")
+    pack_json = db.Column(db.Text, nullable=False, default="{}")
+    ip_hash = db.Column(db.String(64), index=True)
+    claimed_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True)
+    claimed_site_id = db.Column(db.Integer, db.ForeignKey("site_analyses.id"), index=True)
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True
+    )
+    finished_at = db.Column(db.DateTime)
+    expires_at = db.Column(db.DateTime, nullable=False, index=True)
 
 
 class AnalysisJob(db.Model):
@@ -2279,6 +2316,25 @@ def kick_analyze_worker() -> None:
     threading.Thread(target=_run, daemon=True, name="analyze-kick").start()
 
 
+def kick_preview_worker(preview_id: int) -> None:
+    """Run guest PLG preview in a background daemon thread."""
+
+    def _run() -> None:
+        try:
+            with app.app_context():
+                run_guest_preview(
+                    db_session=db.session,
+                    GuestPreview=GuestPreview,
+                    preview_id=int(preview_id),
+                )
+        except Exception:
+            app.logger.exception("kick_preview_worker failed id=%s", preview_id)
+
+    threading.Thread(
+        target=_run, daemon=True, name=f"preview-kick-{preview_id}"
+    ).start()
+
+
 def parse_competitor_urls(raw: str, *, seed_url: str = "") -> list[str]:
     """Parse textarea lines into normalized public competitor URLs (max 3)."""
     seed_host = ""
@@ -3679,6 +3735,104 @@ def sample_report():
     )
 
 
+@app.route("/anteprima", methods=["POST"])
+def preview_analyze_start():
+    """Hero PLG: accept a public URL, start structural preview, no account yet."""
+    raw = (request.form.get("url") or "").strip()
+    if not raw:
+        flash("Inserisci l’URL del tuo sito (es. tuodominio.it).", "error")
+        return redirect(url_for("index") + "#hero-brand")
+
+    user = current_user()
+    if user is not None:
+        session["prefill_analyze_url"] = raw
+        flash("Sei già collegato: avvia l’analisi dal dashboard.", "info")
+        return redirect(url_for("dashboard") + "#analyze")
+
+    ip = client_ip()
+    if not limiter.allow(f"preview:{ip}", limit=PREVIEW_IP_HOUR, window_seconds=3600):
+        flash("Troppe anteprime da questo IP. Riprova tra poco o crea un account.", "error")
+        return redirect(url_for("index") + "#hero-brand")
+    if not limiter.allow(f"preview-day:{ip}", limit=PREVIEW_IP_DAY, window_seconds=86400):
+        flash("Limite giornaliero anteprime raggiunto. Crea un account Free per continuare.", "error")
+        return redirect(url_for("register"))
+
+    try:
+        url = normalize_url(raw)
+    except ValueError as exc:
+        flash(str(exc) or "URL non valido.", "error")
+        return redirect(url_for("index") + "#hero-brand")
+
+    token = new_preview_token()
+    preview = GuestPreview(
+        token=token,
+        url=url,
+        domain=preview_domain_from_url(url),
+        status="pending",
+        findings_json="[]",
+        result_json="{}",
+        pack_json="{}",
+        ip_hash=hash_client_ip(ip),
+        expires_at=preview_expires_at(),
+    )
+    db.session.add(preview)
+    db.session.commit()
+    session["guest_preview_token"] = token
+    kick_preview_worker(preview.id)
+    return redirect(url_for("preview_analyze_view", token=token))
+
+
+@app.route("/anteprima/<token>")
+def preview_analyze_view(token: str):
+    """Partial report gate: AIO score + 2 findings; register to unlock pack."""
+    preview = GuestPreview.query.filter_by(token=(token or "").strip()).first_or_404()
+    expires = preview.expires_at
+    if expires is not None:
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        if expires < datetime.now(timezone.utc):
+            flash("Anteprima scaduta. Inserisci di nuovo l’URL in homepage.", "error")
+            return redirect(url_for("index") + "#hero-brand")
+
+    user = current_user()
+    if user is not None and preview.status == "done" and not preview.claimed_user_id:
+        site = claim_guest_preview(
+            db_session=db.session,
+            GuestPreview=GuestPreview,
+            SiteAnalysis=SiteAnalysis,
+            AnalysisRun=AnalysisRun,
+            user=user,
+            token=preview.token,
+        )
+        if site is not None:
+            flash("Report completo sbloccato nel tuo account.", "success")
+            return redirect(url_for("dashboard"))
+
+    payload = public_preview_payload(preview)
+    return render_template(
+        "preview_analyze.html",
+        preview=payload,
+        register_url=url_for("register", preview=preview.token),
+    )
+
+
+@app.route("/anteprima/<token>/stato")
+def preview_analyze_status(token: str):
+    """JSON poll for guest preview progress (token-scoped, no pack bodies)."""
+    preview = GuestPreview.query.filter_by(token=(token or "").strip()).first()
+    if preview is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    expires = preview.expires_at
+    if expires is not None:
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        if expires < datetime.now(timezone.utc):
+            return jsonify({"ok": False, "error": "expired"}), 410
+    payload = public_preview_payload(preview)
+    payload["ok"] = True
+    return jsonify(payload)
+
+
 @app.route("/agenzie")
 def agencies():
     return render_template("agencies.html")
@@ -4441,18 +4595,32 @@ def register():
         return redirect(url_for("dashboard"))
 
     form = RegisterForm()
+    preview_token = (
+        (request.values.get("preview") or session.get("guest_preview_token") or "")
+        .strip()
+    )
+    if request.method == "GET" and preview_token and not form.website_url.data:
+        guest = GuestPreview.query.filter_by(token=preview_token).first()
+        if guest is not None and guest.status == "done":
+            form.website_url.data = guest.url
+            session["guest_preview_token"] = preview_token
+
     if form.validate_on_submit():
         # Stricter anti-farming limits (H3).
         if not limiter.allow(
             f"register:{client_ip()}", limit=3, window_seconds=3600
         ):
             flash("Troppe registrazioni da questo IP. Riprova più tardi.", "error")
-            return render_template("register.html", form=form)
+            return render_template(
+                "register.html", form=form, preview_token=preview_token
+            )
         if not limiter.allow(
             f"register-day:{client_ip()}", limit=8, window_seconds=86400
         ):
             flash("Troppe registrazioni da questo IP. Riprova più tardi.", "error")
-            return render_template("register.html", form=form)
+            return render_template(
+                "register.html", form=form, preview_token=preview_token
+            )
         email = form.email.data.strip().lower()
         # Anti-enumeration (M1): never reveal whether the email already exists.
         generic_ok = (
@@ -4471,6 +4639,14 @@ def register():
             website = None
             if (form.website_url.data or "").strip():
                 website = normalize_url(form.website_url.data)
+            preview_token = (
+                (request.form.get("preview") or session.get("guest_preview_token") or "")
+                .strip()
+            )
+            if not website and preview_token:
+                guest = GuestPreview.query.filter_by(token=preview_token).first()
+                if guest is not None:
+                    website = guest.url
             role_val = (form.role.data or "").strip() or None
             if role_val and role_val.lower() in PRIVILEGE_ROLES:
                 role_val = None
@@ -4510,7 +4686,9 @@ def register():
             return redirect(url_for("login"))
         except ValueError as exc:
             flash(str(exc), "error")
-            return render_template("register.html", form=form)
+            return render_template(
+                "register.html", form=form, preview_token=preview_token
+            )
 
         if verify_raw and mail_configured():
             try:
@@ -4543,6 +4721,33 @@ def register():
             signup_params["send_to"] = send_to
         queue_analytics_event("sign_up", signup_params)
 
+        claimed = None
+        if preview_token:
+            try:
+                claimed = claim_guest_preview(
+                    db_session=db.session,
+                    GuestPreview=GuestPreview,
+                    SiteAnalysis=SiteAnalysis,
+                    AnalysisRun=AnalysisRun,
+                    user=user,
+                    token=preview_token,
+                )
+                session.pop("guest_preview_token", None)
+            except Exception:
+                app.logger.exception("claim guest preview failed user=%s", user.id)
+
+        if claimed is not None:
+            flash(
+                "Account creato. Report completo e file di fix sbloccati in dashboard."
+                + (
+                    " Conferma l’email per il credito di benvenuto."
+                    if mail_configured()
+                    else ""
+                ),
+                "success",
+            )
+            return redirect(url_for("dashboard"))
+
         if mail_configured():
             flash(
                 "Account creato. Conferma l’email per sbloccare il credito di benvenuto "
@@ -4563,7 +4768,9 @@ def register():
         # Defer first analysis until welcome credit is granted via verify.
         return redirect(url_for("dashboard"))
 
-    return render_template("register.html", form=form)
+    return render_template(
+        "register.html", form=form, preview_token=preview_token
+    )
 
 
 @app.route("/verify-email/<token>", methods=["GET"])
@@ -4670,7 +4877,12 @@ def verify_email(token: str):
 
     website = getattr(user, "website_url", None)
     job_id = None
-    if granted_now or already:
+    already_has_site = (
+        SiteAnalysis.query.filter_by(user_id=user.id).count() > 0
+        if user is not None
+        else False
+    )
+    if (granted_now or already) and not already_has_site:
         job_id = start_first_analysis_if_needed(user, website)
 
     if granted_now:
@@ -4865,8 +5077,29 @@ def dashboard_geo_ui():
 def dashboard():
     user = current_user()
     form = AnalyzeForm()
-    if request.method == "GET" and not form.url.data and user and user.website_url:
-        form.url.data = user.website_url
+    if request.method == "GET" and not form.url.data:
+        prefill = session.pop("prefill_analyze_url", None)
+        if prefill:
+            form.url.data = prefill
+        elif user and user.website_url:
+            form.url.data = user.website_url
+    # Claim a completed guest preview once the user lands in-app.
+    pending_preview = (session.get("guest_preview_token") or "").strip()
+    if pending_preview and user is not None:
+        try:
+            claimed = claim_guest_preview(
+                db_session=db.session,
+                GuestPreview=GuestPreview,
+                SiteAnalysis=SiteAnalysis,
+                AnalysisRun=AnalysisRun,
+                user=user,
+                token=pending_preview,
+            )
+            if claimed is not None:
+                session.pop("guest_preview_token", None)
+                flash("Report completo e file di fix sbloccati dalla tua anteprima.", "success")
+        except Exception:
+            app.logger.exception("dashboard claim preview failed user=%s", user.id)
     latest: SiteAnalysis | None = (
         sites_query_for_user(SiteAnalysis, user)
         .order_by(SiteAnalysis.created_at.desc())
