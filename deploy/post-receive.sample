@@ -49,8 +49,8 @@ while read -r oldrev newrev refname; do
 
   echo "Restarting $SERVICE…"
   sudo systemctl restart "$SERVICE"
-  # Optional workers/timers pick up code on next tick; restart if desired:
-  # sudo systemctl restart aio-bot-analyze.service || true
+  # Reclaim/resume analyze queue immediately (deploy can kill mid-SoV workers).
+  sudo systemctl start aio-bot-analyze.service 2>/dev/null || true
 
   echo "Deploy OK: $(git --git-dir="$(pwd)/.git" rev-parse --short HEAD 2>/dev/null || echo "$newrev")"
 done

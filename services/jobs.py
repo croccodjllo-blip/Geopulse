@@ -12,8 +12,9 @@ from typing import Any, Callable
 logger = logging.getLogger(__name__)
 
 # Reclaim only when heartbeat (or started_at) is older than this.
-# Heartbeat should be refreshed during long crawls so live jobs are not stolen.
-STALE_HEARTBEAT_MINUTES = max(5, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
+# Heartbeat is refreshed during crawl/SoV; 2–5 min silence ⇒ lost worker (deploy/OOM).
+# Keep the floor at 2 so a deploy mid-SoV does not strand the UI for 12+ minutes.
+STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "5")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 
 
@@ -188,7 +189,7 @@ def reclaim_stale_jobs(
     When ``SiteAnalysis`` is provided, reclaim reconciles the crash window
     after ``persist_analysis`` committed but before ``mark_job_site``.
     """
-    cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(5, older_than_minutes))
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(2, older_than_minutes))
     stale = (
         AnalysisJob.query.filter(AnalysisJob.status == "running")
         .limit(50)
