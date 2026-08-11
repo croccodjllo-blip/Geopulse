@@ -18,12 +18,16 @@
     <h2 class="page-section__title">{{ _('Canali') }}</h2>
     <ul class="plain-list">
       <li><strong>{{ _('Email') }}</strong> — <a href="mailto:info@centropic.ai">info@centropic.ai</a> {{ _('(supporto e commerciale)') }}</li>
-      <li><strong>Engineering Factory</strong> —
+      <li><strong>{{ legal_company_name }}</strong> —
         <a href="{{ site_owner_url }}" rel="noopener noreferrer" target="_blank">www.engineeringfactory.app</a>
+        {% if legal_vat %}<br />P.IVA {{ legal_vat }}{% endif %}
+        {% if legal_address %}<br />{{ legal_address }}{% endif %}
+        {% if legal_pec %}<br />PEC <a href="mailto:{{ legal_pec }}">{{ legal_pec }}</a>{% endif %}
+        {% if legal_rea %}<br />REA {{ legal_rea }}{% endif %}
       </li>
       <li><strong>{{ _('Prodotto') }}</strong> — <a href="{{ url_for('product') }}">{{ _('come funziona Centropic') }}</a></li>
       <li><strong>{{ _('Account') }}</strong> — <a href="{{ url_for('register') }}">{{ _('registrati') }}</a> {{ _('o') }} <a href="{{ url_for('login') }}">{{ _('accedi') }}</a></li>
-      <li><strong>{{ _('Piani') }}</strong> — <a href="{{ url_for('pricing') }}">Free · Plus · Business</a></li>
+      <li><strong>{{ _('Piani') }}</strong> — <a href="{{ url_for('pricing') }}">Free · Plus{% if not sell_plus_only %} · Business{% else %} · Business (waitlist){% endif %}</a></li>
       <li><strong>{{ _('Interesse / waitlist') }}</strong> — <a href="{{ url_for('pro_interest') }}">{{ _('lascia i contatti') }}</a></li>
       <li><strong>{{ _('Chi siamo') }}</strong> — <a href="{{ url_for('about') }}">{{ _('missione e metodo') }}</a></li>
     </ul>

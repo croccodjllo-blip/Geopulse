@@ -396,12 +396,17 @@ def apply_measured_sov(
     if not positive_rates:
         out = dict(breakdown)
         out["measured"] = measured
+        out["measured_zero_all"] = True
         out["note"] = (
             (measured.get("note") or "").strip()
-            or "Probe measured senza menzioni positive: mostriamo SoV stimato (proxy)."
+            or (
+                "Citation monitor eseguito: 0 menzioni brand sui campioni. "
+                "Mostriamo la citation share stimata (proxy strutturale), "
+                "non una share measured a zero."
+            )
         )
         if out.get("evidence") == "proxy":
-            out["label"] = "Stimato (proxy) — measured senza hit"
+            out["label"] = "Stimato — probe 0 menzioni"
         return out
 
     out = dict(breakdown)

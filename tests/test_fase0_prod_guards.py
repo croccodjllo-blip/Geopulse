@@ -14,8 +14,13 @@ def test_evaluate_env_guards_defaults_ok(monkeypatch):
     monkeypatch.delenv("ALLOW_DROP_ANALYSIS_JOBS", raising=False)
     monkeypatch.delenv("SOV_DAILY_BUDGET_CENTS", raising=False)
     monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
+    monkeypatch.setenv("ALLOW_SQLITE_PROD", "1")
     monkeypatch.setenv("TRUST_PROXY", "1")
     monkeypatch.setenv("BEHIND_NGINX", "1")
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_ntfsec_test")
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
+    monkeypatch.delenv("REQUIRE_SENTRY", raising=False)
     result = evaluate_env_guards()
     assert result["ok"] is True
     assert result["failures"] == []
@@ -28,20 +33,61 @@ def test_evaluate_env_guards_rejects_missing_database_url(monkeypatch):
     monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "5000")
     monkeypatch.setenv("TRUST_PROXY", "0")
     monkeypatch.setenv("BEHIND_NGINX", "0")
+    monkeypatch.setenv("ALLOW_SQLITE_PROD", "1")
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_ntfsec_test")
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
     monkeypatch.delenv("DATABASE_URL", raising=False)
     result = evaluate_env_guards()
     assert result["ok"] is False
     assert "DATABASE_URL" in result["failures"]
 
 
+def test_evaluate_env_guards_rejects_sqlite_without_allow(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
+    monkeypatch.setenv("ALLOW_SQLITE_PROD", "0")
+    monkeypatch.setenv("ASYNC_ANALYZE", "1")
+    monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
+    monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
+    monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "5000")
+    monkeypatch.setenv("TRUST_PROXY", "0")
+    monkeypatch.setenv("BEHIND_NGINX", "0")
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_ntfsec_test")
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
+    result = evaluate_env_guards()
+    assert result["ok"] is False
+    assert "DATABASE_ENGINE" in result["failures"]
+
+
+def test_evaluate_env_guards_rejects_missing_paddle_webhook(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://u:p@localhost/db")
+    monkeypatch.setenv("ASYNC_ANALYZE", "1")
+    monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
+    monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
+    monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "5000")
+    monkeypatch.setenv("TRUST_PROXY", "0")
+    monkeypatch.setenv("BEHIND_NGINX", "0")
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.delenv("PADDLE_WEBHOOK_SECRET", raising=False)
+    result = evaluate_env_guards()
+    assert result["ok"] is False
+    assert "PADDLE_WEBHOOK_SECRET" in result["failures"]
+
+
 def test_evaluate_env_guards_rejects_trust_without_nginx(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
+    monkeypatch.setenv("ALLOW_SQLITE_PROD", "1")
     monkeypatch.setenv("ASYNC_ANALYZE", "1")
     monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
     monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
     monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "5000")
     monkeypatch.setenv("TRUST_PROXY", "1")
     monkeypatch.setenv("BEHIND_NGINX", "0")
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_ntfsec_test")
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
     result = evaluate_env_guards()
     assert result["ok"] is False
     assert "TRUST_PROXY_BEHIND_NGINX" in result["failures"]
@@ -49,12 +95,16 @@ def test_evaluate_env_guards_rejects_trust_without_nginx(monkeypatch):
 
 def test_evaluate_env_guards_rejects_zero_sov_budget(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/centropic-guards.db")
+    monkeypatch.setenv("ALLOW_SQLITE_PROD", "1")
     monkeypatch.setenv("ASYNC_ANALYZE", "1")
     monkeypatch.setenv("ADMIN_BOOTSTRAP", "0")
     monkeypatch.setenv("ALLOW_DROP_ANALYSIS_JOBS", "0")
     monkeypatch.setenv("SOV_DAILY_BUDGET_CENTS", "0")
     monkeypatch.setenv("TRUST_PROXY", "0")
     monkeypatch.setenv("BEHIND_NGINX", "0")
+    monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_ntfsec_test")
+    monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
     result = evaluate_env_guards()
     assert result["ok"] is False
     assert "SOV_DAILY_BUDGET_CENTS" in result["failures"]

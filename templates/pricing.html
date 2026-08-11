@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic: Free (1 dominio), Plus 14,99€ (domini, re-scan, SoV Misurato), Business 49,99€ (API, white-label, portfolio clienti).') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic: Free (1 dominio), Plus 14,99€ (domini, re-scan, SoV Misurato). Business in waitlist per agenzie.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -37,8 +37,8 @@
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
     </section>
 
-    <section class="plan plan--v2" role="listitem" id="plus">
-      <p class="plan__badge">{{ _('Per startup') }}</p>
+    <section class="plan plan--v2 plan--featured" role="listitem" id="plus">
+      <p class="plan__badge">{{ _('In vendita') }}</p>
       <p class="plan__name">Plus</p>
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Operatività continua sul tuo brand: monitoraggio, re-scan e SoV Misurato.') }}</p>
@@ -87,8 +87,8 @@
       {% endif %}
     </section>
 
-    <section class="plan plan--v2 plan--featured" role="listitem" id="business">
-      <p class="plan__badge">{{ _('Per agenzie') }}</p>
+    <section class="plan plan--v2" role="listitem" id="business">
+      <p class="plan__badge">{{ _('Waitlist') }}</p>
       <p class="plan__name">Business</p>
       <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
       <p class="plan__desc">{{ _('Portfolio clienti: API, white-label e scala siti per il delivery in agenzia.') }}</p>
@@ -132,7 +132,8 @@
       {% elif business_ready %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
       {% else %}
-      <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Parla con noi — Business') }}</a>
+      <p class="plan__desc" style="margin-top:0.75rem">{{ _('In arrivo per agenzie. Oggi vendiamo Plus; lascia i contatti per la waitlist Business.') }}</p>
+      <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Waitlist Business') }}</a>
       <a class="btn btn-ghost-light btn-block" href="mailto:info@centropic.ai" style="margin-top:0.5rem">info@centropic.ai</a>
       {% endif %}
     </section>

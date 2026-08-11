@@ -251,8 +251,14 @@
         </div>
       </div>
       <div class="site-footer__bottom">
-        <span>© {{ now_year }} Centropic · Signal Intelligence for generative visibility</span>
         <span>
+          © {{ now_year }} Centropic · {{ legal_company_name }}
+          {% if legal_vat %} · P.IVA {{ legal_vat }}{% endif %}
+          {% if legal_rea %} · REA {{ legal_rea }}{% endif %}
+        </span>
+        <span>
+          {% if legal_address %}<span class="site-footer__legal">{{ legal_address }}</span>&nbsp;·&nbsp;{% endif %}
+          {% if legal_pec %}<a href="mailto:{{ legal_pec }}">{{ legal_pec }}</a>&nbsp;·&nbsp;{% endif %}
           <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
           &nbsp;·&nbsp;
           <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a>

@@ -438,7 +438,9 @@
                     {% endif %}
                   </h3>
                   <p class="sov-panel__lede">
-                    {% if can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
+                    {% if engine_breakdown.measured_zero_all %}
+                    {{ engine_breakdown.note or _('Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), non una measured a zero.') }}
+                    {% elif can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
                     {{ _('Menzioni generative campionate (stocastiche) + predisposizione strutturale — non Share of Voice pubblicitaria.') }}
                     {% elif not can_measured_sov %}
                     {{ _('Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor.') }}

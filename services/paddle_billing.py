@@ -82,7 +82,15 @@ def paddle_plus_enabled() -> bool:
     return bool(PADDLE_PRICE_PLUS and (PADDLE_CLIENT_TOKEN or PADDLE_API_KEY))
 
 
+def sell_plus_only() -> bool:
+    """GTM gate: sell Plus only; Business stays waitlist/interest."""
+    raw = (os.getenv("SELL_PLUS_ONLY") or "1").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
 def paddle_business_enabled() -> bool:
+    if sell_plus_only():
+        return False
     return bool(PADDLE_PRICE_BUSINESS and (PADDLE_CLIENT_TOKEN or PADDLE_API_KEY))
 
 

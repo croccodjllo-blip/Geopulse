@@ -97,6 +97,7 @@ from services.paddle_billing import (
     paddle_enabled,
     paddle_overlay_ready,
     paddle_plus_enabled,
+    sell_plus_only,
     paddle_topup_price_id,
     paddle_topups_enabled,
     parse_webhook_event as paddle_parse_webhook_event,
@@ -339,6 +340,11 @@ SITE_AUTHOR_URL = (
 ).strip().rstrip("/") + "/"
 SITE_OWNER_NAME = (os.getenv("SITE_OWNER_NAME") or SITE_AUTHOR_NAME).strip()
 SITE_OWNER_URL = (os.getenv("SITE_OWNER_URL") or SITE_AUTHOR_URL).strip()
+LEGAL_COMPANY_NAME = (os.getenv("LEGAL_COMPANY_NAME") or SITE_OWNER_NAME).strip()
+LEGAL_VAT = (os.getenv("LEGAL_VAT") or os.getenv("LEGAL_PIVA") or "").strip()
+LEGAL_ADDRESS = (os.getenv("LEGAL_ADDRESS") or "").strip()
+LEGAL_PEC = (os.getenv("LEGAL_PEC") or "").strip()
+LEGAL_REA = (os.getenv("LEGAL_REA") or "").strip()
 
 
 def resolve_database_uri(raw: str | None) -> str:
@@ -421,6 +427,23 @@ from centropic.extensions import db, csrf  # noqa: E402
 
 db.init_app(app)
 csrf.init_app(app)
+
+# SQLite FK is per-connection; enable on every Engine connect.
+from sqlalchemy import event as _sa_event  # noqa: E402
+from sqlalchemy.engine import Engine as _SAEngine  # noqa: E402
+
+
+@_sa_event.listens_for(_SAEngine, "connect")
+def _sqlite_enable_foreign_keys(dbapi_connection, connection_record) -> None:  # noqa: ARG001
+    import sqlite3
+
+    if not isinstance(dbapi_connection, sqlite3.Connection):
+        return
+    cursor = dbapi_connection.cursor()
+    try:
+        cursor.execute("PRAGMA foreign_keys=ON")
+    finally:
+        cursor.close()
 
 from services.observability import configure_app_logging  # noqa: E402
 from centropic.csp import build_csp_header, configure_csp, inject_csp_context  # noqa: E402
@@ -1589,10 +1612,16 @@ def inject_globals() -> dict[str, Any]:
         "paddle_ready": paddle_enabled(),
         "paddle_plus_ready": paddle_plus_enabled(),
         "business_ready": paddle_business_enabled(),
+        "sell_plus_only": sell_plus_only(),
         "payments_ready": payments_enabled(),
         "payments_provider": payments_provider(),
         "paddle_overlay": paddle_overlay_ready(),
         "paddle_config": paddle_client_config(),
+        "legal_company_name": LEGAL_COMPANY_NAME,
+        "legal_vat": LEGAL_VAT,
+        "legal_address": LEGAL_ADDRESS,
+        "legal_pec": LEGAL_PEC,
+        "legal_rea": LEGAL_REA,
         "ga4_measurement_id": GA4_MEASUREMENT_ID,
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
@@ -1741,6 +1770,7 @@ def ensure_schema() -> None:
             conn.execute(text("PRAGMA journal_mode=WAL"))
             conn.execute(text("PRAGMA synchronous=NORMAL"))
             conn.execute(text("PRAGMA busy_timeout=5000"))
+            conn.execute(text("PRAGMA foreign_keys=ON"))
 
     def _add_column(table: str, name: str, col_type: str) -> None:
         """ADD COLUMN idempotente (race-safe tra worker Gunicorn)."""
@@ -2417,6 +2447,55 @@ def parse_competitor_urls(raw: str, *, seed_url: str = "") -> list[str]:
     return out
 
 
+def _competitor_suggest_allow_llm(user: "User") -> bool:
+    """LLM suggest only when the account can absorb metered spend."""
+    if not OPENAI_API_KEY:
+        return False
+    if is_unlimited_user(user):
+        return True
+    try:
+        return int(get_balance_cents(user) or 0) > 0
+    except Exception:
+        return int(getattr(user, "credit_balance_cents", 0) or 0) > 0
+
+
+def _competitor_suggest_usage_cb(user: "User", *, commit: bool = False):
+    """Meter competitor-suggest LLM tokens; fail closed on debit errors."""
+
+    def _cb(*, provider: str, model: str, input_tokens: int, output_tokens: int):
+        charged = record_actual_usage(
+            db.session,
+            UsageEvent,
+            user_id=user.id,
+            analysis_run_id=None,
+            provider=provider,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+        )
+        debit_cents = debit_cents_from_usage(charged)
+        if debit_cents <= 0:
+            if commit:
+                db.session.commit()
+            return
+        deduct_credit(
+            db.session,
+            CreditLedger,
+            user,
+            analysis_run_id=None,
+            cost_eur_cents=debit_cents,
+            description=_usage_ledger_description(
+                "COMP",
+                provider=provider,
+                model=model,
+            ),
+        )
+        if commit:
+            db.session.commit()
+
+    return _cb
+
+
 def resolve_competitor_urls(
     raw: str,
     *,
@@ -2436,12 +2515,17 @@ def resolve_competitor_urls(
     if not auto:
         return [], "empty"
     try:
+        allow_llm = _competitor_suggest_allow_llm(user)
         suggested = suggest_competitors(
             seed_url,
             api_key=OPENAI_API_KEY,
             model=OPENAI_MODEL,
             limit=3,
             logger=app.logger,
+            allow_llm=allow_llm,
+            usage_callback=(
+                _competitor_suggest_usage_cb(user, commit=False) if allow_llm else None
+            ),
         )
         urls = list(suggested.get("competitors") or [])[:3]
         return urls, ("suggested" if urls else "empty")
@@ -4235,7 +4319,7 @@ def billing_checkout():
 
     if product == "business" and not paddle_business_enabled():
         flash(
-            "Business non è ancora in checkout. Scrivi a info@centropic.ai o prenota interesse.",
+            "Business è in waitlist: oggi vendiamo solo Plus. Lascia i contatti o scrivi a info@centropic.ai.",
             "warning",
         )
         return redirect(url_for("pro_interest"))
@@ -6094,19 +6178,36 @@ def dashboard_competitors_suggest():
         url = normalize_url(raw_url)
     except ValueError as exc:
         return jsonify({"ok": False, "error": str(exc)}), 400
-    result = suggest_competitors(
-        url,
-        api_key=OPENAI_API_KEY,
-        model=OPENAI_MODEL,
-        limit=3,
-        logger=app.logger,
-    )
+    allow_llm = _competitor_suggest_allow_llm(user)
+    try:
+        result = suggest_competitors(
+            url,
+            api_key=OPENAI_API_KEY,
+            model=OPENAI_MODEL,
+            limit=3,
+            logger=app.logger,
+            allow_llm=allow_llm,
+            usage_callback=(
+                _competitor_suggest_usage_cb(user, commit=True) if allow_llm else None
+            ),
+        )
+    except InsufficientCreditError:
+        db.session.rollback()
+        result = suggest_competitors(
+            url,
+            api_key="",
+            model=OPENAI_MODEL,
+            limit=3,
+            logger=app.logger,
+            allow_llm=False,
+        )
     return jsonify(
         {
             "ok": True,
             "competitors": result.get("competitors") or [],
             "source": result.get("source") or "empty",
             "domain": result.get("domain") or "",
+            "llm_skipped": bool(result.get("llm_skipped")) or not allow_llm,
         }
     )
 
@@ -6186,8 +6287,10 @@ def dashboard_settings():
     alert_form = AlertSettingsForm(
         alert_email_enabled=bool(getattr(user, "alert_email_enabled", True)),
         webhook_url=getattr(user, "webhook_url", None) or "",
-        webhook_secret=getattr(user, "webhook_secret", None) or "",
+        # Write-only: never redisplay plaintext secret in the form.
+        webhook_secret="",
     )
+    webhook_secret_set = bool((getattr(user, "webhook_secret", None) or "").strip())
     prompt_form = PromptBankForm(
         prompts="\n".join(parse_prompt_bank(getattr(user, "prompt_bank_json", None)))
     )
@@ -6282,8 +6385,28 @@ def dashboard_settings():
                 return redirect(url_for("billing_portal"))
             uid = int(user.id)
             try:
-                # Detach org memberships first.
+                # GDPR cascade: detach refs, then owned rows, then user.
+                GuestPreview.query.filter_by(claimed_user_id=uid).update(
+                    {GuestPreview.claimed_user_id: None},
+                    synchronize_session=False,
+                )
+                User.query.filter_by(referred_by=uid).update(
+                    {User.referred_by: None},
+                    synchronize_session=False,
+                )
                 OrganizationMember.query.filter_by(user_id=uid).delete(
+                    synchronize_session=False
+                )
+                owned_orgs = Organization.query.filter_by(owner_user_id=uid).all()
+                for org in owned_orgs:
+                    OrganizationMember.query.filter_by(organization_id=org.id).delete(
+                        synchronize_session=False
+                    )
+                    db.session.delete(org)
+                AlertDelivery.query.filter_by(user_id=uid).delete(
+                    synchronize_session=False
+                )
+                SovSnapshot.query.filter_by(user_id=uid).delete(
                     synchronize_session=False
                 )
                 AnalysisJob.query.filter_by(user_id=uid).delete(synchronize_session=False)
@@ -6291,6 +6414,12 @@ def dashboard_settings():
                 UsageEvent.query.filter_by(user_id=uid).delete(synchronize_session=False)
                 owned_sites = SiteAnalysis.query.filter_by(user_id=uid).all()
                 for site in owned_sites:
+                    EdgeHit.query.filter_by(site_id=site.id).delete(
+                        synchronize_session=False
+                    )
+                    SovSnapshot.query.filter_by(site_id=site.id).delete(
+                        synchronize_session=False
+                    )
                     AnalysisRun.query.filter_by(site_id=site.id).delete(
                         synchronize_session=False
                     )
@@ -6383,7 +6512,12 @@ def dashboard_settings():
                     return redirect(url_for("dashboard_settings"))
             else:
                 user.webhook_url = None
-            user.webhook_secret = (alert_form.webhook_secret.data or "").strip() or None
+            new_secret = (alert_form.webhook_secret.data or "").strip()
+            if new_secret in {"-", "clear", "DELETE"}:
+                user.webhook_secret = None
+            elif new_secret:
+                user.webhook_secret = new_secret
+            # Blank keeps the existing secret (write-only field).
             db.session.commit()
             flash("Impostazioni alert salvate.", "success")
             return redirect(url_for("dashboard_settings"))
@@ -6475,6 +6609,7 @@ def dashboard_settings():
                 agency_form=agency_form,
                 password_form=password_form,
                 delete_form=delete_form,
+                webhook_secret_set=webhook_secret_set,
                 email_verified=user.email_verified,
                 api_key_prefix=prefix,
                 api_key_once=raw,
@@ -6495,6 +6630,7 @@ def dashboard_settings():
         agency_form=agency_form,
         password_form=password_form,
         delete_form=delete_form,
+        webhook_secret_set=webhook_secret_set,
         email_verified=user.email_verified,
         api_key_prefix=getattr(user, "api_key_prefix", None),
         api_key_once=None,
@@ -7732,5 +7868,5 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    debug = os.getenv("FLASK_DEBUG", "1") == "1"
+    debug = os.getenv("FLASK_DEBUG", "0") == "1"
     app.run(host="127.0.0.1", port=int(os.getenv("PORT", "5000")), debug=debug)

@@ -32,8 +32,14 @@ def build_csp_header(
         "'strict-dynamic'",
     ]
     # Legacy browsers without strict-dynamic still need a fallback for Paddle CDN.
-    # Prefer hash/nonce over blanket unsafe-inline.
-    style_src = ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"]
+    # Prefer hash/nonce over blanket unsafe-inline. Keep unsafe-inline for
+    # attribute styles until templates migrate; nonce covers <style> blocks.
+    style_src = [
+        "'self'",
+        f"'nonce-{nonce}'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+    ]
     img_src = ["'self'", "data:"]
     connect_src = ["'self'"]
     frame_src = ["'self'"]

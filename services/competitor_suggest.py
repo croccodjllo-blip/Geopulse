@@ -149,6 +149,7 @@ def _llm_competitors(
     api_key: str,
     model: str,
     limit: int,
+    usage_callback: Any | None = None,
 ) -> list[str]:
     client = OpenAI(api_key=api_key, timeout=35.0, max_retries=2)
     prompt = f"""
@@ -182,6 +183,14 @@ Description: {ctx.get("description")}
                 {"role": "user", "content": prompt},
             ],
         )
+        usage = getattr(completion, "usage", None)
+        if usage is not None and callable(usage_callback):
+            usage_callback(
+                provider="openai",
+                model=model,
+                input_tokens=int(getattr(usage, "prompt_tokens", 0) or 0),
+                output_tokens=int(getattr(usage, "completion_tokens", 0) or 0),
+            )
         raw = (completion.choices[0].message.content or "").strip()
         data = json.loads(raw) if raw else {}
         items = data.get("competitors") if isinstance(data, dict) else None
@@ -219,11 +228,16 @@ def suggest_competitors(
     model: str = "gpt-4o-mini",
     limit: int = 3,
     logger: Any | None = None,
+    usage_callback: Any | None = None,
+    allow_llm: bool = True,
 ) -> dict[str, Any]:
     """
     Suggest up to `limit` competitor homepage URLs for Competitor snapshot.
 
     Returns {competitors: [url...], source: llm|seed|heuristic|mixed, domain}.
+
+    LLM calls are opt-in via ``allow_llm`` + ``api_key``. Callers must meter
+    spend with ``usage_callback`` (fail-closed: no silent free LLM).
     """
     limit = max(1, min(int(limit or 3), 3))
     try:
@@ -235,6 +249,7 @@ def suggest_competitors(
     seed_host = ctx.get("domain") or _host_key(urlparse(seed).netloc)
     collected: list[str] = []
     source = "heuristic"
+    llm_skipped = False
 
     # 1) Vertical seeds first (stable for our own product niche).
     for url_s in _heuristic_competitors(
@@ -245,9 +260,15 @@ def suggest_competitors(
     if collected:
         source = "seed"
 
-    # 2) LLM fill / replace gaps.
-    if api_key and len(collected) < limit:
-        for raw in _llm_competitors(ctx, api_key=api_key, model=model, limit=limit):
+    # 2) LLM fill / replace gaps (metered; skipped when allow_llm is false).
+    if api_key and allow_llm and len(collected) < limit:
+        for raw in _llm_competitors(
+            ctx,
+            api_key=api_key,
+            model=model,
+            limit=limit,
+            usage_callback=usage_callback,
+        ):
             norm = normalize_competitor_url(raw, seed_host=seed_host)
             if norm and norm not in collected:
                 collected.append(norm)
@@ -263,6 +284,8 @@ def suggest_competitors(
             source = "mixed" if source == "seed" else "llm"
         elif source != "seed":
             source = "llm"
+    elif api_key and not allow_llm and len(collected) < limit:
+        llm_skipped = True
 
     # 3) Outbound-host heuristic to finish the list.
     if len(collected) < limit:
@@ -278,14 +301,16 @@ def suggest_competitors(
 
     if logger is not None:
         logger.info(
-            "competitor_suggest domain=%s source=%s n=%s",
+            "competitor_suggest domain=%s source=%s n=%s llm_skipped=%s",
             seed_host,
             source,
             len(collected),
+            llm_skipped,
         )
     return {
         "competitors": collected[:limit],
         "source": source,
         "domain": seed_host,
         "title": ctx.get("title") or "",
+        "llm_skipped": llm_skipped,
     }

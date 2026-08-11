@@ -46,7 +46,14 @@
       </div>
       <div class="field">
         <label for="webhook_secret">{{ _('Webhook secret (HMAC SHA-256)') }}</label>
-        {{ alert_form.webhook_secret(id="webhook_secret") }}
+        {{ alert_form.webhook_secret(id="webhook_secret", type="password", autocomplete="new-password", placeholder=_('Nuovo secret…') if webhook_secret_set else _('Opzionale')) }}
+        <p class="field-hint">
+          {% if webhook_secret_set %}
+          {{ _('Secret già impostato. Lascia vuoto per mantenerlo; scrivi “clear” per rimuoverlo.') }}
+          {% else %}
+          {{ _('Opzionale. Non viene mai rimostrato in chiaro dopo il salvataggio.') }}
+          {% endif %}
+        </p>
       </div>
       {{ alert_form.submit(class_="btn btn-primary") }}
     </form>

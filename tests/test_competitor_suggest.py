@@ -75,3 +75,36 @@ def test_snippet_context_blocks_ssrf_redirect_target():
             out = _snippet_context("https://open-redirect.example/")
     assert out["title"] == ""
     assert out["description"] == ""
+
+
+def test_suggest_skips_llm_when_allow_llm_false(monkeypatch):
+    monkeypatch.setattr(
+        "services.competitor_suggest._snippet_context",
+        lambda url, timeout=12.0: {
+            "url": url,
+            "domain": "example.com",
+            "title": "Example",
+            "description": "demo",
+            "outbound_hosts": "rival.example",
+        },
+    )
+    monkeypatch.setattr(
+        "services.competitor_suggest.assert_public_http_url",
+        lambda url, resolve=True: url if url.startswith("http") else "https://" + url,
+    )
+    called = {"llm": 0}
+
+    def _boom(*_a, **_k):
+        called["llm"] += 1
+        raise AssertionError("LLM must not run when allow_llm=False")
+
+    monkeypatch.setattr("services.competitor_suggest._llm_competitors", _boom)
+    out = suggest_competitors(
+        "https://example.com/",
+        api_key="sk-test",
+        allow_llm=False,
+        limit=3,
+    )
+    assert called["llm"] == 0
+    assert out.get("llm_skipped") is True
+    assert out["competitors"]

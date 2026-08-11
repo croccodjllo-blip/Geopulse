@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 import zipfile
 from datetime import datetime
 from typing import Any, Iterable
@@ -78,13 +79,21 @@ def pack_zip_bytes(entity: Any) -> bytes:
     return buffer.getvalue()
 
 
+def _safe_zip_folder(name: str) -> str:
+    """Sanitize archive folder names (no path traversal / absolute paths)."""
+    raw = (name or "site").replace("\\", "/").split("/")[-1]
+    cleaned = re.sub(r"[^\w.\-]+", "_", raw, flags=re.UNICODE)
+    cleaned = cleaned.replace("..", "_").strip("._") or "site"
+    return cleaned[:80]
+
+
 def multi_site_zip(sites: Iterable[Any]) -> bytes:
     """Un ZIP con una cartella per dominio/sito (un solo fix.html ciascuno)."""
     buffer = io.BytesIO()
     used_names: set[str] = set()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for site in sites:
-            base = (site.domain or f"site-{site.id}").replace(":", "_").replace("/", "_")
+            base = _safe_zip_folder(site.domain or f"site-{site.id}")
             folder = base
             n = 2
             while folder in used_names:

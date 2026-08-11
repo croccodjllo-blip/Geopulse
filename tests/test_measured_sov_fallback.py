@@ -33,9 +33,10 @@ def test_all_zero_measured_keeps_proxy_brand_sov():
     out = apply_measured_sov(proxy, measured)
     assert out["brand_sov"] == proxy["brand_sov"]
     assert out["evidence"] == "proxy"
-    assert "measured senza" in (out.get("note") or "").lower() or "proxy" in (
-        out.get("label") or ""
-    ).lower()
+    assert out.get("measured_zero_all") is True
+    label = (out.get("label") or "").lower()
+    note = (out.get("note") or "").lower()
+    assert "0 menzioni" in label or "0 menzioni" in note or "proxy" in note
 
 
 def test_sparse_measured_keeps_proxy_brand_and_propensity_on_zeros():
