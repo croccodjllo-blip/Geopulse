@@ -6429,14 +6429,10 @@ body.body-auth {
 
 .hero-visual--cite,
 .hero-visual--field {
-  /* Full-bleed photo via .hero-visual__photo; gradients only for copy legibility. */
   inset: 0;
   width: 100%;
   height: 100%;
-  background:
-    linear-gradient(105deg, rgba(4, 6, 10, 0.86) 0%, rgba(4, 6, 10, 0.48) 40%, rgba(4, 6, 10, 0.22) 68%, rgba(4, 6, 10, 0.55) 100%),
-    radial-gradient(ellipse 55% 50% at 70% 48%, rgba(201, 211, 221, 0.07) 0%, transparent 62%),
-    linear-gradient(168deg, #04060A 0%, #070A10 48%, #0A0E14 100%);
+  background: #04060A;
 }
 
 .hero-visual__photo {
@@ -6451,6 +6447,19 @@ body.body-auth {
   object-position: center center;
   pointer-events: none;
   user-select: none;
+}
+
+/* Scrim ABOVE the full-bleed photo (parent background paints behind <img>). */
+.hero-visual--cite::before,
+.hero-visual--field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(105deg, rgba(4, 6, 10, 0.86) 0%, rgba(4, 6, 10, 0.48) 40%, rgba(4, 6, 10, 0.22) 68%, rgba(4, 6, 10, 0.55) 100%),
+    radial-gradient(ellipse 55% 50% at 70% 48%, rgba(201, 211, 221, 0.07) 0%, transparent 62%);
 }
 
 .hero-visual__aurora {
