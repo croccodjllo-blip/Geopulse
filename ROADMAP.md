@@ -70,7 +70,7 @@ Source of truth: `services/entitlements.py`.
 - [x] Integrazione codice Paddle Billing (overlay + webhook + top-up)
 - [x] Stripe rimosso — solo Paddle come merchant of record
 - [x] Account Paddle live su `centropic.ai` (`PADDLE_ENV=production`, Plus price + top-up su `/prezzi`)
-- [x] Env produzione: `PADDLE_*` + `PADDLE_PRICE_PLUS_MONTHLY` + `PADDLE_PRICE_TOPUP_*` (Business price ancora vuoto → waitlist)
+- [x] Env produzione: `PADDLE_*` + `PADDLE_PRICE_PLUS_MONTHLY` + `PADDLE_PRICE_BUSINESS_MONTHLY` + `PADDLE_PRICE_TOPUP_*`
 - [x] Notification destination: `https://centropic.ai/billing/paddle-webhook` (fail-closed senza firma → 400)
 - [x] CTA Checkout su `/prezzi` quando `paddle_plus_enabled()` / `paddle_business_enabled()` (altrimenti waitlist `/interesse-plus`)
 - [x] Smoke test go-live: Free → paga Plus → token mensili + capability Plus senza admin (2026-08-11, webhook firmato su prod)
