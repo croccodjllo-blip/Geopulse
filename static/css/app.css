@@ -4265,13 +4265,13 @@ html.analyze-busy {
   padding: 1.25rem;
   border-radius: var(--radius-lg);
   background:
-    radial-gradient(circle at 50% 42%, rgba(201, 211, 221, 0.22), transparent 42%),
-    radial-gradient(circle at 70% 70%, rgba(34, 211, 238, 0.08), transparent 45%),
-    linear-gradient(160deg, #111827 0%, #0B0F19 55%, #070B14 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--pc-glow) 22%, transparent), transparent 42%),
+    radial-gradient(circle at 78% 72%, color-mix(in srgb, var(--plan-accent) 10%, transparent), transparent 48%),
+    linear-gradient(160deg, color-mix(in srgb, var(--brand-elevated) 88%, var(--brand-bg)) 0%, var(--brand-bg) 100%);
+  border: 1px solid var(--brand-border);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 20px 40px rgba(11, 17, 32, 0.28);
+    inset 0 1px 0 color-mix(in srgb, var(--brand-clarity) 6%, transparent),
+    0 20px 40px rgba(0, 0, 0, 0.28);
   overflow: hidden;
 }
 
@@ -4459,7 +4459,7 @@ html.analyze-busy {
   padding: 0.2rem 0.65rem;
   border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--pc-glow) 45%, transparent);
-  background: color-mix(in srgb, var(--pc-glow) 18%, rgba(11, 17, 32, 0.65));
+  background: color-mix(in srgb, var(--pc-glow) 16%, var(--brand-bg));
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -4471,8 +4471,22 @@ html.analyze-busy {
 .pulse-core__intel {
   min-width: 0;
   display: grid;
-  gap: 0.75rem;
+  gap: 0.9rem;
   align-content: start;
+}
+
+.signal-diag__intro {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.signal-diag__eyebrow {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.55rem;
+  margin: 0;
 }
 
 .pulse-core__title {
@@ -4490,250 +4504,331 @@ html.analyze-busy {
   color: var(--slate);
   line-height: 1.65;
   font-size: 0.95rem;
-  max-width: 40ch;
+  max-width: 46ch;
 }
 
-.pulse-satellites {
-  display: grid;
-  gap: 0;
-  margin-top: 0.65rem;
-  padding: 0;
-  border: 0;
+/* —— Signal diagnostics table (Score tab) —— */
+.signal-diag {
+  margin-top: 0.15rem;
+  border: 1px solid var(--brand-border);
   border-radius: var(--radius-md);
-  background: var(--surface-2);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--plan-accent) 5%, transparent), transparent 42%),
+    color-mix(in srgb, var(--brand-elevated) 55%, var(--brand-bg));
   overflow: hidden;
   min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
 }
 
-.pulse-sat {
+.signal-diag__head,
+.signal-diag__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 3.1rem;
-  column-gap: 0.75rem;
+  grid-template-columns: minmax(0, 1.35fr) minmax(7.5rem, 1.1fr) 4.25rem;
+  gap: 0.75rem 1rem;
   align-items: center;
-  padding: 0.85rem 1rem;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  transition: background 160ms var(--ease);
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
+  padding: 0.72rem 0.95rem;
 }
 
-.pulse-sat[data-tone="grade"] {
-  grid-template-columns: minmax(0, 1fr) 3.1rem;
-  column-gap: 0.75rem;
+.signal-diag__head {
+  border-bottom: 1px solid var(--brand-border);
+  background: color-mix(in srgb, var(--brand-bg) 55%, transparent);
 }
 
-.pulse-sat__copy {
-  min-width: 0;
-  overflow: hidden;
-}
-
-.pulse-sat__copy em {
-  overflow-wrap: anywhere;
-}
-
-.pulse-sat:hover {
-  border-color: transparent;
-  transform: none;
-  background: color-mix(in srgb, var(--signal) 6%, transparent);
-}
-
-.pulse-sat strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 0.92rem;
+.signal-diag__h {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
   font-weight: 700;
-  color: var(--ink);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+
+.signal-diag__h--num { text-align: right; }
+
+.signal-diag__body { display: grid; }
+
+.signal-diag__row {
+  position: relative;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 70%, transparent);
+  transition: background 160ms var(--ease);
+}
+
+.signal-diag__row:last-child { border-bottom: 0; }
+
+.signal-diag__row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  bottom: 0.55rem;
+  width: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--plan-accent) 55%, transparent);
+  opacity: 0.55;
+}
+
+.signal-diag__row[data-tone="geo"]::before {
+  background: var(--plan-accent);
+  opacity: 0.85;
+}
+.signal-diag__row[data-tone="grade"]::before {
+  background: var(--pc-glow, var(--plan-accent));
+}
+.signal-diag__row[data-tone="risk"]::before {
+  background: var(--warn);
+}
+
+.signal-diag__row:hover {
+  background: color-mix(in srgb, var(--plan-accent) 7%, transparent);
+}
+
+.signal-diag__signal {
+  display: grid;
+  grid-template-columns: 0.7rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  min-width: 0;
+  padding-left: 0.35rem;
+}
+
+.signal-diag__swatch {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 2px;
+  background: var(--plan-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--plan-accent) 35%, transparent);
+}
+
+.signal-diag__row[data-tone="grade"] .signal-diag__swatch {
+  background: var(--pc-glow, var(--plan-accent));
+}
+.signal-diag__row[data-tone="risk"] .signal-diag__swatch {
+  background: var(--warn);
+}
+
+.signal-diag__copy {
+  min-width: 0;
+}
+
+.signal-diag__copy strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brand-clarity);
   letter-spacing: -0.01em;
 }
 
-.pulse-sat em {
+.signal-diag__copy em {
   display: block;
-  margin-top: 0.12rem;
+  margin-top: 0.15rem;
   font-style: normal;
-  font-size: 0.78rem;
-  color: var(--slate-light);
-  line-height: 1.45;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--brand-muted);
+  overflow-wrap: anywhere;
 }
 
-.pulse-sat__ring {
-  position: relative;
-  width: 3.1rem;
-  height: 3.1rem;
-  justify-self: end;
-}
-
-.pulse-sat__ring svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.pulse-sat__track {
-  fill: none;
-  stroke: color-mix(in srgb, var(--ink) 14%, transparent);
-  stroke-width: 4;
-}
-
-.pulse-sat__prog {
-  fill: none;
-  stroke: var(--signal);
-  stroke-width: 4;
-  stroke-linecap: round;
-  animation: pc-draw-sat 1.2s var(--ease) both;
-}
-
-.pulse-sat__ring span {
-  position: absolute;
-  inset: 0;
+.signal-diag__reading {
   display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  gap: 0.28rem;
+  min-width: 0;
 }
 
-.pulse-sat__mark {
+.signal-diag__meter {
+  --p: 0;
+  position: relative;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+  overflow: hidden;
+}
+
+.signal-diag__meter i {
+  display: block;
+  height: 100%;
+  width: calc(var(--p) * 1%);
+  max-width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--plan-accent-deep), var(--plan-accent));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--plan-accent) 28%, transparent);
+  animation: signal-meter-in 900ms var(--ease) both;
+}
+
+.signal-diag__meter--grade i {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--pc-glow) 55%, var(--plan-accent-deep)), var(--pc-glow, var(--plan-accent)));
+}
+
+.signal-diag__meta {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brand-muted);
+}
+
+.signal-diag__sev {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.signal-diag__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.35rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--brand-border);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+  background: color-mix(in srgb, var(--brand-bg) 40%, transparent);
+}
+
+.signal-diag__chip[data-sev="critical"] {
+  color: #FECACA;
+  border-color: var(--danger-brd);
+  background: var(--danger-bg);
+}
+.signal-diag__chip[data-sev="warn"] {
+  color: #FDE68A;
+  border-color: var(--warn-brd);
+  background: var(--warn-bg);
+}
+.signal-diag__chip[data-sev="ok"] {
+  color: #BBF7D0;
+  border-color: var(--ok-brd);
+  background: var(--ok-bg);
+}
+
+.signal-diag__value {
+  text-align: right;
+  justify-self: end;
+  min-width: 0;
+}
+
+.signal-diag__value strong {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-clarity);
+  line-height: 1;
+}
+
+.signal-diag__grade {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
-  width: 3.1rem;
-  max-width: 3.1rem;
-  min-width: 0;
-  height: 3.1rem;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  min-width: 2.75rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--pc-glow, var(--plan-accent)) 40%, transparent);
+  background: color-mix(in srgb, var(--pc-glow, var(--plan-accent)) 12%, transparent);
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
-  justify-self: end;
-  align-self: center;
-}
-
-.pulse-sat__mark[data-chars="2"] {
-  font-size: 1.15rem;
   letter-spacing: -0.04em;
-}
-
-.pulse-sat__mark[data-chars="3"] {
-  font-size: 0.92rem;
-  letter-spacing: -0.07em;
-}
-
-.pulse-sat[data-grade="AAA"] .pulse-sat__mark,
-.pulse-sat[data-grade="AA"] .pulse-sat__mark,
-.pulse-sat[data-grade="A"] .pulse-sat__mark {
-  color: var(--ok);
-  background: transparent;
-}
-
-.pulse-sat[data-grade="BBB"] .pulse-sat__mark,
-.pulse-sat[data-grade="BB"] .pulse-sat__mark,
-.pulse-sat[data-grade="B"] .pulse-sat__mark {
-  color: var(--signal-soft);
-  background: transparent;
-}
-
-.pulse-sat[data-grade="CCC"] .pulse-sat__mark,
-.pulse-sat[data-grade="CC"] .pulse-sat__mark,
-.pulse-sat[data-grade="C"] .pulse-sat__mark {
-  color: var(--warn);
-  background: transparent;
-}
-
-.pulse-sat[data-grade="D"] .pulse-sat__mark,
-.pulse-sat[data-grade="DD"] .pulse-sat__mark,
-.pulse-sat[data-grade="DDD"] .pulse-sat__mark {
-  color: var(--danger);
-  background: transparent;
-}
-
-.pulse-sat__risk {
-  display: grid;
-  gap: 0.3rem;
-  justify-items: end;
-  justify-self: end;
-}
-
-.pulse-sat__risk-n {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--ink);
+  color: var(--pc-glow, var(--plan-accent));
   line-height: 1;
 }
 
-.pulse-sat__risk-dots {
-  display: flex;
-  gap: 0.18rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  min-height: 0.4rem;
+.signal-diag__row[data-grade="AAA"] .signal-diag__grade,
+.signal-diag__row[data-grade="AA"] .signal-diag__grade,
+.signal-diag__row[data-grade="A"] .signal-diag__grade {
+  color: var(--ok);
+  border-color: var(--ok-brd);
+  background: var(--ok-bg);
+}
+.signal-diag__row[data-grade="BBB"] .signal-diag__grade,
+.signal-diag__row[data-grade="BB"] .signal-diag__grade,
+.signal-diag__row[data-grade="B"] .signal-diag__grade {
+  color: var(--plan-accent);
+  border-color: color-mix(in srgb, var(--plan-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--plan-accent) 12%, transparent);
+}
+.signal-diag__row[data-grade="CCC"] .signal-diag__grade,
+.signal-diag__row[data-grade="CC"] .signal-diag__grade,
+.signal-diag__row[data-grade="C"] .signal-diag__grade {
+  color: var(--warn);
+  border-color: var(--warn-brd);
+  background: var(--warn-bg);
+}
+.signal-diag__row[data-grade="D"] .signal-diag__grade,
+.signal-diag__row[data-grade="DD"] .signal-diag__grade,
+.signal-diag__row[data-grade="DDD"] .signal-diag__grade {
+  color: var(--danger);
+  border-color: var(--danger-brd);
+  background: var(--danger-bg);
 }
 
-.pulse-sat__risk-dots i {
-  width: 0.35rem;
-  height: 0.35rem;
-  border-radius: 50%;
-  background: var(--slate-pale);
-  font-style: normal;
+.signal-diag__grade[data-chars="3"] {
+  font-size: 0.88rem;
+  letter-spacing: -0.06em;
 }
 
-.pulse-sat__risk-dots i[data-sev="critical"] {
-  background: var(--danger);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 20%, transparent);
+.signal-diag__findings { color: var(--brand-clarity); }
+
+@keyframes signal-meter-in {
+  from { transform: scaleX(0); transform-origin: left center; }
+  to { transform: scaleX(1); transform-origin: left center; }
 }
 
-.pulse-sat__risk-dots i[data-sev="warn"] {
-  background: var(--warn);
+@media (max-width: 720px) {
+  .signal-diag__head { display: none; }
+  .signal-diag__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "signal value"
+      "reading reading";
+    gap: 0.55rem 0.75rem;
+    padding: 0.85rem 0.9rem;
+  }
+  .signal-diag__signal { grid-area: signal; }
+  .signal-diag__reading { grid-area: reading; }
+  .signal-diag__value { grid-area: value; align-self: start; }
 }
 
 .pulse-scale {
   list-style: none;
-  margin: 0.85rem 0 0;
-  padding: 0.55rem 0 0;
-  border-top: 1px solid var(--border);
+  margin: 0.15rem 0 0;
+  padding: 0.55rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.28rem;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--brand-bg) 70%, transparent);
 }
 
 .pulse-scale li {
-  min-width: 2.15rem;
-  padding: 0.22rem 0.3rem;
+  flex: 1 1 auto;
+  min-width: 2.05rem;
+  padding: 0.28rem 0.3rem;
   text-align: center;
   font-family: var(--font-mono);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.03em;
-  color: var(--slate-light);
+  color: var(--brand-muted);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
+  transition: color 160ms var(--ease), background 160ms var(--ease), border-color 160ms var(--ease);
 }
 
 .pulse-scale li.is-active {
-  color: var(--pc-glow);
-  border-color: color-mix(in srgb, var(--pc-glow) 45%, transparent);
-  background: color-mix(in srgb, var(--pc-glow) 10%, #fff);
+  color: var(--brand-clarity);
+  border-color: color-mix(in srgb, var(--pc-glow, var(--plan-accent)) 50%, transparent);
+  background: color-mix(in srgb, var(--pc-glow, var(--plan-accent)) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pc-glow, var(--plan-accent)) 18%, transparent);
 }
 
 @keyframes pc-draw-aio {
@@ -5446,55 +5541,27 @@ html.analyze-busy {
 }
 
 .body-dash .pulse-core {
-  border-color: var(--border-mid);
+  border-color: var(--brand-border);
   background:
-    radial-gradient(ellipse 50% 60% at 20% 40%, rgba(201, 211, 221, 0.12), transparent 60%),
-    var(--surface);
+    radial-gradient(ellipse 50% 60% at 20% 40%, color-mix(in srgb, var(--plan-accent) 12%, transparent), transparent 60%),
+    var(--brand-card);
 }
 
-.body-dash .pulse-satellites {
-  background: var(--surface-2);
+.body-dash .signal-diag {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--plan-accent) 6%, transparent), transparent 42%),
+    color-mix(in srgb, var(--brand-elevated) 55%, var(--brand-bg));
+  border-color: var(--brand-border);
 }
 
-.body-dash .pulse-sat strong {
-  color: #F3F6FB;
+.body-dash .signal-diag__copy strong,
+.body-dash .signal-diag__value strong {
+  color: var(--brand-clarity);
 }
 
-.body-dash .pulse-sat em {
-  color: #B6C2D4;
-}
-
-.body-dash .pulse-sat__ring span,
-.body-dash .pulse-sat__risk-n {
-  color: #F3F6FB;
-}
-
-.body-dash .pulse-sat__mark {
-  background: transparent;
-}
-
-.body-dash .pulse-sat[data-grade="AAA"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="AA"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="A"] .pulse-sat__mark {
-  color: #34D399;
-}
-
-.body-dash .pulse-sat[data-grade="BBB"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="BB"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="B"] .pulse-sat__mark {
-  color: #C9D3DD;
-}
-
-.body-dash .pulse-sat[data-grade="CCC"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="CC"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="C"] .pulse-sat__mark {
-  color: #FBBF24;
-}
-
-.body-dash .pulse-sat[data-grade="D"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="DD"] .pulse-sat__mark,
-.body-dash .pulse-sat[data-grade="DDD"] .pulse-sat__mark {
-  color: #F87171;
+.body-dash .signal-diag__copy em,
+.body-dash .signal-diag__meta {
+  color: var(--brand-muted);
 }
 
 .body-dash .rail-card__grade[data-grade="AAA"],

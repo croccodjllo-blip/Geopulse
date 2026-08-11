@@ -278,62 +278,96 @@
             </div>
 
             <div class="pulse-core__intel">
-              <p class="eyebrow">{{ _('Signal diagnostics') }} <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></p>
-              <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
-              <p class="pulse-core__lede">
-                {{ propensity_lede }}
-                <span class="hint">{{ _('AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di predisposizione strutturale (leggibilità per crawler generativi).') }}</span>
-              </p>
+              <header class="signal-diag__intro">
+                <p class="eyebrow signal-diag__eyebrow">
+                  {{ _('Signal diagnostics') }}
+                  <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
+                </p>
+                <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
+                <p class="pulse-core__lede">
+                  {{ propensity_lede }}
+                  <span class="hint">{{ _('AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di predisposizione strutturale (leggibilità per crawler generativi).') }}</span>
+                </p>
+              </header>
 
-              <div class="pulse-satellites" role="list">
-                <article class="pulse-sat" role="listitem" data-tone="geo">
-                  <div class="pulse-sat__copy">
-                    <strong>GEO <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></strong>
-                    <em>Generative Engine Optimization</em>
-                  </div>
-                  <div class="pulse-sat__ring" style="--p: {{ geo_n }};" aria-hidden="true">
-                    <svg viewBox="0 0 48 48">
-                      <circle class="pulse-sat__track" cx="24" cy="24" r="18" />
-                      <circle class="pulse-sat__prog" cx="24" cy="24" r="18"
-                        stroke-dasharray="113.1"
-                        stroke-dashoffset="{{ '%.1f'|format(113.1 * (1 - geo_n / 100)) }}"
-                        transform="rotate(-90 24 24)" />
-                    </svg>
-                    <span>{{ geo_n }}</span>
-                  </div>
-                </article>
+              <div class="signal-diag" role="table" aria-label="{{ _('Signal diagnostics') }}">
+                <div class="signal-diag__head" role="row">
+                  <span class="signal-diag__h" role="columnheader">{{ _('Segnale') }}</span>
+                  <span class="signal-diag__h signal-diag__h--read" role="columnheader">{{ _('Lettura') }}</span>
+                  <span class="signal-diag__h signal-diag__h--num" role="columnheader">{{ _('Valore') }}</span>
+                </div>
 
-                <article class="pulse-sat" role="listitem" data-tone="grade" data-grade="{{ rating.code }}">
-                  <div class="pulse-sat__copy">
-                    <strong>{{ _('CVI') }}</strong>
-                    <em>{{ rating.score }}/100 · {{ _('Centropic Visibility Index') }} · {{ rating.label.split('—')[0].strip() }}</em>
-                  </div>
-                  <div
-                    class="pulse-sat__mark"
-                    data-chars="{{ rating.code|length }}"
-                    aria-hidden="true"
-                  >{{ rating.code }}</div>
-                </article>
+                <div class="signal-diag__body" role="rowgroup">
+                  <article class="signal-diag__row" role="row" data-tone="geo">
+                    <div class="signal-diag__signal" role="cell">
+                      <span class="signal-diag__swatch" aria-hidden="true"></span>
+                      <div class="signal-diag__copy">
+                        <strong>GEO <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></strong>
+                        <em>Generative Engine Optimization</em>
+                      </div>
+                    </div>
+                    <div class="signal-diag__reading" role="cell">
+                      <div class="signal-diag__meter" style="--p: {{ geo_n }};" aria-hidden="true">
+                        <i></i>
+                      </div>
+                      <span class="signal-diag__meta">0–100</span>
+                    </div>
+                    <div class="signal-diag__value" role="cell">
+                      <strong>{{ geo_n }}</strong>
+                    </div>
+                  </article>
 
-                <article class="pulse-sat" role="listitem" data-tone="risk">
-                  <div class="pulse-sat__copy">
-                    <strong>{{ _('Interferenze') }}</strong>
-                    <em>
-                      {% if crit_n or warn_n %}
-                        {{ crit_n }} critical · {{ warn_n }} warn
-                      {% else %}
-                        {{ _('Nessuna criticità aperta') }}
-                      {% endif %}
-                    </em>
-                  </div>
-                  <div class="pulse-sat__risk" aria-hidden="true">
-                    <span class="pulse-sat__risk-n">{{ findings_n }}</span>
-                    <span class="pulse-sat__risk-dots">
-                      {% for _ in range([crit_n, 5]|min) %}<i data-sev="critical"></i>{% endfor %}
-                      {% for _ in range([warn_n, 5]|min) %}<i data-sev="warn"></i>{% endfor %}
-                    </span>
-                  </div>
-                </article>
+                  <article class="signal-diag__row" role="row" data-tone="grade" data-grade="{{ rating.code }}">
+                    <div class="signal-diag__signal" role="cell">
+                      <span class="signal-diag__swatch" aria-hidden="true"></span>
+                      <div class="signal-diag__copy">
+                        <strong>{{ _('CVI') }}</strong>
+                        <em>{{ _('Centropic Visibility Index') }} · {{ rating.label.split('—')[0].strip() }}</em>
+                      </div>
+                    </div>
+                    <div class="signal-diag__reading" role="cell">
+                      <div class="signal-diag__meter signal-diag__meter--grade" style="--p: {{ rating.score }};" aria-hidden="true">
+                        <i></i>
+                      </div>
+                      <span class="signal-diag__meta">{{ rating.score }}/100</span>
+                    </div>
+                    <div class="signal-diag__value" role="cell">
+                      <span class="signal-diag__grade" data-chars="{{ rating.code|length }}">{{ rating.code }}</span>
+                    </div>
+                  </article>
+
+                  <article class="signal-diag__row" role="row" data-tone="risk">
+                    <div class="signal-diag__signal" role="cell">
+                      <span class="signal-diag__swatch" aria-hidden="true"></span>
+                      <div class="signal-diag__copy">
+                        <strong>{{ _('Interferenze') }}</strong>
+                        <em>
+                          {% if crit_n or warn_n %}
+                            {{ crit_n }} critical · {{ warn_n }} warn
+                          {% else %}
+                            {{ _('Nessuna criticità aperta') }}
+                          {% endif %}
+                        </em>
+                      </div>
+                    </div>
+                    <div class="signal-diag__reading" role="cell">
+                      <div class="signal-diag__sev" aria-hidden="true">
+                        {% if crit_n %}
+                        <span class="signal-diag__chip" data-sev="critical">{{ crit_n }} crit</span>
+                        {% endif %}
+                        {% if warn_n %}
+                        <span class="signal-diag__chip" data-sev="warn">{{ warn_n }} warn</span>
+                        {% endif %}
+                        {% if not crit_n and not warn_n %}
+                        <span class="signal-diag__chip" data-sev="ok">{{ _('clear') }}</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="signal-diag__value" role="cell">
+                      <strong class="signal-diag__findings">{{ findings_n }}</strong>
+                    </div>
+                  </article>
+                </div>
               </div>
 
               <ol class="pulse-scale" aria-label="{{ _('Scala da DDD a AAA') }}">
