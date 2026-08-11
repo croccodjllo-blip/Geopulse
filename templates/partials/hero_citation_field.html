@@ -1,71 +1,123 @@
-<svg class="hero-cite-svg" viewBox="0 0 920 560" role="img" aria-label="Mappa citazioni AI: i modelli citano il tuo dominio e i competitor">
+<svg class="hero-cite-svg" viewBox="0 0 920 560" role="img" aria-label="Mappa citazioni AI: i modelli citano il tuo dominio">
   <defs>
-    <radialGradient id="hcf-glow" cx="50%" cy="42%" r="55%">
-      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.18"/>
-      <stop offset="55%" stop-color="#C9D3DD" stop-opacity="0.04"/>
+    <radialGradient id="hcf-void" cx="58%" cy="46%" r="62%">
+      <stop offset="0%" stop-color="#141A22" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#0A0E14" stop-opacity="0.2"/>
       <stop offset="100%" stop-color="#04060A" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="hcf-core" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#E8EEF4" stop-opacity="0.16"/>
+      <stop offset="40%" stop-color="#C9D3DD" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hcf-ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E8EEF4" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#C9D3DD" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#5B6B7A" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="hcf-link" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.08"/>
+      <stop offset="50%" stop-color="#C9D3DD" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0.12"/>
+    </linearGradient>
     <linearGradient id="hcf-scan" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#C9D3DD" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#C9D3DD" stop-opacity="0.28"/>
       <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
     </linearGradient>
-    <filter id="hcf-soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="1.2" result="b"/>
+    <filter id="hcf-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.1" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+    <filter id="hcf-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
+
+  <!-- Atmosphere -->
   <rect width="920" height="560" fill="#04060A" fill-opacity="0"/>
-  <rect width="920" height="560" fill="url(#hcf-glow)"/>
-  <g opacity="0.22" stroke="#8B939E" stroke-width="0.6">
-    <line x1="60" y1="80" x2="860" y2="80"/><line x1="60" y1="140" x2="860" y2="140"/>
-    <line x1="60" y1="200" x2="860" y2="200"/><line x1="60" y1="260" x2="860" y2="260"/>
-    <line x1="60" y1="320" x2="860" y2="320"/><line x1="60" y1="380" x2="860" y2="380"/>
-    <line x1="60" y1="440" x2="860" y2="440"/>
-    <line x1="140" y1="40" x2="140" y2="500"/><line x1="260" y1="40" x2="260" y2="500"/>
-    <line x1="380" y1="40" x2="380" y2="500"/><line x1="500" y1="40" x2="500" y2="500"/>
-    <line x1="620" y1="40" x2="620" y2="500"/><line x1="740" y1="40" x2="740" y2="500"/>
+  <rect width="920" height="560" fill="url(#hcf-void)"/>
+
+  <!-- Orbital rings around brand -->
+  <g transform="translate(455 250)" fill="none" stroke="url(#hcf-ring)">
+    <ellipse cx="0" cy="0" rx="168" ry="98" stroke-width="1" opacity="0.55" stroke-dasharray="3 7"/>
+    <ellipse cx="0" cy="0" rx="230" ry="138" stroke-width="0.8" opacity="0.28" stroke-dasharray="1.5 9"/>
+    <ellipse cx="0" cy="0" rx="292" ry="176" stroke-width="0.7" opacity="0.16"/>
   </g>
-  <g class="hero-cite-svg__scan" opacity="0.55">
-    <rect x="60" y="0" width="800" height="48" fill="url(#hcf-scan)"/>
+
+  <!-- Fine tick marks (radar, not newspaper grid) -->
+  <g transform="translate(455 250)" stroke="#5B6B7A" stroke-width="0.7" opacity="0.28">
+    <line x1="-8" y1="-168" x2="8" y2="-168"/>
+    <line x1="-8" y1="168" x2="8" y2="168"/>
+    <line x1="-230" y1="-6" x2="-218" y2="-6"/>
+    <line x1="218" y1="-6" x2="230" y2="-6"/>
   </g>
-  <g filter="url(#hcf-soft)" stroke-linecap="round" fill="none">
-    <path d="M210 390 C 290 330, 340 250, 390 210" stroke="#C9D3DD" stroke-width="1.4" opacity="0.55"/>
-    <path d="M460 420 C 470 340, 455 280, 430 230" stroke="#C9D3DD" stroke-width="1.4" opacity="0.45"/>
-    <path d="M700 400 C 620 340, 540 280, 470 230" stroke="#8B939E" stroke-width="1.2" opacity="0.4"/>
-    <path d="M780 280 C 680 250, 560 235, 470 225" stroke="#8B939E" stroke-width="1.2" opacity="0.35"/>
-    <path d="M150 220 C 250 210, 350 215, 430 225" stroke="#C9D3DD" stroke-width="1.2" opacity="0.4"/>
+
+  <!-- Scan sweep accent -->
+  <g class="hero-cite-svg__scan" opacity="0.45">
+    <rect x="170" y="0" width="570" height="36" fill="url(#hcf-scan)"/>
   </g>
-  <g font-family="IBM Plex Sans, ui-sans-serif, system-ui, sans-serif">
-    <g transform="translate(180 380)">
-      <circle r="34" fill="#0B1018" stroke="#C9D3DD" stroke-width="1.5"/>
-      <circle r="6" fill="#C9D3DD"/><text x="0" y="52" text-anchor="middle" fill="#C8CDD5" font-size="12">ChatGPT</text>
+
+  <!-- Signal links -->
+  <g filter="url(#hcf-soft)" fill="none" stroke="url(#hcf-link)" stroke-linecap="round">
+    <path d="M455 250 C 390 290, 300 330, 214 372" stroke-width="1.35"/>
+    <path d="M455 250 C 455 310, 455 350, 455 398" stroke-width="1.2"/>
+    <path d="M455 250 C 520 290, 610 330, 696 372" stroke-width="1.2"/>
+    <path d="M455 250 C 360 220, 280 200, 198 188" stroke-width="1.15"/>
+    <path d="M455 250 C 550 220, 640 200, 722 188" stroke-width="1.15"/>
+  </g>
+
+  <!-- Engine nodes -->
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+    <!-- ChatGPT -->
+    <g transform="translate(214 372)">
+      <circle r="28" fill="#0A0E14" stroke="#C9D3DD" stroke-width="1.35"/>
+      <circle r="28" fill="#C9D3DD" opacity="0.05"/>
+      <circle r="4.5" fill="#C9D3DD" filter="url(#hcf-glow)"/>
+      <text x="0" y="46" text-anchor="middle" fill="#C8CDD5" font-size="11.5" letter-spacing="0.04em">ChatGPT</text>
     </g>
-    <g transform="translate(450 410)">
-      <circle r="30" fill="#0B1018" stroke="#8B939E" stroke-width="1.2"/>
-      <circle r="5" fill="#8B939E"/><text x="0" y="48" text-anchor="middle" fill="#8B939E" font-size="12">Perplexity</text>
+    <!-- Perplexity -->
+    <g transform="translate(455 398)">
+      <circle r="24" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.1"/>
+      <circle r="3.8" fill="#8BA3BD"/>
+      <text x="0" y="42" text-anchor="middle" fill="#8B97A8" font-size="11" letter-spacing="0.03em">Perplexity</text>
     </g>
-    <g transform="translate(700 390)">
-      <circle r="30" fill="#0B1018" stroke="#8B939E" stroke-width="1.2"/>
-      <circle r="5" fill="#8B939E"/><text x="0" y="48" text-anchor="middle" fill="#8B939E" font-size="12">Gemini</text>
+    <!-- Gemini -->
+    <g transform="translate(696 372)">
+      <circle r="24" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.1"/>
+      <circle r="3.8" fill="#8BA3BD"/>
+      <text x="0" y="42" text-anchor="middle" fill="#8B97A8" font-size="11" letter-spacing="0.03em">Gemini</text>
     </g>
-    <g transform="translate(140 210)">
-      <circle r="26" fill="#0B1018" stroke="#8B939E" stroke-width="1.2"/>
-      <circle r="4.5" fill="#8B939E"/><text x="0" y="44" text-anchor="middle" fill="#8B939E" font-size="11">Claude</text>
+    <!-- Claude -->
+    <g transform="translate(198 188)">
+      <circle r="22" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.05"/>
+      <circle r="3.4" fill="#8BA3BD"/>
+      <text x="0" y="40" text-anchor="middle" fill="#8B97A8" font-size="10.5" letter-spacing="0.03em">Claude</text>
     </g>
-    <g transform="translate(780 270)">
-      <circle r="26" fill="#0B1018" stroke="#8B939E" stroke-width="1.2"/>
-      <circle r="4.5" fill="#8B939E"/><text x="0" y="44" text-anchor="middle" fill="#8B939E" font-size="11">Copilot</text>
+    <!-- Copilot -->
+    <g transform="translate(722 188)">
+      <circle r="22" fill="#0A0E14" stroke="#8BA3BD" stroke-width="1.05"/>
+      <circle r="3.4" fill="#8BA3BD"/>
+      <text x="0" y="40" text-anchor="middle" fill="#8B97A8" font-size="10.5" letter-spacing="0.03em">Copilot</text>
     </g>
-    <g transform="translate(440 210)">
-      <circle r="48" fill="#0B1018" stroke="#C9D3DD" stroke-width="2"/>
-      <circle r="48" fill="#C9D3DD" opacity="0.08"/>
-      <text x="0" y="-4" text-anchor="middle" fill="#F2F4F7" font-size="13" font-weight="600">tuodominio.it</text>
-      <text x="0" y="14" text-anchor="middle" fill="#C9D3DD" font-size="11" font-weight="500">citato · 34%</text>
+
+    <!-- Brand core -->
+    <g transform="translate(455 250)" filter="url(#hcf-glow)">
+      <circle r="62" fill="url(#hcf-core)"/>
+      <circle r="54" fill="#0A0E14" stroke="#C9D3DD" stroke-width="1.8"/>
+      <circle r="54" fill="#C9D3DD" opacity="0.04"/>
+      <circle r="46" fill="none" stroke="#5B6B7A" stroke-width="0.7" stroke-dasharray="2 5" opacity="0.55"/>
+      <text x="0" y="-6" text-anchor="middle" fill="#F2F4F7" font-size="14" font-weight="600" letter-spacing="0.01em">tuodominio.it</text>
+      <text x="0" y="14" text-anchor="middle" fill="#C9D3DD" font-size="11" font-weight="500" letter-spacing="0.08em">CITATO · 34%</text>
     </g>
   </g>
-  <g font-family="IBM Plex Sans, ui-sans-serif, system-ui, sans-serif" fill="#8B939E" font-size="11">
-    <text x="60" y="36">Share of Voice · modelli AI</text>
-    <text x="860" y="36" text-anchor="end">live scan</text>
+
+  <!-- Eyebrow chrome -->
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif" fill="#8B97A8" font-size="10.5" letter-spacing="0.14em">
+    <text x="72" y="40" style="text-transform:uppercase">SHARE OF VOICE</text>
+    <text x="848" y="40" text-anchor="end" style="text-transform:uppercase">LIVE SCAN</text>
   </g>
+  <line x1="72" y1="50" x2="168" y2="50" stroke="#5B6B7A" stroke-width="0.8" opacity="0.55"/>
+  <line x1="752" y1="50" x2="848" y2="50" stroke="#5B6B7A" stroke-width="0.8" opacity="0.55"/>
 </svg>
