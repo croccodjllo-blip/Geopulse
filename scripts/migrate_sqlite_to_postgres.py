@@ -144,10 +144,30 @@ def copy_all(*, sqlite_url: str, postgres_url: str, dry_run: bool = False) -> di
             inserted = 0
             if rows:
                 # Only columns present on both sides.
-                src_cols = {c.name for c in src_t.columns}
                 dst_cols = {c.name for c in dst_t.columns}
                 cols = [c for c in src_t.columns.keys() if c in dst_cols]
-                payload = [{c: row[c] for c in cols} for row in rows]
+                notnull = {
+                    c.name
+                    for c in dst_t.columns
+                    if (not c.nullable) and c.name in cols
+                }
+                payload = []
+                for row in rows:
+                    item = {c: row[c] for c in cols}
+                    # SQLite often stores NULL in NOT NULL timestamp columns
+                    # that Postgres rejects (e.g. site_analyses.updated_at).
+                    if (
+                        "updated_at" in notnull
+                        and item.get("updated_at") is None
+                        and item.get("created_at") is not None
+                    ):
+                        item["updated_at"] = item["created_at"]
+                    for col in notnull:
+                        if item.get(col) is None and col.endswith("_at"):
+                            # Last resort: leave for DB default if any; else skip row noise
+                            if col == "created_at" and item.get("updated_at") is not None:
+                                item[col] = item["updated_at"]
+                    payload.append(item)
                 # Chunk inserts
                 chunk = 500
                 for i in range(0, len(payload), chunk):
