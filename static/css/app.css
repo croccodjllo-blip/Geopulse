@@ -6433,7 +6433,7 @@ body.body-auth {
   background:
     linear-gradient(105deg, rgba(4, 6, 10, 0.88) 0%, rgba(4, 6, 10, 0.55) 38%, rgba(4, 6, 10, 0.28) 62%, rgba(4, 6, 10, 0.62) 100%),
     radial-gradient(ellipse 55% 50% at 72% 46%, rgba(201, 211, 221, 0.08) 0%, transparent 62%),
-    url("../img/hero-cosmic.jpg") 68% 42% / cover no-repeat,
+    url("../img/hero-signal-field.jpg") 68% 42% / cover no-repeat,
     linear-gradient(168deg, #04060A 0%, #070A10 48%, #0A0E14 100%);
 }
 
@@ -7061,7 +7061,7 @@ body.body-auth {
   margin: 0 0 1.75rem;
 }
 
-/* NOTE: .hero-visual--cite's real background (with the hero-cosmic.jpg
+/* NOTE: .hero-visual--cite's real background (with the hero-signal-field.jpg
    nebula backdrop) is defined once, earlier in this file — do not add
    another `background:` rule for these selectors here, it silently wins
    the cascade (same specificity, later source order) and drops the photo. */
