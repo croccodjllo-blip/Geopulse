@@ -69,10 +69,11 @@ Source of truth: `services/entitlements.py`.
 ### 0.1 Monetizzazione Paddle
 - [x] Integrazione codice Paddle Billing (overlay + webhook + top-up)
 - [x] Stripe rimosso — solo Paddle come merchant of record
-- [ ] Creare account Paddle (sandbox → live), default payment link = `centropic.ai`
-- [ ] Impostare in produzione: `PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_PRICE_PLUS_MONTHLY`, `PADDLE_PRICE_TOPUP_*`
-- [ ] Notification destination: `https://centropic.ai/billing/paddle-webhook` (`subscription.*`, `transaction.completed`, `transaction.paid`)
+- [x] Account Paddle live su `centropic.ai` (`PADDLE_ENV=production`, Plus price + top-up su `/prezzi`)
+- [x] Env produzione: `PADDLE_*` + `PADDLE_PRICE_PLUS_MONTHLY` + `PADDLE_PRICE_TOPUP_*` (Business price ancora vuoto → waitlist)
+- [x] Notification destination: `https://centropic.ai/billing/paddle-webhook` (fail-closed senza firma → 400)
 - [x] CTA Checkout su `/prezzi` quando `paddle_plus_enabled()` / `paddle_business_enabled()` (altrimenti waitlist `/interesse-plus`)
+- [ ] Smoke test go-live: Free → paga Plus → token mensili + capability Plus senza admin
 
 **Done quando:** un utente Free completa il pagamento Paddle e vede subito le capability Plus senza intervento admin.
 
