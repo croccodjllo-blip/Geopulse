@@ -13,8 +13,10 @@ def test_analyze_overlay_partial_renders_on_dashboard(monkeypatch):
         )
     assert 'data-analyze-overlay' in html
     assert 'analyze-orbit' in html
-    assert 'Elaborazione in corso' in html
+    assert 'Analisi in corso' in html
     assert 'data-overlay-eta' in html
+    assert 'data-overlay-percent-value' in html
+    assert 'data-overlay-ring-progress' in html
 
 
 def test_analyze_overlay_auto_open_attrs_when_job():
@@ -31,3 +33,11 @@ def test_analyze_overlay_auto_open_attrs_when_job():
     assert 'data-auto-open="1"' in html
     assert "https://example.com" in html
     assert 'data-phase="running"' in html
+
+
+def test_confirm_analyze_script_has_csp_nonce():
+    from pathlib import Path
+
+    html = Path("templates/confirm_analyze.html").read_text(encoding="utf-8")
+    assert 'nonce="{{ csp_nonce }}"' in html
+    assert "analyze-overlay.js" in html

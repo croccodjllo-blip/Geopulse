@@ -1807,36 +1807,50 @@ body.app-body:not(.body-dash) {
 }
 .analyze-overlay__viz {
   position: relative;
-  width: 9.5rem;
-  height: 9.5rem;
+  width: 10.5rem;
+  height: 10.5rem;
   margin: 0 auto 1.1rem;
+}
+.analyze-overlay__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(201, 211, 221, 0.28));
+}
+.analyze-overlay__ring-track {
+  stroke: rgba(255, 255, 255, 0.10);
+}
+.analyze-overlay__ring-progress {
+  stroke: var(--plan-accent, #C9D3DD);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.35s ease;
 }
 .analyze-orbit {
   position: relative;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 .analyze-orbit__ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1px solid rgba(201, 211, 221, 0.28);
+  border: 1px solid rgba(201, 211, 221, 0.18);
 }
 .analyze-orbit__ring--a {
-  inset: 8%;
-  border-color: rgba(201, 211, 221, 0.35);
+  inset: 14%;
+  border-color: rgba(201, 211, 221, 0.28);
   animation: analyze-spin 7s linear infinite;
 }
 .analyze-orbit__ring--b {
-  inset: 22%;
+  inset: 28%;
   border-style: dashed;
-  border-color: rgba(201, 211, 221, 0.45);
+  border-color: rgba(201, 211, 221, 0.38);
   animation: analyze-spin-rev 11s linear infinite;
-}
-.analyze-orbit__ring--c {
-  inset: 36%;
-  border-color: rgba(255, 255, 255, 0.18);
-  animation: analyze-spin 5.5s linear infinite;
 }
 .analyze-orbit__core {
   position: absolute;
@@ -1929,14 +1943,15 @@ body.app-body:not(.body-dash) {
   word-break: break-all;
 }
 .analyze-overlay__percent {
-  margin: 0.85rem 0 0;
+  margin: 1rem 0 0;
   font-family: var(--font-display);
-  font-size: clamp(2.6rem, 8vw, 3.5rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-size: clamp(3rem, 9vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
   line-height: 1;
   color: #f8fafc;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--plan-accent, #C9D3DD) 35%, transparent);
 }
 .analyze-overlay__percent-unit {
   margin-left: 0.05em;
@@ -2063,8 +2078,10 @@ html.analyze-busy {
   .analyze-orbit__ring,
   .analyze-orbit__core,
   .analyze-orbit__dot,
-  .analyze-overlay__scan {
+  .analyze-overlay__scan,
+  .analyze-overlay__ring-progress {
     animation: none !important;
+    transition: none !important;
   }
 }
 

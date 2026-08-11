@@ -37,6 +37,7 @@
     this.barTrack = el(root, "[data-overlay-bar-track]");
     this.percentEl = el(root, "[data-overlay-percent]");
     this.percentValue = el(root, "[data-overlay-percent-value]");
+    this.ringProgress = el(root, "[data-overlay-ring-progress]");
     this.steps = root.querySelectorAll("[data-overlay-steps] [data-step]");
     this.errorBox = el(root, "[data-overlay-error]");
     this.errorText = el(root, "[data-overlay-error-text]");
@@ -49,8 +50,13 @@
     this._displayPct = 0;
     this._serverPct = null;
     this._etaSeconds = null;
+    this._ringLen = 326.73;
     this._doneUrl = "/dashboard";
     var self = this;
+    if (this.ringProgress) {
+      var len = Number(this.ringProgress.getAttribute("stroke-dasharray") || 0);
+      if (len > 0) this._ringLen = len;
+    }
     if (this.closeBtn) {
       this.closeBtn.addEventListener("click", function () {
         self.hide();
@@ -155,6 +161,10 @@
     if (this.percentEl) {
       this.percentEl.setAttribute("aria-label", shown + "% " + (this.root.getAttribute("data-percent-label") || "completato"));
     }
+    if (this.ringProgress) {
+      var offset = this._ringLen * (1 - shown / 100);
+      this.ringProgress.style.strokeDashoffset = String(offset);
+    }
   };
 
   Overlay.prototype.setPhase = function (phase, hint) {
@@ -222,7 +232,7 @@
     this.setUrl(opts.url || this.root.getAttribute("data-url") || "");
     if (this.title) {
       this.title.textContent =
-        opts.title || this.root.getAttribute("data-title") || "Elaborazione in corso";
+        opts.title || this.root.getAttribute("data-title") || "Analisi in corso";
     }
     if (this.desc) {
       this.desc.textContent =
@@ -324,14 +334,39 @@
       } catch (e) {
         /* ignore transient */
       }
-      var delay = tries < 90 ? 2000 : tries < 180 ? 4000 : 8000;
+      var delay = tries < 20 ? 900 : tries < 90 ? 1600 : tries < 180 ? 4000 : 8000;
       if (tries === 90 && self.hint && !(typeof self._etaSeconds === "number")) {
         self.hint.textContent = "Analisi ancora in corso — puoi lasciare questa pagina aperta.";
       }
       self._poll = setTimeout(tick, delay);
     };
-    self._poll = setTimeout(tick, 900);
+    // Poll faster early so the % feels live.
+    self._poll = setTimeout(tick, 400);
   };
+
+  function rememberPending(url) {
+    try {
+      sessionStorage.setItem(
+        "centropic_analyze_overlay",
+        JSON.stringify({ url: url || "", t: Date.now() })
+      );
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function consumePending() {
+    try {
+      var raw = sessionStorage.getItem("centropic_analyze_overlay");
+      if (!raw) return null;
+      sessionStorage.removeItem("centropic_analyze_overlay");
+      var data = JSON.parse(raw);
+      if (!data || !data.t || Date.now() - data.t > 120000) return null;
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
 
   function init() {
     var root = document.querySelector("[data-analyze-overlay]");
@@ -340,12 +375,32 @@
     window.CentropicAnalyzeOverlay = api;
 
     if (root.getAttribute("data-auto-open") === "1") {
+      consumePending();
       api.show({
         url: root.getAttribute("data-url"),
         statusUrl: root.getAttribute("data-status-url"),
         doneUrl: root.getAttribute("data-done-url"),
         phase: root.getAttribute("data-phase") || "pending",
+        hint: "Aggiornamento avanzamento in tempo reale…",
       });
+    } else {
+      // Dashboard landed without attrs but confirm just fired — open if job strip exists.
+      var pending = consumePending();
+      var jobStatus = document.getElementById("job-status");
+      var statusUrl =
+        (jobStatus && jobStatus.getAttribute("data-status-url")) ||
+        (pending && root.getAttribute("data-status-url"));
+      if (pending && statusUrl) {
+        api.show({
+          url: pending.url || (jobStatus && jobStatus.querySelector("code")
+            ? jobStatus.querySelector("code").textContent
+            : ""),
+          statusUrl: statusUrl,
+          doneUrl: root.getAttribute("data-done-url") || "/dashboard",
+          phase: "pending",
+          hint: "Analisi avviata — calcolo avanzamento…",
+        });
+      }
     }
 
     document.addEventListener("submit", function (ev) {
@@ -356,13 +411,17 @@
         form.classList.contains("js-analyze-confirm") ||
         form.getAttribute("data-analyze-overlay-trigger") === "1";
       if (!trigger) return;
-      if (root.open) return;
       var urlInput = form.querySelector('[name="url"]');
       var url = urlInput && urlInput.value ? urlInput.value : "";
+      rememberPending(url);
+      if (root.open) return;
       api.show({
         url: url,
         phase: "pending",
-        hint: "Invio richiesta… il worker partirà a breve.",
+        hint:
+          form.classList.contains("js-analyze-confirm")
+            ? "Avvio analisi… a breve vedrai l’avanzamento in %."
+            : "Preparazione stima…",
         etaLabel: "Stima in preparazione…",
       });
     });

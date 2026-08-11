@@ -16,10 +16,24 @@
 >
   <div class="analyze-overlay__panel">
     <div class="analyze-overlay__viz" aria-hidden="true">
+      <svg class="analyze-overlay__ring" viewBox="0 0 120 120" data-overlay-ring>
+        <circle class="analyze-overlay__ring-track" cx="60" cy="60" r="52" fill="none" stroke-width="7"/>
+        <circle
+          class="analyze-overlay__ring-progress"
+          cx="60"
+          cy="60"
+          r="52"
+          fill="none"
+          stroke-width="7"
+          stroke-dasharray="326.73"
+          stroke-dashoffset="326.73"
+          transform="rotate(-90 60 60)"
+          data-overlay-ring-progress
+        />
+      </svg>
       <div class="analyze-orbit">
         <span class="analyze-orbit__ring analyze-orbit__ring--a"></span>
         <span class="analyze-orbit__ring analyze-orbit__ring--b"></span>
-        <span class="analyze-orbit__ring analyze-orbit__ring--c"></span>
         <span class="analyze-orbit__core">
           <img
             src="{{ url_for('static', filename='img/logo.svg') }}"
@@ -31,14 +45,12 @@
         </span>
         <span class="analyze-orbit__dot analyze-orbit__dot--1"></span>
         <span class="analyze-orbit__dot analyze-orbit__dot--2"></span>
-        <span class="analyze-orbit__dot analyze-orbit__dot--3"></span>
       </div>
-      <div class="analyze-overlay__scan"></div>
     </div>
 
     <p class="analyze-overlay__brand">centropic<span>.ai</span></p>
     <h2 class="analyze-overlay__title" id="analyze-overlay-title" data-overlay-title>
-      {{ _('Elaborazione in corso') }}
+      {{ _('Analisi in corso') }}
     </h2>
     <p class="analyze-overlay__desc" id="analyze-overlay-desc" data-overlay-desc>
       {{ _('Stiamo analizzando i segnali del dominio. Resta su questa pagina.') }}
@@ -59,7 +71,7 @@
       {{ _('Stima: 30–90 secondi') }}
     </p>
 
-    <ol class="analyze-overlay__steps" data-overlay-steps aria-hidden="true">
+    <ol class="analyze-overlay__steps" data-overlay-steps>
       <li data-step="queue">{{ _('In coda') }}</li>
       <li data-step="crawl">{{ _('Crawl del dominio') }}</li>
       <li data-step="probe">{{ _('Probe segnali') }}</li>
@@ -73,6 +85,7 @@
       aria-valuemin="0"
       aria-valuemax="100"
       aria-valuenow="0"
+      aria-label="{{ _('Avanzamento analisi') }}"
       data-overlay-bar-track
     >
       <span class="analyze-overlay__bar-fill" data-overlay-bar></span>
