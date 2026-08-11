@@ -27,14 +27,19 @@ class DuplicateAnalyzeJobError(RuntimeError):
 
 
 def _begin_immediate(db_session: Any) -> None:
-    """Take a reserved write lock early (critical on SQLite under concurrency)."""
-    try:
-        from sqlalchemy import text
+    """Take a reserved write lock early (SQLite only; no-op on Postgres).
 
-        db_session.execute(text("BEGIN IMMEDIATE"))
-    except Exception:
-        # Postgres / already-in-transaction: best-effort only.
-        pass
+    Never emit ``BEGIN IMMEDIATE`` on Postgres: a syntax error aborts the
+    transaction even if caught, and the next query raises InFailedSqlTransaction
+    (analyze enqueue 500 on ``/dashboard/analyze/confirmed``).
+    """
+    from sqlalchemy import text
+
+    bind = db_session.get_bind()
+    dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
+    if dialect != "sqlite":
+        return
+    db_session.execute(text("BEGIN IMMEDIATE"))
 
 
 def enqueue_analysis(
