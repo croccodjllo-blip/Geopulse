@@ -73,7 +73,7 @@ Source of truth: `services/entitlements.py`.
 - [x] Env produzione: `PADDLE_*` + `PADDLE_PRICE_PLUS_MONTHLY` + `PADDLE_PRICE_TOPUP_*` (Business price ancora vuoto → waitlist)
 - [x] Notification destination: `https://centropic.ai/billing/paddle-webhook` (fail-closed senza firma → 400)
 - [x] CTA Checkout su `/prezzi` quando `paddle_plus_enabled()` / `paddle_business_enabled()` (altrimenti waitlist `/interesse-plus`)
-- [ ] Smoke test go-live: Free → paga Plus → token mensili + capability Plus senza admin
+- [x] Smoke test go-live: Free → paga Plus → token mensili + capability Plus senza admin (2026-08-11, webhook firmato su prod)
 
 **Done quando:** un utente Free completa il pagamento Paddle e vede subito le capability Plus senza intervento admin.
 
