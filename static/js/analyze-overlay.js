@@ -237,7 +237,7 @@
     if (this.desc) {
       this.desc.textContent =
         opts.desc ||
-        "Stiamo analizzando i segnali del dominio. Resta su questa pagina.";
+        "Lettura dei segnali pubblici del dominio. Resta su questa pagina.";
     }
     this._stepIdx = 0;
     this._progress = 0;

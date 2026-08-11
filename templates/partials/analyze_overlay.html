@@ -1,4 +1,4 @@
-{# Full-screen processing overlay shown while an analysis job runs. #}
+{# Full-screen processing overlay — Logo Chrome diagnostic stage. #}
 <dialog
   class="analyze-overlay"
   id="analyze-overlay"
@@ -15,68 +15,78 @@
   {% endif %}
 >
   <div class="analyze-overlay__panel">
-    <div class="analyze-overlay__viz" aria-hidden="true">
-      <svg class="analyze-overlay__ring" viewBox="0 0 120 120" data-overlay-ring>
-        <circle class="analyze-overlay__ring-track" cx="60" cy="60" r="52" fill="none" stroke-width="7"/>
-        <circle
-          class="analyze-overlay__ring-progress"
-          cx="60"
-          cy="60"
-          r="52"
-          fill="none"
-          stroke-width="7"
-          stroke-dasharray="326.73"
-          stroke-dashoffset="326.73"
-          transform="rotate(-90 60 60)"
-          data-overlay-ring-progress
-        />
-      </svg>
-      <div class="analyze-orbit">
-        <span class="analyze-orbit__ring analyze-orbit__ring--a"></span>
-        <span class="analyze-orbit__ring analyze-orbit__ring--b"></span>
-        <span class="analyze-orbit__core">
-          <img
-            src="{{ url_for('static', filename='img/logo.svg') }}"
-            alt=""
-            width="56"
-            height="56"
-            decoding="async"
+    <header class="analyze-overlay__chrome">
+      <img
+        class="analyze-overlay__mark"
+        src="{{ url_for('static', filename='img/logo-mark.svg') }}"
+        width="22"
+        height="22"
+        alt=""
+        decoding="async"
+      />
+      <p class="analyze-overlay__brand">centropic<span>.ai</span></p>
+      <span class="analyze-overlay__live" data-overlay-live aria-hidden="true">
+        <i></i>{{ _('LIVE') }}
+      </span>
+    </header>
+
+    <div class="analyze-overlay__stage">
+      <div class="analyze-overlay__viz analyze-orbit" aria-hidden="true">
+        <svg class="analyze-overlay__ring" viewBox="0 0 120 120" data-overlay-ring>
+          <defs>
+            <linearGradient id="analyzeRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="var(--plan-accent, #C9D3DD)" />
+              <stop offset="100%" stop-color="#5B6B7A" />
+            </linearGradient>
+          </defs>
+          <circle class="analyze-overlay__ring-track" cx="60" cy="60" r="52" fill="none" stroke-width="6"/>
+          <circle
+            class="analyze-overlay__ring-progress"
+            cx="60"
+            cy="60"
+            r="52"
+            fill="none"
+            stroke-width="6"
+            stroke="url(#analyzeRingGrad)"
+            stroke-dasharray="326.73"
+            stroke-dashoffset="326.73"
+            transform="rotate(-90 60 60)"
+            data-overlay-ring-progress
           />
-        </span>
-        <span class="analyze-orbit__dot analyze-orbit__dot--1"></span>
-        <span class="analyze-orbit__dot analyze-orbit__dot--2"></span>
+        </svg>
+        <div class="analyze-overlay__gauge">
+          <p
+            class="analyze-overlay__percent"
+            data-overlay-percent
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <span data-overlay-percent-value>0</span><span class="analyze-overlay__percent-unit">%</span>
+          </p>
+        </div>
+        <span class="analyze-overlay__scan" aria-hidden="true"></span>
+      </div>
+
+      <div class="analyze-overlay__copy">
+        <h2 class="analyze-overlay__title" id="analyze-overlay-title" data-overlay-title>
+          {{ _('Analisi in corso') }}
+        </h2>
+        <p class="analyze-overlay__desc" id="analyze-overlay-desc" data-overlay-desc>
+          {{ _('Lettura dei segnali pubblici del dominio. Resta su questa pagina.') }}
+        </p>
+        <p class="analyze-overlay__url" data-overlay-url hidden></p>
+        <p class="analyze-overlay__eta" data-overlay-eta aria-live="polite">
+          {{ _('Stima: 30–90 secondi') }}
+        </p>
       </div>
     </div>
 
-    <p class="analyze-overlay__brand">centropic<span>.ai</span></p>
-    <h2 class="analyze-overlay__title" id="analyze-overlay-title" data-overlay-title>
-      {{ _('Analisi in corso') }}
-    </h2>
-    <p class="analyze-overlay__desc" id="analyze-overlay-desc" data-overlay-desc>
-      {{ _('Stiamo analizzando i segnali del dominio. Resta su questa pagina.') }}
-    </p>
-    <p class="analyze-overlay__url" data-overlay-url hidden></p>
-
-    <p
-      class="analyze-overlay__percent"
-      data-overlay-percent
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      <span data-overlay-percent-value>0</span><span class="analyze-overlay__percent-unit">%</span>
-    </p>
-    <p class="analyze-overlay__percent-label">{{ _('Avanzamento') }}</p>
-
-    <p class="analyze-overlay__eta" data-overlay-eta aria-live="polite">
-      {{ _('Stima: 30–90 secondi') }}
-    </p>
-
     <ol class="analyze-overlay__steps" data-overlay-steps>
-      <li data-step="queue">{{ _('In coda') }}</li>
-      <li data-step="crawl">{{ _('Crawl del dominio') }}</li>
-      <li data-step="probe">{{ _('Probe segnali') }}</li>
-      <li data-step="score">{{ _('Scoring AIO / GEO') }}</li>
-      <li data-step="pack">{{ _('Pack artifact') }}</li>
+      <li data-step="queue"><span>{{ _('Coda') }}</span></li>
+      <li data-step="crawl"><span>{{ _('Crawl') }}</span></li>
+      <li data-step="probe"><span>{{ _('Probe') }}</span></li>
+      <li data-step="score"><span>{{ _('Score') }}</span></li>
+      <li data-step="pack"><span>{{ _('Pack') }}</span></li>
     </ol>
 
     <div
@@ -92,7 +102,7 @@
     </div>
 
     <p class="analyze-overlay__hint" data-overlay-hint>
-      {{ _('Di solito 30–90 secondi.') }}
+      {{ _('Avanzamento in tempo reale · tipicamente 30–90 s') }}
     </p>
 
     <div class="analyze-overlay__error" data-overlay-error hidden>
