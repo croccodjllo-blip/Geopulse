@@ -3557,6 +3557,16 @@ def edge_cms_bundle(analysis_id: int):
     )
 
 
+@app.route("/googlee1d69b8c33683acd.html")
+def google_site_verification_file():
+    """Google Search Console HTML-file ownership proof (root URL, not /static/)."""
+    return send_from_directory(
+        app.static_folder,
+        "googlee1d69b8c33683acd.html",
+        mimetype="text/html",
+    )
+
+
 @app.route("/ai.txt")
 def ai_txt():
     return send_from_directory(
