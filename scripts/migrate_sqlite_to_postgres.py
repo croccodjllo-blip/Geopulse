@@ -19,7 +19,7 @@ import os
 import sys
 from typing import Any
 
-from sqlalchemy import MetaData, create_engine, inspect, select, text
+from sqlalchemy import MetaData, create_engine, insert, inspect, select, text
 from sqlalchemy.engine import Engine
 
 
@@ -91,15 +91,24 @@ def copy_all(*, sqlite_url: str, postgres_url: str, dry_run: bool = False) -> di
 
     src_tables = set(_table_names(src))
     dst_tables = set(_table_names(dst))
-    missing = sorted(src_tables - dst_tables)
-    if missing:
-        raise SystemExit(
-            "Postgres schema missing tables (run create_all/alembic first): "
-            + ", ".join(missing)
-        )
+    skipped = sorted(src_tables - dst_tables)
+    missing_dst_only = sorted(dst_tables - src_tables)
 
-    report: dict[str, Any] = {"tables": {}, "dry_run": dry_run}
+    report: dict[str, Any] = {
+        "tables": {},
+        "dry_run": dry_run,
+        "skipped_sqlite_only": skipped,
+        "postgres_only": missing_dst_only,
+    }
+    if skipped:
+        print(
+            "WARN: skipping SQLite-only tables (no Postgres model): "
+            + ", ".join(skipped),
+            file=sys.stderr,
+        )
     order = [t for t in _table_names(src) if t in dst_tables]
+    if not order:
+        raise SystemExit("No overlapping tables to copy")
 
     src_meta = MetaData()
     src_meta.reflect(bind=src, only=order)
