@@ -42,11 +42,14 @@ from services.signals import (
     detect_html_faq,
     extract_json_ld_from_soup,
 )
+from services.js_crawl import js_crawl_available, render_html
 from services.ssrf import UnsafeURLError, assert_public_http_url, safe_get
 
 HTTP_TIMEOUT = 12
 PROBE_TIMEOUT = 6
 PAGE_TIMEOUT = 10
+# Thin-page threshold before optional Playwright enrich (seed only by default).
+_JS_ENRICH_MAX_WORDS = 80
 # Tetto di sicurezza operativo (anche per crawl “illimitato” Plus).
 ABS_MAX_CRAWL_PAGES = 2000
 USER_AGENT = "Centropic/1.0 (+https://centropic.ai; GEO/AIO optimizer)"
@@ -174,29 +177,47 @@ def _extract_meta(soup: BeautifulSoup, *, name: str | None = None, prop: str | N
     return ""
 
 
-def scrape_page(url: str) -> dict[str, Any]:
-    import time
-
-    t0 = time.perf_counter()
-    response = safe_get(
-        _SESSION,
-        url,
-        timeout=HTTP_TIMEOUT,
-        max_redirects=5,
+def _looks_like_spa_shell(html: str) -> bool:
+    head = (html or "")[:6000].lower()
+    markers = (
+        'id="root"',
+        "id='root'",
+        'id="app"',
+        "id='app'",
+        'id="__next"',
+        "__next",
+        "data-reactroot",
+        "ng-version=",
+        "svelte-",
     )
-    elapsed_ms = int((time.perf_counter() - t0) * 1000)
-    # Non raise subito su 4xx: servono metriche
-    ctype = (response.headers.get("Content-Type") or "").lower()
-    html = response.text or ""
+    return any(m in head for m in markers)
+
+
+def _should_js_enrich(scraped: dict[str, Any], html: str) -> bool:
+    """Playwright only when static HTML looks content-starved (SPA shell)."""
+    words = int(scraped.get("word_count") or 0)
+    if words >= _JS_ENRICH_MAX_WORDS:
+        return False
+    if int(scraped.get("status_code") or 0) >= 400:
+        return False
+    if _looks_like_spa_shell(html):
+        return True
+    # Sparse body + many external scripts → likely client-rendered.
+    return words < 40 and int(scraped.get("blocking_scripts") or 0) >= 1
+
+
+def _parse_scraped_html(
+    html: str,
+    *,
+    requested_url: str,
+    final_url: str,
+    status_code: int,
+    response_ms: int,
+    redirect_count: int,
+    fetch_mode: str = "static",
+) -> dict[str, Any]:
     if len(html) > 1_500_000:
         html = html[:1_500_000]
-    if response.status_code >= 400:
-        # body minimo per soft signals
-        pass
-    elif "html" not in ctype and "xml" not in ctype and ctype:
-        if "<html" not in html[:500].lower():
-            response.raise_for_status()
-            raise requests.RequestException(f"Non-HTML content-type: {ctype}")
 
     soup = BeautifulSoup(html, "lxml")
     jsonld_meta = extract_json_ld_from_soup(soup)
@@ -262,7 +283,6 @@ def scrape_page(url: str) -> dict[str, Any]:
         if h.get_text(strip=True)
     ][:12]
 
-    final_url = str(response.url)
     hrefs: list[str] = []
     links: list[str] = []
     internal_hrefs: list[str] = []
@@ -305,19 +325,18 @@ def scrape_page(url: str) -> dict[str, Any]:
         or AUTHOR_RE.search(body_text[:2500] or "")
     )
     soft_404 = bool(
-        response.status_code == 200
+        status_code == 200
         and (
             re.search(r"\b404\b|not found|pagina non trovata", title, re.I)
             or (words < 40 and re.search(r"\b404\b|not found", body_text[:500], re.I))
         )
     )
 
-    redirect_count = max(0, len(response.history))
     return {
         "final_url": final_url,
-        "requested_url": url,
-        "status_code": response.status_code,
-        "response_ms": elapsed_ms,
+        "requested_url": requested_url,
+        "status_code": status_code,
+        "response_ms": response_ms,
         "redirect_count": redirect_count,
         "html_kb": round(len(html.encode("utf-8", errors="ignore")) / 1024.0, 1),
         "blocking_scripts": blocking_scripts,
@@ -362,7 +381,78 @@ def scrape_page(url: str) -> dict[str, Any]:
         "has_contact_link": has_contact_link,
         "has_author_signal": has_author_signal,
         "soft_404": soft_404,
+        "fetch_mode": fetch_mode,
     }
+
+
+def scrape_page(url: str, *, allow_js: bool = True) -> dict[str, Any]:
+    import time
+
+    t0 = time.perf_counter()
+    response = safe_get(
+        _SESSION,
+        url,
+        timeout=HTTP_TIMEOUT,
+        max_redirects=5,
+    )
+    elapsed_ms = int((time.perf_counter() - t0) * 1000)
+    # Non raise subito su 4xx: servono metriche
+    ctype = (response.headers.get("Content-Type") or "").lower()
+    html = response.text or ""
+    if len(html) > 1_500_000:
+        html = html[:1_500_000]
+    if response.status_code >= 400:
+        # body minimo per soft signals
+        pass
+    elif "html" not in ctype and "xml" not in ctype and ctype:
+        if "<html" not in html[:500].lower():
+            response.raise_for_status()
+            raise requests.RequestException(f"Non-HTML content-type: {ctype}")
+
+    final_url = str(response.url)
+    redirect_count = max(0, len(response.history))
+    scraped = _parse_scraped_html(
+        html,
+        requested_url=url,
+        final_url=final_url,
+        status_code=response.status_code,
+        response_ms=elapsed_ms,
+        redirect_count=redirect_count,
+        fetch_mode="static",
+    )
+
+    # Optional Playwright enrich for SPA/thin shells (seed path; crawl extras opt out).
+    if allow_js and js_crawl_available() and _should_js_enrich(scraped, html):
+        t_js = time.perf_counter()
+        rendered = render_html(final_url or url)
+        js_ms = int((time.perf_counter() - t_js) * 1000)
+        if rendered.get("ok") and rendered.get("html"):
+            enriched = _parse_scraped_html(
+                str(rendered["html"]),
+                requested_url=url,
+                final_url=final_url,
+                status_code=response.status_code,
+                response_ms=elapsed_ms + js_ms,
+                redirect_count=redirect_count,
+                fetch_mode="playwright",
+            )
+            richer = int(enriched.get("word_count") or 0) > int(
+                scraped.get("word_count") or 0
+            ) + 20
+            gained_jsonld = bool(enriched.get("has_json_ld")) and not bool(
+                scraped.get("has_json_ld")
+            )
+            if richer or gained_jsonld:
+                enriched["js_enriched"] = True
+                enriched["js_render_ms"] = js_ms
+                return enriched
+            scraped["js_attempted"] = True
+            scraped["js_render_ms"] = js_ms
+        else:
+            scraped["js_attempted"] = True
+            scraped["js_error"] = (rendered.get("error") or "js_render_failed")[:200]
+
+    return scraped
 
 
 # Compat alias
@@ -1174,7 +1264,8 @@ def _crawl_extra_pages(urls: list[str], *, seed_url: str, max_workers: int = 4) 
 
     def job(u: str) -> dict[str, Any] | None:
         try:
-            page = scrape_page(u)
+            # BFS extras stay on static fetch — Playwright only on seed (cost/latency).
+            page = scrape_page(u, allow_js=False)
             # Se redirect fuori dominio, salta
             if not same_domain(page.get("final_url") or u, seed_url):
                 return {
