@@ -1488,6 +1488,19 @@ def absolute_url(endpoint: str, **values: Any) -> str:
         return path
     return f"{public_base_url()}{path}"
 
+def dated_url_for(endpoint: str, **values: Any) -> str:
+    """Cache-bust static assets with ?v=<mtime> (nginx serves /static/ immutable)."""
+    if endpoint == "static":
+        filename = values.get("filename")
+        if filename and app.static_folder:
+            fpath = os.path.join(app.static_folder, str(filename))
+            try:
+                values["v"] = int(os.path.getmtime(fpath))
+            except OSError:
+                pass
+    return url_for(endpoint, **values)
+
+
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
     base = public_base_url()
@@ -1549,6 +1562,7 @@ def inject_globals() -> dict[str, Any]:
     return {
         "current_user": user,
         "csrf_token": generate_csrf,
+        "url_for": dated_url_for,
         **caps,
         "max_sites_free": MAX_SITES_FREE,
         "max_sites_plus": MAX_SITES_PLUS,
