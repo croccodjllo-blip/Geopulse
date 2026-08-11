@@ -98,7 +98,7 @@
               <p class="eyebrow">{{ _('Ultimo report') }}</p>
               <div class="report-top__title-row">
                 <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
-                <span class="grade-badge" data-grade="{{ rating.code }}">{{ rating.code }}</span>
+                <span class="grade-badge" data-grade="{{ rating.code }}" title="{{ _('Centropic Visibility Index') }}">{{ _('CVI') }} {{ rating.code }}</span>
               </div>
               <p class="report-meta">
                 {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
@@ -305,8 +305,8 @@
 
                 <article class="pulse-sat" role="listitem" data-tone="grade" data-grade="{{ rating.code }}">
                   <div class="pulse-sat__copy">
-                    <strong>{{ _('Indice') }}</strong>
-                    <em>{{ rating.score }}/100 · {{ rating.label.split('—')[0].strip() }}</em>
+                    <strong>{{ _('CVI') }}</strong>
+                    <em>{{ rating.score }}/100 · {{ _('Centropic Visibility Index') }} · {{ rating.label.split('—')[0].strip() }}</em>
                   </div>
                   <div
                     class="pulse-sat__mark"
@@ -354,18 +354,18 @@
                   <p class="eyebrow">{{ _('AI Engine Breakdown') }}</p>
                   <h3 class="sov-panel__title" id="sov-title">
                     {% if engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
-                    {{ _('Share of Voice') }}
+                    {{ _('Citation share') }}
                     {% else %}
-                    {{ _('Share of Voice stimato') }}
+                    {{ _('Citation share (stimata)') }}
                     {% endif %}
                   </h3>
                   <p class="sov-panel__lede">
                     {% if can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
-                    {{ _('Mix di menzioni campionate (Misurato) e predisposizione strutturale (Stimato) per engine.') }}
+                    {{ _('Menzioni generative campionate (stocastiche) + predisposizione strutturale — non Share of Voice pubblicitaria.') }}
                     {% elif not can_measured_sov %}
-                    {{ _('SoV stimato dalla predisposizione strutturale (score + robots) sul piano attuale.') }}
+                    {{ _('Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor.') }}
                     {% else %}
-                    {{ _('Stima dalla struttura osservata (score + robots); con Plus puoi aggiungere campioni Misurati.') }}
+                    {{ _('Stima dalla struttura osservata (CVI / score + robots); con Plus puoi aggiungere campioni Misurati.') }}
                     {% endif %}
                   </p>
                   <span class="evidence-badge sov-panel__badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
@@ -912,7 +912,7 @@
       {% if latest %}
       <aside class="workspace-rail" aria-label="{{ _('Contesto report') }}">
         <div class="rail-card">
-          <p class="rail-card__eyebrow">{{ _('Indice') }}</p>
+          <p class="rail-card__eyebrow">{{ _('CVI') }}</p>
           <p class="rail-card__grade" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</p>
           <p class="rail-card__sub">{{ latest.rating.score }}/100</p>
         </div>

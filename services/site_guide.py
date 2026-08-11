@@ -10,24 +10,33 @@ from flask_babel import gettext as _
 def _glossary_entries() -> list[dict[str, str]]:
     raw = [
         (
+            "cvi",
+            _("CVI (Centropic Visibility Index)"),
+            _(
+                "Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che sintetizza AIO+GEO "
+                "(con penalità findings). È lo standard da confrontare tra brand — non Domain Authority di terzi."
+            ),
+        ),
+        (
             "aio",
             "AIO",
             _(
-                "AI-Driven Visibility: quanto brand e sito sono comprensibili/visibili a modelli e crawler IA. Non significa All-in-One."
+                "AI-Driven Visibility: componente del CVI — quanto brand e sito sono comprensibili/visibili a modelli e crawler IA. Non significa All-in-One."
             ),
         ),
         (
             "geo",
             "GEO",
             _(
-                "Generative Engine Optimization: ottimizzazione per essere citati nelle risposte generate da answer engine. Non significa GIS."
+                "Generative Engine Optimization: componente del CVI — ottimizzazione per essere citati nelle risposte generate. Non significa GIS."
             ),
         ),
         (
             "sov",
-            _("SoV (Share of Voice)"),
+            _("Citation share (SoV)"),
             _(
-                "Quota di “voce” del brand rispetto agli engine. Proxy = stimato; Measured = campionato via citation monitor (Plus)."
+                "Campione di menzioni del brand nelle risposte generative (stocastiche), non Share of Voice pubblicitaria. "
+                "Proxy = stimato dalla struttura; Measured = citation monitor (Plus)."
             ),
         ),
         (
@@ -46,9 +55,9 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "indice",
-            _("Indice DDD→AAA"),
+            _("CVI · scala DDD→AAA"),
             _(
-                "Scala sintetica della qualità AIO/GEO complessiva, da critica (DDD) a eccellente (AAA)."
+                "Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). Alias storico: “Indice”."
             ),
         ),
         (
@@ -269,7 +278,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
                 "bullets": [
                     _("Avvia o ripeti l’analisi sull’URL del sito"),
-                    _("Vedi Indice DDD→AAA, score AIO/GEO e Share of Voice"),
+                    _("Vedi CVI (DDD→AAA), score AIO/GEO e citation share"),
                     _("Accedi a pack, Edge Signals, storico e crediti"),
                 ],
             },
@@ -285,7 +294,7 @@ def site_guide_payload() -> dict[str, Any]:
                     _(
                         "GEO = Generative Engine Optimization (citabilità nelle risposte generate)"
                     ),
-                    _("Indice lettera DDD→AAA sintetizza la qualità complessiva"),
+                    _("CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"),
                 ],
             },
             {
@@ -484,24 +493,25 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
             },
             {
-                "title": _("SoV measured"),
+                "title": _("Citation share measured"),
                 "body": _(
                     "Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio "
-                    "nelle risposte — campione probe, non garanzia di ranking nelle UI consumer."
+                    "nelle risposte generative (stocastiche) — non Share of Voice pubblicitaria, "
+                    "non garanzia di ranking nelle UI consumer."
                 ),
             },
         ],
         "workflow": [
             {
-                "title": _("Indice DDD→AAA"),
+                "title": _("CVI (Centropic Visibility Index)"),
                 "body": _(
-                    "Leggi la lettera: DDD è critico, AAA è top. Mira a salire di almeno un grado tra un re-scan e l’altro."
+                    "Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un grado CVI tra un re-scan e l’altro."
                 ),
             },
             {
                 "title": _("Score AIO / GEO"),
                 "body": _(
-                    "Sotto 60 = intervento prioritario. AIO e GEO vanno letti insieme al SoV, non isolati."
+                    "Componenti del CVI. Sotto 60 = intervento prioritario. Poi campiona la citation share — non isolare i numeri."
                 ),
             },
             {
@@ -590,7 +600,7 @@ def site_guide_payload() -> dict[str, Any]:
             },
             {
                 "href": "/guide/score-vs-sov",
-                "label": _("Score AIO/GEO vs SoV"),
+                "label": _("CVI · score · citation share"),
             },
             {"href": "/faq", "label": "FAQ"},
             {"href": "/prodotto", "label": _("Prodotto")},

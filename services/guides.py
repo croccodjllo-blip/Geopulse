@@ -32,9 +32,9 @@ def _guide_metodologia() -> dict[str, Any]:
     return {
         "path": "/metodologia",
         "eyebrow": _("Metodologia"),
-        "title": _("Come Centropic misura AIO e GEO"),
+        "title": _("Come Centropic misura il CVI"),
         "description": _(
-            "Metodologia Centropic: predisposizione strutturale del brand per i crawler generativi, score AIO/GEO, badge Misurato/Stimato e SoV measured."
+            "Metodologia Centropic: Centropic Visibility Index (CVI), score AIO/GEO, badge Misurato/Stimato e citation share campionata."
         ),
         "lede": _(
             "L’IA non può citare ciò che non riesce a leggere. Centropic rende il brand visibile e interpretabile "
@@ -43,18 +43,24 @@ def _guide_metodologia() -> dict[str, Any]:
         "body": _(
             """
   <section class="page-section">
-    <h2 class="page-section__title">1. Cosa controlliamo (predisposizione strutturale)</h2>
+    <h2 class="page-section__title">1. Centropic Visibility Index (CVI)</h2>
+    <p class="lede">Il <strong>CVI</strong> è la metrica proprietaria di Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi generativi.</p>
+    <p class="lede">Formula operativa: media di <strong>AIO</strong> (leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui findings critical/warn. Non è un ranking pubblicitario né una garanzia di menzione: è lo standard Centropic per confrontare domini e nel tempo.</p>
+    <p class="lede">Quando un marketer chiede <em>«qual è il tuo CVI?»</em> sta chiedendo questa predisposizione strutturale — non impression PR tradizionali.</p>
+  </section>
+  <section class="page-section">
+    <h2 class="page-section__title">2. Cosa controlliamo (predisposizione strutturale)</h2>
     <p class="lede">Probe HTTP e parsing HTML sullo stesso dominio: title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, crawl multi-pagina. Questi finding possono essere badge <em>Misurato</em>.</p>
     <p class="lede">Centropic registra entity (Organization, sameAs, contatti), citabilità del copy e policy verso bot AI (GPTBot, ClaudeBot, PerplexityBot, Google-Extended) — il perimetro che i modelli devono poter leggere senza ambiguità.</p>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">2. Score AIO / GEO (diagnostica di leggibilità)</h2>
-    <p class="lede">Score compositi AIO/GEO e indice DDD→AAA quantificano quanto il sito è machine-readable: non “promettono” un posto in classifica, misurano se i crawler generativi trovano segnali chiari da usare.</p>
+    <h2 class="page-section__title">3. Score AIO / GEO (componenti del CVI)</h2>
+    <p class="lede"><strong>AIO (AI-Driven Visibility)</strong> e <strong>GEO (Generative Engine Optimization)</strong> sono i due sotto-score 0–100 che alimentano il CVI: leggibilità per sistemi IA e citabilità / policy crawler.</p>
     <p class="lede">Il breakdown per engine (ChatGPT, Gemini, Claude, Perplexity, Grok, Azure AI) parte come <em>Stimato</em> sulla struttura osservata; su Plus/Business il citation monitor può aggiungere menzioni <em>Misurate</em>.</p>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">3. SoV measured (Plus / Business)</h2>
-    <p class="lede">Con connector API configurati, Centropic invia un prompt bank e conta le menzioni del brand nelle risposte — un campione operativo per vedere se la struttura sta entrando nelle risposte, oltre alla sola diagnosi sul sito.</p>
+    <h2 class="page-section__title">4. Citation share (campione stocastico — Plus / Business)</h2>
+    <p class="lede">Le risposte LLM sono stocastiche: non “Share of Voice” pubblicitaria (impression/PR), ma un <strong>campione di menzioni</strong> su prompt controllati. In prodotto resta l’etichetta SoV Misurato per continuità; metodologicamente è citation share campionata.</p>
     <ul class="plain-list">
       <li>Prompt personalizzabili in Impostazioni (prompt bank).</li>
       <li>Evidence badge <em>Misurato</em> per engine disponibili.</li>
@@ -62,21 +68,21 @@ def _guide_metodologia() -> dict[str, Any]:
     </ul>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">4. Trasparenza: la nostra promessa</h2>
+    <h2 class="page-section__title">5. Trasparenza: la nostra promessa</h2>
     <ul class="plain-list">
       <li><strong>Garantiamo la predisposizione:</strong> brand e pagine rese leggibili, strutturate e raggiungibili dai crawler generativi — così l’IA ha materiale vero da citare, non vuoti da inventare.</li>
       <li>Il pack artifact è pronto per la pubblicazione; il go-live sul tuo stack resta sotto il tuo controllo (download, Edge o connector).</li>
-      <li>SoV measured è su <strong>Plus e Business</strong> (e Admin) con connector API attivi: misura campioni di menzione, non vende “posizione garantita” nelle UI di terzi.</li>
-      <li>GEO in Centropic non significa GIS; AIO non significa All-in-One.</li>
+      <li>Citation share measured è su <strong>Plus e Business</strong> (e Admin) con connector API attivi: misura campioni di menzione, non vende “posizione garantita” nelle UI di terzi.</li>
+      <li>GEO in Centropic non significa GIS; AIO non significa All-in-One; CVI non è Domain Authority di terzi.</li>
     </ul>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">5. Approfondimenti</h2>
+    <h2 class="page-section__title">6. Approfondimenti</h2>
     <ul class="plain-list">
       <li><a href="/guida">Guida completa Centropic (servizi, analisi, glossario)</a></li>
       <li><a href="/guide/llms-txt">Guida llms.txt</a></li>
       <li><a href="/guide/schema-ai">Schema.org per answer engine</a></li>
-      <li><a href="/guide/score-vs-sov">Score AIO/GEO vs Share of Voice</a></li>
+      <li><a href="/guide/score-vs-sov">CVI, score AIO/GEO e citation share</a></li>
       <li><a href="/llms.txt">llms.txt pubblico di Centropic</a></li>
       <li><a href="/prodotto">Come funziona il prodotto</a></li>
     </ul>
@@ -182,28 +188,32 @@ def _guide_score_vs_sov() -> dict[str, Any]:
     return {
         "path": "/guide/score-vs-sov",
         "eyebrow": _("Guida"),
-        "title": _("Score AIO/GEO vs Share of Voice"),
+        "title": _("CVI, score AIO/GEO e citation share"),
         "description": _(
-            "Differenza tra score AIO/GEO (predisposizione strutturale) e Share of Voice per answer engine (proxy o measured) in Centropic."
+            "Centropic Visibility Index (CVI) vs sotto-score AIO/GEO e citation share campionata (SoV proxy/measured)."
         ),
         "lede": _(
-            "Due metriche: prima rendi il brand leggibile (score), poi misuri se la voce entra nelle risposte (SoV)."
+            "Tre livelli: CVI (standard proprietario), AIO/GEO (componenti), citation share (campione stocastico sulle risposte)."
         ),
         "body": _(
             """
   <section class="page-section">
-    <h2 class="page-section__title">Score AIO / GEO</h2>
-    <p class="lede">Indici 0–100 di predisposizione strutturale da crawl e probe. Badge Stimato sul compositario; i check di presenza file possono essere Misurato.</p>
+    <h2 class="page-section__title">Centropic Visibility Index (CVI)</h2>
+    <p class="lede">Il <strong>CVI</strong> è la metrica di categoria di Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale (AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e nel tempo.</p>
+  </section>
+  <section class="page-section">
+    <h2 class="page-section__title">Score AIO / GEO (componenti)</h2>
+    <p class="lede">Sotto-score 0–100 da crawl e probe. Badge Stimato sul compositario; i check di presenza file possono essere Misurato.</p>
     <p class="lede"><strong>AIO (AI-Driven Visibility)</strong> premia leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. <strong>GEO (Generative Engine Optimization)</strong> premia citabilità e policy crawler AI.</p>
   </section>
   <section class="page-section">
-    <h2 class="page-section__title">Share of Voice (SoV)</h2>
-    <p class="lede"><strong>Proxy</strong>: formula su AIO/GEO + robots osservato. <strong>Measured</strong>: campioni prompt su LLM (Plus/Business) con conteggio menzioni brand. Non confondere i due.</p>
-    <p class="lede">Per alzare SoV measured: rafforza entity pubblica (llms.txt, Organization, about), pubblica contenuti citabili, amplia il prompt bank con domande che il tuo mercato pone davvero.</p>
+    <h2 class="page-section__title">Citation share (non SoV pubblicitaria)</h2>
+    <p class="lede">Nei media tradizionali “Share of Voice” conta impression e PR. Qui misuriamo <strong>menzioni in risposte generative</strong> — stocastiche, prompt-dipendenti. In UI resta l’etichetta SoV per continuità; in metodologia è citation share.</p>
+    <p class="lede"><strong>Proxy</strong>: formula su AIO/GEO + robots. <strong>Measured</strong> (Plus/Business): campioni prompt su LLM con conteggio menzioni brand. Non confondere i due.</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Come leggerli insieme</h2>
-    <p class="lede">Prima chiudi i gap di leggibilità (score): l’IA non cita ciò che non legge. Poi misura la voce (SoV). Score alto è controllo del dato; SoV measured è il campione sulle risposte.</p>
+    <p class="lede">Alza il <strong>CVI</strong> chiudendo i gap AIO/GEO: l’IA non cita ciò che non legge. Poi campiona la citation share. CVI alto = controllo del dato; measured = campione sulle risposte.</p>
     <p class="lede">Centropic mostra sempre l’evidence badge: Stimato, Misto o Misurato. Dettagli in <a href="/metodologia">metodologia</a> e nel prodotto su <a href="/prodotto">/prodotto</a>.</p>
   </section>
 """

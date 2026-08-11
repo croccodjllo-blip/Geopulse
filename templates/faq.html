@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('FAQ') }}{% endblock %}
-{% block meta_description %}{{ _('FAQ Centropic: AIO/GEO, Free vs Plus vs Business, SoV Misurato, Edge Signals, API e white-label.') }}{% endblock %}
+{% block meta_description %}{{ _('FAQ Centropic: CVI, AIO/GEO, Free vs Plus vs Business, citation share, Edge Signals, API e white-label.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_faq.html" %}
 {% endblock %}
@@ -17,8 +17,17 @@
 
   <div class="faq-list">
     <details class="faq-item" open>
+      <summary>{{ _('Cos’è il CVI (Centropic Visibility Index)?') }}</summary>
+      <p>
+        {{ _('Il') }} <strong>CVI</strong> {{ _('è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È lo standard da confrontare tra brand — non Domain Authority di terzi, non Share of Voice pubblicitaria.') }}
+        <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>.
+      </p>
+    </details>
+
+    <details class="faq-item">
       <summary>{{ _('Cos’è AIO e GEO in Centropic?') }}</summary>
       <p>
+        {{ _('Componenti del CVI.') }}
         <strong>AIO</strong> = <em>AI-Driven Visibility</em>: {{ _('quanto i modelli e i crawler IA comprendono e “vedono” il tuo brand.') }}
         <strong>GEO</strong> = <em>Generative Engine Optimization</em>: {{ _('quanto sei ottimizzato per essere citato nelle risposte generate.') }}
       </p>
@@ -42,16 +51,16 @@
     </details>
 
     <details class="faq-item">
-      <summary>{{ _('Gli score AIO e GEO sono misurazioni live sulle IA?') }}</summary>
+      <summary>{{ _('CVI e score AIO/GEO sono misurazioni live sulle IA?') }}</summary>
       <p>
-        {{ _('Misurano la predisposizione strutturale: quanto brand e pagine sono leggibili dai crawler generativi. Di default il compositario è Stimato; i file osservati e, su Plus/Business, i probe LLM possono essere Misurati. Non vendiamo un ranking fisso nelle UI di terzi — ti diamo il controllo del dato che l’IA deve poter leggere.') }}
+        {{ _('Il CVI misura la predisposizione strutturale: quanto brand e pagine sono leggibili dai crawler generativi. Di default è Stimato; i file osservati e, su Plus/Business, i probe LLM (citation share) possono essere Misurati. Non vendiamo un ranking fisso nelle UI di terzi — ti diamo il controllo del dato che l’IA deve poter leggere.') }}
       </p>
     </details>
 
     <details class="faq-item">
       <summary>{{ _('Cosa ricevo dopo un’analisi?') }}</summary>
       <p>
-        {{ _('Score AIO/GEO, findings prioritizzati e pack (llms.txt, JSON-LD, meta, robots). Su Business anche export white-label.') }}
+        {{ _('CVI (lettera + score), componenti AIO/GEO, findings prioritizzati e pack (llms.txt, JSON-LD, meta, robots). Su Business anche export white-label.') }}
       </p>
     </details>
 

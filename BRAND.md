@@ -65,6 +65,11 @@ Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satelli
 
 Do not use Roboto, Sora, or Plus Jakarta Sans.
 
+## Proprietary metric (category)
+- **CVI — Centropic Visibility Index**: flagship product metric (composite 0–100 + letter **DDD→AAA** from AIO+GEO with finding penalties). User-facing name for the former “Indice”. Do not conflate with Moz DA / Ahrefs DR.
+- **AIO / GEO**: keep as named *components* of CVI (not replacements for CVI).
+- **Citation share**: user-facing framing for generative mention samples (stochastic). Legacy UI may still say SoV; methodology copy should prefer “citation share” over advertising “Share of Voice”.
+
 ## Dashboard components
 - **Stat tiles** (`templates/partials/ui_metric.html`): circular gradient icon badge (`--plan-accent-deep` → `--plan-accent`) + big Inter number + uppercase label/hint. Pass `icon='aio'|'geo'|'findings'` when including. No fabricated deltas/sparklines — Centropic never shows a trend it hasn't actually measured.
 - **Engine radar** (`services/engine_breakdown.py::_radar_geometry`, rendered in `templates/dashboard.html` inside the SoV panel): server-computed N-axis polygon from real per-engine `propensity` — no client-side JS trig needed. Colored via `var(--plan-accent)`. Reuse this helper if another panel needs a radar/spider view over per-engine data.

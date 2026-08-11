@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Esempio report') }} — Centropic{% endblock %}
-{% block meta_description %}{{ _('Esempio di report Centropic: score AIO/GEO, finding critici e pack artifact per essere citati dalle IA. Report anonimizzato, stessi moduli della dashboard.') }}{% endblock %}
+{% block meta_description %}{{ _('Esempio di report Centropic: CVI, score AIO/GEO, finding critici e pack artifact per essere citati dalle IA. Report anonimizzato, stessi moduli della dashboard.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -25,8 +25,8 @@
 
   <section class="page-section">
     <h2 class="page-section__title">{{ _('Sintesi') }}</h2>
-    <p class="lede"><strong>{{ report.domain }}</strong> · {{ _('Indice') }} <code>{{ report.rating }}</code>
-      · AIO {{ report.aio_score }} · GEO {{ report.geo_score }} · SoV {{ report.brand_sov }}% ({{ report.evidence }})</p>
+    <p class="lede"><strong>{{ report.domain }}</strong> · {{ _('CVI') }} <code>{{ report.rating }}</code>
+      · AIO {{ report.aio_score }} · GEO {{ report.geo_score }} · {{ _('Citation share') }} {{ report.brand_sov }}% ({{ report.evidence }})</p>
     <p class="lede">{{ report.summary }}</p>
   </section>
 

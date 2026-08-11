@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prodotto') }}{% endblock %}
-{% block meta_description %}{{ _('Centropic: crawl, score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label.') }}{% endblock %}
+{% block meta_description %}{{ _('Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
 {% endblock %}
@@ -16,9 +16,10 @@
     <p class="eyebrow">{{ _('Prodotto') }}</p>
     <h1 class="h-display page-intro__title">{{ _('Il segnale che le IA leggono') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Una piattaforma di Signal Intelligence per') }} <strong>AI-Driven Visibility (AIO)</strong>
-      {{ _('e') }} <strong>Generative Engine Optimization (GEO)</strong>:
-      {{ _('diagnosi del dominio, artifact pubblicabili, loop continuo — scalato per founder, team e agenzie.') }}
+      {{ _('Misuriamo il') }} <strong>{{ _('Centropic Visibility Index (CVI)') }}</strong>
+      {{ _('— la predisposizione del brand a essere letto e citato dai sistemi generativi — con componenti') }}
+      <strong>AIO</strong> {{ _('e') }} <strong>GEO</strong>,
+      {{ _('diagnosi del dominio, artifact pubblicabili e loop continuo.') }}
     </p>
   </header>
 
@@ -26,13 +27,14 @@
     <h2 class="page-section__title">{{ _('Come funziona') }}</h2>
     <p class="lede">
       {{ _('Crawl del dominio, probe di') }} <code>/llms.txt</code>, <code>/robots.txt</code>,
-      <code>/sitemap.xml</code>, <code>/ai.txt</code> {{ _('e diagnosi di predisposizione strutturale per i crawler generativi. Di default il SoV è') }}
-      <strong>{{ _('Stimato (proxy)') }}</strong>; {{ _('su Plus e Business, con API LLM, il') }}
+      <code>/sitemap.xml</code>, <code>/ai.txt</code> {{ _('e calcolo del CVI dalla predisposizione strutturale. La citation share (campione di menzioni) di default è') }}
+      <strong>{{ _('Stimata (proxy)') }}</strong>; {{ _('su Plus e Business, con API LLM, il') }}
       <strong>{{ _('citation monitor') }}</strong> {{ _('aggiunge menzioni Misurate.') }}
       <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>.
     </p>
     <ul class="plain-list">
-      <li>{{ _('Score AIO/GEO di leggibilità e citabilità strutturale') }}</li>
+      <li>{{ _('CVI (0–100 + lettera DDD→AAA) — metrica proprietaria Centropic') }}</li>
+      <li>{{ _('Score AIO/GEO come componenti di leggibilità e citabilità') }}</li>
       <li>{{ _('Findings prioritizzati (entity, citability, schema, publish verify)') }}</li>
       <li>{{ _('Pack: un solo HTML con tutti i fix — download / Edge / email') }}</li>
       <li>{{ _('Badge Stimato / Misurato su ogni finding') }}</li>

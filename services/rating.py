@@ -1,4 +1,8 @@
-"""Indice di risultato GeoPulse: da DDD (peggiore) ad AAA (migliore)."""
+"""Centropic Visibility Index (CVI): composite grade DDD (worst) → AAA (best).
+
+CVI is the proprietary umbrella metric: composite of AIO + GEO scores with
+finding penalties. Letter codes stay DDD→AAA; user-facing name is CVI.
+"""
 
 from __future__ import annotations
 
@@ -45,7 +49,7 @@ def composite_score(
 
 
 def grade_from_score(score: int) -> dict[str, Any]:
-    """Restituisce l’indice lettera e metadati per lo score composito."""
+    """Return CVI letter grade + metadata for the composite score."""
     score = max(0, min(100, int(score)))
     selected = RATING_SCALE[0]
     for code, minimum, label in RATING_SCALE:
@@ -66,6 +70,9 @@ def grade_from_score(score: int) -> dict[str, Any]:
         "scale": RATING_ORDER,
         "is_top": code == "AAA",
         "is_low": code in {"DDD", "DD", "D"},
+        # Proprietary product name for the composite (category metric).
+        "metric": "CVI",
+        "metric_name": "Centropic Visibility Index",
     }
 
 
