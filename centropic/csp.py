@@ -25,21 +25,26 @@ def build_csp_header(
     analytics: bool,
     adsense: bool,
 ) -> str:
-    """Prefer nonce-based script-src; keep strict-dynamic for modern browsers."""
+    """Prefer nonce-based script-src; keep strict-dynamic for modern browsers.
+
+    Styles use CSP3 split directives:
+    - ``style-src-elem``: ``<style>`` / linked stylesheets require nonce/'self'
+    - ``style-src-attr``: keep ``'unsafe-inline'`` for dynamic CSS variables
+      (``style="--aio: …"``) until those move to data-attrs + stylesheet rules
+    """
     script_src = [
         "'self'",
         f"'nonce-{nonce}'",
         "'strict-dynamic'",
     ]
-    # Legacy browsers without strict-dynamic still need a fallback for Paddle CDN.
-    # Prefer hash/nonce over blanket unsafe-inline. Keep unsafe-inline for
-    # attribute styles until templates migrate; nonce covers <style> blocks.
     style_src = [
         "'self'",
         f"'nonce-{nonce}'",
-        "'unsafe-inline'",
         "https://fonts.googleapis.com",
     ]
+    style_src_elem = list(style_src)
+    # Attribute styles (dashboard meters, SoV rings) still need this.
+    style_src_attr = ["'unsafe-inline'"]
     img_src = ["'self'", "data:"]
     connect_src = ["'self'"]
     frame_src = ["'self'"]
@@ -109,6 +114,8 @@ def build_csp_header(
         "default-src 'self'; "
         f"script-src {uniq(script_src)}; "
         f"style-src {uniq(style_src)}; "
+        f"style-src-elem {uniq(style_src_elem)}; "
+        f"style-src-attr {uniq(style_src_attr)}; "
         f"font-src {uniq(font_src)}; "
         f"img-src {uniq(img_src)}; "
         f"connect-src {uniq(connect_src)}; "

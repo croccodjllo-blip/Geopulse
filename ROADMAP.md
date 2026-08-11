@@ -170,7 +170,8 @@ Source of truth: `services/entitlements.py`.
 **Done quando:** un regressione pipeline viene presa dai test prima del deploy.
 
 ### 2.4 Security residuale (mantenere il bar)
-- [ ] CSP: ridurre `'unsafe-inline'` dove fattibile (nonce/hash)
+- [x] CSP: `style-src` senza blanket `'unsafe-inline'` (CSP3 `style-src-elem` + nonce; `style-src-attr` ancora unsafe-inline per CSS vars dinamiche)
+- [ ] CSP: eliminare anche `style-src-attr 'unsafe-inline'` (migrare `style="--var"` → data-attr + CSS)
 - [ ] Pin dipendenze produzione (lockfile)
 - [ ] Review periodica `security.txt` + pentest light auth/API/Edge
 - [ ] Segreti: rotazione `FLASK_SECRET_KEY` / API keys documentata

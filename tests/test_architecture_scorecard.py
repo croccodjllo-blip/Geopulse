@@ -48,6 +48,23 @@ def test_csp_uses_nonce_not_blanket_unsafe_inline_script():
     assert "'unsafe-inline'" not in script_part
 
 
+def test_csp_style_src_split_no_blanket_unsafe_inline():
+    header = build_csp_header(
+        nonce="styleNonce99",
+        paddle=False,
+        analytics=False,
+        adsense=False,
+    )
+    style_part = header.split("style-src ")[1].split(";")[0]
+    elem_part = header.split("style-src-elem ")[1].split(";")[0]
+    attr_part = header.split("style-src-attr ")[1].split(";")[0]
+    assert "'unsafe-inline'" not in style_part
+    assert "'unsafe-inline'" not in elem_part
+    assert "nonce-styleNonce99" in elem_part
+    # Dynamic CSS variables (dashboard meters) still need attr allow — scoped.
+    assert "'unsafe-inline'" in attr_part
+
+
 def test_metrics_counters():
     before = snapshot()["counters"].get("arch.test", 0)
     incr("arch.test", 2)
