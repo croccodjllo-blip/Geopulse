@@ -371,7 +371,7 @@
                   <span class="evidence-badge sov-panel__badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
                 </div>
 
-                <div class="sov-hero" aria-label="{{ _('Brand SoV') }}">
+                <div class="sov-hero" aria-label="{{ _('Citation share brand') }}">
                   <div class="sov-hero__ring" style="--sov: {{ engine_breakdown.brand_sov }};">
                     <svg class="sov-hero__svg" viewBox="0 0 120 120" aria-hidden="true">
                       <defs>
@@ -388,7 +388,7 @@
                     </svg>
                     <div class="sov-hero__value">
                       <span class="sov-hero__n">{{ engine_breakdown.brand_sov }}%</span>
-                      <span class="sov-hero__l">Brand SoV</span>
+                      <span class="sov-hero__l">{{ _('Citation share') }}</span>
                     </div>
                   </div>
                   {% if engine_breakdown.has_competitors %}
@@ -399,38 +399,39 @@
                   </ul>
                   {% endif %}
                 </div>
-
-                {% if engine_breakdown.columns and engine_breakdown.columns.bars %}
-                <div class="sov-columns" role="img" aria-label="{{ _('Propensity per engine') }}">
-                  <svg
-                    class="sov-columns__svg"
-                    viewBox="0 0 {{ engine_breakdown.columns.width }} {{ engine_breakdown.columns.height }}"
-                    preserveAspectRatio="xMidYMid meet"
-                  >
-                    <line
-                      class="sov-columns__baseline"
-                      x1="{{ engine_breakdown.columns.pad_x }}"
-                      x2="{{ engine_breakdown.columns.width - engine_breakdown.columns.pad_x }}"
-                      y1="{{ engine_breakdown.columns.baseline }}"
-                      y2="{{ engine_breakdown.columns.baseline }}"
-                    />
-                    {% for b in engine_breakdown.columns.bars %}
-                    <rect
-                      class="sov-columns__bar"
-                      x="{{ b.x }}"
-                      y="{{ b.y }}"
-                      width="{{ b.w }}"
-                      height="{{ b.h }}"
-                      rx="3"
-                      style="--accent: {{ b.accent }};"
-                    />
-                    <text class="sov-columns__value" x="{{ b.cx }}" y="{{ b.vy }}" text-anchor="middle">{{ b.value }}</text>
-                    <text class="sov-columns__label" x="{{ b.cx }}" y="{{ b.ly }}" text-anchor="middle">{{ b.label }}</text>
-                    {% endfor %}
-                  </svg>
-                </div>
-                {% endif %}
               </header>
+
+              {% if engine_breakdown.columns and engine_breakdown.columns.bars %}
+              <div class="sov-columns" role="img" aria-label="{{ _('Propensity per engine') }}">
+                <p class="sov-compose__label">{{ _('Propensity snapshot') }}</p>
+                <svg
+                  class="sov-columns__svg"
+                  viewBox="0 0 {{ engine_breakdown.columns.width }} {{ engine_breakdown.columns.height }}"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  <line
+                    class="sov-columns__baseline"
+                    x1="{{ engine_breakdown.columns.pad_x }}"
+                    x2="{{ engine_breakdown.columns.width - engine_breakdown.columns.pad_x }}"
+                    y1="{{ engine_breakdown.columns.baseline }}"
+                    y2="{{ engine_breakdown.columns.baseline }}"
+                  />
+                  {% for b in engine_breakdown.columns.bars %}
+                  <rect
+                    class="sov-columns__bar"
+                    x="{{ b.x }}"
+                    y="{{ b.y }}"
+                    width="{{ b.w }}"
+                    height="{{ b.h }}"
+                    rx="3"
+                    style="--accent: {{ b.accent }};"
+                  />
+                  <text class="sov-columns__value" x="{{ b.cx }}" y="{{ b.vy }}" text-anchor="middle">{{ b.value }}</text>
+                  <text class="sov-columns__label" x="{{ b.cx }}" y="{{ b.ly }}" text-anchor="middle">{{ b.label }}</text>
+                  {% endfor %}
+                </svg>
+              </div>
+              {% endif %}
 
               <div class="sov-compose">
                 <p class="sov-compose__label">{{ _('Composizione per engine') }}</p>
@@ -477,42 +478,71 @@
               {% endif %}
 
               <div class="sov-engines">
-                <p class="sov-compose__label">{{ _('Propensity per engine') }}</p>
-                <ul class="engine-bars" role="list">
-                  {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
-                  <li class="engine-bar" data-engine="{{ e.id }}" data-band="{{ e.band }}" style="--accent: {{ e.accent }}; --p: {{ e.propensity }};">
-                    <div class="engine-bar__meta">
-                      <strong>{{ e.label }}</strong>
-                      <span class="engine-bar__vendor">{{ e.vendor }}</span>
-                      {% if e.access == 'blocked' %}
-                      <span class="engine-bar__access" data-access="blocked">{{ _('bot blocked') }}</span>
-                      {% elif e.access == 'allow' %}
-                      <span class="engine-bar__access" data-access="allow">{{ _('bot allow') }}</span>
+                <p class="sov-compose__label">{{ _('AI Engine Breakdown') }}</p>
+                <div
+                  class="sov-table"
+                  role="table"
+                  aria-label="{{ _('Propensity e citation share per engine') }}"
+                >
+                  <div class="sov-table__head" role="row">
+                    <span class="sov-table__h" role="columnheader">{{ _('Engine') }}</span>
+                    <span class="sov-table__h" role="columnheader">{{ _('Evidence') }}</span>
+                    <span class="sov-table__h sov-table__h--bar" role="columnheader">{{ _('Propensity') }}</span>
+                    <span class="sov-table__h sov-table__h--num" role="columnheader">{{ _('Score') }}</span>
+                    <span class="sov-table__h sov-table__h--num" role="columnheader">{{ _('Share') }}</span>
+                  </div>
+                  <ul class="engine-bars sov-table__body" role="rowgroup">
+                    {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
+                    <li
+                      class="engine-bar sov-table__row"
+                      role="row"
+                      data-engine="{{ e.id }}"
+                      data-band="{{ e.band }}"
+                      style="--accent: {{ e.accent }}; --p: {{ e.propensity }};"
+                    >
+                      <div class="sov-table__engine" role="cell">
+                        <span class="sov-table__swatch" aria-hidden="true"></span>
+                        <div class="sov-table__identity">
+                          <strong>{{ e.label }}</strong>
+                          <span class="engine-bar__vendor">{{ e.vendor }}</span>
+                        </div>
+                      </div>
+                      <div class="sov-table__status" role="cell">
+                        {% if e.evidence == 'measured' %}
+                        <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}</span>
+                        {% elif e.evidence == 'unavailable' %}
+                        <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('N/D') }}</span>
+                        {% else %}
+                        <span class="evidence-badge" data-evidence="estimated">{{ _('Stimato') }}</span>
+                        {% endif %}
+                        {% if e.access == 'blocked' %}
+                        <span class="engine-bar__access" data-access="blocked">{{ _('blocked') }}</span>
+                        {% elif e.access == 'allow' %}
+                        <span class="engine-bar__access" data-access="allow">{{ _('allow') }}</span>
+                        {% endif %}
+                        {% if e.evidence == 'measured' and (e.mention_rate is not none or e.samples is not none) %}
+                        <span class="sov-table__sample">
+                          {% if e.mention_rate is not none %}{{ e.mention_rate }}%{% endif %}
+                          {% if e.samples is not none %} · {{ e.samples }}{% endif %}
+                        </span>
+                        {% endif %}
+                      </div>
+                      <div class="engine-bar__track sov-table__track" role="cell" aria-hidden="true">
+                        <span class="engine-bar__fill"></span>
+                      </div>
+                      <div class="engine-bar__score sov-table__score" role="cell">
+                        <span class="engine-bar__n">{{ e.propensity }}</span><span class="engine-bar__unit">/100</span>
+                      </div>
+                      <div class="engine-bar__share sov-table__share" role="cell" title="{{ _('Share') }}">
+                        {{ e.share }}%
+                      </div>
+                      {% if e.evidence == 'unavailable' and e.reason %}
+                      <p class="engine-bar__hint sov-table__hint" role="cell">{{ e.reason }}</p>
                       {% endif %}
-                      {% if e.evidence == 'measured' %}
-                      <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}{% if e.mention_rate is not none %} · {{ e.mention_rate }}%{% endif %}{% if e.samples is not none %} · {{ e.samples }} {{ _('campioni') }}{% endif %}</span>
-                      {% elif e.evidence == 'unavailable' %}
-                      <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('Non disponibile') }}</span>
-                      {% else %}
-                      <span class="evidence-badge" data-evidence="estimated">{{ _('Stimato') }}</span>
-                      {% endif %}
-                    </div>
-                    <div class="engine-bar__track" aria-hidden="true">
-                      <span class="engine-bar__fill"></span>
-                    </div>
-                    <div class="engine-bar__score">
-                      <span class="engine-bar__n">{{ e.propensity }}</span>
-                      <span class="engine-bar__unit">/100</span>
-                    </div>
-                    <div class="engine-bar__share" title="{{ _('Share') }}">
-                      <span>{{ e.share }}%</span>
-                    </div>
-                    {% if e.evidence == 'unavailable' and e.reason %}
-                    <p class="engine-bar__hint">{{ e.reason }}</p>
-                    {% endif %}
-                  </li>
-                  {% endfor %}
-                </ul>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
 
               <p class="sov-panel__note">{{ engine_breakdown.note }}</p>
