@@ -16,11 +16,16 @@ from services.ssrf import UnsafeURLError, assert_public_http_url, resolve_public
 
 logger = logging.getLogger(__name__)
 
-JS_CRAWL_ENABLED = (os.getenv("JS_CRAWL_ENABLED") or "").strip() in {"1", "true", "yes"}
+def _env_enabled() -> bool:
+    return (os.getenv("JS_CRAWL_ENABLED") or "").strip().lower() in {"1", "true", "yes"}
+
+
+# Legacy alias (evaluated at import; prefer js_crawl_available() which re-reads env).
+JS_CRAWL_ENABLED = _env_enabled()
 
 
 def js_crawl_available() -> bool:
-    if not JS_CRAWL_ENABLED:
+    if not _env_enabled():
         return False
     try:
         import playwright  # noqa: F401
