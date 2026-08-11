@@ -46,12 +46,41 @@
       <span class="hero-accent">{{ _('ti citano') }}</span>
     </h1>
     <p class="lede hero-lede">
+<<<<<<< HEAD
       {{ _('Dal sito invisibile al brand leggibile dai crawler generativi — score, findings e pack in un’unica dashboard.') }}
+=======
+      {{ _('Inserisci il tuo dominio: vedi subito lo score AIO e le criticità. Account solo per sbloccare il report completo e i file di fix.') }}
+>>>>>>> fe4be45 (feat(plg): hero URL input → guest preview → register to unlock pack)
     </p>
-    <div class="cta-row">
-      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Inizia l’analisi') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('sample_report') }}">{{ _('Vedi un report') }}</a>
-    </div>
+    <form
+      class="hero-url-form"
+      method="post"
+      action="{{ url_for('preview_analyze_start') }}"
+      aria-label="{{ _('Analizza il tuo dominio') }}"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <label class="sr-only" for="hero-url">{{ _('URL del sito') }}</label>
+      <div class="hero-url-form__row">
+        <input
+          id="hero-url"
+          class="hero-url-form__input"
+          type="text"
+          name="url"
+          inputmode="url"
+          autocomplete="url"
+          required
+          maxlength="500"
+          placeholder="tuodominio.it"
+          spellcheck="false"
+        />
+        <button type="submit" class="btn btn-core hero-url-form__submit">{{ _('Analizza gratis') }}</button>
+      </div>
+      <p class="hero-url-form__hint">
+        {{ _('Anteprima immediata · niente carta') }}
+        ·
+        <a href="{{ url_for('sample_report') }}">{{ _('Vedi un report di esempio') }}</a>
+      </p>
+    </form>
   </div>
 
   <div class="hero-contrast" aria-label="{{ _('Anteprima dashboard: sito invisibile vs Centropic-Optimized') }}">

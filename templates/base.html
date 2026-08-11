@@ -9,6 +9,7 @@
       name="description"
       content="{% block meta_description %}{{ _('Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.') }}{% endblock %}"
     />
+    {% block robots_meta %}{% endblock %}
     {% if google_site_verification %}
     <meta name="google-site-verification" content="{{ google_site_verification }}" />
     {% endif %}
@@ -150,7 +151,7 @@
             <a href="{{ url_for('agencies') }}" class="{% if request.endpoint == 'agencies' %}is-active{% endif %}">{{ _('Agenzie') }}</a>
             <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
             <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
-            <a class="nav-cta" href="{{ url_for('register') }}">{{ _('Inizia gratis') }}</a>
+            <a class="nav-cta" href="{{ url_for('index') }}#hero-brand">{{ _('Analizza gratis') }}</a>
           {% endif %}
           <div class="lang-switch" data-lang-switch>
             <button

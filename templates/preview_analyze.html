@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Anteprima report') }} — {{ preview.domain }} · Centropic{% endblock %}
+{% block meta_description %}{{ _('Anteprima diagnosi AIO/GEO per') }} {{ preview.domain }}{{ _(': score e criticità. Registra un account Free per sbloccare il report completo e i file di fix.') }}{% endblock %}
+{% block body_class %}body-marketing{% endblock %}
+{% block robots_meta %}<meta name="robots" content="noindex,nofollow" />{% endblock %}
+
+{% block content %}
+<article class="page page--v2 page--preview" data-preview-token="{{ preview.token }}">
+  <header class="page-intro page-intro--v2">
+    <p class="eyebrow">{{ _('Anteprima gratuita') }}</p>
+    <h1 class="h-display page-intro__title">{{ preview.domain or _('Il tuo dominio') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Score e criticità strutturali — senza account. Il report completo e i file di fix (llms.txt, schema, pack) si sbloccano con la registrazione Free.') }}
+    </p>
+  </header>
+
+  <section class="page-section preview-status" id="preview-status" aria-live="polite">
+    {% if preview.status in ('pending', 'running') %}
+    <div class="preview-loading">
+      <p class="preview-loading__title">{{ _('Analisi in corso…') }}</p>
+      <p class="lede muted">{{ _('Stiamo leggendo i segnali pubblici del dominio (llms.txt, robots, schema, meta).') }}</p>
+      <div class="preview-loading__bar" aria-hidden="true"><span></span></div>
+    </div>
+    {% elif preview.status == 'error' %}
+    <div class="flash error">
+      {{ _('Non siamo riusciti ad analizzare questo URL.') }}
+      {% if preview.error %}<br /><span class="muted">{{ preview.error }}</span>{% endif %}
+    </div>
+    <p class="lede">
+      <a class="btn btn-core" href="{{ url_for('index') }}#hero-brand">{{ _('Riprova con un altro URL') }}</a>
+    </p>
+    {% else %}
+    <div class="preview-scores" id="preview-scores">
+      <div class="preview-score">
+        <span class="preview-score__label">AIO</span>
+        <strong class="preview-score__value">{{ preview.aio_score if preview.aio_score is not none else '—' }}</strong>
+      </div>
+      <div class="preview-score">
+        <span class="preview-score__label">GEO</span>
+        <strong class="preview-score__value">{{ preview.geo_score if preview.geo_score is not none else '—' }}</strong>
+      </div>
+      <div class="preview-score preview-score--muted">
+        <span class="preview-score__label">{{ _('Findings') }}</span>
+        <strong class="preview-score__value">{{ preview.findings_total }}</strong>
+      </div>
+    </div>
+
+    <h2 class="page-section__title">{{ _('2 criticità in evidenza') }}</h2>
+    {% if preview.findings_preview %}
+    <ol class="preview-findings">
+      {% for f in preview.findings_preview %}
+      <li>
+        <strong>{{ f.title }}</strong>
+        {% if f.detail %}<p class="muted">{{ f.detail }}</p>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="lede">{{ _('Nessuna criticità grave emersa dal crawl iniziale — il report completo mostra comunque score, segnali e pack.') }}</p>
+    {% endif %}
+
+    <aside class="preview-gate" aria-labelledby="preview-gate-title">
+      <h2 class="page-section__title" id="preview-gate-title">{{ _('Sblocca il report completo') }}</h2>
+      <p class="lede">
+        {{ _('Con un account Free ottieni findings completi, pack HTML e file di fix pronti da pubblicare') }}
+        (<code>llms.txt</code>, schema, robots) — {{ _('senza carta.') }}
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-core" href="{{ register_url }}">{{ _('Crea account e sblocca') }}</a>
+        <a class="btn btn-ghost-light" href="{{ url_for('sample_report') }}">{{ _('Vedi un report di esempio') }}</a>
+      </div>
+    </aside>
+    {% endif %}
+  </section>
+</article>
+
+{% if preview.status in ('pending', 'running') %}
+<script nonce="{{ csp_nonce }}">
+(function () {
+  var token = {{ preview.token|tojson }};
+  var statusUrl = {{ url_for('preview_analyze_status', token=preview.token)|tojson }};
+  var tries = 0;
+  var maxTries = 90;
+  function poll() {
+    tries += 1;
+    fetch(statusUrl, { credentials: "same-origin", headers: { Accept: "application/json" } })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok) return;
+        var st = (res.j && res.j.status) || "";
+        if (st === "done" || st === "error") {
+          window.location.reload();
+          return;
+        }
+        if (tries < maxTries) setTimeout(poll, 1500);
+      })
+      .catch(function () {
+        if (tries < maxTries) setTimeout(poll, 2000);
+      });
+  }
+  setTimeout(poll, 1200);
+})();
+</script>
+{% endif %}
+{% endblock %}
