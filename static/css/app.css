@@ -6456,7 +6456,7 @@ body.body-auth {
 .hero-visual__aurora {
   position: absolute;
   inset: -20% -10% auto;
-  z-index: 1;
+  z-index: 2;
   height: 75%;
   background:
     radial-gradient(ellipse 50% 45% at 65% 30%, rgba(201, 211, 221, 0.14) 0%, transparent 60%),
@@ -6469,7 +6469,7 @@ body.body-auth {
 .hero-visual__scan {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
   background:
     conic-gradient(from 200deg at 72% 48%, transparent 0deg, rgba(201, 211, 221, 0.07) 28deg, transparent 70deg);
@@ -6491,7 +6491,7 @@ body.body-auth {
 .hero-visual__field {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
