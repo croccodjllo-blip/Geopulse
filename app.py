@@ -13,6 +13,8 @@ import math
 import os
 import re
 import secrets
+import subprocess
+import sys
 import threading
 from datetime import datetime, timedelta, timezone
 from functools import wraps
@@ -2318,7 +2320,34 @@ def process_pending_analyze_jobs(
 
 
 def kick_analyze_worker() -> None:
-    """Avvia un worker one-shot in background (daemon)."""
+    """Start a one-shot analyze worker that survives gunicorn reloads.
+
+    Prefer an out-of-process ``scripts/analyze_worker.py`` (same entrypoint as the
+    systemd timer). In-process daemon threads die on every ``systemctl restart
+    aio-bot`` / deploy and leave partially-billed jobs stuck in ``running`` until
+    the heartbeat reclaim path permanently fails them.
+    """
+    worker = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "analyze_worker.py")
+    if os.path.isfile(worker):
+        try:
+            env = os.environ.copy()
+            # Detach from the gunicorn worker session so SIGTERM on reload does
+            # not tear down an in-flight measured SoV / pack run.
+            subprocess.Popen(
+                [sys.executable, worker, "--limit", "1"],
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                env=env,
+                start_new_session=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+            )
+            return
+        except Exception:
+            app.logger.exception(
+                "out-of-process analyze kick failed; falling back to in-process thread"
+            )
 
     def _run() -> None:
         try:

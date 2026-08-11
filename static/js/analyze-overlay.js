@@ -237,7 +237,7 @@
     if (this.desc) {
       this.desc.textContent =
         opts.desc ||
-        "Lettura dei segnali pubblici del dominio. Resta su questa pagina.";
+        "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina.";
     }
     this._stepIdx = 0;
     this._progress = 0;
@@ -245,8 +245,11 @@
     this._serverPct = null;
     this._etaSeconds = null;
     this.setPercent(0);
-    this.setEta(opts.etaLabel || "Stima: 30–90 secondi");
-    this.setPhase(opts.phase || "pending", opts.hint || "Di solito 30–90 secondi.");
+    this.setEta(opts.etaLabel || "Stima: 1–3 minuti con SoV measured");
+    this.setPhase(
+      opts.phase || "pending",
+      opts.hint || "Di solito 30–90 s; con SoV measured fino a qualche minuto."
+    );
     this.openDialog();
     this._stopTimers();
     var self = this;

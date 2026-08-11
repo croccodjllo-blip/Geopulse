@@ -30,7 +30,9 @@ def estimate_total_seconds(
     # Seed scrape + root probes + scoring + pack
     base = 14
     crawl = 0 if pages <= 1 else int(5 + (pages - 1) * 1.15)
-    measured = 28 if run_measured else 0
+    # Measured SoV probes several engines (often 8 prompts each). Wall-clock is
+    # parallelized but still commonly 45–90s beyond crawl+pack.
+    measured = 70 if run_measured else 0
     competitors = max(0, int(competitor_count)) * 6
     return max(20, base + crawl + measured + competitors)
 
@@ -147,7 +149,7 @@ def compute_analyze_eta(
             if rate > 0.05:
                 left_pages = max(0, target - done)
                 pace_rem = left_pages / rate
-                post_crawl = 12 + (28 if run_measured else 8)
+                post_crawl = 12 + (70 if run_measured else 8)
                 remaining = max(8, int(0.55 * remaining + 0.45 * (pace_rem + post_crawl)))
     else:
         fraction = min(0.9, elapsed / max(total, 1))
