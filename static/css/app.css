@@ -1022,6 +1022,20 @@ body.app-body:not(.body-dash) {
 
 .section-band--wide { width: min(820px, calc(100% - 2.5rem)); }
 
+/* Full marketing page width (align with --max-w shell) */
+.section-band--page {
+  width: min(var(--max-w), calc(100% - 2.5rem));
+}
+.section-band--page h2 {
+  max-width: 28ch;
+}
+.section-band--page .lede--page {
+  max-width: 68ch;
+  font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--ink-soft, rgba(245, 247, 250, 0.72));
+}
+
 .section-band + .section-band {
   border-top: 1px solid var(--border);
 }
