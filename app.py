@@ -164,6 +164,10 @@ from services.jobs import (
     reclaim_stale_jobs,
     release_stranded_holds,
 )
+from services.job_billing_recovery import (
+    clear_paid_alert_settings,
+    refund_failed_job_billing,
+)
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
 from services.security import (
@@ -1970,16 +1974,30 @@ def process_pending_analyze_jobs(
     def _on_abandon(abandoned_job: AnalysisJob) -> None:
         """Release credit hold when a stale job is permanently failed."""
         held = int(getattr(abandoned_job, "held_cents", 0) or 0)
-        if held <= 0:
-            abandoned_job.held_cents = 0
-            return
         owner = db.session.get(User, abandoned_job.user_id)
-        release_job_hold(db.session, owner, abandoned_job)
-        app.logger.warning(
-            "Released hold %s cent for abandoned job %s",
-            held,
-            abandoned_job.id,
-        )
+        if held > 0 and owner is not None:
+            release_job_hold(db.session, owner, abandoned_job)
+            app.logger.warning(
+                "Released hold %s cent for abandoned job %s",
+                held,
+                abandoned_job.id,
+            )
+        else:
+            abandoned_job.held_cents = 0
+        if owner is not None:
+            try:
+                refund_failed_job_billing(
+                    db.session,
+                    CreditLedger,
+                    owner,
+                    abandoned_job,
+                    SiteAnalysis=SiteAnalysis,
+                    topup_credit_fn=topup_credit,
+                )
+            except Exception:
+                app.logger.exception(
+                    "abandoned job refund failed job=%s", abandoned_job.id
+                )
 
     for _ in range(max(1, limit)):
         job = claim_next_job(
@@ -2224,6 +2242,19 @@ def process_pending_analyze_jobs(
                 ):
                     if user is not None:
                         release_job_hold(db.session, user, job)
+                        try:
+                            refund_failed_job_billing(
+                                db.session,
+                                CreditLedger,
+                                user,
+                                job,
+                                SiteAnalysis=SiteAnalysis,
+                                topup_credit_fn=topup_credit,
+                            )
+                        except Exception:
+                            app.logger.exception(
+                                "job billing refund failed job=%s", job.id
+                            )
                         db.session.commit()
             stats["error"] += 1
     return stats
@@ -3082,14 +3113,25 @@ def ops_reclaim_jobs():
 
     def _on_abandon(abandoned_job: AnalysisJob) -> None:
         held = int(getattr(abandoned_job, "held_cents", 0) or 0)
-        if held <= 0:
-            abandoned_job.held_cents = 0
-            return
         owner = db.session.get(User, abandoned_job.user_id)
-        if owner is None:
+        if held > 0 and owner is not None:
+            release_job_hold(db.session, owner, abandoned_job)
+        else:
             abandoned_job.held_cents = 0
-            return
-        release_job_hold(db.session, owner, abandoned_job)
+        if owner is not None:
+            try:
+                refund_failed_job_billing(
+                    db.session,
+                    CreditLedger,
+                    owner,
+                    abandoned_job,
+                    SiteAnalysis=SiteAnalysis,
+                    topup_credit_fn=topup_credit,
+                )
+            except Exception:
+                app.logger.exception(
+                    "ops reclaim refund failed job=%s", abandoned_job.id
+                )
 
     try:
         reclaimed = reclaim_stale_jobs(
@@ -3410,10 +3452,12 @@ def edge_cms_bundle(analysis_id: int):
         return redirect(url_for("dashboard") + "#edge-signals")
     base = edge_base_url(public_base_url(), analysis.public_token)
     site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    full = _edge_full_access(analysis)
     raw = cms_bundle_zip_bytes(
         origin_edge_base=base,
         site_origin=site_origin,
         public_base=public_base_url(),
+        full_edge=full,
     )
     buf = io.BytesIO(raw)
     buf.seek(0)
@@ -4114,6 +4158,12 @@ def billing_paddle_webhook():
                         past_due_at=past_due_at,
                         paid_plan=paid or fallback,
                     )
+                if (user.plan or "").lower() == "free":
+                    if clear_paid_alert_settings(user):
+                        app.logger.info(
+                            "Cleared alert settings after downgrade user=%s",
+                            user.id,
+                        )
                 db.session.commit()
 
         elif etype in {"transaction.completed", "transaction.paid"}:
@@ -6655,6 +6705,7 @@ def api_v1_site_edge(site_id: int):
         origin_edge_base=base,
         site_origin=site_origin,
         public_base=public_base_url(),
+        full_edge=full,
     )
     adapters = {
         key: {
@@ -6676,7 +6727,7 @@ def api_v1_site_edge(site_id: int):
             "token": analysis.public_token,
             "edge_base": base,
             "site_origin": site_origin,
-            "routes": dict(EDGE_ROUTE_MAP),
+            "routes": dict(bundle.get("routes") or {}),
             "endpoints": {
                 "llms_txt": f"{base}/llms.txt",
                 "signals_json": f"{base}/signals.json",
@@ -6719,10 +6770,12 @@ def api_v1_site_edge_cms_bundle(site_id: int):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
     site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    full = _edge_full_access(analysis)
     raw_zip = cms_bundle_zip_bytes(
         origin_edge_base=base,
         site_origin=site_origin,
         public_base=public_base_url(),
+        full_edge=full,
     )
     buf = io.BytesIO(raw_zip)
     buf.seek(0)
@@ -6876,6 +6929,8 @@ def admin_set_plan(user_id: int, plan: str):
     else:
         # Demotion must revoke admin AND internal privileges (unlimited bypass).
         clear_privilege_role(target)
+    if plan == "free":
+        clear_paid_alert_settings(target)
     db.session.commit()
     if plan in {"business", "admin"}:
         try:
@@ -6885,6 +6940,47 @@ def admin_set_plan(user_id: int, plan: str):
             app.logger.exception("ensure_personal_org failed for user %s", target.id)
             db.session.rollback()
     flash(f"Piano di {target.email} aggiornato a {plan}.", "success")
+    return redirect(url_for("admin_home"))
+
+
+@app.route("/admin/jobs/<int:job_id>/refund", methods=["POST"])
+@admin_required
+def admin_refund_job(job_id: int):
+    """Refund billed credits when an error job produced no deliverable report."""
+    job = db.session.get(AnalysisJob, job_id)
+    if job is None:
+        flash("Job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    owner = db.session.get(User, job.user_id)
+    if owner is None:
+        flash("Utente del job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    try:
+        refunded = refund_failed_job_billing(
+            db.session,
+            CreditLedger,
+            owner,
+            job,
+            SiteAnalysis=SiteAnalysis,
+            topup_credit_fn=topup_credit,
+        )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("admin refund job failed id=%s", job_id)
+        flash("Rimborso fallito.", "error")
+        return redirect(url_for("admin_home"))
+    if refunded <= 0:
+        flash(
+            "Nessun rimborso: job non in errore, già rimborsato, "
+            "senza addebito, oppure con report già presente.",
+            "warning",
+        )
+    else:
+        flash(
+            f"Rimborsati {format_token_amount(refunded)} per job #{job.id}.",
+            "success",
+        )
     return redirect(url_for("admin_home"))
 
 

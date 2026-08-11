@@ -87,6 +87,7 @@
           <div class="history-scores">
             <span>Utente {{ job.user_id }}</span>
             <span>Stato {{ job.status }}</span>
+            <span>Addebitato {{ job.billed_cents or 0 }} cent</span>
             <span>{{ job.created_at.strftime('%Y-%m-%d %H:%M') if job.created_at else '' }}</span>
           </div>
           {% if job.error %}<div class="muted" style="margin-top:0.35rem">{{ job.error }}</div>{% endif %}
@@ -102,6 +103,12 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Riprova</button>
           </form>
+          {% if job.status == 'error' and (job.billed_cents or 0) > 0 %}
+          <form method="post" action="{{ url_for('admin_refund_job', job_id=job.id) }}" style="display:inline;margin-left:0.5rem">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="site-link" style="border:0;background:none;cursor:pointer;font:inherit">Rimborsa</button>
+          </form>
+          {% endif %}
           {% else %}
           <span class="muted">—</span>
           {% endif %}

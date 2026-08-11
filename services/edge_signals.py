@@ -179,15 +179,26 @@ def build_signals_payload(
     return payload
 
 
-def cloudflare_worker_snippet(*, origin_edge_base: str, site_origin: str) -> str:
+def cloudflare_worker_snippet(
+    *,
+    origin_edge_base: str,
+    site_origin: str,
+    full_edge: bool = True,
+) -> str:
     """
     Worker che fa proxy degli artifact Centropic verso il dominio del cliente.
     origin_edge_base: https://app.../e/<token>
     site_origin: https://cliente.com (documentazione)
     """
+    plus_routes = ""
+    if full_edge:
+        plus_routes = """  "/robots.txt": "/robots.txt",
+  "/.well-known/organization.jsonld": "/organization.jsonld",
+"""
     return f"""// Centropic Edge Signals — Cloudflare Worker
 // Deploy: wrangler deploy (vedi workers/centropic-signals/)
 // Sostituisci CENTROPIC_ORIGIN con il tuo endpoint Edge assegnato.
+// Tier: {"full" if full_edge else "basic (Free — no robots/JSON-LD)"}
 
 const CENTROPIC_ORIGIN = "{origin_edge_base}";
 const SITE_ORIGIN = "{site_origin.rstrip('/')}";
@@ -195,9 +206,7 @@ const SITE_ORIGIN = "{site_origin.rstrip('/')}";
 const ROUTES = {{
   "/llms.txt": "/llms.txt",
   "/.well-known/llms.txt": "/llms.txt",
-  "/robots.txt": "/robots.txt",
-  "/.well-known/organization.jsonld": "/organization.jsonld",
-  "/centropic/signals.json": "/signals.json",
+{plus_routes}  "/centropic/signals.json": "/signals.json",
   // Alias legacy: mantenuto per installazioni GeoPulse esistenti.
   "/geopulse/signals.json": "/signals.json",
 }};
@@ -250,19 +259,29 @@ def html_embed_snippet(*, signals_url: str) -> str:
     )
 
 
-def vercel_edge_config_snippet(*, origin_edge_base: str) -> str:
+def vercel_edge_config_snippet(
+    *,
+    origin_edge_base: str,
+    full_edge: bool = True,
+) -> str:
     base = origin_edge_base.rstrip("/")
+    plus_rewrites = ""
+    header_paths = "llms.txt|centropic/signals.json|geopulse/signals.json"
+    if full_edge:
+        plus_rewrites = f"""    {{ "source": "/robots.txt", "destination": "{base}/robots.txt" }},
+    {{ "source": "/.well-known/organization.jsonld", "destination": "{base}/organization.jsonld" }},
+"""
+        header_paths = "llms.txt|robots.txt|centropic/signals.json|geopulse/signals.json"
     return f"""{{
   "version": 2,
   "rewrites": [
     {{ "source": "/llms.txt", "destination": "{base}/llms.txt" }},
-    {{ "source": "/robots.txt", "destination": "{base}/robots.txt" }},
-    {{ "source": "/geopulse/signals.json", "destination": "{base}/signals.json" }},
-    {{ "source": "/.well-known/organization.jsonld", "destination": "{base}/organization.jsonld" }}
+{plus_rewrites}    {{ "source": "/centropic/signals.json", "destination": "{base}/signals.json" }},
+    {{ "source": "/geopulse/signals.json", "destination": "{base}/signals.json" }}
   ],
   "headers": [
     {{
-      "source": "/(llms.txt|robots.txt|geopulse/signals.json)",
+      "source": "/({header_paths})",
       "headers": [
         {{ "key": "Cache-Control", "value": "private, max-age=60" }},
         {{ "key": "X-Centropic-Edge", "value": "1" }},

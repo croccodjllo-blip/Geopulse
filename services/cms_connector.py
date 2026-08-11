@@ -19,14 +19,24 @@ from services.edge_signals import (
 )
 
 # Paths exposed on the customer domain → Edge upstream suffix.
-EDGE_ROUTE_MAP: dict[str, str] = {
+EDGE_ROUTE_MAP_BASIC: dict[str, str] = {
     "/llms.txt": "/llms.txt",
     "/.well-known/llms.txt": "/llms.txt",
+    "/centropic/signals.json": "/signals.json",
+    "/geopulse/signals.json": "/signals.json",  # legacy alias
+}
+EDGE_ROUTE_MAP_FULL: dict[str, str] = {
+    **EDGE_ROUTE_MAP_BASIC,
     "/robots.txt": "/robots.txt",
     "/.well-known/organization.jsonld": "/organization.jsonld",
-    "/geopulse/signals.json": "/signals.json",
-    "/centropic/signals.json": "/signals.json",
 }
+# Backward-compatible alias (full map).
+EDGE_ROUTE_MAP: dict[str, str] = dict(EDGE_ROUTE_MAP_FULL)
+
+
+def edge_route_map(*, full_edge: bool = True) -> dict[str, str]:
+    """Free/basic Edge omits Plus-only robots + JSON-LD public routes."""
+    return dict(EDGE_ROUTE_MAP_FULL if full_edge else EDGE_ROUTE_MAP_BASIC)
 
 
 def build_cms_bundle(
@@ -34,16 +44,19 @@ def build_cms_bundle(
     origin_edge_base: str,
     site_origin: str,
     public_base: str = "https://centropic.ai",
+    full_edge: bool = True,
 ) -> dict[str, Any]:
     """Return install artifacts for all supported CMS / hosts."""
     base = origin_edge_base.rstrip("/")
     site = site_origin.rstrip("/")
     signals_url = f"{base}/signals.json"
+    routes = edge_route_map(full_edge=full_edge)
     return {
         "schema": "centropic.cms_connector/v1",
         "edge_base": base,
         "site_origin": site,
-        "routes": dict(EDGE_ROUTE_MAP),
+        "tier": "full" if full_edge else "basic",
+        "routes": routes,
         "docs": f"{public_base.rstrip('/')}/faq#edge-signals",
         "adapters": {
             "wordpress": {
@@ -111,7 +124,9 @@ def build_cms_bundle(
                 "label": "Cloudflare Worker",
                 "files": {
                     "worker.js": cloudflare_worker_snippet(
-                        origin_edge_base=base, site_origin=site
+                        origin_edge_base=base,
+                        site_origin=site,
+                        full_edge=full_edge,
                     ),
                 },
                 "install": "Deploy con wrangler; collega le route sul dominio.",
@@ -119,7 +134,10 @@ def build_cms_bundle(
             "vercel": {
                 "label": "Vercel",
                 "files": {
-                    "vercel.json": vercel_edge_config_snippet(origin_edge_base=base),
+                    "vercel.json": vercel_edge_config_snippet(
+                        origin_edge_base=base,
+                        full_edge=full_edge,
+                    ),
                 },
                 "install": "Committa vercel.json nella root del progetto.",
             },
@@ -129,8 +147,9 @@ def build_cms_bundle(
                     "embed.html": html_embed_snippet(signals_url=signals_url),
                 },
                 "install": (
-                    "Incolla embed.html nel <head>. Per llms.txt/robots sul dominio "
-                    "usa Worker, rewrite host o plugin nativo."
+                    "Incolla embed.html nel <head>. Per llms.txt"
+                    + ("/robots" if full_edge else "")
+                    + " sul dominio usa Worker, rewrite host o plugin nativo."
                 ),
             },
         },
@@ -142,12 +161,14 @@ def cms_bundle_zip_bytes(
     origin_edge_base: str,
     site_origin: str,
     public_base: str = "https://centropic.ai",
+    full_edge: bool = True,
 ) -> bytes:
     """ZIP with every adapter ready to drop into a CMS / host."""
     bundle = build_cms_bundle(
         origin_edge_base=origin_edge_base,
         site_origin=site_origin,
         public_base=public_base,
+        full_edge=full_edge,
     )
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
