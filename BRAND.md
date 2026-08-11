@@ -23,7 +23,7 @@ Marketing pages and admin (no `dash-plan--*` class) fall back to the global chro
 - `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility).
 - `static/favicon.svg` — same compact-mark design.
 - `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` — raster renders of the SVGs above (`cairosvg`), used only where raster is required: `<link rel="apple-touch-icon">`, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback.
-- `static/img/hero-cosmic.jpg` — nebula backdrop behind the landing hero (unrelated to the mark itself; a separate AI-generated backdrop photo).
+- `static/img/hero-cosmic.jpg` — landing hero atmosphere only: abstract chrome signal-field / constellation (void + steel light filaments). **No logo, monogram, or wordmark baked in** — the mark stays in the HTML lockup.
 - `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art.
 - Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current).
 
@@ -73,7 +73,7 @@ Do not use Roboto, Sora, or Plus Jakarta Sans.
 
 ## Hierarchy rules
 1. Brand (`CENTROPIC.AI`) is a hero-level signal on marketing first viewports — never overpowered by the headline.
-2. Hero budget: brand + one headline + one supporting sentence + one CTA group + one dominant visual (now the nebula + chrome emblem).
+2. Hero budget: brand + one headline + one supporting sentence + one CTA group + one dominant visual (signal-field atmosphere + citation map overlay — mark only in the HTML lockup).
 3. No floating badges/chips on hero media.
 4. Cards only when they contain a user interaction (plans, forms). Prefer open sections elsewhere.
 5. Prefer single soft depth shadows over glow stacks; avoid `rounded-full` pills for status chrome.
