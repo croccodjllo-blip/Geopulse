@@ -174,10 +174,34 @@ def create_transaction(
         timeout=30,
     )
     if res.status_code >= 400:
+        err_code = ""
+        err_detail = ""
+        try:
+            err_body = res.json() or {}
+            err = err_body.get("error") or {}
+            err_code = str(err.get("code") or "")
+            err_detail = str(err.get("detail") or "")
+        except Exception:
+            err_body = {}
         logger.warning(
-            "Paddle create_transaction failed: HTTP %s", res.status_code
+            "Paddle create_transaction failed: HTTP %s code=%s detail=%s",
+            res.status_code,
+            err_code or "-",
+            (err_detail or res.text or "")[:300],
         )
-        raise RuntimeError(f"Paddle transaction error HTTP {res.status_code}")
+        if err_code == "transaction_default_checkout_url_not_set" or (
+            "default payment link" in err_detail.lower()
+        ):
+            raise RuntimeError(
+                "paddle_default_payment_link_missing: "
+                "Set Default payment link in Paddle Checkout settings "
+                "(https://vendors.paddle.com/checkout-settings) to "
+                "https://centropic.ai"
+            )
+        raise RuntimeError(
+            f"Paddle transaction error HTTP {res.status_code}"
+            + (f" ({err_code})" if err_code else "")
+        )
     body = res.json()
     data = body.get("data") or {}
     checkout = data.get("checkout") or {}

@@ -169,3 +169,32 @@ def test_transaction_gross_cents_no_custom_data_fallback():
     assert pb.transaction_gross_cents(data) is None
     data2 = {"details": {"totals": {"grand_total": "500"}}}
     assert pb.transaction_gross_cents(data2) == 500
+
+
+def test_create_transaction_surfaces_missing_default_payment_link(monkeypatch):
+    class _Resp:
+        status_code = 400
+        text = "bad"
+
+        def json(self):
+            return {
+                "error": {
+                    "code": "transaction_default_checkout_url_not_set",
+                    "detail": (
+                        "Cannot create a transaction or open a checkout as no "
+                        "default payment link has been set for this account."
+                    ),
+                }
+            }
+
+    monkeypatch.setattr(pb, "PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setattr(pb.requests, "post", lambda *a, **k: _Resp())
+    try:
+        pb.create_transaction(
+            price_id="pri_x",
+            user_id=1,
+            email="a@b.c",
+        )
+        assert False, "expected RuntimeError"
+    except RuntimeError as exc:
+        assert "paddle_default_payment_link_missing" in str(exc)

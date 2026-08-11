@@ -48,8 +48,24 @@
     return _inited;
   }
 
+  function showCheckoutError(msg) {
+    try {
+      console.error("Paddle checkout:", msg);
+      if (window.alert) {
+        window.alert(msg);
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+
   function openItems(items, extra) {
-    if (!ensureInit()) return false;
+    if (!ensureInit()) {
+      showCheckoutError(
+        "Checkout Paddle non pronto. Ricarica la pagina o contatta supporto."
+      );
+      return false;
+    }
     var c = cfg();
     var opts = {
       items: items,
@@ -60,13 +76,42 @@
       settings: {
         successUrl: (extra && extra.successUrl) || c.successPlus || window.location.href,
         allowLogout: false,
+        displayMode: "overlay",
+        theme: "dark",
+        locale: "it",
       },
     };
     if (c.email) {
       opts.customer = { email: c.email };
     }
-    window.Paddle.Checkout.open(opts);
-    return true;
+    function explainCheckoutFailure(err) {
+      var detail =
+        (err && (err.message || err.detail || err.code || err.error)) ||
+        String(err || "");
+      var text = String(detail);
+      if (
+        text.indexOf("default_checkout_url") !== -1 ||
+        text.indexOf("payment link") !== -1 ||
+        text.indexOf("transaction_default_checkout_url_not_set") !== -1
+      ) {
+        showCheckoutError(
+          "Paddle: manca il Default payment link. In dashboard Paddle → Checkout → Checkout settings imposta https://centropic.ai poi riprova."
+        );
+        return;
+      }
+      showCheckoutError("Checkout non disponibile: " + text);
+    }
+
+    try {
+      var opened = window.Paddle.Checkout.open(opts);
+      if (opened && typeof opened.then === "function") {
+        opened.catch(explainCheckoutFailure);
+      }
+      return true;
+    } catch (e) {
+      explainCheckoutFailure(e);
+      return false;
+    }
   }
 
   function openPlus() {

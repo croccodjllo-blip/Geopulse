@@ -109,7 +109,21 @@ SOV_DAILY_BUDGET_CENTS=5000
 ALLOW_DROP_ANALYSIS_JOBS=0
 MAIL_FROM=Centropic <noreply@centropic.ai>
 ADMIN_EMAIL=admin@centropic.ai
-# Opzionali analytics/ads:
+```
+
+### Paddle Checkout — Default payment link (obbligatorio)
+
+Senza questo, overlay/API tornano `transaction_default_checkout_url_not_set` e il checkout sembra “rotto”.
+
+1. Apri **Paddle live** → [Checkout settings](https://vendors.paddle.com/checkout-settings)
+2. **Default payment link** = `https://centropic.ai` (dominio approvato)
+3. Salva, poi riprova Plus/Business su `/prezzi`
+
+Il dominio deve essere approved in Paddle (Website approval). Webhook: `https://centropic.ai/billing/paddle-webhook`.
+
+Opzionali analytics/ads (env):
+
+```env
 # GA4_MEASUREMENT_ID=G-...
 # ADS_TXT_CONTENT=...
 ```

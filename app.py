@@ -4045,9 +4045,23 @@ def billing_checkout():
             )
             return redirect(url_for("pricing"))
         return redirect(url)
-    except Exception:
+    except Exception as exc:
         app.logger.exception("Paddle %s checkout failed", product)
-        flash("Impossibile avviare il checkout Paddle. Riprova o contattaci.", "error")
+        detail = str(exc or "")
+        if "paddle_default_payment_link_missing" in detail or (
+            "default payment link" in detail.lower()
+        ):
+            flash(
+                "Checkout Paddle non configurato: in Paddle Dashboard → Checkout → "
+                "Checkout settings imposta Default payment link = https://centropic.ai, "
+                "poi riprova.",
+                "error",
+            )
+        else:
+            flash(
+                "Impossibile avviare il checkout Paddle. Riprova o contattaci.",
+                "error",
+            )
         return redirect(url_for("pricing"))
 
 
@@ -5645,9 +5659,23 @@ def topup_checkout():
                 )
                 return redirect(url_for("topup_credit_page"))
             return redirect(url)
-        except Exception:
+        except Exception as exc:
             app.logger.exception("Paddle topup checkout failed")
-            flash("Errore durante la creazione del pagamento Paddle. Riprova.", "error")
+            detail = str(exc or "")
+            if "paddle_default_payment_link_missing" in detail or (
+                "default payment link" in detail.lower()
+            ):
+                flash(
+                    "Checkout Paddle non configurato: in Paddle Dashboard → Checkout → "
+                    "Checkout settings imposta Default payment link = https://centropic.ai, "
+                    "poi riprova.",
+                    "error",
+                )
+            else:
+                flash(
+                    "Errore durante la creazione del pagamento Paddle. Riprova.",
+                    "error",
+                )
             return redirect(url_for("topup_credit_page"))
 
     # Dev fallback: add credits directly only when FLASK_DEBUG=1
