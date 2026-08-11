@@ -12,6 +12,7 @@ ROUTE_CATALOG = [
     'admin_home',
     'admin_set_plan',
     'admin_retry_job',
+    'admin_refund_job',
     'admin_cancel_job'
 ]
 

@@ -27,6 +27,7 @@ ROUTE_CATALOG = [
     'pricing',
     'pricing_alias',
     'pro_interest',
+    'pro_interest_legacy',
     'faq'
 ]
 

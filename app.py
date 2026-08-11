@@ -90,6 +90,7 @@ from services.paddle_billing import (
     create_plus_checkout as paddle_create_plus_checkout,
     create_topup_checkout as paddle_create_topup_checkout,
     extract_user_id as paddle_extract_user_id,
+    resolve_webhook_user as paddle_resolve_webhook_user,
     paddle_business_enabled,
     paddle_enabled,
     paddle_overlay_ready,
@@ -153,6 +154,7 @@ from services.site_guide import site_guide_payload
 from services.competitor_suggest import suggest_competitors, normalize_competitor_url
 from services.jobs import (
     STALE_HEARTBEAT_MINUTES,
+    DuplicateAnalyzeJobError,
     claim_next_job,
     complete_job,
     enqueue_analysis,
@@ -161,6 +163,10 @@ from services.jobs import (
     mark_job_site,
     reclaim_stale_jobs,
     release_stranded_holds,
+)
+from services.job_billing_recovery import (
+    clear_paid_alert_settings,
+    refund_failed_job_billing,
 )
 from services.analyze_errors import classify_analyze_error, format_job_error
 from services.entitlements import entitlements_for, require_capability
@@ -212,6 +218,7 @@ from services.sov_budget import (
     SovDailyBudgetExceeded,
     assert_sov_budget_allows,
     sov_budget_status,
+    sov_ledger_description,
     sov_spent_today_cents,
 )
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
@@ -927,7 +934,7 @@ class AnalysisRun(db.Model):
 
 
 class ProInterest(db.Model):
-    """Waitlist interesse piano Pro (da Prenota l'interesse)."""
+    """Waitlist interesse piani Plus / Business (tabella storica ``pro_interests``)."""
 
     __tablename__ = "pro_interests"
 
@@ -1360,11 +1367,14 @@ def _establish_session(user: User, *, permanent: bool = True) -> None:
 
 
 def ensure_admin_user() -> User | None:
-    """Crea l’admin solo se ADMIN_PASSWORD è impostata.
+    """Crea o mantiene l’admin solo in modo fail-closed.
 
-    - Nuovo utente: richiede ADMIN_PASSWORD.
-    - Utente esistente: aggiorna metadati; reset password solo se
-      ADMIN_BOOTSTRAP=1 (evita overwrite a ogni restart).
+    - Nuovo utente: richiede ``ADMIN_PASSWORD``.
+    - Utente già admin: aggiorna metadati; reset password solo con
+      ``ADMIN_BOOTSTRAP=1`` (evita overwrite a ogni restart).
+    - Utente esistente non-admin con ``ADMIN_EMAIL``: **non** promuovere
+      senza ``ADMIN_BOOTSTRAP=1`` (mitiga pre-claim via registrazione pubblica).
+      Con bootstrap attivo, promuove e forza reset password.
     """
     if not ADMIN_PASSWORD:
         app.logger.warning(
@@ -1394,6 +1404,16 @@ def ensure_admin_user() -> User | None:
         db.session.add(user)
         app.logger.info("Admin creato: %s", ADMIN_EMAIL)
     else:
+        already_admin = (user.role or "").lower() == "admin" or (
+            user.plan or ""
+        ).lower() == "admin"
+        if not already_admin and not ADMIN_BOOTSTRAP:
+            app.logger.error(
+                "Refusing to promote existing non-admin %s without "
+                "ADMIN_BOOTSTRAP=1 (possible email pre-claim).",
+                ADMIN_EMAIL,
+            )
+            return None
         user.name = ADMIN_NAME
         user.company = user.company or "Centropic"
         user.website_url = user.website_url or "https://centropic.ai/"
@@ -1404,7 +1424,8 @@ def ensure_admin_user() -> User | None:
         if ADMIN_BOOTSTRAP:
             user.set_password(ADMIN_PASSWORD)
             app.logger.warning(
-                "ADMIN_BOOTSTRAP=1: password admin resettata per %s", ADMIN_EMAIL
+                "ADMIN_BOOTSTRAP=1: password admin resettata / claim per %s",
+                ADMIN_EMAIL,
             )
     db.session.commit()
     return user
@@ -1463,7 +1484,13 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "settings"
         elif ep in {"dashboard_history", "site_history", "export_history_csv"}:
             sidebar_active = "history"
-        elif ep in {"topup_credit_page", "pricing", "pro_interest", "billing_checkout"}:
+        elif ep in {
+            "topup_credit_page",
+            "pricing",
+            "pro_interest",
+            "pro_interest_legacy",
+            "billing_checkout",
+        }:
             sidebar_active = "billing"
         elif ep in {"dashboard_guide", "site_guide"}:
             sidebar_active = "guide"
@@ -1850,31 +1877,15 @@ def ensure_schema() -> None:
                 )
             )
         # Fail-loud if the index is still missing (double-credit risk).
-        dialect = db.engine.dialect.name
-        with db.engine.connect() as conn:
-            if dialect == "sqlite":
-                row = conn.execute(
-                    text(
-                        "SELECT 1 FROM sqlite_master "
-                        "WHERE type='index' AND name='uq_credit_ledger_stripe_pi'"
-                    )
-                ).fetchone()
-            else:
-                row = conn.execute(
-                    text(
-                        "SELECT 1 FROM pg_indexes "
-                        "WHERE indexname='uq_credit_ledger_stripe_pi'"
-                    )
-                ).fetchone()
-            global CREDIT_LEDGER_PI_INDEX_OK
-            if row is None:
-                CREDIT_LEDGER_PI_INDEX_OK = False
-                app.logger.error(
-                    "CRITICAL: credit_ledger unique index uq_credit_ledger_stripe_pi "
-                    "missing — webhook double-credit possible"
-                )
-            else:
-                CREDIT_LEDGER_PI_INDEX_OK = True
+        from centropic.prod_guards import refresh_credit_ledger_index_ok
+
+        global CREDIT_LEDGER_PI_INDEX_OK
+        CREDIT_LEDGER_PI_INDEX_OK = refresh_credit_ledger_index_ok(db.engine)
+        if not CREDIT_LEDGER_PI_INDEX_OK:
+            app.logger.error(
+                "CRITICAL: credit_ledger unique index uq_credit_ledger_stripe_pi "
+                "missing — webhook double-credit possible"
+            )
     except Exception:
         CREDIT_LEDGER_PI_INDEX_OK = False
         app.logger.exception(
@@ -1950,8 +1961,9 @@ def _usage_ledger_description(
     provider: str,
     model: str,
 ) -> str:
-    scope = "SoV citation" if is_sov_usage_call() else prefix
-    return f"{scope} usage realtime {provider}:{model}"
+    if is_sov_usage_call():
+        return sov_ledger_description("SoV citation", provider=provider, model=model)
+    return f"{prefix} usage realtime {provider}:{model}"
 
 
 def process_pending_analyze_jobs(
@@ -1968,19 +1980,38 @@ def process_pending_analyze_jobs(
     def _on_abandon(abandoned_job: AnalysisJob) -> None:
         """Release credit hold when a stale job is permanently failed."""
         held = int(getattr(abandoned_job, "held_cents", 0) or 0)
-        if held <= 0:
-            abandoned_job.held_cents = 0
-            return
         owner = db.session.get(User, abandoned_job.user_id)
-        release_job_hold(db.session, owner, abandoned_job)
-        app.logger.warning(
-            "Released hold %s cent for abandoned job %s",
-            held,
-            abandoned_job.id,
-        )
+        if held > 0 and owner is not None:
+            release_job_hold(db.session, owner, abandoned_job)
+            app.logger.warning(
+                "Released hold %s cent for abandoned job %s",
+                held,
+                abandoned_job.id,
+            )
+        else:
+            abandoned_job.held_cents = 0
+        if owner is not None:
+            try:
+                refund_failed_job_billing(
+                    db.session,
+                    CreditLedger,
+                    owner,
+                    abandoned_job,
+                    SiteAnalysis=SiteAnalysis,
+                    topup_credit_fn=topup_credit,
+                )
+            except Exception:
+                app.logger.exception(
+                    "abandoned job refund failed job=%s", abandoned_job.id
+                )
 
     for _ in range(max(1, limit)):
-        job = claim_next_job(db.session, AnalysisJob, on_abandon=_on_abandon)
+        job = claim_next_job(
+            db.session,
+            AnalysisJob,
+            on_abandon=_on_abandon,
+            SiteAnalysis=SiteAnalysis,
+        )
         if job is None:
             stats["empty"] += 1
             break
@@ -2217,6 +2248,19 @@ def process_pending_analyze_jobs(
                 ):
                     if user is not None:
                         release_job_hold(db.session, user, job)
+                        try:
+                            refund_failed_job_billing(
+                                db.session,
+                                CreditLedger,
+                                user,
+                                job,
+                                SiteAnalysis=SiteAnalysis,
+                                topup_credit_fn=topup_credit,
+                            )
+                        except Exception:
+                            app.logger.exception(
+                                "job billing refund failed job=%s", job.id
+                            )
                         db.session.commit()
             stats["error"] += 1
     return stats
@@ -2588,6 +2632,10 @@ def resolve_crawl_pages(user: User, *, deep_crawl: bool = False) -> int:
     return int(PRO_CRAWL_PAGES)
 
 
+class LedgerIndexMissingError(RuntimeError):
+    """Raised when payment idempotency unique index is absent (fail closed)."""
+
+
 def grant_plus_monthly_tokens(
     *,
     user: User,
@@ -2598,7 +2646,14 @@ def grant_plus_monthly_tokens(
     """Credit subscription monthly GEO tokens once per billing event.
 
     Returns True if granted. ``credit_cents`` defaults to Plus monthly grant.
+    Fail-closed when the credit_ledger payment-idempotency unique index is
+    missing (same policy as Paddle top-ups).
     """
+    if not CREDIT_LEDGER_PI_INDEX_OK:
+        app.logger.error(
+            "Plus/Business token grant refused: credit ledger unique index missing"
+        )
+        raise LedgerIndexMissingError("ledger_index_missing")
     amount = (
         int(credit_cents)
         if credit_cents is not None
@@ -2817,17 +2872,26 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
                 user.id,
             )
             return None
-        job = enqueue_analysis(
-            db.session,
-            AnalysisJob,
-            user_id=user.id,
-            url=url,
-            max_pages=resolve_crawl_pages(user, deep_crawl=False),
-            competitor_urls=[],
-            run_measured=False,
-            held_cents=held,
-            source="onboarding",
-        )
+        try:
+            job = enqueue_analysis(
+                db.session,
+                AnalysisJob,
+                user_id=user.id,
+                url=url,
+                max_pages=resolve_crawl_pages(user, deep_crawl=False),
+                competitor_urls=[],
+                run_measured=False,
+                held_cents=held,
+                source="onboarding",
+                active_check=lambda: active_analyze_job_for_url(
+                    user.id, url, site=None
+                ),
+            )
+        except DuplicateAnalyzeJobError as dup:
+            if held:
+                release_hold(db.session, user, amount_cents=held)
+                db.session.commit()
+            return int(dup.job.id)
         kick_analyze_worker()
         return int(job.id)
     required = required_credit_with_grace_cents(est.service_cost_eur_cents)
@@ -2904,17 +2968,74 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
 @app.get("/health")
 @csrf.exempt
 def health():
+    from centropic.prod_guards import (
+        evaluate_env_guards,
+        prod_guards_enforced,
+        refresh_credit_ledger_index_ok,
+    )
+
     db_ok = True
     try:
         db.session.execute(text("SELECT 1"))
     except Exception:
         db_ok = False
-    status = 200 if db_ok else 503
+
+    # Re-check every probe so a dropped index fails closed without restart.
+    global CREDIT_LEDGER_PI_INDEX_OK
+    if db_ok:
+        CREDIT_LEDGER_PI_INDEX_OK = refresh_credit_ledger_index_ok(db.engine)
+    else:
+        CREDIT_LEDGER_PI_INDEX_OK = False
+
+    env_guards = evaluate_env_guards()
+    enforce_env = prod_guards_enforced()
+    jobs_public: dict[str, int] | None = None
+    if db_ok:
+        try:
+            from centropic.ops_health import job_queue_snapshot
+
+            jobs_public = job_queue_snapshot(
+                AnalysisJob,
+                stale_after_minutes=STALE_HEARTBEAT_MINUTES,
+                func=func,
+                or_=or_,
+            )
+        except Exception:
+            app.logger.exception("health job snapshot failed")
+            jobs_public = None
+    stale_n = int((jobs_public or {}).get("stale_running") or 0)
+    fail_on_stale = (os.getenv("HEALTH_FAIL_ON_STALE_JOBS") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    healthy = (
+        db_ok
+        and CREDIT_LEDGER_PI_INDEX_OK
+        and (env_guards["ok"] if enforce_env else True)
+        and (not fail_on_stale or stale_n == 0)
+    )
+    status = 200 if healthy else 503
     payload: dict[str, Any] = {
-        "ok": db_ok,
+        "ok": healthy,
         "service": "centropic",
         "time": datetime.now(timezone.utc).isoformat(),
+        "degraded": bool(stale_n > 0),
     }
+    if stale_n > 0:
+        payload["degraded_reasons"] = ["stale_jobs"]
+    if not healthy:
+        reasons: list[str] = []
+        if not db_ok:
+            reasons.append("db")
+        if not CREDIT_LEDGER_PI_INDEX_OK:
+            reasons.append("credit_ledger_pi_index")
+        if enforce_env and not env_guards["ok"]:
+            reasons.extend(f"env:{name}" for name in env_guards["failures"])
+        if fail_on_stale and stale_n > 0:
+            reasons.append("stale_jobs")
+        payload["failures"] = reasons
     # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     want_detail = False
@@ -2932,18 +3053,8 @@ def health():
             "stale_running": None,
             "stale_after_minutes": STALE_HEARTBEAT_MINUTES,
         }
-        if db_ok:
-            from centropic.ops_health import job_queue_snapshot
-
-            # GET is read-only: reclaim moved to POST /ops/reclaim-jobs.
-            jobs_detail.update(
-                job_queue_snapshot(
-                    AnalysisJob,
-                    stale_after_minutes=STALE_HEARTBEAT_MINUTES,
-                    func=func,
-                    or_=or_,
-                )
-            )
+        if jobs_public is not None:
+            jobs_detail.update(jobs_public)
         payload.update(
             {
                 "openai": bool(OPENAI_API_KEY),
@@ -2984,6 +3095,9 @@ def health():
                 "measured_sov": MEASURED_SOV_ON_ANALYZE and citation_monitor_available(),
                 "measured_sov_plus_only": True,
                 "async_analyze": ASYNC_ANALYZE,
+                "credit_ledger_pi_index_ok": CREDIT_LEDGER_PI_INDEX_OK,
+                "prod_guards": env_guards,
+                "prod_guards_enforced": enforce_env,
                 "jobs": jobs_detail,
                 "metrics": app_metrics.snapshot(),
                 "architecture": {
@@ -3016,18 +3130,32 @@ def ops_reclaim_jobs():
 
     def _on_abandon(abandoned_job: AnalysisJob) -> None:
         held = int(getattr(abandoned_job, "held_cents", 0) or 0)
-        if held <= 0:
-            abandoned_job.held_cents = 0
-            return
         owner = db.session.get(User, abandoned_job.user_id)
-        if owner is None:
+        if held > 0 and owner is not None:
+            release_job_hold(db.session, owner, abandoned_job)
+        else:
             abandoned_job.held_cents = 0
-            return
-        release_job_hold(db.session, owner, abandoned_job)
+        if owner is not None:
+            try:
+                refund_failed_job_billing(
+                    db.session,
+                    CreditLedger,
+                    owner,
+                    abandoned_job,
+                    SiteAnalysis=SiteAnalysis,
+                    topup_credit_fn=topup_credit,
+                )
+            except Exception:
+                app.logger.exception(
+                    "ops reclaim refund failed job=%s", abandoned_job.id
+                )
 
     try:
         reclaimed = reclaim_stale_jobs(
-            db.session, AnalysisJob, on_abandon=_on_abandon
+            db.session,
+            AnalysisJob,
+            on_abandon=_on_abandon,
+            SiteAnalysis=SiteAnalysis,
         )
         stranded = release_stranded_holds(
             db.session, AnalysisJob, on_release=_on_abandon
@@ -3341,10 +3469,12 @@ def edge_cms_bundle(analysis_id: int):
         return redirect(url_for("dashboard") + "#edge-signals")
     base = edge_base_url(public_base_url(), analysis.public_token)
     site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    full = _edge_full_access(analysis)
     raw = cms_bundle_zip_bytes(
         origin_edge_base=base,
         site_origin=site_origin,
         public_base=public_base_url(),
+        full_edge=full,
     )
     buf = io.BytesIO(raw)
     buf.seek(0)
@@ -3468,7 +3598,7 @@ def sitemap_xml():
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
         ("/rimborsi", "0.4", "yearly"),
-        ("/interesse-pro", "0.5", "monthly"),
+        ("/interesse-plus", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
         pages.insert(12, ("/ads.txt", "0.5", "monthly"))
@@ -3961,16 +4091,22 @@ def billing_paddle_webhook():
     data = event.get("data") or {}
 
     def _user_from_paddle(obj: dict) -> User | None:
-        uid = paddle_extract_user_id(obj.get("custom_data"))
-        if uid:
-            return db.session.get(User, uid)
-        cust = obj.get("customer_id") or (obj.get("customer") or {}).get("id")
-        if cust:
-            return User.query.filter_by(paddle_customer_id=str(cust)).first()
-        sub = obj.get("subscription_id") or obj.get("id")
-        if sub and etype.startswith("subscription."):
-            return User.query.filter_by(paddle_subscription_id=str(sub)).first()
-        return None
+        """Resolve tenant for a signed Paddle event (customer/sub first)."""
+        return paddle_resolve_webhook_user(
+            obj,
+            event_type=etype,
+            by_customer_id=lambda cid: User.query.filter_by(
+                paddle_customer_id=cid
+            ).first(),
+            by_subscription_id=lambda sid: User.query.filter_by(
+                paddle_subscription_id=sid
+            ).first(),
+            by_user_id=lambda uid: db.session.get(User, uid),
+            customer_taken_by_other=lambda cid, uid: User.query.filter(
+                User.paddle_customer_id == cid,
+                User.id != uid,
+            ).first(),
+        )
 
     try:
         if etype in {
@@ -4039,6 +4175,12 @@ def billing_paddle_webhook():
                         past_due_at=past_due_at,
                         paid_plan=paid or fallback,
                     )
+                if (user.plan or "").lower() == "free":
+                    if clear_paid_alert_settings(user):
+                        app.logger.info(
+                            "Cleared alert settings after downgrade user=%s",
+                            user.id,
+                        )
                 db.session.commit()
 
         elif etype in {"transaction.completed", "transaction.paid"}:
@@ -4074,15 +4216,22 @@ def billing_paddle_webhook():
 
                     _apply_business(user)
                     if txn_id and BUSINESS_MONTHLY_CREDIT_CENTS > 0:
-                        granted = grant_plus_monthly_tokens(
-                            user=user,
-                            idempotency_key=f"paddle-business-tokens:{txn_id}",
-                            credit_cents=BUSINESS_MONTHLY_CREDIT_CENTS,
-                            description=(
-                                f"Business mensile: "
-                                f"{format_token_amount(BUSINESS_MONTHLY_CREDIT_CENTS)}"
-                            ),
-                        )
+                        try:
+                            granted = grant_plus_monthly_tokens(
+                                user=user,
+                                idempotency_key=f"paddle-business-tokens:{txn_id}",
+                                credit_cents=BUSINESS_MONTHLY_CREDIT_CENTS,
+                                description=(
+                                    f"Business mensile: "
+                                    f"{format_token_amount(BUSINESS_MONTHLY_CREDIT_CENTS)}"
+                                ),
+                            )
+                        except LedgerIndexMissingError:
+                            app_metrics.incr("billing.plan_grant_index_missing")
+                            return (
+                                jsonify({"ok": False, "error": "ledger_index_missing"}),
+                                503,
+                            )
                         if not granted:
                             user = _user_from_paddle(data) or user
                             if user is not None and (user.plan or "").lower() != "admin":
@@ -4116,10 +4265,17 @@ def billing_paddle_webhook():
 
                     _apply_plus(user)
                     if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
-                        granted = grant_plus_monthly_tokens(
-                            user=user,
-                            idempotency_key=f"paddle-plus-tokens:{txn_id}",
-                        )
+                        try:
+                            granted = grant_plus_monthly_tokens(
+                                user=user,
+                                idempotency_key=f"paddle-plus-tokens:{txn_id}",
+                            )
+                        except LedgerIndexMissingError:
+                            app_metrics.incr("billing.plan_grant_index_missing")
+                            return (
+                                jsonify({"ok": False, "error": "ledger_index_missing"}),
+                                503,
+                            )
                         if not granted:
                             # Duplicate or race: keep plan after possible rollback.
                             user = _user_from_paddle(data) or user
@@ -4194,9 +4350,9 @@ def billing_webhook():
     return jsonify({"ok": False, "error": "gone", "use": "/billing/paddle-webhook"}), 410
 
 
-@app.route("/interesse-pro", methods=["GET", "POST"])
+@app.route("/interesse-plus", methods=["GET", "POST"])
 def pro_interest():
-    """Raccoglie interesse piano Pro nella tabella pro_interests."""
+    """Raccoglie interesse Plus/Business (tabella storica ``pro_interests``)."""
     form = ProInterestForm()
     if current_user():
         user = current_user()
@@ -4233,7 +4389,7 @@ def pro_interest():
                 created = created.replace(tzinfo=timezone.utc)
             if datetime.now(timezone.utc) - created < timedelta(hours=24):
                 flash(
-                    "Abbiamo già ricevuto il tuo interesse Pro nelle ultime 24 ore. "
+                    "Abbiamo già ricevuto il tuo interesse Plus/Business nelle ultime 24 ore. "
                     "Ti contatteremo a breve.",
                     "success",
                 )
@@ -4250,20 +4406,28 @@ def pro_interest():
         db.session.add(lead)
         db.session.commit()
         app.logger.info(
-            "Pro interest saved id=%s email=%s company=%s",
+            "Plus/Business interest saved id=%s email=%s company=%s",
             lead.id,
             lead.email,
             lead.company,
         )
         flash(
-            "Interesse Plus registrato. Ti contatteremo a "
-            f"{email} appena il piano sarà disponibile "
+            "Interesse Plus/Business registrato. Ti contatteremo a "
+            f"{email} appena il checkout sarà disponibile "
             "(o scrivici a info@centropic.ai).",
             "success",
         )
         return redirect(url_for("pricing"))
 
     return render_template("pro_interest.html", form=form)
+
+
+@app.route("/interesse-pro", methods=["GET", "POST"])
+def pro_interest_legacy():
+    """Legacy waitlist URL — SEO 301 to `/interesse-plus`; POST still accepted."""
+    if request.method == "GET":
+        return redirect(url_for("pro_interest"), code=301)
+    return pro_interest()
 
 
 @app.route("/faq")
@@ -4296,6 +4460,10 @@ def register():
             "Controlla la casella email per confermare l’indirizzo "
             "(richiesto per il credito di benvenuto)."
         )
+        # Block public registration of the bootstrap admin mailbox (pre-claim).
+        if email == ADMIN_EMAIL:
+            flash(generic_ok, "success")
+            return redirect(url_for("login"))
         if User.query.filter_by(email=email).first():
             flash(generic_ok, "success")
             return redirect(url_for("login"))
@@ -5215,16 +5383,26 @@ def dashboard_analyze_confirmed():
                     f"{format_token_amount(shortage)}."
                 )
             )
-        job = enqueue_analysis(
-            db.session,
-            AnalysisJob,
-            user_id=user.id,
-            url=url,
-            max_pages=crawl_pages,
-            competitor_urls=competitor_urls[:3],
-            run_measured=run_meas,
-            held_cents=held,
-        )
+        try:
+            job = enqueue_analysis(
+                db.session,
+                AnalysisJob,
+                user_id=user.id,
+                url=url,
+                max_pages=crawl_pages,
+                competitor_urls=competitor_urls[:3],
+                run_measured=run_meas,
+                held_cents=held,
+                active_check=lambda: active_analyze_job_for_url(
+                    user.id, url, site=existing
+                ),
+            )
+        except DuplicateAnalyzeJobError as dup:
+            if held:
+                release_hold(db.session, user, amount_cents=held)
+                db.session.commit()
+            flash("Analisi già in coda per questo URL.", "info")
+            return redirect(url_for("dashboard", job=dup.job.id))
         kick_analyze_worker()
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
@@ -6124,17 +6302,27 @@ def dashboard_verify_rescan(analysis_id: int):
         flash("Token insufficienti per il re-scan measured.", "warning")
         return redirect(url_for("topup_credit_page"))
 
-    job = enqueue_analysis(
-        db.session,
-        AnalysisJob,
-        user_id=user.id,
-        url=url,
-        max_pages=resolve_crawl_pages(user, deep_crawl=False),
-        competitor_urls=[],
-        run_measured=run_meas,
-        held_cents=held,
-        source="verify",
-    )
+    try:
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url=url,
+            max_pages=resolve_crawl_pages(user, deep_crawl=False),
+            competitor_urls=[],
+            run_measured=run_meas,
+            held_cents=held,
+            source="verify",
+            active_check=lambda: active_analyze_job_for_url(
+                user.id, url, site=analysis
+            ),
+        )
+    except DuplicateAnalyzeJobError as dup:
+        if held:
+            release_hold(db.session, user, amount_cents=held)
+            db.session.commit()
+        flash("Re-scan già in coda per questo URL.", "info")
+        return redirect(url_for("dashboard", job=dup.job.id))
     kick_analyze_worker()
     flash("Re-scan measured in coda.", "success")
     return redirect(url_for("dashboard", job=job.id))
@@ -6373,13 +6561,37 @@ def api_v1_analyze():
             run_measured=want_measured,
             held_cents=int(api_held or 0),
             source="api",
+            active_check=lambda: active_analyze_job_for_url(
+                user.id, url, site=existing
+            ),
+        )
+    except DuplicateAnalyzeJobError as dup:
+        if int(api_held or 0) > 0:
+            try:
+                release_hold(db.session, user, amount_cents=int(api_held))
+                db.session.commit()
+            except Exception:
+                app.logger.exception("API analyze hold release after dedupe")
+                db.session.rollback()
+        return (
+            jsonify(
+                {
+                    "ok": True,
+                    "queued": True,
+                    "job_id": dup.job.id,
+                    "status": dup.job.status,
+                    "deduped": True,
+                    "status_url": url_for(
+                        "api_v1_job_status", job_id=dup.job.id, _external=True
+                    ),
+                }
+            ),
+            202,
         )
     except Exception:
         db.session.rollback()
         if int(api_held or 0) > 0:
             try:
-                from services.usage_billing import release_hold
-
                 release_hold(
                     db.session,
                     user,
@@ -6532,6 +6744,7 @@ def api_v1_site_edge(site_id: int):
         origin_edge_base=base,
         site_origin=site_origin,
         public_base=public_base_url(),
+        full_edge=full,
     )
     adapters = {
         key: {
@@ -6553,7 +6766,7 @@ def api_v1_site_edge(site_id: int):
             "token": analysis.public_token,
             "edge_base": base,
             "site_origin": site_origin,
-            "routes": dict(EDGE_ROUTE_MAP),
+            "routes": dict(bundle.get("routes") or {}),
             "endpoints": {
                 "llms_txt": f"{base}/llms.txt",
                 "signals_json": f"{base}/signals.json",
@@ -6596,10 +6809,12 @@ def api_v1_site_edge_cms_bundle(site_id: int):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
     site_origin = (analysis.url or f"https://{analysis.domain}").rstrip("/")
+    full = _edge_full_access(analysis)
     raw_zip = cms_bundle_zip_bytes(
         origin_edge_base=base,
         site_origin=site_origin,
         public_base=public_base_url(),
+        full_edge=full,
     )
     buf = io.BytesIO(raw_zip)
     buf.seek(0)
@@ -6753,6 +6968,8 @@ def admin_set_plan(user_id: int, plan: str):
     else:
         # Demotion must revoke admin AND internal privileges (unlimited bypass).
         clear_privilege_role(target)
+    if plan == "free":
+        clear_paid_alert_settings(target)
     db.session.commit()
     if plan in {"business", "admin"}:
         try:
@@ -6762,6 +6979,47 @@ def admin_set_plan(user_id: int, plan: str):
             app.logger.exception("ensure_personal_org failed for user %s", target.id)
             db.session.rollback()
     flash(f"Piano di {target.email} aggiornato a {plan}.", "success")
+    return redirect(url_for("admin_home"))
+
+
+@app.route("/admin/jobs/<int:job_id>/refund", methods=["POST"])
+@admin_required
+def admin_refund_job(job_id: int):
+    """Refund billed credits when an error job produced no deliverable report."""
+    job = db.session.get(AnalysisJob, job_id)
+    if job is None:
+        flash("Job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    owner = db.session.get(User, job.user_id)
+    if owner is None:
+        flash("Utente del job non trovato.", "error")
+        return redirect(url_for("admin_home"))
+    try:
+        refunded = refund_failed_job_billing(
+            db.session,
+            CreditLedger,
+            owner,
+            job,
+            SiteAnalysis=SiteAnalysis,
+            topup_credit_fn=topup_credit,
+        )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("admin refund job failed id=%s", job_id)
+        flash("Rimborso fallito.", "error")
+        return redirect(url_for("admin_home"))
+    if refunded <= 0:
+        flash(
+            "Nessun rimborso: job non in errore, già rimborsato, "
+            "senza addebito, oppure con report già presente.",
+            "warning",
+        )
+    else:
+        flash(
+            f"Rimborsati {format_token_amount(refunded)} per job #{job.id}.",
+            "success",
+        )
     return redirect(url_for("admin_home"))
 
 

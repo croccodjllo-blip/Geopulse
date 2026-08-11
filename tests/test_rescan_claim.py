@@ -143,3 +143,61 @@ def test_process_due_rescans_passes_billing_callback_for_pack_llm(monkeypatch):
     assert callable(calls["usage_callback"])
     assert billed == [9]
 
+
+def test_process_due_rescans_releases_only_own_hold(monkeypatch):
+    """Rescan finally must not wipe concurrent dashboard/API credit holds."""
+    released: list[int] = []
+    # Global held = this rescan (40) + foreign concurrent hold (100).
+    held_state = {"cents": 140}
+
+    def fake_pipeline(**kwargs):
+        # Pipeline does not consume the rescan hold.
+        return MagicMock()
+
+    monkeypatch.setattr("services.rescan.run_analysis_pipeline", fake_pipeline)
+    monkeypatch.setattr("services.rescan.claim_due_site", lambda *a, **k: True)
+    monkeypatch.setattr(
+        "services.usage_billing.get_held_cents",
+        lambda u: int(held_state["cents"]),
+    )
+
+    user = SimpleNamespace(id=11, is_pro=True, credit_held_cents=140)
+    site = SimpleNamespace(
+        id=5,
+        user_id=11,
+        url="https://example.com/hold",
+        next_rescan_at=datetime.now(timezone.utc) - timedelta(hours=1),
+    )
+
+    class _Due:
+        def limit(self, n):
+            return self
+
+        def all(self):
+            return [site]
+
+    monkeypatch.setattr("services.rescan.due_sites_query", lambda *a, **k: _Due())
+    db = MagicMock()
+    db.get.side_effect = lambda model, pk: user if pk == 11 else site
+
+    def hold_fn(u, need):
+        return 40
+
+    def release_fn(u, amount):
+        released.append(int(amount))
+        held_state["cents"] = max(0, held_state["cents"] - int(amount))
+
+    stats = process_due_rescans(
+        db_session=db,
+        SiteAnalysis=MagicMock(),
+        AnalysisRun=MagicMock(),
+        User=MagicMock(),
+        measured=False,
+        hold_credit_fn=hold_fn,
+        release_hold_fn=release_fn,
+        estimate_cents_fn=lambda u: 40,
+    )
+    assert stats["ok"] == 1
+    assert released == [40]
+    assert held_state["cents"] == 100
+

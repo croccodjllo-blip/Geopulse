@@ -1,4 +1,8 @@
-# Deploy Centropic / GeoPulse
+# Deploy Centropic (`centropic.ai`)
+
+> Ex-brand **GeoPulse** (`geopulse.it`) resta solo come alias legacy SEO/TLS:
+> Nginx redirige `geopulse.it` / `www.geopulse.it` → `https://centropic.ai$request_uri`.
+> Non pubblicare nuovi integrazioni o docs sotto il nome GeoPulse.
 
 ## Stack
 
@@ -9,7 +13,7 @@
 | Proxy | Nginx + Let's Encrypt |
 | Secrets | `/opt/aio-bot/.env` (mai in git) |
 | Job worker | `aio-bot-analyze.timer` (+ kick thread in-app) |
-| Rescan Pro | `aio-bot-rescan.timer` |
+| Rescan Plus/Business | `aio-bot-rescan.timer` |
 | Backup | `aio-bot-backup.timer` |
 
 ## Database
@@ -37,16 +41,52 @@ Alembic (`alembic.ini` + `migrations/`) è la fonte di verità dello schema in p
 # Codice su GitHub
 git push -u origin HEAD
 
-# Produzione: remote `vps` → hook post-receive → checkout + pip + restart
+# Produzione: remote `vps` → hook post-receive → checkout + pip + alembic + schema check + restart
 git push vps HEAD:main
 ```
 
-Lo hook deve:
+Lo hook deve (in ordine):
 1. `git checkout -f` sul work tree (`/opt/aio-bot`)
-2. **`pip install -r requirements.txt`** nel venv (obbligatorio dopo dipendenze nuove)
-3. `systemctl restart aio-bot`
+2. **`pip install -r requirements.txt`** nel venv
+3. **`alembic upgrade head`** (obbligatorio — niente restart se fallisce)
+4. **`python scripts/check_schema_ready.py`** (Alembic at head + index `uq_credit_ledger_stripe_pi`)
+5. `systemctl restart aio-bot` **solo** se i passi sopra OK
 
-Sample: `deploy/post-receive.sample`. Senza lo step pip, import nuovi falliscono in silenzio fino al restart con moduli mancanti.
+Sample: `deploy/post-receive.sample`. Senza pip/alembic/check, non riavviare: è un deploy “cieco”.
+
+### Fase 0 — guardrail produzione
+
+Valori effettivi richiesti (default codice se assenti, ma vanno pinnati in `.env`):
+
+```env
+ASYNC_ANALYZE=1
+ADMIN_BOOTSTRAP=0
+SOV_DAILY_BUDGET_CENTS=5000   # >0; 0 = illimitato (vietato in prod)
+ALLOW_DROP_ANALYSIS_JOBS=0
+TRUST_PROXY=1
+BEHIND_NGINX=1                 # obbligatorio se TRUST_PROXY=1
+FLASK_DEBUG=0
+```
+
+Checklist systemd:
+
+```bash
+systemctl is-active aio-bot aio-bot-analyze.timer aio-bot-backup.timer aio-bot-rescan.timer
+systemctl is-enabled aio-bot-analyze.timer
+# Gunicorn deve restare su 127.0.0.1 (Nginx pubblico su :80/:443)
+```
+
+`/health` risponde **503** se:
+- DB down
+- manca l’index `uq_credit_ledger_stripe_pi`
+- (con `FLASK_DEBUG=0`) falliscono i guardrail env sopra
+
+Verifica locale/VPS:
+
+```bash
+sudo -u aio-bot .venv/bin/python scripts/verify_prod_guards.py
+curl -fsS https://centropic.ai/health
+```
 
 Non pubblicare host IP, path interni o credenziali in questa guida. Usare inventory/ops privato per indirizzi e chiavi SSH.
 
@@ -56,6 +96,9 @@ Non pubblicare host IP, path interni o credenziali in questa guida. Usare invent
 FLASK_SECRET_KEY=<random>
 FLASK_DEBUG=0
 ASYNC_ANALYZE=1
+BEHIND_NGINX=1
+TRUST_PROXY=1
+ADMIN_BOOTSTRAP=0
 ANALYZE_BATCH_LIMIT=5
 JOB_STALE_HEARTBEAT_MINUTES=12
 JOB_MAX_ATTEMPTS=2
@@ -70,6 +113,30 @@ ADMIN_EMAIL=admin@centropic.ai
 # GA4_MEASUREMENT_ID=G-...
 # ADS_TXT_CONTENT=...
 ```
+
+### Paddle (checkout self-serve)
+
+Senza queste chiavi `/prezzi` mostra la waitlist (`/interesse-plus`) invece del CTA Checkout.
+
+```env
+PADDLE_ENV=production
+PADDLE_API_KEY=
+PADDLE_CLIENT_TOKEN=
+PADDLE_WEBHOOK_SECRET=
+PADDLE_PRICE_PLUS_MONTHLY=
+PADDLE_PRICE_BUSINESS_MONTHLY=
+PADDLE_PRICE_TOPUP_1000=
+PADDLE_PRICE_TOPUP_2000=
+PADDLE_PRICE_TOPUP_5000=
+```
+
+Notification destination in Paddle → Developer Tools → Notifications:
+
+- URL: `https://centropic.ai/billing/paddle-webhook`
+- Eventi: `subscription.*`, `transaction.completed`, `transaction.paid`
+
+Sandbox (`PADDLE_ENV=sandbox`) è bloccato su `PUBLIC_SITE_URL=https://centropic.ai` fuori da `FLASK_DEBUG`.
+
 ### Worker analyze
 
 ```bash
@@ -85,15 +152,22 @@ python scripts/i18n_auto_translate.py
 
 Admin UI resta in italiano di proposito (non wrappata).
 
-### Nginx
+### Nginx e redirect brand
 
-Vedi `deploy/nginx.prod.conf`. **www → apex** obbligatorio:
+Vedi `deploy/nginx.prod.conf`.
 
-```nginx
-if ($host = www.centropic.ai) { return 301 https://centropic.ai$request_uri; }
-if ($host = www.geopulse.it)  { return 301 https://geopulse.it$request_uri; }
-```
+| Host | Comportamento |
+|---|---|
+| `centropic.ai` | App (proxy → Gunicorn) |
+| `www.centropic.ai` | `301` → `https://centropic.ai$request_uri` |
+| `geopulse.it` | `301` → `https://centropic.ai$request_uri` |
+| `www.geopulse.it` | `301` → `https://centropic.ai$request_uri` |
+
+HTTP→HTTPS e ACME challenge restano su tutti i `server_name` del blocco `:80`.
+Il certificato LE può restare multi-SAN sotto il path storico
+`/etc/letsencrypt/live/geopulse.it/` finché include `centropic.ai`.
 
 ### HTTPS
 
-Certbot con SAN per apex + www. Non esporre IP letterali nei `server_name` pubblici se evitabile.
+Certbot con SAN per apex + www Centropic (e, finché serve, i nomi legacy GeoPulse).
+Non esporre IP letterali nei `server_name` pubblici se evitabile.

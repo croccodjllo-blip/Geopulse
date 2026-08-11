@@ -95,6 +95,20 @@ def deliver_webhook(
     }
 
 
+def _user_may_dispatch_alerts(user: Any) -> bool:
+    """Entitlement gate — settings may still hold stale Free-after-downgrade flags."""
+    try:
+        if getattr(user, "is_admin", False):
+            return True
+        if bool(getattr(user, "is_pro", False)):
+            return True
+        plan = (getattr(user, "plan", None) or "").lower()
+        return plan in {"plus", "pro", "business", "admin"}
+    except Exception:
+        logger.exception("alert entitlement check failed — fail closed")
+        return False
+
+
 def dispatch_alerts(
     *,
     user: Any,
@@ -109,6 +123,9 @@ def dispatch_alerts(
     alerts = _alert_findings(findings)
     result: dict[str, Any] = {"alerts": len(alerts), "email": None, "webhook": None}
     if not alerts:
+        return result
+    if not _user_may_dispatch_alerts(user):
+        result["skipped"] = "entitlement"
         return result
 
     email_on = bool(getattr(user, "alert_email_enabled", True))

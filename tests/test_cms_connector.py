@@ -61,3 +61,17 @@ def test_edge_route_map_covers_well_known_paths():
     assert "/robots.txt" in EDGE_ROUTE_MAP
     assert "/.well-known/organization.jsonld" in EDGE_ROUTE_MAP
     assert "/geopulse/signals.json" in EDGE_ROUTE_MAP
+
+
+def test_basic_tier_adapters_omit_plus_only_routes():
+    basic = build_cms_bundle(
+        origin_edge_base=EDGE, site_origin=SITE, full_edge=False
+    )
+    for key in ("wordpress", "drupal", "generic_php", "netlify"):
+        files = basic["adapters"][key]["files"]
+        blob = "\n".join(str(v) for v in files.values())
+        assert "/robots.txt" not in blob
+        assert "organization.jsonld" not in blob
+    shopify = "\n".join(basic["adapters"]["shopify"]["files"].values())
+    assert f"{EDGE}/robots.txt" not in shopify
+    assert "organization.jsonld" not in shopify

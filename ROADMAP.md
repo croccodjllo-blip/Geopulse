@@ -69,28 +69,29 @@ Source of truth: `services/entitlements.py`.
 ### 0.1 Monetizzazione Paddle
 - [x] Integrazione codice Paddle Billing (overlay + webhook + top-up)
 - [x] Stripe rimosso — solo Paddle come merchant of record
-- [ ] Creare account Paddle (sandbox → live), default payment link = `centropic.ai`
-- [ ] Impostare in produzione: `PADDLE_API_KEY`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_PRICE_PLUS_MONTHLY`, `PADDLE_PRICE_TOPUP_*`
-- [ ] Notification destination: `https://centropic.ai/billing/paddle-webhook` (`subscription.*`, `transaction.completed`, `transaction.paid`)
-- [ ] CTA Checkout su `/prezzi` attiva quando `payments_enabled()` (oggi mostra waitlist senza chiavi)
+- [x] Account Paddle live su `centropic.ai` (`PADDLE_ENV=production`, Plus price + top-up su `/prezzi`)
+- [x] Env produzione: `PADDLE_*` + `PADDLE_PRICE_PLUS_MONTHLY` + `PADDLE_PRICE_TOPUP_*` (Business price ancora vuoto → waitlist)
+- [x] Notification destination: `https://centropic.ai/billing/paddle-webhook` (fail-closed senza firma → 400)
+- [x] CTA Checkout su `/prezzi` quando `paddle_plus_enabled()` / `paddle_business_enabled()` (altrimenti waitlist `/interesse-plus`)
+- [ ] Smoke test go-live: Free → paga Plus → token mensili + capability Plus senza admin
 
 **Done quando:** un utente Free completa il pagamento Paddle e vede subito le capability Plus senza intervento admin.
 
 ### 0.2 Brand / ops Centropic end-to-end
-- [ ] `README.md` + `DEPLOY.md` → Centropic / `centropic.ai` (GeoPulse solo note legacy)
-- [ ] Default mail/admin `.env.example` → `@centropic.ai`
-- [ ] Worker `workers/geopulse-signals/` → `centropic-signals` (o dual-name documentato)
+- [x] `README.md` + `DEPLOY.md` → Centropic / `centropic.ai` (GeoPulse solo note legacy)
+- [x] Default mail/admin `.env.example` → `@centropic.ai`
+- [x] Worker dual-name: `workers/centropic-signals/` (docs) + `workers/geopulse-signals/` (deploy legacy, path `/centropic/signals.json` + alias `/geopulse/…`)
 - [x] Header edge: preferire `X-Centropic-*`, mantenere alias `X-GeoPulse-*` per compat
 - [x] Header webhook: `X-Centropic-*` + alias `X-GeoPulse-*`
 - [x] Prefisso API key: generare `ct_`, accettare `ct_` + legacy `gp_`
-- [ ] Policy redirect `geopulse.it` → `centropic.ai` documentata e coerente con TLS
+- [x] Policy redirect `geopulse.it` → `centropic.ai` in `deploy/nginx.prod.conf` + `DEPLOY.md`
 
 **Done quando:** un nuovo integratore non incontra “GeoPulse” fuori da continuità SEO esplicita.
 
 ### 0.3 Chiarezza piano Pro vs Plus
-- [ ] Decidere: (A) Plus = unico piano a pagamento, oppure (B) Agency/Pro SKU reale
-- [ ] Rinominare UX `/interesse-pro` / waitlist in coerenza con la decisione
-- [ ] Allineare copy pricing, termini, entitlements, admin set-plan
+- [x] Decisione: **Free / Plus / Business** — Plus = piano self-serve startup; Business = SKU agenzia (API + white-label). Nessun SKU “Pro” in UX (alias interno `pro` solo legacy DB/entitlements).
+- [x] Waitlist canonica `/interesse-plus` (alias 301 `/interesse-pro`)
+- [x] Copy pricing / waitlist / flash allineati a Plus · Business
 
 **Done quando:** pricing, waitlist e codice usano lo stesso vocabolario.
 

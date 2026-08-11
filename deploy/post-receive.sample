@@ -1,12 +1,16 @@
 #!/bin/bash
-# Sample bare-repo post-receive hook for Centropic/GeoPulse.
+# Bare-repo post-receive hook for Centropic/GeoPulse.
 # Install on the VPS as: /opt/git/geopulse.git/hooks/post-receive
 # (adjust TARGET / SERVICE to match inventory).
+#
+# Never restart the app unless schema is at Alembic head and the
+# credit_ledger payment-idempotency index is present.
 set -euo pipefail
 
 TARGET="${DEPLOY_TARGET:-/opt/aio-bot}"
 SERVICE="${DEPLOY_SERVICE:-aio-bot}"
 BRANCH_REF="refs/heads/main"
+APP_USER="${DEPLOY_APP_USER:-aio-bot}"
 
 while read -r oldrev newrev refname; do
   if [ "$refname" != "$BRANCH_REF" ]; then
@@ -16,17 +20,32 @@ while read -r oldrev newrev refname; do
 
   echo "Deploying $newrev to $TARGET"
   git --work-tree="$TARGET" --git-dir="$(pwd)" checkout -f main
+  chown -R "$APP_USER:$APP_USER" "$TARGET" 2>/dev/null || true
+  if [ -d "$TARGET/data" ]; then chown -R "$APP_USER:$APP_USER" "$TARGET/data"; fi
+  if [ -d "$TARGET/.venv" ]; then chown -R "$APP_USER:$APP_USER" "$TARGET/.venv"; fi
 
   cd "$TARGET"
   if [ -x .venv/bin/pip ]; then
     echo "Installing Python dependencies…"
-    sudo -u aio-bot .venv/bin/pip install -q -r requirements.txt
+    sudo -u "$APP_USER" .venv/bin/pip install -q -r requirements.txt
   elif [ -x .venv/bin/python ]; then
     echo "Installing Python dependencies…"
-    sudo -u aio-bot .venv/bin/python -m pip install -q -r requirements.txt
+    sudo -u "$APP_USER" .venv/bin/python -m pip install -q -r requirements.txt
   else
-    echo "WARN: .venv not found; skip pip install" >&2
+    echo "ERROR: .venv not found; refuse deploy without venv" >&2
+    exit 1
   fi
+
+  if [ ! -x .venv/bin/alembic ]; then
+    echo "ERROR: .venv/bin/alembic missing; refuse restart" >&2
+    exit 1
+  fi
+
+  echo "Running alembic upgrade head…"
+  sudo -u "$APP_USER" .venv/bin/alembic upgrade head
+
+  echo "Verifying schema readiness (refuse blind restart)…"
+  sudo -u "$APP_USER" .venv/bin/python scripts/check_schema_ready.py
 
   echo "Restarting $SERVICE…"
   sudo systemctl restart "$SERVICE"

@@ -9,17 +9,14 @@ from typing import Any
 from sqlalchemy import func, or_
 
 
+# Match only ledger rows explicitly tagged as SoV/citation spend.
+# Do NOT match bare provider names — pack/OpenAI non-SoV usage would over-count.
 SOV_DESCRIPTION_TERMS: tuple[str, ...] = (
-    "sov",
-    "citation",
-    "openai",
-    "perplexity",
-    "anthropic",
-    "gemini",
-    "grok",
-    "xai",
-    "copilot",
-    "measured",
+    "[sov]",
+    "sov citation",
+    "rescan sov",
+    "citation usage",
+    "citation monitor",
 )
 
 
@@ -34,6 +31,12 @@ def _daily_budget_cents() -> int:
     except (TypeError, ValueError):
         configured = 5000
     return max(0, configured)
+
+
+def sov_ledger_description(prefix: str, *, provider: str, model: str) -> str:
+    """Stable SoV ledger description (budget matcher uses ``[sov]``)."""
+    scope = (prefix or "SoV citation").strip() or "SoV citation"
+    return f"[sov] {scope} usage {provider}:{model}"
 
 
 def sov_spent_today_cents(
@@ -106,5 +109,6 @@ __all__ = [
     "SovDailyBudgetExceeded",
     "assert_sov_budget_allows",
     "sov_budget_status",
+    "sov_ledger_description",
     "sov_spent_today_cents",
 ]

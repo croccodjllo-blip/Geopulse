@@ -19,14 +19,24 @@ from services.edge_signals import (
 )
 
 # Paths exposed on the customer domain → Edge upstream suffix.
-EDGE_ROUTE_MAP: dict[str, str] = {
+EDGE_ROUTE_MAP_BASIC: dict[str, str] = {
     "/llms.txt": "/llms.txt",
     "/.well-known/llms.txt": "/llms.txt",
+    "/centropic/signals.json": "/signals.json",
+    "/geopulse/signals.json": "/signals.json",  # legacy alias
+}
+EDGE_ROUTE_MAP_FULL: dict[str, str] = {
+    **EDGE_ROUTE_MAP_BASIC,
     "/robots.txt": "/robots.txt",
     "/.well-known/organization.jsonld": "/organization.jsonld",
-    "/geopulse/signals.json": "/signals.json",
-    "/centropic/signals.json": "/signals.json",
 }
+# Backward-compatible alias (full map).
+EDGE_ROUTE_MAP: dict[str, str] = dict(EDGE_ROUTE_MAP_FULL)
+
+
+def edge_route_map(*, full_edge: bool = True) -> dict[str, str]:
+    """Free/basic Edge omits Plus-only robots + JSON-LD public routes."""
+    return dict(EDGE_ROUTE_MAP_FULL if full_edge else EDGE_ROUTE_MAP_BASIC)
 
 
 def build_cms_bundle(
@@ -34,25 +44,28 @@ def build_cms_bundle(
     origin_edge_base: str,
     site_origin: str,
     public_base: str = "https://centropic.ai",
+    full_edge: bool = True,
 ) -> dict[str, Any]:
     """Return install artifacts for all supported CMS / hosts."""
     base = origin_edge_base.rstrip("/")
     site = site_origin.rstrip("/")
     signals_url = f"{base}/signals.json"
+    routes = edge_route_map(full_edge=full_edge)
     return {
         "schema": "centropic.cms_connector/v1",
         "edge_base": base,
         "site_origin": site,
-        "routes": dict(EDGE_ROUTE_MAP),
+        "tier": "full" if full_edge else "basic",
+        "routes": routes,
         "docs": f"{public_base.rstrip('/')}/faq#edge-signals",
         "adapters": {
             "wordpress": {
                 "label": "WordPress",
                 "files": {
                     "centropic-edge/centropic-edge.php": _wordpress_plugin_main(
-                        edge_base=base, site_origin=site
+                        edge_base=base, site_origin=site, full_edge=full_edge
                     ),
-                    "centropic-edge/readme.txt": _wordpress_readme(),
+                    "centropic-edge/readme.txt": _wordpress_readme(full_edge=full_edge),
                 },
                 "install": (
                     "Carica la cartella centropic-edge in wp-content/plugins/, "
@@ -63,21 +76,28 @@ def build_cms_bundle(
                 "label": "Shopify",
                 "files": {
                     "snippets/centropic-edge.liquid": _shopify_liquid(edge_base=base),
-                    "README.md": _shopify_readme(edge_base=base),
+                    "README.md": _shopify_readme(
+                        edge_base=base, full_edge=full_edge
+                    ),
                 },
                 "install": (
                     "Inserisci lo snippet nel theme layout e configura un app proxy "
-                    "o Cloudflare Worker per /llms.txt e /robots.txt."
+                    "o Cloudflare Worker per /llms.txt"
+                    + (" e /robots.txt." if full_edge else ".")
                 ),
             },
             "drupal": {
                 "label": "Drupal",
                 "files": {
-                    "centropic_edge/centropic_edge.info.yml": _drupal_info(),
+                    "centropic_edge/centropic_edge.info.yml": _drupal_info(
+                        full_edge=full_edge
+                    ),
                     "centropic_edge/centropic_edge.module": _drupal_module(),
-                    "centropic_edge/centropic_edge.routing.yml": _drupal_routing(),
+                    "centropic_edge/centropic_edge.routing.yml": _drupal_routing(
+                        full_edge=full_edge
+                    ),
                     "centropic_edge/src/Controller/EdgeProxyController.php": _drupal_controller(
-                        edge_base=base
+                        edge_base=base, full_edge=full_edge
                     ),
                     "centropic_edge/README.md": _drupal_readme(edge_base=base),
                 },
@@ -89,9 +109,13 @@ def build_cms_bundle(
             "generic_php": {
                 "label": "PHP generico (Joomla, Prestashop, custom)",
                 "files": {
-                    "centropic-proxy.php": _generic_php_proxy(edge_base=base),
-                    ".htaccess.centropic": _apache_htaccess(),
-                    "nginx-centropic.conf": _nginx_conf(edge_base=base),
+                    "centropic-proxy.php": _generic_php_proxy(
+                        edge_base=base, full_edge=full_edge
+                    ),
+                    ".htaccess.centropic": _apache_htaccess(full_edge=full_edge),
+                    "nginx-centropic.conf": _nginx_conf(
+                        edge_base=base, full_edge=full_edge
+                    ),
                     "README.md": _generic_php_readme(edge_base=base),
                 },
                 "install": (
@@ -102,8 +126,12 @@ def build_cms_bundle(
             "netlify": {
                 "label": "Netlify",
                 "files": {
-                    "netlify.toml": _netlify_toml(edge_base=base),
-                    "_redirects": _netlify_redirects(edge_base=base),
+                    "netlify.toml": _netlify_toml(
+                        edge_base=base, full_edge=full_edge
+                    ),
+                    "_redirects": _netlify_redirects(
+                        edge_base=base, full_edge=full_edge
+                    ),
                 },
                 "install": "Committa netlify.toml (o _redirects) e fai redeploy.",
             },
@@ -111,7 +139,9 @@ def build_cms_bundle(
                 "label": "Cloudflare Worker",
                 "files": {
                     "worker.js": cloudflare_worker_snippet(
-                        origin_edge_base=base, site_origin=site
+                        origin_edge_base=base,
+                        site_origin=site,
+                        full_edge=full_edge,
                     ),
                 },
                 "install": "Deploy con wrangler; collega le route sul dominio.",
@@ -119,7 +149,10 @@ def build_cms_bundle(
             "vercel": {
                 "label": "Vercel",
                 "files": {
-                    "vercel.json": vercel_edge_config_snippet(origin_edge_base=base),
+                    "vercel.json": vercel_edge_config_snippet(
+                        origin_edge_base=base,
+                        full_edge=full_edge,
+                    ),
                 },
                 "install": "Committa vercel.json nella root del progetto.",
             },
@@ -129,8 +162,9 @@ def build_cms_bundle(
                     "embed.html": html_embed_snippet(signals_url=signals_url),
                 },
                 "install": (
-                    "Incolla embed.html nel <head>. Per llms.txt/robots sul dominio "
-                    "usa Worker, rewrite host o plugin nativo."
+                    "Incolla embed.html nel <head>. Per llms.txt"
+                    + ("/robots" if full_edge else "")
+                    + " sul dominio usa Worker, rewrite host o plugin nativo."
                 ),
             },
         },
@@ -142,12 +176,14 @@ def cms_bundle_zip_bytes(
     origin_edge_base: str,
     site_origin: str,
     public_base: str = "https://centropic.ai",
+    full_edge: bool = True,
 ) -> bytes:
     """ZIP with every adapter ready to drop into a CMS / host."""
     bundle = build_cms_bundle(
         origin_edge_base=origin_edge_base,
         site_origin=site_origin,
         public_base=public_base,
+        full_edge=full_edge,
     )
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -157,6 +193,7 @@ def cms_bundle_zip_bytes(
                 edge_base=bundle["edge_base"],
                 site_origin=bundle["site_origin"],
                 docs=bundle["docs"],
+                full_edge=full_edge,
             ),
         )
         zf.writestr("routes.json", _pretty_json(bundle["routes"]))
@@ -193,13 +230,22 @@ def _pretty_json(obj: Any) -> str:
     return json.dumps(obj, indent=2, ensure_ascii=False) + "\n"
 
 
-def _root_readme(*, edge_base: str, site_origin: str, docs: str) -> str:
+def _root_readme(
+    *, edge_base: str, site_origin: str, docs: str, full_edge: bool = True
+) -> str:
+    plus_paths = (
+        "- `/robots.txt` (Plus)\n- `/.well-known/organization.jsonld` (Plus)\n"
+        if full_edge
+        else ""
+    )
+    tier = "full (Plus/Business)" if full_edge else "basic (Free — no robots/JSON-LD)"
     return f"""# Centropic CMS Connector
 
 Universal Edge Signals installer for any CMS / host.
 
 - Edge base: `{edge_base}`
 - Site: `{site_origin}`
+- Tier: {tier}
 - Docs: {docs}
 
 ## What it does
@@ -207,9 +253,7 @@ Universal Edge Signals installer for any CMS / host.
 Proxies these paths on your domain to Centropic (live crawler policy):
 
 - `/llms.txt`
-- `/robots.txt` (Plus)
-- `/.well-known/organization.jsonld` (Plus)
-- `/geopulse/signals.json`
+{plus_paths}- `/geopulse/signals.json`
 
 ## Pick your adapter
 
@@ -228,12 +272,36 @@ Activate Edge Signals in the Centropic dashboard first, then deploy one adapter.
 """
 
 
-def _wordpress_plugin_main(*, edge_base: str, site_origin: str) -> str:
+def _wordpress_plugin_main(
+    *, edge_base: str, site_origin: str, full_edge: bool = True
+) -> str:
     # Keep plugin bootstrap self-contained; default option = this edge base.
+    if full_edge:
+        rewrite_extra = """        add_rewrite_rule('^robots\\\\.txt$', 'index.php?centropic_edge=robots', 'top');
+        add_rewrite_rule('^\\\\.well-known/organization\\\\.jsonld$', 'index.php?centropic_edge=jsonld', 'top');
+"""
+        uri_map_extra = """                '/robots.txt' => 'robots',
+                '/.well-known/organization.jsonld' => 'jsonld',
+"""
+        paths_extra = """            'robots' => '/robots.txt',
+            'jsonld' => '/organization.jsonld',
+"""
+        desc = (
+            "Proxies llms.txt, robots.txt and AI signals from Centropic Edge "
+            "to your WordPress site (works with any theme / page builder)."
+        )
+    else:
+        rewrite_extra = ""
+        uri_map_extra = ""
+        paths_extra = ""
+        desc = (
+            "Proxies llms.txt and AI signals from Centropic Edge "
+            "(Free tier — no robots/JSON-LD)."
+        )
     return f"""<?php
 /**
  * Plugin Name: Centropic Edge Signals
- * Description: Proxies llms.txt, robots.txt and AI signals from Centropic Edge to your WordPress site (works with any theme / page builder).
+ * Description: {desc}
  * Version: 1.0.0
  * Author: Centropic
  * License: GPL-2.0-or-later
@@ -275,11 +343,9 @@ final class Centropic_Edge_Plugin {{
 
     public static function add_rewrites(): void {{
         add_rewrite_rule('^llms\\\\.txt$', 'index.php?centropic_edge=llms', 'top');
-        add_rewrite_rule('^robots\\\\.txt$', 'index.php?centropic_edge=robots', 'top');
-        add_rewrite_rule('^geopulse/signals\\\\.json$', 'index.php?centropic_edge=signals', 'top');
+{rewrite_extra}        add_rewrite_rule('^geopulse/signals\\\\.json$', 'index.php?centropic_edge=signals', 'top');
         add_rewrite_rule('^centropic/signals\\\\.json$', 'index.php?centropic_edge=signals', 'top');
         add_rewrite_rule('^\\\\.well-known/llms\\\\.txt$', 'index.php?centropic_edge=llms', 'top');
-        add_rewrite_rule('^\\\\.well-known/organization\\\\.jsonld$', 'index.php?centropic_edge=jsonld', 'top');
     }}
 
     public static function query_vars(array $vars): array {{
@@ -290,15 +356,13 @@ final class Centropic_Edge_Plugin {{
     public static function maybe_proxy(): void {{
         $which = get_query_var('centropic_edge');
         if (!$which) {{
-            // Fallback when another robots.txt plugin owns the route.
+            // Fallback when another plugin owns a well-known AIO route.
             $uri = isset($_SERVER['REQUEST_URI']) ? strtok($_SERVER['REQUEST_URI'], '?') : '';
             $map = [
                 '/llms.txt' => 'llms',
                 '/.well-known/llms.txt' => 'llms',
-                '/robots.txt' => 'robots',
-                '/geopulse/signals.json' => 'signals',
+{uri_map_extra}                '/geopulse/signals.json' => 'signals',
                 '/centropic/signals.json' => 'signals',
-                '/.well-known/organization.jsonld' => 'jsonld',
             ];
             $which = $map[$uri] ?? '';
         }}
@@ -307,9 +371,7 @@ final class Centropic_Edge_Plugin {{
         }}
         $paths = [
             'llms' => '/llms.txt',
-            'robots' => '/robots.txt',
-            'signals' => '/signals.json',
-            'jsonld' => '/organization.jsonld',
+{paths_extra}            'signals' => '/signals.json',
         ];
         $suffix = $paths[$which] ?? '';
         if ($suffix === '') {{
@@ -397,8 +459,13 @@ Centropic_Edge_Plugin::init();
 """
 
 
-def _wordpress_readme() -> str:
-    return """=== Centropic Edge Signals ===
+def _wordpress_readme(*, full_edge: bool = True) -> str:
+    signals = (
+        "llms.txt, robots.txt, signals.json"
+        if full_edge
+        else "llms.txt, signals.json (Free — no robots/JSON-LD)"
+    )
+    return f"""=== Centropic Edge Signals ===
 Contributors: centropic
 Tags: seo, ai, llms.txt, geo, aio
 Requires at least: 6.0
@@ -406,7 +473,7 @@ Tested up to: 6.7
 Stable tag: 1.0.0
 License: GPLv2 or later
 
-Proxies Centropic Edge Signals (llms.txt, robots.txt, signals.json) onto your WordPress domain.
+Proxies Centropic Edge Signals ({signals}) onto your WordPress domain.
 
 == Installation ==
 1. Upload the `centropic-edge` folder to `/wp-content/plugins/`
@@ -419,7 +486,7 @@ Proxies Centropic Edge Signals (llms.txt, robots.txt, signals.json) onto your Wo
 def _shopify_liquid(*, edge_base: str) -> str:
     return f"""{{% comment %}}
   Centropic Edge Signals — drop into layout/theme.liquid inside <head>
-  For /llms.txt and /robots.txt on the shop domain, use Cloudflare Worker
+  For /llms.txt on the shop domain, use Cloudflare Worker
   or a Shopify app proxy pointing to {edge_base}
 {{% endcomment %}}
 <link rel="alternate" type="text/plain" href="{edge_base}/llms.txt" title="llms.txt" />
@@ -427,26 +494,34 @@ def _shopify_liquid(*, edge_base: str) -> str:
 """
 
 
-def _shopify_readme(*, edge_base: str) -> str:
+def _shopify_readme(*, edge_base: str, full_edge: bool = True) -> str:
+    plus_line = f"{edge_base}/robots.txt\n" if full_edge else ""
+    root_note = (
+        "`/llms.txt`, `/robots.txt`" if full_edge else "`/llms.txt` (Free — no robots)"
+    )
     return f"""# Shopify + Centropic
 
 1. Theme → Edit code → `layout/theme.liquid` → paste `snippets/centropic-edge.liquid` in `<head>`.
-2. Root files (`/llms.txt`, `/robots.txt`) need an app proxy or Cloudflare Worker:
+2. Root files ({root_note}) need an app proxy or Cloudflare Worker:
 
 ```
 {edge_base}/llms.txt
-{edge_base}/robots.txt
-{edge_base}/signals.json
+{plus_line}{edge_base}/signals.json
 ```
 
 3. Optional: Cloudflare Worker from the `cloudflare/` folder in this ZIP.
 """
 
 
-def _drupal_info() -> str:
-    return """name: 'Centropic Edge Signals'
+def _drupal_info(*, full_edge: bool = True) -> str:
+    desc = (
+        "Proxies Centropic Edge AIO/GEO artifacts (llms.txt, robots, signals)."
+        if full_edge
+        else "Proxies Centropic Edge AIO/GEO artifacts (llms.txt, signals; Free)."
+    )
+    return f"""name: 'Centropic Edge Signals'
 type: module
-description: 'Proxies Centropic Edge AIO/GEO artifacts (llms.txt, robots, signals).'
+description: '{desc}'
 core_version_requirement: '^10 || ^11'
 package: SEO
 """
@@ -464,23 +539,13 @@ declare(strict_types=1);
 """
 
 
-def _drupal_routing() -> str:
-    return """centropic_edge.llms:
-  path: '/llms.txt'
-  defaults:
-    _controller: '\\Drupal\\centropic_edge\\Controller\\EdgeProxyController::llms'
-  requirements:
-    _access: 'TRUE'
-centropic_edge.robots:
+def _drupal_routing(*, full_edge: bool = True) -> str:
+    plus = ""
+    if full_edge:
+        plus = """centropic_edge.robots:
   path: '/robots.txt'
   defaults:
     _controller: '\\Drupal\\centropic_edge\\Controller\\EdgeProxyController::robots'
-  requirements:
-    _access: 'TRUE'
-centropic_edge.signals:
-  path: '/geopulse/signals.json'
-  defaults:
-    _controller: '\\Drupal\\centropic_edge\\Controller\\EdgeProxyController::signals'
   requirements:
     _access: 'TRUE'
 centropic_edge.jsonld:
@@ -490,9 +555,33 @@ centropic_edge.jsonld:
   requirements:
     _access: 'TRUE'
 """
+    return f"""centropic_edge.llms:
+  path: '/llms.txt'
+  defaults:
+    _controller: '\\Drupal\\centropic_edge\\Controller\\EdgeProxyController::llms'
+  requirements:
+    _access: 'TRUE'
+{plus}centropic_edge.signals:
+  path: '/geopulse/signals.json'
+  defaults:
+    _controller: '\\Drupal\\centropic_edge\\Controller\\EdgeProxyController::signals'
+  requirements:
+    _access: 'TRUE'
+"""
 
 
-def _drupal_controller(*, edge_base: str) -> str:
+def _drupal_controller(*, edge_base: str, full_edge: bool = True) -> str:
+    plus_methods = ""
+    if full_edge:
+        plus_methods = """
+  public function robots(): Response {
+    return $this->proxy('/robots.txt', 'text/plain; charset=utf-8');
+  }
+
+  public function jsonld(): Response {
+    return $this->proxy('/organization.jsonld', 'application/ld+json; charset=utf-8');
+  }
+"""
     return f"""<?php
 
 declare(strict_types=1);
@@ -540,17 +629,9 @@ final class EdgeProxyController extends ControllerBase {{
   public function llms(): Response {{
     return $this->proxy('/llms.txt', 'text/plain; charset=utf-8');
   }}
-
-  public function robots(): Response {{
-    return $this->proxy('/robots.txt', 'text/plain; charset=utf-8');
-  }}
-
+{plus_methods}
   public function signals(): Response {{
     return $this->proxy('/signals.json', 'application/json; charset=utf-8');
-  }}
-
-  public function jsonld(): Response {{
-    return $this->proxy('/organization.jsonld', 'application/ld+json; charset=utf-8');
   }}
 
 }}
@@ -570,7 +651,35 @@ drush cr
 """
 
 
-def _generic_php_proxy(*, edge_base: str) -> str:
+def _generic_php_proxy(*, edge_base: str, full_edge: bool = True) -> str:
+    if full_edge:
+        route_map = """$map = [
+    '/llms.txt' => '/llms.txt',
+    '/.well-known/llms.txt' => '/llms.txt',
+    '/robots.txt' => '/robots.txt',
+    '/geopulse/signals.json' => '/signals.json',
+    '/centropic/signals.json' => '/signals.json',
+    '/.well-known/organization.jsonld' => '/organization.jsonld',
+];"""
+        alias = """    $alias = [
+        'llms' => '/llms.txt',
+        'robots' => '/robots.txt',
+        'signals' => '/signals.json',
+        'jsonld' => '/organization.jsonld',
+    ];"""
+        path_help = "llms|robots|signals|jsonld"
+    else:
+        route_map = """$map = [
+    '/llms.txt' => '/llms.txt',
+    '/.well-known/llms.txt' => '/llms.txt',
+    '/geopulse/signals.json' => '/signals.json',
+    '/centropic/signals.json' => '/signals.json',
+];"""
+        alias = """    $alias = [
+        'llms' => '/llms.txt',
+        'signals' => '/signals.json',
+    ];"""
+        path_help = "llms|signals"
     return f"""<?php
 /**
  * Centropic Edge universal PHP proxy (Joomla, PrestaShop, custom PHP, etc.)
@@ -581,26 +690,14 @@ declare(strict_types=1);
 $EDGE_BASE = getenv('CENTROPIC_EDGE_BASE') ?: '{edge_base}';
 $EDGE_BASE = rtrim($EDGE_BASE, '/');
 
-$map = [
-    '/llms.txt' => '/llms.txt',
-    '/.well-known/llms.txt' => '/llms.txt',
-    '/robots.txt' => '/robots.txt',
-    '/geopulse/signals.json' => '/signals.json',
-    '/centropic/signals.json' => '/signals.json',
-    '/.well-known/organization.jsonld' => '/organization.jsonld',
-];
+{route_map}
 
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $suffix = $map[$uri] ?? null;
 if ($suffix === null) {{
-    // Allow ?path=llms|robots|signals|jsonld when used as front controller.
+    // Allow ?path={path_help} when used as front controller.
     $q = $_GET['path'] ?? '';
-    $alias = [
-        'llms' => '/llms.txt',
-        'robots' => '/robots.txt',
-        'signals' => '/signals.json',
-        'jsonld' => '/organization.jsonld',
-    ];
+{alias}
     $suffix = $alias[$q] ?? null;
 }}
 if ($suffix === null) {{
@@ -644,22 +741,39 @@ echo $body;
 """
 
 
-def _apache_htaccess() -> str:
-    return """# Centropic Edge — Apache rewrite to centropic-proxy.php
+def _apache_htaccess(*, full_edge: bool = True) -> str:
+    plus = ""
+    if full_edge:
+        plus = """  RewriteRule ^robots\\.txt$ centropic-proxy.php?path=robots [L]
+  RewriteRule ^\\.well-known/organization\\.jsonld$ centropic-proxy.php?path=jsonld [L]
+"""
+    return f"""# Centropic Edge — Apache rewrite to centropic-proxy.php
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteRule ^llms\\.txt$ centropic-proxy.php?path=llms [L]
-  RewriteRule ^robots\\.txt$ centropic-proxy.php?path=robots [L]
-  RewriteRule ^geopulse/signals\\.json$ centropic-proxy.php?path=signals [L]
+{plus}  RewriteRule ^geopulse/signals\\.json$ centropic-proxy.php?path=signals [L]
   RewriteRule ^centropic/signals\\.json$ centropic-proxy.php?path=signals [L]
   RewriteRule ^\\.well-known/llms\\.txt$ centropic-proxy.php?path=llms [L]
-  RewriteRule ^\\.well-known/organization\\.jsonld$ centropic-proxy.php?path=jsonld [L]
 </IfModule>
 """
 
 
-def _nginx_conf(*, edge_base: str) -> str:
+def _nginx_conf(*, edge_base: str, full_edge: bool = True) -> str:
     base = edge_base.rstrip("/")
+    plus = ""
+    if full_edge:
+        plus = f"""location = /robots.txt {{
+  proxy_pass {base}/robots.txt;
+  proxy_set_header Accept "text/plain, */*";
+  add_header Cache-Control "public, max-age=300, stale-while-revalidate=3600";
+  add_header X-Centropic-Edge nginx;
+}}
+location = /.well-known/organization.jsonld {{
+  proxy_pass {base}/organization.jsonld;
+  add_header Cache-Control "public, max-age=300, stale-while-revalidate=3600";
+  add_header X-Centropic-Edge nginx;
+}}
+"""
     return f"""# Centropic Edge — Nginx proxy (preferred) or front-controller to PHP
 location = /llms.txt {{
   proxy_pass {base}/llms.txt;
@@ -667,19 +781,8 @@ location = /llms.txt {{
   add_header Cache-Control "public, max-age=300, stale-while-revalidate=3600";
   add_header X-Centropic-Edge nginx;
 }}
-location = /robots.txt {{
-  proxy_pass {base}/robots.txt;
-  proxy_set_header Accept "text/plain, */*";
-  add_header Cache-Control "public, max-age=300, stale-while-revalidate=3600";
-  add_header X-Centropic-Edge nginx;
-}}
-location = /geopulse/signals.json {{
+{plus}location = /geopulse/signals.json {{
   proxy_pass {base}/signals.json;
-  add_header Cache-Control "public, max-age=300, stale-while-revalidate=3600";
-  add_header X-Centropic-Edge nginx;
-}}
-location = /.well-known/organization.jsonld {{
-  proxy_pass {base}/organization.jsonld;
   add_header Cache-Control "public, max-age=300, stale-while-revalidate=3600";
   add_header X-Centropic-Edge nginx;
 }}
@@ -697,23 +800,14 @@ Edge base: `{edge_base}`
 """
 
 
-def _netlify_toml(*, edge_base: str) -> str:
+def _netlify_toml(*, edge_base: str, full_edge: bool = True) -> str:
     base = edge_base.rstrip("/")
-    return f"""[[redirects]]
-  from = "/llms.txt"
-  to = "{base}/llms.txt"
-  status = 200
-  force = true
-
+    plus = ""
+    if full_edge:
+        plus = f"""
 [[redirects]]
   from = "/robots.txt"
   to = "{base}/robots.txt"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/geopulse/signals.json"
-  to = "{base}/signals.json"
   status = 200
   force = true
 
@@ -723,12 +817,27 @@ def _netlify_toml(*, edge_base: str) -> str:
   status = 200
   force = true
 """
-
-
-def _netlify_redirects(*, edge_base: str) -> str:
-    base = edge_base.rstrip("/")
-    return f"""/llms.txt  {base}/llms.txt  200!
-/robots.txt  {base}/robots.txt  200!
-/geopulse/signals.json  {base}/signals.json  200!
-/.well-known/organization.jsonld  {base}/organization.jsonld  200!
+    return f"""[[redirects]]
+  from = "/llms.txt"
+  to = "{base}/llms.txt"
+  status = 200
+  force = true
+{plus}
+[[redirects]]
+  from = "/geopulse/signals.json"
+  to = "{base}/signals.json"
+  status = 200
+  force = true
 """
+
+
+def _netlify_redirects(*, edge_base: str, full_edge: bool = True) -> str:
+    base = edge_base.rstrip("/")
+    lines = [f"/llms.txt  {base}/llms.txt  200!"]
+    if full_edge:
+        lines.append(f"/robots.txt  {base}/robots.txt  200!")
+        lines.append(
+            f"/.well-known/organization.jsonld  {base}/organization.jsonld  200!"
+        )
+    lines.append(f"/geopulse/signals.json  {base}/signals.json  200!")
+    return "\n".join(lines) + "\n"
