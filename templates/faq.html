@@ -53,7 +53,10 @@
     <details class="faq-item">
       <summary>{{ _('CVI e score AIO/GEO sono misurazioni live sulle IA?') }}</summary>
       <p>
-        {{ _('Il CVI misura la predisposizione strutturale: quanto brand e pagine sono leggibili dai crawler generativi. Di default è Stimato; i file osservati e, su Plus/Business, i probe LLM (citation share) possono essere Misurati. Non vendiamo un ranking fisso nelle UI di terzi — ti diamo il controllo del dato che l’IA deve poter leggere.') }}
+        {{ _('No. CVI / AIO / GEO sono sempre Stimati: predisposizione strutturale dal crawl (schema, robots, entity, findings). Non sono ranking live su ChatGPT o Claude.') }}
+      </p>
+      <p>
+        {{ _('Su Plus, il citation monitor aggiunge probe LLM Misurati (campioni stocastici). Se nessun engine menziona il brand, mostriamo “measured senza hit” e teniamo la share Stimata (proxy) — non inventiamo menzioni e non azzeriamo i numeri strutturali.') }}
       </p>
     </details>
 

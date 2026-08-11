@@ -123,10 +123,14 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
       </div>
       {% endif %}
       {% if can_measured_sov %}
-      <p class="analyze-composer__hint">{{ _('SoV measured (probe LLM) incluso quando i connector sono attivi.') }}</p>
+      <p class="analyze-composer__hint">
+        {{ _('CVI/AIO/GEO restano') }} <em>{{ _('Stimati') }}</em>
+        {{ _('(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, la share resta Stimata (proxy).') }}
+      </p>
       {% else %}
       <p class="analyze-composer__hint">
-        {{ _('Score AIO/GEO e SoV') }} <em>{{ _('stimato') }}</em> {{ _('sul dominio analizzato.') }}
+        {{ _('Score AIO/GEO e citation share') }} <em>{{ _('Stimati') }}</em>
+        {{ _('dalla struttura del dominio. Su Plus: probe LLM Misurati.') }}
       </p>
       {% endif %}
       {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}

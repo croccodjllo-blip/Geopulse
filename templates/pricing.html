@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic: Free (1 dominio), Plus 14,99€ (domini, re-scan, SoV Misurato). Business in waitlist per agenzie.') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic: Free (CVI/AIO/GEO Stimati), Plus 14,99€ con citation monitor Misurato (probe LLM; può risultare 0 hit). Business solo sales/waitlist.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -30,7 +30,8 @@
         <li><strong>{{ _('1 dominio monitorato') }}</strong></li>
         <li>{{ _('Crawl fino a') }} {{ free_crawl_pages }} {{ _('pagine') }}</li>
         <li>{{ free_total_analyses }} {{ _('analisi iniziali incluse') }}</li>
-        <li>{{ _('CVI + AIO/GEO + findings (citation share stimata)') }}</li>
+        <li>{{ _('CVI + AIO/GEO Stimati (struttura sito)') }}</li>
+        <li>{{ _('Citation share stimata (proxy)') }}</li>
         <li>{{ _('Pack HTML con tutti i fix') }}</li>
         <li>{{ _('Re-scan: manuale') }}</li>
       </ul>
@@ -41,11 +42,11 @@
       <p class="plan__badge">{{ _('In vendita') }}</p>
       <p class="plan__name">Plus</p>
       <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Operatività continua sul tuo brand: monitoraggio, re-scan e SoV Misurato.') }}</p>
+      <p class="plan__desc">{{ _('Operatività continua sul tuo brand: monitoraggio, re-scan e citation monitor.') }}</p>
       <ul class="plan__features">
         <li><strong>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('domini monitorati') }}</strong></li>
         <li><strong>{{ _('Re-scan giornaliero o settimanale') }}</strong></li>
-        <li>{{ _('SoV Misurato + citation monitor') }}</li>
+        <li>{{ _('Citation monitor Misurato (probe LLM; 0 hit → resta Stimato)') }}</li>
         <li>{{ _('Crawl fino a') }} {{ pro_crawl_pages }} {{ _('pagine (Deep') }} {{ deep_crawl_pages }})</li>
         <li>{{ _('Prompt bank + alert email/webhook') }}</li>
         <li>{{ _('Edge Signals completo + storico run') }}</li>
@@ -88,16 +89,16 @@
     </section>
 
     <section class="plan plan--v2" role="listitem" id="business">
-      <p class="plan__badge">{{ _('Waitlist') }}</p>
+      <p class="plan__badge">{{ _('Sales only') }}</p>
       <p class="plan__name">Business</p>
       <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
-      <p class="plan__desc">{{ _('Portfolio clienti: API, white-label e scala siti per il delivery in agenzia.') }}</p>
+      <p class="plan__desc">{{ _('Portfolio clienti: API, white-label e scala siti — onboarding assistito, niente checkout self-serve.') }}</p>
       <ul class="plan__features">
         <li><strong>{{ _('Fino a') }} {{ max_sites_business }} {{ _('domini / clienti') }}</strong></li>
         <li><strong>{{ _('API') }} <code>/api/v1</code> {{ _('+ white-label') }}</strong></li>
         <li><strong>{{ _('Re-scan giornaliero o settimanale') }}</strong></li>
         <li>{{ _('Export report MD/HTML white-label') }}</li>
-        <li>{{ _('Tutto di Plus: SoV Misurato, Edge, alert, storico') }}</li>
+        <li>{{ _('Tutto di Plus: citation monitor, Edge, alert, storico') }}</li>
         <li>{{ _('Ideale per retainer multi-cliente') }}</li>
       </ul>
       {% if business_ready and current_user %}
@@ -132,13 +133,21 @@
       {% elif business_ready %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
       {% else %}
-      <p class="plan__desc u-mt-075">{{ _('In arrivo per agenzie. Oggi vendiamo Plus; lascia i contatti per la waitlist Business.') }}</p>
-      <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Waitlist Business') }}</a>
+      <p class="plan__desc u-mt-075">{{ _('Oggi vendiamo Plus self-serve. Business si attiva via sales / waitlist.') }}</p>
+      <a class="btn btn-core btn-block" href="{{ url_for('pro_interest') }}">{{ _('Richiedi onboarding Business') }}</a>
       <a class="btn btn-ghost-light btn-block u-mt-05" href="mailto:info@centropic.ai">info@centropic.ai</a>
       {% endif %}
     </section>
   </div>
 
+  <p class="plan-note">
+    {{ _('Evidence:') }}
+    <strong>{{ _('Stimato') }}</strong> {{ _('= predisposizione strutturale (CVI / AIO / GEO dal crawl).') }}
+    <strong>{{ _('Misurato') }}</strong> {{ _('= probe LLM su Plus; se nessuna menzione, la share resta Stimata (proxy) — non azzeriamo i numeri utili.') }}
+    {% if sell_plus_only %}
+    {{ _('Business: solo sales / waitlist.') }}
+    {% endif %}
+  </p>
   <p class="plan-note">
     {{ _('Pagamenti:') }} {% if payments_provider == 'paddle' %}Paddle{% else %}—{% endif %}.
     {{ _('I piani si confrontano su domini, re-scan e capability (API / white-label). La quota operativa è inclusa nel canone; eventuali top-up restano opzionali.') }}

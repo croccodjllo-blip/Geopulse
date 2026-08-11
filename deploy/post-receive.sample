@@ -47,6 +47,24 @@ while read -r oldrev newrev refname; do
   echo "Verifying schema readiness (refuse blind restart)…"
   sudo -u "$APP_USER" .venv/bin/python scripts/check_schema_ready.py
 
+  # Soft warn if analyze jobs are mid-flight (restart kills workers; reclaim is 2–5 min).
+  active="$(
+    sudo -u "$APP_USER" .venv/bin/python - <<'PY' 2>/dev/null || echo 0
+from app import AnalysisJob, app, db
+from sqlalchemy import func
+with app.app_context():
+    print(
+        db.session.query(func.count(AnalysisJob.id))
+        .filter(AnalysisJob.status.in_(("pending", "running")))
+        .scalar()
+        or 0
+    )
+PY
+  )"
+  if [ "${active:-0}" != "0" ]; then
+    echo "WARN: $active pending/running analyze job(s) — restart will interrupt workers; reclaim kick follows."
+  fi
+
   echo "Restarting $SERVICE…"
   sudo systemctl restart "$SERVICE"
   # Reclaim/resume analyze queue immediately (deploy can kill mid-SoV workers).

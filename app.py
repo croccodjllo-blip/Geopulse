@@ -2324,12 +2324,24 @@ def process_pending_analyze_jobs(
             if job is not None:
                 # Pass the original lease explicitly — never write it back onto
                 # the ORM row (autoflush could overwrite a reclaimed lease).
+                err_msg = format_job_error(exc)
                 if fail_job(
                     db.session,
                     job,
-                    format_job_error(exc),
+                    err_msg,
                     lease_token=lease_token,
                 ):
+                    try:
+                        from centropic.ops_alerts import report_analyze_job_failed
+
+                        report_analyze_job_failed(
+                            job_id=int(job.id),
+                            user_id=int(getattr(job, "user_id", 0) or 0) or None,
+                            error=err_msg,
+                            phase=getattr(job, "progress_phase", None),
+                        )
+                    except Exception:
+                        app.logger.exception("job failure sentry alert failed")
                     if user is not None:
                         release_job_hold(db.session, user, job)
                         try:
@@ -3224,6 +3236,14 @@ def health():
     }
     if stale_n > 0:
         payload["degraded_reasons"] = ["stale_jobs"]
+        try:
+            from centropic.ops_alerts import report_stale_running_jobs
+
+            report_stale_running_jobs(
+                stale_n, stale_after_minutes=STALE_HEARTBEAT_MINUTES
+            )
+        except Exception:
+            app.logger.exception("stale job sentry alert failed")
     if not healthy:
         reasons: list[str] = []
         if not db_ok:
@@ -4301,10 +4321,16 @@ def billing_checkout():
             flash("Hai già Business (include tutte le funzioni Plus).", "success")
             return redirect(url_for("dashboard"))
         if product == "plus" and plan in {"plus", "pro"}:
-            flash(
-                "Hai già Plus. Passa a Business per API, white-label e più domini clienti.",
-                "success",
-            )
+            if sell_plus_only():
+                flash(
+                    "Hai già Plus. Business è in waitlist sales (API / white-label).",
+                    "success",
+                )
+            else:
+                flash(
+                    "Hai già Plus. Passa a Business per API, white-label e più domini clienti.",
+                    "success",
+                )
             return redirect(url_for("pricing") + "#business")
 
     # Overlay is preferred; server transaction is the fallback when only API key is set.
@@ -4323,7 +4349,7 @@ def billing_checkout():
 
     if product == "business" and not paddle_business_enabled():
         flash(
-            "Business è in waitlist: oggi vendiamo solo Plus. Lascia i contatti o scrivi a info@centropic.ai.",
+            "Business non è in checkout self-serve: onboarding via sales / waitlist. Oggi vendiamo Plus.",
             "warning",
         )
         return redirect(url_for("pro_interest"))
