@@ -1,10 +1,13 @@
 """Rate limiter condiviso tra worker Gunicorn (SQLite WAL).
 
-Fallback in-memory solo se il path DB non è scrivibile.
+In produzione il fallback in-memory è disabilitato (fail-closed al boot):
+con Gunicorn multi-worker i limiti per-processo sono aggirabili.
+Dev/test: ALLOW_MEMORY_RATE_LIMITER=1 oppure FLASK_DEBUG=1.
 """
 
 from __future__ import annotations
 
+import logging
 import os
 import sqlite3
 import threading
@@ -12,9 +15,11 @@ import time
 from collections import defaultdict, deque
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
 
 class MemoryRateLimiter:
-    """Limiter per-processo (dev / fallback)."""
+    """Limiter per-processo (dev / fallback esplicito)."""
 
     def __init__(self) -> None:
         self._events: dict[str, deque[float]] = defaultdict(deque)
@@ -126,12 +131,32 @@ def _default_db_path() -> str:
     return os.path.join(root, "instance", "rate_limit.db")
 
 
+def _allow_memory_fallback() -> bool:
+    if (os.getenv("ALLOW_MEMORY_RATE_LIMITER") or "").strip() in {"1", "true", "yes"}:
+        return True
+    if (os.getenv("FLASK_DEBUG") or "0").strip() == "1":
+        return True
+    # Pytest / unit tests import app with FLASK_DEBUG=1 via conftest; keep explicit.
+    if (os.getenv("PYTEST_CURRENT_TEST") or "").strip():
+        return True
+    return False
+
+
 def build_limiter() -> MemoryRateLimiter | SqliteRateLimiter:
     path = _default_db_path()
     try:
         return SqliteRateLimiter(path)
-    except Exception:
-        return MemoryRateLimiter()
+    except Exception as exc:
+        if _allow_memory_fallback():
+            logger.warning(
+                "Rate limiter SQLite unavailable (%s); using in-memory fallback",
+                exc,
+            )
+            return MemoryRateLimiter()
+        raise RuntimeError(
+            f"Rate limiter DB non scrivibile ({path}). "
+            "Monta RATE_LIMIT_DB o imposta ALLOW_MEMORY_RATE_LIMITER=1 solo in dev."
+        ) from exc
 
 
 # Alias storico

@@ -57,7 +57,9 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('6. Diritti') }}</h2>
     <p class="lede">
-      {{ _('Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione scrivendo a') }}
+      {{ _('Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione dalle') }}
+      <a href="{{ url_for('dashboard_settings') }}">{{ _('Impostazioni account') }}</a>
+      {{ _('(export dati / elimina account) oppure scrivendo a') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
       {{ _('Hai anche diritto di reclamare presso l’autorità di controllo competente.') }}
     </p>

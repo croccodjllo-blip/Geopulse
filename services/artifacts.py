@@ -848,7 +848,7 @@ footer{{margin-top:2rem;font-size:.85rem;color:#8B97A8}}
 <body>
 <div class="wrap">
   <p class="brand">centropic.ai</p>
-  <h1>Pack ottimizzazione — un solo file</h1>
+  <h1>Pack ottimizzazione</h1>
   <p class="lede">Questo file chiude i gap AIO/GEO emersi dall’analisi. Applica le 3 sezioni sotto sul sito live, poi ri-analizza.</p>
   <p class="meta">Dominio: <strong>{_esc(host)}</strong> · URL: {_esc(url)} · AIO {aio_s} · GEO {geo_s} · generato {generated}</p>
 

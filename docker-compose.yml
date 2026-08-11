@@ -8,8 +8,11 @@ services:
       - .env
     environment:
       PORT: "8000"
-      DATABASE_URL: sqlite:////data/database.db
+      # Prefer Postgres in production. SQLite forces WEB_CONCURRENCY=1 in entrypoint.
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////data/database.db}
       FLASK_DEBUG: "0"
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      WEB_THREADS: ${WEB_THREADS:-4}
     volumes:
       - aio_bot_data:/data
     # Bind localhost only so X-Forwarded-* cannot be spoofed via the published port.
@@ -22,6 +25,26 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+
+  # Postgres opzionale: docker compose --profile postgres up -d
+  db:
+    profiles: ["postgres"]
+    image: postgres:16-alpine
+    container_name: aio-bot-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-centropic}
+      POSTGRES_USER: ${POSTGRES_USER:-centropic}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-centropic}
+    volumes:
+      - aio_bot_pg:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Proxy opzionale: usa profile "proxy"
   # docker compose --profile proxy up -d
@@ -40,3 +63,4 @@ services:
 
 volumes:
   aio_bot_data:
+  aio_bot_pg:

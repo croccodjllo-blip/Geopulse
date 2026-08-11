@@ -1,12 +1,18 @@
-"""Optional JS-rendered crawl mode (Playwright). Falls back to static HTML."""
+"""Optional JS-rendered crawl mode (Playwright). Falls back to static HTML.
+
+DNS is pinned via Chromium ``--host-resolver-rules`` so Playwright connects to the
+same public IP that ``assert_public_http_url`` validated (mitigates rebinding).
+"""
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import os
 from typing import Any
+from urllib.parse import urlparse
 
-from services.ssrf import UnsafeURLError, assert_public_http_url
+from services.ssrf import UnsafeURLError, assert_public_http_url, resolve_public_ips
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +41,22 @@ def _allow_request(url: str) -> bool:
         return False
 
 
+def _chromium_dns_pin_args(url: str) -> list[str]:
+    """Map hostname → first public IP so Chromium cannot rebind mid-request."""
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
+    if not host:
+        return []
+    try:
+        ipaddress.ip_address(host)
+        return []  # already a literal IP
+    except ValueError:
+        pass
+    ips = resolve_public_ips(host)
+    pinned = ips[0]
+    # MAP host to the validated IP; keep localhost/resolv intact.
+    return [f"--host-resolver-rules=MAP {host} {pinned}, EXCLUDE localhost"]
+
+
 def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
     """Fetch page HTML after JS render. Returns {ok, html, error}."""
     if not js_crawl_available():
@@ -46,6 +68,7 @@ def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
         }
     try:
         safe_url = assert_public_http_url(url, resolve=True)
+        launch_args = _chromium_dns_pin_args(safe_url)
     except UnsafeURLError as exc:
         return {
             "ok": False,
@@ -57,7 +80,7 @@ def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
         from playwright.sync_api import sync_playwright
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=True, args=launch_args)
             context = browser.new_context(
                 java_script_enabled=True,
                 ignore_https_errors=False,
@@ -72,15 +95,13 @@ def render_html(url: str, *, timeout_ms: int = 15000) -> dict[str, Any]:
                 return route.continue_()
 
             page.route("**/*", _on_route)
-            # Narrow DNS-rebinding TOCTOU: re-resolve immediately before goto.
+            # Narrow DNS-rebinding TOCTOU: re-resolve + refresh MAP immediately before goto.
             assert_public_http_url(safe_url, resolve=True)
             page.goto(safe_url, wait_until="domcontentloaded", timeout=timeout_ms)
             # Re-validate final URL after redirects (DNS rebinding / open redirect).
             try:
                 final = assert_public_http_url(page.url, resolve=True)
                 # Reject host swaps after redirect (common rebinding vector).
-                from urllib.parse import urlparse
-
                 if urlparse(safe_url).hostname != urlparse(final).hostname:
                     raise UnsafeURLError("redirect_host_mismatch")
             except UnsafeURLError as exc:

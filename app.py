@@ -84,6 +84,7 @@ from services.analyzer import (
 )
 from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
+    assert_paddle_env_matches_site,
     client_config as paddle_client_config,
     create_business_checkout as paddle_create_business_checkout,
     create_plus_checkout as paddle_create_plus_checkout,
@@ -495,7 +496,8 @@ class User(db.Model):
     company = db.Column(db.String(160))
     website_url = db.Column(db.String(500))
     phone = db.Column(db.String(40))
-    role = db.Column(db.String(80))
+    role = db.Column(db.String(80))  # job title from register OR privilege (admin/internal)
+    # Privilege roles must never be set via RegisterForm (ROLE_CHOICES excludes them).
     country = db.Column(db.String(80))
     plan = db.Column(db.String(40), nullable=False, default="free")  # free|plus|pro|admin
     password_hash = db.Column(db.String(255), nullable=False)
@@ -531,6 +533,9 @@ class User(db.Model):
     trial_started_at = db.Column(db.DateTime)
     free_exhausted_email_sent = db.Column(db.Boolean, nullable=False, default=False)
     low_balance_email_sent_at = db.Column(db.DateTime)
+    # GDPR consent proof (checkbox + timestamp + doc version).
+    terms_accepted_at = db.Column(db.DateTime)
+    terms_version = db.Column(db.String(40))
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1008,6 +1013,27 @@ ROLE_CHOICES = [
     ("developer", "Developer"),
     ("other", "Altro"),
 ]
+# Privilege values that may live in users.role (ops-only; never from RegisterForm).
+PRIVILEGE_ROLES = frozenset({"admin", "internal"})
+TERMS_VERSION = (os.getenv("TERMS_VERSION") or "2026-08-11").strip() or "2026-08-11"
+
+
+def clear_privilege_role(user: "User") -> None:
+    """Strip admin/internal privilege from the overloaded role column."""
+    if (getattr(user, "role", None) or "").lower() in PRIVILEGE_ROLES:
+        user.role = None
+
+
+class DeleteAccountForm(FlaskForm):
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(), Length(min=PASSWORD_MIN_LEN, max=PASSWORD_MAX_LEN)],
+    )
+    confirm_delete = BooleanField(
+        "Confermo di voler eliminare definitivamente l’account",
+        validators=[DataRequired(message="Devi confermare l’eliminazione.")],
+    )
+    submit = SubmitField("Elimina account")
 
 
 class RegisterForm(FlaskForm):
@@ -1611,6 +1637,7 @@ from centropic.tenancy import (  # noqa: E402
     sites_query_for_user,
     user_can_access_site,
     user_can_write_site,
+    user_org_ids,
 )
 
 
@@ -1723,6 +1750,8 @@ def ensure_schema() -> None:
             "trial_started_at": "DATETIME",
             "free_exhausted_email_sent": "BOOLEAN DEFAULT 0",
             "low_balance_email_sent_at": "DATETIME",
+            "terms_accepted_at": "DATETIME",
+            "terms_version": "TEXT",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -2429,13 +2458,65 @@ def resolve_analyze_existing(user: User, url: str) -> tuple[SiteAnalysis | None,
     return existing, None
 
 
-def active_analyze_job_for_url(user_id: int, url: str) -> AnalysisJob | None:
-    """Pending/running job for the same user+url (dedupe enqueue)."""
-    return (
+def active_analyze_job_for_url(
+    user_id: int,
+    url: str,
+    *,
+    site: SiteAnalysis | None = None,
+) -> AnalysisJob | None:
+    """Pending/running job for the same URL within the tenant (dedupe enqueue).
+
+    Matches: (1) same site_id, (2) same user+url, (3) org peers on the same URL.
+    """
+    active = AnalysisJob.status.in_(("pending", "running"))
+    if site is not None and getattr(site, "id", None):
+        by_site = (
+            AnalysisJob.query.filter(active, AnalysisJob.site_id == int(site.id))
+            .order_by(AnalysisJob.id.desc())
+            .first()
+        )
+        if by_site is not None:
+            return by_site
+
+    by_user = (
         AnalysisJob.query.filter(
+            active,
             AnalysisJob.user_id == user_id,
             AnalysisJob.url == url,
-            AnalysisJob.status.in_(("pending", "running")),
+        )
+        .order_by(AnalysisJob.id.desc())
+        .first()
+    )
+    if by_user is not None:
+        return by_user
+
+    # Org-shared remisure: block parallel jobs from other members on the same URL.
+    org_ids: list[int] = []
+    if site is not None and getattr(site, "organization_id", None):
+        org_ids = [int(site.organization_id)]
+    else:
+        try:
+            org_ids = [int(x) for x in user_org_ids(user_id)]
+        except Exception:
+            org_ids = []
+    if not org_ids:
+        return None
+
+    peer_ids = [
+        int(r[0])
+        for r in OrganizationMember.query.filter(
+            OrganizationMember.organization_id.in_(org_ids)
+        )
+        .with_entities(OrganizationMember.user_id)
+        .all()
+    ]
+    if not peer_ids:
+        return None
+    return (
+        AnalysisJob.query.filter(
+            active,
+            AnalysisJob.url == url,
+            AnalysisJob.user_id.in_(peer_ids),
         )
         .order_by(AnalysisJob.id.desc())
         .first()
@@ -3970,7 +4051,16 @@ def billing_paddle_webhook():
             user = _user_from_paddle(data)
 
             if transaction_grants_business(data):
-                if user is not None and (user.plan or "").lower() != "admin":
+                if user is None:
+                    app.logger.error(
+                        "Paddle business grant no_user txn=%s customer=%s",
+                        data.get("id"),
+                        data.get("customer_id"),
+                    )
+                    app_metrics.incr("billing.plan_grant_no_user")
+                    # 5xx so Paddle retries after ops maps the customer.
+                    return jsonify({"ok": False, "error": "no_user"}), 500
+                if (user.plan or "").lower() != "admin":
                     txn_id = str(data.get("id") or "").strip()
                     customer_id = data.get("customer_id")
                     sub = data.get("subscription_id")
@@ -4001,7 +4091,16 @@ def billing_paddle_webhook():
                 return jsonify({"ok": True})
 
             if transaction_grants_plus(data):
-                if user is not None and (user.plan or "").lower() != "admin":
+                if user is None:
+                    app.logger.error(
+                        "Paddle plus grant no_user txn=%s customer=%s",
+                        data.get("id"),
+                        data.get("customer_id"),
+                    )
+                    app_metrics.incr("billing.plan_grant_no_user")
+                    # 5xx so Paddle retries after ops maps the customer.
+                    return jsonify({"ok": False, "error": "no_user"}), 500
+                if (user.plan or "").lower() != "admin":
                     txn_id = str(data.get("id") or "").strip()
                     customer_id = data.get("customer_id")
                     sub = data.get("subscription_id")
@@ -4205,6 +4304,8 @@ def register():
             if (form.website_url.data or "").strip():
                 website = normalize_url(form.website_url.data)
             role_val = (form.role.data or "").strip() or None
+            if role_val and role_val.lower() in PRIVILEGE_ROLES:
+                role_val = None
             user = User(
                 email=email,
                 name=form.name.data.strip(),
@@ -4217,6 +4318,8 @@ def register():
                 credit_balance_cents=0,
                 welcome_credit_granted=False,
                 referral_code=new_referral_code(),
+                terms_accepted_at=datetime.now(timezone.utc),
+                terms_version=TERMS_VERSION,
             )
             # Optional referral: ?ref=CODE
             ref = (request.args.get("ref") or request.form.get("ref") or "").strip().lower()
@@ -5059,7 +5162,7 @@ def dashboard_analyze_confirmed():
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return blocked
-    dup = active_analyze_job_for_url(user.id, url)
+    dup = active_analyze_job_for_url(user.id, url, site=existing)
     if dup is not None:
         flash("Analisi già in coda per questo URL.", "info")
         return redirect(url_for("dashboard", job=dup.id))
@@ -5575,9 +5678,111 @@ def dashboard_settings():
         footer_note=agency.get("footer_note") or "",
     )
     password_form = ChangePasswordForm()
+    delete_form = DeleteAccountForm()
 
     if request.method == "POST":
         action = (request.form.get("action") or "").strip()
+        if action == "export_data":
+            sites = (
+                sites_query_for_user(SiteAnalysis, user)
+                .order_by(SiteAnalysis.domain.asc())
+                .all()
+            )
+            payload = {
+                "exported_at": datetime.now(timezone.utc).isoformat(),
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "name": user.name,
+                    "company": user.company,
+                    "website_url": user.website_url,
+                    "phone": user.phone,
+                    "role": user.role,
+                    "country": user.country,
+                    "plan": user.plan,
+                    "email_verified_at": (
+                        user.email_verified_at.isoformat()
+                        if user.email_verified_at
+                        else None
+                    ),
+                    "terms_accepted_at": (
+                        getattr(user, "terms_accepted_at", None).isoformat()
+                        if getattr(user, "terms_accepted_at", None)
+                        else None
+                    ),
+                    "terms_version": getattr(user, "terms_version", None),
+                    "created_at": (
+                        user.created_at.isoformat() if user.created_at else None
+                    ),
+                    "credit_balance_cents": int(user.credit_balance_cents or 0),
+                    "referral_code": getattr(user, "referral_code", None),
+                },
+                "sites": [
+                    {
+                        "id": s.id,
+                        "url": s.url,
+                        "domain": s.domain,
+                        "aio_score": s.aio_score,
+                        "geo_score": s.geo_score,
+                        "updated_at": (
+                            s.updated_at.isoformat() if s.updated_at else None
+                        ),
+                    }
+                    for s in sites
+                ],
+            }
+            buf = io.BytesIO(
+                json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
+            )
+            buf.seek(0)
+            return send_file(
+                buf,
+                as_attachment=True,
+                download_name=f"centropic-account-{user.id}.json",
+                mimetype="application/json",
+            )
+        if action == "delete_account" and delete_form.validate_on_submit():
+            if user.email == ADMIN_EMAIL or (user.plan or "").lower() == "admin":
+                flash("L’account admin non può essere eliminato da qui.", "error")
+                return redirect(url_for("dashboard_settings"))
+            if not user.check_password(delete_form.password.data or ""):
+                flash("Password non corretta.", "error")
+                return redirect(url_for("dashboard_settings"))
+            plan = (user.plan or "").lower()
+            if plan in {"plus", "business", "pro"} or getattr(
+                user, "paddle_subscription_id", None
+            ):
+                flash(
+                    "Cancella prima l’abbonamento dal portale billing, "
+                    "poi riprova l’eliminazione account.",
+                    "warning",
+                )
+                return redirect(url_for("billing_portal"))
+            uid = int(user.id)
+            try:
+                # Detach org memberships first.
+                OrganizationMember.query.filter_by(user_id=uid).delete(
+                    synchronize_session=False
+                )
+                AnalysisJob.query.filter_by(user_id=uid).delete(synchronize_session=False)
+                CreditLedger.query.filter_by(user_id=uid).delete(synchronize_session=False)
+                UsageEvent.query.filter_by(user_id=uid).delete(synchronize_session=False)
+                owned_sites = SiteAnalysis.query.filter_by(user_id=uid).all()
+                for site in owned_sites:
+                    AnalysisRun.query.filter_by(site_id=site.id).delete(
+                        synchronize_session=False
+                    )
+                    db.session.delete(site)
+                db.session.delete(user)
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Account delete failed for user %s", uid)
+                flash("Eliminazione non riuscita. Contatta supporto.", "error")
+                return redirect(url_for("dashboard_settings"))
+            session.clear()
+            flash("Account eliminato.", "success")
+            return redirect(url_for("home"))
         if action == "password" and password_form.validate_on_submit():
             if not user.check_password(password_form.current_password.data or ""):
                 flash("Password attuale non corretta.", "error")
@@ -5747,6 +5952,7 @@ def dashboard_settings():
                 vertical_form=vertical_form,
                 agency_form=agency_form,
                 password_form=password_form,
+                delete_form=delete_form,
                 email_verified=user.email_verified,
                 api_key_prefix=prefix,
                 api_key_once=raw,
@@ -5766,6 +5972,7 @@ def dashboard_settings():
         vertical_form=vertical_form,
         agency_form=agency_form,
         password_form=password_form,
+        delete_form=delete_form,
         email_verified=user.email_verified,
         api_key_prefix=getattr(user, "api_key_prefix", None),
         api_key_once=None,
@@ -6029,7 +6236,7 @@ def api_v1_analyze():
         if isinstance(blocked, tuple):
             return blocked
         return jsonify({"ok": False, "error": "quota_exceeded"}), 423
-    dup = active_analyze_job_for_url(user.id, url)
+    dup = active_analyze_job_for_url(user.id, url, site=existing)
     if dup is not None:
         return (
             jsonify(
@@ -6543,9 +6750,9 @@ def admin_set_plan(user_id: int, plan: str):
     target.plan = plan
     if plan == "admin":
         target.role = "admin"
-    elif (target.role or "").lower() == "admin":
-        # Demotion must revoke admin privileges (is_admin checks role OR plan).
-        target.role = None
+    else:
+        # Demotion must revoke admin AND internal privileges (unlimited bypass).
+        clear_privilege_role(target)
     db.session.commit()
     if plan in {"business", "admin"}:
         try:
@@ -6911,6 +7118,15 @@ with app.app_context():
     except Exception:
         # Evita crash al boot se il DB non è ancora montato
         app.logger.exception("ensure_admin_user failed")
+    try:
+        assert_paddle_env_matches_site(
+            public_site_url=PUBLIC_SITE_URL,
+            flask_debug=(os.getenv("FLASK_DEBUG", "0") == "1"),
+        )
+    except Exception:
+        app.logger.exception("Paddle environment check failed")
+        if os.getenv("FLASK_DEBUG", "0") != "1" and not app.config.get("TESTING"):
+            raise
 
 
 if __name__ == "__main__":

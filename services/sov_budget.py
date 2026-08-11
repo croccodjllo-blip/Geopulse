@@ -28,10 +28,11 @@ class SovDailyBudgetExceeded(RuntimeError):
 
 
 def _daily_budget_cents() -> int:
+    # Default €50/day platform guardrail. Set SOV_DAILY_BUDGET_CENTS=0 for unlimited.
     try:
-        configured = int(os.getenv("SOV_DAILY_BUDGET_CENTS", "0") or "0")
+        configured = int(os.getenv("SOV_DAILY_BUDGET_CENTS", "5000") or "5000")
     except (TypeError, ValueError):
-        configured = 0
+        configured = 5000
     return max(0, configured)
 
 

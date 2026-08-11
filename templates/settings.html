@@ -139,6 +139,27 @@
     </form>
   </section>
 
+  <section class="page-section" id="privacy-data">
+    <h2 class="page-section__title">{{ _('Dati e account') }}</h2>
+    <form method="post" class="form-grid panel">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="hidden" name="action" value="export_data" />
+      <p class="lede">{{ _('Scarica un export JSON con profilo e siti (portabilità).') }}</p>
+      <button class="btn btn-ghost" type="submit">{{ _('Esporta i miei dati') }}</button>
+    </form>
+    <form method="post" class="form-grid panel" style="margin-top:1rem">
+      {{ delete_form.hidden_tag() }}
+      <input type="hidden" name="action" value="delete_account" />
+      <p class="lede">{{ _('Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal billing.') }}</p>
+      <div class="field">
+        <label for="delete_password">{{ _('Password') }}</label>
+        {{ delete_form.password(id="delete_password", autocomplete="current-password") }}
+      </div>
+      <label class="checkline">{{ delete_form.confirm_delete() }} <span>{{ _('Confermo di voler eliminare l’account') }}</span></label>
+      {{ delete_form.submit(class_="btn btn-ghost") }}
+    </form>
+  </section>
+
   {% if can_agency %}
   <section class="page-section">
     <h2 class="page-section__title">{{ _('White-label agenzia') }}</h2>

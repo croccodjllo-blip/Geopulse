@@ -37,6 +37,35 @@ def paddle_environment() -> str:
     return "sandbox" if PADDLE_ENV in {"sandbox", "test", "sandbox-api"} else "production"
 
 
+def assert_paddle_env_matches_site(
+    *,
+    public_site_url: str,
+    flask_debug: bool = False,
+    allow_sandbox_on_prod: bool | None = None,
+) -> None:
+    """Fail-fast when production public URL would talk to Paddle sandbox.
+
+    Override with ALLOW_PADDLE_SANDBOX_ON_PROD=1 for emergency staging.
+    """
+    if allow_sandbox_on_prod is None:
+        allow_sandbox_on_prod = (os.getenv("ALLOW_PADDLE_SANDBOX_ON_PROD") or "").strip() in {
+            "1",
+            "true",
+            "yes",
+        }
+    if flask_debug or allow_sandbox_on_prod:
+        return
+    if paddle_environment() != "sandbox":
+        return
+    host = (public_site_url or "").strip().lower()
+    if "centropic.ai" in host and "localhost" not in host and "127.0.0.1" not in host:
+        raise RuntimeError(
+            "PADDLE_ENV=sandbox with PUBLIC_SITE_URL pointing at production "
+            f"({public_site_url}). Set PADDLE_ENV=production or "
+            "ALLOW_PADDLE_SANDBOX_ON_PROD=1 for intentional staging."
+        )
+
+
 def paddle_api_base() -> str:
     if paddle_environment() == "sandbox":
         return "https://sandbox-api.paddle.com"
