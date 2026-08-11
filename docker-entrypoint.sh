@@ -1,5 +1,6 @@
 #!/bin/sh
 # Centropic container entrypoint: SQLite must stay single-worker.
+# Refuse to start unless Alembic is at head and billing index exists.
 set -eu
 
 PORT="${PORT:-8000}"
@@ -15,6 +16,13 @@ case "$DB_URL" in
     fi
     ;;
 esac
+
+if [ "${SKIP_SCHEMA_CHECK:-0}" != "1" ]; then
+  echo "centropic: alembic upgrade head"
+  alembic upgrade head
+  echo "centropic: check_schema_ready"
+  python scripts/check_schema_ready.py
+fi
 
 exec gunicorn \
   --bind "0.0.0.0:${PORT}" \
