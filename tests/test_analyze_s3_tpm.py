@@ -255,3 +255,10 @@ def test_persist_analysis_offloads_to_s3(monkeypatch):
         assert loaded["llms.txt"] == "# Hello pack"
         ensure_pack_loaded(analysis)
         assert "application/ld+json" in analysis.json_ld_artifact
+
+
+def test_estimate_tpm_tokens():
+    from services.llm_retry import estimate_tpm_tokens
+
+    assert estimate_tpm_tokens(prompt_chars=400, max_output=100) == 200
+    assert estimate_tpm_tokens(prompt_chars=0, max_output=0) == 1

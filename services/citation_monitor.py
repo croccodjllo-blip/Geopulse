@@ -17,7 +17,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextvars import ContextVar
 from typing import Any
 
-from services.llm_retry import call_with_retries, http_should_retry, probe_pacing_seconds
+from services.llm_retry import (
+    call_with_retries,
+    estimate_tpm_tokens,
+    http_should_retry,
+    probe_pacing_seconds,
+)
 from services.prompt_bank import default_prompts
 
 logger = logging.getLogger(__name__)
@@ -275,7 +280,12 @@ def _probe_openai(
                     ],
                 )
 
-            resp = call_with_retries(_once, retries=5, label="openai-sov")
+            resp = call_with_retries(
+                _once,
+                retries=5,
+                label="openai-sov",
+                tokens=estimate_tpm_tokens(prompt_chars=len(prompt or "") + 200, max_output=350),
+            )
             if hasattr(resp, "usage") and resp.usage and usage_callback:
                 usage_callback(
                     provider="openai",
@@ -361,7 +371,12 @@ def _probe_perplexity(
                     raise RuntimeError(f"HTTP {res.status_code}: {(res.text or '')[:120]}")
                 return res
 
-            res = call_with_retries(_once, retries=4, label="perplexity-sov")
+            res = call_with_retries(
+                _once,
+                retries=4,
+                label="perplexity-sov",
+                tokens=estimate_tpm_tokens(prompt_chars=len(prompt or "") + 200, max_output=350),
+            )
             if not res.ok:
                 err_body = (res.text or "")[:180]
                 details.append(
@@ -449,7 +464,7 @@ def _probe_anthropic(
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("anthropic")
-            acquire_tpm("anthropic")
+            acquire_tpm("anthropic", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
             res = requests.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={
@@ -557,7 +572,7 @@ def _probe_gemini(
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("gemini")
-            acquire_tpm("gemini")
+            acquire_tpm("gemini", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
             url = (
                 "https://generativelanguage.googleapis.com/v1beta/models/"
                 f"{model}:generateContent"
@@ -670,7 +685,7 @@ def _probe_xai(
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("xai")
-            acquire_tpm("xai")
+            acquire_tpm("xai", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
             res = requests.post(
                 "https://api.x.ai/v1/chat/completions",
                 headers={
@@ -766,7 +781,7 @@ def _copilot_run_prompts(
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("copilot")
-            acquire_tpm("copilot")
+            acquire_tpm("copilot", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
             text = ""
             try:
                 resp = openai_client.responses.create(

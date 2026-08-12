@@ -12,7 +12,7 @@ Group=aio-bot
 WorkingDirectory=/opt/aio-bot
 EnvironmentFile=-/opt/aio-bot/.env
 EnvironmentFile=-/opt/aio-bot/deploy/analyze-worker-%i.env
-Environment=ANALYZE_WORKER_CONCURRENCY=4
+Environment=ANALYZE_WORKER_CONCURRENCY=16
 Environment=ANALYZE_WORKER_IDLE_SLEEP=2
 ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/analyze_worker.py --loop
 Restart=always

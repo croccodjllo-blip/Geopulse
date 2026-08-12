@@ -51,11 +51,19 @@ def _retry_after_seconds(exc: BaseException, attempt: int, *, base: float = 0.4)
     return min(8.0, delay)
 
 
+def estimate_tpm_tokens(*, prompt_chars: int = 0, max_output: int = 0) -> int:
+    """Rough pre-call TPM reserve: ~4 chars/token + output headroom."""
+    prompt_tok = max(0, int(prompt_chars) + 3) // 4
+    out_tok = max(0, int(max_output))
+    return max(1, prompt_tok + out_tok)
+
+
 def call_with_retries(
     fn: Callable[[], T],
     *,
     retries: int = 4,
     label: str = "llm",
+    tokens: int | None = None,
     retry_on: Callable[[BaseException], bool] | None = None,
 ) -> T:
     """Call ``fn`` with retries on rate-limit / transient errors."""
@@ -67,9 +75,9 @@ def call_with_retries(
     attempts = max(1, int(retries))
     for attempt in range(attempts):
         try:
-            # Client-side RPM before each attempt (shared API keys across jobs).
+            # Client-side RPM + TPM before each attempt (shared API keys).
             acquire_for_label(label)
-            acquire_tpm_for_label(label)
+            acquire_tpm_for_label(label, tokens)
             return fn()
         except Exception as exc:  # noqa: BLE001 — provider SDKs vary
             last = exc

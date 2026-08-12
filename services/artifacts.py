@@ -10,6 +10,7 @@ from urllib.parse import urljoin, urlparse
 
 from openai import OpenAI
 from services.usage_billing import MAX_TOKENS_PER_CALL
+from services.llm_retry import call_with_retries, estimate_tpm_tokens
 
 from services.security import html_attr
 
@@ -194,21 +195,32 @@ Pagine analizzate: {scraped.get('pages_analyzed') or 1}
 Snippet homepage: {scraped.get('snippet')}
 """.strip()
     try:
-        completion = client.chat.completions.create(
-            model=model,
-            temperature=0.3,
-            max_tokens=MAX_TOKENS_PER_CALL,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Generi file llms.txt accurati e utili per crawler/agenti AI. "
-                        "Brand del prodotto generatore: Centropic (centropic.ai), "
-                        "non GeoPulse."
-                    ),
-                },
-                {"role": "user", "content": prompt},
-            ],
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Generi file llms.txt accurati e utili per crawler/agenti AI. "
+                    "Brand del prodotto generatore: Centropic (centropic.ai), "
+                    "non GeoPulse."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ]
+        tpm_tokens = estimate_tpm_tokens(
+            prompt_chars=sum(len(str(m.get("content") or "")) for m in messages),
+            max_output=MAX_TOKENS_PER_CALL,
+        )
+
+        def _once():
+            return client.chat.completions.create(
+                model=model,
+                temperature=0.3,
+                max_tokens=MAX_TOKENS_PER_CALL,
+                messages=messages,
+            )
+
+        completion = call_with_retries(
+            _once, retries=4, label="openai-pack", tokens=tpm_tokens
         )
         # Capture real token usage for billing
         if hasattr(completion, "usage") and completion.usage and usage_callback:
