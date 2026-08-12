@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 # Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
-MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "32")))
+# Global in-flight cap across tenants. Launch target ≈100 concurrent crawls.
+MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "100")))
 # Postgres advisory lock key for serialize(count running + claim).
 _CLAIM_ADVISORY_LOCK_KEY = 872_341
 
@@ -80,12 +81,16 @@ def enqueue_analysis(
     held_cents: int = 0,
     source: str = "job",
     active_check: Callable[[], Any | None] | None = None,
+    plan: str | None = None,
+    is_admin: bool = False,
 ) -> Any:
     """Enqueue a pending analyze job.
 
     When ``active_check`` is provided it runs under a reserved write lock and
     must return an existing active job (or ``None``). A non-None result raises
     ``DuplicateAnalyzeJobError`` so callers can release holds and reuse the job.
+
+    ``plan`` / ``is_admin`` select the Redis priority lane (Business → Plus → Free).
     """
     _begin_immediate(db_session)
     if active_check is not None:
@@ -113,8 +118,16 @@ def enqueue_analysis(
     try:
         from services.analyze_queue import dispatch_analyze_job
 
-        if dispatch_analyze_job(int(job.id)):
-            logger.info("analyze job %s dispatched to redis queue", job.id)
+        if dispatch_analyze_job(
+            int(job.id),
+            plan=plan,
+            is_admin=bool(is_admin),
+        ):
+            logger.info(
+                "analyze job %s dispatched to redis queue plan=%s",
+                job.id,
+                plan or "free",
+            )
     except Exception:
         logger.exception("redis dispatch failed for job %s (DB pending still valid)", job.id)
     return job

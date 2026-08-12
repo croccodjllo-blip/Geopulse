@@ -379,8 +379,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 _db_uri = app.config["SQLALCHEMY_DATABASE_URI"] or ""
 if _db_uri.startswith("postgresql"):
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "56"))),
-        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "80"))),
+        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "100"))),
+        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "120"))),
         "pool_pre_ping": True,
         "pool_recycle": max(300, int(os.getenv("DB_POOL_RECYCLE", "1800"))),
     }
@@ -2040,6 +2040,20 @@ def _should_run_measured_with_budget(
     if not enabled:
         return False
     try:
+        from services.sov_load import should_shed_measured
+
+        if should_shed_measured(AnalysisJob=AnalysisJob):
+            app.logger.info(
+                "SoV measured shed under load user=%s",
+                getattr(user, "id", None),
+            )
+            return False
+    except Exception:
+        app.logger.exception(
+            "SoV load shed check failed for user=%s; continuing with budget gate",
+            getattr(user, "id", None),
+        )
+    try:
         status = _current_sov_budget(user)
     except Exception:
         app.logger.exception(
@@ -3176,6 +3190,8 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
                 run_measured=False,
                 held_cents=held,
                 source="onboarding",
+                plan=getattr(user, "plan", None),
+                is_admin=bool(getattr(user, "is_admin", False)),
                 active_check=lambda: active_analyze_job_for_url(
                     user.id, url, site=None
                 ),
@@ -5878,6 +5894,8 @@ def dashboard_analyze_confirmed():
                 competitor_urls=competitor_urls[:3],
                 run_measured=run_meas,
                 held_cents=held,
+                plan=getattr(user, "plan", None),
+                is_admin=bool(getattr(user, "is_admin", False)),
                 active_check=lambda: active_analyze_job_for_url(
                     user.id, url, site=existing
                 ),
@@ -6874,6 +6892,8 @@ def dashboard_verify_rescan(analysis_id: int):
             run_measured=run_meas,
             held_cents=held,
             source="verify",
+            plan=getattr(user, "plan", None),
+            is_admin=bool(getattr(user, "is_admin", False)),
             active_check=lambda: active_analyze_job_for_url(
                 user.id, url, site=analysis
             ),
@@ -7122,6 +7142,8 @@ def api_v1_analyze():
             run_measured=want_measured,
             held_cents=int(api_held or 0),
             source="api",
+            plan=getattr(user, "plan", None),
+            is_admin=bool(getattr(user, "is_admin", False)),
             active_check=lambda: active_analyze_job_for_url(
                 user.id, url, site=existing
             ),

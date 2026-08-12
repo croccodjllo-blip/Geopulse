@@ -5,12 +5,15 @@ from __future__ import annotations
 from services.analyze_queue import (
     dispatch_analyze_job,
     pop_batch,
+    priority_for_plan,
     queue_backend,
+    queue_key_for_priority,
     try_pop_analyze_job,
 )
-from services.jobs import claim_next_job, enqueue_analysis
+from services.jobs import MAX_RUNNING_ANALYZE_JOBS, claim_next_job, enqueue_analysis
 from services.llm_rpm import RedisRpmBucket, reset_buckets_for_tests
 from services.redis_client import reset_redis_client_for_tests
+from services.sov_load import max_concurrent_measured, should_shed_measured
 
 from app import AnalysisJob, User, app, db, ensure_schema
 
@@ -34,11 +37,16 @@ class _FakeRedis:
             return None
         return q.pop(0)
 
-    def brpop(self, key, timeout=0):
-        val = self.lpop(key)
-        if val is None:
-            return None
-        return (key, val)
+    def brpop(self, keys, timeout=0):
+        if isinstance(keys, (str, bytes)):
+            key_list = [keys]
+        else:
+            key_list = list(keys)
+        for key in key_list:
+            val = self.lpop(key)
+            if val is not None:
+                return (key, val)
+        return None
 
     def llen(self, key):
         return len(self.lists.get(key) or [])
@@ -126,16 +134,29 @@ def test_queue_backend_redis(monkeypatch):
 
 
 def test_dispatch_and_pop(fake_redis):
-    assert dispatch_analyze_job(42) is True
+    assert dispatch_analyze_job(42, plan="plus") is True
     assert try_pop_analyze_job() == 42
     assert try_pop_analyze_job() is None
 
 
+def test_priority_business_before_free(fake_redis):
+    assert priority_for_plan("free") == 2
+    assert priority_for_plan("plus") == 1
+    assert priority_for_plan("business") == 0
+    dispatch_analyze_job(10, plan="free")
+    dispatch_analyze_job(20, plan="business")
+    dispatch_analyze_job(30, plan="plus")
+    # Business (p0) wins over Plus (p1) and Free (p2)
+    assert try_pop_analyze_job() == 20
+    assert try_pop_analyze_job() == 30
+    assert try_pop_analyze_job() == 10
+
+
 def test_pop_batch_drains(fake_redis):
-    dispatch_analyze_job(1)
-    dispatch_analyze_job(2)
-    dispatch_analyze_job(3)
-    # LPUSH prepends → pop order 3,2,1
+    dispatch_analyze_job(1, plan="plus")
+    dispatch_analyze_job(2, plan="plus")
+    dispatch_analyze_job(3, plan="plus")
+    # Same lane LPUSH prepends → pop order 3,2,1
     batch = pop_batch(2, block_timeout=1)
     assert batch == [3, 2]
     assert try_pop_analyze_job() == 1
@@ -158,8 +179,10 @@ def test_enqueue_dispatches_to_redis(fake_redis):
             user_id=user.id,
             url="https://example.com/redis-q",
             max_pages=2,
+            plan="plus",
         )
         assert try_pop_analyze_job() == job.id
+        assert queue_key_for_priority(1) in fake_redis.lists
 
 
 def test_claim_preferred_job_id(fake_redis):
@@ -179,6 +202,7 @@ def test_claim_preferred_job_id(fake_redis):
             user_id=user.id,
             url="https://example.com/p1",
             max_pages=1,
+            plan="plus",
         )
         j2 = enqueue_analysis(
             db.session,
@@ -186,10 +210,25 @@ def test_claim_preferred_job_id(fake_redis):
             user_id=user.id,
             url="https://example.com/p2",
             max_pages=1,
+            plan="plus",
         )
         claimed = claim_next_job(db.session, AnalysisJob, preferred_job_id=j2.id)
         assert claimed is not None
         assert claimed.id == j2.id
+
+
+def test_scale_defaults_target_100():
+    assert MAX_RUNNING_ANALYZE_JOBS >= 100 or MAX_RUNNING_ANALYZE_JOBS == 0
+    assert max_concurrent_measured() > 0
+
+
+def test_measured_shed_by_queue_depth(fake_redis, monkeypatch):
+    monkeypatch.setenv("MEASURED_SHED_ENABLE", "1")
+    monkeypatch.setenv("MEASURED_SHED_QUEUE_DEPTH", "2")
+    monkeypatch.setenv("MAX_CONCURRENT_MEASURED", "100")
+    for i in range(3):
+        dispatch_analyze_job(100 + i, plan="plus")
+    assert should_shed_measured(AnalysisJob=None) is True
 
 
 def test_redis_rpm_bucket_caps(fake_redis):
