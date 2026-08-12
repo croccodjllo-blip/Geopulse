@@ -1,0 +1,12 @@
+[Unit]
+Description=Centropic S3/B2 analyze pack lifecycle cleanup
+After=network.target
+
+[Service]
+Type=oneshot
+User=aio-bot
+Group=aio-bot
+WorkingDirectory=/opt/aio-bot
+EnvironmentFile=/opt/aio-bot/.env
+ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/s3_pack_lifecycle.py
+Nice=10

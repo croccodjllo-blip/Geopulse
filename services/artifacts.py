@@ -11,6 +11,7 @@ from urllib.parse import urljoin, urlparse
 from openai import OpenAI
 from services.usage_billing import MAX_TOKENS_PER_CALL
 from services.llm_retry import call_with_retries, estimate_tpm_tokens
+from services.model_guard import guard_model
 
 from services.security import html_attr
 
@@ -155,6 +156,32 @@ def fallback_llms_txt(url: str, scraped: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+
+def scrape_fingerprint(scraped: dict[str, Any]) -> str:
+    """Stable hash of scrape fields that drive llms.txt (FinOps rescan cache)."""
+    import hashlib
+    import json
+
+    payload = {
+        "domain": scraped.get("domain") or "",
+        "title": scraped.get("title") or "",
+        "description": scraped.get("description") or "",
+        "headings": scraped.get("headings") or [],
+        "snippet": (scraped.get("snippet") or "")[:4000],
+        "links": (scraped.get("links") or [])[:40],
+        "pages_analyzed": scraped.get("pages_analyzed") or 1,
+    }
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+
+
+def _llms_cache_enabled() -> bool:
+    import os
+
+    raw = (os.getenv("LLMS_TXT_RESCAN_CACHE") or "1").strip().lower()
+    return raw not in {"0", "false", "off", "no"}
+
+
 def generate_llms_txt(
     url: str,
     scraped: dict[str, Any],
@@ -163,10 +190,30 @@ def generate_llms_txt(
     model: str = "gpt-4o-mini",
     logger: Any | None = None,
     usage_callback: Any | None = None,
+    previous: Any | None = None,
 ) -> str:
     if not api_key:
         return fallback_llms_txt(url, scraped)
 
+    if _llms_cache_enabled() and previous is not None:
+        prev_llms = (getattr(previous, "llms_txt", None) or "").strip()
+        if prev_llms:
+            try:
+                import json
+
+                blob = json.loads(getattr(previous, "crawl_pages_json", None) or "{}")
+                prev_fp = ""
+                if isinstance(blob, dict):
+                    prev_fp = str((blob.get("signals") or {}).get("llms_fingerprint") or "")
+                if prev_fp and prev_fp == scrape_fingerprint(scraped):
+                    if logger is not None:
+                        logger.info("llms.txt cache hit (rescan fingerprint match)")
+                    return prev_llms if prev_llms.endswith("\n") else prev_llms + "\n"
+            except Exception:
+                if logger is not None:
+                    logger.exception("llms.txt cache check failed")
+
+    model = guard_model(model, fallback="gpt-4o-mini")
     client = OpenAI(api_key=api_key, timeout=45.0, max_retries=3)
     brand = _clean_brand_name(str(scraped.get("domain") or ""), scraped.get("title"))
     important = _important_page_lines(scraped.get("links") or [], limit=16)
@@ -212,12 +259,21 @@ Snippet homepage: {scraped.get('snippet')}
         )
 
         def _once():
-            return client.chat.completions.create(
+            import os
+
+            kwargs = dict(
                 model=model,
                 temperature=0.3,
                 max_tokens=MAX_TOKENS_PER_CALL,
                 messages=messages,
             )
+            if (os.getenv("PROMPT_CACHE_ENABLED") or "1").strip().lower() not in {
+                "0",
+                "false",
+                "off",
+            }:
+                kwargs["extra_body"] = {"prompt_cache_key": "centropic-llms-v1"}
+            return client.chat.completions.create(**kwargs)
 
         completion = call_with_retries(
             _once, retries=4, label="openai-pack", tokens=tpm_tokens
@@ -962,8 +1018,13 @@ def build_optimization_pack(
     }
     _hb()
     llms = generate_llms_txt(
-        url, scraped, api_key=api_key, model=model, logger=logger,
+        url,
+        scraped,
+        api_key=api_key,
+        model=model,
+        logger=logger,
         usage_callback=usage_callback,
+        previous=previous,
     )
     _hb()
     org_ld = build_json_ld(url, scraped)

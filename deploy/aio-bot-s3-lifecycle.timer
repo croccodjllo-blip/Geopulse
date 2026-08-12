@@ -1,0 +1,9 @@
+[Unit]
+Description=Weekly Centropic S3 pack lifecycle cleanup
+
+[Timer]
+OnCalendar=Sun *-*-* 04:15:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

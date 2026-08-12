@@ -121,6 +121,11 @@ from services.usage_billing import (
     get_balance_cents,
     deduct_credit,
     debit_leased_job_usage,
+    add_usage_fraction,
+    flush_usage_accumulator,
+    discard_usage_accumulator,
+    usage_accum_key,
+    peek_usage_accum_cents,
     topup_credit,
     hold_credit,
     release_hold,
@@ -2190,7 +2195,7 @@ def process_pending_analyze_jobs(
                 anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
                 perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
                 run_measured=run_measured_job,
-                n_prompts=ANALYSIS_SOV_PROMPTS,
+                n_prompts=sov_prompt_limit(),
                 has_openai=bool(api_key),
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -2284,10 +2289,15 @@ def process_pending_analyze_jobs(
                             input_tokens=input_tokens,
                             output_tokens=output_tokens,
                         )
-                        debit_cents = debit_cents_from_usage(charged)
+                        accum_key = usage_accum_key(job_id=int(job.id))
+                        debit_cents = add_usage_fraction(accum_key, charged)
+                        # Soft balance guard while aggregating.
+                        projected = peek_usage_accum_cents(accum_key)
+                        if projected > 0:
+                            _assert_current_sov_debit(thread_user, max(debit_cents, projected))
                         if debit_cents <= 0:
+                            db.session.commit()
                             return
-                        _assert_current_sov_debit(thread_user, debit_cents)
                         debit_leased_job_usage(
                             db.session,
                             CreditLedger,
@@ -2346,6 +2356,27 @@ def process_pending_analyze_jobs(
                 UsageEvent=UsageEvent,
                 run_started_at=getattr(job, "started_at", None),
             )
+
+            # FinOps: one ceil debit for all LLM calls in this job (aggregate mode).
+            try:
+                flush_cents = flush_usage_accumulator(usage_accum_key(job_id=int(job.id)))
+                if flush_cents > 0:
+                    thread_user = db.session.get(User, user.id) or user
+                    _assert_current_sov_debit(thread_user, flush_cents)
+                    debit_leased_job_usage(
+                        db.session,
+                        CreditLedger,
+                        AnalysisJob,
+                        thread_user,
+                        job,
+                        lease_token=lease_token,
+                        cost_eur_cents=flush_cents,
+                        description=_usage_ledger_description("JOB", provider="aggregate", model="llm"),
+                    )
+                    db.session.commit()
+            except Exception:
+                app.logger.exception("aggregate usage flush failed job=%s", job.id)
+                raise
             # Restore lease on in-memory job after pipeline commits/refreshes.
             if not getattr(job, "lease_token", None):
                 job.lease_token = lease_token
@@ -2413,6 +2444,7 @@ def process_pending_analyze_jobs(
                     except Exception:
                         app.logger.exception("job failure sentry alert failed")
                     if user is not None:
+                        discard_usage_accumulator(usage_accum_key(job_id=int(job.id)))
                         release_job_hold(db.session, user, job)
                         try:
                             refund_failed_job_billing(
@@ -5463,7 +5495,7 @@ def dashboard():
                 anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
                 perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
                 run_measured=run_meas,
-                n_prompts=ANALYSIS_SOV_PROMPTS,
+                n_prompts=sov_prompt_limit(),
                 has_openai=bool(OPENAI_API_KEY),
                 has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
                 has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -5791,7 +5823,7 @@ def dashboard_analyze_confirmed():
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
         run_measured=run_meas,
-        n_prompts=ANALYSIS_SOV_PROMPTS,
+        n_prompts=sov_prompt_limit(),
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -6865,7 +6897,7 @@ def dashboard_verify_rescan(analysis_id: int):
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
         run_measured=run_meas,
-        n_prompts=ANALYSIS_SOV_PROMPTS,
+        n_prompts=sov_prompt_limit(),
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
@@ -7065,7 +7097,7 @@ def api_v1_analyze():
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
         run_measured=want_measured,
-        n_prompts=ANALYSIS_SOV_PROMPTS,
+        n_prompts=sov_prompt_limit(),
         has_openai=bool(OPENAI_API_KEY),
         has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
         has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),

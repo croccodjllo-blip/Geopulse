@@ -8,7 +8,7 @@ from typing import Any
 
 from services.analyzer import analyze_site
 from services.analysis_store import persist_analysis
-from services.artifacts import build_optimization_pack
+from services.artifacts import build_optimization_pack, scrape_fingerprint
 from services.alerts import dispatch_alerts
 from services.deep_checks import analyze_monitoring_alerts
 from services.geo_suite import run_geo_suite
@@ -254,6 +254,13 @@ def run_analysis_pipeline(
     # or cancelled mid-pack.
     _hb(phase="persist", done=crawled, total=max(crawled, pages))
 
+    # FinOps: persist scrape fingerprint for llms.txt rescan cache.
+    try:
+        sig = result.setdefault("signals", {})
+        if isinstance(sig, dict):
+            sig["llms_fingerprint"] = scrape_fingerprint(result.get("scraped") or {})
+    except Exception:
+        logger.exception("llms fingerprint attach failed")
     analysis = persist_analysis(
         db_session,
         SiteAnalysis=SiteAnalysis,

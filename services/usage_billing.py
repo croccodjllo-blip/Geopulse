@@ -96,6 +96,8 @@ _PRICE_TABLE: dict[str, dict[str, float]] = {
 _DEFAULT_PRICE = {"in": 1.00, "out": 4.00}   # fallback for unknown models
 
 PLATFORM_SPREAD = float(os.getenv("PLATFORM_SPREAD", "0.77"))   # 77%
+# per_call = ceil each LLM call (legacy); aggregate = one ceil per job/run
+USAGE_DEBIT_MODE = (os.getenv("USAGE_DEBIT_MODE") or "aggregate").strip().lower()
 USD_TO_EUR = float(os.getenv("USD_TO_EUR", "0.92"))
 MAX_TOKENS_PER_CALL = int(os.getenv("MAX_TOKENS_PER_CALL", "1500"))
 MAX_PREFLIGHT_WORDS = int(os.getenv("MAX_PREFLIGHT_WORDS", "12000"))
@@ -320,8 +322,12 @@ def estimate_analysis_cost(
 
     raw_micro = sum(b.cost_usd_micro() for b in call_budgets)
     service_micro = raw_micro * (1 + PLATFORM_SPREAD)
-    # Sum of per-call ceils (= what ledger will charge), never below 1¢ if any work.
-    service_eur_cents = sum(_debit_cents_for_budget(b) for b in call_budgets)
+    if usage_debit_aggregate():
+        # One ceil for the whole analysis (FinOps margin / more analyses per MRR).
+        frac = sum(_service_eur_cents_from_micro(b.cost_usd_micro()) for b in call_budgets)
+        service_eur_cents = debit_cents_from_usage(frac) if call_budgets else 0
+    else:
+        service_eur_cents = sum(_debit_cents_for_budget(b) for b in call_budgets)
     if call_budgets and service_eur_cents < 1:
         service_eur_cents = 1
 
@@ -533,6 +539,53 @@ def debit_cents_from_usage(charged_eur_cents: float) -> int:
     if charged_eur_cents <= 0:
         return 0
     return int(math.ceil(charged_eur_cents - 1e-12))
+
+
+# ─────────────────────────── aggregate debit (FinOps) ─────────────────────────
+
+import threading as _threading
+
+_USAGE_ACCUM: dict[str, float] = {}
+_USAGE_ACCUM_LOCK = _threading.Lock()
+
+
+def usage_debit_aggregate() -> bool:
+    return USAGE_DEBIT_MODE in {"aggregate", "job", "run", "batch"}
+
+
+def usage_accum_key(*, job_id: int | None = None, run_key: str | None = None) -> str:
+    if job_id is not None:
+        return f"job:{int(job_id)}"
+    return f"run:{run_key or 'anon'}"
+
+
+def add_usage_fraction(key: str, charged_eur_cents: float) -> int:
+    """Track fractional cents. Return cents to debit *now* (0 when aggregating)."""
+    if charged_eur_cents <= 0:
+        return 0
+    if not usage_debit_aggregate():
+        return debit_cents_from_usage(charged_eur_cents)
+    with _USAGE_ACCUM_LOCK:
+        _USAGE_ACCUM[key] = float(_USAGE_ACCUM.get(key, 0.0)) + float(charged_eur_cents)
+    return 0
+
+
+def peek_usage_accum_cents(key: str) -> int:
+    with _USAGE_ACCUM_LOCK:
+        frac = float(_USAGE_ACCUM.get(key, 0.0))
+    return debit_cents_from_usage(frac)
+
+
+def flush_usage_accumulator(key: str) -> int:
+    """Ceil once and clear. Returns integer EUR cents to debit."""
+    with _USAGE_ACCUM_LOCK:
+        frac = float(_USAGE_ACCUM.pop(key, 0.0))
+    return debit_cents_from_usage(frac)
+
+
+def discard_usage_accumulator(key: str) -> None:
+    with _USAGE_ACCUM_LOCK:
+        _USAGE_ACCUM.pop(key, None)
 
 
 def get_held_cents(user: Any) -> int:

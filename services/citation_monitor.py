@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextvars import ContextVar
 from typing import Any
 
+from services.model_guard import guard_model
 from services.llm_retry import (
     call_with_retries,
     estimate_tpm_tokens,
@@ -50,7 +51,7 @@ def _openai_key() -> str:
 
 
 def _openai_model() -> str:
-    return _env("OPENAI_MODEL", default="gpt-4o-mini") or "gpt-4o-mini"
+    return guard_model(_env("OPENAI_MODEL", default="gpt-4o-mini") or "gpt-4o-mini", fallback="gpt-4o-mini")
 
 
 def _perplexity_key() -> str:
@@ -58,7 +59,7 @@ def _perplexity_key() -> str:
 
 
 def _perplexity_model() -> str:
-    return _env("PERPLEXITY_MODEL", default="sonar") or "sonar"
+    return guard_model(_env("PERPLEXITY_MODEL", default="sonar") or "sonar", fallback="sonar")
 
 
 def _anthropic_key() -> str:
@@ -66,9 +67,10 @@ def _anthropic_key() -> str:
 
 
 def _anthropic_model() -> str:
-    return (
+    return guard_model(
         _env("ANTHROPIC_MODEL", "CLAUDE_MODEL", default="claude-haiku-4-5-20251001")
-        or "claude-haiku-4-5-20251001"
+        or "claude-haiku-4-5-20251001",
+        fallback="claude-haiku-4-5-20251001",
     )
 
 
@@ -81,9 +83,10 @@ def _gemini_key() -> str:
 
 
 def _gemini_model() -> str:
-    return (
+    return guard_model(
         _env("GEMINI_MODEL", "GOOGLE_AI_MODEL", default="gemini-flash-latest")
-        or "gemini-flash-latest"
+        or "gemini-flash-latest",
+        fallback="gemini-flash-latest",
     )
 
 
@@ -92,9 +95,10 @@ def _xai_key() -> str:
 
 
 def _xai_model() -> str:
-    return (
+    return guard_model(
         _env("XAI_MODEL", "GROK_MODEL", default="grok-4-1-fast-non-reasoning")
-        or "grok-4-1-fast-non-reasoning"
+        or "grok-4-1-fast-non-reasoning",
+        fallback="grok-4-1-fast-non-reasoning",
     )
 
 
@@ -119,14 +123,15 @@ def _azure_ai_api_key() -> str:
 
 
 def _azure_ai_model() -> str:
-    return (
+    return guard_model(
         _env(
             "AZURE_AI_MODEL",
             "FOUNDRY_MODEL_NAME",
             "AZURE_OPENAI_DEPLOYMENT",
             default="gpt-4o-mini",
         )
-        or "gpt-4o-mini"
+        or "gpt-4o-mini",
+        fallback="gpt-4o-mini",
     )
 
 
@@ -264,27 +269,34 @@ def _probe_openai(
         try:
 
             def _once(p: str = prompt) -> Any:
-                return client.chat.completions.create(
+                kwargs = dict(
                     model=model,
                     temperature=0.2,
-                    max_tokens=350,
+                    max_tokens=_sov_max_tokens(),
                     messages=[
                         {
                             "role": "system",
                             "content": (
-                                "Rispondi in modo fattuale. Cita brand solo se li conosci; "
-                                "non inventare URL."
+                                "Rispondi breve e fattuale. Cita brand solo se li conosci; niente URL inventati."
                             ),
                         },
                         {"role": "user", "content": p},
                     ],
                 )
+                if (os.getenv("PROMPT_CACHE_ENABLED") or "1").strip().lower() not in {
+                    "0",
+                    "false",
+                    "off",
+                }:
+                    # Stable prefix caching across SoV prompts (OpenAI auto/prefix cache).
+                    kwargs["extra_body"] = {"prompt_cache_key": "centropic-sov-v1"}
+                return client.chat.completions.create(**kwargs)
 
             resp = call_with_retries(
                 _once,
                 retries=5,
                 label="openai-sov",
-                tokens=estimate_tpm_tokens(prompt_chars=len(prompt or "") + 200, max_output=350),
+                tokens=estimate_tpm_tokens(prompt_chars=len(prompt or "") + 200, max_output=_sov_max_tokens()),
             )
             if hasattr(resp, "usage") and resp.usage and usage_callback:
                 usage_callback(
@@ -340,7 +352,7 @@ def _probe_perplexity(
 
     hits = 0
     details: list[dict[str, Any]] = []
-    system = "Be factual. Cite real brands only. Answer briefly."
+    system = "Be brief and factual. Cite real brands only."
     pace = probe_pacing_seconds()
     for idx, prompt in enumerate(prompts[:3]):
         if idx and pace:
@@ -357,7 +369,7 @@ def _probe_perplexity(
                     json={
                         "model": model,
                         "temperature": 0.2,
-                        "max_tokens": 350,
+                        "max_tokens": _sov_max_tokens(),
                         "messages": [
                             {
                                 "role": "user",
@@ -375,7 +387,7 @@ def _probe_perplexity(
                 _once,
                 retries=4,
                 label="perplexity-sov",
-                tokens=estimate_tpm_tokens(prompt_chars=len(prompt or "") + 200, max_output=350),
+                tokens=estimate_tpm_tokens(prompt_chars=len(prompt or "") + 200, max_output=_sov_max_tokens()),
             )
             if not res.ok:
                 err_body = (res.text or "")[:180]
@@ -454,17 +466,23 @@ def _probe_anthropic(
 
     hits = 0
     details: list[dict[str, Any]] = []
-    system = (
-        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
-        "non inventare URL o menzioni."
-    )
+    system = "Rispondi breve e fattuale. Cita brand solo se li conosci; niente URL inventati."
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("anthropic")
-            acquire_tpm("anthropic", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
+            acquire_tpm("anthropic", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=_sov_max_tokens()))
+            system_payload: Any = system
+            if (os.getenv("PROMPT_CACHE_ENABLED") or "1").strip().lower() not in {"0", "false", "off"}:
+                system_payload = [
+                    {
+                        "type": "text",
+                        "text": system,
+                        "cache_control": {"type": "ephemeral"},
+                    }
+                ]
             res = requests.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={
@@ -474,9 +492,9 @@ def _probe_anthropic(
                 },
                 json={
                     "model": model,
-                    "max_tokens": 350,
+                    "max_tokens": _sov_max_tokens(),
                     "temperature": 0.2,
-                    "system": system,
+                    "system": system_payload,
                     "messages": [{"role": "user", "content": prompt}],
                 },
                 timeout=45,
@@ -562,17 +580,14 @@ def _probe_gemini(
 
     hits = 0
     details: list[dict[str, Any]] = []
-    system = (
-        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
-        "non inventare URL o menzioni."
-    )
+    system = "Rispondi breve e fattuale. Cita brand solo se li conosci; niente URL inventati."
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("gemini")
-            acquire_tpm("gemini", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
+            acquire_tpm("gemini", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=_sov_max_tokens()))
             url = (
                 "https://generativelanguage.googleapis.com/v1beta/models/"
                 f"{model}:generateContent"
@@ -675,17 +690,14 @@ def _probe_xai(
 
     hits = 0
     details: list[dict[str, Any]] = []
-    system = (
-        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
-        "non inventare URL o menzioni."
-    )
+    system = "Rispondi breve e fattuale. Cita brand solo se li conosci; niente URL inventati."
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("xai")
-            acquire_tpm("xai", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
+            acquire_tpm("xai", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=_sov_max_tokens()))
             res = requests.post(
                 "https://api.x.ai/v1/chat/completions",
                 headers={
@@ -695,7 +707,7 @@ def _probe_xai(
                 json={
                     "model": model,
                     "temperature": 0.2,
-                    "max_tokens": 350,
+                    "max_tokens": _sov_max_tokens(),
                     "messages": [
                         {"role": "system", "content": system},
                         {"role": "user", "content": prompt},
@@ -771,17 +783,14 @@ def _copilot_run_prompts(
 ) -> tuple[int, list[dict[str, Any]]]:
     hits = 0
     details: list[dict[str, Any]] = []
-    system = (
-        "Rispondi in modo fattuale. Cita brand solo se li conosci realmente; "
-        "non inventare URL o menzioni."
-    )
+    system = "Rispondi breve e fattuale. Cita brand solo se li conosci; niente URL inventati."
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
             from services.llm_tpm import acquire_tpm
 
             acquire_rpm("copilot")
-            acquire_tpm("copilot", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=350))
+            acquire_tpm("copilot", estimate_tpm_tokens(prompt_chars=len(prompt or "") + 280, max_output=_sov_max_tokens()))
             text = ""
             try:
                 resp = openai_client.responses.create(
@@ -809,7 +818,7 @@ def _copilot_run_prompts(
                 resp = openai_client.chat.completions.create(
                     model=model,
                     temperature=0.2,
-                    max_tokens=350,
+                    max_tokens=_sov_max_tokens(),
                     messages=[
                         {"role": "system", "content": system},
                         {"role": "user", "content": prompt},
@@ -995,13 +1004,35 @@ def _sov_monitor_timeout_seconds() -> int:
     return max(30, min(300, n))
 
 
+def _sov_max_tokens() -> int:
+    """Output cap for SoV probes (FinOps: lower = less COGS)."""
+    try:
+        n = int(os.getenv("SOV_MAX_TOKENS", "200") or "200")
+    except (TypeError, ValueError):
+        n = 200
+    return max(64, min(500, n))
+
+
+def _dedupe_prompts(prompts: list[str]) -> list[str]:
+    """Drop duplicate prompt strings (order-preserving)."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for p in prompts:
+        key = (p or "").strip()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(p)
+    return out
+
+
 def _sov_prompt_limit() -> int:
-    """Full pack size (default 8). Fast mode uses SOV_FAST_PROMPTS when set."""
+    """Full pack size. Default mode is fast (FinOps); set SOV_PROMPT_MODE=full for depth."""
     try:
         full = int(os.getenv("ANALYSIS_SOV_PROMPTS", "8") or "8")
     except (TypeError, ValueError):
         full = 8
-    mode = (os.getenv("SOV_PROMPT_MODE", "full") or "full").strip().lower()
+    mode = (os.getenv("SOV_PROMPT_MODE", "fast") or "fast").strip().lower()
     if mode in {"fast", "quick", "lite"}:
         try:
             fast = int(os.getenv("SOV_FAST_PROMPTS", "3") or "3")
@@ -1026,7 +1057,7 @@ def run_citation_monitor(
     heartbeat_callback: Any | None = None,
 ) -> dict[str, Any]:
     limit = _sov_prompt_limit()
-    prompts = list(prompts or default_prompts(locale="it"))[:limit]
+    prompts = _dedupe_prompts(list(prompts or default_prompts(locale="it"))[:limit])
     needles = _needles(brand, domain)
     findings: list[dict[str, str]] = []
     engines_out: list[dict[str, Any]] = []

@@ -275,3 +275,18 @@ Il certificato LE può restare multi-SAN sotto il path storico
 
 Certbot con SAN per apex + www Centropic (e, finché serve, i nomi legacy GeoPulse).
 Non esporre IP letterali nei `server_name` pubblici se evitabile.
+
+
+## FinOps margin levers
+
+```env
+USAGE_DEBIT_MODE=aggregate   # one ceil per job (more analyses per MRR)
+SOV_PROMPT_MODE=fast
+SOV_MAX_TOKENS=200
+PROMPT_CACHE_ENABLED=1
+LLMS_TXT_RESCAN_CACHE=1
+LLM_MODEL_GUARD=1
+ANALYZE_S3_RETENTION_DAYS=90
+```
+
+Weekly pack cleanup: `systemctl enable --now aio-bot-s3-lifecycle.timer`
