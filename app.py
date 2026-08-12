@@ -1826,9 +1826,17 @@ def ensure_schema() -> None:
 
     def _add_column(table: str, name: str, col_type: str) -> None:
         """ADD COLUMN idempotente (race-safe tra worker Gunicorn)."""
+        dialect = db.engine.dialect.name
+        sql_type = col_type
+        if dialect == "postgresql":
+            sql_type = (
+                col_type.replace("DATETIME", "TIMESTAMP")
+                .replace("BOOLEAN DEFAULT 0", "BOOLEAN DEFAULT FALSE")
+                .replace("BOOLEAN DEFAULT 1", "BOOLEAN DEFAULT TRUE")
+            )
         try:
             with db.engine.begin() as conn:
-                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {col_type}"))
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {sql_type}"))
         except Exception as exc:
             msg = str(exc).lower()
             if "duplicate column" in msg or "already exists" in msg:
@@ -6788,6 +6796,14 @@ def dashboard_settings():
                         else None
                     ),
                     "terms_version": getattr(user, "terms_version", None),
+                    "digital_service_waiver_at": (
+                        getattr(user, "digital_service_waiver_at", None).isoformat()
+                        if getattr(user, "digital_service_waiver_at", None)
+                        else None
+                    ),
+                    "digital_service_waiver_version": getattr(
+                        user, "digital_service_waiver_version", None
+                    ),
                     "created_at": (
                         user.created_at.isoformat() if user.created_at else None
                     ),
