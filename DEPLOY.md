@@ -12,7 +12,8 @@
 | DB | SQLite WAL (dev/single-worker) — **Postgres obbligatorio** per multi-worker |
 | Proxy | Nginx + Let's Encrypt |
 | Secrets | `/opt/aio-bot/.env` (mai in git) |
-| Job worker | `aio-bot-analyze.service` (Type=simple `--loop`) + timer oneshot backup + kick on enqueue |
+| Job worker | `aio-bot-analyze.service` (Type=simple `--loop`) + optional Redis LIST dispatch + timer oneshot backup |
+| Redis (optional) | `REDIS_URL` — analyze queue + shared LLM RPM |
 | Rescan Plus/Business | `aio-bot-rescan.timer` |
 | Backup | `aio-bot-backup.timer` |
 
@@ -117,6 +118,9 @@ DB_MAX_OVERFLOW=20
 OPENAI_RPM=60
 PERPLEXITY_RPM=30
 ANTHROPIC_RPM=40
+REDIS_URL=redis://127.0.0.1:6379/0
+ANALYZE_QUEUE_BACKEND=redis
+LLM_RPM_BACKEND=redis
 PUBLIC_SITE_URL=https://centropic.ai
 PADDLE_ENV=production
 SOV_DAILY_BUDGET_CENTS=5000
@@ -124,6 +128,15 @@ ALLOW_DROP_ANALYSIS_JOBS=0
 MAIL_FROM=Centropic <noreply@centropic.ai>
 ADMIN_EMAIL=admin@centropic.ai
 ```
+
+### Redis (coda analisi + RPM condiviso)
+
+```bash
+sudo apt-get install -y redis-server
+sudo systemctl enable --now redis-server
+```
+
+Senza `REDIS_URL` (o con `ANALYZE_QUEUE_BACKEND=db`) i worker restano sul claim FIFO Postgres.
 
 ### Paddle Checkout — Default payment link (obbligatorio)
 

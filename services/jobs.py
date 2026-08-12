@@ -86,6 +86,13 @@ def enqueue_analysis(
     job = AnalysisJob(**kwargs)
     db_session.add(job)
     db_session.commit()
+    try:
+        from services.analyze_queue import dispatch_analyze_job
+
+        if dispatch_analyze_job(int(job.id)):
+            logger.info("analyze job %s dispatched to redis queue", job.id)
+    except Exception:
+        logger.exception("redis dispatch failed for job %s (DB pending still valid)", job.id)
     return job
 
 
@@ -303,8 +310,13 @@ def claim_next_job(
     *,
     on_abandon: Callable[[Any], None] | None = None,
     SiteAnalysis: Any | None = None,
+    preferred_job_id: int | None = None,
 ) -> Any | None:
-    """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending."""
+    """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending.
+
+    When ``preferred_job_id`` is set (Redis pop), try that row first; if it was
+    already claimed/cancelled, fall through to FIFO pending.
+    """
     try:
         reclaim_stale_jobs(
             db_session,
@@ -328,6 +340,13 @@ def claim_next_job(
             )
             return None
 
+    if preferred_job_id is not None:
+        claimed = _try_claim_pending_id(
+            db_session, AnalysisJob, int(preferred_job_id)
+        )
+        if claimed is not None:
+            return claimed
+
     now = datetime.now(timezone.utc)
     lease = secrets.token_hex(16)
     for _ in range(3):
@@ -338,28 +357,51 @@ def claim_next_job(
         )
         if job is None:
             return None
-        attempts = int(getattr(job, "attempt_count", 0) or 0) + 1
-        claim_fields = {
-            "status": "running",
-            "started_at": now,
-            "heartbeat_at": now,
-            "lease_token": lease,
-            "attempt_count": attempts,
-            "error": None,
-        }
-        if hasattr(job, "progress_done"):
-            claim_fields["progress_done"] = 0
-            claim_fields["progress_total"] = 0
-            claim_fields["progress_phase"] = "crawl"
-        updated = (
-            AnalysisJob.query.filter_by(id=job.id, status="pending")
-            .update(claim_fields, synchronize_session=False)
-        )
-        db_session.commit()
-        if updated == 1:
-            claimed = db_session.get(AnalysisJob, job.id)
+        claimed = _finish_claim(db_session, AnalysisJob, job.id, lease=lease, now=now)
+        if claimed is not None:
             return claimed
-        db_session.rollback()
+    return None
+
+
+def _try_claim_pending_id(db_session, AnalysisJob, job_id: int) -> Any | None:
+    now = datetime.now(timezone.utc)
+    lease = secrets.token_hex(16)
+    return _finish_claim(db_session, AnalysisJob, job_id, lease=lease, now=now)
+
+
+def _finish_claim(
+    db_session,
+    AnalysisJob,
+    job_id: int,
+    *,
+    lease: str,
+    now: datetime,
+) -> Any | None:
+    attempts_row = db_session.get(AnalysisJob, job_id)
+    if attempts_row is None or getattr(attempts_row, "status", None) != "pending":
+        return None
+    attempts = int(getattr(attempts_row, "attempt_count", 0) or 0) + 1
+    claim_fields = {
+        "status": "running",
+        "started_at": now,
+        "heartbeat_at": now,
+        "lease_token": lease,
+        "attempt_count": attempts,
+        "error": None,
+    }
+    if hasattr(attempts_row, "progress_done"):
+        claim_fields["progress_done"] = 0
+        claim_fields["progress_total"] = 0
+        claim_fields["progress_phase"] = "crawl"
+    updated = (
+        AnalysisJob.query.filter_by(id=job_id, status="pending").update(
+            claim_fields, synchronize_session=False
+        )
+    )
+    db_session.commit()
+    if updated == 1:
+        return db_session.get(AnalysisJob, job_id)
+    db_session.rollback()
     return None
 
 

@@ -2115,8 +2115,12 @@ def process_pending_analyze_jobs(
     limit: int = 5,
     openai_api_key: str | None = None,
     openai_model: str | None = None,
+    preferred_job_id: int | None = None,
 ) -> dict[str, int]:
-    """Claim e processa job pending. Usato da worker e thread kick."""
+    """Claim e processa job pending. Usato da worker e thread kick.
+
+    ``preferred_job_id`` (from Redis pop) is tried first on the initial claim.
+    """
     stats = {"ok": 0, "error": 0, "empty": 0}
     api_key = openai_api_key if openai_api_key is not None else OPENAI_API_KEY
     model = openai_model or OPENAI_MODEL
@@ -2149,12 +2153,14 @@ def process_pending_analyze_jobs(
                     "abandoned job refund failed job=%s", abandoned_job.id
                 )
 
-    for _ in range(max(1, limit)):
+    for i in range(max(1, limit)):
+        prefer = preferred_job_id if i == 0 else None
         job = claim_next_job(
             db.session,
             AnalysisJob,
             on_abandon=_on_abandon,
             SiteAnalysis=SiteAnalysis,
+            preferred_job_id=prefer,
         )
         if job is None:
             stats["empty"] += 1
@@ -2423,13 +2429,22 @@ def process_pending_analyze_jobs(
 
 
 def kick_analyze_worker() -> None:
-    """Start a one-shot analyze worker that survives gunicorn reloads.
+    """Nudge the analyze pipeline after enqueue.
 
-    Prefer an out-of-process ``scripts/analyze_worker.py`` (same entrypoint as the
-    systemd timer). In-process daemon threads die on every ``systemctl restart
-    aio-bot`` / deploy and leave partially-billed jobs stuck in ``running`` until
-    the heartbeat reclaim path permanently fails them.
+    With Redis queue the long-running ``--loop`` worker is already BRPOP-blocked,
+    so a kick is optional. We still spawn a oneshot drain so pending jobs that
+    missed Redis (or when Redis is down) are not stranded until the timer.
     """
+    try:
+        from services.analyze_queue import redis_queue_enabled
+
+        if redis_queue_enabled():
+            # Job id was already LPUSH'd in enqueue_analysis; loop worker will pick it up.
+            # Still start a cheap oneshot as safety net for orphan DB-pending rows.
+            pass
+    except Exception:
+        pass
+
     root_dir = os.path.dirname(os.path.abspath(__file__))
     worker = os.path.join(root_dir, "scripts", "analyze_worker.py")
     if os.path.isfile(worker):
@@ -2442,8 +2457,6 @@ def kick_analyze_worker() -> None:
                 log_dir = "/tmp"
             log_path = os.path.join(log_dir, "analyze-kick.log")
             log_fh = open(log_path, "a", encoding="utf-8")
-            # Detach from the gunicorn worker session so SIGTERM on reload does
-            # not tear down an in-flight measured SoV / pack run.
             proc = subprocess.Popen(
                 [sys.executable, worker, "--limit", "1"],
                 cwd=root_dir,
@@ -2455,7 +2468,6 @@ def kick_analyze_worker() -> None:
                 close_fds=True,
             )
             log_fh.close()
-            # Reap the child so gunicorn does not accumulate <defunct> zombies.
             threading.Thread(
                 target=proc.wait,
                 daemon=True,

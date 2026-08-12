@@ -4,6 +4,9 @@
 Modes:
   oneshot (default): process up to ``--limit`` jobs then exit
   ``--loop``: long-running claim loop with ``--concurrency`` parallel claim slots
+
+When ``ANALYZE_QUEUE_BACKEND=redis`` and ``REDIS_URL`` is set, the loop prefers
+BRPOP from the Redis list, then claims that AnalysisJob id in Postgres.
 """
 
 from __future__ import annotations
@@ -27,31 +30,56 @@ from app import (  # noqa: E402
 )
 
 
-def _run_batch(limit: int) -> dict[str, int]:
+def _run_batch(limit: int, preferred_job_id: int | None = None) -> dict[str, int]:
     with app.app_context():
         return process_pending_analyze_jobs(
             limit=limit,
             openai_api_key=OPENAI_API_KEY,
             openai_model=OPENAI_MODEL,
+            preferred_job_id=preferred_job_id,
         )
 
 
-def _run_one_slot() -> dict[str, int]:
+def _run_one_slot(preferred_job_id: int | None = None) -> dict[str, int]:
     """Claim and run at most one job (exclusive lease across processes)."""
-    return _run_batch(1)
+    return _run_batch(1, preferred_job_id=preferred_job_id)
+
+
+def _redis_mode() -> bool:
+    try:
+        from services.analyze_queue import redis_queue_enabled
+
+        return bool(redis_queue_enabled())
+    except Exception:
+        return False
 
 
 def run_loop(*, concurrency: int, idle_sleep: float) -> None:
     workers = max(1, int(concurrency))
     sleep_s = max(0.2, float(idle_sleep))
+    use_redis = _redis_mode()
     logging.info(
-        "Analyze worker loop starting concurrency=%s idle_sleep=%.2fs",
+        "Analyze worker loop starting concurrency=%s idle_sleep=%.2fs redis_queue=%s",
         workers,
         sleep_s,
+        use_redis,
     )
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while True:
-            futures = [pool.submit(_run_one_slot) for _ in range(workers)]
+            preferred_ids: list[int | None] = [None] * workers
+            if use_redis:
+                try:
+                    from services.analyze_queue import pop_batch
+
+                    ids = pop_batch(workers, block_timeout=max(1.0, sleep_s))
+                    for i, jid in enumerate(ids):
+                        preferred_ids[i] = jid
+                except Exception:
+                    logging.exception("redis pop failed; falling back to DB claim")
+
+            futures = [
+                pool.submit(_run_one_slot, preferred_ids[i]) for i in range(workers)
+            ]
             totals = {"ok": 0, "error": 0, "empty": 0}
             claimed_any = False
             for fut in as_completed(futures):
@@ -72,8 +100,12 @@ def run_loop(*, concurrency: int, idle_sleep: float) -> None:
                     totals["error"],
                     totals["empty"],
                 )
-            else:
+            elif not use_redis:
                 time.sleep(sleep_s)
+            # Redis path already blocked in BRPOP; tiny pause avoids busy spin
+            # when all pops timed out and DB was empty.
+            elif all(pid is None for pid in preferred_ids):
+                time.sleep(min(0.5, sleep_s))
 
 
 def main() -> int:
