@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 # Heartbeat should be refreshed during long crawls so live jobs are not stolen.
 STALE_HEARTBEAT_MINUTES = max(5, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
+# Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
+MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "20")))
 
 
 class DuplicateAnalyzeJobError(RuntimeError):
@@ -309,6 +311,16 @@ def claim_next_job(
     except Exception:
         logger.exception("reclaim_stale_jobs failed")
         db_session.rollback()
+
+    if MAX_RUNNING_ANALYZE_JOBS > 0:
+        running_n = AnalysisJob.query.filter_by(status="running").count()
+        if running_n >= MAX_RUNNING_ANALYZE_JOBS:
+            logger.info(
+                "claim skipped: global running cap reached (%s/%s)",
+                running_n,
+                MAX_RUNNING_ANALYZE_JOBS,
+            )
+            return None
 
     now = datetime.now(timezone.utc)
     lease = secrets.token_hex(16)

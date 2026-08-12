@@ -12,7 +12,7 @@
 | DB | SQLite WAL (dev/single-worker) — **Postgres obbligatorio** per multi-worker |
 | Proxy | Nginx + Let's Encrypt |
 | Secrets | `/opt/aio-bot/.env` (mai in git) |
-| Job worker | `aio-bot-analyze.timer` (+ kick thread in-app) |
+| Job worker | `aio-bot-analyze.service` (Type=simple `--loop`) + timer oneshot backup + kick on enqueue |
 | Rescan Plus/Business | `aio-bot-rescan.timer` |
 | Backup | `aio-bot-backup.timer` |
 
@@ -71,8 +71,8 @@ FLASK_DEBUG=0
 Checklist systemd:
 
 ```bash
-systemctl is-active aio-bot aio-bot-analyze.timer aio-bot-backup.timer aio-bot-rescan.timer
-systemctl is-enabled aio-bot-analyze.timer
+systemctl is-active aio-bot aio-bot-analyze.service aio-bot-analyze.timer aio-bot-backup.timer aio-bot-rescan.timer
+systemctl is-enabled aio-bot-analyze.service aio-bot-analyze.timer
 # Gunicorn deve restare su 127.0.0.1 (Nginx pubblico su :80/:443)
 ```
 
@@ -102,7 +102,19 @@ ADMIN_BOOTSTRAP=0
 ANALYZE_BATCH_LIMIT=5
 JOB_STALE_HEARTBEAT_MINUTES=12
 JOB_MAX_ATTEMPTS=2
+MAX_RUNNING_ANALYZE_JOBS=20
+ANALYZE_WORKER_CONCURRENCY=4
+ANALYZE_WORKER_IDLE_SLEEP=2
+MAX_CONCURRENT_ANALYZE_FREE=1
+MAX_CONCURRENT_ANALYZE_PLUS=3
+MAX_CONCURRENT_ANALYZE_BUSINESS=5
+MAX_CONCURRENT_ANALYZE_ADMIN=8
 MAX_CONCURRENT_ANALYZE_JOBS=2
+DB_POOL_SIZE=10
+DB_MAX_OVERFLOW=20
+OPENAI_RPM=60
+PERPLEXITY_RPM=30
+ANTHROPIC_RPM=40
 PUBLIC_SITE_URL=https://centropic.ai
 PADDLE_ENV=production
 SOV_DAILY_BUDGET_CENTS=5000
@@ -140,8 +152,20 @@ Sandbox (`PADDLE_ENV=sandbox`) è bloccato su `PUBLIC_SITE_URL=https://centropic
 ### Worker analyze
 
 ```bash
+# Long-running loop (preferred)
+sudo systemctl enable --now aio-bot-analyze.service
+# Optional safety-net oneshot every 10 min
 sudo systemctl enable --now aio-bot-analyze.timer
-sudo -u aio-bot .venv/bin/python scripts/analyze_worker.py -v
+sudo -u aio-bot .venv/bin/python scripts/analyze_worker.py --loop -v
+```
+
+After upgrading from the old oneshot-only unit:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl disable --now aio-bot-analyze.timer || true
+sudo systemctl enable --now aio-bot-analyze.service
+sudo systemctl enable --now aio-bot-analyze.timer   # backup oneshot
 ```
 
 ### i18n (dopo edit template con `_()`)

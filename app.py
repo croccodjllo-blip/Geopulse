@@ -350,6 +350,16 @@ if not _flask_secret:
 app.config["SECRET_KEY"] = _flask_secret
 app.config["SQLALCHEMY_DATABASE_URI"] = resolve_database_uri(os.getenv("DATABASE_URL"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Postgres: size the pool for Gunicorn workers + long-running analyze workers.
+# SQLite ignores QueuePool knobs (StaticPool / NullPool under Flask-SQLAlchemy).
+_db_uri = app.config["SQLALCHEMY_DATABASE_URI"] or ""
+if _db_uri.startswith("postgresql"):
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "10"))),
+        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "20"))),
+        "pool_pre_ping": True,
+        "pool_recycle": max(300, int(os.getenv("DB_POOL_RECYCLE", "1800"))),
+    }
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # Secure cookies by default outside local debug.
@@ -436,8 +446,23 @@ GOOGLE_ADS_TOPUP_LABEL = (os.getenv("GOOGLE_ADS_TOPUP_LABEL") or "").strip()
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
 EDGE_RATE_LIMIT = max(30, int(os.getenv("EDGE_RATE_LIMIT", "120")))
 EDGE_RATE_WINDOW = max(60, int(os.getenv("EDGE_RATE_WINDOW", "60")))
+# Fallback / Free default when plan-specific env is unset.
 MAX_CONCURRENT_ANALYZE_JOBS = max(1, int(os.getenv("MAX_CONCURRENT_ANALYZE_JOBS", "2")))
 ALLOW_DROP_ANALYSIS_JOBS = os.getenv("ALLOW_DROP_ANALYSIS_JOBS", "0") == "1"
+
+
+def concurrent_analyze_cap_for(user: Any) -> int:
+    """Per-plan in-flight analyze cap (pending+running for that user)."""
+    from services.usage_billing import concurrent_analyze_cap_for as _cap
+
+    return _cap(
+        user,
+        free=int(os.getenv("MAX_CONCURRENT_ANALYZE_FREE", "1")),
+        plus=int(os.getenv("MAX_CONCURRENT_ANALYZE_PLUS", "3")),
+        business=int(os.getenv("MAX_CONCURRENT_ANALYZE_BUSINESS", "5")),
+        admin=int(os.getenv("MAX_CONCURRENT_ANALYZE_ADMIN", "8")),
+        fallback=MAX_CONCURRENT_ANALYZE_JOBS,
+    )
 
 
 def _ads_send_to(label: str) -> str | None:
@@ -2817,7 +2842,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(est.service_cost_eur_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except (ConcurrentAnalysisError, InsufficientCreditError) as exc:
         app.logger.info("Onboarding analyze skipped for user %s: %s", user.id, exc)
@@ -5342,7 +5367,7 @@ def dashboard_analyze_confirmed():
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(cost_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
         flash(str(exc), "warning")
@@ -6280,7 +6305,7 @@ def dashboard_verify_rescan(analysis_id: int):
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(cost.service_cost_eur_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
         flash(str(exc), "warning")
@@ -6498,7 +6523,7 @@ def api_v1_analyze():
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(api_cost.service_cost_eur_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
         return jsonify({"ok": False, "error": "too_many_jobs", "message": str(exc)}), 429
