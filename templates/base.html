@@ -244,9 +244,14 @@
           <a href="mailto:info@centropic.ai">info@centropic.ai</a>
           <a href="{{ url_for('status_page') }}">Status</a>
           <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+          <a href="{{ url_for('cookies_policy') }}">{{ _('Cookie') }}</a>
           <a href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
           <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
           <a href="{{ url_for('dpa') }}">{{ _('DPA / sub-responsabili') }}</a>
+          <a href="{{ url_for('ai_transparency') }}">{{ _('AI / LLM') }}</a>
+          <a href="{{ url_for('trust_security') }}">{{ _('Trust') }}</a>
+          <a href="{{ url_for('accessibility_statement') }}">{{ _('Accessibilità') }}</a>
+          <a href="#" data-cookie-manage>{{ _('Gestisci consenso') }}</a>
         </div>
       </div>
       <div class="site-footer__bottom">
@@ -260,13 +265,19 @@
           {% if legal_pec %}<a href="mailto:{{ legal_pec }}">{{ legal_pec }}</a>&nbsp;·&nbsp;{% endif %}
           <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
           &nbsp;·&nbsp;
+          <a href="{{ url_for('cookies_policy') }}">{{ _('Cookie') }}</a>
+          &nbsp;·&nbsp;
           <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a>
           &nbsp;·&nbsp;
           <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
           &nbsp;·&nbsp;
           <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>
           &nbsp;·&nbsp;
-          <a href="{{ url_for('ai_txt') }}">ai.txt</a>
+          <a href="{{ url_for('ai_transparency') }}">{{ _('AI') }}</a>
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('trust_security') }}">{{ _('Trust') }}</a>
+          &nbsp;·&nbsp;
+          <a href="#" data-cookie-manage>{{ _('Consenso') }}</a>
           &nbsp;·&nbsp;
           <a href="mailto:info@centropic.ai">info@centropic.ai</a>
         </span>
@@ -274,16 +285,27 @@
     </footer>
     {% endblock %}
 
-    {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
     <aside id="cookie-consent" class="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc" hidden>
       <p class="cookie-consent__title" id="cookie-consent-title">{{ _('Cookie e misurazione') }}</p>
       <p class="cookie-consent__text" id="cookie-consent-desc">
-        {{ _('Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o rifiutare. Dettagli nella') }}
-        <a href="{{ url_for('privacy') }}">Privacy</a>.
+        {{ _('Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare, rifiutare o personalizzare. Dettagli nella') }}
+        <a href="{{ url_for('cookies_policy') }}">{{ _('Cookie Policy') }}</a>.
       </p>
+      <div id="cookie-consent-customize" class="cookie-consent__prefs" hidden>
+        <label class="cookie-consent__check">
+          <input type="checkbox" id="cookie-consent-analytics" />
+          <span>{{ _('Analytics (GA4)') }}</span>
+        </label>
+        <label class="cookie-consent__check">
+          <input type="checkbox" id="cookie-consent-ads" />
+          <span>{{ _('Advertising (Ads / AdSense)') }}</span>
+        </label>
+      </div>
       <div class="cookie-consent__actions">
-        <button type="button" class="btn btn-core" id="cookie-consent-accept">{{ _('Accetta') }}</button>
+        <button type="button" class="btn btn-core" id="cookie-consent-accept">{{ _('Accetta tutto') }}</button>
         <button type="button" class="btn btn-ghost" id="cookie-consent-reject">{{ _('Rifiuta') }}</button>
+        <button type="button" class="btn btn-ghost" id="cookie-consent-customize-btn">{{ _('Personalizza') }}</button>
+        <button type="button" class="btn btn-core" id="cookie-consent-save" hidden>{{ _('Salva preferenze') }}</button>
       </div>
     </aside>
     <script nonce="{{ csp_nonce }}">
@@ -295,7 +317,6 @@
       };
     </script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/analytics.js') }}" defer></script>
-    {% endif %}
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/i18n.js') }}" defer></script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/shell.js') }}" defer></script>

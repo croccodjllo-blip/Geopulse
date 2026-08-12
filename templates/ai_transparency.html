@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Trasparenza AI / LLM') }}{% endblock %}
+{% block meta_description %}{{ _('Cosa Centropic invia ai modelli LLM, finalità, training e limiti — trasparenza AI per clienti SaaS.') }}{% endblock %}
+{% block canonical %}{{ canonical_base }}/ai{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">{{ _('Legale · AI') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Trasparenza AI / LLM') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Versione') }} {{ policy_version }} ·
+      {{ _('Centropic usa modelli di terze parti solo per funzioni esplicite del prodotto (artifact e citation monitor). Contatti:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('1. Cosa inviamo') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Snippet di pagine pubbliche che hai chiesto di analizzare (title, testo estratto, segnali strutturali).') }}</li>
+      <li>{{ _('Prompt di sistema/utente per generare bozze (es. llms.txt) o per probe di citazione Misurate.') }}</li>
+      <li>{{ _('Non inviamo password, carte di pagamento né contenuti di aree autenticate del tuo sito.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('2. Finalità') }}</h2>
+    <p class="lede">
+      {{ _('Generazione di artifact operativi e campionamento citation share Misurata sugli engine abilitati dal piano. Gli score Stimati restano basati sul crawl strutturale senza probe LLM.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('3. Provider e training') }}</h2>
+    <p class="lede">
+      {{ _('I provider attivi sono elencati nel') }}
+      <a href="{{ url_for('dpa') }}">{{ _('DPA / Allegato A') }}</a>
+      {{ _('(OpenAI, Anthropic, Perplexity, Google Gemini, xAI se configurati). Centropic non usa i tuoi contenuti per addestrare modelli propri. L’uso dei dati per training da parte dei provider dipende dalle loro policy enterprise/API: usiamo endpoint API e impostazioni disponibili per limitare retention/training ove supportato. Per dettagli vincolanti vedi le privacy policy dei singoli fornitori.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('4. Log e conservazione') }}</h2>
+    <p class="lede">
+      {{ _('Conserviamo metadati di job, addebiti token e risultati necessari al servizio. I pack artifact possono restare in object storage con retention configurata (tipicamente 90 giorni per artefatti tecnici). Puoi esportare o eliminare l’account dalle Impostazioni.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('5. Limiti e non-garanzie') }}</h2>
+    <p class="lede">
+      {{ _('I modelli possono produrre output incompleti o imprecisi. Stimato ≠ Misurato. Centropic non garantisce ranking o menzioni nelle UI di terzi. Pubblicazione degli artifact e conformità restano a tuo carico.') }}
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-ghost" href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('trust_security') }}">{{ _('Trust') }}</a>
+  </div>
+</article>
+{% endblock %}

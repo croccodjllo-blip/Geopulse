@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Trust & security') }}{% endblock %}
+{% block meta_description %}{{ _('Trust Centropic: sicurezza, sub-responsabili, retention, DPA e canali di supporto per clienti SaaS.') }}{% endblock %}
+{% block canonical %}{{ canonical_base }}/trust{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">{{ _('Trust') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Trust & security') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Versione') }} {{ policy_version }} ·
+      {{ _('Sintesi operativa per procurement e security review. Contatti:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('1. Controlli') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Sessioni firmate, CSRF su form di stato, CSP con nonce, password hashate.') }}</li>
+      <li>{{ _('Isolamento tenant su query (user_id / organization).') }}</li>
+      <li>{{ _('Webhook Paddle con verifica firma; billing fail-closed su credito insufficiente.') }}</li>
+      <li>{{ _('SSRF guard sulle URL analizzate; rate limit su azioni sensibili.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('2. Sub-responsabili') }}</h2>
+    <p class="lede">
+      {{ _('Elenco attivo e DPA Art. 28 scaricabile:') }}
+      <a href="{{ url_for('dpa') }}">{{ _('DPA / sub-responsabili') }}</a>
+      ·
+      <a href="{{ url_for('dpa_download') }}">{{ _('Download .txt') }}</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('3. Retention') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Account e risultati: finché l’account è attivo + tempi tecnici post-chiusura (backup/sicurezza).') }}</li>
+      <li>{{ _('Pack/object storage analisi: tipicamente 90 giorni (configurabile).') }}</li>
+      <li>{{ _('Log tecnici di sicurezza: finché necessari a prevenzione abusi e debug.') }}</li>
+      <li>{{ _('Ledger crediti / fatturazione: obblighi contabili e antifrode.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('4. Diritti e incidenti') }}</h2>
+    <p class="lede">
+      {{ _('Export/delete dalle Impostazioni account. Per data breach o richieste privacy:') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
+      {{ _('Miriamo a rispondere entro 30 giorni alle richieste degli interessati, salvo complessità.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('5. Documenti correlati') }}</h2>
+    <ul class="plain-list">
+      <li><a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a></li>
+      <li><a href="{{ url_for('cookies_policy') }}">{{ _('Cookie') }}</a></li>
+      <li><a href="{{ url_for('ai_transparency') }}">{{ _('AI / LLM') }}</a></li>
+      <li><a href="{{ url_for('terms') }}">{{ _('Termini') }}</a></li>
+      <li><a href="{{ url_for('accessibility_statement') }}">{{ _('Accessibilità') }}</a></li>
+      <li><a href="{{ url_for('status_page') }}">Status</a></li>
+    </ul>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('dpa_download') }}">{{ _('Scarica DPA') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('contact') }}">{{ _('Contatti') }}</a>
+  </div>
+</article>
+{% endblock %}

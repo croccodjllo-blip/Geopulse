@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Cookie') }}{% endblock %}
+{% block meta_description %}{{ _('Informativa cookie Centropic: cookie tecnici, analytics e advertising con consenso granulare.') }}{% endblock %}
+{% block canonical %}{{ canonical_base }}/cookie{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">{{ _('Legale') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Informativa cookie') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Versione') }} {{ policy_version }} ·
+      {{ _('Puoi accettare, rifiutare o personalizzare analytics e advertising. Dettagli anche in') }}
+      <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>.
+    </p>
+    <p class="page-intro__actions">
+      <button type="button" class="btn btn-core" data-cookie-manage>{{ _('Gestisci consenso') }}</button>
+      <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('1. Categorie') }}</h2>
+    <ul class="plain-list">
+      <li><strong>{{ _('Necessari') }}</strong> — {{ _('sessione, CSRF, lingua, memoria del consenso. Sempre attivi.') }}</li>
+      <li><strong>{{ _('Analytics') }}</strong> — {{ _('Google Analytics 4, solo con consenso.') }}</li>
+      <li><strong>{{ _('Advertising') }}</strong> — {{ _('Google Ads / AdSense se configurati, solo con consenso ads.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('2. Elenco') }}</h2>
+    <div class="legal-table-wrap">
+      <table class="legal-table">
+        <thead>
+          <tr>
+            <th>{{ _('Nome') }}</th>
+            <th>{{ _('Fornitore') }}</th>
+            <th>{{ _('Scopo') }}</th>
+            <th>{{ _('Durata') }}</th>
+            <th>{{ _('Categoria') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in cookies %}
+          <tr>
+            <td><code>{{ c.name }}</code></td>
+            <td>{{ c.provider }}</td>
+            <td>{{ c.purpose }}</td>
+            <td>{{ c.duration }}</td>
+            <td>{{ c.category }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('3. Come modificare') }}</h2>
+    <p class="lede">
+      {{ _('Usa “Gestisci consenso” in questa pagina o il link Cookie nel footer. Puoi anche cancellare i dati del sito dal browser e ricaricare. Consent Mode v2: di default analytics/ads sono negati nell’UE finché non scegli.') }}
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <button type="button" class="btn btn-core" data-cookie-manage>{{ _('Gestisci consenso') }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('ai_transparency') }}">{{ _('AI / LLM') }}</a>
+  </div>
+</article>
+{% endblock %}

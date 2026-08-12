@@ -1,5 +1,6 @@
 /**
  * Centropic analytics: Consent Mode v2 + GA4 events + Ads conversions.
+ * Granular consent (analytics vs ads) + always-reachable "Gestisci consenso".
  * Loads after Consent Mode default is declared in <head>.
  */
 (function () {
@@ -79,7 +80,10 @@
     }
     window.gtag("event", name, payload);
     if (sendTo) {
-      window.gtag("event", "conversion", { send_to: sendTo, currency: payload.currency || "EUR" });
+      window.gtag("event", "conversion", {
+        send_to: sendTo,
+        currency: payload.currency || "EUR",
+      });
     }
   }
 
@@ -96,33 +100,86 @@
     if (el) el.setAttribute("hidden", "hidden");
   }
 
-  function showBanner() {
+  function showBanner(opts) {
     var el = document.getElementById("cookie-consent");
-    if (el) el.removeAttribute("hidden");
+    if (!el) return;
+    el.removeAttribute("hidden");
+    var panel = document.getElementById("cookie-consent-customize");
+    var saveBtn = document.getElementById("cookie-consent-save");
+    var customizeBtn = document.getElementById("cookie-consent-customize-btn");
+    var showCustom = opts && opts.customize;
+    if (panel) {
+      if (showCustom) panel.removeAttribute("hidden");
+      else panel.setAttribute("hidden", "hidden");
+    }
+    if (saveBtn) {
+      if (showCustom) saveBtn.removeAttribute("hidden");
+      else saveBtn.setAttribute("hidden", "hidden");
+    }
+    if (customizeBtn) {
+      if (showCustom) customizeBtn.setAttribute("hidden", "hidden");
+      else customizeBtn.removeAttribute("hidden");
+    }
+    if (showCustom) {
+      syncTogglesFromStored();
+    }
+  }
+
+  function syncTogglesFromStored() {
+    var existing = readConsent() || { analytics: false, ads: false };
+    var a = document.getElementById("cookie-consent-analytics");
+    var d = document.getElementById("cookie-consent-ads");
+    if (a) a.checked = !!existing.analytics;
+    if (d) d.checked = !!existing.ads;
+  }
+
+  function saveChoice(choice) {
+    writeConsent(choice);
+    applyConsent(choice);
+    hideBanner();
+    flushQueue();
   }
 
   function bindBanner() {
     var accept = document.getElementById("cookie-consent-accept");
     var reject = document.getElementById("cookie-consent-reject");
+    var customizeBtn = document.getElementById("cookie-consent-customize-btn");
+    var saveCustom = document.getElementById("cookie-consent-save");
+
     if (accept) {
       accept.addEventListener("click", function () {
-        var choice = { analytics: true, ads: true };
-        writeConsent(choice);
-        applyConsent(choice);
-        hideBanner();
-        flushQueue();
+        saveChoice({ analytics: true, ads: true });
       });
     }
     if (reject) {
       reject.addEventListener("click", function () {
-        var choice = { analytics: false, ads: false };
-        writeConsent(choice);
-        applyConsent(choice);
-        hideBanner();
-        // Still flush: Consent Mode sends cookieless pings when denied.
-        flushQueue();
+        saveChoice({ analytics: false, ads: false });
       });
     }
+    if (customizeBtn) {
+      customizeBtn.addEventListener("click", function () {
+        showBanner({ customize: true });
+      });
+    }
+    if (saveCustom) {
+      saveCustom.addEventListener("click", function () {
+        var a = document.getElementById("cookie-consent-analytics");
+        var d = document.getElementById("cookie-consent-ads");
+        saveChoice({
+          analytics: !!(a && a.checked),
+          ads: !!(d && d.checked),
+        });
+      });
+    }
+
+    document.addEventListener("click", function (ev) {
+      var t = ev.target;
+      if (!(t instanceof Element)) return;
+      var btn = t.closest("[data-cookie-manage]");
+      if (!btn) return;
+      ev.preventDefault();
+      showBanner({ customize: true });
+    });
   }
 
   function bindAnalyzeForms() {
@@ -149,14 +206,16 @@
       flushQueue();
       return;
     }
-    // No choice yet: keep Consent Mode default (denied), show banner.
+    // No choice yet: keep Consent Mode default (denied), show banner if trackers configured.
     if (gaId || adsId || adsenseClient) {
-      showBanner();
+      showBanner({ customize: false });
     }
-    // Queue stays until user chooses; cookieless measurement still works after reject.
   }
 
   window.centropicTrack = track;
+  window.centropicOpenCookiePrefs = function () {
+    showBanner({ customize: true });
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

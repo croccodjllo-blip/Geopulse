@@ -217,3 +217,94 @@ def render_dpa_plaintext(*, company_name: str, company_email: str = "info@centro
 
 # Digital-service waiver (consumer withdrawal / immediate performance)
 DIGITAL_WAIVER_VERSION = "2026-08-12"
+
+# Public policy versions (changelog surface)
+POLICY_VERSIONS: dict[str, str] = {
+    "privacy": "2026-08-12",
+    "terms": "2026-08-12",
+    "refunds": "2026-07-30",
+    "dpa": DPA_VERSION,
+    "cookies": "2026-08-12",
+    "ai": "2026-08-12",
+    "trust": "2026-08-12",
+    "accessibility": "2026-08-12",
+}
+
+
+@dataclass(frozen=True)
+class CookieRow:
+    name: str
+    provider: str
+    purpose: str
+    duration: str
+    category: str  # necessary | analytics | advertising
+
+
+def cookie_inventory(*, analytics_active: bool, ads_active: bool) -> list[CookieRow]:
+    rows = [
+        CookieRow(
+            name="session",
+            provider="Centropic",
+            purpose="Sessione autenticata / CSRF",
+            duration="Sessione / configurazione app",
+            category="necessary",
+        ),
+        CookieRow(
+            name="centropic_lang",
+            provider="Centropic",
+            purpose="Preferenza lingua UI",
+            duration="1 anno",
+            category="necessary",
+        ),
+        CookieRow(
+            name="centropic_consent_v1",
+            provider="Centropic (localStorage)",
+            purpose="Memorizza scelta consenso analytics/ads",
+            duration="Persistente (browser)",
+            category="necessary",
+        ),
+    ]
+    if analytics_active:
+        rows.append(
+            CookieRow(
+                name="_ga / _ga_*",
+                provider="Google Analytics 4",
+                purpose="Misurazione traffico (solo con consenso analytics)",
+                duration="Fino a 24 mesi (policy Google)",
+                category="analytics",
+            )
+        )
+    if ads_active:
+        rows.append(
+            CookieRow(
+                name="_gcl_* / IDE (eventuali)",
+                provider="Google Ads / AdSense",
+                purpose="Misurazione e annunci (solo con consenso ads)",
+                duration="Secondo policy Google",
+                category="advertising",
+            )
+        )
+    rows.append(
+        CookieRow(
+            name="fonts.googleapis.com / fonts.gstatic.com",
+            provider="Google Fonts",
+            purpose="Caricamento font tipografici (richiesta di rete terze parti)",
+            duration="Cache browser",
+            category="necessary",
+        )
+    )
+    return rows
+
+
+def legal_nav_links() -> list[dict[str, str]]:
+    """Stable public legal routes for footer / trust pages."""
+    return [
+        {"endpoint": "privacy", "label_it": "Privacy"},
+        {"endpoint": "terms", "label_it": "Termini"},
+        {"endpoint": "cookies_policy", "label_it": "Cookie"},
+        {"endpoint": "refunds", "label_it": "Rimborsi"},
+        {"endpoint": "dpa", "label_it": "DPA"},
+        {"endpoint": "ai_transparency", "label_it": "AI / LLM"},
+        {"endpoint": "trust_security", "label_it": "Trust"},
+        {"endpoint": "accessibility_statement", "label_it": "Accessibilità"},
+    ]

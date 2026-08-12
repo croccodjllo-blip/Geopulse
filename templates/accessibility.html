@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Accessibilità') }}{% endblock %}
+{% block meta_description %}{{ _('Dichiarazione di accessibilità Centropic: impegno WCAG, feedback e limiti noti del SaaS.') }}{% endblock %}
+{% block canonical %}{{ canonical_base }}/accessibilita{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">{{ _('Accessibilità') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Dichiarazione di accessibilità') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Versione') }} {{ policy_version }} ·
+      {{ _('Centropic mira a un’interfaccia utilizzabile da tastiera e screen reader, in linea con WCAG 2.2 livello AA dove praticabile per un SaaS dashboard.') }}
+    </p>
+  </header>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('1. Ambito') }}</h2>
+    <p class="lede">
+      {{ _('Copre centropic.ai (marketing + dashboard). Componenti chart React e overlay di analisi possono avere limiti residuali di accessibilità; li trattiamo come debito prodotto.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('2. Misure') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Focus visibili, landmark, etichette form, testi alternativi su mark principali.') }}</li>
+      <li>{{ _('Rispetto di prefers-reduced-motion sulle animazioni marketing.') }}</li>
+      <li>{{ _('Contrasto mirato su chrome Logo / plan accent; stati success/warn/danger distinti.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('3. Limiti noti') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Grafici interattivi geo-ui: navigazione da tastiera non completa su tutti i series.') }}</li>
+      <li>{{ _('Alcune tabelle dense della dashboard possono richiedere scroll orizzontale su mobile.') }}</li>
+      <li>{{ _('PDF/export di terzi non rientrano in questa dichiarazione.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('4. Feedback') }}</h2>
+    <p class="lede">
+      {{ _('Segnala barriere a') }}
+      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      {{ _('con URL, browser/AT e descrizione. Rispondiamo di norma entro 10 giorni lavorativi.') }}
+    </p>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-ghost" href="{{ url_for('contact') }}">{{ _('Contatti') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('trust_security') }}">{{ _('Trust') }}</a>
+  </div>
+</article>
+{% endblock %}

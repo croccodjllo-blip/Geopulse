@@ -1,91 +1,170 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Privacy') }}{% endblock %}
-{% block meta_description %}{{ _('Informativa privacy di Centropic (centropic.ai): dati trattati per account, analisi siti e contatti. Titolare e diritti dell’interessato.') }}{% endblock %}
+{% block title %}{{ _('Privacy Policy') }} — Centropic{% endblock %}
+{% block meta_description %}{{ _('Informativa privacy Centropic: titolare, finalità, basi giuridiche, retention, trasferimenti, AI/LLM e diritti.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/privacy{% endblock %}
 
 {% block content %}
 <article class="page page--legal">
   <header class="page-intro">
-    <p class="eyebrow">{{ _('Legale') }}</p>
-    <h1 class="h-display page-intro__title">{{ _('Informativa privacy') }}</h1>
+    <p class="eyebrow">{{ _('Privacy') }} · v{{ policy_versions.privacy }}</p>
+    <h1 class="h-display page-intro__title">{{ _('Informativa sulla privacy') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · Contatti:') }}
-      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      {{ _('Ultimo aggiornamento:') }} {{ policy_versions.privacy }} ·
+      <a href="{{ url_for('cookies_policy') }}">{{ _('Cookie Policy') }}</a> ·
+      <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a> ·
+      <a href="{{ url_for('ai_transparency') }}">{{ _('Trasparenza AI') }}</a>
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('1. Cosa trattiamo') }}</h2>
+    <h2 class="page-section__title">{{ _('1. Titolare del trattamento') }}</h2>
     <p class="lede">
-      {{ _('Per erogare il servizio SaaS trattiamo: dati di account (nome, email, password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL dei siti analizzati, risultati di analisi (score, findings, artifact generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati volontariamente (es. waitlist Plus).') }}
+      {{ _('Il Titolare è') }} <strong>{{ legal_company_name }}</strong>{% if legal_vat %}, {{ _('P. IVA') }} {{ legal_vat }}{% endif %}{% if legal_address %}, {{ legal_address }}{% endif %}.
+      {{ _('Contatto privacy:') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>{% if legal_pec %}; PEC: <a href="mailto:{{ legal_pec }}">{{ legal_pec }}</a>{% endif %}.
     </p>
+    {% if not legal_vat or not legal_address %}
+    <p class="lede">{{ _('I dati societari completi (indirizzo e partita IVA) saranno pubblicati non appena disponibili nel registro imprese / configurazione operativa.') }}</p>
+    {% endif %}
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('2. Finalità e basi giuridiche') }}</h2>
+    <h2 class="page-section__title">{{ _('2. Ambito e ruoli') }}</h2>
     <ul class="plain-list">
-      <li><strong>{{ _('Esecuzione del contratto') }}</strong> — {{ _('account, analisi, pack, supporto.') }}</li>
-      <li><strong>{{ _('Legittimo interesse') }}</strong> — {{ _('sicurezza, prevenzione abusi, miglioramento prodotto.') }}</li>
-      <li><strong>{{ _('Obblighi di legge') }}</strong> — {{ _('ove applicabili (es. richieste autorità).') }}</li>
-      <li><strong>{{ _('Consenso') }}</strong> — {{ _('solo per comunicazioni non essenziali, se richieste in futuro.') }}</li>
+      <li><strong>{{ _('Titolare') }}</strong> — {{ _('per account, autenticazione, fatturazione, sicurezza della piattaforma, analytics e marketing propri.') }}</li>
+      <li><strong>{{ _('Responsabile') }}</strong> — {{ _('quando trattiamo contenuti dei siti e output di analisi per conto del Cliente (B2B). Vedi') }} <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>.</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('3. Analisi dei siti') }}</h2>
+    <h2 class="page-section__title">{{ _('3. Categorie di dati') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Identità e contatto: email, nome, telefono (opzionale), lingua, fuso orario.') }}</li>
+      <li>{{ _('Account e autenticazione: hash password, sessioni, versioni sessione, log di accesso.') }}</li>
+      <li>{{ _('Fatturazione: piano, stato abbonamento, ID Paddle, storico crediti, waiver recesso digitale.') }}</li>
+      <li>{{ _('Utilizzo prodotto: siti monitorati, run di analisi, findings, SoV, job status, preferenze.') }}</li>
+      <li>{{ _('Contenuti del Cliente: URL, testi/HTML acquisiti per analisi, output AI generati.') }}</li>
+      <li>{{ _('Tecnici: IP, user-agent, cookie/localStorage di preferenza e, se consenso, analytics/ads.') }}</li>
+      <li>{{ _('Supporto: messaggi inviati a') }} info@centropic.ai.</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('4. Finalità e basi giuridiche') }}</h2>
+    <div class="legal-table-wrap">
+      <table class="legal-table">
+        <thead>
+          <tr>
+            <th>{{ _('Finalità') }}</th>
+            <th>{{ _('Base giuridica') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>{{ _('Erogazione del Servizio SaaS e gestione account') }}</td><td>{{ _('Contratto (art. 6.1.b)') }}</td></tr>
+          <tr><td>{{ _('Fatturazione, crediti, adempimenti fiscali') }}</td><td>{{ _('Contratto / obbligo legale (art. 6.1.b/c)') }}</td></tr>
+          <tr><td>{{ _('Sicurezza, prevenzione abusi, debug') }}</td><td>{{ _('Legittimo interesse (art. 6.1.f)') }}</td></tr>
+          <tr><td>{{ _('Cookie analitici / pubblicitari') }}</td><td>{{ _('Consenso (art. 6.1.a) — gestibile nel banner') }}</td></tr>
+          <tr><td>{{ _('Comunicazioni di servizio e legali') }}</td><td>{{ _('Contratto / obbligo legale') }}</td></tr>
+          <tr><td>{{ _('Miglioramento prodotto (dati aggregati/anonimizzati)') }}</td><td>{{ _('Legittimo interesse, con salvaguardie') }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('5. Periodi di conservazione') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Account attivo: per tutta la durata del rapporto + 30 giorni dopo chiusura (salvo obblighi legali).') }}</li>
+      <li>{{ _('Dati di fatturazione e fiscali: fino a 10 anni ove richiesto dalla legge.') }}</li>
+      <li>{{ _('Log di sicurezza e accesso: tipicamente 12 mesi.') }}</li>
+      <li>{{ _('Run di analisi e contenuti associati: fino a cancellazione account/sito o richiesta del Cliente; backup residui fino a 90 giorni.') }}</li>
+      <li>{{ _('Preferenze cookie: fino a 12 mesi, poi riesame del consenso.') }}</li>
+      <li>{{ _('Ticket di supporto: fino a 24 mesi dalla chiusura.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('6. Destinatari e sub-responsabili') }}</h2>
     <p class="lede">
-      {{ _('Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato (pagine pubbliche raggiungibili) e probe di file come') }}
-      <code>/robots.txt</code>, <code>/llms.txt</code>, <code>/sitemap.xml</code>.
-      {{ _('Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati restano nel tuo account finché non li elimini o chiudi l’account.') }}
+      {{ _('Trattiamo dati con fornitori strettamente necessari (hosting, database, email, pagamenti, modelli AI). Elenco attivo:') }}
+      <a href="{{ url_for('dpa') }}">{{ _('Sub-responsabili') }}</a>.
+      {{ _('Paddle tratta i dati di pagamento come titolare autonomo per il checkout.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('4. Pagamenti') }}</h2>
+    <h2 class="page-section__title">{{ _('7. Trasferimenti internazionali') }}</h2>
     <p class="lede">
-      {{ _('I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da Paddle.com Market Limited in qualità di merchant of record. Centropic non memorizza i dati completi della carta. Paddle tratta i dati di fatturazione necessari all’incasso e alla fiscalità secondo la propria informativa; riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e importi per attivare il piano e accreditare il saldo.') }}
+      {{ _('Alcuni fornitori possono trattare dati fuori SEE (es. USA). In tali casi usiamo salvaguardie adeguate (Clausole Contrattuali Standard / meccanismi equivalenti del fornitore) e minimizzazione. Dettagli per fornitore nella pagina Sub-responsabili e nelle rispettive DPA.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('5. Conservazione e trasferimenti') }}</h2>
+    <h2 class="page-section__title">{{ _('8. Decisioni automatizzate e AI') }}</h2>
     <p class="lede">
-      {{ _('I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati solo per conto del servizio o come autonomi titolari ove indicato (es. Paddle). Elenco aggiornato e DPA Art. 28 per clienti Business/agenzie:') }}
-      <a href="{{ url_for('dpa') }}">{{ _('DPA e sub-responsabili') }}</a>
-      ({{ _('download') }} <a href="{{ url_for('dpa_download') }}">.txt</a>).
+      {{ _('Il Servizio genera score, findings e raccomandazioni tramite modelli AI. Non prendiamo decisioni esclusivamente automatizzate che producano effetti giuridici significativi sull’interessato ai sensi dell’art. 22 GDPR senza intervento umano. Maggiori dettagli:') }}
+      <a href="{{ url_for('ai_transparency') }}">{{ _('Trasparenza AI') }}</a>.
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('6. Diritti') }}</h2>
+    <h2 class="page-section__title">{{ _('9. Cookie e tracciamento') }}</h2>
     <p class="lede">
-      {{ _('Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e opposizione dalle') }}
-      <a href="{{ url_for('dashboard_settings') }}">{{ _('Impostazioni account') }}</a>
-      {{ _('(export dati / elimina account) oppure scrivendo a') }}
+      {{ _('Vedi la') }} <a href="{{ url_for('cookies_policy') }}">{{ _('Cookie Policy') }}</a>.
+      {{ _('Puoi modificare il consenso in qualsiasi momento tramite “Gestisci consenso” nel footer.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('10. Diritti dell’interessato') }}</h2>
+    <p class="lede">
+      {{ _('Hai diritto di accesso, rettifica, cancellazione, limitazione, portabilità, opposizione e revoca del consenso. Scrivi a') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
-      {{ _('Hai anche diritto di reclamare presso l’autorità di controllo competente.') }}
+      {{ _('Puoi reclamare al Garante Privacy (Italia) o all’autorità del tuo Paese UE/SEE.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('7. Cookie') }}</h2>
+    <h2 class="page-section__title">{{ _('11. Minori') }}</h2>
     <p class="lede">
-      {{ _('Usiamo cookie tecnici necessari al funzionamento del sito (sessione, protezione CSRF, preferenza lingua).') }}
-      {% if ga4_measurement_id or google_ads_id or adsense_client_id %}
-      {{ _('Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è gestito con') }}
-      <strong>Google Consent Mode v2</strong>:
-      {{ _('di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non attiviamo AdSense senza consenso pubblicitario.') }}
-      {% else %}
-      {{ _('Attualmente non sono attivi cookie di misurazione o pubblicitari di terze parti su questo sito.') }}
-      {% endif %}
+      {{ _('Il Servizio è destinato a utenti professionali maggiorenni. Non raccogliamo consapevolmente dati di minori di 16 anni. Se ritieni che un minore ci abbia fornito dati, contattaci per la cancellazione.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('12. Sicurezza e data breach') }}</h2>
+    <p class="lede">
+      {{ _('Adottiamo misure tecniche e organizzative appropriate (cifratura in transito, controlli di accesso, segregazione tenant, backup). In caso di violazione dei dati personali con rischio per i diritti e le libertà, notificheremo l’autorità competente e, ove dovuto, gli interessati, nei termini di legge. Overview:') }}
+      <a href="{{ url_for('trust_security') }}">{{ _('Trust &amp; Security') }}</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('13. Note internazionali (ove applicabili)') }}</h2>
+    <ul class="plain-list">
+      <li><strong>UK GDPR</strong> — {{ _('se tratti dati di interessati UK, i diritti e le basi restano sostanzialmente allineati; contatto privacy invariato.') }}</li>
+      <li><strong>CCPA/CPRA (California)</strong> — {{ _('non vendiamo dati personali. Diritti di accesso/cancellazione/opt-out: contatta') }} info@centropic.ai. {{ _('Identificati come residente CA nella richiesta.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('14. Modifiche') }}</h2>
+    <p class="lede">
+      {{ _('Possiamo aggiornare questa informativa. La versione corrente e la data sono indicate in cima. Per modifiche sostanziali, avviso in-app o email ove appropriato.') }}
+    </p>
+    <p class="lede muted">
+      {{ _('Versioni documenti:') }}
+      Privacy v{{ policy_versions.privacy }} ·
+      Cookie v{{ policy_versions.cookies }} ·
+      Terms v{{ policy_versions.terms }} ·
+      DPA v{{ policy_versions.dpa }} ·
+      AI v{{ policy_versions.ai }}
     </p>
   </section>
 
   <div class="page-cta">
-    <a class="btn btn-ghost" href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('dpa') }}">{{ _('DPA / sub-responsabili') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
-    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
+    <button type="button" class="btn btn-core" data-cookie-manage>{{ _('Gestisci consenso') }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('cookies_policy') }}">{{ _('Cookie') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>
   </div>
 </article>
 {% endblock %}

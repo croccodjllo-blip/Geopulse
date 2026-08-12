@@ -1,85 +1,153 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Termini di servizio') }}{% endblock %}
-{% block meta_description %}{{ _('Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO), limiti e responsabilità.') }}{% endblock %}
+{% block title %}{{ _('Termini di servizio') }} — Centropic{% endblock %}
+{% block meta_description %}{{ _('Termini di servizio Centropic: account, piani, crediti, IP, responsabilità e legge applicabile.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/termini{% endblock %}
 
 {% block content %}
 <article class="page page--legal">
   <header class="page-intro">
-    <p class="eyebrow">{{ _('Legale') }}</p>
+    <p class="eyebrow">{{ _('Legal') }} · v{{ policy_versions.terms }}</p>
     <h1 class="h-display page-intro__title">{{ _('Termini di servizio') }}</h1>
     <p class="lede page-intro__lede">
-      {{ _('Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti questi termini. Contatti:') }}
-      <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+      {{ _('Ultimo aggiornamento:') }} {{ policy_versions.terms }} ·
+      <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a> ·
+      <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a> ·
+      <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
     </p>
   </header>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('1. Servizio') }}</h2>
+    <h2 class="page-section__title">{{ _('1. Premessa') }}</h2>
     <p class="lede">
-      {{ _('Centropic è un software-as-a-service che analizza siti web pubblici e genera score') }}
-      <strong>AIO</strong> (AI-Driven Visibility) {{ _('e') }} <strong>GEO</strong>
-      (Generative Engine Optimization),
-      {{ _('findings e artifact (es.') }} <code>llms.txt</code>, JSON-LD, meta, {{ _('bozza') }} <code>robots.txt</code>).
-      {{ _('Non è un Geographic Information System (GIS) né una suite All-in-One generica.') }}
+      {{ _('Questi Termini regolano l’uso della piattaforma Centropic (“Servizio”) fornita da') }}
+      <strong>{{ legal_company_name }}</strong>
+      (“{{ _('Fornitore') }}”). {{ _('Accedendo o usando il Servizio accetti i Termini. Se agisci per un’organizzazione, dichiari di avere autorità a vincolarla.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('2. Natura degli score') }}</h2>
+    <h2 class="page-section__title">{{ _('2. Descrizione del Servizio') }}</h2>
     <p class="lede">
-      {{ _('Gli score AIO/GEO misurano la') }}
-      <strong>{{ _('predisposizione strutturale') }}</strong>
-      {{ _('del sito (contenuto, schema, robots, llms, entity): quanto brand e pagine sono leggibili dai crawler generativi. Il Centropic Visibility Index (CVI) sintetizza AIO/GEO; la citation share può essere Stimata (da struttura) o Misurata (campioni LLM su Plus/Business).') }}
-      {{ _('Centropic garantisce il lavoro di diagnosi e predisposizione sul tuo dominio; non garantisce ranking o menzioni nelle interfacce di modelli di terzi, che restano indipendenti.') }}
+      {{ _('Centropic è un SaaS B2B di intelligence AIO/GEO: analisi di siti, score, share of voice, findings e deliverable correlati. Le funzionalità dipendono dal piano e dalle capacità abilitate. Il Servizio può evolvere; funzioni beta possono essere modificate o ritirate con preavviso ragionevole ove praticabile.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('3. Account e uso corretto') }}</h2>
+    <h2 class="page-section__title">{{ _('3. Account e idoneità') }}</h2>
     <ul class="plain-list">
-      <li>{{ _('Fornisci dati veritieri e custodisci le credenziali.') }}</li>
-      <li>{{ _('Analizza solo siti per cui hai diritto di richiedere un audit tecnico.') }}</li>
-      <li>{{ _('Non usare il servizio per scansioni abusive, attacchi o accesso a reti private.') }}</li>
-      <li>{{ _('Rispetta i rate limit e i piani (Free / Plus / Business).') }}</li>
+      <li>{{ _('Devi fornire informazioni accurate e mantenere la sicurezza delle credenziali.') }}</li>
+      <li>{{ _('Il Servizio è destinato a utenti professionali maggiorenni.') }}</li>
+      <li>{{ _('Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati della tua organizzazione.') }}</li>
     </ul>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('4. Artifact e responsabilità') }}</h2>
+    <h2 class="page-section__title">{{ _('4. Piani, crediti e pagamenti') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. I prezzi includono IVA ove applicabile secondo checkout Paddle.') }}</li>
+      <li>{{ _('I pagamenti sono gestiti da Paddle (Merchant of Record).') }}</li>
+      <li>{{ _('I crediti consumati per analisi non sono rimborsabili salvo quanto previsto nella') }} <a href="{{ url_for('refunds') }}">{{ _('Politica rimborsi') }}</a>.</li>
+      <li>{{ _('Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o contattando') }} info@centropic.ai.</li>
+      <li>{{ _('Per contenuti digitali a esecuzione immediata, al checkout ti chiediamo di richiedere l’esecuzione e accettare la perdita del diritto di recesso 14 giorni (direttiva 2011/83/UE), ove applicabile.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('5. Uso consentito e divieti') }}</h2>
     <p class="lede">
-      {{ _('Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la conformità legale/SEO e l’impatto sulle performance restano a tuo carico. Centropic non risponde di decisioni di crawler o modelli di terzi.') }}
+      {{ _('Non puoi: (a) usare il Servizio in violazione di legge; (b) tentare accesso non autorizzato; (c) interferire con infrastruttura o altri tenant; (d) rivendere il Servizio senza accordo; (e) caricare contenuti illeciti; (f) eludere limiti di piano o misure di sicurezza; (g) usare output per spamming abusivo o attività fraudolente.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('5. Piani e disponibilità') }}</h2>
+    <h2 class="page-section__title">{{ _('6. Contenuti del Cliente e licenza') }}</h2>
     <p class="lede">
-      {{ _('Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza reset). Plus e Business sono abbonamenti self-serve via Paddle quando il catalogo è configurato; altrimenti interesse via waitlist. Il servizio è fornito “as is”; possiamo sospendere account in caso di abuso o rischio sicurezza.') }}
+      {{ _('Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. Dichiaro/dichiari di avere i diritti necessari sui siti analizzati.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('6. Pagamenti e rimborsi') }}</h2>
+    <h2 class="page-section__title">{{ _('7. Proprietà intellettuale del Fornitore') }}</h2>
     <p class="lede">
-      {{ _('Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla') }}
-      <a href="{{ url_for('refunds') }}">{{ _('Politica di rimborso') }}</a>.
-      {{ _('I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle).') }}
+      {{ _('Piattaforma, software, marchi, UI, modelli di prompt e documentazione restano di proprietà del Fornitore o dei suoi licenzianti. Ti concediamo un diritto limitato, non trasferibile, di usare il Servizio durante l’abbonamento. Gli output generati per te possono essere usati nella tua attività, fermo restando che non acquisisci diritti sul software sottostante.') }}
     </p>
   </section>
 
   <section class="page-section">
-    <h2 class="page-section__title">{{ _('7. Legge applicabile') }}</h2>
+    <h2 class="page-section__title">{{ _('8. AI e natura degli output') }}</h2>
     <p class="lede">
-      {{ _('Salvo norme imperative diverse, si applica la legge italiana. Per controversie è competente il foro del titolare, fatti salvi i diritti del consumatore.') }}
+      {{ _('Score, findings e raccomandazioni sono strumenti di supporto decisionale basati su modelli AI e fonti pubbliche/crawl. Non costituiscono consulenza legale, fiscale o di compliance automatica. Devi verificare informazioni materialmente rilevanti prima di decisioni operative. Dettagli:') }}
+      <a href="{{ url_for('ai_transparency') }}">{{ _('Trasparenza AI') }}</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('9. Disponibilità e modifiche') }}</h2>
+    <p class="lede">
+      {{ _('Ci impegniamo a mantenere il Servizio ragionevolmente disponibile, ma non promettiamo disponibilità ininterrotta o assenza di errori. Manutenzioni, force majeure, dipendenze di terzi (LLM, pagamenti, DNS) possono causare interruzioni. Possiamo modificare o sospendere funzionalità con comunicazione ragionevole per cambiamenti sostanziali a pagamento.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('10. Garanzie e disclaimer') }}</h2>
+    <p class="lede">
+      {{ _('Il Servizio è fornito “così com’è” e “come disponibile”, nei limiti consentiti dalla legge. Nella misura massima consentita, escludiamo garanzie implicite di commerciabilità, idoneità a uno scopo particolare e non violazione. Nulla in questi Termini limita diritti inderogabili del consumatore ove tu ne sia uno; per clienti B2B tipici, le limitazioni di questa sezione si applicano pienamente.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('11. Limitazione di responsabilità') }}</h2>
+    <p class="lede">{{ _('Nella misura massima consentita dalla legge applicabile:') }}</p>
+    <ul class="plain-list">
+      <li>{{ _('non siamo responsabili per danni indiretti, consequenziali, lucro cessante, perdita di dati o interruzione di attività;') }}</li>
+      <li>{{ _('la responsabilità complessiva del Fornitore per eventi connessi al Servizio in un periodo di 12 mesi non supera l’importo da te pagato al Fornitore per il Servizio in tali 12 mesi (o €100 se non hai pagato);') }}</li>
+      <li>{{ _('le limitazioni non si applicano a dolo, colpa grave, o altre responsabilità che la legge non consente di escludere.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('12. Indennizzo') }}</h2>
+    <p class="lede">
+      {{ _('Accetti di indennizzare il Fornitore da pretese di terzi derivanti dai tuoi Contenuti, dall’uso illecito del Servizio o dalla violazione di questi Termini, salvo dove la responsabilità sia esclusivamente imputabile al Fornitore.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('13. Sospensione e risoluzione') }}</h2>
+    <p class="lede">
+      {{ _('Possiamo sospendere o chiudere l’accesso in caso di violazione, rischio di sicurezza, mancato pagamento o richiesta legale. Puoi chiudere l’account e annullare i rinnovi come indicato in Impostazioni / ricevuta Paddle. Alla cessazione, cessa il diritto d’uso; alcune obbligazioni (IP, responsabilità, indennizzo) sopravvivono.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('14. Privacy e DPA') }}</h2>
+    <p class="lede">
+      {{ _('Il trattamento dati è descritto nell’') }}<a href="{{ url_for('privacy') }}">{{ _('Informativa privacy') }}</a>.
+      {{ _('Per trattamenti in qualità di responsabile, si applica il') }} <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>.
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('15. Legge applicabile e foro') }}</h2>
+    <p class="lede">
+      {{ _('Questi Termini sono regolati dalla legge italiana. Foro competente: tribunali italiani, salvo foro inderogabile del consumatore ove applicabile.') }}
+    </p>
+  </section>
+
+  <section class="page-section">
+    <h2 class="page-section__title">{{ _('16. Modifiche ai Termini') }}</h2>
+    <p class="lede">
+      {{ _('Possiamo aggiornare i Termini pubblicando la nuova versione con data e numero di versione (attualmente v') }}{{ policy_versions.terms }}{{ _('). L’uso continuato dopo la data di efficacia costituisce accettazione, salvo diversamente richiesto dalla legge.') }}
+    </p>
+    <p class="lede muted">
+      {{ _('Versioni:') }} Terms v{{ policy_versions.terms }} · Privacy v{{ policy_versions.privacy }} · DPA v{{ policy_versions.dpa }}
     </p>
   </section>
 
   <div class="page-cta">
     <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('dpa') }}">{{ _('DPA / sub-responsabili') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
-    <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('trust_security') }}">{{ _('Trust') }}</a>
   </div>
 </article>
 {% endblock %}

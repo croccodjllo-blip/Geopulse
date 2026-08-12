@@ -1578,6 +1578,12 @@ def dated_url_for(endpoint: str, **values: Any) -> str:
     return url_for(endpoint, **values)
 
 
+def _policy_versions_for_templates() -> dict[str, str]:
+    from services.legal_docs import POLICY_VERSIONS
+
+    return POLICY_VERSIONS
+
+
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
     base = public_base_url()
@@ -1699,6 +1705,7 @@ def inject_globals() -> dict[str, Any]:
         "format_tokens_short": format_tokens_short,
         "cents_to_tokens": cents_to_tokens,
         "csp_nonce": getattr(g, "csp_nonce", ""),
+        "policy_versions": _policy_versions_for_templates(),
     }
 
 
@@ -4167,6 +4174,10 @@ def sitemap_xml():
         ("/termini", "0.4", "yearly"),
         ("/rimborsi", "0.4", "yearly"),
         ("/dpa", "0.5", "yearly"),
+        ("/cookie", "0.4", "yearly"),
+        ("/ai", "0.5", "yearly"),
+        ("/trust", "0.5", "yearly"),
+        ("/accessibilita", "0.4", "yearly"),
         ("/interesse-plus", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
@@ -4226,6 +4237,58 @@ def terms():
 @app.route("/rimborsi")
 def refunds():
     return render_template("rimborsi.html")
+
+
+@app.route("/cookie")
+@app.route("/cookies")
+@app.route("/cookie-policy")
+def cookies_policy():
+    """Cookie inventory + granular consent entrypoint."""
+    from services.legal_docs import POLICY_VERSIONS, cookie_inventory
+
+    return render_template(
+        "cookies.html",
+        policy_version=POLICY_VERSIONS["cookies"],
+        cookies=cookie_inventory(
+            analytics_active=bool(GA4_MEASUREMENT_ID),
+            ads_active=bool(GOOGLE_ADS_ID or ADSENSE_CLIENT_ID),
+        ),
+    )
+
+
+@app.route("/ai")
+@app.route("/ai-transparency")
+@app.route("/trasparenza-ai")
+def ai_transparency():
+    from services.legal_docs import POLICY_VERSIONS
+
+    return render_template(
+        "ai_transparency.html",
+        policy_version=POLICY_VERSIONS["ai"],
+    )
+
+
+@app.route("/trust")
+@app.route("/security")
+@app.route("/trust-security")
+def trust_security():
+    from services.legal_docs import POLICY_VERSIONS
+
+    return render_template(
+        "trust.html",
+        policy_version=POLICY_VERSIONS["trust"],
+    )
+
+
+@app.route("/accessibilita")
+@app.route("/accessibility")
+def accessibility_statement():
+    from services.legal_docs import POLICY_VERSIONS
+
+    return render_template(
+        "accessibility.html",
+        policy_version=POLICY_VERSIONS["accessibility"],
+    )
 
 
 @app.route("/dpa")
@@ -4852,11 +4915,13 @@ def billing_checkout():
 @login_required
 def billing_portal():
     flash(
-        "Per gestire l’abbonamento usa il link nella ricevuta Paddle "
-        "o scrivi a info@centropic.ai.",
+        "Per annullare o gestire l’abbonamento: apri il link “Manage "
+        "subscription” nella ricevuta Paddle, oppure scrivi a info@centropic.ai "
+        "indicando l’email dell’account. I crediti già consumati non si "
+        "ripristinano (vedi Politica rimborsi).",
         "info",
     )
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("dashboard_settings") + "#billing")
 
 
 @app.route("/billing/success")

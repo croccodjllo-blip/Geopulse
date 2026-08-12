@@ -146,6 +146,25 @@
     </form>
   </section>
 
+  <section class="page-section" id="billing">
+    <h2 class="page-section__title">{{ _('Fatturazione e cancellazione') }}</h2>
+    <div class="form-grid panel">
+      <p class="lede">
+        {{ _('Piano attuale:') }} <strong>{{ sidebar_plan }}</strong>.
+        {{ _('I pagamenti sono gestiti da Paddle (Merchant of Record).') }}
+      </p>
+      <ul class="plain-list">
+        <li>{{ _('Per cambiare carta, scaricare fatture o annullare il rinnovo: usa il link “Manage subscription” nella ricevuta Paddle, oppure invia richiesta a') }} <a href="mailto:info@centropic.ai">info@centropic.ai</a>.</li>
+        <li>{{ _('Dopo la cancellazione resti attivo fino a fine periodo già pagato; i crediti consumati non si ripristinano.') }} <a href="{{ url_for('refunds') }}">{{ _('Politica rimborsi') }}</a>.</li>
+        <li><a href="{{ url_for('pricing') }}">{{ _('Vedi piani e prezzi') }}</a> · <a href="{{ url_for('topup_credit_page') }}">{{ _('Top-up crediti') }}</a></li>
+      </ul>
+      <form method="post" action="{{ url_for('billing_portal') }}" class="u-mt-1">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button class="btn btn-ghost" type="submit">{{ _('Come gestire / annullare abbonamento') }}</button>
+      </form>
+    </div>
+  </section>
+
   <section class="page-section" id="privacy-data">
     <h2 class="page-section__title">{{ _('Dati e account') }}</h2>
     <form method="post" class="form-grid panel">
@@ -157,7 +176,7 @@
     <form method="post" class="form-grid panel u-mt-1">
       {{ delete_form.hidden_tag() }}
       <input type="hidden" name="action" value="delete_account" />
-      <p class="lede">{{ _('Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal billing.') }}</p>
+      <p class="lede">{{ _('Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima da') }} <a href="#billing">{{ _('Fatturazione') }}</a>.</p>
       <div class="field">
         <label for="delete_password">{{ _('Password') }}</label>
         {{ delete_form.password(id="delete_password", autocomplete="current-password") }}
