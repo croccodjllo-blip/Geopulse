@@ -446,8 +446,10 @@ def _probe_anthropic(
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
+            from services.llm_tpm import acquire_tpm
 
             acquire_rpm("anthropic")
+            acquire_tpm("anthropic")
             res = requests.post(
                 "https://api.anthropic.com/v1/messages",
                 headers={
@@ -552,8 +554,10 @@ def _probe_gemini(
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
+            from services.llm_tpm import acquire_tpm
 
             acquire_rpm("gemini")
+            acquire_tpm("gemini")
             url = (
                 "https://generativelanguage.googleapis.com/v1beta/models/"
                 f"{model}:generateContent"
@@ -663,8 +667,10 @@ def _probe_xai(
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
+            from services.llm_tpm import acquire_tpm
 
             acquire_rpm("xai")
+            acquire_tpm("xai")
             res = requests.post(
                 "https://api.x.ai/v1/chat/completions",
                 headers={
@@ -757,8 +763,10 @@ def _copilot_run_prompts(
     for prompt in prompts[:3]:
         try:
             from services.llm_rpm import acquire_rpm
+            from services.llm_tpm import acquire_tpm
 
             acquire_rpm("copilot")
+            acquire_tpm("copilot")
             text = ""
             try:
                 resp = openai_client.responses.create(

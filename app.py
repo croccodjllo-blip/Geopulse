@@ -786,6 +786,7 @@ class SiteAnalysis(db.Model):
     robots_artifact = db.Column(db.Text, nullable=False, default="")
     checklist_artifact = db.Column(db.Text, nullable=False, default="")
     before_after_artifact = db.Column(db.Text, nullable=False, default="")
+    pack_uri = db.Column(db.String(500), nullable=False, default="")
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
     crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     rescan_interval = db.Column(db.String(20), nullable=False, default="off")
@@ -968,6 +969,7 @@ class AnalysisRun(db.Model):
     robots_artifact = db.Column(db.Text, nullable=False, default="")
     checklist_artifact = db.Column(db.Text, nullable=False, default="")
     before_after_artifact = db.Column(db.Text, nullable=False, default="")
+    pack_uri = db.Column(db.String(500), nullable=False, default="")
     pages_analyzed = db.Column(db.Integer, nullable=False, default=1)
     crawl_pages_json = db.Column(db.Text, nullable=False, default="[]")
     source = db.Column(db.String(20), nullable=False, default="manual")
@@ -1858,6 +1860,7 @@ def ensure_schema() -> None:
             "robots_artifact": "TEXT DEFAULT ''",
             "checklist_artifact": "TEXT DEFAULT ''",
             "before_after_artifact": "TEXT DEFAULT ''",
+            "pack_uri": "TEXT DEFAULT ''",
             "pages_analyzed": "INTEGER DEFAULT 1",
             "crawl_pages_json": "TEXT DEFAULT '[]'",
             "rescan_interval": "TEXT DEFAULT 'off'",
@@ -1936,6 +1939,7 @@ def ensure_schema() -> None:
             "faq_artifact": "TEXT DEFAULT ''",
             "checklist_artifact": "TEXT DEFAULT ''",
             "before_after_artifact": "TEXT DEFAULT ''",
+            "pack_uri": "TEXT DEFAULT ''",
         }
         for name, col_type in run_alters.items():
             if name not in run_cols:
@@ -2659,6 +2663,7 @@ def backfill_analysis_runs() -> None:
                 faq_artifact=getattr(site, "faq_artifact", None) or "",
                 meta_pack_artifact=site.meta_pack_artifact or "",
                 robots_artifact=site.robots_artifact or "",
+                pack_uri=getattr(site, "pack_uri", None) or "",
                 pages_analyzed=getattr(site, "pages_analyzed", None) or 1,
                 crawl_pages_json=getattr(site, "crawl_pages_json", None) or "[]",
                 source="manual",
@@ -3475,13 +3480,23 @@ def llms_txt():
     )
 
 
+def _edge_hydrate_pack(analysis: SiteAnalysis) -> SiteAnalysis:
+    """Load pack artifacts from S3 when DB lean (pack_uri set)."""
+    try:
+        from services.artifact_s3 import ensure_pack_loaded
+
+        return ensure_pack_loaded(analysis)
+    except Exception:
+        return analysis
+
+
 def _edge_site_or_404(token: str) -> SiteAnalysis:
     analysis = SiteAnalysis.query.filter_by(
         public_token=token, signals_hosted=True
     ).first()
     if analysis is None:
         abort(404)
-    return analysis
+    return _edge_hydrate_pack(analysis)
 
 
 def _edge_client_key() -> str:

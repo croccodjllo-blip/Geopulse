@@ -60,6 +60,7 @@ def call_with_retries(
 ) -> T:
     """Call ``fn`` with retries on rate-limit / transient errors."""
     from services.llm_rpm import acquire_for_label
+    from services.llm_tpm import acquire_tpm_for_label
 
     predicate = retry_on or _is_rate_limit
     last: BaseException | None = None
@@ -68,6 +69,7 @@ def call_with_retries(
         try:
             # Client-side RPM before each attempt (shared API keys across jobs).
             acquire_for_label(label)
+            acquire_tpm_for_label(label)
             return fn()
         except Exception as exc:  # noqa: BLE001 — provider SDKs vary
             last = exc

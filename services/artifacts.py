@@ -888,6 +888,12 @@ footer{{margin-top:2rem;font-size:.85rem;color:#8B97A8}}
 
 def unified_fix_html_from_entity(entity: Any) -> str:
     """Build the single pack file from a persisted SiteAnalysis / AnalysisRun."""
+    try:
+        from services.artifact_s3 import ensure_pack_loaded
+
+        entity = ensure_pack_loaded(entity)
+    except Exception:
+        pass
     findings = entity.findings if hasattr(entity, "findings") else []
     if callable(findings):
         findings = findings()

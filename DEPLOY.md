@@ -13,7 +13,8 @@
 | Proxy | Nginx + Let's Encrypt |
 | Secrets | `/opt/aio-bot/.env` (mai in git) |
 | Job worker | `aio-bot-analyze.service` (Type=simple `--loop`) + optional Redis LIST dispatch + timer oneshot backup |
-| Redis (optional) | `REDIS_URL` — analyze queue + shared LLM RPM |
+| Redis (optional) | `REDIS_URL` — analyze queue + shared LLM RPM/TPM |
+| S3 packs (optional) | `ANALYZE_ARTIFACT_STORE=s3` + `ANALYZE_S3_BUCKET` |
 | Rescan Plus/Business | `aio-bot-rescan.timer` |
 | Backup | `aio-bot-backup.timer` |
 
@@ -121,6 +122,13 @@ ANTHROPIC_RPM=60
 REDIS_URL=redis://127.0.0.1:6379/0
 ANALYZE_QUEUE_BACKEND=redis
 LLM_RPM_BACKEND=redis
+LLM_TPM_BACKEND=redis
+OPENAI_TPM=200000
+# Optional S3 pack offload (keeps Postgres lean at high volume)
+# ANALYZE_ARTIFACT_STORE=s3
+# ANALYZE_S3_BUCKET=centropic-analyze-packs
+# ANALYZE_S3_PREFIX=analyze-packs
+# ANALYZE_S3_REGION=eu-central-1
 PUBLIC_SITE_URL=https://centropic.ai
 PADDLE_ENV=production
 SOV_DAILY_BUDGET_CENTS=5000
@@ -137,6 +145,8 @@ sudo systemctl enable --now redis-server
 ```
 
 Senza `REDIS_URL` (o con `ANALYZE_QUEUE_BACKEND=db`) i worker restano sul claim FIFO Postgres.
+Con `LLM_TPM_BACKEND=redis` i worker condividono anche il budget token/minuto.
+Con `ANALYZE_ARTIFACT_STORE=s3` i pack ottimizzazione vanno su object storage (`pack_uri`); senza bucket resta tutto in Postgres.
 
 ### Paddle Checkout — Default payment link (obbligatorio)
 

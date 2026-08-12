@@ -10,6 +10,12 @@ from urllib.parse import urlparse
 from sqlalchemy.orm import Session
 
 from services.analyzer import pages_for_storage
+from services.artifact_s3 import (
+    apply_pack_attrs,
+    clear_bulky_pack_attrs,
+    db_lean_enabled,
+    upload_pack,
+)
 
 RESCAN_INTERVALS = ("off", "daily", "weekly")
 DEFAULT_RESCAN_HOUR = 6
@@ -81,6 +87,37 @@ ALLOWED_RUN_SOURCES = frozenset(
 )
 
 
+
+def _assign_pack_fields(target: Any, pack: dict[str, str]) -> None:
+    """Write pack artifacts onto SiteAnalysis / AnalysisRun."""
+    apply_pack_attrs(target, pack)
+
+
+def _maybe_offload_pack(
+    *,
+    analysis: Any,
+    run: Any,
+    pack: dict[str, str],
+    user_id: int,
+) -> None:
+    """Upload pack to S3 when configured; lean DB columns on success."""
+    site_id = getattr(analysis, "id", None)
+    run_id = getattr(run, "id", None)
+    if not site_id or not run_id:
+        return
+    uri = upload_pack(pack, user_id=user_id, site_id=int(site_id), run_id=int(run_id))
+    if not uri:
+        return
+    if hasattr(analysis, "pack_uri"):
+        analysis.pack_uri = uri
+    if hasattr(run, "pack_uri"):
+        run.pack_uri = uri
+    if db_lean_enabled():
+        preview = pack.get("llms.txt") or ""
+        clear_bulky_pack_attrs(analysis, llms_preview=preview)
+        clear_bulky_pack_attrs(run, llms_preview=preview)
+
+
 def persist_analysis(
     db_session: Session,
     *,
@@ -138,13 +175,7 @@ def persist_analysis(
     analysis.geo_score = result.get("geo_score")
     analysis.findings_json = findings_json
     analysis.analysis_notes = notes
-    analysis.llms_txt = pack.get("llms.txt") or ""
-    analysis.json_ld_artifact = pack.get("organization.jsonld.html") or ""
-    analysis.faq_artifact = pack.get("faq.jsonld.html") or ""
-    analysis.meta_pack_artifact = pack.get("meta-pack.html") or ""
-    analysis.robots_artifact = pack.get("robots.txt") or ""
-    analysis.checklist_artifact = pack.get("fix-this-week.md") or ""
-    analysis.before_after_artifact = pack.get("before-after.md") or ""
+    _assign_pack_fields(analysis, pack)
     analysis.pages_analyzed = pages_analyzed
     analysis.crawl_pages_json = json.dumps(
         {
@@ -208,13 +239,7 @@ def persist_analysis(
         analysis.geo_score = result.get("geo_score")
         analysis.findings_json = findings_json
         analysis.analysis_notes = notes
-        analysis.llms_txt = pack.get("llms.txt") or ""
-        analysis.json_ld_artifact = pack.get("organization.jsonld.html") or ""
-        analysis.faq_artifact = pack.get("faq.jsonld.html") or ""
-        analysis.meta_pack_artifact = pack.get("meta-pack.html") or ""
-        analysis.robots_artifact = pack.get("robots.txt") or ""
-        analysis.checklist_artifact = pack.get("fix-this-week.md") or ""
-        analysis.before_after_artifact = pack.get("before-after.md") or ""
+        _assign_pack_fields(analysis, pack)
         analysis.pages_analyzed = pages_analyzed
         analysis.crawl_pages_json = json.dumps(
             {
@@ -251,20 +276,17 @@ def persist_analysis(
         geo_score=result.get("geo_score"),
         findings_json=findings_json,
         analysis_notes=notes,
-        llms_txt=pack.get("llms.txt") or "",
-        json_ld_artifact=pack.get("organization.jsonld.html") or "",
-        faq_artifact=pack.get("faq.jsonld.html") or "",
-        meta_pack_artifact=pack.get("meta-pack.html") or "",
-        robots_artifact=pack.get("robots.txt") or "",
-        checklist_artifact=pack.get("fix-this-week.md") or "",
-        before_after_artifact=pack.get("before-after.md") or "",
         pages_analyzed=pages_analyzed,
         crawl_pages_json=analysis.crawl_pages_json,
         source=run_source,
         created_at=now,
     )
+    _assign_pack_fields(run, pack)
     db_session.add(run)
     db_session.flush()
+    _maybe_offload_pack(
+        analysis=analysis, run=run, pack=pack, user_id=run_uid
+    )
     # Expose for callers that want to attribute UsageEvents.
     analysis._last_run_id = getattr(run, "id", None)  # type: ignore[attr-defined]
     db_session.commit()
