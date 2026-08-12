@@ -1,0 +1,149 @@
+{# Competitor snapshot — graphic arena: brand lead + rival bars (CSP-safe). #}
+{% set brand_aio = latest.aio_score if latest.aio_score is number else none %}
+{% set brand_geo = latest.geo_score if latest.geo_score is number else none %}
+{% set brand_rating = (latest.rating.code if latest.rating else '—') %}
+{% set brand_crit = crit_n if crit_n is defined else 0 %}
+
+<style nonce="{{ csp_nonce }}">
+.comp-arena {
+  --brand-aio: {{ brand_aio if brand_aio is number else 0 }};
+  --brand-geo: {{ brand_geo if brand_geo is number else 0 }};
+}
+.comp-arena [data-comp-row="brand"] [data-fill][data-metric="aio"] { --w: {{ brand_aio if brand_aio is number else 0 }}; }
+.comp-arena [data-comp-row="brand"] [data-fill][data-metric="geo"] { --w: {{ brand_geo if brand_geo is number else 0 }}; }
+{% for c in latest.competitors %}
+{% if not c.error %}
+.comp-arena [data-comp-row="{{ loop.index0 }}"] [data-fill][data-metric="aio"] { --w: {{ c.aio_score if c.aio_score is number else 0 }}; }
+.comp-arena [data-comp-row="{{ loop.index0 }}"] [data-fill][data-metric="geo"] { --w: {{ c.geo_score if c.geo_score is number else 0 }}; }
+{% endif %}
+{% endfor %}
+</style>
+
+<section class="comp-arena dash-block dash-block--panel" aria-labelledby="comp-title">
+  <header class="dash-block__head">
+    <div>
+      <p class="dash-block__eyebrow">{{ _('Confronto') }}</p>
+      <h3 class="dash-block__title" id="comp-title">{{ _('Competitor snapshot') }}</h3>
+      <p class="dash-block__more">{{ _('AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione.') }}</p>
+    </div>
+    <span class="dash-block__count">{{ latest.competitors|length }}</span>
+  </header>
+
+  <div class="comp-arena__legend" aria-hidden="true">
+    <span class="comp-arena__leg" data-tone="aio"><i></i>AIO</span>
+    <span class="comp-arena__leg" data-tone="geo"><i></i>GEO</span>
+    <span class="comp-arena__leg" data-tone="you"><i></i>{{ _('Tu') }}</span>
+    <span class="comp-arena__leg" data-tone="mark"><i></i>{{ _('Tua soglia') }}</span>
+  </div>
+
+  <div class="comp-arena__board" role="list">
+    <article class="comp-card is-you" role="listitem" data-role="brand" data-comp-row="brand">
+      <div class="comp-card__id">
+        <span class="comp-card__swatch" aria-hidden="true"></span>
+        <div class="comp-card__copy">
+          <strong>{{ latest.domain }}</strong>
+          <em>{{ _('Il tuo brand') }}</em>
+        </div>
+        <span class="comp-card__you">{{ _('Tu') }}</span>
+      </div>
+
+      <div class="comp-card__chart" aria-label="AIO {{ brand_aio if brand_aio is number else '—' }}, GEO {{ brand_geo if brand_geo is number else '—' }}">
+        <div class="comp-card__meter" data-metric="aio">
+          <span class="comp-card__meter-k">AIO</span>
+          <div class="comp-card__track" aria-hidden="true">
+            <i data-fill data-metric="aio"></i>
+          </div>
+          <strong class="comp-card__meter-n">{{ brand_aio if brand_aio is number else '—' }}</strong>
+        </div>
+        <div class="comp-card__meter" data-metric="geo">
+          <span class="comp-card__meter-k">GEO</span>
+          <div class="comp-card__track" aria-hidden="true">
+            <i data-fill data-metric="geo"></i>
+          </div>
+          <strong class="comp-card__meter-n">{{ brand_geo if brand_geo is number else '—' }}</strong>
+        </div>
+      </div>
+
+      <div class="comp-card__meta">
+        <span class="comp-card__cvi" data-grade="{{ brand_rating }}">{{ _('CVI') }} {{ brand_rating }}</span>
+        {% if brand_crit %}
+        <span class="comp-card__chip" data-sev="critical">{{ brand_crit }} crit</span>
+        {% else %}
+        <span class="comp-card__chip" data-sev="ok">{{ _('clear') }}</span>
+        {% endif %}
+      </div>
+    </article>
+
+    {% for c in latest.competitors %}
+    {% set host = c.domain or (c.url|replace('https://','')|replace('http://','')|truncate(42, True, '…')) %}
+    {% if c.error %}
+    <article class="comp-card is-error" role="listitem" data-role="rival" data-comp-row="{{ loop.index0 }}">
+      <div class="comp-card__id">
+        <span class="comp-card__swatch" aria-hidden="true"></span>
+        <div class="comp-card__copy">
+          <strong>{{ host }}</strong>
+          <em>{{ c.error }}</em>
+        </div>
+      </div>
+      <div class="comp-card__chart comp-card__chart--empty">
+        <p class="comp-card__fail">{{ _('Snapshot non disponibile') }}</p>
+      </div>
+      <div class="comp-card__meta">
+        <span class="comp-card__chip" data-sev="warn">{{ _('n/d') }}</span>
+      </div>
+    </article>
+    {% else %}
+    {% set c_aio = c.aio_score if c.aio_score is number else none %}
+    {% set c_geo = c.geo_score if c.geo_score is number else none %}
+    {% set d_aio = (c_aio - brand_aio) if (c_aio is number and brand_aio is number) else none %}
+    {% set d_geo = (c_geo - brand_geo) if (c_geo is number and brand_geo is number) else none %}
+    <article class="comp-card" role="listitem" data-role="rival" data-comp-row="{{ loop.index0 }}">
+      <div class="comp-card__id">
+        <span class="comp-card__swatch" aria-hidden="true"></span>
+        <div class="comp-card__copy">
+          <strong>{{ host }}</strong>
+          <em>
+            {% if d_aio is number or d_geo is number %}
+              {% if d_aio is number %}AIO {{ '%+d'|format(d_aio) }}{% endif %}
+              {% if d_aio is number and d_geo is number %} · {% endif %}
+              {% if d_geo is number %}GEO {{ '%+d'|format(d_geo) }}{% endif %}
+              <span class="comp-card__vs">{{ _('vs te') }}</span>
+            {% else %}
+              {{ _('Rivale') }}
+            {% endif %}
+          </em>
+        </div>
+      </div>
+
+      <div class="comp-card__chart" aria-label="AIO {{ c_aio if c_aio is number else '—' }}, GEO {{ c_geo if c_geo is number else '—' }}">
+        <div class="comp-card__meter" data-metric="aio">
+          <span class="comp-card__meter-k">AIO</span>
+          <div class="comp-card__track" aria-hidden="true">
+            <i data-fill data-metric="aio"></i>
+            {% if brand_aio is number %}<b class="comp-card__mark" data-mark="aio" title="{{ _('Tuo AIO') }}"></b>{% endif %}
+          </div>
+          <strong class="comp-card__meter-n">{{ c_aio if c_aio is number else '—' }}</strong>
+        </div>
+        <div class="comp-card__meter" data-metric="geo">
+          <span class="comp-card__meter-k">GEO</span>
+          <div class="comp-card__track" aria-hidden="true">
+            <i data-fill data-metric="geo"></i>
+            {% if brand_geo is number %}<b class="comp-card__mark" data-mark="geo" title="{{ _('Tuo GEO') }}"></b>{% endif %}
+          </div>
+          <strong class="comp-card__meter-n">{{ c_geo if c_geo is number else '—' }}</strong>
+        </div>
+      </div>
+
+      <div class="comp-card__meta">
+        <span class="comp-card__cvi" data-grade="{{ c.rating or '—' }}">{{ _('CVI') }} {{ c.rating or '—' }}</span>
+        {% if c.critical %}
+        <span class="comp-card__chip" data-sev="critical">{{ c.critical }} crit</span>
+        {% else %}
+        <span class="comp-card__chip" data-sev="ok">{{ _('clear') }}</span>
+        {% endif %}
+      </div>
+    </article>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>

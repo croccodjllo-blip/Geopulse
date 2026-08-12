@@ -863,27 +863,7 @@
           {% endif %}
 
           {% if can_competitors and latest.competitors %}
-          <section class="dash-block dash-block--panel" aria-labelledby="comp-title">
-            <header class="dash-block__head">
-              <div>
-                <p class="dash-block__eyebrow">{{ _('Confronto') }}</p>
-                <h3 class="dash-block__title" id="comp-title">{{ _('Competitor snapshot') }}</h3>
-              </div>
-              <span class="dash-block__count">{{ latest.competitors|length }}</span>
-            </header>
-            <ul class="comp-list">
-              {% for c in latest.competitors %}
-              <li>
-                <strong>{{ c.domain or c.url }}</strong>
-                {% if c.error %}
-                <span class="muted">{{ c.error }}</span>
-                {% else %}
-                <span>AIO {{ c.aio_score }} · GEO {{ c.geo_score }} · {{ c.rating }} · {{ c.critical }} critical</span>
-                {% endif %}
-              </li>
-              {% endfor %}
-            </ul>
-          </section>
+          {% include "partials/competitor_snapshot.html" %}
           {% endif %}
 
           <section class="dash-block dash-block--panel dash-block--edge" id="edge-signals" aria-labelledby="edge-title">
