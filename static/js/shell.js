@@ -1,5 +1,5 @@
 /**
- * Dashboard shell: mobile sidebar drawer + deep-link to report tabs.
+ * Dashboard shell: mobile sidebar drawer + report view rail (SoV / Score).
  */
 (function () {
   function qs(sel, root) {
@@ -30,12 +30,41 @@
     document.documentElement.style.overflow = open ? "hidden" : "";
   }
 
-  function activateDashTab(id) {
+  function animateSovBars() {
+    qsa(".engine-bar").forEach(function (row) {
+      row.classList.remove("is-animated");
+      void row.offsetWidth;
+      row.classList.add("is-animated");
+    });
+    qsa(".sov-columns").forEach(function (chart) {
+      chart.classList.remove("is-animated");
+      void chart.offsetWidth;
+      chart.classList.add("is-animated");
+    });
+  }
+
+  function activateReportView(id) {
     if (!id) return;
-    var btn = qs('.report-tabs__btn[data-tab="' + id + '"]');
-    if (btn) btn.click();
+    qsa(".report-nav__view").forEach(function (link) {
+      var on = link.getAttribute("data-tab") === id;
+      link.classList.toggle("is-active", on);
+      if (on) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+    qsa(".report-panel").forEach(function (panel) {
+      var on = panel.getAttribute("data-panel") === id;
+      panel.classList.toggle("is-active", on);
+      panel.hidden = !on;
+    });
+    if (id === "sov") animateSovBars();
+  }
+
+  function activateDashTab(id, opts) {
+    if (!id) return;
+    activateReportView(id);
+    var scroll = !opts || opts.scroll !== false;
     var panel = qs("#panel-" + id) || qs("#" + id);
-    if (panel && typeof panel.scrollIntoView === "function") {
+    if (scroll && panel && typeof panel.scrollIntoView === "function") {
       setTimeout(function () {
         panel.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 60);
@@ -74,7 +103,18 @@
       });
     });
 
-    // Hash → SoV / Edge / analyze sections
+    qsa(".report-nav__view[data-tab]").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        var id = link.getAttribute("data-tab");
+        activateReportView(id);
+        if (id && history.replaceState) {
+          history.replaceState(null, "", "#" + (id === "sov" ? "panel-sov" : "panel-score"));
+        }
+      });
+    });
+
+    // Hash → SoV / Score / Edge / analyze sections
     var hash = (location.hash || "").replace(/^#/, "");
     if (hash === "panel-score" || hash === "score") activateDashTab("score");
     else if (hash === "panel-sov" || hash === "sov") activateDashTab("sov");
@@ -88,11 +128,8 @@
       if (form && typeof form.scrollIntoView === "function") {
         form.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    } else if (qs("#panel-sov") && qs('.report-tabs__btn[data-tab="sov"]')) {
-      // Default view: SoV (animate bars once on load).
-      document.querySelectorAll(".engine-bar").forEach(function (row) {
-        row.classList.add("is-animated");
-      });
+    } else if (qs("#panel-sov.is-active")) {
+      animateSovBars();
     }
 
     window.addEventListener("hashchange", function () {

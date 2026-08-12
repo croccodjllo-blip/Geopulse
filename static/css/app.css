@@ -5751,76 +5751,59 @@ html.analyze-busy {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
-/* Tabs Score / SoV */
-.report-tabs {
-  display: inline-flex;
-  gap: 0.25rem;
-  margin: 1.25rem 0 1rem;
-  padding: 0.25rem;
-  border-radius: var(--radius-md);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-}
-
-.report-tabs__btn {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: var(--slate);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.55rem 1rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background 180ms var(--ease), color 180ms var(--ease);
-}
-
-.report-tabs__btn:hover { color: var(--ink); }
-
-.report-tabs__btn.is-active {
-  background: var(--surface-3);
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--border-mid);
-}
-
+/* Sticky report rail: SoV/Score views + section anchors */
 .report-nav {
   position: sticky;
   top: calc(var(--header-h) + 0.4rem);
   z-index: 30;
   display: flex;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.3rem;
   max-width: 100%;
-  margin: 0 0 1rem;
-  padding: 0.4rem;
+  margin: 1.25rem 0 1rem;
+  padding: 0.35rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
   border: 1px solid var(--border-mid);
   border-radius: var(--radius-md);
-  background: rgba(10, 15, 25, 0.9);
+  background: rgba(10, 15, 25, 0.92);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
 }
 
 .report-nav a {
   flex: 0 0 auto;
-  padding: 0.42rem 0.7rem;
+  padding: 0.45rem 0.75rem;
   border-radius: var(--radius-sm);
   color: var(--slate-light);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   text-decoration: none;
+  transition: background 160ms var(--ease), color 160ms var(--ease), box-shadow 160ms var(--ease);
 }
 
 .report-nav a:hover,
 .report-nav a:focus-visible {
   color: var(--ink);
   background: var(--surface-3);
+}
+
+.report-nav__view.is-active {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 16%, var(--surface-3));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 45%, var(--border-mid));
+}
+
+.report-nav__rule {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 1px;
+  margin: 0.2rem 0.25rem;
+  background: var(--border-mid);
 }
 
 #panel-score,
