@@ -1033,9 +1033,12 @@
                 <button type="button" class="pack-mail__close" data-pack-mail-close aria-label="{{ _('Chiudi') }}">×</button>
               </header>
               <p class="pack-mail__lede" id="pack-mail-desc">
-                {{ _('Inserisci l’indirizzo dove ricevere') }}
+                {{ _('Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo dominio.') }}
+              </p>
+              <p class="pack-mail__meta">
                 <code>{{ pack_fix_filename }}</code>
-                {{ _('per') }} <strong>{{ latest.domain }}</strong>.
+                <span aria-hidden="true">·</span>
+                <strong>{{ latest.domain }}</strong>
               </p>
               <label class="pack-mail__label" for="pack-mail-to">{{ _('Indirizzo email') }}</label>
               <input

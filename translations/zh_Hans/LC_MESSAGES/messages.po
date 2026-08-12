@@ -81,20 +81,18 @@ msgstr "Centropic 如何测量 AIO 和 GEO"
 
 #: services/guides.py:37
 msgid ""
-"Metodologia Centropic: Centropic Visibility Index (CVI), score AIO/GEO, "
-"badge Misurato/Stimato e citation share campionata."
+"Metodologia Centropic: Centropic Visibility Index (CVI), score AIO/GEO, badge"
+" Misurato/Stimato e citation share campionata."
 msgstr ""
-"Centropic 方法论：Centropic Visibility Index (CVI)、AIO/GEO score、实测/估计 "
-"badge，以及抽样 citation share。"
+"Centropic 方法论：Centropic Visibility Index (CVI)、AIO/GEO score、实测/估计 badge，以及抽样"
+" citation share。"
 
 #: services/guides.py:40
 msgid ""
-"L’IA non può citare ciò che non riesce a leggere. Centropic rende il "
-"brand visibile e interpretabile dai crawler generativi: chiudiamo gap di "
+"L’IA non può citare ciò che non riesce a leggere. Centropic rende il brand "
+"visibile e interpretabile dai crawler generativi: chiudiamo gap di "
 "informazione e ambiguità entity prima che diventino allucinazioni."
-msgstr ""
-"AI 无法引用它读不到的内容。Centropic 让品牌对生成式 crawler 可见且可解释：在信息缺口和 entity "
-"歧义演变成幻觉之前将其关闭。"
+msgstr "AI 无法引用它读不到的内容。Centropic 让品牌对生成式 crawler 可见且可解释：在信息缺口和 entity 歧义演变成幻觉之前将其关闭。"
 
 #: services/guides.py:44
 msgid ""
@@ -102,73 +100,69 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
-"    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria "
-"di Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
-"sintetizza quanto il brand è predisposto a essere letto e citato dai "
-"sistemi generativi.</p>\n"
+"    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria di "
+"Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
+"sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi "
+"generativi.</p>\n"
 "    <p class=\"lede\">Formula operativa: media di <strong>AIO</strong> "
-"(leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui "
-"findings critical/warn. Non è un ranking pubblicitario né una garanzia di"
-" menzione: è lo standard Centropic per confrontare domini e nel "
-"tempo.</p>\n"
-"    <p class=\"lede\">Quando un marketer chiede <em>«qual è il tuo "
-"CVI?»</em> sta chiedendo questa predisposizione strutturale — non "
-"impression PR tradizionali.</p>\n"
+"(leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui findings "
+"critical/warn. Non è un ranking pubblicitario né una garanzia di menzione: è "
+"lo standard Centropic per confrontare domini e nel tempo.</p>\n"
+"    <p class=\"lede\">Quando un marketer chiede <em>«qual è il tuo CVI?»</em>"
+" sta chiedendo questa predisposizione strutturale — non impression PR "
+"tradizionali.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">2. Cosa controlliamo "
-"(predisposizione strutturale)</h2>\n"
-"    <p class=\"lede\">Probe HTTP e parsing HTML sullo stesso dominio: "
-"title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt,"
-" crawl multi-pagina. Questi finding possono essere badge "
-"<em>Misurato</em>.</p>\n"
+"    <h2 class=\"page-section__title\">2. Cosa controlliamo (predisposizione "
+"strutturale)</h2>\n"
+"    <p class=\"lede\">Probe HTTP e parsing HTML sullo stesso dominio: title, "
+"meta, JSON-LD, FAQ, robots, llms.txt, sitemap, ai.txt, humans.txt, crawl "
+"multi-pagina. Questi finding possono essere badge <em>Misurato</em>.</p>\n"
 "    <p class=\"lede\">Centropic registra entity (Organization, sameAs, "
 "contatti), citabilità del copy e policy verso bot AI (GPTBot, ClaudeBot, "
-"PerplexityBot, Google-Extended) — il perimetro che i modelli devono poter"
-" leggere senza ambiguità.</p>\n"
+"PerplexityBot, Google-Extended) — il perimetro che i modelli devono poter "
+"leggere senza ambiguità.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">3. Score AIO / GEO (componenti del "
 "CVI)</h2>\n"
 "    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> e "
-"<strong>GEO (Generative Engine Optimization)</strong> sono i due sotto-"
-"score 0–100 che alimentano il CVI: leggibilità per sistemi IA e "
-"citabilità / policy crawler.</p>\n"
+"<strong>GEO (Generative Engine Optimization)</strong> sono i due sotto-score "
+"0–100 che alimentano il CVI: leggibilità per sistemi IA e citabilità / policy"
+" crawler.</p>\n"
 "    <p class=\"lede\">Il breakdown per engine (ChatGPT, Gemini, Claude, "
 "Perplexity, Grok, Azure AI) parte come <em>Stimato</em> sulla struttura "
 "osservata; su Plus/Business il citation monitor può aggiungere menzioni "
 "<em>Misurate</em>.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">4. Citation share (campione "
-"stocastico — Plus / Business)</h2>\n"
-"    <p class=\"lede\">Le risposte LLM sono stocastiche: non “Share of "
-"Voice” pubblicitaria (impression/PR), ma un <strong>campione di "
-"menzioni</strong> su prompt controllati. In prodotto resta l’etichetta "
-"SoV Misurato per continuità; metodologicamente è citation share "
-"campionata.</p>\n"
+"    <h2 class=\"page-section__title\">4. Citation share (campione stocastico "
+"— Plus / Business)</h2>\n"
+"    <p class=\"lede\">Le risposte LLM sono stocastiche: non “Share of Voice” "
+"pubblicitaria (impression/PR), ma un <strong>campione di menzioni</strong> su"
+" prompt controllati. In prodotto resta l’etichetta SoV Misurato per "
+"continuità; metodologicamente è citation share campionata.</p>\n"
 "    <ul class=\"plain-list\">\n"
 "      <li>Prompt personalizzabili in Impostazioni (prompt bank).</li>\n"
 "      <li>Evidence badge <em>Misurato</em> per engine disponibili.</li>\n"
-"      <li>Gemini e Azure AI sono proxy documentati (non Google AI "
-"Overview nativo né Copilot Bing nativo).</li>\n"
+"      <li>Gemini e Azure AI sono proxy documentati (non Google AI Overview "
+"nativo né Copilot Bing nativo).</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">5. Trasparenza: la nostra "
-"promessa</h2>\n"
-"    <ul class=\"plain-list\">\n"
-"      <li><strong>Garantiamo la predisposizione:</strong> brand e pagine "
-"rese leggibili, strutturate e raggiungibili dai crawler generativi — così"
-" l’IA ha materiale vero da citare, non vuoti da inventare.</li>\n"
-"      <li>Il pack artifact è pronto per la pubblicazione; il go-live sul "
-"tuo stack resta sotto il tuo controllo (download, Edge o connector).</li>"
+"    <h2 class=\"page-section__title\">5. Trasparenza: la nostra promessa</h2>"
 "\n"
-"      <li>Citation share measured è su <strong>Plus e Business</strong> "
-"(e Admin) con connector API attivi: misura campioni di menzione, non "
-"vende “posizione garantita” nelle UI di terzi.</li>\n"
-"      <li>GEO in Centropic non significa GIS; AIO non significa All-in-"
-"One; CVI non è Domain Authority di terzi.</li>\n"
+"    <ul class=\"plain-list\">\n"
+"      <li><strong>Garantiamo la predisposizione:</strong> brand e pagine rese"
+" leggibili, strutturate e raggiungibili dai crawler generativi — così l’IA ha"
+" materiale vero da citare, non vuoti da inventare.</li>\n"
+"      <li>Il pack artifact è pronto per la pubblicazione; il go-live sul tuo "
+"stack resta sotto il tuo controllo (download, Edge o connector).</li>\n"
+"      <li>Citation share measured è su <strong>Plus e Business</strong> (e "
+"Admin) con connector API attivi: misura campioni di menzione, non vende "
+"“posizione garantita” nelle UI di terzi.</li>\n"
+"      <li>GEO in Centropic non significa GIS; AIO non significa All-in-One; "
+"CVI non è Domain Authority di terzi.</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
@@ -177,8 +171,7 @@ msgid ""
 "      <li><a href=\"/guida\">Guida completa Centropic (servizi, analisi, "
 "glossario)</a></li>\n"
 "      <li><a href=\"/guide/llms-txt\">Guida llms.txt</a></li>\n"
-"      <li><a href=\"/guide/schema-ai\">Schema.org per answer "
-"engine</a></li>\n"
+"      <li><a href=\"/guide/schema-ai\">Schema.org per answer engine</a></li>\n"
 "      <li><a href=\"/guide/score-vs-sov\">CVI, score AIO/GEO e citation "
 "share</a></li>\n"
 "      <li><a href=\"/llms.txt\">llms.txt pubblico di Centropic</a></li>\n"
@@ -195,24 +188,23 @@ msgstr ""
 "    <p class=\"lede\">操作公式：<strong>AIO</strong>（可读性）与 "
 "<strong>GEO</strong>（可引用性）的平均值，并对 critical/warn findings "
 "施加惩罚。它不是广告排名，也不是被提及的保证；它是 Centropic 用于跨域名和随时间比较的标准。</p>\n"
-"    <p class=\"lede\">当营销人员问 <em>“你的 CVI 是多少？”</em> 时，问的是这种结构性准备度，而不是传统 "
-"PR impression。</p>\n"
+"    <p class=\"lede\">当营销人员问 <em>“你的 CVI 是多少？”</em> 时，问的是这种结构性准备度，而不是传统 PR "
+"impression。</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">2. 我们检查什么（结构性准备度）</h2>\n"
 "    <p class=\"lede\">在同一域名上进行 HTTP probe 和 HTML parsing：title、meta、JSON-"
-"LD、FAQ、robots、llms.txt、sitemap、ai.txt、humans.txt、多页面 crawl。这些 findings "
-"可以带有 <em>实测</em> badge。</p>\n"
-"    <p class=\"lede\">Centropic 记录 "
-"entity（Organization、sameAs、contact）、copy 的可引用性，以及面向 AI "
-"bot（GPTBot、ClaudeBot、PerplexityBot、Google-"
+"LD、FAQ、robots、llms.txt、sitemap、ai.txt、humans.txt、多页面 crawl。这些 findings 可以带有 "
+"<em>实测</em> badge。</p>\n"
+"    <p class=\"lede\">Centropic 记录 entity（Organization、sameAs、contact）、copy "
+"的可引用性，以及面向 AI bot（GPTBot、ClaudeBot、PerplexityBot、Google-"
 "Extended）的政策——这些是模型必须能够无歧义读取的范围。</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">3. AIO / GEO score（CVI 的组成部分）</h2>\n"
 "    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> 与 "
-"<strong>GEO (Generative Engine Optimization)</strong> 是构成 CVI 的两个 0–100 子"
-" score：面向 AI 系统的可读性，以及可引用性 / crawler 政策。</p>\n"
+"<strong>GEO (Generative Engine Optimization)</strong> 是构成 CVI 的两个 0–100 子 "
+"score：面向 AI 系统的可读性，以及可引用性 / crawler 政策。</p>\n"
 "    <p class=\"lede\">按 engine 的 "
 "breakdown（ChatGPT、Gemini、Claude、Perplexity、Grok、Azure AI）会先基于观察到的结构标记为 "
 "<em>估计</em>；在 Plus/Business 中，citation monitor 可以增加 <em>实测</em>提及。</p>\n"
@@ -221,8 +213,8 @@ msgstr ""
 "    <h2 class=\"page-section__title\">4. Citation share（随机样本 — Plus / "
 "Business）</h2>\n"
 "    <p class=\"lede\">LLM 回答具有随机性：这不是广告意义上的 “Share of "
-"Voice”（impression/PR），而是在受控 prompt 上的<strong>提及样本</strong>。产品中为保持连续性仍使用 "
-"SoV 实测标签；从方法论上看，这是抽样 citation share。</p>\n"
+"Voice”（impression/PR），而是在受控 prompt 上的<strong>提及样本</strong>。产品中为保持连续性仍使用 SoV "
+"实测标签；从方法论上看，这是抽样 citation share。</p>\n"
 "    <ul class=\"plain-list\">\n"
 "      <li>可在设置中自定义 prompt（prompt bank）。</li>\n"
 "      <li>为可用 engine 提供 evidence badge <em>实测</em>。</li>\n"
@@ -248,8 +240,8 @@ msgstr ""
 "    <ul class=\"plain-list\">\n"
 "      <li><a href=\"/guida\">Centropic 完整指南（服务、分析、术语表）</a></li>\n"
 "      <li><a href=\"/guide/llms-txt\">llms.txt 指南</a></li>\n"
-"      <li><a href=\"/guide/schema-ai\">面向 answer engine 的 "
-"Schema.org</a></li>\n"
+"      <li><a href=\"/guide/schema-ai\">面向 answer engine 的 Schema.org</a></li>"
+"\n"
 "      <li><a href=\"/guide/score-vs-sov\">CVI、AIO/GEO score 与 citation "
 "share</a></li>\n"
 "      <li><a href=\"/llms.txt\">Centropic 公开 llms.txt</a></li>\n"
@@ -269,14 +261,14 @@ msgstr "llms.txt：AI 可引用性的实用指南"
 
 #: services/guides.py:101
 msgid ""
-"Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera "
-"e lo valida nel crawl."
+"Cos’è llms.txt, come strutturarlo per AIO/GEO e come Centropic lo genera e lo"
+" valida nel crawl."
 msgstr "什么是 llms.txt，如何为 AIO/GEO 结构化，以及 Centropic 如何在爬取中生成和验证它。"
 
 #: services/guides.py:104
 msgid ""
-"Un file root machine-readable che spiega brand, topic e pagine preferite "
-"ai modelli e crawler AI."
+"Un file root machine-readable che spiega brand, topic e pagine preferite ai "
+"modelli e crawler AI."
 msgstr "一个机器可读的根文件，向 AI 模型和爬虫解释品牌、主题和首选页面。"
 
 #: services/guides.py:107
@@ -284,13 +276,12 @@ msgid ""
 "\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Perché conta</h2>\n"
-"    <p class=\"lede\">llms.txt riduce ambiguità entity: dice chi sei, "
-"cosa offri e quali URL citare. In Centropic la presenza e la qualità del "
-"file alimentano score AIO/GEO (probe Misurato).</p>\n"
+"    <p class=\"lede\">llms.txt riduce ambiguità entity: dice chi sei, cosa "
+"offri e quali URL citare. In Centropic la presenza e la qualità del file "
+"alimentano score AIO/GEO (probe Misurato).</p>\n"
 "    <p class=\"lede\">Answer engine e crawler AI (GPTBot, ClaudeBot, "
-"PerplexityBot, Google-Extended) usano segnali pubblici; un llms.txt "
-"chiaro è un’ancora di citazione accanto a Schema.org e robots "
-"permissivi.</p>\n"
+"PerplexityBot, Google-Extended) usano segnali pubblici; un llms.txt chiaro è "
+"un’ancora di citazione accanto a Schema.org e robots permissivi.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Sezioni utili</h2>\n"
@@ -298,20 +289,19 @@ msgid ""
 "      <li>Site / Summary / Key topics con brand e dominio canonici</li>\n"
 "      <li>Preferred citation (brand + acronimi espansi: AIO, GEO)</li>\n"
 "      <li>Important pages con URL https assoluti</li>\n"
-"      <li>Disambiguazione (cosa non siete: GIS, All-in-One generici)</li>"
-"\n"
+"      <li>Disambiguazione (cosa non siete: GIS, All-in-One generici)</li>\n"
 "      <li>Contact e owner / parent organization</li>\n"
 "    </ul>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Come Centropic aiuta</h2>\n"
-"    <p class=\"lede\">Ogni analisi genera una bozza <code>llms.txt</code>"
-" nel pack HTML unico. Pubblicala in root "
-"(<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding "
-"passa a “disponibile” se il probe la trova.</p>\n"
+"    <p class=\"lede\">Ogni analisi genera una bozza <code>llms.txt</code> nel"
+" pack HTML unico. Pubblicala in root "
+"(<code>https://tuodominio/llms.txt</code>) e ri-analizza: il finding passa a "
+"“disponibile” se il probe la trova.</p>\n"
 "    <p class=\"lede\">Esempio vivo: il llms.txt di Centropic è su <a "
-"href=\"/llms.txt\">centropic.ai/llms.txt</a>, con preferred citation e "
-"link a metodologia.</p>\n"
+"href=\"/llms.txt\">centropic.ai/llms.txt</a>, con preferred citation e link a"
+" metodologia.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Checklist rapida</h2>\n"
@@ -321,8 +311,8 @@ msgid ""
 "      <li>Allinea llms.txt a JSON-LD Organization e alla home</li>\n"
 "      <li>Aggiorna la data quando cambi offerta o positioning</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Vedi anche <a href=\"/guide/schema-ai\">Schema "
-"AI</a> e <a href=\"/metodologia\">metodologia</a>.</p>\n"
+"    <p class=\"lede\">Vedi anche <a href=\"/guide/schema-ai\">Schema AI</a> e"
+" <a href=\"/metodologia\">metodologia</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 "\n"
@@ -331,8 +321,7 @@ msgstr ""
 "    <p class=\"lede\">llms.txt 可以减少 entity 的歧义:说明您是谁、提供什么,以及应引用哪些 URL。在 "
 "Centropic 中,该文件的存在与质量会影响 AIO/GEO 分数(Measured probe)。</p>\n"
 "    <p class=\"lede\">答案引擎与 AI 爬虫(GPTBot、ClaudeBot、PerplexityBot、Google-"
-"Extended)会使用公开信号;清晰的 llms.txt 与 Schema.org 及宽松的 robots 一起,构成引用的重要依据。</p>"
-"\n"
+"Extended)会使用公开信号;清晰的 llms.txt 与 Schema.org 及宽松的 robots 一起,构成引用的重要依据。</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">实用板块</h2>\n"
@@ -361,8 +350,8 @@ msgstr ""
 "      <li>使 llms.txt 与 JSON-LD Organization 及首页保持一致</li>\n"
 "      <li>更改产品或定位时及时更新日期</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">另请参阅 <a href=\"/guide/schema-ai\">Schema AI</a> 及 "
-"<a href=\"/metodologia\">方法论</a>。</p>\n"
+"    <p class=\"lede\">另请参阅 <a href=\"/guide/schema-ai\">Schema AI</a> 及 <a "
+"href=\"/metodologia\">方法论</a>。</p>\n"
 "  </section>\n"
 
 #: services/guides.py:147
@@ -372,8 +361,7 @@ msgstr "Schema.org 用于答案引擎 (AIO/GEO)"
 #: services/guides.py:149
 msgid ""
 "Quali tipi Schema.org aiutano AI-Driven Visibility e Generative Engine "
-"Optimization: Organization, WebSite, FAQPage, SoftwareApplication, "
-"Article."
+"Optimization: Organization, WebSite, FAQPage, SoftwareApplication, Article."
 msgstr "哪些 Schema.org 类型有助于 AI 驱动的可见性和生成引擎优化：组织、网站、FAQ 页面、软件应用、文章。"
 
 #: services/guides.py:152
@@ -388,28 +376,27 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Tipi prioritari</h2>\n"
 "    <ul class=\"plain-list\">\n"
-"      <li><strong>Organization</strong> + <strong>WebSite</strong> "
-"collegati via @id</li>\n"
-"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate "
-"all’HTML visibile</li>\n"
-"      <li><strong>SoftwareApplication</strong> o Product se vendi "
-"software (come Centropic)</li>\n"
-"      <li><strong>Article</strong> / HowTo per guide evergreen con author"
-" e date</li>\n"
+"      <li><strong>Organization</strong> + <strong>WebSite</strong> collegati "
+"via @id</li>\n"
+"      <li><strong>FAQPage</strong> per Q&amp;A tipizzate allineate all’HTML "
+"visibile</li>\n"
+"      <li><strong>SoftwareApplication</strong> o Product se vendi software "
+"(come Centropic)</li>\n"
+"      <li><strong>Article</strong> / HowTo per guide evergreen con author e "
+"date</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Riferimento normativo: <a "
-"href=\"https://schema.org/\" rel=\"noopener noreferrer\" "
-"target=\"_blank\">schema.org</a>. In Centropic i tipi rilevati alimentano"
-" score AIO/GEO (probe Misurato).</p>\n"
+"    <p class=\"lede\">Riferimento normativo: <a href=\"https://schema.org/\" "
+"rel=\"noopener noreferrer\" target=\"_blank\">schema.org</a>. In Centropic i "
+"tipi rilevati alimentano score AIO/GEO (probe Misurato).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Errori comuni</h2>\n"
 "    <p class=\"lede\">JSON-LD orfano senza tipi chiave, sameAs solo self-"
-"referenziali, FAQ senza acceptedAnswer, Organization senza contatto o "
-"logo. Centropic li segnala nei findings.</p>\n"
-"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non "
-"basta: preferisci profili esterni reali (azienda madre, directory, social"
-" verificati).</p>\n"
+"referenziali, FAQ senza acceptedAnswer, Organization senza contatto o logo. "
+"Centropic li segnala nei findings.</p>\n"
+"    <p class=\"lede\">Un sameAs verso il solo sito proprietario non basta: "
+"preferisci profili esterni reali (azienda madre, directory, social "
+"verificati).</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Checklist minima</h2>\n"
@@ -421,10 +408,9 @@ msgid ""
 "      <li>FAQPage solo se le domande sono visibili in pagina</li>\n"
 "      <li>knowsAbout allineato a llms.txt e al copy della home</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">Vedi anche <a "
-"href=\"/metodologia\">metodologia</a>, <a href=\"/guide/llms-"
-"txt\">llms.txt</a> e <a href=\"/guide/score-vs-sov\">score vs "
-"SoV</a>.</p>\n"
+"    <p class=\"lede\">Vedi anche <a href=\"/metodologia\">metodologia</a>, <a"
+" href=\"/guide/llms-txt\">llms.txt</a> e <a href=\"/guide/score-vs-"
+"sov\">score vs SoV</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 "<section class=\"page-section\">\n"
@@ -435,9 +421,9 @@ msgstr ""
 "      <li><strong>软件应用</strong> 或产品，如果你销售软件（如 Centropic）</li>\n"
 "      <li><strong>文章</strong> / 如何为具有作者和日期的常青指南</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">规范参考：<a href=\"https://schema.org/\" rel=\"noopener"
-" noreferrer\" target=\"_blank\">schema.org</a>。在 Centropic 中，检测到的类型会影响 "
-"AIO/GEO 分数（测量探测）。</p>\n"
+"    <p class=\"lede\">规范参考：<a href=\"https://schema.org/\" rel=\"noopener "
+"noreferrer\" target=\"_blank\">schema.org</a>。在 Centropic 中，检测到的类型会影响 AIO/GEO"
+" 分数（测量探测）。</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">常见错误</h2>\n"
@@ -455,9 +441,8 @@ msgstr ""
 "      <li>仅当问题在页面上可见时才使用 FAQPage</li>\n"
 "      <li>knowsAbout 与 llms.txt 和主页文案对齐</li>\n"
 "    </ul>\n"
-"    <p class=\"lede\">另见 <a href=\"/metodologia\">方法论</a>、<a "
-"href=\"/guide/llms-txt\">llms.txt</a> 和 <a href=\"/guide/score-vs-"
-"sov\">分数与 SoV</a>。</p>\n"
+"    <p class=\"lede\">另见 <a href=\"/metodologia\">方法论</a>、<a href=\"/guide"
+"/llms-txt\">llms.txt</a> 和 <a href=\"/guide/score-vs-sov\">分数与 SoV</a>。</p>\n"
 "  </section>"
 
 #: services/guides.py:191
@@ -482,41 +467,40 @@ msgstr "三个层级：CVI（专有标准）、AIO/GEO（组成部分）、citat
 msgid ""
 "\n"
 "  <section class=\"page-section\">\n"
-"    <h2 class=\"page-section__title\">Centropic Visibility Index "
-"(CVI)</h2>\n"
-"    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria "
-"di Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione "
-"strutturale (AIO+GEO) con penalità findings. È ciò che confronti tra "
-"brand, competitor e nel tempo.</p>\n"
+"    <h2 class=\"page-section__title\">Centropic Visibility Index (CVI)</h2>\n"
+"    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria di "
+"Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale "
+"(AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e "
+"nel tempo.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Score AIO / GEO (componenti)</h2>\n"
-"    <p class=\"lede\">Sotto-score 0–100 da crawl e probe. Badge Stimato "
-"sul compositario; i check di presenza file possono essere Misurato.</p>\n"
+"    <p class=\"lede\">Sotto-score 0–100 da crawl e probe. Badge Stimato sul "
+"compositario; i check di presenza file possono essere Misurato.</p>\n"
 "    <p class=\"lede\"><strong>AIO (AI-Driven Visibility)</strong> premia "
-"leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. "
-"<strong>GEO (Generative Engine Optimization)</strong> premia citabilità e"
-" policy crawler AI.</p>\n"
+"leggibilità per sistemi IA: entity, schema, FAQ, llms.txt, meta. <strong>GEO "
+"(Generative Engine Optimization)</strong> premia citabilità e policy crawler "
+"AI.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Citation share (non SoV "
 "pubblicitaria)</h2>\n"
 "    <p class=\"lede\">Nei media tradizionali “Share of Voice” conta "
 "impression e PR. Qui misuriamo <strong>menzioni in risposte "
-"generative</strong> — stocastiche, prompt-dipendenti. In UI resta "
-"l’etichetta SoV per continuità; in metodologia è citation share.</p>\n"
-"    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + "
-"robots. <strong>Measured</strong> (Plus/Business): campioni prompt su LLM"
-" con conteggio menzioni brand. Non confondere i due.</p>\n"
+"generative</strong> — stocastiche, prompt-dipendenti. In UI resta l’etichetta"
+" SoV per continuità; in metodologia è citation share.</p>\n"
+"    <p class=\"lede\"><strong>Proxy</strong>: formula su AIO/GEO + robots. "
+"<strong>Measured</strong> (Plus/Business): campioni prompt su LLM con "
+"conteggio menzioni brand. Non confondere i due.</p>\n"
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Come leggerli insieme</h2>\n"
-"    <p class=\"lede\">Alza il <strong>CVI</strong> chiudendo i gap "
-"AIO/GEO: l’IA non cita ciò che non legge. Poi campiona la citation share."
-" CVI alto = controllo del dato; measured = campione sulle risposte.</p>\n"
+"    <p class=\"lede\">Alza il <strong>CVI</strong> chiudendo i gap AIO/GEO: "
+"l’IA non cita ciò che non legge. Poi campiona la citation share. CVI alto = "
+"controllo del dato; measured = campione sulle risposte.</p>\n"
 "    <p class=\"lede\">Centropic mostra sempre l’evidence badge: Stimato, "
-"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e "
-"nel prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
+"Misto o Misurato. Dettagli in <a href=\"/metodologia\">metodologia</a> e nel "
+"prodotto su <a href=\"/prodotto\">/prodotto</a>.</p>\n"
 "  </section>\n"
 msgstr ""
 "\n"
@@ -539,8 +523,8 @@ msgstr ""
 "  </section>\n"
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">如何综合解读</h2>\n"
-"    <p class=\"lede\">先提升信号(分数),再衡量声量(SoV)。低分数配合高 SoV 并不稳固;高分数若没有 "
-"measured SoV,仍只是诊断结果,并非引用的证明。</p>\n"
+"    <p class=\"lede\">先提升信号(分数),再衡量声量(SoV)。低分数配合高 SoV 并不稳固;高分数若没有 measured "
+"SoV,仍只是诊断结果,并非引用的证明。</p>\n"
 "    <p class=\"lede\">Centropic 始终显示 evidence 标记:Estimated、Mixed 或 "
 "Measured。详情请参见<a href=\"/metodologia\">方法论</a>及产品页面 <a "
 "href=\"/prodotto\">/prodotto</a>。</p>\n"
@@ -570,9 +554,7 @@ msgstr "添加作者、简介或完整 Organization 以增强信任。"
 msgid ""
 "Aggiungi blocchi User-agent dedicati (GPTBot, ClaudeBot, PerplexityBot, "
 "Google-Extended) con Allow: /."
-msgstr ""
-"添加带 Allow: / 的专用 User-agent 块（GPTBot、ClaudeBot、PerplexityBot、Google-"
-"Extended）。"
+msgstr "添加带 Allow: / 的专用 User-agent 块（GPTBot、ClaudeBot、PerplexityBot、Google-Extended）。"
 
 #: services/i18n_findings.py:21
 msgid "Aggiungi contact, Allow/Disallow e link a llms.txt."
@@ -698,9 +680,7 @@ msgid "Annullata."
 msgstr "已取消。"
 
 #: services/i18n_findings.py:51
-msgid ""
-"Apri l’URL in browser in modalità anonima: deve essere pubblico e senza "
-"login."
+msgid "Apri l’URL in browser in modalità anonima: deve essere pubblico e senza login."
 msgstr "用无痕模式打开 URL：须为公开且无需登录。"
 
 #: services/i18n_findings.py:52
@@ -754,16 +734,15 @@ msgstr "存在可引用性信号"
 #: services/i18n_findings.py:67
 msgid ""
 "Citation monitor eseguito: 0 menzioni brand sui campioni. Mostriamo la "
-"citation share stimata (proxy strutturale), non una share measured a "
-"zero."
+"citation share stimata (proxy strutturale), non una share measured a zero."
 msgstr ""
-"已运行 Citation monitor：样本中品牌提及为 0。显示的是估计 citation share（结构性 proxy），而非 "
-"measured share 为零。"
+"已运行 Citation monitor：样本中品牌提及为 0。显示的是估计 citation share（结构性 proxy），而非 measured "
+"share 为零。"
 
 #: services/i18n_findings.py:68 templates/dashboard.html:444
 msgid ""
-"Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata "
-"(proxy), non una measured a zero."
+"Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), "
+"non una measured a zero."
 msgstr "Citation monitor 已执行：0 次提及。我们显示估计 share（proxy），而不是归零的实测值。"
 
 #: services/i18n_findings.py:69
@@ -804,8 +783,8 @@ msgstr "连接被拒绝"
 
 #: services/i18n_findings.py:78
 msgid ""
-"Consenti i bot di diagnosi o ripubblica robots.txt meno restrittivo, poi "
-"ri-analizza."
+"Consenti i bot di diagnosi o ripubblica robots.txt meno restrittivo, poi ri-"
+"analizza."
 msgstr "允许诊断机器人，或发布更宽松的 robots.txt，然后重新分析。"
 
 #: services/i18n_findings.py:79
@@ -840,9 +819,7 @@ msgstr "无法计算 Sitemap 覆盖率"
 
 #: services/i18n_findings.py:87 templates/partials/analyze_overlay.html:10
 #: templates/partials/analyze_overlay.html:91
-msgid ""
-"Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa "
-"pagina."
+msgid "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina."
 msgstr "Crawl、score，以及（如为 Plus）engine 上的 实测 SoV。请留在此页面。"
 
 #: services/i18n_findings.py:88
@@ -972,9 +949,7 @@ msgid "File root leggibile per crawler e bot AI."
 msgstr "根目录文件可供 crawler 与 AI 机器人读取。"
 
 #: services/i18n_findings.py:120
-msgid ""
-"File troppo corto o senza sezioni/link utili. Usa il pack Centropic come "
-"base."
+msgid "File troppo corto o senza sezioni/link utili. Usa il pack Centropic come base."
 msgstr "文件过短或缺少有用章节/链接。请以 Centropic Pack 为基线。"
 
 #: services/i18n_findings.py:121
@@ -1373,8 +1348,8 @@ msgstr "准备中…"
 
 #: services/i18n_findings.py:221
 msgid ""
-"Probe measured con pochi hit: brand SoV resta sulla stima proxy; gli "
-"engine con menzioni positive restano evidenza measured."
+"Probe measured con pochi hit: brand SoV resta sulla stima proxy; gli engine "
+"con menzioni positive restano evidenza measured."
 msgstr "命中较少的 measured probe：品牌 SoV 仍用 proxy 估算；有正面提及的引擎保留为 measured 证据。"
 
 #: services/i18n_findings.py:222
@@ -1424,9 +1399,7 @@ msgid "Riprova tra poco. Se persiste, scrivi a info@centropic.ai con l’URL."
 msgstr "请稍后重试。若仍失败，将 URL 发至 info@centropic.ai。"
 
 #: services/i18n_findings.py:234
-msgid ""
-"Riprova. Se ripeti l’errore, contatta info@centropic.ai con l’URL "
-"analizzato."
+msgid "Riprova. Se ripeti l’errore, contatta info@centropic.ai con l’URL analizzato."
 msgstr "请重试。若错误重复，将所分析 URL 发至 info@centropic.ai。"
 
 #: services/i18n_findings.py:235
@@ -1523,12 +1496,11 @@ msgstr "未知状态"
 
 #: services/i18n_findings.py:260
 msgid ""
-"Stima di predisposizione strutturale da score AIO/GEO, robots osservato e"
-" findings. Con Plus puoi aggiungere campioni Misurati sul citation "
-"monitor."
+"Stima di predisposizione strutturale da score AIO/GEO, robots osservato e "
+"findings. Con Plus puoi aggiungere campioni Misurati sul citation monitor."
 msgstr ""
-"基于 AIO/GEO 分数、观察到的 robots 与 findings 的结构性准备度估算。Plus 可在 citation monitor "
-"中添加 Measured 样本。"
+"基于 AIO/GEO 分数、观察到的 robots 与 findings 的结构性准备度估算。Plus 可在 citation monitor 中添加 "
+"Measured 样本。"
 
 #: services/i18n_findings.py:261 templates/partials/analyze_overlay.html:23
 msgid "Stima in preparazione…"
@@ -1555,9 +1527,7 @@ msgid "Struttura e link sufficienti per orientare gli agenti."
 msgstr "结构与链接足以引导代理。"
 
 #: services/i18n_findings.py:267
-msgid ""
-"Telefono + indirizzo rilevati. Verifica coerenza con Google Business "
-"Profile."
+msgid "Telefono + indirizzo rilevati. Verifica coerenza con Google Business Profile."
 msgstr "已检测到电话 + 地址。请与 Google Business Profile 核对一致性。"
 
 #: services/i18n_findings.py:268
@@ -1641,15 +1611,13 @@ msgid "Utile se hai varianti lingua/mercato; altrimenti ok su sito mono-lingua."
 msgstr "有语言/市场变体时有用；单语言站点则无妨。"
 
 #: services/i18n_findings.py:288
-msgid ""
-"Verifica che il dominio sia online e raggiungibile pubblicamente, poi "
-"riprova."
+msgid "Verifica che il dominio sia online e raggiungibile pubblicamente, poi riprova."
 msgstr "确认域名在线且可公开访问，然后重试。"
 
 #: services/i18n_findings.py:289
 msgid ""
-"Verifica che l’URL sia pubblico e riprova. Se usi un CDN, controlla le "
-"regole geo/bot."
+"Verifica che l’URL sia pubblico e riprova. Se usi un CDN, controlla le regole"
+" geo/bot."
 msgstr "确认 URL 公开后重试。若使用 CDN，请检查 geo/bot 规则。"
 
 #: services/i18n_findings.py:290
@@ -1667,8 +1635,8 @@ msgstr "CVI (Centropic Visibility Index)"
 #: services/site_guide.py:16
 msgid ""
 "Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che "
-"sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare "
-"tra brand — non Domain Authority di terzi."
+"sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare tra "
+"brand — non Domain Authority di terzi."
 msgstr ""
 "Centropic 专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括 AIO+GEO（含 findings "
 "惩罚）。这是品牌间比较的标准，而不是第三方 Domain Authority。"
@@ -1691,23 +1659,23 @@ msgstr "Citation share (SoV)"
 
 #: services/site_guide.py:38
 msgid ""
-"Campione di menzioni del brand nelle risposte generative (stocastiche), "
-"non Share of Voice pubblicitaria. Proxy = stimato dalla struttura; "
-"Measured = citation monitor (Plus)."
+"Campione di menzioni del brand nelle risposte generative (stocastiche), non "
+"Share of Voice pubblicitaria. Proxy = stimato dalla struttura; Measured = "
+"citation monitor (Plus)."
 msgstr ""
 "品牌在生成式回答中的提及样本（随机），不是广告意义上的 Share of Voice。Proxy = 根据结构估计；实测 = citation "
 "monitor（Plus）。"
 
 #: services/site_guide.py:46
 msgid ""
-"Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
-"API LLM configurate."
+"Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via API "
+"LLM configurate."
 msgstr "直接观察到的信号（HTTP/HTML 探测）或通过配置的 LLM API 计算的提及。"
 
 #: services/site_guide.py:53
 msgid ""
-"Valore euristico derivato dai segnali del sito, non una citazione live "
-"nella UI dell’LLM."
+"Valore euristico derivato dai segnali del sito, non una citazione live nella "
+"UI dell’LLM."
 msgstr "基于网站信号的启发式值，而不是 LLM UI 中的实时引用。"
 
 #: services/site_guide.py:58
@@ -1716,8 +1684,8 @@ msgstr "从 DDD 到 AAA 的等级"
 
 #: services/site_guide.py:60
 msgid ""
-"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente "
-"(AAA). Alias storico: “Indice”."
+"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). "
+"Alias storico: “Indice”."
 msgstr "Centropic Visibility Index 的字母等级，从关键风险（DDD）到优秀（AAA）。历史别名：“指数”。"
 
 #: services/site_guide.py:67
@@ -1737,27 +1705,21 @@ msgid ""
 msgstr "一个机器可读的根文件，向 AI 模型和爬虫解释品牌、主题和首选 URL。"
 
 #: services/site_guide.py:88
-msgid ""
-"Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage,"
-" …)."
+msgid "Dati strutturati Schema.org incorporati in pagina (Organization, FAQPage, …)."
 msgstr "嵌入页面的结构化数据 Schema.org（组织、FAQ 页面等）。"
 
 #: services/site_guide.py:95
-msgid ""
-"Endpoint Centropic /e/<token>/… che servono artifact aggiornati "
-"dinamicamente."
+msgid "Endpoint Centropic /e/<token>/… che servono artifact aggiornati dinamicamente."
 msgstr "Centropic /e/<token>/… 端点，用于动态更新工件。"
 
 #: services/site_guide.py:102
 msgid ""
-"Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo "
-"dominio verso Edge."
+"Pacchetto universale (plugin/rewrite) che punta i path AIO del tuo dominio "
+"verso Edge."
 msgstr "一个通用包（插件/重写），将您域的 AIO 路径指向 Edge。"
 
 #: services/site_guide.py:109
-msgid ""
-"Payload macchina con versioning e metadati Edge per discovery e "
-"integrazioni."
+msgid "Payload macchina con versioning e metadati Edge per discovery e integrazioni."
 msgstr "带有版本控制和 Edge 元数据的机器负载，用于发现和集成。"
 
 #: services/site_guide.py:116
@@ -1784,8 +1746,8 @@ msgstr "实体信号网络（名称，sameAs，联系方式）消除品牌歧义
 
 #: services/site_guide.py:151
 msgid ""
-"Quanto il contenuto è facilmente citabile da un modello (chiarezza, "
-"fatti, struttura)."
+"Quanto il contenuto è facilmente citabile da un modello (chiarezza, fatti, "
+"struttura)."
 msgstr "内容被模型引用的容易程度（清晰度，事实，结构）。"
 
 #: services/site_guide.py:158
@@ -1798,29 +1760,27 @@ msgstr "IA爬虫"
 
 #: services/site_guide.py:165
 msgid ""
-"Bot come GPTBot, ClaudeBot, PerplexityBot, Google-Extended che "
-"indicizzano per modelli."
+"Bot come GPTBot, ClaudeBot, PerplexityBot, Google-Extended che indicizzano "
+"per modelli."
 msgstr "像GPTBot、ClaudeBot、PerplexityBot、Google-Extended这样的机器人为模型进行索引。"
 
 #: services/site_guide.py:172
 msgid ""
-"Policy di accesso crawler; bozza Centropic apre i bot IA utili senza "
-"spezzare le regole esistenti."
+"Policy di accesso crawler; bozza Centropic apre i bot IA utili senza spezzare"
+" le regole esistenti."
 msgstr "爬虫访问政策；Centropic草案允许有用的IA机器人而不破坏现有规则。"
 
 #: services/site_guide.py:179
 msgid ""
-"Credito incluso nel piano (e nei pacchetti extra) che copre analisi e job"
-" measured. In dashboard compare come copertura residua in euro — non "
-"serve calcolare “token” API."
-msgstr ""
-"计划（以及额外 pack）中包含的额度，用于覆盖分析和 实测 job。在 Dashboard 中显示为以欧元计的剩余额度；无需计算 API "
-"“token”。"
+"Credito incluso nel piano (e nei pacchetti extra) che copre analisi e job "
+"measured. In dashboard compare come copertura residua in euro — non serve "
+"calcolare “token” API."
+msgstr "计划（以及额外 pack）中包含的额度，用于覆盖分析和 实测 job。在 Dashboard 中显示为以欧元计的剩余额度；无需计算 API “token”。"
 
 #: services/site_guide.py:186
 msgid ""
-"Prenotazione temporanea di credito prima di un job; rilasciata o "
-"convertita a debito a fine run."
+"Prenotazione temporanea di credito prima di un job; rilasciata o convertita a"
+" debito a fine run."
 msgstr "在工作之前临时预留信用；在运行结束时释放或转换为债务。"
 
 #: services/site_guide.py:192
@@ -1833,14 +1793,14 @@ msgstr "可导出的报告，带有代理品牌（徽标/颜色）供最终客�
 
 #: services/site_guide.py:205
 msgid ""
-"Chiave Bearer ct_ per /api/v1 (analyze, sites, edge). Le chiavi gp_ "
-"legacy restano accettate. Solo Business."
+"Chiave Bearer ct_ per /api/v1 (analyze, sites, edge). Le chiavi gp_ legacy "
+"restano accettate. Solo Business."
 msgstr "用于 /api/v1(analyze、sites、edge)的 Bearer ct_ 密钥。旧版 gp_ 密钥仍可使用。仅限 Business。"
 
 #: services/site_guide.py:213
 msgid ""
-"Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) "
-"dello Share of Voice."
+"Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) dello "
+"Share of Voice."
 msgstr "针对引擎（ChatGPT，Gemini*，Claude，Perplexity，Grok，Azure*）的声音份额视图。"
 
 #: services/site_guide.py:218 templates/dashboard.html:724
@@ -1861,8 +1821,8 @@ msgstr "Centropic完整指南"
 
 #: services/site_guide.py:257
 msgid ""
-"Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli "
-"diagnostici, pack, Edge Signals, CMS, token, API e glossario."
+"Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli diagnostici, "
+"pack, Edge Signals, CMS, token, API e glossario."
 msgstr "所有产品在一个页面上：AIO/GEO分析，诊断模块，包，Edge Signals，CMS，令牌，API和术语表。"
 
 #: services/site_guide.py:260
@@ -2039,9 +1999,7 @@ msgid "Gemini e Azure AI restano proxy onesti (non Overview/Copilot nativi)"
 msgstr "Gemini 和 Azure AI 仍然是诚实的代理（不是原生的 Overview/Copilot）"
 
 #: services/site_guide.py:376
-msgid ""
-"Moduli: entity graph, citability, schema, publish verify, llms lint, "
-"locales."
+msgid "Moduli: entity graph, citability, schema, publish verify, llms lint, locales."
 msgstr "模块：实体图，引用性，模式，发布验证，llms lint，本地化。"
 
 #: services/site_guide.py:379
@@ -2098,8 +2056,8 @@ msgstr "运营额度与覆盖"
 
 #: services/site_guide.py:414
 msgid ""
-"Ogni piano include una quota operativa mensile. I pacchetti extra "
-"ampliano la copertura senza cambiare piano."
+"Ogni piano include una quota operativa mensile. I pacchetti extra ampliano la"
+" copertura senza cambiare piano."
 msgstr "每个计划都包含月度运营额度。额外 pack 可在不更改计划的情况下扩大覆盖。"
 
 #: services/site_guide.py:417
@@ -2141,8 +2099,8 @@ msgstr "爬虫和探测"
 #: services/site_guide.py:440
 msgid ""
 "Centropic richiede title, meta, JSON-LD, FAQ, robots, llms.txt, sitemap, "
-"ai.txt, humans.txt e pagine del sito. Free: tetto pagine; Plus: crawl "
-"intero (con tetto operativo di piattaforma)."
+"ai.txt, humans.txt e pagine del sito. Free: tetto pagine; Plus: crawl intero "
+"(con tetto operativo di piattaforma)."
 msgstr ""
 "Centropic需要title、meta、JSON-"
 "LD、FAQ、robots、llms.txt、sitemap、ai.txt、humans.txt和网站页面。免费：页面上限；Plus：完整爬取（带平台操作上限）。"
@@ -2164,22 +2122,20 @@ msgstr "评估组织/品牌的一致性、sameAs、联系信息和可由爬虫�
 
 #: services/site_guide.py:463
 msgid ""
-"Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili,"
-" meno ambiguità sul “chi siete / cosa fate”."
+"Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili, "
+"meno ambiguità sul “chi siete / cosa fate”."
 msgstr "文案的可引用性：清晰的声明、定义、可验证的事实，减少关于“你是谁/你做什么”的模糊性。"
 
 #: services/site_guide.py:470
 msgid ""
 "Qualità e completezza JSON-LD (Organization, WebSite, FAQPage, "
 "SoftwareApplication, Article dove rilevante)."
-msgstr ""
-"JSON-"
-"LD的质量和完整性（Organization、WebSite、FAQPage、SoftwareApplication、Article在相关时）。"
+msgstr "JSON-LD的质量和完整性（Organization、WebSite、FAQPage、SoftwareApplication、Article在相关时）。"
 
 #: services/site_guide.py:477
 msgid ""
-"Verifica se llms.txt, robots e schema pubblicati sul dominio "
-"corrispondono alle bozze del pack / Edge."
+"Verifica se llms.txt, robots e schema pubblicati sul dominio corrispondono "
+"alle bozze del pack / Edge."
 msgstr "检查发布在域上的llms.txt、robots和schema是否与pack/Edge的草稿相符。"
 
 #: services/site_guide.py:484
@@ -2190,8 +2146,8 @@ msgstr "检查/llms.txt的存在和质量：品牌、主题、绝对URL、首选
 
 #: services/site_guide.py:491
 msgid ""
-"Segnali hreflang / mercati: coerenza linguistica e copertura "
-"internazionale per answer engine multi-lingua."
+"Segnali hreflang / mercati: coerenza linguistica e copertura internazionale "
+"per answer engine multi-lingua."
 msgstr "hreflang信号/市场：多语言回答引擎的语言一致性和国际覆盖。"
 
 #: services/site_guide.py:496
@@ -2200,15 +2156,15 @@ msgstr "Citation monitor / Measured SoV"
 
 #: services/site_guide.py:498
 msgid ""
-"Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio"
-" nelle risposte generative (stocastiche) — non Share of Voice "
-"pubblicitaria, non garanzia di ranking nelle UI consumer."
+"Solo Plus: citation monitor con prompt bank. Conta menzioni brand/dominio "
+"nelle risposte generative (stocastiche) — non Share of Voice pubblicitaria, "
+"non garanzia di ranking nelle UI consumer."
 msgstr "仅限Plus：带有提示库的引用监控。计算回答中的品牌/域名提及——样本探测，不保证在消费者UI中的排名。"
 
 #: services/site_guide.py:508
 msgid ""
-"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno "
-"un grado CVI tra un re-scan e l’altro."
+"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un "
+"grado CVI tra un re-scan e l’altro."
 msgstr "阅读信件：DDD是关键，AAA是顶级。目标是在一次重新扫描与另一扫描之间至少提升一个等级。"
 
 #: services/site_guide.py:512 templates/landing.html:184
@@ -2309,8 +2265,8 @@ msgstr "llms.txt指南"
 msgid "Schema.org per answer engine"
 msgstr "Schema.org用于回答引擎"
 
-#: services/site_guide.py:603 templates/base.html:223
-#: templates/landing.html:240 templates/partials/auth_help.html:16
+#: services/site_guide.py:603 templates/base.html:223 templates/landing.html:240
+#: templates/partials/auth_help.html:16
 msgid "CVI · score · citation share"
 msgstr "CVI · score · citation share"
 
@@ -2328,8 +2284,8 @@ msgstr "计划和价格"
 msgid "Guida completa"
 msgstr "完整指南"
 
-#: services/site_guide.py:609 templates/agencies.html:55
-#: templates/base.html:217 templates/sample_report.html:2
+#: services/site_guide.py:609 templates/agencies.html:55 templates/base.html:217
+#: templates/sample_report.html:2
 msgid "Esempio report"
 msgstr "示例报告"
 
@@ -2340,9 +2296,8 @@ msgstr "关于我们"
 
 #: templates/about.html:3
 msgid ""
-"Chi è Centropic: team e missione su AI-Driven Visibility (AIO) e "
-"Generative Engine Optimization (GEO) per brand che vogliono essere citati"
-" dalle IA."
+"Chi è Centropic: team e missione su AI-Driven Visibility (AIO) e Generative "
+"Engine Optimization (GEO) per brand che vogliono essere citati dalle IA."
 msgstr "Centropic 是谁：团队和使命在 AI 驱动的可见性 (AIO) 和生成引擎优化 (GEO) 方面，为希望被 AI 引用的品牌服务。"
 
 #: templates/about.html:9
@@ -2351,9 +2306,9 @@ msgstr "关于"
 
 #: templates/about.html:12
 msgid ""
-"Centropic rende il brand leggibile ai crawler generativi: predisposizione"
-" strutturale, controllo del dato e artifact pubblicabili — perché l’IA "
-"non può citare ciò che non riesce a leggere."
+"Centropic rende il brand leggibile ai crawler generativi: predisposizione "
+"strutturale, controllo del dato e artifact pubblicabili — perché l’IA non può"
+" citare ciò che non riesce a leggere."
 msgstr "Centropic 让品牌对生成式 crawler 可读：结构性准备度、数据控制和可发布 artifact——因为 AI 无法引用它读不到的内容。"
 
 #: templates/about.html:17
@@ -2412,8 +2367,8 @@ msgstr "它是其所有者并负责内容。操作联系："
 
 #: templates/about.html:39
 msgid ""
-"Non operiamo come LocalBusiness con sede fisica al pubblico: il rapporto "
-"con i clienti è digitale via account e email."
+"Non operiamo come LocalBusiness con sede fisica al pubblico: il rapporto con "
+"i clienti è digitale via account e email."
 msgstr "我们不作为有实体店面的本地企业运营：与客户的关系是通过账户和电子邮件进行数字化的。"
 
 #: templates/about.html:44
@@ -2438,12 +2393,11 @@ msgstr "结构性准备度"
 
 #: templates/about.html:48
 msgid ""
-"(leggibilità per crawler generativi), non un posto fisso nelle UI di "
-"ChatGPT o Perplexity — in prodotto i badge Stimato / Misurato restano "
-"espliciti."
+"(leggibilità per crawler generativi), non un posto fisso nelle UI di ChatGPT "
+"o Perplexity — in prodotto i badge Stimato / Misurato restano espliciti."
 msgstr ""
-"（面向生成式 crawler 的可读性），而不是 ChatGPT 或 Perplexity UI 中的固定位置——产品中的估计 / 实测 "
-"badge 会保持明确区分。"
+"（面向生成式 crawler 的可读性），而不是 ChatGPT 或 Perplexity UI 中的固定位置——产品中的估计 / 实测 badge "
+"会保持明确区分。"
 
 #: templates/about.html:53
 msgid "Come lavoriamo"
@@ -2454,9 +2408,7 @@ msgid "Crawl dello stesso dominio, probe di"
 msgstr "同一域的爬虫，探测"
 
 #: templates/about.html:56
-msgid ""
-"poi un report con criticità e artifact da pubblicare. Metodologia "
-"pubblica su"
+msgid "poi un report con criticità e artifact da pubblicare. Metodologia pubblica su"
 msgstr "然后生成一份包含关键问题和待发布工件的报告。公开方法在"
 
 #: templates/about.html:58
@@ -2512,12 +2464,12 @@ msgstr "为客户交付 AI 可被引用性"
 
 #: templates/agencies.html:12
 msgid ""
-"Un solo stack per onboarding, audit e retainer: diagnosi AIO/GEO, pack, "
-"Edge Signals, API e report white-label. Misurato su Plus/Business; "
-"toolkit agenzia solo su Business."
+"Un solo stack per onboarding, audit e retainer: diagnosi AIO/GEO, pack, Edge "
+"Signals, API e report white-label. Misurato su Plus/Business; toolkit agenzia"
+" solo su Business."
 msgstr ""
-"面向 onboarding、审计与长期服务的单一技术栈:AIO/GEO 诊断、pack、Edge Signals、API 及 white-"
-"label 报告。Plus/Business 提供 Measured;代理商工具包仅限 Business。"
+"面向 onboarding、审计与长期服务的单一技术栈:AIO/GEO 诊断、pack、Edge Signals、API 及 white-label "
+"报告。Plus/Business 提供 Measured;代理商工具包仅限 Business。"
 
 #: templates/agencies.html:17
 msgid "Cosa ottengono i vostri clienti"
@@ -2545,9 +2497,9 @@ msgstr "为什么选择 Business 而非 Plus"
 
 #: templates/agencies.html:29
 msgid ""
-"Plus (14,99€) è per startup sul proprio brand: pochi domini, re-scan e "
-"SoV Misurato. Business (49,99€) è il profilo agenzia: scala clienti, API,"
-" white-label e brand vostro sui deliverable."
+"Plus (14,99€) è per startup sul proprio brand: pochi domini, re-scan e SoV "
+"Misurato. Business (49,99€) è il profilo agenzia: scala clienti, API, white-"
+"label e brand vostro sui deliverable."
 msgstr ""
 "Plus(14.99€ · 100 个 token)面向经营自有品牌的初创公司。Business(49.99€ · 400 个 "
 "token)是代理商方案:可扩展、自动化,交付物可使用您自己的品牌。"
@@ -2570,8 +2522,8 @@ msgstr "如何开始"
 
 #: templates/agencies.html:47
 msgid ""
-"Attiva Business, importa il primo dominio cliente, pubblica il pack (o "
-"Edge) e confronta lo storico. Walkthrough 15 min:"
+"Attiva Business, importa il primo dominio cliente, pubblica il pack (o Edge) "
+"e confronta lo storico. Walkthrough 15 min:"
 msgstr "启用 Business,导入第一个客户域名,发布 pack(或 Edge),并比较历史记录。15 分钟指南:"
 
 #: templates/agencies.html:53
@@ -2584,9 +2536,8 @@ msgstr "联系我们"
 
 #: templates/base.html:10
 msgid ""
-"Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e "
-"Generative Engine Optimization (GEO): diagnosi, artifact e citabilità "
-"nelle risposte IA."
+"Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative "
+"Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA."
 msgstr "Centropic — AI驱动的可见性（AIO）和生成引擎优化（GEO）的信号智能：诊断、工件和在IA响应中的引用。"
 
 #: templates/base.html:107
@@ -2616,8 +2567,7 @@ msgstr "额度"
 #: templates/base.html:135 templates/base.html:150 templates/base.html:218
 #: templates/faq.html:91 templates/login.html:86 templates/pricing.html:2
 #: templates/pro_interest.html:13 templates/register.html:147
-#: templates/rimborsi.html:89 templates/rimborsi.html:99
-#: templates/topup.html:86
+#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:86
 msgid "Prezzi"
 msgstr "定价"
 
@@ -2672,8 +2622,7 @@ msgstr "联系页面"
 
 #: templates/base.html:246 templates/base.html:260 templates/contact.html:58
 #: templates/partials/auth_help.html:26 templates/pricing.html:155
-#: templates/privacy.html:2 templates/rimborsi.html:98
-#: templates/termini.html:79
+#: templates/privacy.html:2 templates/rimborsi.html:98 templates/termini.html:79
 msgid "Privacy"
 msgstr "隐私"
 
@@ -2683,8 +2632,7 @@ msgid "Termini di servizio"
 msgstr "服务条款"
 
 #: templates/base.html:248 templates/base.html:264 templates/contact.html:60
-#: templates/pricing.html:156 templates/privacy.html:84
-#: templates/termini.html:80
+#: templates/pricing.html:156 templates/privacy.html:84 templates/termini.html:80
 msgid "Rimborsi"
 msgstr "退款"
 
@@ -2699,9 +2647,9 @@ msgstr "Cookie和测量"
 
 #: templates/base.html:278
 msgid ""
-"Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics"
-" e/o Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi "
-"accettare o rifiutare. Dettagli nella"
+"Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o"
+" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o "
+"rifiutare. Dettagli nella"
 msgstr "我们使用技术Cookie，并在您的同意下使用Google工具（Analytics和/或Ads/AdSense）来测量流量并显示广告。您可以接受或拒绝。详细信息在"
 
 #: templates/base.html:282
@@ -2734,8 +2682,8 @@ msgstr "审查并确认"
 
 #: templates/confirm_analyze.html:12
 msgid ""
-"Prima di procedere, controlla copertura del piano e miglioramento atteso."
-" Nessun calcolo astratto: avvii l’analisi sul dominio selezionato."
+"Prima di procedere, controlla copertura del piano e miglioramento atteso. "
+"Nessun calcolo astratto: avvii l’analisi sul dominio selezionato."
 msgstr "继续之前，请检查计划额度与预期改善。没有抽象计算：直接在所选域名上启动分析。"
 
 #: templates/confirm_analyze.html:18
@@ -2747,9 +2695,7 @@ msgid "Copertura stimata"
 msgstr "预计额度"
 
 #: templates/confirm_analyze.html:30
-msgid ""
-"valore operativo stimato per questa analisi (incluso nella quota del "
-"piano)"
+msgid "valore operativo stimato per questa analisi (incluso nella quota del piano)"
 msgstr "本次分析的估计运营价值（包含在计划额度中）"
 
 #: templates/confirm_analyze.html:35
@@ -2794,8 +2740,8 @@ msgstr "无 baseline"
 
 #: templates/confirm_analyze.html:95
 msgid ""
-"Pubblica prima i fix del pack (llms.txt, schema, robots), poi ri-misura. "
-"Lo score non sale solo perché rilanci l’analisi."
+"Pubblica prima i fix del pack (llms.txt, schema, robots), poi ri-misura. Lo "
+"score non sale solo perché rilanci l’analisi."
 msgstr "先发布 pack 中的修复内容(llms.txt、schema、robots),然后重新测量。仅重新运行分析并不会提高分数。"
 
 #: templates/confirm_analyze.html:102
@@ -2864,12 +2810,9 @@ msgstr "取消"
 
 #: templates/contact.html:3
 msgid ""
-"Contatti Centropic: supporto, partnership e domande su AI-Driven "
-"Visibility (AIO) e Generative Engine Optimization (GEO). Email "
-"info@centropic.ai."
-msgstr ""
-"Centropic联系方式：支持、合作伙伴关系和关于AI驱动的可见性（AIO）和生成引擎优化（GEO）的问题。电子邮件 "
-"info@centropic.ai。"
+"Contatti Centropic: supporto, partnership e domande su AI-Driven Visibility "
+"(AIO) e Generative Engine Optimization (GEO). Email info@centropic.ai."
+msgstr "Centropic联系方式：支持、合作伙伴关系和关于AI驱动的可见性（AIO）和生成引擎优化（GEO）的问题。电子邮件 info@centropic.ai。"
 
 #: templates/contact.html:10
 msgid "Parliamo"
@@ -2934,9 +2877,9 @@ msgstr "邮件中包含什么"
 
 #: templates/contact.html:39
 msgid ""
-"URL del sito, piano attuale (Free / Plus / Business) e, se possibile, uno"
-" screenshot del report. Per partnership agenzia indica verticali e volume"
-" siti."
+"URL del sito, piano attuale (Free / Plus / Business) e, se possibile, uno "
+"screenshot del report. Per partnership agenzia indica verticali e volume "
+"siti."
 msgstr "网站 URL、当前方案(Free / Plus / Business),如可能请附上报告截图。如为代理商合作,请说明所属垂直领域及网站数量。"
 
 #: templates/contact.html:44
@@ -2945,9 +2888,9 @@ msgstr "响应时间和时段"
 
 #: templates/contact.html:46
 msgid ""
-"Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni"
-" lavorativi. Per incidenti di accesso account indica l’email di "
-"registrazione nell’oggetto. Aggiornato il"
+"Supporto email in giorni feriali (CET/CEST), tipicamente entro 1–2 giorni "
+"lavorativi. Per incidenti di accesso account indica l’email di registrazione "
+"nell’oggetto. Aggiornato il"
 msgstr "工作日的电子邮件支持（CET/CEST），通常在 1-2 个工作日内。对于账户访问问题，请在主题中指明注册电子邮件。更新于"
 
 #: templates/contact.html:52 templates/landing.html:234
@@ -2957,9 +2900,8 @@ msgstr "透明度"
 #: templates/contact.html:54
 msgid ""
 "L’IA non può citare ciò che non riesce a leggere. La nostra promessa è "
-"strutturale: brand al 100% visibile e interpretabile dai crawler "
-"generativi, con gap di informazione chiusi prima che diventino "
-"allucinazioni."
+"strutturale: brand al 100% visibile e interpretabile dai crawler generativi, "
+"con gap di informazione chiusi prima che diventino allucinazioni."
 msgstr "AI 无法引用它读不到的内容。我们的承诺是结构性的：让品牌对生成式 crawler 100% 可见且可解释，在信息缺口变成幻觉之前将其关闭。"
 
 #: templates/contact.html:58
@@ -3092,8 +3034,8 @@ msgstr "非常强的 AIO 信号"
 
 #: templates/dashboard.html:133
 msgid ""
-"Alta predisposizione strutturale: i crawler generativi trovano segnali "
-"chiari da leggere e citare."
+"Alta predisposizione strutturale: i crawler generativi trovano segnali chiari"
+" da leggere e citare."
 msgstr "高结构性准备度：生成式 crawler 能找到清晰信号用于读取和引用。"
 
 #: templates/dashboard.html:136
@@ -3111,9 +3053,7 @@ msgid "Segnali AIO moderati"
 msgstr "适度的 AIO 信号"
 
 #: templates/dashboard.html:141
-msgid ""
-"Alcuni asset presenti, diversi gap aperti. Prioritizza findings "
-"critical/warn."
+msgid "Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn."
 msgstr "存在一些资产，存在多个开放的差距。优先处理关键/警告发现。"
 
 #: templates/dashboard.html:144
@@ -3122,8 +3062,8 @@ msgstr "新兴的 AIO 信号"
 
 #: templates/dashboard.html:145
 msgid ""
-"Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e "
-"file AI."
+"Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file "
+"AI."
 msgstr "爬取信号较弱：需要在实体、架构和 AI 文件上进行结构性工作。"
 
 #: templates/dashboard.html:148
@@ -3132,8 +3072,8 @@ msgstr "关键 AIO 信号"
 
 #: templates/dashboard.html:149
 msgid ""
-"Base insufficiente: intervento prioritario su title, schema, robots/llms "
-"e contenuti citabili."
+"Base insufficiente: intervento prioritario su title, schema, robots/llms e "
+"contenuti citabili."
 msgstr "基础不足：优先处理标题、架构、robots/llms 和可引用内容。"
 
 #: templates/dashboard.html:159
@@ -3206,8 +3146,8 @@ msgstr "AIO/GEO 信号有多稳固"
 
 #: templates/dashboard.html:291
 msgid ""
-"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score "
-"di predisposizione strutturale (leggibilità per crawler generativi)."
+"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di "
+"predisposizione strutturale (leggibilità per crawler generativi)."
 msgstr "AIO = AI 驱动的可见性 · GEO = 生成引擎优化。评分来自探测/启发式，不保证实时引用。"
 
 #: templates/dashboard.html:297
@@ -3277,14 +3217,12 @@ msgstr "Citation share（估计）"
 
 #: templates/dashboard.html:446
 msgid ""
-"Menzioni generative campionate (stocastiche) + predisposizione "
-"strutturale — non Share of Voice pubblicitaria."
+"Menzioni generative campionate (stocastiche) + predisposizione strutturale — "
+"non Share of Voice pubblicitaria."
 msgstr "抽样生成式提及（随机）+ 结构性准备度——不是广告意义上的 Share of Voice。"
 
 #: templates/dashboard.html:448
-msgid ""
-"Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation "
-"monitor."
+msgid "Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor."
 msgstr "根据当前方案下的 score 和 robots 得出的 SoV estimated。"
 
 #: templates/dashboard.html:450
@@ -3379,8 +3317,7 @@ msgid "GEO / AIO avanzato"
 msgstr "高级GEO / AIO"
 
 #: templates/dashboard.html:648 templates/dashboard.html:666
-#: templates/dashboard.html:1078 templates/verify.html:2
-#: templates/verify.html:8
+#: templates/dashboard.html:1078 templates/verify.html:2 templates/verify.html:8
 msgid "Publish verify"
 msgstr "发布验证"
 
@@ -3503,9 +3440,9 @@ msgstr "与其重新分发静态包，不如托管"
 
 #: templates/dashboard.html:872
 msgid ""
-"su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
-" tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify,"
-" PHP, Netlify, Cloudflare, Vercel)."
+"su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo"
+" dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, "
+"Netlify, Cloudflare, Vercel)."
 msgstr "在Centropic端点上更新，当AI爬虫发生变化时。通过通用CMS连接器（WordPress，Drupal，Shopify，PHP，Netlify，Cloudflare，Vercel）连接你的域名。"
 
 #: templates/dashboard.html:877
@@ -3533,9 +3470,9 @@ msgstr "复制"
 
 #: templates/dashboard.html:919
 msgid ""
-"CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid "
-"Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti "
-"puntano allo stesso Edge base."
+"CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, "
+"proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo "
+"stesso Edge base."
 msgstr ""
 "通用CMS：一个包含WordPress插件、Drupal模块、Liquid "
 "Shopify、PHP代理、Netlify/Vercel重写和Cloudflare Worker的ZIP — 所有指向相同的基础Edge。"
@@ -3598,8 +3535,8 @@ msgstr "查看状态"
 
 #: templates/dashboard.html:1016
 msgid ""
-"Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, "
-"findings e pack."
+"Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, findings "
+"e pack."
 msgstr "粘贴品牌的公开 URL,即可获得 crawl、AIO/GEO 分数、findings 和 pack。"
 
 #: templates/dashboard.html:1017
@@ -3664,20 +3601,18 @@ msgstr "GEO 套件设置"
 
 #: templates/faq.html:3
 msgid ""
-"FAQ Centropic: CVI, AIO/GEO, Free vs Plus vs Business, citation share, "
-"Edge Signals, API e white-label."
+"FAQ Centropic: CVI, AIO/GEO, Free vs Plus vs Business, citation share, Edge "
+"Signals, API e white-label."
 msgstr ""
-"Centropic 常见问题:AIO/GEO、Free vs Plus vs Business、Measured SoV、Edge "
-"Signals、API 及 white-label。"
+"Centropic 常见问题:AIO/GEO、Free vs Plus vs Business、Measured SoV、Edge Signals、API"
+" 及 white-label。"
 
 #: templates/faq.html:12 templates/landing.html:257
 msgid "Domande frequenti"
 msgstr "常见问题"
 
 #: templates/faq.html:14
-msgid ""
-"Definizioni, piani Free / Plus / Business e come usare pack ed Edge "
-"Signals."
+msgid "Definizioni, piani Free / Plus / Business e come usare pack ed Edge Signals."
 msgstr "术语定义、Free / Plus / Business 方案说明,以及如何使用 pack 与 Edge Signals。"
 
 #: templates/faq.html:20 templates/landing.html:260
@@ -3690,13 +3625,13 @@ msgstr "该"
 
 #: templates/faq.html:22
 msgid ""
-"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA "
-"che sintetizza predisposizione strutturale (AIO + GEO, con penalità "
-"findings). È lo standard da confrontare tra brand — non Domain Authority "
-"di terzi, non Share of Voice pubblicitaria."
+"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che "
+"sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È "
+"lo standard da confrontare tra brand — non Domain Authority di terzi, non "
+"Share of Voice pubblicitaria."
 msgstr ""
-"是 Centropic 的专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + GEO，含 "
-"findings 惩罚）。这是品牌间比较的标准——不是第三方 Domain Authority，也不是广告意义上的 Share of Voice。"
+"是 Centropic 的专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + GEO，含 findings "
+"惩罚）。这是品牌间比较的标准——不是第三方 Domain Authority，也不是广告意义上的 Share of Voice。"
 
 #: templates/faq.html:28
 msgid "Cos’è AIO e GEO in Centropic?"
@@ -3753,19 +3688,18 @@ msgstr "AIO 和 GEO 的分数是对 AI 的实时测量吗？"
 #: templates/faq.html:56
 msgid ""
 "No. CVI / AIO / GEO sono sempre Stimati: predisposizione strutturale dal "
-"crawl (schema, robots, entity, findings). Non sono ranking live su "
-"ChatGPT o Claude."
+"crawl (schema, robots, entity, findings). Non sono ranking live su ChatGPT o "
+"Claude."
 msgstr ""
-"不是。CVI / AIO / GEO 始终是估计：来自 "
-"crawl（schema、robots、entity、findings）的结构性准备度。它们不是 ChatGPT 或 Claude 上的实时 "
-"ranking。"
+"不是。CVI / AIO / GEO 始终是估计：来自 crawl（schema、robots、entity、findings）的结构性准备度。它们不是 "
+"ChatGPT 或 Claude 上的实时 ranking。"
 
 #: templates/faq.html:59
 msgid ""
 "Su Plus, il citation monitor aggiunge probe LLM Misurati (campioni "
-"stocastici). Se nessun engine menziona il brand, mostriamo “measured "
-"senza hit” e teniamo la share Stimata (proxy) — non inventiamo menzioni e"
-" non azzeriamo i numeri strutturali."
+"stocastici). Se nessun engine menziona il brand, mostriamo “measured senza "
+"hit” e teniamo la share Stimata (proxy) — non inventiamo menzioni e non "
+"azzeriamo i numeri strutturali."
 msgstr ""
 "在 Plus 中，citation monitor 会增加实测 LLM probe（随机样本）。如果没有任何 engine 提及品牌，我们会显示 "
 "“实测但无 hit” 并保留估计 share（proxy）——不会编造提及，也不会把结构性数字清零。"
@@ -3779,8 +3713,8 @@ msgid ""
 "CVI (lettera + score), componenti AIO/GEO, findings prioritizzati e pack "
 "(llms.txt, JSON-LD, meta, robots). Su Business anche export white-label."
 msgstr ""
-"AIO/GEO 分数、按优先级排序的 findings 及 pack(llms.txt、JSON-LD、meta、robots)。Business"
-" 还提供 white-label 导出。"
+"AIO/GEO 分数、按优先级排序的 findings 及 pack(llms.txt、JSON-LD、meta、robots)。Business 还提供"
+" white-label 导出。"
 
 #: templates/faq.html:71
 msgid "API e white-label sono in Plus?"
@@ -3792,11 +3726,11 @@ msgstr "不。API"
 
 #: templates/faq.html:73
 msgid ""
-"e white-label (brand agenzia + export MD/HTML) sono riservati a Business."
-" Plus include SoV Misurato, re-scan ed Edge completo sul proprio brand."
+"e white-label (brand agenzia + export MD/HTML) sono riservati a Business. "
+"Plus include SoV Misurato, re-scan ed Edge completo sul proprio brand."
 msgstr ""
-"以及 white-label(代理商品牌 + MD/HTML 导出)仅限 Business 使用。Plus 针对您自己的品牌提供 Measured"
-" SoV、重新扫描及完整 Edge 功能。"
+"以及 white-label(代理商品牌 + MD/HTML 导出)仅限 Business 使用。Plus 针对您自己的品牌提供 Measured "
+"SoV、重新扫描及完整 Edge 功能。"
 
 #: templates/faq.html:78
 msgid "Cos’è Edge Signals?"
@@ -3850,8 +3784,7 @@ msgstr "密码恢复"
 #: templates/forgot_password.html:3
 msgid ""
 "Recupero password Centropic: richiedi un link sicuro via email "
-"(noreply@centropic.ai) per reimpostare l’accesso ad AIO/GEO su "
-"centropic.ai."
+"(noreply@centropic.ai) per reimpostare l’accesso ad AIO/GEO su centropic.ai."
 msgstr "Centropic密码恢复：请求通过电子邮件（noreply@centropic.ai）发送安全链接，以重置对centropic.ai上AIO/GEO的访问。"
 
 #: templates/forgot_password.html:10
@@ -3893,9 +3826,7 @@ msgid "Indice"
 msgstr "索引"
 
 #: templates/guide.html:36
-msgid ""
-"Centropic misura e migliora la visibilità del tuo sito nei modelli "
-"generativi."
+msgid "Centropic misura e migliora la visibilità del tuo sito nei modelli generativi."
 msgstr "Centropic 测量并改善您网站在生成模型中的可见性。"
 
 #: templates/guide.html:37
@@ -3904,8 +3835,8 @@ msgstr "(AI 驱动的可见性) 和"
 
 #: templates/guide.html:38
 msgid ""
-"(Generative Engine Optimization) non sono GIS né “all-in-one”: sono "
-"metriche di citabilità IA."
+"(Generative Engine Optimization) non sono GIS né “all-in-one”: sono metriche "
+"di citabilità IA."
 msgstr "(生成引擎优化) 既不是 GIS 也不是“全合一”：它们是 IA 引用度的指标。"
 
 #: templates/guide.html:41
@@ -3921,9 +3852,7 @@ msgid "Ogni blocco del prodotto, con illustrazione e cosa fa."
 msgstr "每个产品模块，带有说明和功能。"
 
 #: templates/guide.html:70
-msgid ""
-"Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per "
-"engine."
+msgid "Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per engine."
 msgstr "一次运行产生什么：测量的探针、GEO 套件模块和按引擎的细分。"
 
 #: templates/guide.html:73
@@ -4054,8 +3983,8 @@ msgstr "引用你"
 
 #: templates/landing.html:49
 msgid ""
-"Inserisci il tuo dominio: vedi subito lo score AIO e le criticità. "
-"Account solo per sbloccare il report completo e i file di fix."
+"Inserisci il tuo dominio: vedi subito lo score AIO e le criticità. Account "
+"solo per sbloccare il report completo e i file di fix."
 msgstr "输入你的域名：立即查看 AIO score 和关键问题。只有在解锁完整 report 与 fix 文件时才需要账户。"
 
 #: templates/landing.html:55
@@ -4084,17 +4013,16 @@ msgstr "如果 AI 不引用你，品牌就会退出 consideration set。"
 
 #: templates/landing.html:87
 msgid ""
-"ChatGPT, Claude e Perplexity filtrano la domanda prima del click. Un "
-"dominio senza segnali machine-readable resta fuori dalle risposte: meno "
-"menzioni, meno inbound qualificato, più dipendenza dal paid. Centropic "
-"misura la predisposizione a essere citato — score AIO/GEO, criticità "
-"prioritizzate e pack di fix pubblicabile — così marketing e leadership "
-"chiudono il gap con evidenza, non con opinioni."
+"ChatGPT, Claude e Perplexity filtrano la domanda prima del click. Un dominio "
+"senza segnali machine-readable resta fuori dalle risposte: meno menzioni, "
+"meno inbound qualificato, più dipendenza dal paid. Centropic misura la "
+"predisposizione a essere citato — score AIO/GEO, criticità prioritizzate e "
+"pack di fix pubblicabile — così marketing e leadership chiudono il gap con "
+"evidenza, non con opinioni."
 msgstr ""
 "ChatGPT、Claude 和 Perplexity 会在点击之前过滤需求。没有 machine-readable "
-"信号的域名会被排除在回答之外：提及更少、合格 inbound 更少、对 paid 的依赖更强。Centropic "
-"衡量被引用的准备度——AIO/GEO score、优先级排序的问题和可发布 fix pack——让 marketing 和 leadership "
-"用证据而非观点关闭 gap。"
+"信号的域名会被排除在回答之外：提及更少、合格 inbound 更少、对 paid 的依赖更强。Centropic 衡量被引用的准备度——AIO/GEO "
+"score、优先级排序的问题和可发布 fix pack——让 marketing 和 leadership 用证据而非观点关闭 gap。"
 
 #: templates/landing.html:92 templates/pricing.html:13
 msgid "Architettura commerciale"
@@ -4106,8 +4034,8 @@ msgstr "三种方案。一个平台。"
 
 #: templates/landing.html:95
 msgid ""
-"Scegli il profilo giusto: validare, operare sul brand, o scalare clienti "
-"in agenzia."
+"Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in "
+"agenzia."
 msgstr "选择合适的方案:验证、经营品牌,或扩展代理商客户。"
 
 #: templates/landing.html:101
@@ -4134,9 +4062,8 @@ msgstr "手册"
 msgid "In vendita"
 msgstr "现已发售"
 
-#: templates/landing.html:115 templates/landing.html:130
-#: templates/pricing.html:27 templates/pricing.html:44
-#: templates/pricing.html:94
+#: templates/landing.html:115 templates/landing.html:130 templates/pricing.html:27
+#: templates/pricing.html:44 templates/pricing.html:94
 msgid "/mese"
 msgstr "/月"
 
@@ -4146,8 +4073,8 @@ msgstr "经营自有品牌的初创公司"
 
 #: templates/landing.html:118
 msgid ""
-"Operatività continua: citation monitor (probe LLM), re-scan, alert e "
-"crawl esteso."
+"Operatività continua: citation monitor (probe LLM), re-scan, alert e crawl "
+"esteso."
 msgstr "持续运营:measured SoV、重新扫描、提醒及扩展 crawl。"
 
 #: templates/landing.html:121 templates/landing.html:136
@@ -4168,8 +4095,8 @@ msgstr "Re-scan · 实测 citation monitor（0 hit → 估计）"
 msgid "Alert · Edge completo · no API/WL"
 msgstr "Alert · 完整 Edge · 无 API/WL"
 
-#: templates/landing.html:125 templates/pricing.html:58
-#: templates/pricing.html:64 templates/pricing.html:71
+#: templates/landing.html:125 templates/pricing.html:58 templates/pricing.html:64
+#: templates/pricing.html:71
 msgid "Scegli Plus"
 msgstr "选择 Plus"
 
@@ -4183,8 +4110,8 @@ msgstr "多客户代理机构"
 
 #: templates/landing.html:133
 msgid ""
-"API, white-label e scala siti per il delivery in agenzia — in arrivo. "
-"Oggi partiamo da Plus."
+"API, white-label e scala siti per il delivery in agenzia — in arrivo. Oggi "
+"partiamo da Plus."
 msgstr "面向 agency delivery 的 API、white-label 与站点规模能力即将推出。今天先从 Plus 开始。"
 
 #: templates/landing.html:136 templates/pricing.html:97
@@ -4217,8 +4144,8 @@ msgstr "三个阶段。操作输出。"
 
 #: templates/landing.html:149
 msgid ""
-"Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano"
-" limiti, measured SoV e toolkit agenzia."
+"Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano "
+"limiti, measured SoV e toolkit agenzia."
 msgstr "所有方案使用同一引擎:采集、评估、交付。变化的只是限额、measured SoV 及代理商工具包。"
 
 #: templates/landing.html:153
@@ -4257,8 +4184,8 @@ msgstr "MarTech buyer 想看到的 Dashboard。"
 
 #: templates/landing.html:171
 msgid ""
-"Metriche chiare, findings prioritizzati e pack pubblicabile — stessa "
-"energia Logo Chrome del prodotto live."
+"Metriche chiare, findings prioritizzati e pack pubblicabile — stessa energia "
+"Logo Chrome del prodotto live."
 msgstr "清晰指标、优先级排序的 findings 和可发布 pack——与 live 产品相同的 Logo Chrome 能量。"
 
 #: templates/landing.html:177
@@ -4303,9 +4230,7 @@ msgstr "发布包"
 
 #: templates/landing.html:227
 msgid "llms.txt, schema, robots — download, Edge o white-label."
-msgstr ""
-"一个包含所有修复的 HTML 文件(head、llms.txt、robots)—— 可下载、通过 Edge,或 Business white-"
-"label。"
+msgstr "一个包含所有修复的 HTML 文件(head、llms.txt、robots)—— 可下载、通过 Edge,或 Business white-label。"
 
 #: templates/landing.html:235
 msgid "L’IA non cita ciò che non riesce a leggere."
@@ -4313,11 +4238,10 @@ msgstr "AI 不会引用它读不到的内容。"
 
 #: templates/landing.html:237
 msgid ""
-"Centropic ti porta a una predisposizione strutturale completa: brand "
-"visibile e interpretabile dai crawler generativi, gap di informazione "
-"chiusi, meno spazio alle allucinazioni. Stimato e Misurato restano "
-"distinti — così sai cosa abbiamo osservato sul sito e cosa abbiamo "
-"campionato negli engine."
+"Centropic ti porta a una predisposizione strutturale completa: brand visibile"
+" e interpretabile dai crawler generativi, gap di informazione chiusi, meno "
+"spazio alle allucinazioni. Stimato e Misurato restano distinti — così sai "
+"cosa abbiamo osservato sul sito e cosa abbiamo campionato negli engine."
 msgstr ""
 "Centropic 助您达到完整的结构性准备度：品牌对生成式 crawler "
 "可见且可解释，信息缺口被关闭，幻觉空间更少。估计与实测保持区分——你可以清楚知道我们在网站上观察到什么，以及在 engine 中抽样了什么。"
@@ -4348,10 +4272,10 @@ msgstr "供 AI 爬虫使用的访问草稿"
 
 #: templates/landing.html:262
 msgid ""
-"Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con "
-"lettera DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È"
-" lo standard da confrontare tra brand — non Domain Authority di terzi, "
-"non Share of Voice pubblicitaria."
+"Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera "
+"DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
+" da confrontare tra brand — non Domain Authority di terzi, non Share of Voice"
+" pubblicitaria."
 msgstr ""
 "CVI 是 Centropic 的专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + "
 "GEO）。这是品牌间比较的标准——不是第三方 Domain Authority，也不是广告意义上的 Share of Voice。"
@@ -4362,9 +4286,9 @@ msgstr "在 Centropic 中，AIO 和 GEO 的含义是什么？"
 
 #: templates/landing.html:268
 msgid ""
-"Componenti del CVI. AIO (AI-Driven Visibility) = leggibilità per modelli "
-"e crawler IA. GEO (Generative Engine Optimization) = citabilità "
-"strutturale. Non GIS, non All-in-One."
+"Componenti del CVI. AIO (AI-Driven Visibility) = leggibilità per modelli e "
+"crawler IA. GEO (Generative Engine Optimization) = citabilità strutturale. "
+"Non GIS, non All-in-One."
 msgstr "AIO（AI驱动的可见性）指的是模型和AI爬虫可以多大程度上解释品牌。GEO（生成引擎优化）指的是网站结构化到多大程度以便被引用。这不是GIS，也不是一体化。"
 
 #: templates/landing.html:272
@@ -4376,9 +4300,7 @@ msgid "Free: 1 dominio. Plus (14,99€): fino a"
 msgstr "Free：1 个域名。Plus（14,99€）：最多"
 
 #: templates/landing.html:274
-msgid ""
-"domini, re-scan e SoV Misurato. Business (waitlist): API, white-label e "
-"fino a"
+msgid "domini, re-scan e SoV Misurato. Business (waitlist): API, white-label e fino a"
 msgstr "域名、re-scan 和实测 SoV。Business（waitlist）：API、white-label，最多"
 
 #: templates/landing.html:275 templates/product.html:64
@@ -4391,8 +4313,8 @@ msgstr "评分代表实时提及吗？"
 
 #: templates/landing.html:281
 msgid ""
-"Misurano la predisposizione strutturale del sito. Su Plus puoi aggiungere"
-" menzioni Misurate dal citation monitor."
+"Misurano la predisposizione strutturale del sito. Su Plus puoi aggiungere "
+"menzioni Misurate dal citation monitor."
 msgstr "它们衡量网站的结构性准备度。使用 Plus 可通过 citation monitor 增加实测提及。"
 
 #: templates/landing.html:289
@@ -4405,8 +4327,8 @@ msgstr "从合适的方案开始。"
 
 #: templates/landing.html:292
 msgid ""
-"Free senza carta. Plus in vendita per il brand. Business in waitlist per "
-"le agenzie."
+"Free senza carta. Plus in vendita per il brand. Business in waitlist per le "
+"agenzie."
 msgstr "Free 无需信用卡。Plus 面向品牌方。Business 面向代理商客户。"
 
 #: templates/landing.html:295
@@ -4439,20 +4361,17 @@ msgstr "欢迎回来"
 msgid "Entra in dashboard, analizza il dominio e scarica il pack."
 msgstr "登录控制台，分析您的域名并下载 pack。"
 
-#: templates/login.html:56 templates/register.html:65
-#: templates/settings.html:162
+#: templates/login.html:56 templates/register.html:65 templates/settings.html:162
 msgid "Password"
 msgstr "密码"
 
-#: templates/login.html:64 templates/register.html:73
-#: templates/register.html:89 templates/reset_password.html:30
-#: templates/reset_password.html:45
+#: templates/login.html:64 templates/register.html:73 templates/register.html:89
+#: templates/reset_password.html:30 templates/reset_password.html:45
 msgid "Mostra password"
 msgstr "显示密码"
 
-#: templates/login.html:66 templates/register.html:75
-#: templates/register.html:91 templates/reset_password.html:32
-#: templates/reset_password.html:47
+#: templates/login.html:66 templates/register.html:75 templates/register.html:91
+#: templates/reset_password.html:32 templates/reset_password.html:47
 msgid "Mostra"
 msgstr "显示"
 
@@ -4492,17 +4411,14 @@ msgstr "域名 URL"
 
 #: templates/preview_analyze.html:13
 msgid ""
-"Score e criticità strutturali — senza account. Il report completo e i "
-"file di fix (llms.txt, schema, pack) si sbloccano con la registrazione "
-"Free."
-msgstr ""
-"结构性 score 与关键问题——无需账户。完整 report 和 fix 文件（llms.txt、schema、pack）通过 Free "
-"注册解锁。"
+"Score e criticità strutturali — senza account. Il report completo e i file di"
+" fix (llms.txt, schema, pack) si sbloccano con la registrazione Free."
+msgstr "结构性 score 与关键问题——无需账户。完整 report 和 fix 文件（llms.txt、schema、pack）通过 Free 注册解锁。"
 
 #: templates/preview_analyze.html:21
 msgid ""
-"Stiamo leggendo i segnali pubblici del dominio (llms.txt, robots, schema,"
-" meta)."
+"Stiamo leggendo i segnali pubblici del dominio (llms.txt, robots, schema, "
+"meta)."
 msgstr "我们正在读取该域名的公开信号（llms.txt、robots、schema、meta）。"
 
 #: templates/preview_analyze.html:26
@@ -4519,8 +4435,8 @@ msgstr "突出显示 2 个关键问题"
 
 #: templates/preview_analyze.html:59
 msgid ""
-"Nessuna criticità grave emersa dal crawl iniziale — il report completo "
-"mostra comunque score, segnali e pack."
+"Nessuna criticità grave emersa dal crawl iniziale — il report completo mostra"
+" comunque score, segnali e pack."
 msgstr "初始 crawl 未发现严重问题——但完整 report 仍会显示 score、信号和 pack。"
 
 #: templates/preview_analyze.html:63
@@ -4529,8 +4445,8 @@ msgstr "解锁完整 report"
 
 #: templates/preview_analyze.html:65
 msgid ""
-"Con un account Free ottieni findings completi, pack HTML e file di fix "
-"pronti da pubblicare"
+"Con un account Free ottieni findings completi, pack HTML e file di fix pronti"
+" da pubblicare"
 msgstr "使用 Free 账户，你可获得完整 findings、HTML pack 和可直接发布的 fix 文件"
 
 #: templates/preview_analyze.html:66
@@ -4556,8 +4472,8 @@ msgstr "掌控信号的三种方式。"
 
 #: templates/pricing.html:16
 msgid ""
-"Scegli per domini monitorati, frequenza di re-scan e toolkit agenzia — "
-"senza calcoli astratti in fase di checkout."
+"Scegli per domini monitorati, frequenza di re-scan e toolkit agenzia — senza "
+"calcoli astratti in fase di checkout."
 msgstr "按监控域名、re-scan 频率和 agency toolkit 选择——checkout 阶段没有抽象计算。"
 
 #: templates/pricing.html:28
@@ -4585,9 +4501,7 @@ msgid "Pack HTML con tutti i fix"
 msgstr "下载一个包含所有修复的 HTML 文件"
 
 #: templates/pricing.html:45
-msgid ""
-"Operatività continua sul tuo brand: monitoraggio, re-scan e citation "
-"monitor."
+msgid "Operatività continua sul tuo brand: monitoraggio, re-scan e citation monitor."
 msgstr "围绕你的品牌持续运营：监控、re-scan 和 citation monitor。"
 
 #: templates/pricing.html:47
@@ -4656,8 +4570,7 @@ msgstr "Plus 全部内容：citation monitor、Edge、alert、history"
 msgid "Ideale per retainer multi-cliente"
 msgstr "多客户代理机构"
 
-#: templates/pricing.html:107 templates/pricing.html:113
-#: templates/pricing.html:120
+#: templates/pricing.html:107 templates/pricing.html:113 templates/pricing.html:120
 msgid "Passa a Business"
 msgstr "升级到 Business"
 
@@ -4683,8 +4596,8 @@ msgstr "= 结构性准备度（crawl 得出的 CVI / AIO / GEO）。"
 
 #: templates/pricing.html:146
 msgid ""
-"= probe LLM su Plus; se nessuna menzione, la share resta Stimata (proxy) "
-"— non azzeriamo i numeri utili."
+"= probe LLM su Plus; se nessuna menzione, la share resta Stimata (proxy) — "
+"non azzeriamo i numeri utili."
 msgstr "= Plus 上的 LLM probe；如果没有提及，share 保持估计（proxy）——我们不会把有用数字清零。"
 
 #: templates/pricing.html:148
@@ -4697,32 +4610,28 @@ msgstr "付款："
 
 #: templates/pricing.html:153
 msgid ""
-"I piani si confrontano su domini, re-scan e capability (API / white-"
-"label). La quota operativa è inclusa nel canone; eventuali top-up restano"
-" opzionali."
-msgstr ""
-"计划按域名、re-scan 和 capability（API / white-label）比较。运营额度包含在订阅费中；任何 top-up "
-"都是可选的。"
+"I piani si confrontano su domini, re-scan e capability (API / white-label). "
+"La quota operativa è inclusa nel canone; eventuali top-up restano opzionali."
+msgstr "计划按域名、re-scan 和 capability（API / white-label）比较。运营额度包含在订阅费中；任何 top-up 都是可选的。"
 
 #: templates/privacy.html:3
 msgid ""
-"Informativa privacy di Centropic (centropic.ai): dati trattati per "
-"account, analisi siti e contatti. Titolare e diritti dell’interessato."
+"Informativa privacy di Centropic (centropic.ai): dati trattati per account, "
+"analisi siti e contatti. Titolare e diritti dell’interessato."
 msgstr "Centropic（centropic.ai）的隐私政策：处理的账户数据、网站分析和联系信息。数据控制者及相关权利。"
 
 #: templates/privacy.html:9 templates/rimborsi.html:9 templates/termini.html:9
 msgid "Legale"
 msgstr "法律"
 
-#: templates/privacy.html:10 templates/register.html:127
-#: templates/rimborsi.html:88
+#: templates/privacy.html:10 templates/register.html:127 templates/rimborsi.html:88
 msgid "Informativa privacy"
 msgstr "隐私政策"
 
 #: templates/privacy.html:12
 msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai)"
-" · Contatti:"
+"Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · "
+"Contatti:"
 msgstr "最后更新：2026年7月27日 · 数据控制者：Centropic（centropic.ai） · 联系方式："
 
 #: templates/privacy.html:18
@@ -4732,8 +4641,8 @@ msgstr "1. 我们处理什么"
 #: templates/privacy.html:20
 msgid ""
 "Per erogare il servizio SaaS trattiamo: dati di account (nome, email, "
-"password hashata, azienda/ruolo opzionali, telefono e paese se forniti), "
-"URL dei siti analizzati, risultati di analisi (score, findings, artifact "
+"password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL "
+"dei siti analizzati, risultati di analisi (score, findings, artifact "
 "generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati "
 "volontariamente (es. waitlist Plus)."
 msgstr "为了提供SaaS服务，我们处理：账户数据（姓名、电子邮件、哈希密码、可选的公司/角色、电话和国家（如提供））、分析网站的URL、分析结果（分数、发现、生成的工件）、安全技术日志（IP、时间戳）以及自愿发送的消息（例如，Plus候补名单）。"
@@ -4780,15 +4689,14 @@ msgstr "3. 网站分析"
 
 #: templates/privacy.html:37
 msgid ""
-"Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato"
-" (pagine pubbliche raggiungibili) e probe di file come"
+"Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato "
+"(pagine pubbliche raggiungibili) e probe di file come"
 msgstr "当您输入一个URL时，Centropic会对指定域进行爬取（可访问的公共页面）并探测文件，如"
 
 #: templates/privacy.html:39
 msgid ""
-"Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact "
-"generati restano nel tuo account finché non li elimini o chiudi "
-"l’account."
+"Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati"
+" restano nel tuo account finché non li elimini o chiudi l’account."
 msgstr "我们不应访问您网站的认证区域。生成的工件将保留在您的账户中，直到您删除它们或关闭账户。"
 
 #: templates/privacy.html:44
@@ -4798,11 +4706,11 @@ msgstr "4. 付款"
 #: templates/privacy.html:46
 msgid ""
 "I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
-"Paddle.com Market Limited in qualità di merchant of record. Centropic non"
-" memorizza i dati completi della carta. Paddle tratta i dati di "
-"fatturazione necessari all’incasso e alla fiscalità secondo la propria "
-"informativa; riceviamo da Paddle identificativi cliente/transazione, "
-"stato abbonamento e importi per attivare il piano e accreditare il saldo."
+"Paddle.com Market Limited in qualità di merchant of record. Centropic non "
+"memorizza i dati completi della carta. Paddle tratta i dati di fatturazione "
+"necessari all’incasso e alla fiscalità secondo la propria informativa; "
+"riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e "
+"importi per attivare il piano e accreditare il saldo."
 msgstr ""
 "付款（Plus订阅和信用充值）由Paddle.com Market "
 "Limited作为记录商处理。Centropic不存储完整的卡片数据。Paddle根据其隐私政策处理收款和税务所需的账单数据；我们从Paddle收到客户/交易标识、订阅状态和金额，以激活计划并记入余额。"
@@ -4813,12 +4721,12 @@ msgstr "5. 数据保留和转移"
 
 #: templates/privacy.html:53
 msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari "
-"dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal "
-"titolare; eventuali fornitori (hosting, email transazionale, Paddle per i"
-" pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) "
-"trattano dati solo per conto del servizio o come autonomi titolari ove "
-"indicato (es. Paddle)."
+"I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo"
+" la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; "
+"eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, "
+"OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati "
+"solo per conto del servizio o come autonomi titolari ove indicato (es. "
+"Paddle)."
 msgstr "数据在账户处于活动状态时保留，并在关闭后根据技术需要的时间（备份、安全）保留。基础设施由所有者管理；任何供应商（托管、事务性电子邮件、Paddle用于付款、OpenAI和其他LLM提供商如果配置用于分析/打包）仅代表服务处理数据，或在指明的情况下作为独立控制者（例如Paddle）。"
 
 #: templates/privacy.html:58
@@ -4827,8 +4735,8 @@ msgstr "6. 权利"
 
 #: templates/privacy.html:60
 msgid ""
-"Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità"
-" e opposizione dalle"
+"Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e "
+"opposizione dalle"
 msgstr "您可以通过写信请求访问、更正、删除、限制、可携带性和反对权："
 
 #: templates/privacy.html:61
@@ -4855,24 +4763,24 @@ msgstr "我们使用网站运行所需的技术Cookie（会话、CSRF保护、�
 
 #: templates/privacy.html:73
 msgid ""
-"Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 "
-"e, se configurati, Google Ads / AdSense per misurazione e annunci. Il "
-"consenso è gestito con"
+"Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, "
+"se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è"
+" gestito con"
 msgstr ""
 "在您的同意下（Cookie横幅），我们可以启用Google Analytics 4，并在配置的情况下启用Google Ads / "
 "AdSense进行测量和广告。该同意通过以下方式管理："
 
 #: templates/privacy.html:75
 msgid ""
-"di default storage analytics/ads è negato (UE); puoi accettare o "
-"rifiutare in qualsiasi momento cancellando i dati del sito e ricaricando "
-"la pagina. Non attiviamo AdSense senza consenso pubblicitario."
+"di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in"
+" qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non "
+"attiviamo AdSense senza consenso pubblicitario."
 msgstr "默认情况下，存储分析/广告被拒绝（欧盟）；您可以随时通过删除网站数据并重新加载页面来接受或拒绝。我们不会在没有广告同意的情况下启用AdSense。"
 
 #: templates/privacy.html:77
 msgid ""
-"Attualmente non sono attivi cookie di misurazione o pubblicitari di terze"
-" parti su questo sito."
+"Attualmente non sono attivi cookie di misurazione o pubblicitari di terze "
+"parti su questo sito."
 msgstr "目前此网站上没有激活第三方测量或广告Cookie。"
 
 #: templates/pro_interest.html:2
@@ -4897,9 +4805,9 @@ msgstr "告诉我们您需要哪种方案"
 
 #: templates/pro_interest.html:12
 msgid ""
-"Se il checkout Paddle non è ancora attivo per il piano che ti serve, "
-"lascia i contatti. Plus = startup sul brand (domini + re-scan). Business "
-"= agenzie (API, white-label). Oppure vai subito a"
+"Se il checkout Paddle non è ancora attivo per il piano che ti serve, lascia i"
+" contatti. Plus = startup sul brand (domini + re-scan). Business = agenzie "
+"(API, white-label). Oppure vai subito a"
 msgstr ""
 "如果您需要的方案 Paddle 结账尚未上线,请留下联系方式。Plus = 品牌方初创公司。Business = 代理机构(API、white-"
 "label、400 个 token)。或直接前往"
@@ -4969,11 +4877,11 @@ msgstr "返回价格"
 
 #: templates/product.html:3
 msgid ""
-"Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre "
-"profili SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label."
+"Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre profili"
+" SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label."
 msgstr ""
-"Centropic:crawl、AIO/GEO 分数、findings 及 pack。三种 SaaS 方案 —— Free、Plus "
-"14.99€、含 API 与 white-label 的 Business 49.99€。"
+"Centropic:crawl、AIO/GEO 分数、findings 及 pack。三种 SaaS 方案 —— Free、Plus 14.99€、含 "
+"API 与 white-label 的 Business 49.99€。"
 
 #: templates/product.html:17
 msgid "Il segnale che le IA leggono"
@@ -4989,8 +4897,8 @@ msgstr "Centropic Visibility Index (CVI)"
 
 #: templates/product.html:20
 msgid ""
-"— la predisposizione del brand a essere letto e citato dai sistemi "
-"generativi — con componenti"
+"— la predisposizione del brand a essere letto e citato dai sistemi generativi"
+" — con componenti"
 msgstr "——品牌被生成式系统读取和引用的准备度——包含组件"
 
 #: templates/product.html:22
@@ -5097,8 +5005,8 @@ msgstr "适合谁"
 
 #: templates/product.html:82
 msgid ""
-"Founder e marketing sul proprio brand → Plus. Agenzie SEO/GEO multi-"
-"cliente → Business. Contatto:"
+"Founder e marketing sul proprio brand → Plus. Agenzie SEO/GEO multi-cliente →"
+" Business. Contatto:"
 msgstr "经营自有品牌的创始人及营销人员 → Plus。多客户 SEO/GEO 代理机构 → Business。联系方式:"
 
 #: templates/product.html:88
@@ -5123,8 +5031,8 @@ msgstr "你已有可用预览：创建 Free 账户以解锁完整 findings 和 f
 
 #: templates/register.html:29
 msgid ""
-"Nome, email e password. Conferma l’email per attivare l’account. Azienda "
-"e URL sono opzionali."
+"Nome, email e password. Conferma l’email per attivare l’account. Azienda e "
+"URL sono opzionali."
 msgstr "姓名、邮箱和密码。请确认邮箱以激活账户。公司和 URL 为可选项。"
 
 #: templates/register.html:54
@@ -5182,8 +5090,8 @@ msgstr "新密码"
 
 #: templates/reset_password.html:3
 msgid ""
-"Imposta una nuova password Centropic dal link di reset: accesso sicuro "
-"alla dashboard AIO/GEO su centropic.ai."
+"Imposta una nuova password Centropic dal link di reset: accesso sicuro alla "
+"dashboard AIO/GEO su centropic.ai."
 msgstr "通过重置链接设置一个新的Centropic密码：安全访问centropic.ai上的AIO/GEO仪表板。"
 
 #: templates/reset_password.html:9
@@ -5200,15 +5108,14 @@ msgstr "设置新密码以返回 AIO/GEO 仪表板。使用唯一密码。"
 msgid "Richiedi un nuovo link"
 msgstr "请求一个新链接"
 
-#: templates/rimborsi.html:2 templates/rimborsi.html:10
-#: templates/termini.html:66
+#: templates/rimborsi.html:2 templates/rimborsi.html:10 templates/termini.html:66
 msgid "Politica di rimborso"
 msgstr "退款政策"
 
 #: templates/rimborsi.html:3
 msgid ""
-"Politica di rimborso Centropic: abbonamenti Plus/Business, pacchetti "
-"crediti e diritto di recesso."
+"Politica di rimborso Centropic: abbonamenti Plus/Business, pacchetti crediti "
+"e diritto di recesso."
 msgstr "Centropic 退款政策:Plus/Business 订阅、积分套餐及撤销权。"
 
 #: templates/rimborsi.html:12
@@ -5222,10 +5129,9 @@ msgstr "1. 范围"
 #: templates/rimborsi.html:20
 msgid ""
 "Questa politica si applica agli acquisti digitali su Centropic "
-"(centropic.ai): abbonamenti (Plus, Business) e pacchetti di "
-"crediti/analisi pagati tramite il checkout del nostro fornitore di "
-"pagamento (Paddle). Non riguarda servizi di terzi o costi esterni al "
-"nostro SaaS."
+"(centropic.ai): abbonamenti (Plus, Business) e pacchetti di crediti/analisi "
+"pagati tramite il checkout del nostro fornitore di pagamento (Paddle). Non "
+"riguarda servizi di terzi o costi esterni al nostro SaaS."
 msgstr ""
 "本政策适用于在 "
 "Centropic(centropic.ai)上的数字化购买:通过我们支付服务商(Paddle)结账完成支付的订阅(Plus、Business)及积分/分析套餐。不适用于第三方服务或与本"
@@ -5245,22 +5151,21 @@ msgstr "14天"
 
 #: templates/rimborsi.html:29
 msgid ""
-"dalla conclusione del contratto, senza dover indicare un motivo, salvo le"
-" eccezioni previste dalla legge per i contenuti e i servizi digitali."
+"dalla conclusione del contratto, senza dover indicare un motivo, salvo le "
+"eccezioni previste dalla legge per i contenuti e i servizi digitali."
 msgstr "自合同签订之日起，无需说明理由，除非法律对数字内容和服务另有规定的例外。"
 
 #: templates/rimborsi.html:33
 msgid ""
-"Se richiedi l’erogazione immediata del servizio (accesso al piano o "
-"accredito crediti) e riconosci di perdere il diritto di recesso una volta"
-" iniziata l’erogazione, il recesso non si applica dopo che il servizio è "
-"stato avviato."
+"Se richiedi l’erogazione immediata del servizio (accesso al piano o accredito"
+" crediti) e riconosci di perdere il diritto di recesso una volta iniziata "
+"l’erogazione, il recesso non si applica dopo che il servizio è stato avviato."
 msgstr "如果您请求立即提供服务（访问计划或信用额度），并承认在服务开始后失去撤销权，则在服务启动后不适用撤销。"
 
 #: templates/rimborsi.html:36
 msgid ""
-"Se non hai ancora usato crediti né usufruito di funzionalità a pagamento,"
-" puoi chiedere il rimborso entro 14 giorni scrivendo a"
+"Se non hai ancora usato crediti né usufruito di funzionalità a pagamento, "
+"puoi chiedere il rimborso entro 14 giorni scrivendo a"
 msgstr "如果您尚未使用信用或享受付费功能，可以在14天内通过写信请求退款"
 
 #: templates/rimborsi.html:43
@@ -5269,11 +5174,10 @@ msgstr "3. 信用和分析"
 
 #: templates/rimborsi.html:45
 msgid ""
-"I pacchetti di crediti sono beni digitali a consumo. I crediti già "
-"utilizzati per analisi o funzionalità a pagamento non sono rimborsabili. "
-"I crediti non usati possono essere rimborsati entro 14 giorni "
-"dall’acquisto se ne fai richiesta entro quel termine e non risultano "
-"consumi sul tuo account."
+"I pacchetti di crediti sono beni digitali a consumo. I crediti già utilizzati"
+" per analisi o funzionalità a pagamento non sono rimborsabili. I crediti non "
+"usati possono essere rimborsati entro 14 giorni dall’acquisto se ne fai "
+"richiesta entro quel termine e non risultano consumi sul tuo account."
 msgstr "信用包是消费型数字商品。已用于分析或付费功能的信用不可退款。未使用的信用可以在购买后14天内退款，前提是您在该期限内提出请求，并且您的账户没有消费记录。"
 
 #: templates/rimborsi.html:50
@@ -5283,10 +5187,10 @@ msgstr "4. 订阅"
 #: templates/rimborsi.html:52
 msgid ""
 "Puoi disdire un abbonamento in qualsiasi momento per evitare il rinnovo "
-"successivo (dalla dashboard di fatturazione o contattandoci). La disdetta"
-" non genera di per sé un rimborso per il periodo già pagato e già "
-"iniziato, salvo diritto di recesso nei termini di cui sopra o un errore "
-"di addebito dimostrato."
+"successivo (dalla dashboard di fatturazione o contattandoci). La disdetta non"
+" genera di per sé un rimborso per il periodo già pagato e già iniziato, salvo"
+" diritto di recesso nei termini di cui sopra o un errore di addebito "
+"dimostrato."
 msgstr "您可以随时取消订阅以避免后续续订（通过账单仪表板或联系我们）。取消本身不会产生已支付且已开始的期间的退款，除非在上述条款下行使撤销权或证明存在收费错误。"
 
 #: templates/rimborsi.html:57
@@ -5299,11 +5203,11 @@ msgstr "发送电子邮件至"
 
 #: templates/rimborsi.html:61
 msgid ""
-"con: indirizzo email dell’account, data/importo dell’addebito e motivo "
-"della richiesta. Esaminiamo le richieste in genere entro pochi giorni "
-"lavorativi. I rimborsi approvati vengono elaborati tramite il fornitore "
-"di pagamento sullo stesso metodo usato per l’acquisto; i tempi di "
-"accredito dipendono dalla banca o dal circuito della carta."
+"con: indirizzo email dell’account, data/importo dell’addebito e motivo della "
+"richiesta. Esaminiamo le richieste in genere entro pochi giorni lavorativi. I"
+" rimborsi approvati vengono elaborati tramite il fornitore di pagamento sullo"
+" stesso metodo usato per l’acquisto; i tempi di accredito dipendono dalla "
+"banca o dal circuito della carta."
 msgstr "包括：账户的电子邮件地址、扣款日期/金额和请求原因。我们通常在几个工作日内审核请求。批准的退款通过支付服务提供商处理，使用与购买相同的方法；到账时间取决于银行或卡的网络。"
 
 #: templates/rimborsi.html:66
@@ -5319,9 +5223,7 @@ msgid "Crediti o funzionalità già consumati dopo l’avvio del servizio digita
 msgstr "在数字服务启动后已消费的信用或功能。"
 
 #: templates/rimborsi.html:70
-msgid ""
-"Richieste oltre i termini di legge o di questa politica, salvo errore "
-"nostro."
+msgid "Richieste oltre i termini di legge o di questa politica, salvo errore nostro."
 msgstr "超出法律或本政策规定的请求，除非是我们的错误。"
 
 #: templates/rimborsi.html:75
@@ -5331,10 +5233,10 @@ msgstr "7. 记入时间和方式"
 #: templates/rimborsi.html:77
 msgid ""
 "Dopo l’approvazione, il rimborso viene istruito sul merchant of record "
-"(Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione "
-"sul conto dipendono dalla banca o dal circuito della carta (spesso 5–10 "
-"giorni lavorativi). Ti confermiamo via email quando la pratica è stata "
-"inviata al processore."
+"(Paddle) verso lo stesso metodo di pagamento. I tempi di visualizzazione sul "
+"conto dipendono dalla banca o dal circuito della carta (spesso 5–10 giorni "
+"lavorativi). Ti confermiamo via email quando la pratica è stata inviata al "
+"processore."
 msgstr "在批准后，退款将通过记录商（Paddle）处理到相同的付款方式。到账时间取决于银行或卡片网络（通常为5-10个工作日）。当申请已发送给处理器时，我们会通过电子邮件确认。"
 
 #: templates/rimborsi.html:82
@@ -5359,9 +5261,8 @@ msgstr "和页面"
 
 #: templates/rimborsi.html:92
 msgid ""
-"Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi"
-" riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di "
-"terzi."
+"Centropic (centropic.ai) è un prodotto di Engineering Factory: i rimborsi "
+"riguardano solo gli acquisti digitali del SaaS AIO/GEO, non servizi di terzi."
 msgstr ""
 "Centropic (centropic.ai) 是Engineering Factory的产品：退款仅适用于AIO/GEO "
 "SaaS的数字购买，不包括第三方服务。"
@@ -5373,8 +5274,8 @@ msgstr "联系我们"
 #: templates/sample_report.html:3
 msgid ""
 "Esempio di report Centropic: CVI, score AIO/GEO, finding critici e pack "
-"artifact per essere citati dalle IA. Report anonimizzato, stessi moduli "
-"della dashboard."
+"artifact per essere citati dalle IA. Report anonimizzato, stessi moduli della"
+" dashboard."
 msgstr "Centropic 报告示例：AIO/GEO 评分、关键发现和可供 AI 引用的包工件。报告匿名化，使用与仪表板相同的模块。"
 
 #: templates/sample_report.html:10
@@ -5383,9 +5284,9 @@ msgstr "Centropic 报告的外观"
 
 #: templates/sample_report.html:12
 msgid ""
-"Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo"
-" la diagnosi. Gli score misurano la predisposizione strutturale "
-"(Stimato), salvo dove indicato Misurato."
+"Report anonimizzato di esempio — stessi moduli che vedi in dashboard dopo la "
+"diagnosi. Gli score misurano la predisposizione strutturale (Stimato), salvo "
+"dove indicato Misurato."
 msgstr "示例匿名报告——与您在诊断后仪表板中看到的模块相同。评分是诊断性的（估计），除非指明为测量。"
 
 #: templates/sample_report.html:17
@@ -5394,8 +5295,8 @@ msgstr "仪表板"
 
 #: templates/sample_report.html:19
 msgid ""
-"Passa da “invisibile all’IA” a Centropic-Optimized: stessi score e "
-"findings che vedi dopo un’analisi reale."
+"Passa da “invisibile all’IA” a Centropic-Optimized: stessi score e findings "
+"che vedi dopo un’analisi reale."
 msgstr "从“AI 不可见”转为 Centropic-Optimized：与你在真实分析后看到的 score 和 findings 相同。"
 
 #: templates/sample_report.html:21
@@ -5436,9 +5337,7 @@ msgstr "下一步"
 msgid ""
 "Stesso flusso sul tuo dominio: Free per validare, Plus per SoV Misurato, "
 "Business per API e white-label agenzia."
-msgstr ""
-"在您的域名上采用相同流程:Free 用于验证,Plus 提供 Measured SoV,Business 提供 API 及代理商 white-"
-"label。"
+msgstr "在您的域名上采用相同流程:Free 用于验证,Plus 提供 Measured SoV,Business 提供 API 及代理商 white-label。"
 
 #: templates/sample_report.html:66
 msgid "Analizza il tuo sito"
@@ -5454,8 +5353,8 @@ msgstr "GEO 设置"
 
 #: templates/settings.html:4
 msgid ""
-"Impostazioni Centropic per il tuo piano: connector, alert, API e white-"
-"label quando disponibili."
+"Impostazioni Centropic per il tuo piano: connector, alert, API e white-label "
+"quando disponibili."
 msgstr "针对您方案的 Centropic 设置:connector、提醒、API 及(如适用)white-label。"
 
 #: templates/settings.html:10
@@ -5558,8 +5457,8 @@ msgstr "垂直包"
 
 #: templates/settings.html:83
 msgid ""
-"Applica un set di prompt e checklist per settore (SaaS, e-commerce, "
-"local, agency, media)."
+"Applica un set di prompt e checklist per settore (SaaS, e-commerce, local, "
+"agency, media)."
 msgstr "应用一套针对行业的提示和检查清单（SaaS、电子商务、本地、代理、媒体）。"
 
 #: templates/settings.html:91
@@ -5636,8 +5535,8 @@ msgstr "导出我的数据"
 
 #: templates/settings.html:160
 msgid ""
-"Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima "
-"dal billing."
+"Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal "
+"billing."
 msgstr "永久删除。如果你有有效订阅，请先从 billing 取消。"
 
 #: templates/settings.html:165
@@ -5702,8 +5601,8 @@ msgstr "状态"
 
 #: templates/status.html:3
 msgid ""
-"Stato operativo di Centropic.ai: app, database, coda analisi e pagamenti."
-" Heartbeat pubblico senza dati sensibili."
+"Stato operativo di Centropic.ai: app, database, coda analisi e pagamenti. "
+"Heartbeat pubblico senza dati sensibili."
 msgstr "Centropic.ai 的操作状态：应用程序、数据库、分析队列和支付。公共心跳，无敏感数据。"
 
 #: templates/status.html:10
@@ -5751,9 +5650,9 @@ msgstr "此页面的含义"
 #: templates/status.html:34
 msgid ""
 "Centropic diagnostica la citabilità AIO/GEO dei siti pubblici e produce "
-"artifact machine-readable (llms.txt, JSON-LD, robots). Lo status conferma"
-" che la piattaforma risponde; non sostituisce il report di analisi né "
-"garantisce ranking o menzioni sui modelli."
+"artifact machine-readable (llms.txt, JSON-LD, robots). Lo status conferma che"
+" la piattaforma risponde; non sostituisce il report di analisi né garantisce "
+"ranking o menzioni sui modelli."
 msgstr ""
 "Centropic 诊断公共网站的 AIO/GEO 可引用性，并生成机器可读的工件（llms.txt、JSON-"
 "LD、robots）。状态确认平台响应；不替代分析报告，也不保证排名或模型上的提及。"
@@ -5782,18 +5681,18 @@ msgstr "我们在这里监控的信号"
 msgid ""
 "Questa pagina conferma che l’app Flask risponde, che il database delle "
 "analisi è raggiungibile, che la coda job async è interrogabile e che il "
-"provider pagamenti (Paddle) è configurato o in modalità interesse. Non "
-"espone metriche private, crediti utenti o log applicativi."
+"provider pagamenti (Paddle) è configurato o in modalità interesse. Non espone"
+" metriche private, crediti utenti o log applicativi."
 msgstr ""
 "此页面用于确认 Flask "
-"应用是否正常响应、分析数据库是否可访问、异步任务队列是否可查询,以及支付服务商(Paddle)是否已配置或处于意向登记模式。不会暴露私密指标、用户"
-" token 或应用日志。"
+"应用是否正常响应、分析数据库是否可访问、异步任务队列是否可查询,以及支付服务商(Paddle)是否已配置或处于意向登记模式。不会暴露私密指标、用户 "
+"token 或应用日志。"
 
 #: templates/status.html:53
 msgid ""
-"Uno status verde non implica che i tuoi score AIO/GEO siano alti: per "
-"quello serve un’analisi di dominio dalla dashboard, con findings e pack "
-"artifact da pubblicare."
+"Uno status verde non implica che i tuoi score AIO/GEO siano alti: per quello "
+"serve un’analisi di dominio dalla dashboard, con findings e pack artifact da "
+"pubblicare."
 msgstr "绿色状态并不意味着您的 AIO/GEO 评分很高：为此需要从仪表板进行域名分析，并发布发现和包工件。"
 
 #: templates/status.html:58
@@ -5819,8 +5718,8 @@ msgstr "Centropic 服务条款 (centropic.ai)：使用 AI 驱动的可见性 Saa
 
 #: templates/termini.html:12
 msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione "
-"accetti questi termini. Contatti:"
+"Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti "
+"questi termini. Contatti:"
 msgstr "最后更新：2026 年 7 月 27 日 · 接受注册即表示您接受这些条款。联系方式："
 
 #: templates/termini.html:18
@@ -5829,8 +5728,8 @@ msgstr "1. 服务"
 
 #: templates/termini.html:20
 msgid ""
-"Centropic è un software-as-a-service che analizza siti web pubblici e "
-"genera score"
+"Centropic è un software-as-a-service che analizza siti web pubblici e genera "
+"score"
 msgstr "Centropic 是一种软件即服务，分析公共网站并生成评分"
 
 #: templates/termini.html:23
@@ -5842,9 +5741,7 @@ msgid "bozza"
 msgstr "草稿"
 
 #: templates/termini.html:24
-msgid ""
-"Non è un Geographic Information System (GIS) né una suite All-in-One "
-"generica."
+msgid "Non è un Geographic Information System (GIS) né una suite All-in-One generica."
 msgstr "这不是地理信息系统 (GIS) 也不是通用的一体化套件。"
 
 #: templates/termini.html:29
@@ -5857,20 +5754,20 @@ msgstr "AIO 和 GEO 的分数是对 AI 的实时测量吗？"
 
 #: templates/termini.html:33
 msgid ""
-"del sito (contenuto, schema, robots, llms, entity): quanto brand e pagine"
-" sono leggibili dai crawler generativi. Il Centropic Visibility Index "
-"(CVI) sintetizza AIO/GEO; la citation share può essere Stimata (da "
-"struttura) o Misurata (campioni LLM su Plus/Business)."
+"del sito (contenuto, schema, robots, llms, entity): quanto brand e pagine "
+"sono leggibili dai crawler generativi. Il Centropic Visibility Index (CVI) "
+"sintetizza AIO/GEO; la citation share può essere Stimata (da struttura) o "
+"Misurata (campioni LLM su Plus/Business)."
 msgstr ""
 "站点的（content、schema、robots、llms、entity）：品牌和页面对生成式 crawler 的可读程度。Centropic "
-"Visibility Index (CVI) 概括 AIO/GEO；citation share "
-"可以是估计（来自结构）或实测（Plus/Business 上的 LLM 样本）。"
+"Visibility Index (CVI) 概括 AIO/GEO；citation share 可以是估计（来自结构）或实测（Plus/Business"
+" 上的 LLM 样本）。"
 
 #: templates/termini.html:34
 msgid ""
-"Centropic garantisce il lavoro di diagnosi e predisposizione sul tuo "
-"dominio; non garantisce ranking o menzioni nelle interfacce di modelli di"
-" terzi, che restano indipendenti."
+"Centropic garantisce il lavoro di diagnosi e predisposizione sul tuo dominio;"
+" non garantisce ranking o menzioni nelle interfacce di modelli di terzi, che "
+"restano indipendenti."
 msgstr "Centropic 保证对你的域名完成诊断和准备工作；不保证第三方模型界面中的 ranking 或提及，因为这些界面保持独立。"
 
 #: templates/termini.html:39
@@ -5901,10 +5798,9 @@ msgstr "4. 产物和责任"
 
 #: templates/termini.html:51
 msgid ""
-"Gli artifact generati sono bozze operative: la pubblicazione sul tuo "
-"sito, la conformità legale/SEO e l’impatto sulle performance restano a "
-"tuo carico. Centropic non risponde di decisioni di crawler o modelli di "
-"terzi."
+"Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la"
+" conformità legale/SEO e l’impatto sulle performance restano a tuo carico. "
+"Centropic non risponde di decisioni di crawler o modelli di terzi."
 msgstr "生成的产物是操作草稿：在您的网站上发布、法律/SEO 合规性和对性能的影响由您负责。Centropic 不对爬虫或第三方模型的决策负责。"
 
 #: templates/termini.html:56
@@ -5919,8 +5815,8 @@ msgid ""
 "fornito “as is”; possiamo sospendere account in caso di abuso o rischio "
 "sicurezza."
 msgstr ""
-"Free 方案对网站数量(1 个)及分析总次数(2 次,不重置)有严格限制。一旦目录配置完成,Plus 和 Business 即可通过 "
-"Paddle 进行自助订阅;否则可通过候补名单登记意向。本服务按“现状”提供;如发生滥用或存在安全风险,我们可暂停相关账户。"
+"Free 方案对网站数量(1 个)及分析总次数(2 次,不重置)有严格限制。一旦目录配置完成,Plus 和 Business 即可通过 Paddle "
+"进行自助订阅;否则可通过候补名单登记意向。本服务按“现状”提供;如发生滥用或存在安全风险,我们可暂停相关账户。"
 
 #: templates/termini.html:63
 msgid "6. Pagamenti e rimborsi"
@@ -5941,14 +5837,14 @@ msgstr "7. 适用法律"
 #: templates/termini.html:74
 msgid ""
 "Salvo norme imperative diverse, si applica la legge italiana. Per "
-"controversie è competente il foro del titolare, fatti salvi i diritti del"
-" consumatore."
+"controversie è competente il foro del titolare, fatti salvi i diritti del "
+"consumatore."
 msgstr "除非有强制性规定，否则适用意大利法律。对于争议，适用持有者的管辖权，消费者的权利不受影响。"
 
 #: templates/topup.html:4
 msgid ""
-"Amplia la copertura Centropic con pacchetti in euro: utile per picchi di "
-"ri-analisi o clienti extra senza cambiare piano."
+"Amplia la copertura Centropic con pacchetti in euro: utile per picchi di ri-"
+"analisi o clienti extra senza cambiare piano."
 msgstr "用欧元计价的 pack 扩大 Centropic 覆盖：适合再分析峰值或额外客户，无需更改计划。"
 
 #: templates/topup.html:9
@@ -5961,9 +5857,9 @@ msgstr "增加本月额度"
 
 #: templates/topup.html:12
 msgid ""
-"Aggiungi credito operativo senza cambiare piano — ideale per picchi di "
-"ri-analisi o clienti straordinari. Importo in euro (IVA esclusa); il "
-"credito si applica subito al saldo."
+"Aggiungi credito operativo senza cambiare piano — ideale per picchi di ri-"
+"analisi o clienti straordinari. Importo in euro (IVA esclusa); il credito si "
+"applica subito al saldo."
 msgstr "在不更改计划的情况下添加运营额度——适合再分析峰值或特殊客户。金额以欧元计（不含 VAT）；额度会立即应用到账户余额。"
 
 #: templates/topup.html:17
@@ -6000,15 +5896,13 @@ msgstr "三个阶段。操作输出。"
 
 #: templates/topup.html:85
 msgid ""
-"Il credito extra resta sul saldo e si usa dopo la quota del rinnovo "
-"mensile. Non sostituisce il piano: per più domini, frequenza di re-scan o"
-" API/white-label vai su"
+"Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. "
+"Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-"
+"label vai su"
 msgstr "额外额度会保留在余额中，并在月度续费额度之后使用。它不替代计划：如需更多域名、更高 re-scan 频率或 API/white-label，请前往"
 
 #: templates/verify.html:11
-msgid ""
-"Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul "
-"dominio."
+msgid "Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio."
 msgstr "实时检查：llms.txt / robots / ai.txt / sitemap / JSON-LD 在域上。"
 
 #: templates/verify.html:12
@@ -6134,8 +6028,8 @@ msgstr "的SaaS"
 
 #: templates/partials/auth_help.html:9
 msgid ""
-"Dopo l’accesso analizzi un dominio pubblico, leggi findings prioritizzati"
-" e scarichi il pack"
+"Dopo l’accesso analizzi un dominio pubblico, leggi findings prioritizzati e "
+"scarichi il pack"
 msgstr "登录后，您可以分析一个公共域名，阅读优先发现并下载包。"
 
 #: templates/partials/auth_help.html:13
@@ -6162,8 +6056,8 @@ msgstr "GEO ≠ GIS · AIO ≠ 一体化：生成响应中的引用度量。"
 
 #: templates/partials/auth_help.html:30
 msgid ""
-"Gli score misurano la predisposizione strutturale (badge Stimato); "
-"Misurato su segnali osservati o probe LLM Plus."
+"Gli score misurano la predisposizione strutturale (badge Stimato); Misurato "
+"su segnali osservati o probe LLM Plus."
 msgstr "默认评分是探测/启发式（估算徽章）；仅基于观察到的信号进行测量。"
 
 #: templates/partials/auth_help.html:31
@@ -6264,8 +6158,8 @@ msgstr "估计"
 
 #: templates/partials/dashboard_shell.html:128
 msgid ""
-"(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, la "
-"share resta Stimata (proxy)."
+"(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, la share "
+"resta Stimata (proxy)."
 msgstr "（结构）。Citation monitor = 实测 LLM probe；如 0 次提及，share 保持估计（proxy）。"
 
 #: templates/partials/dashboard_shell.html:132
@@ -6524,4 +6418,48 @@ msgstr "无限制"
 #: templates/partials/sov_ops.html:29
 msgid "Azioni SoV"
 msgstr "SoV 操作"
+
+msgid "Invia pack via email"
+msgstr "通过邮件发送优化包"
+
+msgid ""
+"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
+"dominio."
+msgstr "请输入要接收此域名 HTML 优化包的邮箱地址。"
+
+msgid "Indirizzo email"
+msgstr "邮箱地址"
+
+msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
+msgstr "可发给自己或同事。已启用每日防滥用限制。"
+
+msgid "Invia pack"
+msgstr "发送优化包"
+
+msgid ""
+"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
+"applicare sul sito live."
+msgstr "单个 HTML 文件，包含 head 片段、llms.txt、robots 与清单 — 可直接应用到线上站点。"
+
+msgid "Indirizzo email non valido."
+msgstr "邮箱地址无效。"
+
+#, python-format
+msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
+msgstr "已达上限：24 小时内最多发送 %(n)s 次优化包。"
+
+msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
+msgstr "邮件发送失败。请稍后重试，或先下载 HTML 文件。"
+
+#, python-format
+msgid "Pack inviato a %(email)s."
+msgstr "优化包已发送至 %(email)s。"
+
+msgid ""
+"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
+"intanto."
+msgstr "此服务器尚未启用邮件发送。你可先下载 HTML 文件。"
+
+msgid "Analisi non trovata."
+msgstr "未找到分析。"
 

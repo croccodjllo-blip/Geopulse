@@ -3758,10 +3758,29 @@ html.analyze-busy {
   color: var(--slate);
 }
 
-.pack-mail__lede code {
+.pack-mail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--brand-muted);
+}
+
+.pack-mail__meta code {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--ink-soft, #c5ccd6);
+  padding: 0.12rem 0.4rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--brand-border);
+  background: color-mix(in srgb, var(--brand-bg) 80%, transparent);
+}
+
+.pack-mail__meta strong {
+  color: var(--ink);
+  font-weight: 650;
 }
 
 .pack-mail__label {

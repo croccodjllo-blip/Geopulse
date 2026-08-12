@@ -7994,15 +7994,17 @@ def email_pack(analysis_id: int):
     user = current_user()
     analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
-        flash("Analisi non trovata.", "error")
+        flash(_("Analisi non trovata."), "error")
         return redirect(url_for("dashboard", site=analysis_id))
 
     dash_url = url_for("dashboard", site=analysis.id)
 
     if not mail_configured():
         flash(
-            "Invio email non ancora attivo su questo server. "
-            "Puoi scaricare il file HTML intanto.",
+            _(
+                "Invio email non ancora attivo su questo server. "
+                "Puoi scaricare il file HTML intanto."
+            ),
             "error",
         )
         return redirect(dash_url)
@@ -8018,7 +8020,7 @@ def email_pack(analysis_id: int):
     except Exception:
         to_email = ""
     if not to_email or "@" not in to_email or len(to_email) > 255:
-        flash("Indirizzo email non valido.", "error")
+        flash(_("Indirizzo email non valido."), "error")
         return redirect(dash_url)
 
     if not limiter.allow(
@@ -8027,7 +8029,10 @@ def email_pack(analysis_id: int):
         window_seconds=24 * 3600,
     ):
         flash(
-            f"Limite raggiunto: massimo {PACK_EMAIL_DAILY_LIMIT} invii pack / 24h.",
+            _(
+                "Limite raggiunto: massimo %(n)s invii pack / 24h."
+            )
+            % {"n": PACK_EMAIL_DAILY_LIMIT},
             "error",
         )
         return redirect(dash_url)
@@ -8058,12 +8063,14 @@ def email_pack(analysis_id: int):
             to_email,
         )
         flash(
-            "Invio email non riuscito. Riprova tra poco o scarica il file HTML.",
+            _(
+                "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
+            ),
             "error",
         )
         return redirect(dash_url)
 
-    flash(f"Pack inviato a {to_email}.", "success")
+    flash(_("Pack inviato a %(email)s.") % {"email": to_email}, "success")
     return redirect(dash_url)
 
 
