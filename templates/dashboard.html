@@ -166,14 +166,25 @@
             {% endwith %}
           </div>
 
-          <div class="report-tabs" role="tablist" aria-label="{{ _('Vista report') }}">
-            <button type="button" class="report-tabs__btn" role="tab" id="tab-score" aria-controls="panel-score" aria-selected="false" data-tab="score">{{ _('Score') }}</button>
-            <button type="button" class="report-tabs__btn is-active" role="tab" id="tab-sov" aria-controls="panel-sov" aria-selected="true" data-tab="sov">{{ _('SoV') }}</button>
-          </div>
-
           <nav class="report-nav" aria-label="{{ _('Sezioni del report') }}">
-            <a href="#panel-sov" data-dash-tab="sov">{{ _('SoV') }}</a>
-            <a href="#panel-score">{{ _('Score') }}</a>
+            <a
+              href="#panel-sov"
+              id="tab-sov"
+              class="report-nav__view is-active"
+              data-dash-tab="sov"
+              data-tab="sov"
+              aria-controls="panel-sov"
+              aria-current="true"
+            >{{ _('SoV') }}</a>
+            <a
+              href="#panel-score"
+              id="tab-score"
+              class="report-nav__view"
+              data-dash-tab="score"
+              data-tab="score"
+              aria-controls="panel-score"
+            >{{ _('Score') }}</a>
+            <span class="report-nav__rule" aria-hidden="true"></span>
             <a href="#findings">{{ _('Findings') }}</a>
             {% if pages_analyzed_n %}<a href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
             <a href="#edge-signals">{{ _('Edge') }}</a>
@@ -990,36 +1001,6 @@
       };
       requestAnimationFrame(tick);
     }
-  }
-
-  const tabs = document.querySelectorAll('.report-tabs__btn');
-  const panels = document.querySelectorAll('.report-panel');
-  const animateSovBars = () => {
-    document.querySelectorAll('.engine-bar').forEach((row) => {
-      row.classList.remove('is-animated');
-      void row.offsetWidth;
-      row.classList.add('is-animated');
-    });
-  };
-  tabs.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-tab');
-      tabs.forEach((b) => {
-        const on = b === btn;
-        b.classList.toggle('is-active', on);
-        b.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      panels.forEach((p) => {
-        const on = p.getAttribute('data-panel') === id;
-        p.classList.toggle('is-active', on);
-        p.hidden = !on;
-      });
-      if (id === 'sov') animateSovBars();
-    });
-  });
-  // SoV is the default panel — animate bars on first paint.
-  if (document.querySelector('#panel-sov.is-active')) {
-    animateSovBars();
   }
 
   // Fallback poll only if the processing overlay is not present.
