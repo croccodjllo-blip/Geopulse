@@ -559,24 +559,27 @@ def complete_job(
         logger.warning("complete_job refused: missing lease for job %s", getattr(job, "id", "?"))
         return False
     now = datetime.now(timezone.utc)
+    # Never write site_id=NULL on complete — that would wipe mark_job_site
+    # if the caller passes site_id=None after a successful persist.
+    fields: dict[str, Any] = {
+        "status": "done",
+        "finished_at": now,
+        "error": None,
+        "lease_token": None,
+        "heartbeat_at": now,
+    }
+    if site_id is not None:
+        fields["site_id"] = int(site_id)
     updated = (
         Job.query.filter_by(id=job.id, status="running", lease_token=token)
-        .update(
-            {
-                "status": "done",
-                "finished_at": now,
-                "site_id": site_id,
-                "error": None,
-                "lease_token": None,
-                "heartbeat_at": now,
-            },
-            synchronize_session=False,
-        )
+        .update(fields, synchronize_session=False)
     )
     db_session.commit()
     if updated == 1:
         job.status = "done"
         job.lease_token = None
+        if site_id is not None:
+            job.site_id = int(site_id)
         return True
     # Idempotent reconcile: persist already completed but lease was stolen.
     if site_id and _job_already_persisted(job):
@@ -588,7 +591,7 @@ def complete_job(
                 {
                     "status": "done",
                     "finished_at": now,
-                    "site_id": site_id,
+                    "site_id": int(site_id),
                     "error": None,
                     "lease_token": None,
                     "heartbeat_at": now,
@@ -600,7 +603,7 @@ def complete_job(
         if forced == 1:
             job.status = "done"
             job.lease_token = None
-            job.site_id = site_id
+            job.site_id = int(site_id)
             logger.warning(
                 "complete_job reconciled job %s after lease loss (site_id=%s)",
                 getattr(job, "id", "?"),

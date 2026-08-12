@@ -550,6 +550,12 @@ def set_security_headers(response):
         analytics=bool(GA4_MEASUREMENT_ID or GOOGLE_ADS_ID),
         adsense=bool(ADSENSE_CLIENT_ID or GOOGLE_ADS_ID),
     )
+    # Dashboard HTML must never be served from bfcache/proxy after analyze —
+    # otherwise the UI looks stuck on the previous report.
+    ep = (request.endpoint or "") if request else ""
+    if ep == "dashboard" or ep.startswith("dashboard_"):
+        response.headers["Cache-Control"] = "private, no-store, max-age=0"
+        response.headers["Pragma"] = "no-cache"
     # HSTS è impostato da nginx (add_header ... always) davanti a Flask;
     # non duplicarlo qui per evitare due header Strict-Transport-Security.
     return response
@@ -5738,6 +5744,28 @@ def dashboard():
             and prefer_site_id is None
         ):
             prefer_site_id = int(qjob.site_id)
+
+    # Safety net: overlay sometimes lands on bare /dashboard (no site=/job=).
+    # Prefer the most recently finished job's site for a short window so the
+    # report cannot stick on a sibling domain that still wins created_at races.
+    if prefer_site_id is None:
+        recent_done = (
+            AnalysisJob.query.filter(
+                AnalysisJob.user_id == user.id,
+                AnalysisJob.status == "done",
+                AnalysisJob.site_id.isnot(None),
+                AnalysisJob.finished_at.isnot(None),
+            )
+            .order_by(AnalysisJob.finished_at.desc())
+            .first()
+        )
+        if recent_done is not None and recent_done.finished_at is not None:
+            finished = recent_done.finished_at
+            if finished.tzinfo is None:
+                finished = finished.replace(tzinfo=timezone.utc)
+            age = datetime.now(timezone.utc) - finished
+            if age <= timedelta(minutes=15):
+                prefer_site_id = int(recent_done.site_id)
 
     # Refresh latest after possible async completion / job preference.
     latest = latest_site_for_user(

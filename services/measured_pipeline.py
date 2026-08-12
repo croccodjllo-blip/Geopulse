@@ -82,6 +82,9 @@ def _merge_signals_into_site(site: Any, result: dict[str, Any]) -> None:
     if result.get("competitors") is not None:
         blob["competitors"] = result.get("competitors") or []
     site.crawl_pages_json = json.dumps(blob, ensure_ascii=False)
+    # Keep findings_json in sync — dashboard reads site.findings, not only signals.
+    if result.get("findings") is not None and hasattr(site, "findings_json"):
+        site.findings_json = json.dumps(result.get("findings") or [], ensure_ascii=False)
     if hasattr(site, "updated_at"):
         site.updated_at = datetime.now(timezone.utc)
 

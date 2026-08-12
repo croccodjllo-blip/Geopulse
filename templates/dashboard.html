@@ -20,7 +20,8 @@
         <p class="workspace-strip__lede">
           {% if latest %}
             {{ _('Ultimo report') }}
-            {% if latest.created_at %} · {{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}
+            {% set report_at = latest.updated_at or latest.created_at %}
+            {% if report_at %} · {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}
           {% else %}
             {% if current_user.company %}{{ current_user.company }} · {% endif %}
             {% if dash_plan == 'business' %}
@@ -100,8 +101,9 @@
                 {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
                 <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
                 {% if latest.pages_analyzed %}<span>{{ latest.pages_analyzed }} {{ _('pagine') }}</span>{% endif %}
-                {% if latest.created_at %}
-                  <span>{{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
+                {% set report_at = latest.updated_at or latest.created_at %}
+                {% if report_at %}
+                  <span>{{ _('Analizzato') }} {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
                 {% endif %}
               </p>
             </div>
@@ -1161,9 +1163,18 @@
         if (!data.ok) return;
         if (data.status === 'done') {
           const base = '{{ url_for("dashboard") }}';
-          window.location.href = data.site_id
-            ? (base + (base.indexOf('?') >= 0 ? '&' : '?') + 'site=' + encodeURIComponent(data.site_id))
-            : base;
+          let url = base;
+          let sep = base.indexOf('?') >= 0 ? '&' : '?';
+          if (data.site_id) {
+            url += sep + 'site=' + encodeURIComponent(data.site_id);
+            sep = '&';
+          }
+          if (data.id) {
+            url += sep + 'job=' + encodeURIComponent(data.id);
+            sep = '&';
+          }
+          url += sep + '_r=' + encodeURIComponent(String(Date.now()));
+          window.location.replace(url);
           return;
         }
         if (data.status === 'error') {

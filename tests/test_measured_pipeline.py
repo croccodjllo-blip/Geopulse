@@ -44,6 +44,7 @@ def test_run_measured_only_merges_signals(monkeypatch):
         aio_score=50,
         geo_score=50,
         findings=[],
+        findings_json="[]",
         analysis_notes=None,
         pages_analyzed=1,
         crawl_pages_json=json.dumps(
@@ -90,7 +91,7 @@ def test_run_measured_only_merges_signals(monkeypatch):
             "evidence": "measured",
             "brand_mention_rate": 0.4,
             "engines": [{"id": "openai", "evidence": "measured", "mention_rate": 0.4}],
-            "findings": [],
+            "findings": [{"title": "SoV measured", "severity": "ok"}],
         },
     )
     monkeypatch.setattr(
@@ -109,4 +110,7 @@ def test_run_measured_only_merges_signals(monkeypatch):
     assert out is site
     blob = json.loads(site.crawl_pages_json)
     assert blob["signals"]["sov_measured"]["evidence"] == "measured"
+    findings = json.loads(site.findings_json)
+    assert findings and findings[-1]["title"] == "SoV measured"
+    assert site.updated_at is not None
     db.commit.assert_called()

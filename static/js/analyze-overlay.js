@@ -342,13 +342,19 @@
               } catch (e) { /* ignore */ }
             }
             var doneUrl = self._doneUrl || "/dashboard";
+            var sep = doneUrl.indexOf("?") >= 0 ? "&" : "?";
             if (data.site_id) {
-              doneUrl +=
-                (doneUrl.indexOf("?") >= 0 ? "&" : "?") +
-                "site=" +
-                encodeURIComponent(String(data.site_id));
+              doneUrl += sep + "site=" + encodeURIComponent(String(data.site_id));
+              sep = "&";
             }
-            window.location.href = doneUrl;
+            // Prefer the completed job so dashboard can pin that site even if
+            // site_id was late; bust bfcache/proxy with a nonce.
+            if (data.id) {
+              doneUrl += sep + "job=" + encodeURIComponent(String(data.id));
+              sep = "&";
+            }
+            doneUrl += sep + "_r=" + encodeURIComponent(String(Date.now()));
+            window.location.replace(doneUrl);
             return;
           }
           if (data.status === "error") {
