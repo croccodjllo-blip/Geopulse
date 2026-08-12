@@ -37,6 +37,8 @@ def _run_batch(limit: int, preferred_job_id: int | None = None) -> dict[str, int
             openai_api_key=OPENAI_API_KEY,
             openai_model=OPENAI_MODEL,
             preferred_job_id=preferred_job_id,
+            # Dedicated measured worker owns source=measured jobs.
+            source_exclude="measured",
         )
 
 
@@ -59,11 +61,12 @@ def run_loop(*, concurrency: int, idle_sleep: float) -> None:
     sleep_s = max(0.2, float(idle_sleep))
     use_redis = _redis_mode()
     # Reserve a slice of slots for measured follow-ups (rest = crawl).
+    # When a dedicated measured worker is running, keep this at 0–2.
     measured_reserve = max(
         0,
         min(
             workers // 4,
-            int(os.getenv("MEASURED_WORKER_RESERVE", "4")),
+            int(os.getenv("MEASURED_WORKER_RESERVE", "0")),
         ),
     )
     crawl_slots = max(1, workers - measured_reserve)

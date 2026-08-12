@@ -21,6 +21,7 @@ from services.sov_graph import (
     previous_brand_rate,
     sov_delta_findings,
 )
+from services.measured_pipeline import run_measured_only_pipeline
 from services.sov_measured import should_run_measured
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,22 @@ def run_analysis_pipeline(
     organization_id: int | None = None,
     run_started_at: Any | None = None,
 ) -> Any:
+    # Deferred measured follow-up: citation monitor only (no crawl/pack).
+    if (source or "").strip().lower() == "measured" and bool(run_measured):
+        return run_measured_only_pipeline(
+            db_session=db_session,
+            SiteAnalysis=SiteAnalysis,
+            AnalysisRun=AnalysisRun,
+            user=user,
+            url=url,
+            measured_env_enabled=measured_env_enabled,
+            source=source,
+            usage_callback=usage_callback,
+            heartbeat_callback=heartbeat_callback,
+            SovSnapshot=SovSnapshot,
+            organization_id=organization_id,
+        )
+
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     if existing is None:
         # Org member remesure must update the shared site, not fork under actor.

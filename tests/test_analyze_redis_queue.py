@@ -249,7 +249,7 @@ def test_claim_preferred_job_id(fake_redis):
 
 def test_scale_defaults_target_100():
     assert MAX_RUNNING_ANALYZE_JOBS >= 100 or MAX_RUNNING_ANALYZE_JOBS == 0
-    assert max_concurrent_measured() > 0
+    assert max_concurrent_measured() >= 100 or max_concurrent_measured() == 0
 
 
 def test_measured_shed_by_queue_depth(fake_redis, monkeypatch):

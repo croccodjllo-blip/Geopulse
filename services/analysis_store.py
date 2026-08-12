@@ -83,7 +83,16 @@ def next_rescan_after(
 
 
 ALLOWED_RUN_SOURCES = frozenset(
-    {"manual", "scheduled", "job", "api", "onboarding", "verify", "preview"}
+    {
+        "manual",
+        "scheduled",
+        "job",
+        "api",
+        "onboarding",
+        "verify",
+        "preview",
+        "measured",
+    }
 )
 
 

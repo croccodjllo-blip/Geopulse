@@ -35,7 +35,7 @@ def measured_defer_enabled() -> bool:
 
 
 def max_concurrent_measured() -> int:
-    return max(0, int(os.getenv("MAX_CONCURRENT_MEASURED", "16")))
+    return max(0, int(os.getenv("MAX_CONCURRENT_MEASURED", "100")))
 
 
 def _priority_for_plan(plan: str | None = None, *, is_admin: bool = False) -> int:

@@ -43,9 +43,35 @@ def job_queue_snapshot(
             < stale_cutoff,
         ),
     ).count()
-    return {
+    measured_pending = 0
+    measured_running = 0
+    if hasattr(AnalysisJob, "source"):
+        measured_pending = AnalysisJob.query.filter_by(
+            status="pending", source="measured"
+        ).count()
+        measured_running = AnalysisJob.query.filter_by(
+            status="running", source="measured"
+        ).count()
+    out = {
         "pending": pending,
         "running": running,
         "stale_running": stale_running,
         "stale_after_minutes": int(stale_after_minutes),
+        "measured_pending": measured_pending,
+        "measured_running": measured_running,
     }
+    try:
+        from services.analyze_queue import queue_depth
+        from services.measured_queue import (
+            measured_queue_depth,
+            measured_slots_in_use,
+            max_concurrent_measured,
+        )
+
+        out["crawl_queue_depth"] = queue_depth()
+        out["measured_queue_depth"] = measured_queue_depth()
+        out["measured_slots_in_use"] = measured_slots_in_use()
+        out["measured_slots_cap"] = max_concurrent_measured()
+    except Exception:
+        pass
+    return out

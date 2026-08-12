@@ -1,0 +1,23 @@
+[Unit]
+Description=Centropic measured SoV worker (LLM citation monitor)
+Documentation=file:///opt/aio-bot/DEPLOY.md
+After=network-online.target redis-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=aio-bot
+Group=aio-bot
+WorkingDirectory=/opt/aio-bot
+EnvironmentFile=-/opt/aio-bot/.env
+EnvironmentFile=-/opt/aio-bot/deploy/measured-worker.env
+Environment=MEASURED_WORKER_CONCURRENCY=50
+Environment=MEASURED_WORKER_IDLE_SLEEP=2
+Environment=MEASURED_DEFER=1
+ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/measured_worker.py --loop
+Restart=always
+RestartSec=3
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

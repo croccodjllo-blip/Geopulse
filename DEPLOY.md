@@ -106,7 +106,7 @@ ADMIN_BOOTSTRAP=0
 ANALYZE_BATCH_LIMIT=5
 JOB_STALE_HEARTBEAT_MINUTES=12
 JOB_MAX_ATTEMPTS=2
-MAX_RUNNING_ANALYZE_JOBS=100
+MAX_RUNNING_ANALYZE_JOBS=200
 ANALYZE_WORKER_CONCURRENCY=50
 ANALYZE_WORKER_IDLE_SLEEP=2
 MAX_CONCURRENT_ANALYZE_FREE=1
@@ -114,22 +114,25 @@ MAX_CONCURRENT_ANALYZE_PLUS=3
 MAX_CONCURRENT_ANALYZE_BUSINESS=5
 MAX_CONCURRENT_ANALYZE_ADMIN=8
 MAX_CONCURRENT_ANALYZE_JOBS=2
-MAX_CONCURRENT_MEASURED=16
+MAX_CONCURRENT_MEASURED=100
 MEASURED_SHED_ENABLE=1
 MEASURED_SHED_QUEUE_DEPTH=40
 MEASURED_DEFER=1
-MEASURED_WORKER_RESERVE=4
-DB_POOL_SIZE=100
-DB_MAX_OVERFLOW=120
-OPENAI_RPM=120
-PERPLEXITY_RPM=60
-ANTHROPIC_RPM=60
+MEASURED_WORKER_RESERVE=0
+MEASURED_WORKER_CONCURRENCY=50
+MEASURED_WORKER_IDLE_SLEEP=2
+DB_POOL_SIZE=150
+DB_MAX_OVERFLOW=200
+OPENAI_RPM=300
+PERPLEXITY_RPM=120
+ANTHROPIC_RPM=120
 REDIS_URL=redis://127.0.0.1:6379/0
 ANALYZE_QUEUE_BACKEND=redis
 LLM_RPM_BACKEND=redis
 LLM_TPM_BACKEND=redis
-OPENAI_TPM=200000
+OPENAI_TPM=500000
 # Priority lanes: centropic:analyze:queue:p0|p1|p2 (Business|Plus|Free)
+# Measured lanes: centropic:analyze:measured:p0|p1 + aio-bot-measured(.service|@N)
 # Optional S3 pack offload (keeps Postgres lean at high volume)
 # ANALYZE_ARTIFACT_STORE=s3
 # ANALYZE_S3_BUCKET=centropic-analyze-packs  # requires AWS_* creds
@@ -252,7 +255,28 @@ sudo cp deploy/aio-bot-analyze-remote.service /etc/systemd/system/aio-bot-analyz
 sudo systemctl enable --now aio-bot-analyze.service
 ```
 
-Dimensionare: `DB_POOL_SIZE ≥ WEB_CONCURRENCY×WEB_THREADS + Σ ANALYZE_WORKER_CONCURRENCY`.
+Dimensionare: `DB_POOL_SIZE ≥ WEB_CONCURRENCY×WEB_THREADS + Σ ANALYZE_WORKER_CONCURRENCY + Σ MEASURED_WORKER_CONCURRENCY`.
+
+### Measured SoV fleet (target 100 concurrent)
+
+Measured jobs are deferred (`MEASURED_DEFER=1`) onto `centropic:analyze:measured:p0|p1`
+and processed by a **dedicated** worker (no full re-crawl — citation monitor only).
+
+```bash
+sudo cp deploy/aio-bot-measured.service deploy/aio-bot-measured@.service /etc/systemd/system/
+sudo cp deploy/measured-worker.env /opt/aio-bot/deploy/measured-worker.env
+sudo systemctl daemon-reload
+sudo systemctl enable --now aio-bot-measured.service
+# second host / instance for 50+50=100:
+# sudo cp deploy/measured-worker-2.env.example /opt/aio-bot/deploy/measured-worker-2.env
+# sudo systemctl enable --now aio-bot-measured@2
+```
+
+Capacity check (no LLM calls):
+
+```bash
+cd /opt/aio-bot && .venv/bin/python scripts/stress_measured_capacity.py
+```
 
 ### i18n (dopo edit template con `_()`)
 

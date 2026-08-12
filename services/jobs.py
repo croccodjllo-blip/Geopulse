@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 # Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
-# Global in-flight cap across tenants. Launch target ≈100 concurrent crawls.
-MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "100")))
+# Global in-flight cap across tenants (crawl + measured). Target ≈100+100.
+MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "200")))
 # Postgres advisory lock key for serialize(count running + claim).
 _CLAIM_ADVISORY_LOCK_KEY = 872_341
 
@@ -363,11 +363,16 @@ def claim_next_job(
     on_abandon: Callable[[Any], None] | None = None,
     SiteAnalysis: Any | None = None,
     preferred_job_id: int | None = None,
+    source_filter: str | None = None,
+    source_exclude: str | None = None,
 ) -> Any | None:
     """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending.
 
     When ``preferred_job_id`` is set (Redis pop), try that row first; if it was
     already claimed/cancelled, fall through to FIFO pending.
+
+    ``source_filter`` limits FIFO to that source (e.g. measured workers).
+    ``source_exclude`` skips a source on FIFO (e.g. crawl workers skip measured).
     """
     try:
         reclaim_stale_jobs(
@@ -410,11 +415,12 @@ def claim_next_job(
     now = datetime.now(timezone.utc)
     lease = secrets.token_hex(16)
     for _ in range(3):
-        job = (
-            AnalysisJob.query.filter_by(status="pending")
-            .order_by(AnalysisJob.created_at.asc())
-            .first()
-        )
+        q = AnalysisJob.query.filter_by(status="pending")
+        if source_filter and hasattr(AnalysisJob, "source"):
+            q = q.filter_by(source=str(source_filter))
+        if source_exclude and hasattr(AnalysisJob, "source"):
+            q = q.filter(AnalysisJob.source != str(source_exclude))
+        job = q.order_by(AnalysisJob.created_at.asc()).first()
         if job is None:
             return None
         claimed = _finish_claim(db_session, AnalysisJob, job.id, lease=lease, now=now)

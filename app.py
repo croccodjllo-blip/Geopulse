@@ -379,8 +379,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 _db_uri = app.config["SQLALCHEMY_DATABASE_URI"] or ""
 if _db_uri.startswith("postgresql"):
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "100"))),
-        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "120"))),
+        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "150"))),
+        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "200"))),
         "pool_pre_ping": True,
         "pool_recycle": max(300, int(os.getenv("DB_POOL_RECYCLE", "1800"))),
     }
@@ -2223,10 +2223,13 @@ def process_pending_analyze_jobs(
     openai_api_key: str | None = None,
     openai_model: str | None = None,
     preferred_job_id: int | None = None,
+    source_filter: str | None = None,
+    source_exclude: str | None = None,
 ) -> dict[str, int]:
     """Claim e processa job pending. Usato da worker e thread kick.
 
     ``preferred_job_id`` (from Redis pop) is tried first on the initial claim.
+    ``source_filter`` / ``source_exclude`` constrain DB FIFO fallback.
     """
     stats = {"ok": 0, "error": 0, "empty": 0}
     api_key = openai_api_key if openai_api_key is not None else OPENAI_API_KEY
@@ -2268,6 +2271,8 @@ def process_pending_analyze_jobs(
             on_abandon=_on_abandon,
             SiteAnalysis=SiteAnalysis,
             preferred_job_id=prefer,
+            source_filter=source_filter,
+            source_exclude=source_exclude,
         )
         if job is None:
             stats["empty"] += 1
