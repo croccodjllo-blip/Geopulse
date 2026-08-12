@@ -36,6 +36,11 @@
       void row.offsetWidth;
       row.classList.add("is-animated");
     });
+    qsa(".sov-columns").forEach(function (chart) {
+      chart.classList.remove("is-animated");
+      void chart.offsetWidth;
+      chart.classList.add("is-animated");
+    });
   }
 
   function activateReportView(id) {
