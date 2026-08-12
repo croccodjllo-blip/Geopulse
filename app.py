@@ -611,6 +611,9 @@ class User(db.Model):
     # GDPR consent proof (checkbox + timestamp + doc version).
     terms_accepted_at = db.Column(db.DateTime)
     terms_version = db.Column(db.String(40))
+    # Consumer digital-service waiver (immediate performance → loss of withdrawal).
+    digital_service_waiver_at = db.Column(db.DateTime)
+    digital_service_waiver_version = db.Column(db.String(40))
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1910,6 +1913,8 @@ def ensure_schema() -> None:
             "low_balance_email_sent_at": "DATETIME",
             "terms_accepted_at": "DATETIME",
             "terms_version": "TEXT",
+            "digital_service_waiver_at": "DATETIME",
+            "digital_service_waiver_version": "TEXT",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -4153,6 +4158,7 @@ def sitemap_xml():
         ("/privacy", "0.4", "yearly"),
         ("/termini", "0.4", "yearly"),
         ("/rimborsi", "0.4", "yearly"),
+        ("/dpa", "0.5", "yearly"),
         ("/interesse-plus", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
@@ -4212,6 +4218,40 @@ def terms():
 @app.route("/rimborsi")
 def refunds():
     return render_template("rimborsi.html")
+
+
+@app.route("/dpa")
+@app.route("/sub-responsabili")
+def dpa():
+    """Art. 28 DPA + active sub-processor register (B2B procurement)."""
+    from services.legal_docs import dpa_context
+
+    ctx = dpa_context(
+        company_name=LEGAL_COMPANY_NAME or SITE_OWNER_NAME,
+        company_email=(LEGAL_PEC or "info@centropic.ai"),
+    )
+    return render_template("dpa.html", **ctx)
+
+
+@app.route("/dpa.txt")
+@app.route("/dpa.md")
+def dpa_download():
+    """Plain-text DPA for download / countersign workflows."""
+    from services.legal_docs import DPA_VERSION, render_dpa_plaintext
+
+    body = render_dpa_plaintext(
+        company_name=LEGAL_COMPANY_NAME or SITE_OWNER_NAME,
+        company_email=(LEGAL_PEC or "info@centropic.ai"),
+    )
+    filename = f"centropic-dpa-{DPA_VERSION}.txt"
+    return Response(
+        body,
+        mimetype="text/plain; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Cache-Control": "public, max-age=3600",
+        },
+    )
 
 
 @app.route("/chi-siamo")
@@ -4643,6 +4683,44 @@ def pricing_alias():
     return redirect(url_for("pricing"), code=301)
 
 
+def _require_digital_service_waiver(user: "User", *, redirect_to: str):
+    """Enforce consumer waiver for immediate digital performance before checkout.
+
+    Returns a Response when missing; otherwise records consent and returns None.
+    """
+    from services.legal_docs import DIGITAL_WAIVER_VERSION
+
+    accepted = (request.form.get("accept_immediate_service") or "").strip().lower() in {
+        "y",
+        "1",
+        "true",
+        "on",
+        "yes",
+    }
+    if not accepted:
+        msg = (
+            "Per procedere conferma l’erogazione immediata del servizio digitale "
+            "(perdi il diritto di recesso di 14 giorni una volta avviata l’erogazione)."
+        )
+        wants_json = (
+            request.form.get("overlay") == "1"
+            or "application/json" in (request.headers.get("Accept") or "")
+            or request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        )
+        if wants_json:
+            return jsonify({"ok": False, "error": "digital_service_waiver_required", "message": msg}), 400
+        flash(msg, "warning")
+        return redirect(redirect_to)
+    user.digital_service_waiver_at = datetime.now(timezone.utc)
+    user.digital_service_waiver_version = DIGITAL_WAIVER_VERSION
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("digital_service_waiver persist failed")
+    return None
+
+
 @app.route("/billing/checkout", methods=["POST"])
 @login_required
 def billing_checkout():
@@ -4656,6 +4734,10 @@ def billing_checkout():
     if payments_provider() != "paddle":
         flash("Checkout non ancora attivo. Prenota l’interesse Plus.", "warning")
         return redirect(url_for("pro_interest"))
+
+    blocked = _require_digital_service_waiver(user, redirect_to=url_for("pricing"))
+    if blocked is not None:
+        return blocked
 
     product = (request.form.get("product") or "plus").strip().lower()
     if product not in {"plus", "business"}:
@@ -6385,6 +6467,12 @@ def topup_checkout():
     if amount_cents not in {pkg["cents"] for pkg in _TOPUP_PACKAGES}:
         flash("Importo non valido.", "error")
         return redirect(url_for("topup_credit_page"))
+
+    blocked = _require_digital_service_waiver(
+        user, redirect_to=url_for("topup_credit_page")
+    )
+    if blocked is not None:
+        return blocked
 
     if payments_provider() == "paddle" and paddle_topup_price_id(amount_cents):
         if paddle_overlay_ready() and request.form.get("overlay") == "1":

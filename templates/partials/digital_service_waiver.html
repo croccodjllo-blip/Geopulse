@@ -1,0 +1,20 @@
+{# Consumer digital-service waiver: immediate performance → loss of 14-day withdrawal. #}
+<div class="digital-waiver" data-digital-waiver>
+  <label class="digital-waiver__check">
+    <input
+      type="checkbox"
+      name="accept_immediate_service"
+      id="{{ waiver_id|default('accept_immediate_service') }}"
+      value="y"
+      required
+      data-digital-waiver-input
+    />
+    <span>
+      {{ _('Chiedo l’erogazione immediata del servizio digitale (attivazione piano o accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni una volta iniziata l’erogazione, ai sensi della') }}
+      <a href="{{ url_for('refunds') }}" target="_blank" rel="noopener">{{ _('Politica di rimborso') }}</a>.
+    </span>
+  </label>
+  <p class="digital-waiver__hint">
+    {{ _('Obbligatorio per procedere al checkout. Dettagli su rimborsi e crediti non usati nella policy.') }}
+  </p>
+</div>

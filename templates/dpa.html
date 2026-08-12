@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ _('DPA e sub-responsabili') }}{% endblock %}
+{% block meta_description %}{{ _('Data Processing Agreement (Art. 28 GDPR) e elenco sub-responsabili Centropic per clienti Business e agenzie.') }}{% endblock %}
+{% block canonical %}{{ canonical_base }}/dpa{% endblock %}
+
+{% block content %}
+<article class="page page--legal">
+  <header class="page-intro">
+    <p class="eyebrow">{{ _('Legale · GDPR Art. 28') }}</p>
+    <h1 class="h-display page-intro__title">{{ _('DPA e sub-responsabili') }}</h1>
+    <p class="lede page-intro__lede">
+      {{ _('Versione') }} {{ dpa_version }} · {{ _('Aggiornato') }} {{ dpa_last_updated }} ·
+      {{ _('Titolare del trattamento (Cliente) / Responsabile del trattamento:') }}
+      <strong>{{ dpa_company_name }}</strong> (Centropic).
+      {{ _('Contatti:') }}
+      <a href="mailto:{{ dpa_contact_email }}">{{ dpa_contact_email }}</a>
+    </p>
+    <p class="page-intro__actions">
+      <a class="btn btn-primary" href="{{ url_for('dpa_download') }}">{{ _('Scarica DPA (.txt)') }}</a>
+      <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+      <a class="btn btn-ghost" href="{{ url_for('terms') }}">{{ _('Termini') }}</a>
+    </p>
+  </header>
+
+  <section class="page-section" id="ruoli">
+    <h2 class="page-section__title">{{ _('1. Ruoli') }}</h2>
+    <p class="lede">
+      {{ _('Il Cliente è titolare del trattamento dei dati personali che inserisce o fa trattare tramite Centropic. Il Provider (Centropic /') }}
+      {{ dpa_company_name }}{{ _(') agisce come responsabile del trattamento per erogare il SaaS. Paddle, in qualità di merchant of record, tratta i dati di pagamento come titolare autonomo per fatturazione e fiscalità.') }}
+    </p>
+  </section>
+
+  <section class="page-section" id="oggetto">
+    <h2 class="page-section__title">{{ _('2. Oggetto e durata') }}</h2>
+    <p class="lede">
+      {{ _('Il trattamento riguarda account, URL pubblici analizzati, risultati (score, findings, artifact), log tecnici e, se abilitato dal piano, probe LLM. Dura per la vita dell’account e per i tempi di conservazione indicati nell’informativa privacy / esigenze di sicurezza e legge.') }}
+    </p>
+  </section>
+
+  <section class="page-section" id="obblighi">
+    <h2 class="page-section__title">{{ _('3. Obblighi del responsabile (Art. 28)') }}</h2>
+    <ul class="plain-list">
+      <li>{{ _('Tratta i dati solo per erogare Centropic e su istruzioni documentate (uso del servizio).') }}</li>
+      <li>{{ _('Garantisce riservatezza del personale autorizzato.') }}</li>
+      <li>{{ _('Applica misure tecniche e organizzative adeguate.') }}</li>
+      <li>{{ _('Ricorre ai sub-responsabili elencati nell’Allegato A; variazioni rilevanti sono comunicate.') }}</li>
+      <li>{{ _('Assiste il Cliente su diritti degli interessati, DPIA e data breach ove applicabile.') }}</li>
+      <li>{{ _('Cancella o restituisce i dati dopo chiusura account, salvo obblighi di legge.') }}</li>
+      <li>{{ _('Mette a disposizione le informazioni necessarie a dimostrare conformità.') }}</li>
+    </ul>
+  </section>
+
+  <section class="page-section" id="trasferimenti">
+    <h2 class="page-section__title">{{ _('4. Trasferimenti internazionali') }}</h2>
+    <p class="lede">
+      {{ _('Alcuni sub-responsabili (in particolare LLM e tool USA) possono trattare dati fuori SEE/UK. I trasferimenti si basano su garanzie appropriate (es. SCC / decisioni di adeguatezza) secondo le policy di ciascun fornitore. Per un riepilogo aggiornato: scrivi a') }}
+      <a href="mailto:{{ dpa_contact_email }}">{{ dpa_contact_email }}</a>.
+    </p>
+  </section>
+
+  <section class="page-section" id="cliente">
+    <h2 class="page-section__title">{{ _('5. Obblighi del Cliente') }}</h2>
+    <p class="lede">
+      {{ _('Il Cliente garantisce di avere titolo ad analizzare i siti indicati, non deve caricare categorie particolari di dati senza addendum scritto, e rispetta i Termini (niente scansioni abusive). Per white-label / multi-cliente Business, il Cliente resta titolare verso i propri utenti finali.') }}
+    </p>
+  </section>
+
+  <section class="page-section" id="accettazione">
+    <h2 class="page-section__title">{{ _('6. Accettazione') }}</h2>
+    <p class="lede">
+      {{ _('L’uso di funzioni Business/agenzia o un ordine che richiama questa versione DPA costituisce accettazione. Copia controfirmata su richiesta a') }}
+      <a href="mailto:{{ dpa_contact_email }}">{{ dpa_contact_email }}</a>.
+      {{ _('In caso di conflitto su temi privacy, questo DPA prevale sui Termini per gli obblighi di trattamento.') }}
+    </p>
+  </section>
+
+  <section class="page-section" id="allegato-a">
+    <h2 class="page-section__title">{{ _('Allegato A — Sub-responsabili attivi') }}</h2>
+    <p class="lede">
+      {{ _('Elenco aggiornato in base alla configurazione di produzione. Provider non attivi non ricevono dati da questa istanza.') }}
+    </p>
+    <div class="legal-table-wrap">
+      <table class="legal-table">
+        <thead>
+          <tr>
+            <th>{{ _('Fornitore') }}</th>
+            <th>{{ _('Ruolo') }}</th>
+            <th>{{ _('Dati') }}</th>
+            <th>{{ _('Sede / regione') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sp in sub_processors %}
+          <tr>
+            <td>
+              <strong>{{ sp.name }}</strong>
+              {% if sp.docs_url %}
+              <br /><a href="{{ sp.docs_url }}" rel="noopener noreferrer" target="_blank">{{ _('Policy') }}</a>
+              {% endif %}
+            </td>
+            <td>{{ sp.role }}</td>
+            <td>{{ sp.data_categories }}</td>
+            <td>{{ sp.location }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4">{{ _('Nessun sub-responsabile rilevato nella configurazione corrente.') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="page-cta">
+    <a class="btn btn-primary" href="{{ url_for('dpa_download') }}">{{ _('Scarica DPA (.txt)') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
+    <a class="btn btn-ghost" href="mailto:{{ dpa_contact_email }}">{{ _('Richiedi copia firmata') }}</a>
+  </div>
+</article>
+{% endblock %}

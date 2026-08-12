@@ -50,7 +50,9 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('5. Conservazione e trasferimenti') }}</h2>
     <p class="lede">
-      {{ _('I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati solo per conto del servizio o come autonomi titolari ove indicato (es. Paddle).') }}
+      {{ _('I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati solo per conto del servizio o come autonomi titolari ove indicato (es. Paddle). Elenco aggiornato e DPA Art. 28 per clienti Business/agenzie:') }}
+      <a href="{{ url_for('dpa') }}">{{ _('DPA e sub-responsabili') }}</a>
+      ({{ _('download') }} <a href="{{ url_for('dpa_download') }}">.txt</a>).
     </p>
   </section>
 
@@ -81,6 +83,7 @@
 
   <div class="page-cta">
     <a class="btn btn-ghost" href="{{ url_for('terms') }}">{{ _('Termini di servizio') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('dpa') }}">{{ _('DPA / sub-responsabili') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
     <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
   </div>
