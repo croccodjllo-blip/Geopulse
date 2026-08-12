@@ -102,6 +102,7 @@ def run_measured_only_pipeline(
     heartbeat_callback: Any | None = None,
     SovSnapshot: Any | None = None,
     organization_id: int | None = None,
+    locale: str | None = None,
 ) -> Any:
     """Run citation monitor against an existing site; no crawl/pack rebuild."""
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
@@ -149,16 +150,9 @@ def run_measured_only_pipeline(
     scraped = result.get("scraped") or {}
     domain = str(scraped.get("domain") or existing.domain or "")
 
-    prompt_locale = "it"
-    try:
-        from flask import has_request_context
+    from services.pack_i18n import capture_ui_locale
 
-        if has_request_context():
-            from services.i18n import active_ui_locale
-
-            prompt_locale = active_ui_locale() or "it"
-    except Exception:
-        prompt_locale = "it"
+    prompt_locale = capture_ui_locale(locale)
 
     scraped = result.get("scraped") if isinstance(result.get("scraped"), dict) else {}
     if not scraped.get("title"):

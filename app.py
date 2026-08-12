@@ -874,6 +874,8 @@ class GuestPreview(db.Model):
     findings_json = db.Column(db.Text, nullable=False, default="[]")
     result_json = db.Column(db.Text, nullable=False, default="{}")
     pack_json = db.Column(db.Text, nullable=False, default="{}")
+    # UI locale at preview start (pack instructional chrome).
+    locale = db.Column(db.String(8), nullable=False, default="it")
     ip_hash = db.Column(db.String(64), index=True)
     claimed_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True)
     claimed_site_id = db.Column(db.Integer, db.ForeignKey("site_analyses.id"), index=True)
@@ -897,6 +899,8 @@ class AnalysisJob(db.Model):
     competitors_json = db.Column(db.Text, nullable=False, default="[]")
     # Persist measured SoV intent from confirm form through the async worker.
     run_measured = db.Column(db.Boolean, nullable=False, default=False)
+    # UI locale at enqueue time (pack copy + measured prompts).
+    locale = db.Column(db.String(8), nullable=False, default="it")
     # Origin: job | api | onboarding | verify (feeds AnalysisRun.source).
     source = db.Column(db.String(20), nullable=False, default="job")
     # Live progress for overlay ETA (updated during crawl / geo / pack).
@@ -1967,6 +1971,7 @@ def ensure_schema() -> None:
                 "max_pages": "INTEGER DEFAULT 8",
                 "competitors_json": "TEXT DEFAULT '[]'",
                 "run_measured": "BOOLEAN DEFAULT 0",
+                "locale": "TEXT DEFAULT 'it'",
                 "source": "TEXT DEFAULT 'job'",
                 "progress_done": "INTEGER DEFAULT 0",
                 "progress_total": "INTEGER DEFAULT 0",
@@ -1988,6 +1993,11 @@ def ensure_schema() -> None:
             for name, col_type in job_alters.items():
                 if name not in job_cols:
                     _add_column("analysis_jobs", name, col_type)
+
+    if "guest_previews" in tables:
+        gp_cols = {col["name"] for col in inspector.get_columns("guest_previews")}
+        if "locale" not in gp_cols:
+            _add_column("guest_previews", "locale", "TEXT DEFAULT 'it'")
 
     backfill_analysis_runs()
 
@@ -2514,6 +2524,7 @@ def process_pending_analyze_jobs(
                 AlertDelivery=AlertDelivery,
                 UsageEvent=UsageEvent,
                 run_started_at=getattr(job, "started_at", None),
+                locale=getattr(job, "locale", None) or "it",
             )
 
             # FinOps: one ceil debit for all LLM calls in this job (aggregate mode).
@@ -3442,6 +3453,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
             UsageEvent=UsageEvent,
+            locale=active_ui_locale(),
         )
         if sync_held > 0:
             from services.usage_billing import release_hold
@@ -4260,6 +4272,7 @@ def preview_analyze_start():
         findings_json="[]",
         result_json="{}",
         pack_json="{}",
+        locale=active_ui_locale(),
         ip_hash=hash_client_ip(ip),
         expires_at=preview_expires_at(),
     )
@@ -6240,6 +6253,7 @@ def dashboard_analyze_confirmed():
             SovSnapshot=SovSnapshot,
             AlertDelivery=AlertDelivery,
             UsageEvent=UsageEvent,
+            locale=active_ui_locale(),
         )
         db.session.commit()
         rem = int(hold_remaining["n"] or 0)
@@ -8013,6 +8027,7 @@ def email_pack(analysis_id: int):
         domain=analysis.domain,
         aio_score=analysis.aio_score,
         geo_score=analysis.geo_score,
+        locale=active_ui_locale(),
     )
     try:
         send_email_with_attachment(

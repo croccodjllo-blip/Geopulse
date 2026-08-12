@@ -83,6 +83,7 @@ def enqueue_analysis(
     active_check: Callable[[], Any | None] | None = None,
     plan: str | None = None,
     is_admin: bool = False,
+    locale: str | None = None,
 ) -> Any:
     """Enqueue a pending analyze job.
 
@@ -91,6 +92,7 @@ def enqueue_analysis(
     ``DuplicateAnalyzeJobError`` so callers can release holds and reuse the job.
 
     ``plan`` / ``is_admin`` select the Redis priority lane (Business → Plus → Free).
+    ``locale`` is the UI locale for pack copy (captured from the request when omitted).
     """
     _begin_immediate(db_session)
     if active_check is not None:
@@ -112,6 +114,10 @@ def enqueue_analysis(
     if hasattr(AnalysisJob, "source"):
         src = (source or "job").strip().lower() or "job"
         kwargs["source"] = src[:20]
+    if hasattr(AnalysisJob, "locale"):
+        from services.pack_i18n import capture_ui_locale
+
+        kwargs["locale"] = capture_ui_locale(locale)[:8]
     job = AnalysisJob(**kwargs)
     db_session.add(job)
     db_session.commit()

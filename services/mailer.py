@@ -372,30 +372,24 @@ def build_pack_email(
     domain: str,
     aio_score: int | None,
     geo_score: int | None,
+    locale: str | None = None,
 ) -> tuple[str, str, str]:
-    """Ritorna subject, text, html per il pack."""
-    first = (user_name or "ciao").strip().split(" ")[0] or "ciao"
+    """Ritorna subject, text, html per il pack (UI locale)."""
+    from services.pack_i18n import capture_ui_locale, t
+
+    loc = capture_ui_locale(locale)
+    defaults = {
+        "it": "ciao",
+        "en": "there",
+        "de": "dort",
+        "es": "hola",
+        "zh": "你好",
+        "ko": "회원",
+    }
+    first = (user_name or "").strip().split(" ")[0] or defaults.get(loc, "there")
     aio = "—" if aio_score is None else str(aio_score)
     geo = "—" if geo_score is None else str(geo_score)
-    subject = f"Centropic — pack ottimizzazione {domain}"
-    text = (
-        f"Ciao {first},\n\n"
-        f"in allegato il pack di ottimizzazione GEO/AIO per {domain}.\n"
-        f"Score: AIO {aio} · GEO {geo}.\n\n"
-        "È un unico file HTML (centropic-fix.html) con tutti i fix: "
-        "snippet <head>, /llms.txt, /robots.txt e checklist.\n"
-        "Apri il file nel browser e applica le sezioni sul sito live.\n\n"
-        "— Centropic (centropic.ai)\n"
-    )
-    html = (
-        f"<p>Ciao {first},</p>"
-        f"<p>in allegato il pack di ottimizzazione GEO/AIO per "
-        f"<strong>{domain}</strong>.</p>"
-        f"<p>Score: AIO {aio} · GEO {geo}.</p>"
-        "<p>È un unico file HTML (<code>centropic-fix.html</code>) con tutti i fix: "
-        "snippet <code>&lt;head&gt;</code>, <code>/llms.txt</code>, "
-        "<code>/robots.txt</code> e checklist. "
-        "Apri il file nel browser e applica le sezioni sul sito live.</p>"
-        "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
-    )
+    subject = t("email_subject", loc, domain=domain)
+    text = t("email_text", loc, first=first, domain=domain, aio=aio, geo=geo)
+    html = t("email_html", loc, first=first, domain=domain, aio=aio, geo=geo)
     return subject, text, html

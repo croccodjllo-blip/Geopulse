@@ -136,6 +136,7 @@ def run_guest_preview(
             logger=logger,
             findings=result.get("findings"),
             result=result,
+            locale=getattr(preview, "locale", None) or "it",
         )
         preview.aio_score = result.get("aio_score")
         preview.geo_score = result.get("geo_score")

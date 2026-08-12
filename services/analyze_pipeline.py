@@ -50,6 +50,7 @@ def run_analysis_pipeline(
     UsageEvent: Any | None = None,
     organization_id: int | None = None,
     run_started_at: Any | None = None,
+    locale: str | None = None,
 ) -> Any:
     # Deferred measured follow-up: citation monitor only (no crawl/pack).
     if (source or "").strip().lower() == "measured" and bool(run_measured):
@@ -65,6 +66,7 @@ def run_analysis_pipeline(
             heartbeat_callback=heartbeat_callback,
             SovSnapshot=SovSnapshot,
             organization_id=organization_id,
+            locale=locale,
         )
 
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
@@ -166,16 +168,9 @@ def run_analysis_pipeline(
         requested=run_measured,
         env_enabled=measured_env_enabled,
     )
-    prompt_locale = "it"
-    try:
-        from flask import has_request_context
+    from services.pack_i18n import capture_ui_locale
 
-        if has_request_context():
-            from services.i18n import active_ui_locale
-
-            prompt_locale = active_ui_locale() or "it"
-    except Exception:
-        prompt_locale = "it"
+    prompt_locale = capture_ui_locale(locale)
 
     prompts = None
     if measured_ok:
@@ -270,6 +265,7 @@ def run_analysis_pipeline(
         heartbeat_callback=lambda: _hb(
             phase="pack", done=crawled, total=max(crawled, pages)
         ),
+        locale=prompt_locale,
     )
 
     # Lease / cancel check before persist: avoid writing if job was reclaimed

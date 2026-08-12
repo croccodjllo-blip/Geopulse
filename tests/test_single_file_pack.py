@@ -134,11 +134,12 @@ def test_unified_from_entity_uses_persisted_artifacts():
         aio_score=70,
         geo_score=65,
     )
-    html = unified_fix_html_from_entity(entity)
+    html = unified_fix_html_from_entity(entity, locale="it")
     assert "HELLO_LLMS" in html
     assert "ORG_LD" in html
     assert "FAQ_LD" in html
     assert "META_X" in html
     assert "ROBOTS_Y" in html
-    assert "CHECK_Z" in html
-    assert "BA_W" in html
+    # Checklist / before-after chrome is rebuilt in the UI locale at download time.
+    assert "Priorità consigliata" in html
+    assert "baseline" in html.lower()

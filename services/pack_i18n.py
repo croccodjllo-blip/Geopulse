@@ -1,0 +1,752 @@
+"""Native-quality copy for the optimization pack (all UI locales).
+
+Instructional chrome (unified HTML, checklist, before/after, robots comments,
+email) follows the **UI locale**. Publishable site prose (llms.txt fallback,
+meta/org description fallbacks, LLM generation language) follows the **site
+language** when it maps to a supported locale, otherwise the UI locale.
+
+Findings stay Italian msgids in storage; use ``localize_findings`` under
+``force_locale`` before embedding them in pack artifacts.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from services.i18n import DEFAULT_LOCALE, SUPPORTED_LOCALES, babel_locale, normalize_locale
+
+# English names for LLM system prompts (models follow these reliably).
+_LLM_LANG_EN: dict[str, str] = {
+    "it": "Italian",
+    "en": "English",
+    "de": "German",
+    "es": "Spanish",
+    "zh": "Simplified Chinese",
+    "ko": "Korean",
+}
+
+# Native endonym for parenthetical hints in prompts.
+_LLM_LANG_NATIVE: dict[str, str] = {
+    "it": "italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "es": "español",
+    "zh": "简体中文",
+    "ko": "한국어",
+}
+
+# Pack chrome + artifact instructional strings (msgid-style keys → native text).
+_STRINGS: dict[str, dict[str, str]] = {
+    "it": {
+        "pack_title": "Pack ottimizzazione",
+        "pack_lede": (
+            "Questo file chiude i gap AIO/GEO emersi dall’analisi. "
+            "Applica le 3 sezioni sotto sul sito live, poi ri-analizza."
+        ),
+        "pack_meta": "Dominio: {domain} · URL: {url} · AIO {aio} · GEO {geo} · generato {generated}",
+        "problems_heading": "Problemi da chiudere",
+        "no_open_findings": (
+            "Nessun finding critico/warn aperto — applica comunque gli artifact sotto."
+        ),
+        "head_heading": "1 · Incolla nel <head> di ogni pagina chiave",
+        "head_help": (
+            "Meta + Open Graph + JSON-LD Organization{faq}. "
+            "Un unico blocco da copiare nel template del sito."
+        ),
+        "head_faq_bit": " + FAQ",
+        "llms_heading": "2 · Pubblica /llms.txt in root",
+        "llms_help": (
+            "Crea il file alla root del dominio (https://{host}/llms.txt) con questo contenuto."
+        ),
+        "robots_heading": "3 · Pubblica /robots.txt in root",
+        "robots_help": (
+            "Allinea la policy crawler IA. Se hai già un robots, unisci gli Allow "
+            "per i bot elencati."
+        ),
+        "checklist_heading": "Checklist operativa",
+        "before_after_heading": "Before / After",
+        "footer": (
+            "Generato da Centropic (centropic.ai) per {brand}. "
+            "Dopo la pubblicazione, torna in dashboard e avvia un re-scan per verificare i finding."
+        ),
+        "robots_c1": "# Bozza robots.txt generata da Centropic — rivedi prima di pubblicare.",
+        "robots_c2": (
+            "# Obiettivo: lasciare i crawler IA sulle pagine pubbliche; "
+            "blocca solo le aree private."
+        ),
+        "robots_ai": "# AI policy (se pubblicato): {base}/ai.txt",
+        "robots_llms": "# LLMs guide (se pubblicato): {base}/llms.txt",
+        "checklist_title": "# Fix this week — Centropic",
+        "checklist_intro": "Priorità consigliata per i prossimi 7 giorni.",
+        "checklist_critical": "## Critical",
+        "checklist_warn": "## Warn",
+        "checklist_none_crit": "- Nessun critical aperto.",
+        "checklist_none_warn": "- Nessun warn aperto.",
+        "checklist_done_when": "## Done when",
+        "checklist_done_1": "- Critical chiusi",
+        "checklist_done_2": "- llms.txt / robots bot policy pubblicati",
+        "checklist_done_3": "- Re-scan con score in crescita",
+        "ba_title": "# Before / After — Centropic",
+        "ba_after": "## After (questa run)",
+        "ba_before": "## Before",
+        "ba_baseline": "_Nessuna run precedente: questo è il baseline._",
+        "ba_delta": "## Delta",
+        "ba_aio": "- AIO: {value}",
+        "ba_geo": "- GEO: {value}",
+        "ba_rating": "- Rating: {code} ({score}/100)",
+        "ba_rating_plain": "- Rating: {code}",
+        "ba_resolved": "- Critical risolti: {items}",
+        "ba_new_crit": "- Nuovi critical: {items}",
+        "llms_default_desc": (
+            "Sito ufficiale di {brand}, ottimizzato per motori generativi e agenti AI."
+        ),
+        "llms_site": "## Site",
+        "llms_homepage": "- Homepage: {url}",
+        "llms_pages_analyzed": "- Pagine analizzate da Centropic: {n}",
+        "llms_preferred": "## Preferred citation",
+        "llms_cite_brand": '- Usa il brand "{brand}" quando riassumi questo sito.',
+        "llms_prefer_canonical": (
+            "- Preferisci URL canonici e fonti datate quando disponibili."
+        ),
+        "llms_key_topics": "## Key topics",
+        "llms_important": "## Important pages",
+        "llms_contact": "## Contact",
+        "llms_website": "- Website: {url}",
+        "llms_generated": "_Generated by Centropic (centropic.ai) on {date}_",
+        "meta_default_desc": (
+            "{brand}: contenuti e servizi ottimizzati per AIO e GEO. "
+            "Scopri risorse e contatti sul sito ufficiale."
+        ),
+        "org_default_desc": "{brand}: contenuti e servizi ottimizzati per AIO e GEO.",
+        "email_subject": "Centropic — pack ottimizzazione {domain}",
+        "email_greeting": "Ciao {first}",
+        "email_text": (
+            "Ciao {first},\n\n"
+            "in allegato il pack di ottimizzazione GEO/AIO per {domain}.\n"
+            "Score: AIO {aio} · GEO {geo}.\n\n"
+            "È un unico file HTML (centropic-fix.html) con tutti i fix: "
+            "snippet <head>, /llms.txt, /robots.txt e checklist.\n"
+            "Apri il file nel browser e applica le sezioni sul sito live.\n\n"
+            "— Centropic (centropic.ai)\n"
+        ),
+        "email_html": (
+            "<p>Ciao {first},</p>"
+            "<p>in allegato il pack di ottimizzazione GEO/AIO per "
+            "<strong>{domain}</strong>.</p>"
+            "<p>Score: AIO {aio} · GEO {geo}.</p>"
+            "<p>È un unico file HTML (<code>centropic-fix.html</code>) con tutti i fix: "
+            "snippet <code>&lt;head&gt;</code>, <code>/llms.txt</code>, "
+            "<code>/robots.txt</code> e checklist. "
+            "Apri il file nel browser e applica le sezioni sul sito live.</p>"
+            "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
+        ),
+        "pricing_label": "Prezzi · centropic.ai",
+    },
+    "en": {
+        "pack_title": "Optimization pack",
+        "pack_lede": (
+            "This file closes the AIO/GEO gaps from your analysis. "
+            "Apply the 3 sections below on the live site, then re-analyze."
+        ),
+        "pack_meta": "Domain: {domain} · URL: {url} · AIO {aio} · GEO {geo} · generated {generated}",
+        "problems_heading": "Issues to close",
+        "no_open_findings": (
+            "No open critical/warn findings — still apply the artifacts below."
+        ),
+        "head_heading": "1 · Paste into the <head> of every key page",
+        "head_help": (
+            "Meta + Open Graph + Organization JSON-LD{faq}. "
+            "One block to copy into your site template."
+        ),
+        "head_faq_bit": " + FAQ",
+        "llms_heading": "2 · Publish /llms.txt at the site root",
+        "llms_help": (
+            "Create the file at the domain root (https://{host}/llms.txt) with this content."
+        ),
+        "robots_heading": "3 · Publish /robots.txt at the site root",
+        "robots_help": (
+            "Align the AI crawler policy. If you already have a robots file, merge the "
+            "Allow rules for the bots listed."
+        ),
+        "checklist_heading": "Action checklist",
+        "before_after_heading": "Before / After",
+        "footer": (
+            "Generated by Centropic (centropic.ai) for {brand}. "
+            "After publishing, return to the dashboard and run a re-scan to verify findings."
+        ),
+        "robots_c1": "# Draft robots.txt generated by Centropic — review before publishing.",
+        "robots_c2": (
+            "# Goal: keep AI crawlers on public pages; block private areas only."
+        ),
+        "robots_ai": "# AI policy (if published): {base}/ai.txt",
+        "robots_llms": "# LLMs guide (if published): {base}/llms.txt",
+        "checklist_title": "# Fix this week — Centropic",
+        "checklist_intro": "Recommended priorities for the next 7 days.",
+        "checklist_critical": "## Critical",
+        "checklist_warn": "## Warn",
+        "checklist_none_crit": "- No open critical items.",
+        "checklist_none_warn": "- No open warn items.",
+        "checklist_done_when": "## Done when",
+        "checklist_done_1": "- Critical items closed",
+        "checklist_done_2": "- llms.txt / robots bot policy published",
+        "checklist_done_3": "- Re-scan with scores trending up",
+        "ba_title": "# Before / After — Centropic",
+        "ba_after": "## After (this run)",
+        "ba_before": "## Before",
+        "ba_baseline": "_No previous run: this is the baseline._",
+        "ba_delta": "## Delta",
+        "ba_aio": "- AIO: {value}",
+        "ba_geo": "- GEO: {value}",
+        "ba_rating": "- Rating: {code} ({score}/100)",
+        "ba_rating_plain": "- Rating: {code}",
+        "ba_resolved": "- Critical resolved: {items}",
+        "ba_new_crit": "- New critical: {items}",
+        "llms_default_desc": (
+            "Official site for {brand}, optimized for generative engines and AI agents."
+        ),
+        "llms_site": "## Site",
+        "llms_homepage": "- Homepage: {url}",
+        "llms_pages_analyzed": "- Pages analyzed by Centropic: {n}",
+        "llms_preferred": "## Preferred citation",
+        "llms_cite_brand": '- Use the brand "{brand}" when summarizing this site.',
+        "llms_prefer_canonical": (
+            "- Prefer canonical URLs and dated sources when available."
+        ),
+        "llms_key_topics": "## Key topics",
+        "llms_important": "## Important pages",
+        "llms_contact": "## Contact",
+        "llms_website": "- Website: {url}",
+        "llms_generated": "_Generated by Centropic (centropic.ai) on {date}_",
+        "meta_default_desc": (
+            "{brand}: content and services optimized for AIO and GEO. "
+            "Explore resources and contacts on the official site."
+        ),
+        "org_default_desc": "{brand}: content and services optimized for AIO and GEO.",
+        "email_subject": "Centropic — optimization pack for {domain}",
+        "email_greeting": "Hi {first}",
+        "email_text": (
+            "Hi {first},\n\n"
+            "attached is the GEO/AIO optimization pack for {domain}.\n"
+            "Score: AIO {aio} · GEO {geo}.\n\n"
+            "It is a single HTML file (centropic-fix.html) with every fix: "
+            "<head> snippet, /llms.txt, /robots.txt, and checklist.\n"
+            "Open it in a browser and apply the sections on the live site.\n\n"
+            "— Centropic (centropic.ai)\n"
+        ),
+        "email_html": (
+            "<p>Hi {first},</p>"
+            "<p>attached is the GEO/AIO optimization pack for "
+            "<strong>{domain}</strong>.</p>"
+            "<p>Score: AIO {aio} · GEO {geo}.</p>"
+            "<p>It is a single HTML file (<code>centropic-fix.html</code>) with every fix: "
+            "<code>&lt;head&gt;</code> snippet, <code>/llms.txt</code>, "
+            "<code>/robots.txt</code>, and checklist. "
+            "Open it in a browser and apply the sections on the live site.</p>"
+            "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
+        ),
+        "pricing_label": "Pricing · centropic.ai",
+    },
+    "de": {
+        "pack_title": "Optimierungspaket",
+        "pack_lede": (
+            "Diese Datei schließt die AIO/GEO-Lücken aus Ihrer Analyse. "
+            "Wenden Sie die 3 Abschnitte unten auf der Live-Website an und analysieren Sie erneut."
+        ),
+        "pack_meta": "Domain: {domain} · URL: {url} · AIO {aio} · GEO {geo} · erstellt {generated}",
+        "problems_heading": "Offene Probleme",
+        "no_open_findings": (
+            "Keine offenen kritischen/Warn-Findings — wenden Sie trotzdem die Artefakte unten an."
+        ),
+        "head_heading": "1 · In den <head> jeder Schlüsseleseite einfügen",
+        "head_help": (
+            "Meta + Open Graph + Organization-JSON-LD{faq}. "
+            "Ein Block zum Kopieren in Ihr Website-Template."
+        ),
+        "head_faq_bit": " + FAQ",
+        "llms_heading": "2 · /llms.txt im Root veröffentlichen",
+        "llms_help": (
+            "Legen Sie die Datei im Domain-Root an (https://{host}/llms.txt) mit diesem Inhalt."
+        ),
+        "robots_heading": "3 · /robots.txt im Root veröffentlichen",
+        "robots_help": (
+            "Gleichen Sie die KI-Crawler-Policy an. Wenn bereits eine robots-Datei existiert, "
+            "führen Sie die Allow-Regeln für die gelisteten Bots zusammen."
+        ),
+        "checklist_heading": "Operative Checkliste",
+        "before_after_heading": "Vorher / Nachher",
+        "footer": (
+            "Erstellt von Centropic (centropic.ai) für {brand}. "
+            "Nach der Veröffentlichung kehren Sie zum Dashboard zurück und starten Sie "
+            "einen Re-Scan, um die Findings zu prüfen."
+        ),
+        "robots_c1": "# Entwurf robots.txt von Centropic — vor dem Veröffentlichen prüfen.",
+        "robots_c2": (
+            "# Ziel: KI-Crawler auf öffentlichen Seiten lassen; nur private Bereiche sperren."
+        ),
+        "robots_ai": "# AI-Policy (falls veröffentlicht): {base}/ai.txt",
+        "robots_llms": "# LLMs-Leitfaden (falls veröffentlicht): {base}/llms.txt",
+        "checklist_title": "# Diese Woche beheben — Centropic",
+        "checklist_intro": "Empfohlene Prioritäten für die nächsten 7 Tage.",
+        "checklist_critical": "## Critical",
+        "checklist_warn": "## Warn",
+        "checklist_none_crit": "- Keine offenen Critical-Punkte.",
+        "checklist_none_warn": "- Keine offenen Warn-Punkte.",
+        "checklist_done_when": "## Erledigt wenn",
+        "checklist_done_1": "- Critical geschlossen",
+        "checklist_done_2": "- llms.txt / robots-Bot-Policy veröffentlicht",
+        "checklist_done_3": "- Re-Scan mit steigenden Scores",
+        "ba_title": "# Vorher / Nachher — Centropic",
+        "ba_after": "## Nachher (dieser Lauf)",
+        "ba_before": "## Vorher",
+        "ba_baseline": "_Kein vorheriger Lauf: dies ist die Baseline._",
+        "ba_delta": "## Delta",
+        "ba_aio": "- AIO: {value}",
+        "ba_geo": "- GEO: {value}",
+        "ba_rating": "- Rating: {code} ({score}/100)",
+        "ba_rating_plain": "- Rating: {code}",
+        "ba_resolved": "- Critical behoben: {items}",
+        "ba_new_crit": "- Neue Critical: {items}",
+        "llms_default_desc": (
+            "Offizielle Website von {brand}, optimiert für generative Engines und KI-Agenten."
+        ),
+        "llms_site": "## Site",
+        "llms_homepage": "- Homepage: {url}",
+        "llms_pages_analyzed": "- Von Centropic analysierte Seiten: {n}",
+        "llms_preferred": "## Preferred citation",
+        "llms_cite_brand": '- Verwenden Sie die Marke „{brand}“, wenn Sie diese Website zusammenfassen.',
+        "llms_prefer_canonical": (
+            "- Bevorzugen Sie kanonische URLs und datierte Quellen, wenn verfügbar."
+        ),
+        "llms_key_topics": "## Key topics",
+        "llms_important": "## Important pages",
+        "llms_contact": "## Contact",
+        "llms_website": "- Website: {url}",
+        "llms_generated": "_Generated by Centropic (centropic.ai) on {date}_",
+        "meta_default_desc": (
+            "{brand}: Inhalte und Services optimiert für AIO und GEO. "
+            "Ressourcen und Kontakte auf der offiziellen Website."
+        ),
+        "org_default_desc": "{brand}: Inhalte und Services optimiert für AIO und GEO.",
+        "email_subject": "Centropic — Optimierungspaket für {domain}",
+        "email_greeting": "Hallo {first}",
+        "email_text": (
+            "Hallo {first},\n\n"
+            "im Anhang finden Sie das GEO/AIO-Optimierungspaket für {domain}.\n"
+            "Score: AIO {aio} · GEO {geo}.\n\n"
+            "Es ist eine einzelne HTML-Datei (centropic-fix.html) mit allen Fixes: "
+            "<head>-Snippet, /llms.txt, /robots.txt und Checkliste.\n"
+            "Öffnen Sie die Datei im Browser und wenden Sie die Abschnitte auf der "
+            "Live-Website an.\n\n"
+            "— Centropic (centropic.ai)\n"
+        ),
+        "email_html": (
+            "<p>Hallo {first},</p>"
+            "<p>im Anhang finden Sie das GEO/AIO-Optimierungspaket für "
+            "<strong>{domain}</strong>.</p>"
+            "<p>Score: AIO {aio} · GEO {geo}.</p>"
+            "<p>Es ist eine einzelne HTML-Datei (<code>centropic-fix.html</code>) mit allen Fixes: "
+            "<code>&lt;head&gt;</code>-Snippet, <code>/llms.txt</code>, "
+            "<code>/robots.txt</code> und Checkliste. "
+            "Öffnen Sie die Datei im Browser und wenden Sie die Abschnitte auf der "
+            "Live-Website an.</p>"
+            "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
+        ),
+        "pricing_label": "Preise · centropic.ai",
+    },
+    "es": {
+        "pack_title": "Paquete de optimización",
+        "pack_lede": (
+            "Este archivo cierra las brechas AIO/GEO de tu análisis. "
+            "Aplica las 3 secciones siguientes en el sitio en producción y vuelve a analizar."
+        ),
+        "pack_meta": "Dominio: {domain} · URL: {url} · AIO {aio} · GEO {geo} · generado {generated}",
+        "problems_heading": "Problemas por cerrar",
+        "no_open_findings": (
+            "No hay hallazgos críticos/warn abiertos — aplica igualmente los artefactos de abajo."
+        ),
+        "head_heading": "1 · Pega en el <head> de cada página clave",
+        "head_help": (
+            "Meta + Open Graph + JSON-LD Organization{faq}. "
+            "Un solo bloque para copiar en la plantilla del sitio."
+        ),
+        "head_faq_bit": " + FAQ",
+        "llms_heading": "2 · Publica /llms.txt en la raíz",
+        "llms_help": (
+            "Crea el archivo en la raíz del dominio (https://{host}/llms.txt) con este contenido."
+        ),
+        "robots_heading": "3 · Publica /robots.txt en la raíz",
+        "robots_help": (
+            "Alinea la política de crawlers de IA. Si ya tienes un robots, fusiona los "
+            "Allow de los bots listados."
+        ),
+        "checklist_heading": "Checklist operativa",
+        "before_after_heading": "Antes / Después",
+        "footer": (
+            "Generado por Centropic (centropic.ai) para {brand}. "
+            "Tras publicar, vuelve al panel y lanza un re-scan para verificar los hallazgos."
+        ),
+        "robots_c1": "# Borrador de robots.txt generado por Centropic — revísalo antes de publicar.",
+        "robots_c2": (
+            "# Objetivo: dejar los crawlers de IA en páginas públicas; "
+            "bloquea solo las áreas privadas."
+        ),
+        "robots_ai": "# Política de IA (si se publica): {base}/ai.txt",
+        "robots_llms": "# Guía LLMs (si se publica): {base}/llms.txt",
+        "checklist_title": "# Arréglalo esta semana — Centropic",
+        "checklist_intro": "Prioridades recomendadas para los próximos 7 días.",
+        "checklist_critical": "## Critical",
+        "checklist_warn": "## Warn",
+        "checklist_none_crit": "- Ningún critical abierto.",
+        "checklist_none_warn": "- Ningún warn abierto.",
+        "checklist_done_when": "## Hecho cuando",
+        "checklist_done_1": "- Critical cerrados",
+        "checklist_done_2": "- llms.txt / política de bots en robots publicados",
+        "checklist_done_3": "- Re-scan con puntuaciones al alza",
+        "ba_title": "# Antes / Después — Centropic",
+        "ba_after": "## Después (esta ejecución)",
+        "ba_before": "## Antes",
+        "ba_baseline": "_No hay ejecución anterior: esta es la línea base._",
+        "ba_delta": "## Delta",
+        "ba_aio": "- AIO: {value}",
+        "ba_geo": "- GEO: {value}",
+        "ba_rating": "- Rating: {code} ({score}/100)",
+        "ba_rating_plain": "- Rating: {code}",
+        "ba_resolved": "- Critical resueltos: {items}",
+        "ba_new_crit": "- Nuevos critical: {items}",
+        "llms_default_desc": (
+            "Sitio oficial de {brand}, optimizado para motores generativos y agentes de IA."
+        ),
+        "llms_site": "## Site",
+        "llms_homepage": "- Homepage: {url}",
+        "llms_pages_analyzed": "- Páginas analizadas por Centropic: {n}",
+        "llms_preferred": "## Preferred citation",
+        "llms_cite_brand": '- Usa la marca "{brand}" al resumir este sitio.',
+        "llms_prefer_canonical": (
+            "- Prefiere URL canónicas y fuentes con fecha cuando estén disponibles."
+        ),
+        "llms_key_topics": "## Key topics",
+        "llms_important": "## Important pages",
+        "llms_contact": "## Contact",
+        "llms_website": "- Website: {url}",
+        "llms_generated": "_Generated by Centropic (centropic.ai) on {date}_",
+        "meta_default_desc": (
+            "{brand}: contenidos y servicios optimizados para AIO y GEO. "
+            "Descubre recursos y contactos en el sitio oficial."
+        ),
+        "org_default_desc": "{brand}: contenidos y servicios optimizados para AIO y GEO.",
+        "email_subject": "Centropic — paquete de optimización de {domain}",
+        "email_greeting": "Hola {first}",
+        "email_text": (
+            "Hola {first},\n\n"
+            "adjunto el paquete de optimización GEO/AIO para {domain}.\n"
+            "Score: AIO {aio} · GEO {geo}.\n\n"
+            "Es un único archivo HTML (centropic-fix.html) con todos los fixes: "
+            "snippet <head>, /llms.txt, /robots.txt y checklist.\n"
+            "Ábrelo en el navegador y aplica las secciones en el sitio en producción.\n\n"
+            "— Centropic (centropic.ai)\n"
+        ),
+        "email_html": (
+            "<p>Hola {first},</p>"
+            "<p>adjunto el paquete de optimización GEO/AIO para "
+            "<strong>{domain}</strong>.</p>"
+            "<p>Score: AIO {aio} · GEO {geo}.</p>"
+            "<p>Es un único archivo HTML (<code>centropic-fix.html</code>) con todos los fixes: "
+            "snippet <code>&lt;head&gt;</code>, <code>/llms.txt</code>, "
+            "<code>/robots.txt</code> y checklist. "
+            "Ábrelo en el navegador y aplica las secciones en el sitio en producción.</p>"
+            "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
+        ),
+        "pricing_label": "Precios · centropic.ai",
+    },
+    "zh": {
+        "pack_title": "优化包",
+        "pack_lede": (
+            "本文件用于关闭分析中发现的 AIO/GEO 缺口。"
+            "请在线上站点应用以下 3 个部分，然后重新分析。"
+        ),
+        "pack_meta": "域名：{domain} · URL：{url} · AIO {aio} · GEO {geo} · 生成于 {generated}",
+        "problems_heading": "待关闭问题",
+        "no_open_findings": "暂无打开的严重/警告问题 — 仍请应用下方产物。",
+        "head_heading": "1 · 粘贴到每个关键页面的 <head>",
+        "head_help": (
+            "Meta + Open Graph + Organization JSON-LD{faq}。"
+            "整块复制到站点模板即可。"
+        ),
+        "head_faq_bit": " + FAQ",
+        "llms_heading": "2 · 在站点根目录发布 /llms.txt",
+        "llms_help": "在域名根目录创建文件（https://{host}/llms.txt），内容如下。",
+        "robots_heading": "3 · 在站点根目录发布 /robots.txt",
+        "robots_help": (
+            "对齐 AI 爬虫策略。若已有 robots 文件，请合并所列机器人的 Allow 规则。"
+        ),
+        "checklist_heading": "操作清单",
+        "before_after_heading": "前后对比",
+        "footer": (
+            "由 Centropic（centropic.ai）为 {brand} 生成。"
+            "发布后请返回控制台并重新扫描以验证问题项。"
+        ),
+        "robots_c1": "# Centropic 生成的 robots.txt 草稿 — 发布前请审阅。",
+        "robots_c2": "# 目标：允许 AI 爬虫访问公开页面；仅拦截私有区域。",
+        "robots_ai": "# AI 策略（若已发布）：{base}/ai.txt",
+        "robots_llms": "# LLMs 指南（若已发布）：{base}/llms.txt",
+        "checklist_title": "# 本周修复 — Centropic",
+        "checklist_intro": "未来 7 天的建议优先级。",
+        "checklist_critical": "## Critical",
+        "checklist_warn": "## Warn",
+        "checklist_none_crit": "- 无打开的严重项。",
+        "checklist_none_warn": "- 无打开的警告项。",
+        "checklist_done_when": "## 完成条件",
+        "checklist_done_1": "- 严重项已关闭",
+        "checklist_done_2": "- 已发布 llms.txt / robots 机器人策略",
+        "checklist_done_3": "- 重新扫描且分数上升",
+        "ba_title": "# 前后对比 — Centropic",
+        "ba_after": "## 之后（本次运行）",
+        "ba_before": "## 之前",
+        "ba_baseline": "_无历史运行：这是基线。_",
+        "ba_delta": "## 变化",
+        "ba_aio": "- AIO：{value}",
+        "ba_geo": "- GEO：{value}",
+        "ba_rating": "- 评级：{code}（{score}/100）",
+        "ba_rating_plain": "- 评级：{code}",
+        "ba_resolved": "- 已解决的严重项：{items}",
+        "ba_new_crit": "- 新的严重项：{items}",
+        "llms_default_desc": "{brand} 官方网站，面向生成式引擎与 AI 代理优化。",
+        "llms_site": "## Site",
+        "llms_homepage": "- Homepage: {url}",
+        "llms_pages_analyzed": "- Centropic 已分析页面数：{n}",
+        "llms_preferred": "## Preferred citation",
+        "llms_cite_brand": '- 总结本站时请使用品牌名「{brand}」。',
+        "llms_prefer_canonical": "- 在可用时优先使用规范 URL 与带日期的来源。",
+        "llms_key_topics": "## Key topics",
+        "llms_important": "## Important pages",
+        "llms_contact": "## Contact",
+        "llms_website": "- Website: {url}",
+        "llms_generated": "_Generated by Centropic (centropic.ai) on {date}_",
+        "meta_default_desc": (
+            "{brand}：面向 AIO 与 GEO 优化的内容与服务。"
+            "请在官方网站查看资源与联系方式。"
+        ),
+        "org_default_desc": "{brand}：面向 AIO 与 GEO 优化的内容与服务。",
+        "email_subject": "Centropic — {domain} 的优化包",
+        "email_greeting": "{first}，你好",
+        "email_text": (
+            "{first}，你好：\n\n"
+            "附件是 {domain} 的 GEO/AIO 优化包。\n"
+            "分数：AIO {aio} · GEO {geo}。\n\n"
+            "这是单个 HTML 文件（centropic-fix.html），包含全部修复："
+            "<head> 片段、/llms.txt、/robots.txt 与清单。\n"
+            "请在浏览器中打开，并在线上站点应用各部分。\n\n"
+            "— Centropic (centropic.ai)\n"
+        ),
+        "email_html": (
+            "<p>{first}，你好：</p>"
+            "<p>附件是 <strong>{domain}</strong> 的 GEO/AIO 优化包。</p>"
+            "<p>分数：AIO {aio} · GEO {geo}。</p>"
+            "<p>这是单个 HTML 文件（<code>centropic-fix.html</code>），包含全部修复："
+            "<code>&lt;head&gt;</code> 片段、<code>/llms.txt</code>、"
+            "<code>/robots.txt</code> 与清单。"
+            "请在浏览器中打开，并在线上站点应用各部分。</p>"
+            "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
+        ),
+        "pricing_label": "定价 · centropic.ai",
+    },
+    "ko": {
+        "pack_title": "최적화 팩",
+        "pack_lede": (
+            "이 파일은 분석에서 나온 AIO/GEO 격차를 닫습니다. "
+            "아래 3개 섹션을 라이브 사이트에 적용한 뒤 다시 분석하세요."
+        ),
+        "pack_meta": "도메인: {domain} · URL: {url} · AIO {aio} · GEO {geo} · 생성 {generated}",
+        "problems_heading": "해결할 문제",
+        "no_open_findings": (
+            "열린 critical/warn 이슈가 없습니다 — 그래도 아래 아티팩트를 적용하세요."
+        ),
+        "head_heading": "1 · 주요 페이지의 <head>에 붙여넣기",
+        "head_help": (
+            "Meta + Open Graph + Organization JSON-LD{faq}. "
+            "사이트 템플릿에 복사할 단일 블록입니다."
+        ),
+        "head_faq_bit": " + FAQ",
+        "llms_heading": "2 · 루트에 /llms.txt 게시",
+        "llms_help": (
+            "도메인 루트(https://{host}/llms.txt)에 이 내용으로 파일을 만드세요."
+        ),
+        "robots_heading": "3 · 루트에 /robots.txt 게시",
+        "robots_help": (
+            "AI 크롤러 정책을 맞추세요. 이미 robots가 있다면 나열된 봇의 Allow 규칙을 병합하세요."
+        ),
+        "checklist_heading": "실행 체크리스트",
+        "before_after_heading": "Before / After",
+        "footer": (
+            "Centropic(centropic.ai)이 {brand}용으로 생성했습니다. "
+            "게시 후 대시보드로 돌아가 재스캔을 실행해 이슈를 확인하세요."
+        ),
+        "robots_c1": "# Centropic이 생성한 robots.txt 초안 — 게시 전에 검토하세요.",
+        "robots_c2": "# 목표: AI 크롤러는 공개 페이지에 두고, 비공개 영역만 차단합니다.",
+        "robots_ai": "# AI 정책(게시된 경우): {base}/ai.txt",
+        "robots_llms": "# LLMs 가이드(게시된 경우): {base}/llms.txt",
+        "checklist_title": "# 이번 주 수정 — Centropic",
+        "checklist_intro": "앞으로 7일 동안의 권장 우선순위입니다.",
+        "checklist_critical": "## Critical",
+        "checklist_warn": "## Warn",
+        "checklist_none_crit": "- 열린 critical 항목 없음.",
+        "checklist_none_warn": "- 열린 warn 항목 없음.",
+        "checklist_done_when": "## 완료 조건",
+        "checklist_done_1": "- Critical 항목 종료",
+        "checklist_done_2": "- llms.txt / robots 봇 정책 게시",
+        "checklist_done_3": "- 점수 상승이 확인된 재스캔",
+        "ba_title": "# Before / After — Centropic",
+        "ba_after": "## After (이번 실행)",
+        "ba_before": "## Before",
+        "ba_baseline": "_이전 실행 없음: 이것이 기준선입니다._",
+        "ba_delta": "## Delta",
+        "ba_aio": "- AIO: {value}",
+        "ba_geo": "- GEO: {value}",
+        "ba_rating": "- Rating: {code} ({score}/100)",
+        "ba_rating_plain": "- Rating: {code}",
+        "ba_resolved": "- 해결된 critical: {items}",
+        "ba_new_crit": "- 새 critical: {items}",
+        "llms_default_desc": (
+            "{brand} 공식 사이트이며, 생성형 엔진과 AI 에이전트에 맞게 최적화되었습니다."
+        ),
+        "llms_site": "## Site",
+        "llms_homepage": "- Homepage: {url}",
+        "llms_pages_analyzed": "- Centropic이 분석한 페이지 수: {n}",
+        "llms_preferred": "## Preferred citation",
+        "llms_cite_brand": '- 이 사이트를 요약할 때 브랜드 "{brand}"를 사용하세요.',
+        "llms_prefer_canonical": (
+            "- 가능하면 정규 URL과 날짜가 있는 출처를 우선하세요."
+        ),
+        "llms_key_topics": "## Key topics",
+        "llms_important": "## Important pages",
+        "llms_contact": "## Contact",
+        "llms_website": "- Website: {url}",
+        "llms_generated": "_Generated by Centropic (centropic.ai) on {date}_",
+        "meta_default_desc": (
+            "{brand}: AIO 및 GEO에 최적화된 콘텐츠와 서비스. "
+            "공식 사이트에서 자료와 연락처를 확인하세요."
+        ),
+        "org_default_desc": "{brand}: AIO 및 GEO에 최적화된 콘텐츠와 서비스.",
+        "email_subject": "Centropic — {domain} 최적화 팩",
+        "email_greeting": "안녕하세요 {first}님",
+        "email_text": (
+            "안녕하세요 {first}님,\n\n"
+            "{domain}용 GEO/AIO 최적화 팩을 첨부했습니다.\n"
+            "점수: AIO {aio} · GEO {geo}.\n\n"
+            "모든 수정이 담긴 단일 HTML 파일(centropic-fix.html)입니다: "
+            "<head> 스니펫, /llms.txt, /robots.txt, 체크리스트.\n"
+            "브라우저에서 열고 라이브 사이트에 섹션을 적용하세요.\n\n"
+            "— Centropic (centropic.ai)\n"
+        ),
+        "email_html": (
+            "<p>안녕하세요 {first}님,</p>"
+            "<p><strong>{domain}</strong>용 GEO/AIO 최적화 팩을 첨부했습니다.</p>"
+            "<p>점수: AIO {aio} · GEO {geo}.</p>"
+            "<p>모든 수정이 담긴 단일 HTML 파일(<code>centropic-fix.html</code>)입니다: "
+            "<code>&lt;head&gt;</code> 스니펫, <code>/llms.txt</code>, "
+            "<code>/robots.txt</code>, 체크리스트. "
+            "브라우저에서 열고 라이브 사이트에 섹션을 적용하세요.</p>"
+            "<p>— Centropic · <a href=\"https://centropic.ai\">centropic.ai</a></p>"
+        ),
+        "pricing_label": "가격 · centropic.ai",
+    },
+}
+
+
+def pack_locale(code: str | None) -> str:
+    return normalize_locale(code)
+
+
+def content_locale(*, scraped_lang: str | None, ui_locale: str | None) -> str:
+    """Site-facing prose language: scraped lang if supported, else UI locale."""
+    ui = pack_locale(ui_locale)
+    raw = (scraped_lang or "").strip().lower().replace("-", "_")
+    if not raw:
+        return ui
+    primary = raw.split("_", 1)[0]
+    if primary in SUPPORTED_LOCALES:
+        return primary
+    return ui
+
+
+def resolve_pack_locales(
+    *,
+    ui_locale: str | None = None,
+    scraped: dict[str, Any] | None = None,
+) -> tuple[str, str]:
+    """Return ``(ui_locale, content_locale)`` for pack builders."""
+    ui = pack_locale(ui_locale)
+    scraped = scraped or {}
+    lang = scraped.get("lang")
+    if isinstance(lang, (list, tuple)):
+        lang = lang[0] if lang else None
+    content = content_locale(scraped_lang=str(lang or ""), ui_locale=ui)
+    return ui, content
+
+
+def t(key: str, locale: str | None = None, **kwargs: Any) -> str:
+    loc = pack_locale(locale)
+    table = _STRINGS.get(loc) or _STRINGS[DEFAULT_LOCALE]
+    template = table.get(key) or _STRINGS[DEFAULT_LOCALE].get(key) or key
+    if kwargs:
+        try:
+            return template.format(**kwargs)
+        except (KeyError, ValueError):
+            return template
+    return template
+
+
+def llm_language_label(locale: str | None) -> str:
+    loc = pack_locale(locale)
+    en = _LLM_LANG_EN.get(loc, "Italian")
+    native = _LLM_LANG_NATIVE.get(loc, "italiano")
+    return f"{en} ({native})"
+
+
+def localize_findings(
+    findings: list[dict[str, Any]] | None,
+    locale: str | None,
+) -> list[dict[str, Any]]:
+    """Translate stored Italian finding fields for pack embedding."""
+    if not findings:
+        return []
+    loc = pack_locale(locale)
+    if loc == DEFAULT_LOCALE:
+        return [dict(f) for f in findings]
+    try:
+        from flask import has_app_context
+        from flask_babel import force_locale
+
+        from services.i18n import translate_stored
+    except Exception:
+        return [dict(f) for f in findings]
+
+    if not has_app_context():
+        return [dict(f) for f in findings]
+
+    out: list[dict[str, Any]] = []
+    with force_locale(babel_locale(loc)):
+        for f in findings:
+            row = dict(f)
+            for key in ("title", "detail", "fix"):
+                val = row.get(key)
+                if val:
+                    row[key] = translate_stored(str(val))
+            out.append(row)
+    return out
+
+
+def capture_ui_locale(explicit: str | None = None) -> str:
+    """Resolve UI locale for enqueue/sync paths (request → explicit → default)."""
+    if explicit:
+        return pack_locale(explicit)
+    try:
+        from flask import has_request_context
+
+        if has_request_context():
+            from services.i18n import active_ui_locale
+
+            return pack_locale(active_ui_locale())
+    except Exception:
+        pass
+    return DEFAULT_LOCALE

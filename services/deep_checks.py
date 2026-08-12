@@ -771,34 +771,42 @@ def analyze_crawl_aggregate(
     }
 
 
-def build_fix_checklist(findings: list[dict[str, Any]]) -> str:
-    crit = [f for f in findings if str(f.get("severity")).lower() == "critical"]
-    warn = [f for f in findings if str(f.get("severity")).lower() == "warn"]
+def build_fix_checklist(
+    findings: list[dict[str, Any]],
+    *,
+    locale: str | None = None,
+) -> str:
+    from services.pack_i18n import localize_findings, pack_locale, t
+
+    loc = pack_locale(locale)
+    localized = localize_findings(findings, loc)
+    crit = [f for f in localized if str(f.get("severity")).lower() == "critical"]
+    warn = [f for f in localized if str(f.get("severity")).lower() == "warn"]
     lines = [
-        "# Fix this week — Centropic",
+        t("checklist_title", loc),
         "",
-        "Priorità consigliata per i prossimi 7 giorni.",
+        t("checklist_intro", loc),
         "",
-        "## Critical",
+        t("checklist_critical", loc),
     ]
     if crit:
         for i, f in enumerate(crit[:12], 1):
             lines.append(f"{i}. **{f.get('title')}** — {f.get('detail')}")
     else:
-        lines.append("- Nessun critical aperto.")
-    lines.extend(["", "## Warn"])
+        lines.append(t("checklist_none_crit", loc))
+    lines.extend(["", t("checklist_warn", loc)])
     if warn:
         for i, f in enumerate(warn[:16], 1):
             lines.append(f"{i}. **{f.get('title')}** — {f.get('detail')}")
     else:
-        lines.append("- Nessun warn aperto.")
+        lines.append(t("checklist_none_warn", loc))
     lines.extend(
         [
             "",
-            "## Done when",
-            "- Critical chiusi",
-            "- llms.txt / robots bot policy pubblicati",
-            "- Re-scan con score in crescita",
+            t("checklist_done_when", loc),
+            t("checklist_done_1", loc),
+            t("checklist_done_2", loc),
+            t("checklist_done_3", loc),
             "",
         ]
     )
@@ -810,42 +818,63 @@ def build_before_after_report(
     current: dict[str, Any],
     previous: Any | None,
     diff: dict[str, Any] | None,
+    locale: str | None = None,
 ) -> str:
+    from services.pack_i18n import localize_findings, pack_locale, t
+
+    loc = pack_locale(locale)
     cur_aio = current.get("aio_score")
     cur_geo = current.get("geo_score")
     rating = compute_rating(cur_aio, cur_geo, current.get("findings"))
     lines = [
-        "# Before / After — Centropic",
+        t("ba_title", loc),
         "",
-        f"## After (questa run)",
-        f"- AIO: {cur_aio}",
-        f"- GEO: {cur_geo}",
-        f"- Rating: {rating.get('code')} ({rating.get('score')}/100)",
+        t("ba_after", loc),
+        t("ba_aio", loc, value=cur_aio),
+        t("ba_geo", loc, value=cur_geo),
+        t(
+            "ba_rating",
+            loc,
+            code=rating.get("code"),
+            score=rating.get("score"),
+        ),
         "",
     ]
     if previous is None:
-        lines.append("_Nessuna run precedente: questo è il baseline._\n")
+        lines.append(t("ba_baseline", loc) + "\n")
         return "\n".join(lines)
 
+    prev_rating = "—"
+    if hasattr(previous, "rating"):
+        prev_rating = previous.rating.get("code") if previous.rating else "—"
     lines.extend(
         [
-            "## Before",
-            f"- AIO: {previous.aio_score}",
-            f"- GEO: {previous.geo_score}",
-            f"- Rating: {previous.rating.get('code') if hasattr(previous, 'rating') else '—'}",
+            t("ba_before", loc),
+            t("ba_aio", loc, value=previous.aio_score),
+            t("ba_geo", loc, value=previous.geo_score),
+            t("ba_rating_plain", loc, code=prev_rating),
             "",
         ]
     )
     if diff:
-        lines.append("## Delta")
+        lines.append(t("ba_delta", loc))
         if diff.get("delta_aio") is not None:
-            lines.append(f"- AIO: {diff['delta_aio']:+d}")
+            lines.append(t("ba_aio", loc, value=f"{diff['delta_aio']:+d}"))
         if diff.get("delta_geo") is not None:
-            lines.append(f"- GEO: {diff['delta_geo']:+d}")
+            lines.append(t("ba_geo", loc, value=f"{diff['delta_geo']:+d}"))
         if diff.get("improved"):
-            lines.append("- Critical risolti: " + ", ".join(diff["improved"][:8]))
+            improved = list(diff["improved"][:8])
+            # Titles in diff are Italian msgids — localize for display.
+            improved = [
+                localize_findings([{"title": x}], loc)[0]["title"] for x in improved
+            ]
+            lines.append(t("ba_resolved", loc, items=", ".join(improved)))
         if diff.get("regressed"):
-            lines.append("- Nuovi critical: " + ", ".join(diff["regressed"][:8]))
+            regressed = list(diff["regressed"][:8])
+            regressed = [
+                localize_findings([{"title": x}], loc)[0]["title"] for x in regressed
+            ]
+            lines.append(t("ba_new_crit", loc, items=", ".join(regressed)))
         lines.append("")
     return "\n".join(lines)
 
