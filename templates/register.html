@@ -7,11 +7,19 @@
 {% block header_class %}site-header--invert{% endblock %}
 
 {% block content %}
-<section class="auth-shell auth-shell--v2">
-  {% set auth_aside_line = _('Analizza i segnali. Chiudi le criticità. Pubblica il pack.') %}
-  {% include "partials/auth_aside.html" %}
+<section class="auth-shell auth-shell--v2 auth-shell--watermark">
+  <div class="auth-watermark" aria-hidden="true">
+    <img
+      class="auth-watermark__logo"
+      src="{{ url_for('static', filename='img/logo.svg') }}"
+      alt=""
+      width="520"
+      height="520"
+      decoding="async"
+    />
+  </div>
 
-  <div class="auth-wrap auth-wrap--wide">
+  <div class="auth-wrap auth-wrap--page">
     <p class="eyebrow">{{ _('Registrazione') }}</p>
     <h1 class="h-display auth-title">{{ _('Crea account') }}</h1>
     <p class="lede auth-lede">
@@ -23,7 +31,7 @@
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>.
     </p>
 
-    <form method="post" class="form-grid form-grid--2 panel" novalidate>
+    <form method="post" class="form-grid form-grid--2 panel panel--auth" novalidate>
       {{ form.hidden_tag() }}
       <input type="hidden" name="ref" value="{{ request.args.get('ref', '') }}" />
       {% if preview_token %}
