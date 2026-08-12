@@ -5090,20 +5090,45 @@ def verify_email(token: str):
     return redirect(url_for("dashboard"))
 
 
+def _login_close_url() -> str:
+    """Safe URL for dismissing the login popup (next → referrer → home)."""
+    nxt = safe_next_url(request.args.get("next"), fallback="")
+    if nxt:
+        return nxt
+    ref = request.referrer or ""
+    if ref:
+        try:
+            from urllib.parse import urlparse
+
+            host = (urlparse(ref).netloc or "").lower()
+            ours = (urlparse(public_base_url()).netloc or "").lower()
+            path = urlparse(ref).path or "/"
+            if host and ours and host == ours and not path.startswith("/login"):
+                return safe_next_url(path, fallback=url_for("index")) or url_for("index")
+        except Exception:
+            pass
+    return url_for("index")
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user() is not None:
         return redirect(url_for("dashboard"))
 
     form = LoginForm()
+    close_url = _login_close_url()
     if form.validate_on_submit():
         if not limiter.allow(f"login:{client_ip()}", limit=20, window_seconds=900):
             flash("Troppi tentativi di accesso. Attendi qualche minuto.", "error")
-            return render_template("login.html", form=form)
+            return render_template(
+                "login.html", form=form, login_close_url=close_url
+            )
         email = form.email.data.strip().lower()
         if not limiter.allow(f"login:email:{email}", limit=10, window_seconds=900):
             flash("Troppi tentativi di accesso. Attendi qualche minuto.", "error")
-            return render_template("login.html", form=form)
+            return render_template(
+                "login.html", form=form, login_close_url=close_url
+            )
         user = User.query.filter_by(email=email).first()
         if user is None or not user.check_password(form.password.data):
             flash("Credenziali non valide.", "error")
@@ -5144,7 +5169,7 @@ def login():
                 return redirect(next_url)
             return redirect(url_for("dashboard"))
 
-    return render_template("login.html", form=form)
+    return render_template("login.html", form=form, login_close_url=close_url)
 
 
 @app.route("/recupero-password", methods=["GET", "POST"])

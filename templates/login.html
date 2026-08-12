@@ -2,22 +2,50 @@
 {% block title %}{{ _('Accedi') }}{% endblock %}
 {% block meta_description %}{{ _('Accedi a Centropic: dashboard per score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings e pack llms.txt/JSON-LD.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/login{% endblock %}
-{% block body_class %}body-auth{% endblock %}
+{% block body_class %}body-auth body-login-popup{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
+{% block main_class %}site-main--login-popup{% endblock %}
+{% block flash_class %}flash-stack--login-popup{% endblock %}
 
 {% block content %}
-<section class="auth-shell auth-shell--v2">
-  {% set auth_aside_line = _('Signal Intelligence per AIO e GEO. Findings prioritizzati. Pack da pubblicare.') %}
-  {% include "partials/auth_aside.html" %}
+{% set close_href = login_close_url|default(url_for('index')) %}
+<section class="login-popup" data-login-popup>
+  <a class="login-popup__scrim" href="{{ close_href }}" tabindex="-1" aria-hidden="true"></a>
 
-  <div class="auth-wrap">
+  <div class="login-popup__watermark" aria-hidden="true">
+    <img
+      src="{{ url_for('static', filename='img/logo.svg') }}"
+      alt=""
+      width="480"
+      height="480"
+      decoding="async"
+    />
+  </div>
+
+  <div
+    class="login-popup__dialog panel panel--auth"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="login-title"
+  >
+    <a
+      class="login-popup__close"
+      href="{{ close_href }}"
+      aria-label="{{ _('Chiudi') }}"
+    >×</a>
+
     <p class="eyebrow">{{ _('Accesso') }}</p>
-    <h1 class="h-display auth-title">{{ _('Bentornato') }}</h1>
+    <h1 class="h-display auth-title" id="login-title">{{ _('Bentornato') }}</h1>
     <p class="lede auth-lede">
-      {{ _('Entra in dashboard, analizza il dominio e scarica il pack. Piano Free senza carta.') }}
+      {{ _('Entra in dashboard, analizza il dominio e scarica il pack.') }}
     </p>
 
-    <form method="post" class="form-grid panel panel--auth" novalidate>
+    <form
+      method="post"
+      action="{{ url_for('login', next=request.args.get('next', '')) }}"
+      class="form-grid login-popup__form"
+      novalidate
+    >
       {{ form.hidden_tag() }}
       <div class="field">
         <label for="email">{{ _('Email') }}</label>
@@ -39,21 +67,19 @@
         </div>
         {% for error in form.password.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
-      <div class="span-1">
+      <div class="field">
         <label class="checkline">
           {{ form.remember_me(id="remember_me") }}
           <span>{{ _('Resta connesso su questo dispositivo (30 giorni)') }}</span>
         </label>
       </div>
-      <p class="switch-line u-mt-035">
+      <p class="switch-line">
         <a href="{{ url_for('forgot_password') }}">{{ _('Password dimenticata?') }}</a>
       </p>
       {{ form.submit(class_="btn btn-core btn-block") }}
     </form>
 
-    {% include "partials/auth_help.html" %}
-
-    <p class="switch-line">
+    <p class="switch-line login-popup__switch">
       {{ _('Nuovo su Centropic?') }}
       <a href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
       ·

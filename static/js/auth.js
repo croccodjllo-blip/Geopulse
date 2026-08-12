@@ -1,6 +1,7 @@
 /**
  * Password visibility toggles on auth forms.
  * Buttons: [data-password-toggle] with aria-controls pointing at the input id.
+ * Login popup: Escape follows the close control href.
  */
 (function () {
   function bindToggle(btn) {
@@ -22,8 +23,29 @@
     });
   }
 
+  function bindLoginPopupEscape() {
+    var root = document.querySelector("[data-login-popup]");
+    if (!root) return;
+    var close = root.querySelector(".login-popup__close");
+    if (!close || !close.getAttribute("href")) return;
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape") {
+        window.location.href = close.getAttribute("href");
+      }
+    });
+    var email = document.getElementById("email");
+    if (email && typeof email.focus === "function") {
+      try {
+        email.focus({ preventScroll: true });
+      } catch (e) {
+        email.focus();
+      }
+    }
+  }
+
   function init() {
     document.querySelectorAll("[data-password-toggle]").forEach(bindToggle);
+    bindLoginPopupEscape();
   }
 
   if (document.readyState === "loading") {
