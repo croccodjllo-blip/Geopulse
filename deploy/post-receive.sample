@@ -67,8 +67,12 @@ PY
 
   echo "Restarting $SERVICE…"
   sudo systemctl restart "$SERVICE"
-  # Reclaim/resume analyze queue immediately (deploy can kill mid-SoV workers).
-  sudo systemctl start aio-bot-analyze.service 2>/dev/null || true
+  # Analyze/measured workers keep Python in memory — restart them too or they
+  # keep serving pre-deploy code (e.g. NameError after a web-only restart).
+  echo "Restarting analyze + measured workers…"
+  sudo systemctl restart aio-bot-analyze.service aio-bot-analyze@2.service aio-bot-measured.service 2>/dev/null \
+    || sudo systemctl restart aio-bot-analyze.service aio-bot-measured.service 2>/dev/null \
+    || sudo systemctl start aio-bot-analyze.service 2>/dev/null || true
 
   echo "Deploy OK: $(git --git-dir="$(pwd)/.git" rev-parse --short HEAD 2>/dev/null || echo "$newrev")"
 done
