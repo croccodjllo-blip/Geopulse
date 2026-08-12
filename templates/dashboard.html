@@ -187,110 +187,140 @@
             data-band="{{ band }}"
             data-pulse-core
           >
-            <div class="pulse-core__stage">
-              <div class="pulse-core__aura" aria-hidden="true"></div>
-              <div class="pulse-core__viz" aria-hidden="true">
-                <svg class="pulse-core__svg" viewBox="0 0 360 360" role="presentation">
-                  <defs>
-                    <linearGradient id="aioArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="var(--pc-grad-a)" />
-                      <stop offset="55%" stop-color="var(--pc-grad-b)" />
-                      <stop offset="100%" stop-color="var(--pc-grad-c)" />
-                    </linearGradient>
-                    <linearGradient id="geoArcGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.15" />
-                      <stop offset="100%" stop-color="#3D8B9A" stop-opacity="0.85" />
-                    </linearGradient>
-                    <radialGradient id="coreGlow" cx="50%" cy="45%" r="55%">
-                      <stop offset="0%" stop-color="var(--pc-glow)" stop-opacity="0.55" />
-                      <stop offset="55%" stop-color="var(--pc-glow)" stop-opacity="0.12" />
-                      <stop offset="100%" stop-color="var(--pc-glow)" stop-opacity="0" />
-                    </radialGradient>
-                    <filter id="softBloom" x="-40%" y="-40%" width="180%" height="180%">
-                      <feGaussianBlur stdDeviation="3.5" result="b" />
-                      <feMerge>
-                        <feMergeNode in="b" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
+            <header class="pulse-core__intro">
+              <p class="eyebrow signal-diag__eyebrow">
+                {{ _('Signal diagnostics') }}
+                <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
+              </p>
+              <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
+              <p class="pulse-core__lede">
+                {{ propensity_lede }}
+                <span class="hint">{{ _('AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab SoV mostra Misurato quando il citation monitor ha campionato gli engine (anche con 0 menzioni).') }}</span>
+              </p>
+            </header>
 
-                  <!-- Field grid -->
-                  <circle class="pc-field" cx="180" cy="180" r="168" />
-                  <circle class="pc-field pc-field--mid" cx="180" cy="180" r="148" />
+            <div class="pulse-core__mast">
+              <div class="pulse-core__stage">
+                <div class="pulse-core__aura" aria-hidden="true"></div>
+                <div class="pulse-core__viz" aria-hidden="true">
+                  <svg class="pulse-core__svg" viewBox="0 0 360 360" role="presentation">
+                    <defs>
+                      <linearGradient id="aioArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="var(--pc-grad-a)" />
+                        <stop offset="55%" stop-color="var(--pc-grad-b)" />
+                        <stop offset="100%" stop-color="var(--pc-grad-c)" />
+                      </linearGradient>
+                      <linearGradient id="geoArcGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.15" />
+                        <stop offset="100%" stop-color="#3D8B9A" stop-opacity="0.85" />
+                      </linearGradient>
+                      <radialGradient id="coreGlow" cx="50%" cy="45%" r="55%">
+                        <stop offset="0%" stop-color="var(--pc-glow)" stop-opacity="0.55" />
+                        <stop offset="55%" stop-color="var(--pc-glow)" stop-opacity="0.12" />
+                        <stop offset="100%" stop-color="var(--pc-glow)" stop-opacity="0" />
+                      </radialGradient>
+                      <filter id="softBloom" x="-40%" y="-40%" width="180%" height="180%">
+                        <feGaussianBlur stdDeviation="3.5" result="b" />
+                        <feMerge>
+                          <feMergeNode in="b" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
 
-                  <!-- GEO orbit track + progress -->
-                  <circle class="pc-geo-track" cx="180" cy="180" r="150" />
-                  <circle
-                    class="pc-geo-arc"
-                    cx="180" cy="180" r="150"
-                    stroke-dasharray="{{ '%.2f'|format(geo_c) }}"
-                    stroke-dashoffset="{{ '%.2f'|format(geo_offset) }}"
-                    transform="rotate(-90 180 180)"
-                  />
+                    <!-- Field grid -->
+                    <circle class="pc-field" cx="180" cy="180" r="168" />
+                    <circle class="pc-field pc-field--mid" cx="180" cy="180" r="148" />
 
-                  <!-- GEO satellite -->
-                  <g class="pc-satellite">
-                    <circle class="pc-satellite__glow" r="10" />
-                    <circle class="pc-satellite__dot" r="3.5" />
-                  </g>
+                    <!-- GEO orbit track + progress -->
+                    <circle class="pc-geo-track" cx="180" cy="180" r="150" />
+                    <circle
+                      class="pc-geo-arc"
+                      cx="180" cy="180" r="150"
+                      stroke-dasharray="{{ '%.2f'|format(geo_c) }}"
+                      stroke-dashoffset="{{ '%.2f'|format(geo_offset) }}"
+                      transform="rotate(-90 180 180)"
+                    />
 
-                  <!-- AIO track + arc -->
-                  <circle class="pc-aio-track" cx="180" cy="180" r="118" />
-                  <circle
-                    class="pc-aio-arc"
-                    cx="180" cy="180" r="118"
-                    stroke-dasharray="{{ '%.2f'|format(aio_c) }}"
-                    stroke-dashoffset="{{ '%.2f'|format(aio_offset) }}"
-                    transform="rotate(-90 180 180)"
-                    filter="url(#softBloom)"
-                  />
+                    <!-- GEO satellite -->
+                    <g class="pc-satellite">
+                      <circle class="pc-satellite__glow" r="10" />
+                      <circle class="pc-satellite__dot" r="3.5" />
+                    </g>
 
-                  <!-- Sweep needle at AIO tip -->
-                  <g class="pc-needle">
-                    <line x1="180" y1="180" x2="180" y2="62" />
-                    <circle cx="180" cy="62" r="4.5" />
-                  </g>
+                    <!-- AIO track + arc -->
+                    <circle class="pc-aio-track" cx="180" cy="180" r="118" />
+                    <circle
+                      class="pc-aio-arc"
+                      cx="180" cy="180" r="118"
+                      stroke-dasharray="{{ '%.2f'|format(aio_c) }}"
+                      stroke-dashoffset="{{ '%.2f'|format(aio_offset) }}"
+                      transform="rotate(-90 180 180)"
+                      filter="url(#softBloom)"
+                    />
 
-                  <!-- Constellation ticks -->
-                  {% for i in range(24) %}
-                  {% set ang = i * 15 - 90 %}
-                  {% set lit = (i / 24 * 100) <= health %}
-                  <circle
-                    class="pc-tick{% if lit %} is-lit{% endif %}"
-                    cx="0" cy="0" r="2.2"
-                    transform="rotate({{ ang }} 180 180) translate(180 80)"
-                  />
-                  {% endfor %}
+                    <!-- Sweep needle at AIO tip -->
+                    <g class="pc-needle">
+                      <line x1="180" y1="180" x2="180" y2="62" />
+                      <circle cx="180" cy="62" r="4.5" />
+                    </g>
 
-                  <!-- Core glow disc -->
-                  <circle class="pc-core-glow" cx="180" cy="180" r="78" fill="url(#coreGlow)" />
-                  <circle class="pc-core-ring" cx="180" cy="180" r="72" />
-                </svg>
+                    <!-- Constellation ticks -->
+                    {% for i in range(24) %}
+                    {% set ang = i * 15 - 90 %}
+                    {% set lit = (i / 24 * 100) <= health %}
+                    <circle
+                      class="pc-tick{% if lit %} is-lit{% endif %}"
+                      cx="0" cy="0" r="2.2"
+                      transform="rotate({{ ang }} 180 180) translate(180 80)"
+                    />
+                    {% endfor %}
 
-                <div class="pulse-core__hub">
-                  <span class="pulse-core__kicker">AIO · AI-Driven Visibility <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></span>
-                  <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
-                  <span class="pulse-core__denom">/100</span>
-                  <span class="pulse-core__propensity">{{ propensity }}</span>
+                    <!-- Core glow disc -->
+                    <circle class="pc-core-glow" cx="180" cy="180" r="78" fill="url(#coreGlow)" />
+                    <circle class="pc-core-ring" cx="180" cy="180" r="72" />
+                  </svg>
+
+                  <div class="pulse-core__hub">
+                    <span class="pulse-core__kicker">AIO · AI-Driven Visibility <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></span>
+                    <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
+                    <span class="pulse-core__denom">/100</span>
+                    <span class="pulse-core__propensity">{{ propensity }}</span>
+                  </div>
                 </div>
               </div>
+
+              <ul class="pulse-core__stats" aria-label="{{ _('Sintesi score') }}">
+                <li class="pulse-core__stat" data-tone="aio">
+                  <span class="pulse-core__stat-k">AIO</span>
+                  <strong class="pulse-core__stat-v">{{ aio_n }}</strong>
+                  <span class="pulse-core__stat-m">{{ propensity }}</span>
+                </li>
+                <li class="pulse-core__stat" data-tone="geo">
+                  <span class="pulse-core__stat-k">GEO</span>
+                  <strong class="pulse-core__stat-v">{{ geo_n }}</strong>
+                  <span class="pulse-core__stat-m">/100</span>
+                </li>
+                <li class="pulse-core__stat" data-tone="grade" data-grade="{{ rating.code }}">
+                  <span class="pulse-core__stat-k">{{ _('CVI') }}</span>
+                  <strong class="pulse-core__stat-v pulse-core__stat-v--grade">{{ rating.code }}</strong>
+                  <span class="pulse-core__stat-m">{{ rating.score }}/100</span>
+                </li>
+                <li class="pulse-core__stat" data-tone="risk">
+                  <span class="pulse-core__stat-k">{{ _('Interferenze') }}</span>
+                  <strong class="pulse-core__stat-v">{{ findings_n }}</strong>
+                  <span class="pulse-core__stat-m">
+                    {% if crit_n or warn_n %}
+                      {{ crit_n }} crit · {{ warn_n }} warn
+                    {% else %}
+                      {{ _('clear') }}
+                    {% endif %}
+                  </span>
+                </li>
+              </ul>
             </div>
 
-            <div class="pulse-core__intel">
-              <header class="signal-diag__intro">
-                <p class="eyebrow signal-diag__eyebrow">
-                  {{ _('Signal diagnostics') }}
-                  <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
-                </p>
-                <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
-                <p class="pulse-core__lede">
-                  {{ propensity_lede }}
-                  <span class="hint">{{ _('AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab SoV mostra Misurato quando il citation monitor ha campionato gli engine (anche con 0 menzioni).') }}</span>
-                </p>
-              </header>
-
-              <div class="signal-diag" role="table" aria-label="{{ _('Signal diagnostics') }}">
+            <div class="signal-diag" role="table" aria-label="{{ _('Signal diagnostics') }}">
                 <div class="signal-diag__head" role="row">
                   <span class="signal-diag__h" role="columnheader">{{ _('Segnale') }}</span>
                   <span class="signal-diag__h" role="columnheader">{{ _('Evidence') }}</span>
@@ -419,7 +449,6 @@
                   </ol>
                 </footer>
               </div>
-            </div>
           </section>
           </div>
 
