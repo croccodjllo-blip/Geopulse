@@ -133,6 +133,7 @@ LLM_TPM_BACKEND=redis
 OPENAI_TPM=500000
 # Priority lanes: centropic:analyze:queue:p0|p1|p2 (Business|Plus|Free)
 # Measured lanes: centropic:analyze:measured:p0|p1 + aio-bot-measured(.service|@N)
+# Single-host measured: MEASURED_WORKER_CONCURRENCY=100 on one process (avoid PG slot storm).
 # Optional S3 pack offload (keeps Postgres lean at high volume)
 # ANALYZE_ARTIFACT_STORE=s3
 # ANALYZE_S3_BUCKET=centropic-analyze-packs  # requires AWS_* creds
