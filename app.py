@@ -202,6 +202,11 @@ from services.i18n import (
     normalize_locale,
     select_locale,
 )
+from services.phone_prefixes import (
+    DEFAULT_PHONE_PREFIX,
+    PHONE_PREFIX_CHOICES,
+    compose_phone,
+)
 from services.mailer import (
     build_email_verify_email,
     build_pack_email,
@@ -1125,6 +1130,12 @@ class RegisterForm(FlaskForm):
             Length(max=255),
         ],
     )
+    phone_prefix = SelectField(
+        "Prefisso internazionale",
+        choices=PHONE_PREFIX_CHOICES,
+        default=DEFAULT_PHONE_PREFIX,
+        validators=[Optional()],
+    )
     phone = TelField(
         "Telefono",
         validators=[Optional(), Length(max=40)],
@@ -1173,6 +1184,23 @@ class RegisterForm(FlaskForm):
         allowed = {c[0] for c in ROLE_CHOICES if c[0]}
         if raw not in allowed:
             raise ValidationError("Seleziona un ruolo valido.")
+
+    def validate_phone_prefix(self, field: SelectField) -> None:
+        allowed = {c[0] for c in PHONE_PREFIX_CHOICES}
+        raw = (field.data or "").strip() or DEFAULT_PHONE_PREFIX
+        if raw not in allowed:
+            raise ValidationError("Seleziona un prefisso internazionale valido.")
+        field.data = raw
+
+    def validate_phone(self, field: TelField) -> None:
+        national = (field.data or "").strip()
+        if not national:
+            field.data = ""
+            return
+        composed = compose_phone(self.phone_prefix.data, national)
+        if composed is None:
+            raise ValidationError("Numero di telefono non valido.")
+        field.data = composed
 
 
 class LoginForm(FlaskForm):
@@ -4865,7 +4893,7 @@ def register():
                 name=form.name.data.strip(),
                 company=(form.company.data or "").strip() or None,
                 website_url=website,
-                phone=(form.phone.data or "").strip() or None,
+                phone=(form.phone.data or "").strip() or None,  # E.164 via phone_prefix
                 role=role_val,
                 country=(form.country.data or "").strip() or None,
                 plan="free",

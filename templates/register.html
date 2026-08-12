@@ -44,7 +44,12 @@
 
       <div class="field">
         <label for="phone">{{ _('Telefono') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
-        {{ form.phone(id="phone", autocomplete="tel") }}
+        <div class="phone-field">
+          <label class="sr-only" for="phone_prefix">{{ _('Prefisso internazionale') }}</label>
+          {{ form.phone_prefix(id="phone_prefix", class_="phone-field__prefix", autocomplete="tel-country-code") }}
+          {{ form.phone(id="phone", class_="phone-field__number", autocomplete="tel-national", inputmode="tel", placeholder="333 1234567") }}
+        </div>
+        {% for error in form.phone_prefix.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
         {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 

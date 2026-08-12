@@ -851,6 +851,26 @@ body.app-body:not(.body-dash) {
   background: #10182f;
 }
 
+.phone-field {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 11rem) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: stretch;
+}
+.phone-field__prefix,
+.phone-field__number {
+  min-width: 0;
+  width: 100%;
+}
+.phone-field__prefix {
+  font-size: 0.9rem;
+}
+@media (max-width: 420px) {
+  .phone-field {
+    grid-template-columns: 1fr;
+  }
+}
+
 .password-field {
   position: relative;
   display: grid;
