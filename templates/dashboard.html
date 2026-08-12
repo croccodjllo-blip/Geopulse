@@ -55,24 +55,6 @@
         </div>
       </dl>
     </div>
-    {% if plan_services %}
-    <div class="plan-services" data-plan="{{ dash_plan|default('free') }}" aria-label="{{ _('Servizi del piano') }}">
-      <p class="plan-services__label">
-        {% if dash_plan == 'business' %}
-          {{ _('Toolkit Business') }}
-        {% elif dash_plan == 'plus' %}
-          {{ _('Toolkit Plus') }}
-        {% else %}
-          {{ _('Toolkit Free') }}
-        {% endif %}
-      </p>
-      <ul class="plan-services__list">
-        {% for svc in plan_services %}
-        <li data-service="{{ svc.id }}">{{ _(svc.label) }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
   </header>
 
   <div class="workspace-body">
@@ -107,20 +89,11 @@
                 {% endif %}
               </p>
             </div>
+            {% if can_extended_history %}
             <div class="report-top__actions">
-              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
-              <button
-                type="button"
-                class="btn btn-ghost"
-                data-pack-mail-open
-                {% if not mail_ready %}disabled title="{{ _('Email non configurata sul server') }}"{% endif %}
-              >
-                {{ _('Invia email') }}
-              </button>
-              {% if can_extended_history %}
-              <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
-              {% endif %}
+              <a class="report-top__link" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
             </div>
+            {% endif %}
           </div>
 
           {% set aio_n = aio if aio is number else 0 %}
@@ -1010,7 +983,7 @@
             </header>
             <div class="pack-deliverable__actions">
               <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">
-                {{ _('Scarica') }}
+                {{ _('Scarica pack') }}
               </a>
               <button
                 type="button"
@@ -1129,32 +1102,26 @@
         </div>
         {% endif %}
         <div class="rail-card rail-card--actions">
-          <p class="rail-card__eyebrow">{{ _('Azioni') }}</p>
-          <a href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
+          <p class="rail-card__eyebrow">{{ _('Vai a') }}</p>
+          <a href="#analyze">{{ _('Nuova analisi') }}</a>
+          <a href="#pack">{{ _('Pack') }}</a>
           {% if latest.signals_hosted %}
           <a href="#edge-signals">{{ _('Edge Signals') }}</a>
-          <a href="{{ url_for('edge_cms_bundle', analysis_id=latest.id) }}">{{ _('Connector CMS') }}</a>
           {% else %}
-          <a href="#edge-signals">{{ _('Attiva Edge') }}</a>
+          <a href="#edge-signals">{{ _('Edge') }}</a>
           {% endif %}
-          <a href="#findings-title">{{ _('Findings critici') }}</a>
+          <a href="#findings-title">{{ _('Findings') }}</a>
           {% if can_extended_history %}
-          <a href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico run') }}</a>
+          <a href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
+          {% endif %}
+          {% if is_pro %}
+          <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a>
+          {% if can_agency %}
+          <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label') }}</a>
+          {% endif %}
+          <a href="{{ url_for('dashboard_settings') }}">{{ _('Impostazioni') }}</a>
           {% endif %}
         </div>
-        {% if is_pro and latest %}
-        <div class="rail-card">
-          <p class="rail-card__eyebrow">{{ _('Azioni') }}</p>
-          <p class="rail-card__sub">
-            <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a><br />
-            {% if can_agency %}
-            <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label MD') }}</a><br />
-            <a href="{{ url_for('download_whitelabel_html', analysis_id=latest.id) }}">{{ _('White-label HTML') }}</a><br />
-            {% endif %}
-            <a href="{{ url_for('dashboard_settings') }}">{{ _('GEO suite settings') }}</a>
-          </p>
-        </div>
-        {% endif %}
       </aside>
       {% endif %}
     </div>

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from app import User, app, capability_template_vars, db, ensure_schema
@@ -14,6 +15,7 @@ def _user(plan: str) -> User:
         plan=plan,
     )
     user.set_password("UiPlanTest!23456")
+    user.email_verified_at = datetime.now(timezone.utc)
     db.session.add(user)
     db.session.commit()
     return user
@@ -82,18 +84,21 @@ def test_dashboard_plan_theme_classes():
 
     assert "dash-plan--free" in free_html
     assert 'data-dash-plan="free"' in free_html
-    assert "Toolkit Free" in free_html
+    assert "plan-services" not in free_html
+    assert "Toolkit Free" not in free_html
     assert 'href="/dashboard/storico"' not in free_html
 
     assert "dash-plan--plus" in plus_html
     assert 'data-dash-plan="plus"' in plus_html
-    assert "Toolkit Plus" in plus_html
+    assert "plan-services" not in plus_html
+    assert "Toolkit Plus" not in plus_html
     assert "SoV measured" in plus_html
     assert 'href="/dashboard/storico"' in plus_html
 
     assert "dash-plan--business" in biz_html
     assert 'data-dash-plan="business"' in biz_html
-    assert "Toolkit Business" in biz_html
+    assert "plan-services" not in biz_html
+    assert "Toolkit Business" not in biz_html
     assert "White-label" in biz_html
     assert 'href="/dashboard/storico"' in biz_html
 

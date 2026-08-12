@@ -36,38 +36,23 @@
 </aside>
 {% endif %}
 
-{% if latest %}
-<div class="report-lead" aria-label="{{ _('Sintesi report') }}">
-  <div class="report-lead__scores">
-    <span class="grade-badge" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</span>
-    <span class="report-lead__metric"><em>AIO</em> {{ latest.aio_score if latest.aio_score is not none else '—' }}</span>
-    <span class="report-lead__metric"><em>GEO</em> {{ latest.geo_score if latest.geo_score is not none else '—' }}</span>
-  </div>
-  <div class="report-lead__actions">
-    <a class="btn btn-signal" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
-    <a class="btn btn-ghost" href="#analyze">{{ _('Nuova analisi') }}</a>
-    <a class="btn btn-ghost" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Grafici') }}</a>
-    {% if findings_critical %}
-    <a class="btn btn-ghost" href="#findings-title">{{ _('Findings') }} ({{ findings_critical|length }})</a>
-    {% endif %}
-  </div>
-</div>
-{% endif %}
-
 {% if can_measured_sov and latest %}
   {% include "partials/sov_ops.html" %}
 {% endif %}
 
 {% if latest %}
 <details class="analyze-reveal" id="analyze-panel">
-  <summary class="analyze-reveal__summary">{{ _('Nuova analisi') }}</summary>
+  <summary class="analyze-reveal__summary">
+    <span class="analyze-reveal__title">{{ _('Nuova analisi') }}</span>
+    <span class="analyze-reveal__hint">{{ _('URL · crawl · score') }}</span>
+  </summary>
 {% endif %}
 <form method="post" id="analyze" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
   {{ form.hidden_tag() }}
   <div class="analyze-composer">
     <div class="analyze-composer__head">
       <div>
-        <p class="analyze-composer__label">{{ _('Analizza un dominio') }}</p>
+        <p class="analyze-composer__label">{{ _('Dominio da analizzare') }}</p>
         <p class="analyze-composer__sub">
           {% if free_exhausted %}
           {{ _('Quote Free esaurite · passa a Plus per continuare') }}

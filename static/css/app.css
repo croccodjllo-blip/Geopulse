@@ -1762,8 +1762,7 @@ body.app-body:not(.body-dash) {
 
 /* Workspace body — pulled up -2rem to tuck under .workspace-strip's edge.
    .workspace-strip carries a matching padding-bottom: 2rem so this overlap
-   always lands in empty space, never over the (variable-height) toolkit
-   strip content. Keep the two in sync if either value changes. */
+   always lands in empty strip padding. Keep the two in sync if either changes. */
 .workspace-body {
   width: min(1160px, calc(100% - 2rem));
   margin: -2rem auto 0;
@@ -4347,6 +4346,25 @@ html.analyze-busy {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+}
+
+.report-top__link {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--slate-light);
+  padding: 0.35rem 0;
+  border-bottom: 1px solid transparent;
+  transition: color 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.report-top__link:hover,
+.report-top__link:focus-visible {
+  color: var(--ink);
+  border-bottom-color: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 55%, transparent);
 }
 
 .inline-action { display: inline; margin: 0; }
@@ -10035,11 +10053,8 @@ body.body-login-popup .site-footer {
     radial-gradient(ellipse 50% 80% at 0% 0%, color-mix(in srgb, var(--plan-accent) 10%, transparent), transparent 55%),
     linear-gradient(180deg, color-mix(in srgb, var(--brand-elevated) 55%, var(--brand-bg)) 0%, var(--brand-bg) 100%);
   border-bottom: 1px solid var(--brand-border);
-  /* .workspace-body below pulls up by -2rem (see .workspace-body) and sits
-     at a higher z-index; this padding absorbs that overlap in empty space
-     so it never covers the last row of the (variable-height) toolkit
-     strip — e.g. Plus's 12 services wrap to 2-3 lines and were getting
-     their bottom row hidden behind the report content underneath. */
+  /* .workspace-body below pulls up by -2rem (see .workspace-body); this
+     padding absorbs that overlap in empty strip space. */
   padding-bottom: 2rem;
 }
 
@@ -10218,25 +10233,43 @@ body.body-login-popup .site-footer {
   margin: 0 0 1.25rem;
   border: 1px solid var(--brand-border);
   border-radius: var(--radius-lg);
-  background: var(--brand-card);
+  background: color-mix(in srgb, var(--brand-card) 88%, transparent);
 }
 
 .analyze-reveal__summary {
   cursor: pointer;
   list-style: none;
-  padding: 0.85rem 1.1rem;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.95rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.85rem;
+  padding: 0.8rem 1.1rem;
   color: var(--brand-clarity);
 }
 .analyze-reveal__summary::-webkit-details-marker { display: none; }
-.analyze-reveal__summary::after {
-  content: "+";
-  float: right;
+.analyze-reveal__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.analyze-reveal__hint {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--brand-muted);
 }
+.analyze-reveal__summary::after {
+  content: "+";
+  margin-left: auto;
+  color: var(--brand-muted);
+  font-family: var(--font-mono);
+}
 .analyze-reveal[open] > .analyze-reveal__summary::after { content: "−"; }
+.analyze-reveal[open] {
+  border-color: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 35%, var(--brand-border));
+  background: var(--brand-card);
+}
 .analyze-reveal .analyze-form { margin: 0; }
 .analyze-reveal .analyze-composer {
   border: 0;
@@ -10247,6 +10280,19 @@ body.body-login-popup .site-footer {
   padding: 0 1.1rem 1.1rem;
 }
 .analyze-reveal .analyze-composer::before { display: none; }
+
+.rail-card--actions a {
+  display: block;
+  padding: 0.28rem 0;
+  color: var(--slate-light);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.rail-card--actions a:hover,
+.rail-card--actions a:focus-visible {
+  color: var(--ink);
+}
 
 .app-sidebar__group {
   margin: 0.15rem 0 0.55rem;
