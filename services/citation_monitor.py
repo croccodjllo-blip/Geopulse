@@ -965,9 +965,9 @@ def _competitor_pressure(competitors: list[dict[str, Any]]) -> float:
 
 def _sov_engine_parallelism() -> int:
     try:
-        n = int(os.getenv("SOV_ENGINE_PARALLEL", "3") or "3")
+        n = int(os.getenv("SOV_ENGINE_PARALLEL", "2") or "2")
     except (TypeError, ValueError):
-        n = 3
+        n = 2
     return max(1, min(6, n))
 
 

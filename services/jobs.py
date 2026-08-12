@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 # Reclaim only when heartbeat (or started_at) is older than this.
 # Heartbeat is refreshed during crawl/SoV; 2–5 min silence ⇒ lost worker (deploy/OOM).
 # Keep the floor at 2 so a deploy mid-SoV does not strand the UI for 12+ minutes.
-STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "5")))
+STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 # Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
-MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "40")))
+MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "32")))
 # Postgres advisory lock key for serialize(count running + claim).
 _CLAIM_ADVISORY_LOCK_KEY = 872_341
 
