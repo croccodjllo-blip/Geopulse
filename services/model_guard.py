@@ -27,6 +27,8 @@ _DEFAULT_ALLOW = (
     "gemini-1.5-flash",
     "grok-4-1-fast",
     "grok-fast",
+    "grok-4",
+    "grok",
 )
 
 _DEFAULT_DENY_SUBSTR = (
