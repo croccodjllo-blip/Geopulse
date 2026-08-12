@@ -3849,7 +3849,6 @@ def sitemap_xml():
         ("/prodotto", "0.9", "weekly"),
         ("/guida", "0.95", "weekly"),
         ("/esempio-report", "0.85", "weekly"),
-        ("/agenzie", "0.8", "monthly"),
         ("/prezzi", "0.8", "weekly"),
         ("/metodologia", "0.9", "monthly"),
         ("/guide/llms-txt", "0.8", "monthly"),
@@ -4046,7 +4045,8 @@ def preview_analyze_status(token: str):
 
 @app.route("/agenzie")
 def agencies():
-    return render_template("agencies.html")
+    """Retired marketing page — keep route for old bookmarks, return 404."""
+    abort(404)
 
 
 @app.route("/status")

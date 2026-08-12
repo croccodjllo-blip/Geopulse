@@ -148,7 +148,6 @@
             <a href="{{ url_for('site_guide') }}" class="{% if request.endpoint == 'site_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
             <a href="{{ url_for('sample_report') }}" class="{% if request.endpoint == 'sample_report' %}is-active{% endif %}">{{ _('Esempio') }}</a>
             <a href="{{ url_for('pricing') }}" class="{% if request.endpoint == 'pricing' %}is-active{% endif %}">{{ _('Prezzi') }}</a>
-            <a href="{{ url_for('agencies') }}" class="{% if request.endpoint == 'agencies' %}is-active{% endif %}">{{ _('Agenzie') }}</a>
             <a href="{{ url_for('faq') }}" class="{% if request.endpoint == 'faq' %}is-active{% endif %}">FAQ</a>
             <a href="{{ url_for('login') }}">{{ _('Accedi') }}</a>
             <a class="nav-cta" href="{{ url_for('index') }}#hero-brand">{{ _('Analizza gratis') }}</a>
@@ -217,7 +216,6 @@
           <a href="{{ url_for('site_guide') }}">{{ _('Guida completa') }}</a>
           <a href="{{ url_for('sample_report') }}">{{ _('Esempio report') }}</a>
           <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>
-          <a href="{{ url_for('agencies') }}">{{ _('Per agenzie') }}</a>
           <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
           <a href="{{ url_for('site_guide') }}#glossario">{{ _('Glossario') }}</a>
           <a href="{{ url_for('guide_llms_txt') }}">{{ _('Guida llms.txt') }}</a>

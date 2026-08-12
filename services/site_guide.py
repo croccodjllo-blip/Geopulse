@@ -607,7 +607,6 @@ def site_guide_payload() -> dict[str, Any]:
             {"href": "/prezzi", "label": _("Piani e prezzi")},
             {"href": "/guida", "label": _("Guida completa")},
             {"href": "/esempio-report", "label": _("Esempio report")},
-            {"href": "/agenzie", "label": _("Per agenzie")},
             {"href": "/status", "label": "Status"},
         ],
     }
