@@ -109,12 +109,14 @@
             </div>
             <div class="report-top__actions">
               <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
-              <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="{{ _('Email non configurata sul server') }}"{% endif %}>
-                  {{ _('Invia email') }}
-                </button>
-              </form>
+              <button
+                type="button"
+                class="btn btn-ghost"
+                data-pack-mail-open
+                {% if not mail_ready %}disabled title="{{ _('Email non configurata sul server') }}"{% endif %}
+              >
+                {{ _('Invia email') }}
+              </button>
               {% if can_extended_history %}
               <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
               {% endif %}
@@ -986,31 +988,75 @@
             {% endif %}
           </section>
 
-          <section class="dash-block dash-block--panel dash-block--pack" id="pack" aria-labelledby="pack-title">
+          <section class="pack-deliverable dash-block dash-block--panel" id="pack" aria-labelledby="pack-title">
             <header class="dash-block__head">
               <div>
                 <p class="dash-block__eyebrow">{{ _('Deliverable') }}</p>
                 <h3 class="dash-block__title" id="pack-title">{{ _('Pack ottimizzazione') }}</h3>
-                <p class="dash-block__more">{{ _('Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist.') }}</p>
+                <p class="dash-block__more">{{ _('Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da applicare sul sito live.') }}</p>
               </div>
-              <div class="dash-block__meta">
-                <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica') }} {{ pack_fix_filename }}</a>
-                <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                  <button type="submit" class="dash-block__mail">
-                    {{ _('Invia a') }} {{ current_user.email }}
-                  </button>
-                </form>
-              </div>
+              <span class="pack-deliverable__file" title="{{ pack_fix_filename }}">{{ pack_fix_filename }}</span>
             </header>
-            <div class="code-shell">
-              <div class="code-shell__bar">
-                <span>{{ pack_fix_filename }}</span>
-                <button type="button" class="linkish" onclick="copyFrom('pack-fix-box', this)">{{ _('Copia') }}</button>
-              </div>
-              <pre id="pack-fix-box">{{ pack_fix_html }}</pre>
+            <div class="pack-deliverable__actions">
+              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">
+                {{ _('Scarica') }}
+              </a>
+              <button
+                type="button"
+                class="btn btn-ghost"
+                data-pack-mail-open
+                {% if not mail_ready %}disabled title="{{ _('Email non configurata sul server') }}"{% endif %}
+              >
+                {{ _('Invia email') }}
+              </button>
             </div>
           </section>
+
+          <dialog
+            class="pack-mail"
+            id="pack-mail-dialog"
+            data-pack-mail
+            aria-labelledby="pack-mail-title"
+            aria-describedby="pack-mail-desc"
+          >
+            <form
+              method="post"
+              action="{{ url_for('email_pack', analysis_id=latest.id) }}"
+              class="pack-mail__panel"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <header class="pack-mail__head">
+                <div>
+                  <p class="pack-mail__eyebrow">{{ _('Deliverable') }}</p>
+                  <h3 class="pack-mail__title" id="pack-mail-title">{{ _('Invia pack via email') }}</h3>
+                </div>
+                <button type="button" class="pack-mail__close" data-pack-mail-close aria-label="{{ _('Chiudi') }}">×</button>
+              </header>
+              <p class="pack-mail__lede" id="pack-mail-desc">
+                {{ _('Inserisci l’indirizzo dove ricevere') }}
+                <code>{{ pack_fix_filename }}</code>
+                {{ _('per') }} <strong>{{ latest.domain }}</strong>.
+              </p>
+              <label class="pack-mail__label" for="pack-mail-to">{{ _('Indirizzo email') }}</label>
+              <input
+                class="pack-mail__input"
+                type="email"
+                id="pack-mail-to"
+                name="to_email"
+                value="{{ current_user.email }}"
+                autocomplete="email"
+                inputmode="email"
+                maxlength="255"
+                required
+                {% if not mail_ready %}disabled{% endif %}
+              />
+              <p class="pack-mail__hint">{{ _('Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo.') }}</p>
+              <footer class="pack-mail__foot">
+                <button type="button" class="btn btn-ghost" data-pack-mail-close>{{ _('Annulla') }}</button>
+                <button type="submit" class="btn btn-primary"{% if not mail_ready %} disabled{% endif %}>{{ _('Invia pack') }}</button>
+              </footer>
+            </form>
+          </dialog>
         </section>
         {% else %}
         <div class="empty-state">
@@ -1103,6 +1149,7 @@
 
 {% include "partials/analyze_overlay.html" %}
 <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/pack-mail.js') }}" defer></script>
 {% if can_competitors %}
 <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
 {% endif %}

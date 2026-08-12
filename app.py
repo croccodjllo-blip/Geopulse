@@ -144,7 +144,6 @@ from services.export import (
     pack_fix_html_bytes,
     runs_to_csv,
 )
-from services.artifacts import unified_fix_html_from_entity
 from services.guides import GUIDES, get_guide
 from services.growth import (
     REFERRAL_BONUS_CENTS,
@@ -5971,9 +5970,6 @@ def dashboard():
         measured_bg_job=measured_bg_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
-        pack_fix_html=(
-            unified_fix_html_from_entity(latest) if latest is not None else ""
-        ),
         pack_fix_filename=(
             make_pack_fix_filename(latest)
             if latest is not None
@@ -7994,12 +7990,14 @@ def download_pack(analysis_id: int):
 @app.route("/dashboard/email-pack/<int:analysis_id>", methods=["POST"])
 @login_required
 def email_pack(analysis_id: int):
-    """Invia il singolo file fix HTML all’email dell’account registrato."""
+    """Invia il pack HTML a un indirizzo email scelto dall’utente."""
     user = current_user()
     analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard", site=analysis_id))
+
+    dash_url = url_for("dashboard", site=analysis.id)
 
     if not mail_configured():
         flash(
@@ -8007,7 +8005,21 @@ def email_pack(analysis_id: int):
             "Puoi scaricare il file HTML intanto.",
             "error",
         )
-        return redirect(url_for("dashboard"))
+        return redirect(dash_url)
+
+    raw_to = (request.form.get("to_email") or "").strip()
+    if not raw_to:
+        raw_to = (user.email or "").strip()
+    to_email = ""
+    try:
+        from email_validator import validate_email
+
+        to_email = str(validate_email(raw_to, check_deliverability=False).normalized)
+    except Exception:
+        to_email = ""
+    if not to_email or "@" not in to_email or len(to_email) > 255:
+        flash("Indirizzo email non valido.", "error")
+        return redirect(dash_url)
 
     if not limiter.allow(
         f"pack-email:{user.id}",
@@ -8018,7 +8030,7 @@ def email_pack(analysis_id: int):
             f"Limite raggiunto: massimo {PACK_EMAIL_DAILY_LIMIT} invii pack / 24h.",
             "error",
         )
-        return redirect(url_for("dashboard"))
+        return redirect(dash_url)
 
     html_bytes = pack_fix_html_bytes(analysis)
     filename = make_pack_fix_filename(analysis)
@@ -8031,7 +8043,7 @@ def email_pack(analysis_id: int):
     )
     try:
         send_email_with_attachment(
-            to_email=user.email,
+            to_email=to_email,
             subject=subject,
             text_body=text_body,
             html_body=html_body,
@@ -8039,15 +8051,20 @@ def email_pack(analysis_id: int):
             attachment_bytes=html_bytes,
         )
     except Exception:
-        app.logger.exception("Pack email failed user_id=%s analysis_id=%s", user.id, analysis_id)
+        app.logger.exception(
+            "Pack email failed user_id=%s analysis_id=%s to=%s",
+            user.id,
+            analysis_id,
+            to_email,
+        )
         flash(
             "Invio email non riuscito. Riprova tra poco o scarica il file HTML.",
             "error",
         )
-        return redirect(url_for("dashboard"))
+        return redirect(dash_url)
 
-    flash(f"Pack inviato a {user.email}.", "success")
-    return redirect(url_for("dashboard"))
+    flash(f"Pack inviato a {to_email}.", "success")
+    return redirect(dash_url)
 
 
 @app.route("/dashboard/schedule", methods=["POST"])
