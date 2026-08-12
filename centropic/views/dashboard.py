@@ -10,7 +10,6 @@ from flask import Flask
 ROUTE_CATALOG = [
     'dashboard_geo_ui',
     'dashboard',
-    'dashboard_trial_start',
     'dashboard_analyze_confirmed',
     'dashboard_competitors_suggest',
     'dashboard_job_status',

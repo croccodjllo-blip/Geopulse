@@ -1,21 +1,14 @@
-"""Growth helpers: trial, referral codes, sample report, email builders."""
+"""Growth helpers: referral codes, sample report, email builders."""
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from types import SimpleNamespace
-
 from services.growth import (
     REFERRAL_BONUS_CENTS,
-    TRIAL_DAYS,
     build_analysis_complete_email,
     build_free_exhausted_email,
     build_low_balance_email,
-    build_trial_started_email,
     new_referral_code,
     sample_report_payload,
-    trial_ends_at,
-    trial_is_active,
 )
 
 
@@ -28,15 +21,6 @@ def test_referral_code_shape():
 
 def test_referral_bonus_is_20_tokens():
     assert REFERRAL_BONUS_CENTS == 200
-
-
-def test_trial_active_window():
-    now = datetime(2026, 8, 4, 12, 0, tzinfo=timezone.utc)
-    ends = trial_ends_at(days=TRIAL_DAYS, now=now)
-    user = SimpleNamespace(trial_ends_at=ends)
-    assert trial_is_active(user, now=now)
-    assert not trial_is_active(user, now=ends + timedelta(seconds=1))
-    assert not trial_is_active(SimpleNamespace(trial_ends_at=None), now=now)
 
 
 def test_sample_report_payload_shape():
@@ -71,21 +55,16 @@ def test_email_builders_contain_cta():
     )
     assert "12" in low
 
-    _, _, free = build_free_exhausted_email(
+    free_to, free_subj, free = build_free_exhausted_email(
         to_email="a@b.co",
         name="Ada",
         pricing_url="https://centropic.ai/prezzi",
     )
-    assert "Plus" in free
-
-    ends = trial_ends_at(days=7)
-    _, _, trial = build_trial_started_email(
-        to_email="a@b.co",
-        name="Ada",
-        ends_at=ends,
-        dashboard_url="https://centropic.ai/dashboard",
-    )
-    assert "7 giorni" in trial or "Plus trial" in trial
+    assert free_to == "a@b.co"
+    assert "Plus" in free_subj
+    assert "centropic.ai/prezzi" in free
+    assert "trial" not in free.lower()
+    assert "7 giorni" not in free
 
 
 def test_transaction_grants_plus_yearly(monkeypatch):

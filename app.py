@@ -148,15 +148,11 @@ from services.artifacts import unified_fix_html_from_entity
 from services.guides import GUIDES, get_guide
 from services.growth import (
     REFERRAL_BONUS_CENTS,
-    TRIAL_DAYS,
     build_analysis_complete_email,
     build_free_exhausted_email,
     build_low_balance_email,
-    build_trial_started_email,
     new_referral_code,
     sample_report_payload,
-    trial_ends_at,
-    trial_is_active,
 )
 from services.preview_analyze import (
     PREVIEW_IP_DAY,
@@ -603,12 +599,8 @@ class User(db.Model):
     email_verified_at = db.Column(db.DateTime)
     verify_token_hash = db.Column(db.String(64))
     verify_token_expires = db.Column(db.DateTime)
-    # Legacy column (no longer granted); kept for schema compatibility.
-    welcome_credit_granted = db.Column(db.Boolean, nullable=False, default=False)
     referral_code = db.Column(db.String(32), unique=True, index=True)
     referred_by = db.Column(db.Integer, db.ForeignKey("users.id"))
-    trial_ends_at = db.Column(db.DateTime)
-    trial_started_at = db.Column(db.DateTime)
     free_exhausted_email_sent = db.Column(db.Boolean, nullable=False, default=False)
     low_balance_email_sent_at = db.Column(db.DateTime)
     # GDPR consent proof (checkbox + timestamp + doc version).
@@ -684,12 +676,8 @@ class User(db.Model):
 
     @property
     def is_pro(self) -> bool:
-        """Piano Plus/Business/pro/admin oppure trial Plus attivo."""
-        if self.is_admin or (self.plan or "").lower() in {"plus", "pro", "business"}:
-            return True
-        from services.growth import trial_is_active
-
-        return trial_is_active(self)
+        """Piano Plus/Business/pro/admin."""
+        return self.is_admin or (self.plan or "").lower() in {"plus", "pro", "business"}
 
     @property
     def is_business(self) -> bool:
@@ -705,22 +693,7 @@ class User(db.Model):
             return "Business"
         if raw in {"plus", "pro"}:
             return "Plus"
-        from services.growth import trial_is_active
-
-        if trial_is_active(self):
-            return "Plus trial"
         return "Free"
-
-    @property
-    def on_trial(self) -> bool:
-        from services.growth import trial_is_active
-
-        return trial_is_active(self) and (self.plan or "").lower() not in {
-            "plus",
-            "pro",
-            "business",
-            "admin",
-        }
 
     @property
     def max_sites(self) -> int:
@@ -1922,11 +1895,8 @@ def ensure_schema() -> None:
             "email_verified_at": "DATETIME",
             "verify_token_hash": "TEXT",
             "verify_token_expires": "DATETIME",
-            "welcome_credit_granted": "BOOLEAN DEFAULT 0",
             "referral_code": "TEXT",
             "referred_by": "INTEGER",
-            "trial_ends_at": "DATETIME",
-            "trial_started_at": "DATETIME",
             "free_exhausted_email_sent": "BOOLEAN DEFAULT 0",
             "low_balance_email_sent_at": "DATETIME",
             "terms_accepted_at": "DATETIME",
@@ -4208,17 +4178,42 @@ def maybe_send_analysis_complete_email(user: User, analysis: SiteAnalysis) -> No
         app.logger.exception("analysis complete email failed")
 
 
-def start_plus_trial(user: User) -> bool:
-    """Start 7-day Plus trial once per account. Returns True if started."""
-    if user.is_admin or (user.plan or "").lower() in {"plus", "pro", "business"}:
+def maybe_grant_referral_bonus_for_plus(user: User) -> bool:
+    """Credit referrer once when the invited user activates Plus.
+
+    Idempotent via ledger key ``referral:{referred_user_id}``. Business/admin
+    upgrades do not grant; only plan ``plus``.
+    """
+    if user is None or REFERRAL_BONUS_CENTS <= 0:
         return False
-    if getattr(user, "trial_started_at", None) is not None:
+    if (user.plan or "").lower() != "plus":
         return False
-    if trial_is_active(user):
+    ref_id = getattr(user, "referred_by", None)
+    if not ref_id:
         return False
-    user.trial_started_at = datetime.now(timezone.utc)
-    user.trial_ends_at = trial_ends_at(days=TRIAL_DAYS)
-    return True
+    pi = f"referral:{user.id}"
+    if CreditLedger.query.filter_by(stripe_payment_intent=pi).first() is not None:
+        return False
+    referrer = db.session.get(User, int(ref_id))
+    if referrer is None:
+        return False
+    # Nested savepoint so a duplicate-key race does not wipe the caller's
+    # pending plan / subscription updates.
+    try:
+        with db.session.begin_nested():
+            topup_credit(
+                db.session,
+                CreditLedger,
+                referrer,
+                amount_eur_cents=REFERRAL_BONUS_CENTS,
+                description=(
+                    f"Bonus referral {format_token_amount(REFERRAL_BONUS_CENTS)}"
+                ),
+                stripe_payment_intent=pi,
+            )
+        return True
+    except IntegrityError:
+        return False
 
 
 def ensure_user_referral_code(user: User) -> str:
@@ -4661,6 +4656,10 @@ def billing_paddle_webhook():
                             "Cleared alert settings after downgrade user=%s",
                             user.id,
                         )
+                try:
+                    maybe_grant_referral_bonus_for_plus(user)
+                except Exception:
+                    app.logger.exception("referral bonus on subscription failed")
                 db.session.commit()
 
         elif etype in {"transaction.completed", "transaction.paid"}:
@@ -4761,6 +4760,10 @@ def billing_paddle_webhook():
                             user = _user_from_paddle(data) or user
                             if user is not None and (user.plan or "").lower() != "admin":
                                 _apply_plus(user)
+                    try:
+                        maybe_grant_referral_bonus_for_plus(user)
+                    except Exception:
+                        app.logger.exception("referral bonus on plus grant failed")
                     db.session.commit()
                 return jsonify({"ok": True})
 
@@ -4986,7 +4989,6 @@ def register():
                 country=(form.country.data or "").strip() or None,
                 plan="free",
                 credit_balance_cents=0,
-                welcome_credit_granted=False,
                 referral_code=new_referral_code(),
                 terms_accepted_at=datetime.now(timezone.utc),
                 terms_version=TERMS_VERSION,
@@ -5111,51 +5113,6 @@ def verify_email(token: str):
     db.session.commit()
     _establish_session(user, permanent=False)
 
-    # Referral bonus to inviter (once per referred user).
-    try:
-        ref_id = getattr(user, "referred_by", None)
-        if ref_id and REFERRAL_BONUS_CENTS > 0:
-            pi = f"referral:{user.id}"
-            if CreditLedger.query.filter_by(stripe_payment_intent=pi).first() is None:
-                referrer = db.session.get(User, int(ref_id))
-                if referrer is not None:
-                    topup_credit(
-                        db.session,
-                        CreditLedger,
-                        referrer,
-                        amount_eur_cents=REFERRAL_BONUS_CENTS,
-                        description=(
-                            f"Bonus referral {format_token_amount(REFERRAL_BONUS_CENTS)}"
-                        ),
-                        stripe_payment_intent=pi,
-                    )
-                    db.session.commit()
-    except Exception:
-        app.logger.exception("referral bonus failed")
-        try:
-            db.session.rollback()
-        except Exception:
-            pass
-
-    # Auto-start Plus trial once after verify (PLG activation).
-    try:
-        user = db.session.get(User, user.id) or user
-        if start_plus_trial(user):
-            db.session.commit()
-            if mail_configured():
-                try:
-                    to, subject, body = build_trial_started_email(
-                        to_email=user.email,
-                        name=user.name or "",
-                        ends_at=user.trial_ends_at,
-                        dashboard_url=absolute_url("dashboard"),
-                    )
-                    send_email(to_email=to, subject=subject, text_body=body)
-                except Exception:
-                    app.logger.exception("trial email failed")
-    except Exception:
-        app.logger.exception("trial start failed")
-
     website = getattr(user, "website_url", None)
     job_id = None
     already_has_site = (
@@ -5163,13 +5120,11 @@ def verify_email(token: str):
         if user is not None
         else False
     )
-    # First diagnosis only when prepaid balance can cover it (no welcome grant).
+    # First diagnosis only when prepaid balance can cover it.
     if not already_verified and not already_has_site:
         job_id = start_first_analysis_if_needed(user, website)
 
     msg = "Email confermata. Account attivo."
-    if getattr(user, "on_trial", False):
-        msg += f" Plus trial {TRIAL_DAYS} giorni attivo."
     if job_id:
         msg += " Prima diagnosi avviata."
     flash(msg, "success")
@@ -5731,14 +5686,6 @@ def dashboard():
         site_count=sites_query_for_user(SiteAnalysis, user).count(),
         token_balance_short=format_tokens_short(get_balance_cents(user)),
         user_plan=user.plan_label,
-        on_trial=bool(getattr(user, "on_trial", False)),
-        trial_ends_at=getattr(user, "trial_ends_at", None),
-        trial_available=(
-            not user.is_admin
-            and (user.plan or "").lower() not in {"plus", "pro", "business"}
-            and getattr(user, "trial_started_at", None) is None
-            and not trial_is_active(user)
-        ),
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
@@ -5754,35 +5701,6 @@ def dashboard():
         ),
         **capability_template_vars(user),
     )
-
-
-@app.route("/dashboard/trial/start", methods=["POST"])
-@login_required
-def dashboard_trial_start():
-    user = current_user()
-    if not user.email_verified:
-        flash("Conferma l’email prima di attivare la prova Plus.", "error")
-        return redirect(url_for("dashboard"))
-    if start_plus_trial(user):
-        db.session.commit()
-        if mail_configured():
-            try:
-                to, subject, body = build_trial_started_email(
-                    to_email=user.email,
-                    name=user.name or "",
-                    ends_at=user.trial_ends_at,
-                    dashboard_url=absolute_url("dashboard"),
-                )
-                send_email(to_email=to, subject=subject, text_body=body)
-            except Exception:
-                app.logger.exception("trial email failed")
-        flash(
-            f"Prova Plus di {TRIAL_DAYS} giorni attivata. SoV measured e crawl esteso sono disponibili subito.",
-            "success",
-        )
-    else:
-        flash("Prova Plus non disponibile (già usata o piano attivo).", "error")
-    return redirect(url_for("dashboard"))
 
 
 @app.route("/dashboard/analyze/confirmed", methods=["POST"])
@@ -7613,6 +7531,11 @@ def admin_set_plan(user_id: int, plan: str):
         clear_privilege_role(target)
     if plan == "free":
         clear_paid_alert_settings(target)
+    if plan == "plus":
+        try:
+            maybe_grant_referral_bonus_for_plus(target)
+        except Exception:
+            app.logger.exception("referral bonus on admin set-plan failed")
     db.session.commit()
     if plan in {"business", "admin"}:
         try:

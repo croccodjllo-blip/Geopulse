@@ -1,34 +1,17 @@
-"""SaaS growth helpers: sample report, trial, referral, lifecycle email copy."""
+"""SaaS growth helpers: sample report, referral, lifecycle email copy."""
 
 from __future__ import annotations
 
 import secrets
-from datetime import datetime, timedelta, timezone
 from typing import Any
 
 
 REFERRAL_BONUS_CENTS = 200  # 20 GEO token
-TRIAL_DAYS = 7
 SAMPLE_DOMAIN = "example-brand.com"
 
 
 def new_referral_code() -> str:
     return secrets.token_urlsafe(8).replace("-", "").replace("_", "")[:10].lower()
-
-
-def trial_ends_at(*, days: int = TRIAL_DAYS, now: datetime | None = None) -> datetime:
-    now = now or datetime.now(timezone.utc)
-    return now + timedelta(days=max(1, int(days)))
-
-
-def trial_is_active(user: Any, *, now: datetime | None = None) -> bool:
-    ends = getattr(user, "trial_ends_at", None)
-    if ends is None:
-        return False
-    now = now or datetime.now(timezone.utc)
-    if ends.tzinfo is None:
-        ends = ends.replace(tzinfo=timezone.utc)
-    return ends > now
 
 
 def sample_report_payload() -> dict[str, Any]:
@@ -157,21 +140,6 @@ def build_free_exhausted_email(
         "Hai completato le analisi Free iniziali. Puoi ancora ri-analizzare lo stesso sito. "
         "Per più domini, re-scan schedulato, SoV Misurato e crawl più ampio:\n"
         f"{pricing_url}\n\n"
-        "Prova Plus 7 giorni gratis dal dashboard se non l’hai già attivata.\n\n"
-        "— Team Centropic\n"
-    )
-    return to_email, subject, body
-
-
-def build_trial_started_email(
-    *, to_email: str, name: str, ends_at: datetime, dashboard_url: str
-) -> tuple[str, str, str]:
-    subject = "Plus trial attivo — 7 giorni"
-    ends = ends_at.astimezone(timezone.utc).strftime("%d/%m/%Y")
-    body = (
-        f"Ciao {name.split()[0] if name else 'ciao'},\n\n"
-        f"Hai 7 giorni di Plus trial (fino al {ends}): SoV measured, crawl Plus, Edge completo.\n"
-        f"Apri la dashboard: {dashboard_url}\n\n"
         "— Team Centropic\n"
     )
     return to_email, subject, body

@@ -38,7 +38,6 @@ def _make_user_and_job(email: str) -> tuple[int, int]:
             credit_balance_cents=1000,
             credit_held_cents=0,
             password_hash="x",
-            welcome_credit_granted=False,
         )
         u.set_password("SecurePass1!")
         db.session.add(u)

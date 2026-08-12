@@ -26,7 +26,6 @@ def _user(email: str, *, balance: int = 500, verified: bool = True) -> User:
         credit_balance_cents=balance,
         credit_held_cents=0,
         password_hash="x",
-        welcome_credit_granted=False,
         email_verified_at=datetime.now(timezone.utc) if verified else None,
     )
     u.set_password("SecurePass1!")
@@ -205,7 +204,7 @@ def test_login_blocks_unverified_user(monkeypatch, client):
         assert "user_id" not in sess
 
 
-def test_verify_email_activates_without_welcome_credit(monkeypatch, client):
+def test_verify_email_activates_without_bonus_credit(monkeypatch, client):
     with app.app_context():
         ensure_schema()
         u = _user("verify-me@example.com", balance=0, verified=False)
@@ -222,5 +221,6 @@ def test_verify_email_activates_without_welcome_credit(monkeypatch, client):
         u = db.session.get(User, uid)
         assert u.email_verified_at is not None
         assert int(u.credit_balance_cents) == 0
+        assert (u.plan or "").lower() == "free"
     with client.session_transaction() as sess:
         assert sess.get("user_id") == uid

@@ -1,7 +1,7 @@
 {% set onboard_email = current_user.email_verified %}
 {% set onboard_analysis = latest is not none %}
 {# Keep onboarding for activation only — critical findings belong in the report, not a perpetual checklist. #}
-{% set onboard_open = (not onboard_email) or (not onboard_analysis) or trial_available or on_trial %}
+{% set onboard_open = (not onboard_email) or (not onboard_analysis) %}
 
 {% if free_exhausted or free_upsell %}
 <aside class="quota-banner" role="alert">
@@ -26,17 +26,11 @@
     <li>○ {{ _('Prima analisi del dominio') }}</li>
     {% endif %}
   </ol>
-  {% if trial_available %}
-  <form method="post" action="{{ url_for('dashboard_trial_start') }}" class="dash-onboard__actions">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <button type="submit" class="btn btn-ghost">{{ _('Attiva prova Plus 7 giorni') }}</button>
-  </form>
-  {% endif %}
   {% if referral_code %}
   <p class="dash-onboard__ref">
     {{ _('Invita un collega:') }}
     <code>{{ url_for('register', ref=referral_code, _external=True) }}</code>
-    — {{ _('ricevi un bonus sulla quota piano quando conferma l’email.') }}
+    — {{ _('ricevi un bonus quando attiva il piano Plus.') }}
   </p>
   {% endif %}
 </aside>

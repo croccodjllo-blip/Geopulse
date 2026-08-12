@@ -21,7 +21,6 @@
           {% if latest %}
             {{ _('Ultimo report') }}
             {% if latest.created_at %} · {{ latest.created_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}
-            {% if on_trial and trial_ends_at %} · {{ _('prova fino al') }} {{ trial_ends_at.strftime('%d/%m') }}{% endif %}
           {% else %}
             {% if current_user.company %}{{ current_user.company }} · {% endif %}
             {% if dash_plan == 'business' %}
@@ -39,9 +38,6 @@
           <dt>{{ _('Piano') }}</dt>
           <dd>
             <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
-            {% if on_trial and trial_ends_at %}
-            <span class="muted">({{ _('fino al') }} {{ trial_ends_at.strftime('%d/%m') }})</span>
-            {% endif %}
           </dd>
         </div>
         <div>
