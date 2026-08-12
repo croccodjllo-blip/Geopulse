@@ -160,17 +160,24 @@ def run_measured_only_pipeline(
     except Exception:
         prompt_locale = "it"
 
+    scraped = result.get("scraped") if isinstance(result.get("scraped"), dict) else {}
+    if not scraped.get("title"):
+        scraped = {
+            **scraped,
+            "title": getattr(existing, "page_title", None) or scraped.get("title") or "",
+        }
+
+    from services.sov_measured import is_user_owned_domain, resolve_measured_brand
+
+    brand = resolve_measured_brand(user=user, domain=domain, scraped=scraped)
     prompts = resolve_prompts(
         user=user,
         locale=prompt_locale,
         domain=domain,
+        brand=brand,
+        own_site=is_user_owned_domain(user, domain),
         max_prompts=8,
     )
-
-    brand = ""
-    if user is not None:
-        brand = getattr(user, "company", None) or ""
-    brand = brand or (scraped.get("entity") or {}).get("brand_name") or domain
     competitors = result.get("competitors") or []
 
     if not user_can_run_measured(user):

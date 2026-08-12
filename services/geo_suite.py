@@ -104,11 +104,25 @@ def run_geo_suite(
     # --- Measured citation monitor (Plus only) ---
     if allow_measured:
         try:
-            brand = ""
             domain = scraped.get("domain") or ""
-            if user is not None:
-                brand = getattr(user, "company", None) or ""
-            brand = brand or (scraped.get("entity") or {}).get("brand_name") or domain
+            from services.sov_measured import (
+                is_user_owned_domain,
+                resolve_measured_brand,
+            )
+
+            brand = resolve_measured_brand(
+                user=user, domain=str(domain), scraped=scraped
+            )
+            if prompts is None:
+                from services.prompt_bank import resolve_prompts
+
+                prompts = resolve_prompts(
+                    user=user,
+                    domain=str(domain),
+                    brand=str(brand),
+                    own_site=is_user_owned_domain(user, str(domain)),
+                    max_prompts=8,
+                )
             competitors = result.get("competitors") or []
             monitored = run_citation_monitor(
                 brand=str(brand),

@@ -32,11 +32,15 @@ def test_all_zero_measured_keeps_proxy_brand_sov():
     }
     out = apply_measured_sov(proxy, measured)
     assert out["brand_sov"] == proxy["brand_sov"]
-    assert out["evidence"] == "proxy"
     assert out.get("measured_zero_all") is True
+    # Probe ran: engines marked Misurato·0 so UI is not all-"Stimato".
+    assert out["evidence"] == "mixed"
     label = (out.get("label") or "").lower()
     note = (out.get("note") or "").lower()
     assert "0 menzioni" in label or "0 menzioni" in note or "proxy" in note
+    zeroed = [e for e in out["engines"] if e.get("measured_zero")]
+    assert len(zeroed) >= 4
+    assert all(e.get("evidence") == "measured" for e in zeroed)
 
 
 def test_sparse_measured_keeps_proxy_brand_and_propensity_on_zeros():

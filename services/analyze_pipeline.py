@@ -177,16 +177,21 @@ def run_analysis_pipeline(
     except Exception:
         prompt_locale = "it"
 
-    prompts = (
-        resolve_prompts(
+    prompts = None
+    if measured_ok:
+        scraped0 = result.get("scraped") if isinstance(result.get("scraped"), dict) else {}
+        domain0 = str(scraped0.get("domain") or "")
+        from services.sov_measured import is_user_owned_domain, resolve_measured_brand
+
+        brand0 = resolve_measured_brand(user=user, domain=domain0, scraped=scraped0)
+        prompts = resolve_prompts(
             user=user,
             locale=prompt_locale,
-            domain=str((result.get("scraped") or {}).get("domain") or ""),
+            domain=domain0,
+            brand=brand0,
+            own_site=is_user_owned_domain(user, domain0),
             max_prompts=8,
         )
-        if measured_ok
-        else None
-    )
 
     # Suite GEO/AIO (entity, citability, schema, locale, publish verify).
     # SoV measured / citation monitor: solo Plus — surface as phase "sov"

@@ -286,7 +286,7 @@
                 <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
                 <p class="pulse-core__lede">
                   {{ propensity_lede }}
-                  <span class="hint">{{ _('AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di predisposizione strutturale (leggibilità per crawler generativi).') }}</span>
+                  <span class="hint">{{ _('AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab SoV mostra Misurato quando il citation monitor ha campionato gli engine (anche con 0 menzioni).') }}</span>
                 </p>
               </header>
 
@@ -431,7 +431,9 @@
                 <div class="sov-panel__intro">
                   <p class="eyebrow">{{ _('AI Engine Breakdown') }}</p>
                   <h3 class="sov-panel__title" id="sov-title">
-                    {% if engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
+                    {% if engine_breakdown.measured_zero_all %}
+                    {{ _('Citation share — probe Misurato eseguito') }}
+                    {% elif engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
                     {{ _('Citation share') }}
                     {% else %}
                     {{ _('Citation share (stimata)') }}
@@ -587,7 +589,9 @@
                         </div>
                       </div>
                       <div class="sov-table__status" role="cell">
-                        {% if e.evidence == 'measured' %}
+                        {% if e.measured_zero %}
+                        <span class="evidence-badge" data-evidence="measured" title="{{ _('Probe LLM eseguito: 0 menzioni su questo engine') }}">{{ _('Misurato · 0') }}</span>
+                        {% elif e.evidence == 'measured' %}
                         <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}</span>
                         {% elif e.evidence == 'unavailable' %}
                         <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('N/D') }}</span>

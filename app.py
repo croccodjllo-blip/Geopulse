@@ -2283,7 +2283,7 @@ def process_pending_analyze_jobs(
         if job is None:
             stats["empty"] += 1
             break
-            lease_token = getattr(job, "lease_token", None)
+        lease_token = getattr(job, "lease_token", None)
         user = User.query.get(job.user_id)
         if user is None:
             fail_job(db.session, job, "Utente non trovato")

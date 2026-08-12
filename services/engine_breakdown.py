@@ -392,7 +392,9 @@ def apply_measured_sov(
         if rate_f > 0:
             positive_rates.append(rate_f)
 
-    # Full fallback: measured available but no positive mentions → keep proxy.
+    # Full fallback: measured available but no positive mentions → keep proxy
+    # share/propensity, but mark probed engines as measured-zero so the UI does
+    # not look like citation monitor never ran (all "Stimato").
     if not positive_rates:
         out = dict(breakdown)
         out["measured"] = measured
@@ -405,7 +407,31 @@ def apply_measured_sov(
                 "non una share measured a zero."
             )
         )
-        if out.get("evidence") == "proxy":
+        engines = [dict(e) for e in (out.get("engines") or [])]
+        probed = 0
+        for eng in engines:
+            m = measured_engines.get(str(eng.get("id")))
+            if not m:
+                continue
+            if m.get("evidence") in {"unavailable", "pending"}:
+                eng["evidence"] = m.get("evidence")
+                if m.get("reason"):
+                    eng["reason"] = m.get("reason")
+                continue
+            rate = m.get("mention_rate")
+            if rate is None:
+                continue
+            eng["evidence"] = "measured"
+            eng["mention_rate"] = 0
+            eng["measured_zero"] = True
+            if m.get("samples") is not None:
+                eng["samples"] = m.get("samples")
+            probed += 1
+        out["engines"] = engines
+        if probed:
+            out["evidence"] = "mixed"
+            out["label"] = "Misurato · 0 menzioni (share Stimata)"
+        elif out.get("evidence") == "proxy":
             out["label"] = "Stimato — probe 0 menzioni"
         return out
 
