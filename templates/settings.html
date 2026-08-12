@@ -113,7 +113,7 @@
     {% if not email_verified %}
     <p class="lede">
       {{ _('Email non ancora confermata.') }}
-      {{ _('Senza conferma non ricevi il credito di benvenuto.') }}
+      {{ _('Senza conferma l’account resta inattivo.') }}
     </p>
     <form method="post" class="form-grid panel u-mb-125">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />

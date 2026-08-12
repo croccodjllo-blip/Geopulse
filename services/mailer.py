@@ -206,34 +206,20 @@ def build_email_verify_email(
     user_name: str,
     verify_url: str,
     expires_hours: int = 48,
-    welcome_eur: float | None = None,
 ) -> tuple[str, str, str]:
     first = (user_name or "ciao").strip().split(" ")[0] or "ciao"
     subject = "Centropic — conferma la tua email"
-    welcome_line = ""
-    if welcome_eur and welcome_eur > 0:
-        welcome_line = (
-            f"Dopo la conferma riceverai €{welcome_eur:.2f} di credito di benvenuto.\n\n"
-        )
     text = (
         f"Ciao {first},\n\n"
         "conferma il tuo indirizzo email per attivare l’account Centropic.\n"
-        f"{welcome_line}"
         f"Apri questo link entro {expires_hours} ore:\n\n"
         f"{verify_url}\n\n"
         "Se non hai creato tu l’account, ignora questa email.\n\n"
         "— Centropic (centropic.ai)\n"
     )
-    welcome_html = (
-        f"<p>Dopo la conferma riceverai <strong>€{welcome_eur:.2f}</strong> "
-        "di credito di benvenuto.</p>"
-        if welcome_eur and welcome_eur > 0
-        else ""
-    )
     html = (
         f"<p>Ciao {first},</p>"
         "<p>conferma il tuo indirizzo email per attivare l’account Centropic.</p>"
-        f"{welcome_html}"
         f"<p><a href=\"{verify_url}\">Conferma email</a> "
         f"(valido {expires_hours} ore).</p>"
         "<p>Se non hai creato tu l’account, ignora questa email.</p>"

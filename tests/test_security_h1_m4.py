@@ -1,4 +1,4 @@
-"""Security fixes H1–H3 / M1–M4: lease debit, redirects, password, welcome gate."""
+"""Security fixes H1–H3 / M1–M4: lease debit, redirects, password, email gate."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from services.security import password_policy_error, safe_next_url
 from services.usage_billing import debit_leased_job_usage, hold_credit
 
 
-def _user(email: str, *, balance: int = 500) -> User:
+def _user(email: str, *, balance: int = 500, verified: bool = True) -> User:
     u = User(
         email=email,
         name="T",
@@ -27,6 +27,7 @@ def _user(email: str, *, balance: int = 500) -> User:
         credit_held_cents=0,
         password_hash="x",
         welcome_credit_granted=False,
+        email_verified_at=datetime.now(timezone.utc) if verified else None,
     )
     u.set_password("SecurePass1!")
     db.session.add(u)
@@ -138,7 +139,9 @@ def test_debit_leased_job_usage_atomic_success():
         assert job.held_cents == 160
 
 
-def test_register_does_not_grant_welcome_without_verify(client):
+def test_register_with_mail_stays_inactive_and_no_welcome(monkeypatch, client):
+    monkeypatch.setattr("app.mail_configured", lambda: True)
+    monkeypatch.setattr("app.send_email", lambda **kwargs: True)
     email = "nofarm@example.com"
     resp = client.post(
         "/register",
@@ -152,11 +155,17 @@ def test_register_does_not_grant_welcome_without_verify(client):
         follow_redirects=False,
     )
     assert resp.status_code in (302, 303)
+    assert "/login" in (resp.headers.get("Location") or "")
     with app.app_context():
         u = User.query.filter_by(email=email).first()
         assert u is not None
         assert int(u.credit_balance_cents or 0) == 0
-        assert not bool(u.welcome_credit_granted)
+        assert u.email_verified_at is None
+        assert u.verify_token_hash is not None
+    # No session until verify.
+    dash = client.get("/dashboard", follow_redirects=False)
+    assert dash.status_code in (302, 303)
+    assert "/login" in (dash.headers.get("Location") or "")
 
 
 def test_register_anti_enumeration(client):
@@ -177,26 +186,41 @@ def test_register_anti_enumeration(client):
     assert "già registrata" not in body.lower()
 
 
-def test_verify_email_grants_welcome_once(monkeypatch, client):
+def test_login_blocks_unverified_user(monkeypatch, client):
+    monkeypatch.setattr("app.mail_configured", lambda: True)
+    monkeypatch.setattr("app.send_email", lambda **kwargs: True)
+    with app.app_context():
+        _user("pending@example.com", balance=0, verified=False)
+    resp = client.post(
+        "/login",
+        data={
+            "email": "pending@example.com",
+            "password": "SecurePass1!",
+        },
+        follow_redirects=True,
+    )
+    body = resp.get_data(as_text=True).lower()
+    assert "non attivo" in body or "conferma" in body
+    with client.session_transaction() as sess:
+        assert "user_id" not in sess
+
+
+def test_verify_email_activates_without_welcome_credit(monkeypatch, client):
     with app.app_context():
         ensure_schema()
-        u = _user("verify-me@example.com", balance=0)
+        u = _user("verify-me@example.com", balance=0, verified=False)
         raw = u.issue_verify_token(hours=48)
         db.session.commit()
         uid = u.id
 
     monkeypatch.setattr("app.mail_configured", lambda: True)
-    monkeypatch.setattr("app.WELCOME_CREDIT_CENTS", 200)
 
     resp = client.get(f"/verify-email/{raw}", follow_redirects=False)
     assert resp.status_code in (302, 303)
+    assert "/dashboard" in (resp.headers.get("Location") or "")
     with app.app_context():
         u = db.session.get(User, uid)
         assert u.email_verified_at is not None
-        assert bool(u.welcome_credit_granted)
-        assert int(u.credit_balance_cents) == 200
-    resp2 = client.get(f"/verify-email/{raw}", follow_redirects=False)
-    assert resp2.status_code in (302, 303)
-    with app.app_context():
-        u = db.session.get(User, uid)
-        assert int(u.credit_balance_cents) == 200
+        assert int(u.credit_balance_cents) == 0
+    with client.session_transaction() as sess:
+        assert sess.get("user_id") == uid

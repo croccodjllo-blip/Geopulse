@@ -326,8 +326,6 @@ def _estimate_sov_prompts() -> int:
         return int(sov_prompt_limit())
     except Exception:
         return int(ANALYSIS_SOV_PROMPTS)
-# Welcome credit granted only after email verification (anti-farming).
-WELCOME_CREDIT_CENTS = max(0, int(os.getenv("WELCOME_CREDIT_CENTS", "200")))
 EMAIL_VERIFY_HOURS = max(1, int(os.getenv("EMAIL_VERIFY_HOURS", "48")))
 ANALYZE_BATCH_LIMIT = max(1, int(os.getenv("ANALYZE_BATCH_LIMIT", "5")))
 PASSWORD_RESET_HOURS = max(1, int(os.getenv("PASSWORD_RESET_HOURS", "2")))
@@ -565,10 +563,11 @@ class User(db.Model):
     credit_held_cents = db.Column(db.Integer, nullable=False, default=0)
     # Bumped on password change / reset to invalidate other browser sessions.
     session_version = db.Column(db.Integer, nullable=False, default=0)
-    # Email verification (welcome credit gated on verify).
+    # Email verification — account is inactive until confirmed.
     email_verified_at = db.Column(db.DateTime)
     verify_token_hash = db.Column(db.String(64))
     verify_token_expires = db.Column(db.DateTime)
+    # Legacy column (no longer granted); kept for schema compatibility.
     welcome_credit_granted = db.Column(db.Boolean, nullable=False, default=False)
     referral_code = db.Column(db.String(32), unique=True, index=True)
     referred_by = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -1417,6 +1416,10 @@ def current_user() -> User | None:
     if got is None or int(got) != expected:
         session.clear()
         return None
+    # Unverified accounts cannot hold an active session (B2B activation gate).
+    if not user.email_verified and not user.is_admin:
+        session.clear()
+        return None
     return user
 
 
@@ -1463,6 +1466,7 @@ def ensure_admin_user() -> User | None:
             credit_balance_cents=_ADMIN_CREDIT_SENTINEL,
         )
         user.set_password(ADMIN_PASSWORD)
+        user.email_verified_at = datetime.now(timezone.utc)
         db.session.add(user)
         app.logger.info("Admin creato: %s", ADMIN_EMAIL)
     else:
@@ -1483,6 +1487,8 @@ def ensure_admin_user() -> User | None:
         user.plan = "admin"
         # Always keep admin credit at sentinel value so it never appears depleted.
         user.credit_balance_cents = _ADMIN_CREDIT_SENTINEL
+        if getattr(user, "email_verified_at", None) is None:
+            user.email_verified_at = datetime.now(timezone.utc)
         if ADMIN_BOOTSTRAP:
             user.set_password(ADMIN_PASSWORD)
             app.logger.warning(
@@ -3005,7 +3011,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
     if blocked is not None:
         return None
 
-    # Prepaid gate: welcome credit should cover basic first diagnosis.
+    # Prepaid gate: skip enqueue when balance cannot cover the estimate.
     est = estimate_analysis_cost(
         openai_model=OPENAI_MODEL,
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
@@ -4829,8 +4835,7 @@ def register():
         # Anti-enumeration (M1): never reveal whether the email already exists.
         generic_ok = (
             "Se l’indirizzo non era già registrato, l’account è stato creato. "
-            "Controlla la casella email per confermare l’indirizzo "
-            "(richiesto per il credito di benvenuto)."
+            "Controlla la casella email e conferma l’indirizzo per attivarlo."
         )
         # Block public registration of the bootstrap admin mailbox (pre-claim).
         if email == ADMIN_EMAIL:
@@ -4854,6 +4859,7 @@ def register():
             role_val = (form.role.data or "").strip() or None
             if role_val and role_val.lower() in PRIVILEGE_ROLES:
                 role_val = None
+            mail_ok = mail_configured()
             user = User(
                 email=email,
                 name=form.name.data.strip(),
@@ -4878,11 +4884,13 @@ def register():
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.flush()
-            # H3: never grant welcome credit at register — only after email verify,
-            # and only when outbound mail is configured (otherwise farming is free).
             verify_raw = None
-            if mail_configured():
+            if mail_ok:
+                # Production: inactive until email confirm — no session yet.
                 verify_raw = user.issue_verify_token(hours=EMAIL_VERIFY_HOURS)
+            else:
+                # Dev/test escape hatch when outbound mail is unavailable.
+                user.email_verified_at = datetime.now(timezone.utc)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
@@ -4894,17 +4902,13 @@ def register():
                 "register.html", form=form, preview_token=preview_token
             )
 
-        if verify_raw and mail_configured():
+        if verify_raw and mail_ok:
             try:
                 verify_url = absolute_url("verify_email", token=verify_raw)
-                welcome_eur = (
-                    WELCOME_CREDIT_CENTS / 100.0 if WELCOME_CREDIT_CENTS > 0 else None
-                )
                 subject, text_body, html_body = build_email_verify_email(
                     user_name=user.name,
                     verify_url=verify_url,
                     expires_hours=EMAIL_VERIFY_HOURS,
-                    welcome_eur=welcome_eur,
                 )
                 send_email(
                     to_email=user.email,
@@ -4915,7 +4919,6 @@ def register():
             except Exception:
                 app.logger.exception("Verify email failed for %s", email)
 
-        _establish_session(user, permanent=False)
         signup_params: dict[str, Any] = {
             "method": "email",
             "event_category": "auth",
@@ -4940,36 +4943,27 @@ def register():
             except Exception:
                 app.logger.exception("claim guest preview failed user=%s", user.id)
 
-        if claimed is not None:
+        if mail_ok:
             flash(
-                "Account creato. Report completo e file di fix sbloccati in dashboard."
-                + (
-                    " Conferma l’email per il credito di benvenuto."
-                    if mail_configured()
-                    else ""
+                (
+                    "Account creato. Conferma l’email per attivarlo"
+                    + (
+                        "; il report preview sarà disponibile dopo l’accesso."
+                        if claimed is not None
+                        else "."
+                    )
+                    + " Controlla la casella (e lo spam)."
                 ),
                 "success",
             )
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("login"))
 
-        if mail_configured():
-            flash(
-                "Account creato. Conferma l’email per sbloccare il credito di benvenuto "
-                "e avviare la prima diagnosi."
-                + (
-                    f" (fino a {format_token_amount(WELCOME_CREDIT_CENTS)})"
-                    if WELCOME_CREDIT_CENTS > 0
-                    else ""
-                ),
-                "success",
-            )
-        else:
-            flash(
-                "Account creato. Il credito di benvenuto richiede conferma email "
-                "(invio mail non attivo su questo server).",
-                "warning",
-            )
-        # Defer first analysis until welcome credit is granted via verify.
+        # Mail unavailable: already auto-verified above — allow immediate access.
+        _establish_session(user, permanent=False)
+        flash(
+            "Account creato (conferma email non richiesta: invio mail non attivo).",
+            "warning",
+        )
         return redirect(url_for("dashboard"))
 
     return render_template(
@@ -4995,42 +4989,9 @@ def verify_email(token: str):
         )
         return redirect(url_for("login"))
 
-    already = user.email_verified
+    already_verified = user.email_verified
     user.email_verified_at = datetime.now(timezone.utc)
     user.clear_verify_token()
-
-    granted_now = False
-    if WELCOME_CREDIT_CENTS > 0 and mail_configured():
-        # Atomic grant: conditional flag + unique ledger key (welcome:{user_id}).
-        pi = f"welcome:{user.id}"
-        already = CreditLedger.query.filter_by(stripe_payment_intent=pi).first()
-        if already is None and not bool(getattr(user, "welcome_credit_granted", False)):
-            claimed = (
-                User.query.filter_by(id=user.id, welcome_credit_granted=False)
-                .update({"welcome_credit_granted": True}, synchronize_session=False)
-            )
-            if claimed == 1:
-                try:
-                    topup_credit(
-                        db.session,
-                        CreditLedger,
-                        user,
-                        amount_eur_cents=WELCOME_CREDIT_CENTS,
-                        description=(
-                            f"Credito di benvenuto {format_token_amount(WELCOME_CREDIT_CENTS)}"
-                        ),
-                        stripe_payment_intent=pi,
-                    )
-                    user.welcome_credit_granted = True
-                    granted_now = True
-                except IntegrityError:
-                    db.session.rollback()
-                    user = db.session.get(User, user.id)
-                    if user is not None:
-                        user.email_verified_at = datetime.now(timezone.utc)
-                        user.clear_verify_token()
-                        user.welcome_credit_granted = True
-
     db.session.commit()
     _establish_session(user, permanent=False)
 
@@ -5086,18 +5047,16 @@ def verify_email(token: str):
         if user is not None
         else False
     )
-    if (granted_now or already) and not already_has_site:
+    # First diagnosis only when prepaid balance can cover it (no welcome grant).
+    if not already_verified and not already_has_site:
         job_id = start_first_analysis_if_needed(user, website)
 
-    if granted_now:
-        msg = f"Email confermata. Credito di benvenuto: {format_token_amount(WELCOME_CREDIT_CENTS)}."
-        if getattr(user, "on_trial", False):
-            msg += f" Plus trial {TRIAL_DAYS} giorni attivo."
-        if job_id:
-            msg += " Prima diagnosi avviata."
-        flash(msg, "success")
-    else:
-        flash("Email confermata.", "success")
+    msg = "Email confermata. Account attivo."
+    if getattr(user, "on_trial", False):
+        msg += f" Plus trial {TRIAL_DAYS} giorni attivo."
+    if job_id:
+        msg += " Prima diagnosi avviata."
+    flash(msg, "success")
     if job_id:
         return redirect(url_for("dashboard", job=job_id))
     return redirect(url_for("dashboard"))
@@ -5120,6 +5079,34 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user is None or not user.check_password(form.password.data):
             flash("Credenziali non valide.", "error")
+        elif not user.email_verified and not user.is_admin:
+            # Correct password but inactive — resend verify (rate-limited), no session.
+            if mail_configured() and limiter.allow(
+                f"verify-resend-login:{user.id}", limit=3, window_seconds=3600
+            ):
+                try:
+                    raw = user.issue_verify_token(hours=EMAIL_VERIFY_HOURS)
+                    db.session.commit()
+                    verify_url = absolute_url("verify_email", token=raw)
+                    subject, text_body, html_body = build_email_verify_email(
+                        user_name=user.name,
+                        verify_url=verify_url,
+                        expires_hours=EMAIL_VERIFY_HOURS,
+                    )
+                    send_email(
+                        to_email=user.email,
+                        subject=subject,
+                        text_body=text_body,
+                        html_body=html_body,
+                    )
+                except Exception:
+                    app.logger.exception("verify resend on login failed")
+            flash(
+                "Account non attivo: conferma l’email prima di accedere. "
+                "Se non trovi il messaggio, controlla lo spam — "
+                "ti abbiamo inviato un nuovo link se possibile.",
+                "warning",
+            )
         else:
             # Persistent cookie only when the user opts into "Resta connesso".
             _establish_session(user, permanent=bool(form.remember_me.data))
@@ -6495,14 +6482,10 @@ def dashboard_settings():
                 raw = user.issue_verify_token(hours=EMAIL_VERIFY_HOURS)
                 db.session.commit()
                 verify_url = absolute_url("verify_email", token=raw)
-                welcome_eur = (
-                    WELCOME_CREDIT_CENTS / 100.0 if WELCOME_CREDIT_CENTS > 0 else None
-                )
                 subject, text_body, html_body = build_email_verify_email(
                     user_name=user.name,
                     verify_url=verify_url,
                     expires_hours=EMAIL_VERIFY_HOURS,
-                    welcome_eur=welcome_eur,
                 )
                 send_email(
                     to_email=user.email,
