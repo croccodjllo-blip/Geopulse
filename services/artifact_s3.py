@@ -82,12 +82,18 @@ def s3_region() -> str:
 def _client():
     try:
         import boto3
+        from botocore.client import Config
     except ImportError as exc:  # pragma: no cover - env without boto3
         raise RuntimeError("boto3 is required for ANALYZE_ARTIFACT_STORE=s3") from exc
     kwargs: dict[str, Any] = {"region_name": s3_region()}
     endpoint = (os.getenv("ANALYZE_S3_ENDPOINT_URL") or "").strip()
     if endpoint:
+        # MinIO / path-style S3-compatible endpoints.
         kwargs["endpoint_url"] = endpoint
+        kwargs["config"] = Config(
+            signature_version="s3v4",
+            s3={"addressing_style": "path"},
+        )
     return boto3.client("s3", **kwargs)
 
 

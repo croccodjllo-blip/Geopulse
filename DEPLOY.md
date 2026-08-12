@@ -148,6 +148,17 @@ Senza `REDIS_URL` (o con `ANALYZE_QUEUE_BACKEND=db`) i worker restano sul claim 
 Con `LLM_TPM_BACKEND=redis` i worker condividono anche il budget token/minuto.
 Con `ANALYZE_ARTIFACT_STORE=s3` i pack ottimizzazione vanno su object storage (`pack_uri`); senza bucket resta tutto in Postgres.
 
+### MinIO locale (S3-compatible, loopback)
+
+Se non ci sono credenziali AWS cloud, sul VPS:
+
+```bash
+sudo bash scripts/setup_minio_pack_store.sh
+systemctl restart aio-bot aio-bot-analyze.service
+```
+
+Crea bucket `centropic-analyze-packs`, scrive `AWS_*` + `ANALYZE_S3_*` in `.env`, avvia `aio-bot-minio.service` su `127.0.0.1:9000`.
+
 ### Paddle Checkout — Default payment link (obbligatorio)
 
 Senza questo, overlay/API tornano `transaction_default_checkout_url_not_set` e il checkout sembra “rotto”.

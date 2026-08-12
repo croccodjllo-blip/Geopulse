@@ -1,0 +1,23 @@
+[Unit]
+Description=Centropic local MinIO (S3-compatible analyze pack store)
+After=network.target
+Before=aio-bot.service aio-bot-analyze.service
+
+[Service]
+Type=simple
+User=aio-bot
+Group=aio-bot
+WorkingDirectory=/opt/aio-bot
+EnvironmentFile=/opt/aio-bot/.env
+EnvironmentFile=-/opt/aio-bot/deploy/minio.env
+ExecStart=/opt/aio-bot/bin/minio server /opt/aio-bot/data/minio --address 127.0.0.1:9000 --console-address 127.0.0.1:9001
+Restart=always
+RestartSec=3
+Nice=5
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+ReadWritePaths=/opt/aio-bot/data/minio
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,7 @@
 [Unit]
 Description=Centropic async analyze job worker (long-running)
-After=network.target aio-bot.service
+After=network.target aio-bot-minio.service
+Wants=aio-bot-minio.service aio-bot.service
 Wants=aio-bot.service
 
 [Service]
