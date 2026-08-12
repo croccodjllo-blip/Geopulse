@@ -1,12 +1,20 @@
 [Unit]
-Description=GeoPulse async analyze job worker
+Description=Centropic async analyze job worker (long-running)
 After=network.target aio-bot.service
+Wants=aio-bot.service
 
 [Service]
-Type=oneshot
+Type=simple
 User=aio-bot
 Group=aio-bot
 WorkingDirectory=/opt/aio-bot
 EnvironmentFile=/opt/aio-bot/.env
-ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/analyze_worker.py --limit 5
-Nice=10
+Environment=ANALYZE_WORKER_CONCURRENCY=4
+Environment=ANALYZE_WORKER_IDLE_SLEEP=2
+ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/analyze_worker.py --loop
+Restart=always
+RestartSec=3
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

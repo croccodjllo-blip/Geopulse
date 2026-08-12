@@ -59,11 +59,15 @@ def call_with_retries(
     retry_on: Callable[[BaseException], bool] | None = None,
 ) -> T:
     """Call ``fn`` with retries on rate-limit / transient errors."""
+    from services.llm_rpm import acquire_for_label
+
     predicate = retry_on or _is_rate_limit
     last: BaseException | None = None
     attempts = max(1, int(retries))
     for attempt in range(attempts):
         try:
+            # Client-side RPM before each attempt (shared API keys across jobs).
+            acquire_for_label(label)
             return fn()
         except Exception as exc:  # noqa: BLE001 — provider SDKs vary
             last = exc

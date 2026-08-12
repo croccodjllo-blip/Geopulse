@@ -1,12 +1,14 @@
 [Unit]
-Description=GeoPulse async analyze queue every 2 minutes
+Description=Centropic analyze queue safety-net (fallback if loop worker is down)
+# Prefer the long-running aio-bot-analyze.service (--loop). This timer is a
+# backup oneshot so pending jobs still drain if the loop unit is stopped.
 
 [Timer]
-OnBootSec=2min
-OnUnitActiveSec=2min
-AccuracySec=30s
+OnBootSec=5min
+OnUnitActiveSec=10min
+AccuracySec=1min
 Persistent=true
-Unit=aio-bot-analyze.service
+Unit=aio-bot-analyze-oneshot.service
 
 [Install]
 WantedBy=timers.target
