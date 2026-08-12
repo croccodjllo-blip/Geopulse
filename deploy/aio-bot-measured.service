@@ -11,7 +11,7 @@ Group=aio-bot
 WorkingDirectory=/opt/aio-bot
 EnvironmentFile=-/opt/aio-bot/.env
 EnvironmentFile=-/opt/aio-bot/deploy/measured-worker.env
-Environment=MEASURED_WORKER_CONCURRENCY=50
+Environment=MEASURED_WORKER_CONCURRENCY=100
 Environment=MEASURED_WORKER_IDLE_SLEEP=2
 Environment=MEASURED_DEFER=1
 ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/measured_worker.py --loop
