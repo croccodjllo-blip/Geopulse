@@ -57,6 +57,62 @@ def test_overlay_js_pins_site_and_job_on_done():
     assert "location.replace" in src
 
 
+def test_dashboard_does_not_auto_open_overlay_for_measured_followup():
+    """After crawl completes, deferred measured must not block the UI overlay."""
+    with app.app_context():
+        ensure_schema()
+        now = datetime.now(timezone.utc)
+        user = User(
+            email="fresh-measured-overlay@example.com",
+            name="M",
+            plan="plus",
+            email_verified_at=now,
+        )
+        user.set_password("x" * 12)
+        db.session.add(user)
+        db.session.commit()
+        site = SiteAnalysis(
+            user_id=user.id,
+            url="https://nike.example/",
+            domain="nike.example",
+            aio_score=66,
+            geo_score=70,
+            page_title="Nike",
+            created_at=now,
+            updated_at=now,
+        )
+        db.session.add(site)
+        db.session.commit()
+        measured = AnalysisJob(
+            user_id=user.id,
+            url=site.url,
+            status="running",
+            source="measured",
+            site_id=site.id,
+            max_pages=8,
+            run_measured=True,
+            started_at=now,
+            created_at=now,
+            heartbeat_at=now,
+            progress_phase="sov",
+            progress_done=0,
+            progress_total=1,
+        )
+        db.session.add(measured)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["user_id"] = user.id
+            sess["session_version"] = int(getattr(user, "session_version", 0) or 0)
+        resp = client.get(f"/dashboard?site={site.id}")
+        assert resp.status_code == 200
+        html = resp.get_data(as_text=True)
+        assert "nike.example" in html
+        assert 'data-auto-open="1"' not in html
+        assert "SoV measured in aggiornamento" in html
+
+
 def test_dashboard_report_uses_updated_at_not_created_at():
     with app.app_context():
         ensure_schema()

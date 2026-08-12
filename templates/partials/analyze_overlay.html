@@ -7,12 +7,12 @@
   data-analyze-overlay
   data-percent-label="{{ _('completato') }}"
   data-title="{{ _('Analisi in corso') }}"
-  data-desc="{{ _('Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina.') }}"
+  data-desc="{{ _('Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il report.') }}"
   data-fail-title="{{ _('Analisi interrotta') }}"
   data-fail-fallback="{{ _('Analisi non riuscita.') }}"
   data-error-fallback="{{ _('Errore durante l’analisi') }}"
-  data-eta-default="{{ _('Stima: 1–3 minuti con SoV measured') }}"
-  data-hint-default="{{ _('Di solito 30–90 s; con SoV measured fino a qualche minuto.') }}"
+  data-eta-default="{{ _('Stima: 30–90 secondi per crawl e pack') }}"
+  data-hint-default="{{ _('Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata.') }}"
   data-hint-live="{{ _('Aggiornamento avanzamento in tempo reale…') }}"
   data-hint-started="{{ _('Analisi avviata — calcolo avanzamento…') }}"
   data-hint-confirm="{{ _('Avvio analisi… a breve vedrai l’avanzamento in %.') }}"
@@ -88,7 +88,7 @@
           {{ _('Analisi in corso') }}
         </h2>
         <p class="analyze-overlay__desc" id="analyze-overlay-desc" data-overlay-desc>
-          {{ _('Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina.') }}
+          {{ _('Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il report.') }}
         </p>
         <p class="analyze-overlay__url" data-overlay-url hidden></p>
         <p class="analyze-overlay__eta" data-overlay-eta aria-live="polite">
@@ -118,7 +118,7 @@
     </div>
 
     <p class="analyze-overlay__hint" data-overlay-hint>
-      {{ _('Avanzamento in tempo reale · con SoV measured spesso 1–3 min') }}
+      {{ _('Avanzamento in tempo reale · report pronto dopo crawl/pack') }}
     </p>
 
     <div class="analyze-overlay__error" data-overlay-error hidden>

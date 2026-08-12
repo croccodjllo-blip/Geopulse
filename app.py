@@ -2283,7 +2283,7 @@ def process_pending_analyze_jobs(
         if job is None:
             stats["empty"] += 1
             break
-        lease_token = getattr(job, "lease_token", None)
+            lease_token = getattr(job, "lease_token", None)
         user = User.query.get(job.user_id)
         if user is None:
             fail_job(db.session, job, "Utente non trovato")
@@ -2293,6 +2293,9 @@ def process_pending_analyze_jobs(
                 db.session.commit()
             stats["error"] += 1
             continue
+        # Pin ids before pipeline commits expire the worker-thread ORM instance.
+        job_id_pinned = int(job.id)
+        user_id_pinned = int(user.id)
         measured_slot_token: str | None = None
         try:
             from services.measured_queue import (
@@ -2433,7 +2436,8 @@ def process_pending_analyze_jobs(
                         # run in ThreadPoolExecutor threads, so the outer `user`
                         # instance (loaded on the worker's own session/thread) is
                         # foreign here and would blow up on session.refresh().
-                        thread_user = db.session.get(User, user.id) or user
+                        thread_user = db.session.get(User, user_id_pinned) or user
+                        thread_job = db.session.get(AnalysisJob, job_id_pinned) or job
                         charged = record_actual_usage(
                             db.session,
                             UsageEvent,
@@ -2444,7 +2448,7 @@ def process_pending_analyze_jobs(
                             input_tokens=input_tokens,
                             output_tokens=output_tokens,
                         )
-                        accum_key = usage_accum_key(job_id=int(job.id))
+                        accum_key = usage_accum_key(job_id=job_id_pinned)
                         debit_cents = add_usage_fraction(accum_key, charged)
                         # Soft balance guard while aggregating.
                         projected = peek_usage_accum_cents(accum_key)
@@ -2458,7 +2462,7 @@ def process_pending_analyze_jobs(
                             CreditLedger,
                             AnalysisJob,
                             thread_user,
-                            job,
+                            thread_job,
                             lease_token=lease_token,
                             cost_eur_cents=debit_cents,
                             description=_usage_ledger_description(
@@ -2514,23 +2518,24 @@ def process_pending_analyze_jobs(
 
             # FinOps: one ceil debit for all LLM calls in this job (aggregate mode).
             try:
-                flush_cents = flush_usage_accumulator(usage_accum_key(job_id=int(job.id)))
+                flush_cents = flush_usage_accumulator(usage_accum_key(job_id=job_id_pinned))
                 if flush_cents > 0:
-                    thread_user = db.session.get(User, user.id) or user
+                    thread_user = db.session.get(User, user_id_pinned) or user
+                    thread_job = db.session.get(AnalysisJob, job_id_pinned) or job
                     _assert_current_sov_debit(thread_user, flush_cents)
                     debit_leased_job_usage(
                         db.session,
                         CreditLedger,
                         AnalysisJob,
                         thread_user,
-                        job,
+                        thread_job,
                         lease_token=lease_token,
                         cost_eur_cents=flush_cents,
                         description=_usage_ledger_description("JOB", provider="aggregate", model="llm"),
                     )
                     db.session.commit()
             except Exception:
-                app.logger.exception("aggregate usage flush failed job=%s", job.id)
+                app.logger.exception("aggregate usage flush failed job=%s", job_id_pinned)
                 raise
             # Restore lease on in-memory job after pipeline commits/refreshes.
             if not getattr(job, "lease_token", None):
@@ -5606,13 +5611,32 @@ def dashboard():
     latest: SiteAnalysis | None = latest_site_for_user(
         SiteAnalysis, user, prefer_site_id=prefer_site_id
     )
-    pending_job = (
+    active_jobs = (
         AnalysisJob.query.filter(
             AnalysisJob.user_id == user.id,
             AnalysisJob.status.in_(("pending", "running")),
         )
         .order_by(AnalysisJob.created_at.desc())
-        .first()
+        .all()
+    )
+    # Blocking overlay only for crawl/primary jobs. Deferred source=measured
+    # follow-ups run in background after Stimato+pack — re-opening the full
+    # overlay makes the UI look "stuck" for minutes after the report is ready.
+    pending_job = next(
+        (
+            j
+            for j in active_jobs
+            if str(getattr(j, "source", None) or "").lower() != "measured"
+        ),
+        None,
+    )
+    measured_bg_job = next(
+        (
+            j
+            for j in active_jobs
+            if str(getattr(j, "source", None) or "").lower() == "measured"
+        ),
+        None,
     )
 
     if form.validate_on_submit():
@@ -5732,9 +5756,14 @@ def dashboard():
     if job_id_q:
         qjob = AnalysisJob.query.filter_by(id=job_id_q, user_id=user.id).first()
         if qjob is not None and qjob.status in {"pending", "running"}:
-            pending_job = qjob
+            if str(getattr(qjob, "source", None) or "").lower() == "measured":
+                measured_bg_job = qjob
+            else:
+                pending_job = qjob
         elif pending_job is None and qjob is not None:
-            pending_job = qjob
+            # Done/error job in URL: keep for error banner only when not measured bg.
+            if str(getattr(qjob, "source", None) or "").lower() != "measured":
+                pending_job = qjob
         # Completed job → show the site that was just analyzed (not an older
         # preview that happens to have a newer created_at).
         if (
@@ -5926,6 +5955,7 @@ def dashboard():
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
+        measured_bg_job=measured_bg_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
         pack_fix_html=(
