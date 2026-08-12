@@ -105,19 +105,19 @@ ADMIN_BOOTSTRAP=0
 ANALYZE_BATCH_LIMIT=5
 JOB_STALE_HEARTBEAT_MINUTES=12
 JOB_MAX_ATTEMPTS=2
-MAX_RUNNING_ANALYZE_JOBS=20
-ANALYZE_WORKER_CONCURRENCY=4
+MAX_RUNNING_ANALYZE_JOBS=40
+ANALYZE_WORKER_CONCURRENCY=8
 ANALYZE_WORKER_IDLE_SLEEP=2
 MAX_CONCURRENT_ANALYZE_FREE=1
 MAX_CONCURRENT_ANALYZE_PLUS=3
 MAX_CONCURRENT_ANALYZE_BUSINESS=5
 MAX_CONCURRENT_ANALYZE_ADMIN=8
 MAX_CONCURRENT_ANALYZE_JOBS=2
-DB_POOL_SIZE=10
-DB_MAX_OVERFLOW=20
-OPENAI_RPM=60
-PERPLEXITY_RPM=30
-ANTHROPIC_RPM=40
+DB_POOL_SIZE=24
+DB_MAX_OVERFLOW=40
+OPENAI_RPM=120
+PERPLEXITY_RPM=60
+ANTHROPIC_RPM=60
 REDIS_URL=redis://127.0.0.1:6379/0
 ANALYZE_QUEUE_BACKEND=redis
 LLM_RPM_BACKEND=redis
@@ -200,6 +200,32 @@ sudo systemctl disable --now aio-bot-analyze.timer || true
 sudo systemctl enable --now aio-bot-analyze.service
 sudo systemctl enable --now aio-bot-analyze.timer   # backup oneshot
 ```
+
+### Multi-host / più processi worker
+
+Claim esclusivo = Postgres (`lease_token` + `pg_advisory_xact_lock` sul cap globale).
+Dispatch = stesso `REDIS_URL`. Ogni host può girare solo il worker (senza Gunicorn).
+
+**Stesso host, N istanze isolate:**
+
+```bash
+sudo cp deploy/aio-bot-analyze@.service /etc/systemd/system/
+sudo systemctl daemon-reload
+# opzionale: concurrency per istanza in /opt/aio-bot/deploy/analyze-worker-1.env
+sudo systemctl enable --now aio-bot-analyze@1 aio-bot-analyze@2
+# se usi @instance, spegni il service monolitico per non doppiare:
+# sudo systemctl disable --now aio-bot-analyze.service
+```
+
+**Host dedicato (solo worker):**
+
+```bash
+# .env con DATABASE_URL + REDIS_URL uguali al web
+sudo cp deploy/aio-bot-analyze-remote.service /etc/systemd/system/aio-bot-analyze.service
+sudo systemctl enable --now aio-bot-analyze.service
+```
+
+Dimensionare: `DB_POOL_SIZE ≥ WEB_CONCURRENCY×WEB_THREADS + Σ ANALYZE_WORKER_CONCURRENCY`.
 
 ### i18n (dopo edit template con `_()`)
 

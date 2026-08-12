@@ -1,7 +1,8 @@
 [Unit]
-Description=Centropic async analyze job worker (long-running)
-After=network.target aio-bot.service
-Wants=aio-bot.service
+Description=Centropic analyze worker (dedicated host, no local web)
+Documentation=file:///opt/aio-bot/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -11,6 +12,7 @@ WorkingDirectory=/opt/aio-bot
 EnvironmentFile=/opt/aio-bot/.env
 Environment=ANALYZE_WORKER_CONCURRENCY=8
 Environment=ANALYZE_WORKER_IDLE_SLEEP=2
+# Same REDIS_URL + DATABASE_URL as the web host. Claim stays exclusive via Postgres.
 ExecStart=/opt/aio-bot/.venv/bin/python /opt/aio-bot/scripts/analyze_worker.py --loop
 Restart=always
 RestartSec=3

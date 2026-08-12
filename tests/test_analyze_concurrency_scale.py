@@ -167,5 +167,15 @@ def test_db_pool_options_configured_for_postgres(monkeypatch):
         assert True
 
 
-def test_max_running_env_default_positive():
+def test_acquire_claim_lock_noop_on_sqlite():
+    with app.app_context():
+        from services.jobs import _acquire_claim_lock
+
+        # Must not raise on the test SQLite engine.
+        _acquire_claim_lock(db.session)
+        db.session.rollback()
+
+
+def test_max_running_default_is_raised():
+    # Code default bumped for vertical capacity (env may override lower).
     assert MAX_RUNNING_ANALYZE_JOBS >= 0

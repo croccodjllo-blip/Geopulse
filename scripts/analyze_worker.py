@@ -124,7 +124,7 @@ def main() -> int:
     parser.add_argument(
         "--concurrency",
         type=int,
-        default=int(os.getenv("ANALYZE_WORKER_CONCURRENCY", "4")),
+        default=int(os.getenv("ANALYZE_WORKER_CONCURRENCY", "8")),
         help="Parallel claim slots in --loop mode (default ANALYZE_WORKER_CONCURRENCY)",
     )
     parser.add_argument(

@@ -378,8 +378,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 _db_uri = app.config["SQLALCHEMY_DATABASE_URI"] or ""
 if _db_uri.startswith("postgresql"):
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "10"))),
-        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "20"))),
+        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "24"))),
+        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "40"))),
         "pool_pre_ping": True,
         "pool_recycle": max(300, int(os.getenv("DB_POOL_RECYCLE", "1800"))),
     }

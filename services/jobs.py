@@ -17,7 +17,31 @@ logger = logging.getLogger(__name__)
 STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "5")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 # Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
-MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "20")))
+MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "40")))
+# Postgres advisory lock key for serialize(count running + claim).
+_CLAIM_ADVISORY_LOCK_KEY = 872_341
+
+
+def _acquire_claim_lock(db_session: Any) -> None:
+    """Serialize global running-cap check + claim (Postgres only).
+
+    ``pg_advisory_xact_lock`` is held until the current transaction commits —
+    ``_finish_claim`` commits, so the next waiter sees an up-to-date running count.
+    No-op on SQLite / non-Postgres.
+    """
+    try:
+        from sqlalchemy import text
+
+        bind = db_session.get_bind()
+        dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
+        if dialect != "postgresql":
+            return
+        db_session.execute(
+            text("SELECT pg_advisory_xact_lock(:k)"),
+            {"k": _CLAIM_ADVISORY_LOCK_KEY},
+        )
+    except Exception:
+        logger.exception("claim advisory lock failed; continuing without it")
 
 
 class DuplicateAnalyzeJobError(RuntimeError):
@@ -330,6 +354,10 @@ def claim_next_job(
         logger.exception("reclaim_stale_jobs failed")
         db_session.rollback()
 
+    # Hold xact lock through count + claim commit so two workers cannot both
+    # pass a near-cap check and overshoot MAX_RUNNING_ANALYZE_JOBS.
+    _acquire_claim_lock(db_session)
+
     if MAX_RUNNING_ANALYZE_JOBS > 0:
         running_n = AnalysisJob.query.filter_by(status="running").count()
         if running_n >= MAX_RUNNING_ANALYZE_JOBS:
@@ -338,6 +366,10 @@ def claim_next_job(
                 running_n,
                 MAX_RUNNING_ANALYZE_JOBS,
             )
+            try:
+                db_session.rollback()  # release advisory lock without claiming
+            except Exception:
+                pass
             return None
 
     if preferred_job_id is not None:
