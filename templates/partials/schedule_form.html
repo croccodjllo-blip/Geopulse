@@ -6,11 +6,11 @@
   {% endif %}
   <div class="schedule-form__grid">
     <div class="field">
-      <label for="interval">Frequenza</label>
+      <label for="interval">{{ _('Frequenza') }}</label>
       {{ schedule_form.interval(id="interval", class_="schedule-select") }}
     </div>
     <div class="field">
-      <label for="hour">Orario (UTC)</label>
+      <label for="hour">{{ _('Orario (UTC)') }}</label>
       {{ schedule_form.hour(id="hour", class_="schedule-select") }}
     </div>
     <div class="schedule-form__action">
@@ -19,19 +19,19 @@
   </div>
   {% if site and site.rescan_active and site.next_rescan_at %}
   <p class="schedule-form__status">
-    Prossimo: <strong>{{ site.next_rescan_at.strftime('%d/%m/%Y %H:%M') }} UTC</strong>
+    {{ _('Prossimo:') }} <strong>{{ site.next_rescan_at.strftime('%d/%m/%Y %H:%M') }} UTC</strong>
     {% if site.last_rescan_at %}
-      · Ultimo {{ site.last_rescan_at.strftime('%d/%m %H:%M') }} UTC
+      · {{ _('Ultimo') }} {{ site.last_rescan_at.strftime('%d/%m %H:%M') }} UTC
     {% endif %}
   </p>
   {% elif site and site.rescan_active %}
-  <p class="schedule-form__status">Schedule attivo, in coda al worker.</p>
+  <p class="schedule-form__status">{{ _('Schedule attivo, in coda al worker.') }}</p>
   {% else %}
   <p class="schedule-form__status schedule-form__status--muted">
-    Scegli frequenza e orario, poi salva. Il worker Plus/Business esegue i controlli in automatico.
+    {{ _('Scegli frequenza e orario, poi salva. Il worker Plus/Business esegue i controlli in automatico.') }}
   </p>
   {% endif %}
   {% if site and site.last_rescan_error %}
-  <p class="field-error">Ultimo errore: {{ site.last_rescan_error }}</p>
+  <p class="field-error">{{ _('Ultimo errore') }}: {{ site.last_rescan_error }}</p>
   {% endif %}
 </form>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-12 06:36+0000\n"
+"POT-Creation-Date: 2026-08-12 07:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2597 templates/about.html:24 templates/contact.html:47
+#: app.py:2598 templates/about.html:24 templates/contact.html:47
 msgid "27 luglio 2026"
+msgstr ""
+
+#: services/analyze_eta.py:70 services/i18n_findings.py:228
+msgid "Quasi fatto"
+msgstr ""
+
+#: services/analyze_eta.py:74 services/i18n_findings.py:62
+#, python-format
+msgid "Circa %(lo)s–%(hi)s s"
+msgstr ""
+
+#: services/analyze_eta.py:77 services/i18n_findings.py:64
+msgid "Circa 1 minuto"
+msgstr ""
+
+#: services/analyze_eta.py:79 services/i18n_findings.py:63
+#, python-format
+msgid "Circa %(minutes)s minuti"
+msgstr ""
+
+#: services/analyze_eta.py:80 services/i18n_findings.py:97
+msgid "Diversi minuti (sito grande o SoV measured)"
+msgstr ""
+
+#: services/analyze_eta.py:170 services/i18n_findings.py:137
+#, python-format
+msgid "In coda · stima totale ~%(eta)s"
+msgstr ""
+
+#: services/analyze_eta.py:174 services/i18n_findings.py:86
+#, python-format
+msgid "Crawl %(done)s/%(total)s · %(eta)s rimanenti"
+msgstr ""
+
+#: services/analyze_eta.py:180 services/i18n_findings.py:258
+#, python-format
+msgid "SoV measured sugli engine · %(eta)s"
+msgstr ""
+
+#: services/analyze_eta.py:182 services/i18n_findings.py:245
+#, python-format
+msgid "Scoring · %(eta)s"
+msgstr ""
+
+#: services/analyze_eta.py:184 services/i18n_findings.py:207
+#, python-format
+msgid "Pack artifact · %(eta)s"
 msgstr ""
 
 #: services/guides.py:34 templates/about.html:57 templates/base.html:219
@@ -325,6 +372,1114 @@ msgid ""
 "  </section>\n"
 msgstr ""
 
+#: services/i18n_findings.py:15
+msgid "Accesso limitato da robots.txt"
+msgstr ""
+
+#: services/i18n_findings.py:16 templates/partials/analyze_overlay.html:16
+msgid "Aggiornamento avanzamento in tempo reale…"
+msgstr ""
+
+#: services/i18n_findings.py:17
+msgid "Aggiungi @type WebSite collegato all’Organization."
+msgstr ""
+
+#: services/i18n_findings.py:18
+msgid "Aggiungi almeno 2–3 Question/Answer in mainEntity."
+msgstr ""
+
+#: services/i18n_findings.py:19
+msgid "Aggiungi autore, bio o Organization completa per fiducia."
+msgstr ""
+
+#: services/i18n_findings.py:20
+msgid ""
+"Aggiungi blocchi User-agent dedicati (GPTBot, ClaudeBot, PerplexityBot, "
+"Google-Extended) con Allow: /."
+msgstr ""
+
+#: services/i18n_findings.py:21
+msgid "Aggiungi contact, Allow/Disallow e link a llms.txt."
+msgstr ""
+
+#: services/i18n_findings.py:22
+msgid "Aggiungi date, fonti esterne, dati quotabili e byline/author."
+msgstr ""
+
+#: services/i18n_findings.py:23
+msgid "Aggiungi date, fonti o link a riferimenti per claim più citabili."
+msgstr ""
+
+#: services/i18n_findings.py:24
+msgid "Aggiungi H2 per strutturare sezioni leggibili da AI crawler."
+msgstr ""
+
+#: services/i18n_findings.py:25
+msgid "Aggiungi JSON-LD Organization (o LocalBusiness) con name e url."
+msgstr ""
+
+#: services/i18n_findings.py:26
+msgid "Aggiungi sameAs esterni, SoftwareApplication/FAQ e contatti Organization."
+msgstr ""
+
+#: services/i18n_findings.py:27
+msgid "Aggiungi Schema.org tipizzato (Organization/WebSite come minimo)."
+msgstr ""
+
+#: services/i18n_findings.py:28
+msgid ""
+"Aggiungi sezioni Site/Summary/Important pages/Preferred citation e link "
+"canonici."
+msgstr ""
+
+#: services/i18n_findings.py:29
+msgid "Aggiungi twitter:card e twitter:title oltre Open Graph."
+msgstr ""
+
+#: services/i18n_findings.py:30
+msgid "ai.txt lint debole"
+msgstr ""
+
+#: services/i18n_findings.py:31
+msgid "ai.txt lint OK"
+msgstr ""
+
+#: services/i18n_findings.py:32
+msgid "ai.txt lint: file assente"
+msgstr ""
+
+#: services/i18n_findings.py:33
+msgid "Alert: llms.txt sparito"
+msgstr ""
+
+#: services/i18n_findings.py:34
+msgid "Alert: llms.txt sparito dopo publish"
+msgstr ""
+
+#: services/i18n_findings.py:35
+msgid "Alert: rating in calo"
+msgstr ""
+
+#: services/i18n_findings.py:36
+msgid "Alert: regressione score"
+msgstr ""
+
+#: services/i18n_findings.py:37
+msgid "Alt immagini insufficienti"
+msgstr ""
+
+#: services/i18n_findings.py:38
+msgid "Analisi ancora in coda…"
+msgstr ""
+
+#: services/i18n_findings.py:39 templates/partials/analyze_overlay.html:20
+msgid "Analisi ancora in corso — puoi lasciare questa pagina aperta."
+msgstr ""
+
+#: services/i18n_findings.py:40
+msgid "Analisi annullata."
+msgstr ""
+
+#: services/i18n_findings.py:41 templates/partials/analyze_overlay.html:17
+msgid "Analisi avviata — calcolo avanzamento…"
+msgstr ""
+
+#: services/i18n_findings.py:42
+msgid "Analisi fallita. Riprova."
+msgstr ""
+
+#: services/i18n_findings.py:43 templates/partials/analyze_overlay.html:9
+#: templates/partials/analyze_overlay.html:88
+msgid "Analisi in corso"
+msgstr ""
+
+#: services/i18n_findings.py:44 templates/partials/analyze_overlay.html:11
+msgid "Analisi interrotta"
+msgstr ""
+
+#: services/i18n_findings.py:45
+msgid "Analisi interrotta."
+msgstr ""
+
+#: services/i18n_findings.py:46
+msgid "Analisi non riuscita"
+msgstr ""
+
+#: services/i18n_findings.py:47 templates/partials/analyze_overlay.html:12
+msgid "Analisi non riuscita."
+msgstr ""
+
+#: services/i18n_findings.py:48
+msgid "Annulla analisi"
+msgstr ""
+
+#: services/i18n_findings.py:49
+msgid "Annullata"
+msgstr ""
+
+#: services/i18n_findings.py:50
+msgid "Annullata."
+msgstr ""
+
+#: services/i18n_findings.py:51
+msgid ""
+"Apri l’URL in browser in modalità anonima: deve essere pubblico e senza "
+"login."
+msgstr ""
+
+#: services/i18n_findings.py:52
+msgid "Attributo lang mancante"
+msgstr ""
+
+#: services/i18n_findings.py:53
+msgid "Author/E-E-A-T debole"
+msgstr ""
+
+#: services/i18n_findings.py:54
+msgid "Avvio analisi…"
+msgstr ""
+
+#: services/i18n_findings.py:55 templates/partials/analyze_overlay.html:18
+msgid "Avvio analisi… a breve vedrai l’avanzamento in %."
+msgstr ""
+
+#: services/i18n_findings.py:56
+msgid "Boilerplate/link pesanti"
+msgstr ""
+
+#: services/i18n_findings.py:57
+msgid "Bot AI bloccati"
+msgstr ""
+
+#: services/i18n_findings.py:58
+msgid "Brand poco identificabile"
+msgstr ""
+
+#: services/i18n_findings.py:59
+msgid "Buono — buona base, margini chiari"
+msgstr ""
+
+#: services/i18n_findings.py:60
+msgid "Canonical cross-domain"
+msgstr ""
+
+#: services/i18n_findings.py:61
+msgid "Canonical URL mancante"
+msgstr ""
+
+#: services/i18n_findings.py:65
+msgid "Citability audit debole"
+msgstr ""
+
+#: services/i18n_findings.py:66
+msgid "Citability signals presenti"
+msgstr ""
+
+#: services/i18n_findings.py:67
+msgid ""
+"Citation monitor eseguito: 0 menzioni brand sui campioni. Mostriamo la "
+"citation share stimata (proxy strutturale), non una share measured a "
+"zero."
+msgstr ""
+
+#: services/i18n_findings.py:68 templates/dashboard.html:444
+msgid ""
+"Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata "
+"(proxy), non una measured a zero."
+msgstr ""
+
+#: services/i18n_findings.py:69
+msgid "Claim assoluti rischiosi"
+msgstr ""
+
+#: services/i18n_findings.py:70
+msgid "Completa Organization con name, url, telephone/email e sameAs."
+msgstr ""
+
+#: services/i18n_findings.py:71 templates/partials/analyze_overlay.html:21
+msgid "Completamento pack…"
+msgstr ""
+
+#: services/i18n_findings.py:72
+msgid "Completata"
+msgstr ""
+
+#: services/i18n_findings.py:73
+msgid "Completata — aggiornamento…"
+msgstr ""
+
+#: services/i18n_findings.py:74 templates/partials/analyze_overlay.html:22
+msgid "Completato"
+msgstr ""
+
+#: services/i18n_findings.py:75 templates/partials/analyze_overlay.html:8
+msgid "completato"
+msgstr ""
+
+#: services/i18n_findings.py:76
+msgid "Confronto vs run precedente"
+msgstr ""
+
+#: services/i18n_findings.py:77
+msgid "Connessione rifiutata"
+msgstr ""
+
+#: services/i18n_findings.py:78
+msgid ""
+"Consenti i bot di diagnosi o ripubblica robots.txt meno restrittivo, poi "
+"ri-analizza."
+msgstr ""
+
+#: services/i18n_findings.py:79
+msgid "Contatto digitale presente"
+msgstr ""
+
+#: services/i18n_findings.py:80
+msgid "Contenuto sottile"
+msgstr ""
+
+#: services/i18n_findings.py:81
+msgid "Controlla il certificato sul dominio e riprova con https:// corretto."
+msgstr ""
+
+#: services/i18n_findings.py:82
+msgid ""
+"Controlla typo nel dominio (es. https://tuosito.com) e che il DNS sia "
+"propagato."
+msgstr ""
+
+#: services/i18n_findings.py:83
+msgid "Correggi www/non-www e http→https, poi punta direttamente alla URL finale."
+msgstr ""
+
+#: services/i18n_findings.py:84
+msgid "Coverage sitemap"
+msgstr ""
+
+#: services/i18n_findings.py:85
+msgid "Coverage sitemap non calcolabile"
+msgstr ""
+
+#: services/i18n_findings.py:87 templates/partials/analyze_overlay.html:10
+#: templates/partials/analyze_overlay.html:91
+msgid ""
+"Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa "
+"pagina."
+msgstr ""
+
+#: services/i18n_findings.py:88
+msgid "Crea /llms.txt per guidare crawler e agenti AI sul tuo contenuto."
+msgstr ""
+
+#: services/i18n_findings.py:89
+msgid "Critico — segnali AIO/GEO assenti o bloccati (diagnostica probe)"
+msgstr ""
+
+#: services/i18n_findings.py:90
+msgid "Debole — base tecnica insufficiente"
+msgstr ""
+
+#: services/i18n_findings.py:91
+msgid "Description duplicate"
+msgstr ""
+
+#: services/i18n_findings.py:92 templates/partials/analyze_overlay.html:15
+msgid "Di solito 30–90 s; con SoV measured fino a qualche minuto."
+msgstr ""
+
+#: services/i18n_findings.py:93
+msgid "Dichiarati: "
+msgstr ""
+
+#: services/i18n_findings.py:94
+msgid "Dimensioni immagini mancanti"
+msgstr ""
+
+#: services/i18n_findings.py:95
+msgid "Disallow per: "
+msgstr ""
+
+#: services/i18n_findings.py:96
+msgid "Discreto — struttura utile ma incompleta"
+msgstr ""
+
+#: services/i18n_findings.py:98
+msgid "Dominio non risolvibile"
+msgstr ""
+
+#: services/i18n_findings.py:99
+msgid "Eccellente — superficie machine-readable quasi completa"
+msgstr ""
+
+#: services/i18n_findings.py:100
+msgid "Email operativa rilevata; NAP fisico richiesto solo per LocalBusiness."
+msgstr ""
+
+#: services/i18n_findings.py:101
+msgid ""
+"Engine con menzioni LLM: evidence measured. Altri engine restano proxy "
+"euristico."
+msgstr ""
+
+#: services/i18n_findings.py:102
+msgid "Entity graph debole"
+msgstr ""
+
+#: services/i18n_findings.py:103
+msgid "Entity graph incompleto"
+msgstr ""
+
+#: services/i18n_findings.py:104
+msgid "Entity graph solido"
+msgstr ""
+
+#: services/i18n_findings.py:105
+msgid "Entità brand chiara"
+msgstr ""
+
+#: services/i18n_findings.py:106
+msgid "Entità brand incompleta"
+msgstr ""
+
+#: services/i18n_findings.py:107
+msgid "Entità brand strutturata rilevata."
+msgstr ""
+
+#: services/i18n_findings.py:108
+msgid "Era online nella run precedente; ora il probe fallisce."
+msgstr ""
+
+#: services/i18n_findings.py:109
+msgid "Era presente nella run precedente e ora non è raggiungibile."
+msgstr ""
+
+#: services/i18n_findings.py:110 templates/base.html:327
+msgid "Errore"
+msgstr ""
+
+#: services/i18n_findings.py:111
+msgid "Errore analisi"
+msgstr ""
+
+#: services/i18n_findings.py:112
+msgid "Errore di rete durante l'annullamento."
+msgstr ""
+
+#: services/i18n_findings.py:113 templates/partials/analyze_overlay.html:13
+msgid "Errore durante l’analisi"
+msgstr ""
+
+#: services/i18n_findings.py:114
+msgid "FAQ in HTML senza schema"
+msgstr ""
+
+#: services/i18n_findings.py:115
+msgid "FAQ schema"
+msgstr ""
+
+#: services/i18n_findings.py:116
+msgid "FAQ schema assente"
+msgstr ""
+
+#: services/i18n_findings.py:117
+msgid "FAQPage troppo corta"
+msgstr ""
+
+#: services/i18n_findings.py:118
+msgid "Fetch pagina fallito (timeout/rete/WAF)"
+msgstr ""
+
+#: services/i18n_findings.py:119
+msgid "File root leggibile per crawler e bot AI."
+msgstr ""
+
+#: services/i18n_findings.py:120
+msgid ""
+"File troppo corto o senza sezioni/link utili. Usa il pack Centropic come "
+"base."
+msgstr ""
+
+#: services/i18n_findings.py:121
+msgid "H1 assente"
+msgstr ""
+
+#: services/i18n_findings.py:122
+msgid "H1 multipli"
+msgstr ""
+
+#: services/i18n_findings.py:123
+msgid "hreflang assente"
+msgstr ""
+
+#: services/i18n_findings.py:124
+msgid "hreflang non allineato a lang"
+msgstr ""
+
+#: services/i18n_findings.py:125
+msgid "hreflang presente"
+msgstr ""
+
+#: services/i18n_findings.py:126
+msgid "HTML pesante"
+msgstr ""
+
+#: services/i18n_findings.py:127
+msgid "HTTPS misto/declassato"
+msgstr ""
+
+#: services/i18n_findings.py:128
+msgid "I blocchi non espongono tipi Schema.org utilizzabili."
+msgstr ""
+
+#: services/i18n_findings.py:129
+msgid "Il file è di nuovo disponibile rispetto alla run precedente."
+msgstr ""
+
+#: services/i18n_findings.py:130
+msgid "Il server ha chiuso la connessione durante il crawl."
+msgstr ""
+
+#: services/i18n_findings.py:131
+msgid "Il sito blocca i crawler su percorsi rilevanti per l’analisi."
+msgstr ""
+
+#: services/i18n_findings.py:132
+msgid "Il sito non ha risposto in tempo utile."
+msgstr ""
+
+#: services/i18n_findings.py:133
+msgid "Impossibile annullare l'analisi."
+msgstr ""
+
+#: services/i18n_findings.py:134
+msgid "Impossibile completare la richiesta HTTP verso il dominio."
+msgstr ""
+
+#: services/i18n_findings.py:135
+msgid "Impossibile contattare il server. Verifica la connessione."
+msgstr ""
+
+#: services/i18n_findings.py:136
+msgid "In attesa"
+msgstr ""
+
+#: services/i18n_findings.py:138
+msgid "In corso…"
+msgstr ""
+
+#: services/i18n_findings.py:139
+msgid "Inizia con `# Brand` e una riga `> tagline`."
+msgstr ""
+
+#: services/i18n_findings.py:140
+msgid "Inserisci almeno homepage e 2–3 pagine chiave."
+msgstr ""
+
+#: services/i18n_findings.py:141
+msgid "Insufficiente — mancano asset chiave (llms/schema/robots)"
+msgstr ""
+
+#: services/i18n_findings.py:142
+msgid "JSON-LD generico"
+msgstr ""
+
+#: services/i18n_findings.py:143
+msgid "JSON-LD non valido"
+msgstr ""
+
+#: services/i18n_findings.py:144
+msgid "JSON-LD senza @type"
+msgstr ""
+
+#: services/i18n_findings.py:145
+msgid "JSON-LD strutturato assente"
+msgstr ""
+
+#: services/i18n_findings.py:146
+msgid "JSON-LD tipizzato"
+msgstr ""
+
+#: services/i18n_findings.py:147
+msgid "La connessione HTTPS non è risultata affidabile."
+msgstr ""
+
+#: services/i18n_findings.py:148
+msgid "La pagina sembra un errore ma restituisce 200."
+msgstr ""
+
+#: services/i18n_findings.py:149
+msgid "Lazy-load eccessivo"
+msgstr ""
+
+#: services/i18n_findings.py:150
+msgid "Link a chi siamo / contatti rafforzano entità brand e E-E-A-T."
+msgstr ""
+
+#: services/i18n_findings.py:151 templates/partials/hero_contrast_demo.html:43
+msgid "llms.txt assente"
+msgstr ""
+
+#: services/i18n_findings.py:152
+msgid "llms.txt di buona qualità"
+msgstr ""
+
+#: services/i18n_findings.py:153
+msgid "llms.txt disponibile"
+msgstr ""
+
+#: services/i18n_findings.py:154
+msgid "llms.txt lint OK"
+msgstr ""
+
+#: services/i18n_findings.py:155
+msgid "llms.txt lint: file assente"
+msgstr ""
+
+#: services/i18n_findings.py:156
+msgid "llms.txt lint: migliorabile"
+msgstr ""
+
+#: services/i18n_findings.py:157
+msgid "llms.txt migliorabile"
+msgstr ""
+
+#: services/i18n_findings.py:158
+msgid "llms.txt povero"
+msgstr ""
+
+#: services/i18n_findings.py:159
+msgid "llms.txt ripristinato"
+msgstr ""
+
+#: services/i18n_findings.py:160
+msgid "llms.txt senza titolo #"
+msgstr ""
+
+#: services/i18n_findings.py:161
+msgid "llms.txt, robots, ai.txt, sitemap e JSON-LD rilevati sul dominio."
+msgstr ""
+
+#: services/i18n_findings.py:162
+msgid "Local pack incompleto"
+msgstr ""
+
+#: services/i18n_findings.py:163
+msgid "Local pack NAP presente"
+msgstr ""
+
+#: services/i18n_findings.py:164
+msgid "Local pack non richiesto"
+msgstr ""
+
+#: services/i18n_findings.py:165
+msgid "L’analisi si è interrotta prima di produrre il report."
+msgstr ""
+
+#: services/i18n_findings.py:166
+msgid "L’URL entra in un loop di redirect."
+msgstr ""
+
+#: services/i18n_findings.py:167
+msgid "L’URL non restituisce una pagina HTML analizzabile."
+msgstr ""
+
+#: services/i18n_findings.py:168
+msgid "L’URL non è analizzabile per policy di sicurezza."
+msgstr ""
+
+#: services/i18n_findings.py:169
+msgid "Manca About/Contatti in evidenza"
+msgstr ""
+
+#: services/i18n_findings.py:170
+msgid "Manca JSON-LD"
+msgstr ""
+
+#: services/i18n_findings.py:171
+msgid "Manca Organization"
+msgstr ""
+
+#: services/i18n_findings.py:172
+msgid "Manca un’Organization chiara collegata al sito."
+msgstr ""
+
+#: services/i18n_findings.py:173
+msgid "Manca WebSite schema"
+msgstr ""
+
+#: services/i18n_findings.py:174
+msgid "Manca: "
+msgstr ""
+
+#: services/i18n_findings.py:175
+msgid "Mancano ancora: "
+msgstr ""
+
+#: services/i18n_findings.py:176
+msgid "Mediocre — alcuni segnali, molti gap"
+msgstr ""
+
+#: services/i18n_findings.py:177
+msgid "Meta description assente o troppo corta"
+msgstr ""
+
+#: services/i18n_findings.py:178
+msgid "meta robots nofollow riduce la scoperta dei link."
+msgstr ""
+
+#: services/i18n_findings.py:179
+msgid "Misto"
+msgstr ""
+
+#: services/i18n_findings.py:180
+msgid "Misto (proxy + measured)"
+msgstr ""
+
+#: services/i18n_findings.py:181
+msgid "Misto — brand SoV da proxy"
+msgstr ""
+
+#: services/i18n_findings.py:182 services/site_guide.py:44
+#: templates/dashboard.html:593 templates/dashboard.html:797
+#: templates/partials/sov_ops.html:7 templates/pricing.html:146
+msgid "Misurato"
+msgstr ""
+
+#: services/i18n_findings.py:183
+msgid "Molti link rispetto al testo utile: riduci nav ripetitiva nella pagina."
+msgstr ""
+
+#: services/i18n_findings.py:184
+msgid "Molto debole — interventi urgenti sui segnali crawlabili"
+msgstr ""
+
+#: services/i18n_findings.py:185
+msgid "NAP coerente"
+msgstr ""
+
+#: services/i18n_findings.py:186
+msgid "NAP locale presente"
+msgstr ""
+
+#: services/i18n_findings.py:187
+msgid "NAP parziale"
+msgstr ""
+
+#: services/i18n_findings.py:188
+msgid "Nessun finding critico rilevato in questa analisi."
+msgstr ""
+
+#: services/i18n_findings.py:189
+msgid "Nessun finding critico."
+msgstr ""
+
+#: services/i18n_findings.py:190
+msgid "Nessun finding in questa categoria per questa analisi."
+msgstr ""
+
+#: services/i18n_findings.py:191
+msgid "Nessun finding in questa categoria."
+msgstr ""
+
+#: services/i18n_findings.py:192
+msgid "Nessun finding."
+msgstr ""
+
+#: services/i18n_findings.py:193
+msgid "Nessun H2"
+msgstr ""
+
+#: services/i18n_findings.py:194
+msgid "Nessun JSON-LD tipizzato rilevato."
+msgstr ""
+
+#: services/i18n_findings.py:195
+msgid "Nessun LocalBusiness: focus su Organization digitale + email."
+msgstr ""
+
+#: services/i18n_findings.py:196
+msgid "Nessuna evidenza rilevata in questa analisi."
+msgstr ""
+
+#: services/i18n_findings.py:197
+msgid "Nessuna evidenza."
+msgstr ""
+
+#: services/i18n_findings.py:198
+msgid "Nessuna immagine rilevata"
+msgstr ""
+
+#: services/i18n_findings.py:199
+msgid "Nessuna opportunità rilevata in questa analisi."
+msgstr ""
+
+#: services/i18n_findings.py:200
+msgid "Nessuna opportunità."
+msgstr ""
+
+#: services/i18n_findings.py:201
+msgid "nofollow a livello pagina"
+msgstr ""
+
+#: services/i18n_findings.py:202
+msgid "Nome, contatti e about non emergono chiaramente."
+msgstr ""
+
+#: services/i18n_findings.py:203
+msgid "Non riusciamo a risolvere il DNS di questo URL."
+msgstr ""
+
+#: services/i18n_findings.py:204
+msgid "Open Graph incompleto"
+msgstr ""
+
+#: services/i18n_findings.py:205
+msgid "Organization/LocalBusiness"
+msgstr ""
+
+#: services/i18n_findings.py:206
+msgid "Ottimo — segnali AIO/GEO ben impostati (euristico)"
+msgstr ""
+
+#: services/i18n_findings.py:208
+msgid "Pack non pubblicato"
+msgstr ""
+
+#: services/i18n_findings.py:209
+msgid "Pagina con noindex (non indicizzabile)"
+msgstr ""
+
+#: services/i18n_findings.py:210
+msgid "Pagine con poco testo nel campione crawl."
+msgstr ""
+
+#: services/i18n_findings.py:211
+msgid "Pagine isolate nel campione"
+msgstr ""
+
+#: services/i18n_findings.py:212
+msgid "Per LocalBusiness aggiungi telefono + indirizzo coerenti."
+msgstr ""
+
+#: services/i18n_findings.py:213
+msgid "Per LocalBusiness manca: "
+msgstr ""
+
+#: services/i18n_findings.py:214
+msgid "Poche prove verificabili"
+msgstr ""
+
+#: services/i18n_findings.py:215
+msgid "Pochi link in llms.txt"
+msgstr ""
+
+#: services/i18n_findings.py:216
+msgid "Policy bot AI esplicite"
+msgstr ""
+
+#: services/i18n_findings.py:217
+msgid "Policy bot AI implicite"
+msgstr ""
+
+#: services/i18n_findings.py:218
+msgid "Possibile soft-404"
+msgstr ""
+
+#: services/i18n_findings.py:219 templates/partials/analyze_overlay.html:19
+msgid "Preparazione stima…"
+msgstr ""
+
+#: services/i18n_findings.py:220
+msgid "Preparazione…"
+msgstr ""
+
+#: services/i18n_findings.py:221
+msgid ""
+"Probe measured con pochi hit: brand SoV resta sulla stima proxy; gli "
+"engine con menzioni positive restano evidenza measured."
+msgstr ""
+
+#: services/i18n_findings.py:222
+msgid "Problema certificato SSL"
+msgstr ""
+
+#: services/i18n_findings.py:223
+msgid "Pubblica /ai.txt con policy Allow/Disallow per training/crawler."
+msgstr ""
+
+#: services/i18n_findings.py:224
+msgid "Pubblica /llms.txt in root."
+msgstr ""
+
+#: services/i18n_findings.py:225
+msgid ""
+"Pubblica policy esplicite per GPTBot, ClaudeBot, PerplexityBot, Google-"
+"Extended."
+msgstr ""
+
+#: services/i18n_findings.py:226
+msgid "Publish verify: pack online"
+msgstr ""
+
+#: services/i18n_findings.py:227
+msgid "Publish verify: pack parziale"
+msgstr ""
+
+#: services/i18n_findings.py:229
+msgid "Redirect chain lunga"
+msgstr ""
+
+#: services/i18n_findings.py:230
+msgid "Redirect fuori dominio: pagina esclusa"
+msgstr ""
+
+#: services/i18n_findings.py:231
+msgid "Richiesta HTTPS ma risposta finale HTTP."
+msgstr ""
+
+#: services/i18n_findings.py:232
+msgid "Rilevati meta/rel author o byline."
+msgstr ""
+
+#: services/i18n_findings.py:233
+msgid "Riprova tra poco. Se persiste, scrivi a info@centropic.ai con l’URL."
+msgstr ""
+
+#: services/i18n_findings.py:234
+msgid ""
+"Riprova. Se ripeti l’errore, contatta info@centropic.ai con l’URL "
+"analizzato."
+msgstr ""
+
+#: services/i18n_findings.py:235
+msgid "Risposta lenta"
+msgstr ""
+
+#: services/i18n_findings.py:236
+msgid "Risposta non HTML"
+msgstr ""
+
+#: services/i18n_findings.py:237
+msgid "robots.txt assente o non raggiungibile"
+msgstr ""
+
+#: services/i18n_findings.py:238
+msgid "robots.txt raggiungibile"
+msgstr ""
+
+#: services/i18n_findings.py:239
+msgid "Scarso — ottimizzazione ancora iniziale"
+msgstr ""
+
+#: services/i18n_findings.py:240
+msgid "Schema assente"
+msgstr ""
+
+#: services/i18n_findings.py:241
+msgid "Schema quality issues"
+msgstr ""
+
+#: services/i18n_findings.py:242
+msgid "Schema quality OK"
+msgstr ""
+
+#: services/i18n_findings.py:243
+msgid "Score AIO/GEO sotto soglia"
+msgstr ""
+
+#: services/i18n_findings.py:244
+msgid "Score stabili vs run precedente"
+msgstr ""
+
+#: services/i18n_findings.py:246
+msgid "Script bloccanti"
+msgstr ""
+
+#: services/i18n_findings.py:247
+msgid "Segnale author/E-E-A-T"
+msgstr ""
+
+#: services/i18n_findings.py:248
+msgid "Segnali citabili"
+msgstr ""
+
+#: services/i18n_findings.py:249
+msgid "Sembra esserci una FAQ visiva: aggiungi JSON-LD FAQPage per AIO."
+msgstr ""
+
+#: services/i18n_findings.py:250
+msgid "Serve un H1 unico che dichiari il topic della pagina."
+msgstr ""
+
+#: services/i18n_findings.py:251
+msgid "Sessione scaduta. Aggiorna la pagina e riprova."
+msgstr ""
+
+#: services/i18n_findings.py:252
+msgid "Si è verificato un errore durante l’analisi."
+msgstr ""
+
+#: services/i18n_findings.py:253
+msgid "Sitemap assente o vuota: la scoperta resta limitata ai link."
+msgstr ""
+
+#: services/i18n_findings.py:254
+msgid "Sitemap molto profonda"
+msgstr ""
+
+#: services/i18n_findings.py:255
+msgid "Sito non raggiungibile"
+msgstr ""
+
+#: services/i18n_findings.py:256
+msgid "Solido — pronto per rafforzamenti mirati"
+msgstr ""
+
+#: services/i18n_findings.py:257
+msgid "SoV measured interrotto"
+msgstr ""
+
+#: services/i18n_findings.py:259
+msgid "Stato sconosciuto"
+msgstr ""
+
+#: services/i18n_findings.py:260
+msgid ""
+"Stima di predisposizione strutturale da score AIO/GEO, robots osservato e"
+" findings. Con Plus puoi aggiungere campioni Misurati sul citation "
+"monitor."
+msgstr ""
+
+#: services/i18n_findings.py:261 templates/partials/analyze_overlay.html:23
+msgid "Stima in preparazione…"
+msgstr ""
+
+#: services/i18n_findings.py:262 templates/partials/analyze_overlay.html:24
+msgid "Stima:"
+msgstr ""
+
+#: services/i18n_findings.py:263 templates/partials/analyze_overlay.html:14
+msgid "Stima: 1–3 minuti con SoV measured"
+msgstr ""
+
+#: services/i18n_findings.py:264 services/site_guide.py:51
+msgid "Stimato (proxy)"
+msgstr ""
+
+#: services/i18n_findings.py:265
+msgid "Stimato — probe 0 menzioni"
+msgstr ""
+
+#: services/i18n_findings.py:266
+msgid "Struttura e link sufficienti per orientare gli agenti."
+msgstr ""
+
+#: services/i18n_findings.py:267
+msgid ""
+"Telefono + indirizzo rilevati. Verifica coerenza con Google Business "
+"Profile."
+msgstr ""
+
+#: services/i18n_findings.py:268
+msgid "Telefono JSON-LD allineato al contenuto pagina."
+msgstr ""
+
+#: services/i18n_findings.py:269
+msgid "Tempo risposta >3s su parte del campione."
+msgstr ""
+
+#: services/i18n_findings.py:270
+msgid "Timeout di rete"
+msgstr ""
+
+#: services/i18n_findings.py:271
+msgid "Tipi: "
+msgstr ""
+
+#: services/i18n_findings.py:272
+msgid "Title"
+msgstr ""
+
+#: services/i18n_findings.py:273
+msgid "Title assente o troppo corto"
+msgstr ""
+
+#: services/i18n_findings.py:274
+msgid "Title duplicati"
+msgstr ""
+
+#: services/i18n_findings.py:275
+msgid "Top — diagnostica probe completa; non equivale a citazioni live garantite"
+msgstr ""
+
+#: services/i18n_findings.py:276
+msgid "Troppi redirect"
+msgstr ""
+
+#: services/i18n_findings.py:277
+msgid "Trovato JSON-LD ma senza tipi chiave (Organization, WebSite, FAQPage…)."
+msgstr ""
+
+#: services/i18n_findings.py:278
+msgid "Twitter/X cards"
+msgstr ""
+
+#: services/i18n_findings.py:279
+msgid "Twitter/X cards assenti"
+msgstr ""
+
+#: services/i18n_findings.py:280 templates/partials/schedule_form.html:35
+msgid "Ultimo errore"
+msgstr ""
+
+#: services/i18n_findings.py:281
+msgid "Un visual brand aiuta citazioni e anteprime."
+msgstr ""
+
+#: services/i18n_findings.py:282
+msgid "Una FAQPage con Q&A tipizzate aiuta answer engine e snippet."
+msgstr ""
+
+#: services/i18n_findings.py:283
+msgid "URL non consentito"
+msgstr ""
+
+#: services/i18n_findings.py:284
+msgid "Usa la homepage pubblica del sito (non un PDF, JSON o asset statico)."
+msgstr ""
+
+#: services/i18n_findings.py:285
+msgid "Usa solo URL pubblici https:// (niente localhost, IP privati o file://)."
+msgstr ""
+
+#: services/i18n_findings.py:286
+msgid "Utile per sitelink e interpretazione del dominio."
+msgstr ""
+
+#: services/i18n_findings.py:287
+msgid "Utile se hai varianti lingua/mercato; altrimenti ok su sito mono-lingua."
+msgstr ""
+
+#: services/i18n_findings.py:288
+msgid ""
+"Verifica che il dominio sia online e raggiungibile pubblicamente, poi "
+"riprova."
+msgstr ""
+
+#: services/i18n_findings.py:289
+msgid ""
+"Verifica che l’URL sia pubblico e riprova. Se usi un CDN, controlla le "
+"regole geo/bot."
+msgstr ""
+
+#: services/i18n_findings.py:290
+msgid "Verifica firewall/WAF e che l’host accetti traffico HTTPS pubblico."
+msgstr ""
+
+#: services/i18n_findings.py:291
+msgid "WebSite schema"
+msgstr ""
+
 #: services/site_guide.py:14 services/site_guide.py:506
 msgid "CVI (Centropic Visibility Index)"
 msgstr ""
@@ -359,20 +1514,10 @@ msgid ""
 "Measured = citation monitor (Plus)."
 msgstr ""
 
-#: services/site_guide.py:44 templates/dashboard.html:593
-#: templates/dashboard.html:795 templates/partials/sov_ops.html:7
-#: templates/pricing.html:146
-msgid "Misurato"
-msgstr ""
-
 #: services/site_guide.py:46
 msgid ""
 "Segnale osservato direttamente (probe HTTP/HTML) o menzione contata via "
 "API LLM configurate."
-msgstr ""
-
-#: services/site_guide.py:51
-msgid "Stimato (proxy)"
 msgstr ""
 
 #: services/site_guide.py:53
@@ -512,7 +1657,7 @@ msgid ""
 "dello Share of Voice."
 msgstr ""
 
-#: services/site_guide.py:218 templates/dashboard.html:722
+#: services/site_guide.py:218 templates/dashboard.html:724
 msgid "Pagine critiche"
 msgstr ""
 
@@ -633,7 +1778,7 @@ msgstr ""
 msgid "Le pagine critiche evidenziano URL con gap gravi"
 msgstr ""
 
-#: services/site_guide.py:315 templates/dashboard.html:980
+#: services/site_guide.py:315 templates/dashboard.html:982
 msgid "Pack ottimizzazione"
 msgstr ""
 
@@ -725,7 +1870,7 @@ msgstr ""
 msgid "Locales: hreflang e coerenza mercati"
 msgstr ""
 
-#: services/site_guide.py:386 templates/dashboard.html:837
+#: services/site_guide.py:386 templates/dashboard.html:839
 msgid "Competitor snapshot"
 msgstr ""
 
@@ -1031,7 +2176,7 @@ msgid ""
 msgstr ""
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/dashboard.html:870 templates/partials/auth_help.html:7
+#: templates/dashboard.html:872 templates/partials/auth_help.html:7
 #: templates/partials/auth_help.html:19 templates/product.html:21
 #: templates/termini.html:21
 msgid "e"
@@ -1251,12 +2396,12 @@ msgid "Principale"
 msgstr ""
 
 #: templates/base.html:130 templates/base.html:232 templates/dashboard.html:121
-#: templates/dashboard.html:823 templates/history.html:2
+#: templates/dashboard.html:825 templates/history.html:2
 #: templates/partials/app_sidebar.html:59 templates/site_history.html:2
 msgid "Storico"
 msgstr ""
 
-#: templates/base.html:133 templates/dashboard.html:644
+#: templates/base.html:133 templates/dashboard.html:646
 #: templates/partials/app_sidebar.html:72
 msgid "Impostazioni"
 msgstr ""
@@ -1367,10 +2512,6 @@ msgstr ""
 
 #: templates/base.html:324
 msgid "Copiato"
-msgstr ""
-
-#: templates/base.html:327
-msgid "Errore"
 msgstr ""
 
 #: templates/base.html:337 templates/preview_analyze.html:20
@@ -1673,7 +2814,7 @@ msgstr ""
 msgid "Siti"
 msgstr ""
 
-#: templates/dashboard.html:52 templates/partials/analyze_overlay.html:86
+#: templates/dashboard.html:52 templates/partials/analyze_overlay.html:102
 msgid "Crawl"
 msgstr ""
 
@@ -1714,7 +2855,7 @@ msgid "Centropic Visibility Index"
 msgstr ""
 
 #: templates/dashboard.html:101 templates/dashboard.html:354
-#: templates/dashboard.html:1026 templates/sample_report.html:28
+#: templates/dashboard.html:1028 templates/sample_report.html:28
 msgid "CVI"
 msgstr ""
 
@@ -1722,13 +2863,13 @@ msgstr ""
 msgid "Apri sito"
 msgstr ""
 
-#: templates/dashboard.html:106 templates/dashboard.html:764
+#: templates/dashboard.html:106 templates/dashboard.html:766
 #: templates/partials/dashboard_shell.html:85
 #: templates/partials/dashboard_shell.html:119 templates/pricing.html:31
 msgid "pagine"
 msgstr ""
 
-#: templates/dashboard.html:113 templates/dashboard.html:1060
+#: templates/dashboard.html:113 templates/dashboard.html:1062
 #: templates/partials/dashboard_shell.html:53
 msgid "Scarica pack"
 msgstr ""
@@ -1818,12 +2959,12 @@ msgid "Vista report"
 msgstr ""
 
 #: templates/dashboard.html:172 templates/dashboard.html:178
-#: templates/dashboard.html:573 templates/partials/analyze_overlay.html:88
+#: templates/dashboard.html:573 templates/partials/analyze_overlay.html:104
 msgid "Score"
 msgstr ""
 
 #: templates/dashboard.html:173 templates/dashboard.html:177
-#: templates/dashboard.html:1049 templates/partials/analyze_overlay.html:87
+#: templates/dashboard.html:1051 templates/partials/analyze_overlay.html:103
 msgid "SoV"
 msgstr ""
 
@@ -1839,14 +2980,14 @@ msgstr ""
 msgid "Edge"
 msgstr ""
 
-#: templates/dashboard.html:182 templates/partials/analyze_overlay.html:89
+#: templates/dashboard.html:182 templates/partials/analyze_overlay.html:105
 msgid "Pack"
 msgstr ""
 
 #: templates/dashboard.html:274 templates/dashboard.html:286
 #: templates/dashboard.html:313 templates/dashboard.html:336
 #: templates/dashboard.html:359 templates/dashboard.html:597
-#: templates/dashboard.html:795 templates/partials/sov_ops.html:11
+#: templates/dashboard.html:797 templates/partials/sov_ops.html:11
 #: templates/pricing.html:145
 msgid "Stimato"
 msgstr ""
@@ -1928,12 +3069,6 @@ msgstr ""
 
 #: templates/dashboard.html:439
 msgid "Citation share (stimata)"
-msgstr ""
-
-#: templates/dashboard.html:444
-msgid ""
-"Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata "
-"(proxy), non una measured a zero."
 msgstr ""
 
 #: templates/dashboard.html:446
@@ -2023,301 +3158,301 @@ msgstr ""
 msgid "allow"
 msgstr ""
 
-#: templates/dashboard.html:632
+#: templates/dashboard.html:634
 msgid "Nessun breakdown disponibile."
 msgstr ""
 
-#: templates/dashboard.html:637
+#: templates/dashboard.html:639
 msgid "GEO suite"
 msgstr ""
 
-#: templates/dashboard.html:640
+#: templates/dashboard.html:642
 msgid "Suite"
 msgstr ""
 
-#: templates/dashboard.html:641
+#: templates/dashboard.html:643
 msgid "GEO / AIO avanzato"
 msgstr ""
 
-#: templates/dashboard.html:646 templates/dashboard.html:664
-#: templates/dashboard.html:1076 templates/verify.html:2
+#: templates/dashboard.html:648 templates/dashboard.html:666
+#: templates/dashboard.html:1078 templates/verify.html:2
 #: templates/verify.html:8
 msgid "Publish verify"
 msgstr ""
 
-#: templates/dashboard.html:652
+#: templates/dashboard.html:654
 msgid "Entity graph"
 msgstr ""
 
-#: templates/dashboard.html:653
+#: templates/dashboard.html:655
 msgid "nodi"
 msgstr ""
 
-#: templates/dashboard.html:656
+#: templates/dashboard.html:658
 msgid "Citability"
 msgstr ""
 
-#: templates/dashboard.html:660
+#: templates/dashboard.html:662
 msgid "Schema quality"
 msgstr ""
 
-#: templates/dashboard.html:668
+#: templates/dashboard.html:670
 msgid "llms lint"
 msgstr ""
 
-#: templates/dashboard.html:672
+#: templates/dashboard.html:674
 msgid "Locales"
 msgstr ""
 
-#: templates/dashboard.html:677 templates/site_history.html:31
+#: templates/dashboard.html:679 templates/site_history.html:31
 msgid "SoV measured"
 msgstr ""
 
-#: templates/dashboard.html:692
+#: templates/dashboard.html:694
 msgid "Confronto con run precedente"
 msgstr ""
 
-#: templates/dashboard.html:694
+#: templates/dashboard.html:696
 msgid "Vs run precedente"
 msgstr ""
 
-#: templates/dashboard.html:721 templates/dashboard.html:771
+#: templates/dashboard.html:723 templates/dashboard.html:773
 msgid "Priorità"
 msgstr ""
 
-#: templates/dashboard.html:727 templates/dashboard.html:730
+#: templates/dashboard.html:729 templates/dashboard.html:732
 msgid "critiche"
 msgstr ""
 
-#: templates/dashboard.html:727
+#: templates/dashboard.html:729
 msgid "critica"
 msgstr ""
 
-#: templates/dashboard.html:728 templates/dashboard.html:732
+#: templates/dashboard.html:730 templates/dashboard.html:734
 msgid "attenzione"
 msgstr ""
 
-#: templates/dashboard.html:759
+#: templates/dashboard.html:761
 msgid "Prime 24 criticità · elenco completo nel pack"
 msgstr ""
 
-#: templates/dashboard.html:762
+#: templates/dashboard.html:764
 msgid "Nessuna pagina critica su"
 msgstr ""
 
-#: templates/dashboard.html:762
+#: templates/dashboard.html:764
 msgid "analizzate."
 msgstr ""
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:766
 msgid "Analizzate"
 msgstr ""
 
-#: templates/dashboard.html:772 templates/dashboard.html:1067
+#: templates/dashboard.html:774 templates/dashboard.html:1069
 msgid "Findings critici"
 msgstr ""
 
-#: templates/dashboard.html:803
+#: templates/dashboard.html:805
 msgid "Nessuna criticità."
 msgstr ""
 
-#: templates/dashboard.html:803
+#: templates/dashboard.html:805
 msgid "check ok nascosti."
 msgstr ""
 
-#: templates/dashboard.html:808
+#: templates/dashboard.html:810
 msgid "Solo critical/warn ·"
 msgstr ""
 
-#: templates/dashboard.html:808
+#: templates/dashboard.html:810
 msgid "totali"
 msgstr ""
 
-#: templates/dashboard.html:818 templates/site_history.html:21
+#: templates/dashboard.html:820 templates/site_history.html:21
 msgid "Monitoraggio"
 msgstr ""
 
-#: templates/dashboard.html:836
+#: templates/dashboard.html:838
 msgid "Confronto"
 msgstr ""
 
-#: templates/dashboard.html:859
+#: templates/dashboard.html:861
 msgid "Infrastruttura"
 msgstr ""
 
-#: templates/dashboard.html:860 templates/dashboard.html:1062
+#: templates/dashboard.html:862 templates/dashboard.html:1064
 #: templates/partials/app_sidebar.html:47
 msgid "Edge Signals"
 msgstr ""
 
-#: templates/dashboard.html:863
+#: templates/dashboard.html:865
 msgid "Attivo"
 msgstr ""
 
-#: templates/dashboard.html:865
+#: templates/dashboard.html:867
 msgid "ZIP only"
 msgstr ""
 
-#: templates/dashboard.html:869
+#: templates/dashboard.html:871
 msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr ""
 
-#: templates/dashboard.html:870
+#: templates/dashboard.html:872
 msgid ""
 "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il"
 " tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify,"
 " PHP, Netlify, Cloudflare, Vercel)."
 msgstr ""
 
-#: templates/dashboard.html:875
+#: templates/dashboard.html:877
 msgid "Attiva hosting dinamico"
 msgstr ""
 
-#: templates/dashboard.html:878
+#: templates/dashboard.html:880
 msgid "Include"
 msgstr ""
 
-#: templates/dashboard.html:880
+#: templates/dashboard.html:882
 msgid "robots live, JSON-LD e snippet Worker/Vercel."
 msgstr ""
 
-#: templates/dashboard.html:887
+#: templates/dashboard.html:889
 msgid "Snippet avanzati"
 msgstr ""
 
-#: templates/dashboard.html:895 templates/dashboard.html:900
-#: templates/dashboard.html:906 templates/dashboard.html:911
-#: templates/dashboard.html:951 templates/dashboard.html:958
-#: templates/dashboard.html:965 templates/dashboard.html:996
+#: templates/dashboard.html:897 templates/dashboard.html:902
+#: templates/dashboard.html:908 templates/dashboard.html:913
+#: templates/dashboard.html:953 templates/dashboard.html:960
+#: templates/dashboard.html:967 templates/dashboard.html:998
 msgid "Copia"
 msgstr ""
 
-#: templates/dashboard.html:917
+#: templates/dashboard.html:919
 msgid ""
 "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid "
 "Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti "
 "puntano allo stesso Edge base."
 msgstr ""
 
-#: templates/dashboard.html:920 templates/partials/edge_wizard.html:20
+#: templates/dashboard.html:922 templates/partials/edge_wizard.html:20
 msgid "Scarica connector CMS (.zip)"
 msgstr ""
 
-#: templates/dashboard.html:931
+#: templates/dashboard.html:933
 msgid "Rigenera token"
 msgstr ""
 
-#: templates/dashboard.html:935
+#: templates/dashboard.html:937
 msgid "Disattiva"
 msgstr ""
 
-#: templates/dashboard.html:939
+#: templates/dashboard.html:941
 msgid "Crawler IA recenti su Edge:"
 msgstr ""
 
-#: templates/dashboard.html:942
+#: templates/dashboard.html:944
 msgid "hit"
 msgstr ""
 
-#: templates/dashboard.html:979 templates/landing.html:245
+#: templates/dashboard.html:981 templates/landing.html:245
 msgid "Deliverable"
 msgstr ""
 
-#: templates/dashboard.html:981
+#: templates/dashboard.html:983
 msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
 msgstr ""
 
-#: templates/dashboard.html:984
+#: templates/dashboard.html:986
 msgid "Scarica"
 msgstr ""
 
-#: templates/dashboard.html:988
+#: templates/dashboard.html:990
 msgid "Invia a"
 msgstr ""
 
-#: templates/dashboard.html:1004
+#: templates/dashboard.html:1006
 msgid "Attivazione"
 msgstr ""
 
-#: templates/dashboard.html:1005
+#: templates/dashboard.html:1007
 msgid "Prima diagnosi in un passo"
 msgstr ""
 
-#: templates/dashboard.html:1008
+#: templates/dashboard.html:1010
 msgid "Stiamo già elaborando"
 msgstr ""
 
-#: templates/dashboard.html:1009
+#: templates/dashboard.html:1011
 msgid "Al termine compariranno qui score, findings e pack."
 msgstr ""
 
-#: templates/dashboard.html:1011
+#: templates/dashboard.html:1013
 msgid "Segui lo stato"
 msgstr ""
 
-#: templates/dashboard.html:1014
+#: templates/dashboard.html:1016
 msgid ""
 "Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, "
 "findings e pack."
 msgstr ""
 
-#: templates/dashboard.html:1015
+#: templates/dashboard.html:1017
 msgid "Piano Free:"
 msgstr ""
 
-#: templates/dashboard.html:1015
+#: templates/dashboard.html:1017
 msgid "sito"
 msgstr ""
 
-#: templates/dashboard.html:1015
+#: templates/dashboard.html:1017
 msgid "analisi iniziali."
 msgstr ""
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1019
 msgid "Avvia la prima analisi"
 msgstr ""
 
-#: templates/dashboard.html:1024
+#: templates/dashboard.html:1026
 msgid "Contesto report"
 msgstr ""
 
-#: templates/dashboard.html:1031
+#: templates/dashboard.html:1033
 msgid "Signal"
 msgstr ""
 
-#: templates/dashboard.html:1042
+#: templates/dashboard.html:1044
 msgid "Gap"
 msgstr ""
 
-#: templates/dashboard.html:1052
+#: templates/dashboard.html:1054
 msgid "Brand share"
 msgstr ""
 
-#: templates/dashboard.html:1059 templates/dashboard.html:1074
+#: templates/dashboard.html:1061 templates/dashboard.html:1076
 msgid "Azioni"
 msgstr ""
 
-#: templates/dashboard.html:1063
+#: templates/dashboard.html:1065
 msgid "Connector CMS"
 msgstr ""
 
-#: templates/dashboard.html:1065
+#: templates/dashboard.html:1067
 msgid "Attiva Edge"
 msgstr ""
 
-#: templates/dashboard.html:1069 templates/history.html:11
+#: templates/dashboard.html:1071 templates/history.html:11
 msgid "Storico run"
 msgstr ""
 
-#: templates/dashboard.html:1078
+#: templates/dashboard.html:1080
 msgid "White-label MD"
 msgstr ""
 
-#: templates/dashboard.html:1079
+#: templates/dashboard.html:1081
 msgid "White-label HTML"
 msgstr ""
 
-#: templates/dashboard.html:1081
+#: templates/dashboard.html:1083
 msgid "GEO suite settings"
 msgstr ""
 
@@ -2950,13 +4085,12 @@ msgid "L’IA non cita ciò che non riesce a leggere."
 msgstr ""
 
 #: templates/landing.html:237
-#, python-format
 msgid ""
-"Centropic ti porta al 100% di predisposizione strutturale: brand visibile"
-" e interpretabile dai crawler generativi, gap di informazione chiusi, "
-"meno spazio alle allucinazioni. Stimato e Misurato restano distinti — "
-"così sai cosa abbiamo osservato sul sito e cosa abbiamo campionato negli "
-"engine."
+"Centropic ti porta a una predisposizione strutturale completa: brand "
+"visibile e interpretabile dai crawler generativi, gap di informazione "
+"chiusi, meno spazio alle allucinazioni. Stimato e Misurato restano "
+"distinti — così sai cosa abbiamo osservato sul sito e cosa abbiamo "
+"campionato negli engine."
 msgstr ""
 
 #: templates/landing.html:246
@@ -3058,7 +4192,7 @@ msgid ""
 "(Generative Engine Optimization), findings e pack llms.txt/JSON-LD."
 msgstr ""
 
-#: templates/login.html:34 templates/partials/analyze_overlay.html:111
+#: templates/login.html:34 templates/partials/analyze_overlay.html:127
 msgid "Chiudi"
 msgstr ""
 
@@ -4657,37 +5791,23 @@ msgstr ""
 msgid "Export white-label HTML"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:8
-msgid "completato"
-msgstr ""
-
-#: templates/partials/analyze_overlay.html:29
+#: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:72
-msgid "Analisi in corso"
-msgstr ""
-
-#: templates/partials/analyze_overlay.html:75
-msgid ""
-"Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa "
-"pagina."
-msgstr ""
-
-#: templates/partials/analyze_overlay.html:79
+#: templates/partials/analyze_overlay.html:95
 msgid "Stima: 30–90 secondi"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:85
+#: templates/partials/analyze_overlay.html:101
 msgid "Coda"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:98
+#: templates/partials/analyze_overlay.html:114
 msgid "Avanzamento analisi"
 msgstr ""
 
-#: templates/partials/analyze_overlay.html:105
+#: templates/partials/analyze_overlay.html:121
 msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
 msgstr ""
 
@@ -5059,10 +6179,6 @@ msgstr ""
 msgid "Brand SoV"
 msgstr ""
 
-#: templates/partials/hero_contrast_demo.html:43
-msgid "llms.txt assente"
-msgstr ""
-
 #: templates/partials/hero_contrast_demo.html:44
 msgid "JSON-LD Organization mancante"
 msgstr ""
@@ -5089,6 +6205,32 @@ msgstr ""
 
 #: templates/partials/hero_contrast_demo.html:83
 msgid "Pack Edge Signals live"
+msgstr ""
+
+#: templates/partials/schedule_form.html:9
+msgid "Frequenza"
+msgstr ""
+
+#: templates/partials/schedule_form.html:13
+msgid "Orario (UTC)"
+msgstr ""
+
+#: templates/partials/schedule_form.html:22
+msgid "Prossimo:"
+msgstr ""
+
+#: templates/partials/schedule_form.html:24
+msgid "Ultimo"
+msgstr ""
+
+#: templates/partials/schedule_form.html:28
+msgid "Schedule attivo, in coda al worker."
+msgstr ""
+
+#: templates/partials/schedule_form.html:31
+msgid ""
+"Scegli frequenza e orario, poi salva. Il worker Plus/Business esegue i "
+"controlli in automatico."
 msgstr ""
 
 #: templates/partials/sov_ops.html:1

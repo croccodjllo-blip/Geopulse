@@ -54,6 +54,32 @@ EXPECTED = {
     },
 }
 
+# Analysis results / dashboard body (stored Italian msgids, translated at render).
+FINDINGS_EXPECTED = {
+    "en": {
+        "Manca JSON-LD": "Missing JSON-LD",
+        "H1 assente": "Missing H1",
+        "Stimato (proxy)": "Estimated (proxy)",
+        "Quasi fatto": "Almost done",
+        "Analisi interrotta": "Analysis interrupted",
+        "llms.txt assente": "llms.txt missing",
+        "Ultimo errore": "Last error",
+    },
+    "de": {
+        "Manca JSON-LD": "JSON-LD fehlt",
+        "H1 assente": "H1 fehlt",
+        "Stimato (proxy)": "Geschätzt (Proxy)",
+        "Quasi fatto": "Fast fertig",
+        "Ultimo errore": "Letzter Fehler",
+    },
+    "es": {
+        "Manca JSON-LD": "Falta JSON-LD",
+        "H1 assente": "Falta H1",
+        "Stimato (proxy)": "Estimado (proxy)",
+        "Ultimo errore": "Último error",
+    },
+}
+
 
 def test_ui_chrome_translations_are_native():
     with app.app_context():
@@ -61,3 +87,13 @@ def test_ui_chrome_translations_are_native():
             with force_locale(loc):
                 for msgid, want in pairs.items():
                     assert _(msgid) == want, (loc, msgid, _(msgid), want)
+
+
+def test_dashboard_finding_strings_are_translated():
+    with app.app_context():
+        for loc, pairs in FINDINGS_EXPECTED.items():
+            with force_locale(loc):
+                for msgid, want in pairs.items():
+                    got = _(msgid)
+                    assert got == want, (loc, msgid, got, want)
+                    assert got != msgid

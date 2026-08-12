@@ -33,7 +33,7 @@
     <h2 class="page-section__title">{{ _('Findings') }}</h2>
     <ul class="plain-list">
       {% for f in verify.findings %}
-        <li><strong>{{ f.title }}</strong> — {{ f.detail }}</li>
+        <li><strong>{{ _(f.title) }}</strong>{% if f.detail %} — {{ _(f.detail) }}{% endif %}</li>
       {% endfor %}
     </ul>
   </section>

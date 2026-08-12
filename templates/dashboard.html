@@ -352,7 +352,7 @@
                       <span class="signal-diag__swatch" aria-hidden="true"></span>
                       <div class="signal-diag__copy">
                         <strong>{{ _('CVI') }}</strong>
-                        <em>{{ _('Centropic Visibility Index') }} · {{ rating.label.split('—')[0].strip() }}</em>
+                        <em>{{ _('Centropic Visibility Index') }} · {{ _(rating.label).split('—')[0].strip() }}</em>
                       </div>
                     </div>
                     <div class="signal-diag__status" role="cell">
@@ -441,7 +441,7 @@
                   </h3>
                   <p class="sov-panel__lede">
                     {% if engine_breakdown.measured_zero_all %}
-                    {{ engine_breakdown.note or _('Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), non una measured a zero.') }}
+                    {{ _(engine_breakdown.note) if engine_breakdown.note else _('Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), non una measured a zero.') }}
                     {% elif can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
                     {{ _('Menzioni generative campionate (stocastiche) + predisposizione strutturale — non Share of Voice pubblicitaria.') }}
                     {% elif not can_measured_sov %}
@@ -450,7 +450,7 @@
                     {{ _('Stima dalla struttura osservata (CVI / score + robots); con Plus puoi aggiungere campioni Misurati.') }}
                     {% endif %}
                   </p>
-                  <span class="evidence-badge sov-panel__badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.label }}</span>
+                  <span class="evidence-badge sov-panel__badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
                 </div>
 
                 <div class="sov-hero" aria-label="{{ _('Citation share brand') }}">
@@ -618,7 +618,7 @@
                         {{ e.share }}%
                       </div>
                       {% if e.evidence == 'unavailable' and e.reason %}
-                      <p class="engine-bar__hint sov-table__hint" role="cell">{{ e.reason }}</p>
+                      <p class="engine-bar__hint sov-table__hint" role="cell">{{ _(e.reason) }}</p>
                       {% endif %}
                     </li>
                     {% endfor %}
@@ -626,7 +626,9 @@
                 </div>
               </div>
 
-              <p class="sov-panel__note">{{ engine_breakdown.note }}</p>
+              {% if engine_breakdown.note %}
+              <p class="sov-panel__note">{{ _(engine_breakdown.note) }}</p>
+              {% endif %}
             </section>
             {% else %}
             <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
@@ -677,9 +679,9 @@
                 <strong>{{ _('SoV measured') }}</strong>
                 <span>
                   {% if geo_suite.sov_measured.brand_mention_rate is not none %}
-                    {{ geo_suite.sov_measured.brand_mention_rate }}% · {{ geo_suite.sov_measured.label }}
+                    {{ geo_suite.sov_measured.brand_mention_rate }}% · {{ _(geo_suite.sov_measured.label) if geo_suite.sov_measured.label else '' }}
                   {% else %}
-                    {{ geo_suite.sov_measured.label or 'n/d' }}
+                    {{ _(geo_suite.sov_measured.label) if geo_suite.sov_measured.label else 'n/d' }}
                   {% endif %}
                 </span>
               </li>
@@ -702,7 +704,7 @@
             {% if run_diff.findings %}
             <ul class="diff-strip__list">
               {% for f in run_diff.findings[:3] %}
-              <li data-severity="{{ f.severity }}"><strong>{{ f.title }}</strong> — {{ f.detail }}</li>
+              <li data-severity="{{ f.severity }}"><strong>{{ _(f.title) }}</strong>{% if f.detail %} — {{ _(f.detail) }}{% endif %}</li>
               {% endfor %}
             </ul>
             {% endif %}
@@ -748,7 +750,7 @@
                   {% if page.problems %}
                   <ul class="crawl-list__problems">
                     {% for problem in page.problems %}
-                    <li>{{ problem }}</li>
+                    <li>{{ _(problem) }}</li>
                     {% endfor %}
                   </ul>
                   {% endif %}
@@ -789,13 +791,13 @@
                   <em>{{ f.severity }}</em>
                   <div class="finding-list__body">
                     <strong>
-                      {{ f.title }}
+                      {{ _(f.title) }}
                       {% set ev = f.evidence or 'estimated' %}
                       <span class="evidence-badge" data-evidence="{{ ev }}">
                         {% if ev == 'measured' %}{{ _('Misurato') }}{% else %}{{ _('Stimato') }}{% endif %}
                       </span>
                     </strong>
-                    <span>{{ f.detail }}</span>
+                    {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
                   </div>
                 </li>
                 {% else %}

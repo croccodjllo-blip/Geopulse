@@ -50,8 +50,8 @@
     <ol class="preview-findings">
       {% for f in preview.findings_preview %}
       <li>
-        <strong>{{ f.title }}</strong>
-        {% if f.detail %}<p class="muted">{{ f.detail }}</p>{% endif %}
+        <strong>{{ _(f.title) }}</strong>
+        {% if f.detail %}<p class="muted">{{ _(f.detail) }}</p>{% endif %}
       </li>
       {% endfor %}
     </ol>

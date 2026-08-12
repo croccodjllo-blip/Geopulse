@@ -36,8 +36,8 @@
     <ol class="plain-list">
       {% for f in report.critical_findings %}
       <li>
-        <strong>{{ f.title }}</strong><br />
-        <span class="muted">{{ f.detail }}</span><br />
+        <strong>{{ _(f.title) }}</strong><br />
+        <span class="muted">{{ _(f.detail) }}</span><br />
         <em>{{ _('Fix:') }} {{ f.fix }}</em>
       </li>
       {% endfor %}

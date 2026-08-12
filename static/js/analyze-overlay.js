@@ -28,6 +28,10 @@
     return root.querySelector(sel);
   }
 
+  function t(root, key, fallback) {
+    return (root && root.getAttribute("data-" + key)) || fallback;
+  }
+
   function Overlay(root) {
     this.root = root;
     this.title = el(root, "[data-overlay-title]");
@@ -121,14 +125,16 @@
     if (!this.eta) return;
     if (label) {
       this.eta.hidden = false;
+      var prefix = t(this.root, "eta-prefix", "Stima:");
       this.eta.textContent =
         label.indexOf("Stima") === 0 ||
         label.indexOf("About") === 0 ||
         label.indexOf("Complet") === 0 ||
         label.indexOf("Quasi") === 0 ||
-        label.indexOf("Circa") === 0
+        label.indexOf("Circa") === 0 ||
+        label.indexOf(prefix) === 0
           ? label
-          : "Stima: " + label;
+          : prefix + " " + label;
     }
   };
 
@@ -161,7 +167,10 @@
     if (this.percentValue) this.percentValue.textContent = String(shown);
     if (this.barTrack) this.barTrack.setAttribute("aria-valuenow", String(shown));
     if (this.percentEl) {
-      this.percentEl.setAttribute("aria-label", shown + "% " + (this.root.getAttribute("data-percent-label") || "completato"));
+      this.percentEl.setAttribute(
+        "aria-label",
+        shown + "% " + t(this.root, "percent-label", "completato")
+      );
     }
     if (this.ringProgress) {
       var offset = this._ringLen * (1 - shown / 100);
@@ -218,9 +227,10 @@
     this.root.classList.add("is-error");
     if (this.errorBox) this.errorBox.hidden = false;
     if (this.errorText) {
-      this.errorText.textContent = message || "Analisi non riuscita.";
+      this.errorText.textContent =
+        message || t(this.root, "fail-fallback", "Analisi non riuscita.");
     }
-    if (this.title) this.title.textContent = "Analisi interrotta";
+    if (this.title) this.title.textContent = t(this.root, "fail-title", "Analisi interrotta");
     if (this.eta) this.eta.textContent = "";
     this._progress = this._displayPct;
     this._paintBar();
@@ -234,12 +244,16 @@
     this.setUrl(opts.url || this.root.getAttribute("data-url") || "");
     if (this.title) {
       this.title.textContent =
-        opts.title || this.root.getAttribute("data-title") || "Analisi in corso";
+        opts.title || t(this.root, "title", "Analisi in corso");
     }
     if (this.desc) {
       this.desc.textContent =
         opts.desc ||
-        "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina.";
+        t(
+          this.root,
+          "desc",
+          "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina."
+        );
     }
     this._stepIdx = 0;
     this._progress = 0;
@@ -247,10 +261,17 @@
     this._serverPct = null;
     this._etaSeconds = null;
     this.setPercent(0);
-    this.setEta(opts.etaLabel || "Stima: 1–3 minuti con SoV measured");
+    this.setEta(
+      opts.etaLabel || t(this.root, "eta-default", "Stima: 1–3 minuti con SoV measured")
+    );
     this.setPhase(
       opts.phase || "pending",
-      opts.hint || "Di solito 30–90 s; con SoV measured fino a qualche minuto."
+      opts.hint ||
+        t(
+          this.root,
+          "hint-default",
+          "Di solito 30–90 s; con SoV measured fino a qualche minuto."
+        )
     );
     this.openDialog();
     this._stopTimers();
@@ -305,8 +326,8 @@
           if (data.status === "running" && self._stepIdx < 1) self.setPhase("crawl", data.hint);
           if (data.status === "done") {
             self._stepIdx = 4;
-            self.setPhase("pack", "Completamento pack…");
-            self.setEta("Completato", 0);
+            self.setPhase("pack", t(self.root, "hint-pack", "Completamento pack…"));
+            self.setEta(t(self.root, "eta-done", "Completato"), 0);
             self._serverPct = 100;
             self._progress = 100;
             self._displayPct = 100;
@@ -334,7 +355,7 @@
             var info = data.error_info;
             var msg = info
               ? [info.title, info.message, info.hint].filter(Boolean).join(". ")
-              : data.error || "Errore durante l’analisi";
+              : data.error || t(self.root, "error-fallback", "Errore durante l’analisi");
             self.fail(msg);
             return;
           }
@@ -344,7 +365,11 @@
       }
       var delay = tries < 20 ? 900 : tries < 90 ? 1600 : tries < 180 ? 4000 : 8000;
       if (tries === 90 && self.hint && !(typeof self._etaSeconds === "number")) {
-        self.hint.textContent = "Analisi ancora in corso — puoi lasciare questa pagina aperta.";
+        self.hint.textContent = t(
+          self.root,
+          "hint-long",
+          "Analisi ancora in corso — puoi lasciare questa pagina aperta."
+        );
       }
       self._poll = setTimeout(tick, delay);
     };
@@ -389,7 +414,7 @@
         statusUrl: root.getAttribute("data-status-url"),
         doneUrl: root.getAttribute("data-done-url"),
         phase: root.getAttribute("data-phase") || "pending",
-        hint: "Aggiornamento avanzamento in tempo reale…",
+        hint: t(root, "hint-live", "Aggiornamento avanzamento in tempo reale…"),
       });
     } else {
       // Dashboard landed without attrs but confirm just fired — open if job strip exists.
@@ -406,7 +431,7 @@
           statusUrl: statusUrl,
           doneUrl: root.getAttribute("data-done-url") || "/dashboard",
           phase: "pending",
-          hint: "Analisi avviata — calcolo avanzamento…",
+          hint: t(root, "hint-started", "Analisi avviata — calcolo avanzamento…"),
         });
       }
     }
@@ -426,11 +451,10 @@
       api.show({
         url: url,
         phase: "pending",
-        hint:
-          form.classList.contains("js-analyze-confirm")
-            ? "Avvio analisi… a breve vedrai l’avanzamento in %."
-            : "Preparazione stima…",
-        etaLabel: "Stima in preparazione…",
+        hint: form.classList.contains("js-analyze-confirm")
+          ? t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %.")
+          : t(root, "hint-prepare", "Preparazione stima…"),
+        etaLabel: t(root, "eta-prepare", "Stima in preparazione…"),
       });
     });
   }

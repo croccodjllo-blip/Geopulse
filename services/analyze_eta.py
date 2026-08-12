@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from flask_babel import gettext as _
+
 
 # Soft cap: huge crawl budgets (admin 2000) rarely fill on typical sites, and
 # the UI estimate would otherwise look absurd. Live progress refines this.
@@ -59,26 +61,23 @@ def _elapsed_seconds(
     return max(0.0, (now - origin).total_seconds())
 
 
-def format_eta_label(seconds: int | None, *, lang: str = "it") -> str:
+def format_eta_label(seconds: int | None) -> str:
+    """User-facing ETA label; Italian msgid, translated via gettext."""
     if seconds is None:
         return ""
     s = max(0, int(seconds))
     if s < 15:
-        return "Quasi fatto" if lang == "it" else "Almost done"
+        return _("Quasi fatto")
     if s < 60:
         lo = max(15, (s // 10) * 10)
         hi = lo + 20
-        return f"Circa {lo}–{hi} s" if lang == "it" else f"About {lo}–{hi} s"
+        return _("Circa %(lo)s–%(hi)s s") % {"lo": lo, "hi": hi}
     minutes = max(1, round(s / 60))
     if minutes == 1:
-        return "Circa 1 minuto" if lang == "it" else "About 1 minute"
+        return _("Circa 1 minuto")
     if minutes <= 8:
-        return f"Circa {minutes} minuti" if lang == "it" else f"About {minutes} minutes"
-    return (
-        "Diversi minuti (sito grande o SoV measured)"
-        if lang == "it"
-        else "Several minutes (large site or measured SoV)"
-    )
+        return _("Circa %(minutes)s minuti") % {"minutes": minutes}
+    return _("Diversi minuti (sito grande o SoV measured)")
 
 
 def compute_analyze_eta(
@@ -93,9 +92,10 @@ def compute_analyze_eta(
     started_at: datetime | None = None,
     created_at: datetime | None = None,
     now: datetime | None = None,
-    lang: str = "it",
+    lang: str | None = None,  # kept for call-site compat; unused (uses request locale)
 ) -> dict[str, Any]:
     """Return ETA fields for job status JSON / overlay hint."""
+    del lang  # locale comes from Flask-Babel request context
     now = now or datetime.now(timezone.utc)
     status = (status or "").strip().lower()
 
@@ -164,26 +164,24 @@ def compute_analyze_eta(
         remaining = max(remaining, int(max(25, elapsed * 0.2)))
 
     remaining = int(min(max(remaining, 5), 900))
-    label = format_eta_label(remaining, lang=lang)
+    label = format_eta_label(remaining)
 
     if status == "pending":
-        hint = f"In coda · stima totale ~{format_eta_label(total, lang=lang).lower()}"
-        if lang != "it":
-            hint = f"Queued · total estimate {format_eta_label(total, lang=lang).lower()}"
+        hint = _("In coda · stima totale ~%(eta)s") % {
+            "eta": format_eta_label(total).lower()
+        }
     elif target > 0 and phase == "crawl":
-        hint = f"Crawl {done}/{target} · {label} rimanenti"
-        if lang != "it":
-            hint = f"Crawl {done}/{target} · {label} remaining"
+        hint = _("Crawl %(done)s/%(total)s · %(eta)s rimanenti") % {
+            "done": done,
+            "total": target,
+            "eta": label,
+        }
     elif phase in {"sov", "geo"}:
-        hint = f"SoV measured sugli engine · {label}"
-        if lang != "it":
-            hint = f"Measured SoV across engines · {label}"
+        hint = _("SoV measured sugli engine · %(eta)s") % {"eta": label}
     elif phase in {"score", "probe"}:
-        hint = f"Scoring · {label}"
-        if lang != "it":
-            hint = f"Scoring · {label}"
+        hint = _("Scoring · %(eta)s") % {"eta": label}
     elif phase == "pack":
-        hint = f"Pack artifact · {label}"
+        hint = _("Pack artifact · %(eta)s") % {"eta": label}
     else:
         hint = label
 

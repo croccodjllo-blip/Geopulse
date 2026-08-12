@@ -92,6 +92,20 @@ def active_ui_locale() -> str:
     return normalize_locale(current_l)
 
 
+def translate_stored(message: str | None) -> str:
+    """Translate a stored Italian msgid at request time.
+
+    Use this instead of ``_(info["title"])`` so Babel does not extract the
+    dict key ``title`` / ``message`` / ``hint`` as fake msgids.
+    Catalog coverage comes from ``services/i18n_findings.py``.
+    """
+    if not message:
+        return ""
+    from flask_babel import gettext
+
+    return gettext(message)
+
+
 def language_switcher_items(current: str | None = None) -> list[dict[str, Any]]:
     cur = normalize_locale(current or active_ui_locale())
     items = []

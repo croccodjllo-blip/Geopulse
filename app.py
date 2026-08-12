@@ -201,6 +201,7 @@ from services.i18n import (
     locale_meta,
     normalize_locale,
     select_locale,
+    translate_stored,
 )
 from services.phone_prefixes import (
     DEFAULT_PHONE_PREFIX,
@@ -3021,7 +3022,10 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
 
 def flash_analyze_error(exc: BaseException) -> None:
     info = classify_analyze_error(exc)
-    flash(f"{info['title']}. {info['message']} {info['hint']}", "error")
+    err_title = translate_stored(info["title"])
+    err_message = translate_stored(info["message"])
+    err_hint = translate_stored(info["hint"])
+    flash(f"{err_title}. {err_message} {err_hint}", "error")
 
 
 def start_first_analysis_if_needed(user: User, website: str | None) -> int | None:
@@ -6300,13 +6304,22 @@ def dashboard_job_status(job_id: int):
         started_at=job.started_at,
         created_at=job.created_at,
     )
+    error_info = classify_analyze_error(job.error) if job.error else None
+    if error_info:
+        # Keep Italian msgids in DB; translate presentation fields for the UI locale.
+        error_info = {
+            **error_info,
+            "title": translate_stored(error_info.get("title")),
+            "message": translate_stored(error_info.get("message")),
+            "hint": translate_stored(error_info.get("hint")),
+        }
     payload: dict[str, Any] = {
         "ok": True,
         "id": job.id,
         "status": job.status,
         "url": job.url,
         "error": job.error,
-        "error_info": classify_analyze_error(job.error) if job.error else None,
+        "error_info": error_info,
         "site_id": job.site_id,
         "max_pages": getattr(job, "max_pages", None),
         "run_measured": bool(getattr(job, "run_measured", False)),
