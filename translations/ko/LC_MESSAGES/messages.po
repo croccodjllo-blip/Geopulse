@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-12 07:20+0000\n"
+"POT-Creation-Date: 2026-08-12 20:47+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -18,9 +18,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2598 templates/about.html:24 templates/contact.html:47
+#: app.py:2889 templates/about.html:24 templates/contact.html:47
 msgid "27 luglio 2026"
 msgstr "2026년 7월 27일"
+
+#: app.py:8166
+msgid "Analisi non trovata."
+msgstr "분석을 찾을 수 없습니다."
+
+#: app.py:8174
+msgid ""
+"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
+"intanto."
+msgstr "이 서버에서는 아직 이메일 발송이 활성화되지 않았습니다. 그동안 HTML 파일을 다운로드할 수 있습니다."
+
+#: app.py:8192
+msgid "Indirizzo email non valido."
+msgstr "유효하지 않은 이메일 주소입니다."
+
+#: app.py:8202
+#, python-format
+msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
+msgstr "한도 초과: 24시간 내 팩 발송은 최대 %(n)s회입니다."
+
+#: app.py:8236
+msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
+msgstr "이메일 전송에 실패했습니다. 잠시 후 다시 시도하거나 HTML 파일을 다운로드하세요."
+
+#: app.py:8242
+#, python-format
+msgid "Pack inviato a %(email)s."
+msgstr "%(email)s(으)로 팩을 보냈습니다."
 
 #: services/analyze_eta.py:70 services/i18n_findings.py:228
 msgid "Quasi fatto"
@@ -758,7 +786,7 @@ msgstr ""
 "Citation monitor 실행: 샘플에서 브랜드 멘션 0건. measured share 0이 아니라 추정 citation "
 "share(구조적 proxy)를 표시합니다."
 
-#: services/i18n_findings.py:68 templates/dashboard.html:444
+#: services/i18n_findings.py:68 templates/dashboard.html:459
 msgid ""
 "Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), "
 "non una measured a zero."
@@ -836,8 +864,7 @@ msgstr "Sitemap 커버리지"
 msgid "Coverage sitemap non calcolabile"
 msgstr "Sitemap 커버리지 계산 불가"
 
-#: services/i18n_findings.py:87 templates/partials/analyze_overlay.html:10
-#: templates/partials/analyze_overlay.html:91
+#: services/i18n_findings.py:87
 msgid "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina."
 msgstr "Crawl, score 및 (Plus인 경우) engine별 측정 SoV. 이 페이지에 머무르세요."
 
@@ -857,7 +884,7 @@ msgstr "약함 — 기술 기반 부족"
 msgid "Description duplicate"
 msgstr "Description 중복"
 
-#: services/i18n_findings.py:92 templates/partials/analyze_overlay.html:15
+#: services/i18n_findings.py:92
 msgid "Di solito 30–90 s; con SoV measured fino a qualche minuto."
 msgstr "보통 30–90초; SoV measured 시 수 분까지."
 
@@ -927,7 +954,7 @@ msgstr "이전 실행에서는 온라인이었으나 현재 probe 실패."
 msgid "Era presente nella run precedente e ora non è raggiungibile."
 msgstr "이전 실행에는 있었으나 현재 접근 불가."
 
-#: services/i18n_findings.py:110 templates/base.html:327
+#: services/i18n_findings.py:110 templates/base.html:351
 msgid "Errore"
 msgstr "오류"
 
@@ -1212,8 +1239,8 @@ msgid "Misto — brand SoV da proxy"
 msgstr "혼합 — proxy 기반 브랜드 SoV"
 
 #: services/i18n_findings.py:182 services/site_guide.py:44
-#: templates/dashboard.html:593 templates/dashboard.html:797
-#: templates/partials/sov_ops.html:7 templates/pricing.html:146
+#: templates/dashboard.html:610 templates/dashboard.html:814
+#: templates/partials/sov_ops.html:7 templates/pricing.html:162
 msgid "Misurato"
 msgstr "측정됨"
 
@@ -1529,7 +1556,7 @@ msgstr "예상 준비 중…"
 msgid "Stima:"
 msgstr "예상:"
 
-#: services/i18n_findings.py:263 templates/partials/analyze_overlay.html:14
+#: services/i18n_findings.py:263
 msgid "Stima: 1–3 minuti con SoV measured"
 msgstr "예상: SoV measured 시 1–3분"
 
@@ -1840,7 +1867,7 @@ msgid ""
 "Share of Voice."
 msgstr "음성 점유율의 ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*에 대한 엔진 보기."
 
-#: services/site_guide.py:218 templates/dashboard.html:724
+#: services/site_guide.py:218 templates/dashboard.html:741
 msgid "Pagine critiche"
 msgstr "중요 페이지"
 
@@ -1901,7 +1928,7 @@ msgstr "용어집"
 #: services/site_guide.py:274 templates/base.html:128 templates/base.html:230
 #: templates/dashboard.html:2 templates/history.html:21
 #: templates/partials/app_sidebar.html:38 templates/site_history.html:13
-#: templates/topup.html:91 templates/verify.html:53
+#: templates/topup.html:99 templates/verify.html:53
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -1961,7 +1988,7 @@ msgstr "fix-this-week.md를 운영 체크리스트로 사용하세요."
 msgid "Le pagine critiche evidenziano URL con gap gravi"
 msgstr "중요 페이지는 심각한 격차가 있는 URL을 강조합니다."
 
-#: services/site_guide.py:315 templates/dashboard.html:982
+#: services/site_guide.py:315 templates/dashboard.html:979
 msgid "Pack ottimizzazione"
 msgstr "최적화 팩"
 
@@ -2053,7 +2080,7 @@ msgstr "게시 확인: 아티팩트가 라이브인지 확인"
 msgid "Locales: hreflang e coerenza mercati"
 msgstr "로케일: hreflang 및 시장 일관성"
 
-#: services/site_guide.py:386 templates/dashboard.html:839
+#: services/site_guide.py:386 templates/partials/competitor_snapshot.html:26
 msgid "Competitor snapshot"
 msgstr "경쟁사 스냅샷"
 
@@ -2370,9 +2397,8 @@ msgstr ""
 "파일을 우선시합니다. 우리는 창립자, 브랜드 및 에이전시가 점수로 그 격차를 해소하도록 돕습니다."
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/dashboard.html:872 templates/partials/auth_help.html:7
+#: templates/dashboard.html:869 templates/partials/auth_help.html:7
 #: templates/partials/auth_help.html:19 templates/product.html:21
-#: templates/termini.html:21
 msgid "e"
 msgstr "그리고"
 
@@ -2432,7 +2458,7 @@ msgstr "우리는 일반적인 마케팅 스위트가 아닙니다."
 msgid "Garantiamo la"
 msgstr "우리가 보장하는 것은"
 
-#: templates/about.html:48 templates/termini.html:32
+#: templates/about.html:48
 msgid "predisposizione strutturale"
 msgstr "구조적 준비 상태"
 
@@ -2466,8 +2492,9 @@ msgid "FAQ"
 msgstr "FAQ"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:242 templates/contact.html:2 templates/contact.html:9
-#: templates/partials/auth_help.html:24 templates/status.html:69
+#: templates/accessibility.html:52 templates/base.html:242 templates/contact.html:2
+#: templates/contact.html:9 templates/partials/auth_help.html:24
+#: templates/status.html:69 templates/trust.html:71
 msgid "Contatti"
 msgstr "문의"
 
@@ -2486,6 +2513,107 @@ msgstr "온라인 운영 본부:"
 #: templates/about.html:74
 msgid "Prova Centropic"
 msgstr "Centropic을 사용해 보세요"
+
+#: templates/accessibility.html:2 templates/accessibility.html:9
+#: templates/base.html:253 templates/trust.html:64
+msgid "Accessibilità"
+msgstr "접근성"
+
+#: templates/accessibility.html:3
+msgid ""
+"Dichiarazione di accessibilità Centropic: impegno WCAG, feedback e limiti "
+"noti del SaaS."
+msgstr "Centropic 접근성 선언: WCAG 준수 노력, 피드백 채널 및 SaaS의 알려진 제한 사항입니다."
+
+#: templates/accessibility.html:10
+msgid "Dichiarazione di accessibilità"
+msgstr "접근성 선언"
+
+#: templates/accessibility.html:12 templates/ai_transparency.html:12
+#: templates/cookies.html:12 templates/dpa.html:12 templates/trust.html:12
+msgid "Versione"
+msgstr "버전"
+
+#: templates/accessibility.html:13
+msgid ""
+"Centropic mira a un’interfaccia utilizzabile da tastiera e screen reader, in "
+"linea con WCAG 2.2 livello AA dove praticabile per un SaaS dashboard."
+msgstr ""
+"Centropic은 SaaS 대시보드에서 실현 가능한 범위 내에서 WCAG 2.2 AA 수준에 맞추어, 키보드와 스크린 리더로 사용할 수 "
+"있는 인터페이스를 목표로 합니다."
+
+#: templates/accessibility.html:18 templates/rimborsi.html:18
+msgid "1. Ambito"
+msgstr "1. 범위"
+
+#: templates/accessibility.html:20
+msgid ""
+"Copre centropic.ai (marketing + dashboard). Componenti chart React e overlay "
+"di analisi possono avere limiti residuali di accessibilità; li trattiamo come"
+" debito prodotto."
+msgstr ""
+"이 선언은 centropic.ai(마케팅 페이지 + 대시보드)에 적용됩니다. React 차트 컴포넌트와 분석 오버레이에는 일부 접근성 "
+"제한이 남아 있을 수 있으며, 이를 제품 부채로 관리합니다."
+
+#: templates/accessibility.html:25
+msgid "2. Misure"
+msgstr "2. 조치"
+
+#: templates/accessibility.html:27
+msgid ""
+"Focus visibili, landmark, etichette form, testi alternativi su mark "
+"principali."
+msgstr "보이는 포커스, landmark, 폼 레이블, 주요 마크의 대체 텍스트를 제공합니다."
+
+#: templates/accessibility.html:28
+msgid "Rispetto di prefers-reduced-motion sulle animazioni marketing."
+msgstr "마케팅 애니메이션에는 prefers-reduced-motion 설정을 반영합니다."
+
+#: templates/accessibility.html:29
+msgid ""
+"Contrasto mirato su chrome Logo / plan accent; stati success/warn/danger "
+"distinti."
+msgstr "Chrome 스타일 Logo / plan accent의 대비를 관리하고, success/warn/danger 상태는 명확히 구분합니다."
+
+#: templates/accessibility.html:34
+msgid "3. Limiti noti"
+msgstr "3. 알려진 제한 사항"
+
+#: templates/accessibility.html:36
+msgid ""
+"Grafici interattivi geo-ui: navigazione da tastiera non completa su tutti i "
+"series."
+msgstr "geo-ui 인터랙티브 차트: 모든 series에서 키보드 탐색이 완전하지는 않습니다."
+
+#: templates/accessibility.html:37
+msgid ""
+"Alcune tabelle dense della dashboard possono richiedere scroll orizzontale su"
+" mobile."
+msgstr "대시보드의 일부 고밀도 표는 모바일에서 가로 스크롤이 필요할 수 있습니다."
+
+#: templates/accessibility.html:38
+msgid "PDF/export di terzi non rientrano in questa dichiarazione."
+msgstr "제3자 PDF/export는 이 선언의 범위에 포함되지 않습니다."
+
+#: templates/accessibility.html:43
+msgid "4. Feedback"
+msgstr "4. 피드백"
+
+#: templates/accessibility.html:45
+msgid "Segnala barriere a"
+msgstr "접근성 장벽은 다음 주소로 알려 주세요"
+
+#: templates/accessibility.html:47
+msgid ""
+"con URL, browser/AT e descrizione. Rispondiamo di norma entro 10 giorni "
+"lavorativi."
+msgstr "URL, 브라우저/보조기술(AT), 설명을 함께 보내 주세요. 통상 영업일 기준 10일 이내에 답변드립니다."
+
+#: templates/accessibility.html:53 templates/ai_transparency.html:60
+#: templates/base.html:252 templates/base.html:278 templates/termini.html:150
+#: templates/trust.html:9
+msgid "Trust"
+msgstr "신뢰"
 
 #: templates/agencies.html:2
 msgid "Centropic per agenzie"
@@ -2579,6 +2707,130 @@ msgstr "Business 활성화"
 msgid "Parla con noi"
 msgstr "문의하기"
 
+#: templates/ai_transparency.html:2 templates/ai_transparency.html:10
+msgid "Trasparenza AI / LLM"
+msgstr "AI / LLM 투명성"
+
+#: templates/ai_transparency.html:3
+msgid ""
+"Cosa Centropic invia ai modelli LLM, finalità, training e limiti — "
+"trasparenza AI per clienti SaaS."
+msgstr "Centropic이 LLM 모델에 보내는 내용, 목적, training 및 제한 사항 — SaaS 고객을 위한 AI 투명성 안내입니다."
+
+#: templates/ai_transparency.html:9
+msgid "Legale · AI"
+msgstr "법무 · AI"
+
+#: templates/ai_transparency.html:13
+msgid ""
+"Centropic usa modelli di terze parti solo per funzioni esplicite del prodotto"
+" (artifact e citation monitor). Contatti:"
+msgstr "Centropic은 명시적인 제품 기능(artifact 및 citation monitor)에 한해 제3자 모델을 사용합니다. 문의:"
+
+#: templates/ai_transparency.html:19
+msgid "1. Cosa inviamo"
+msgstr "1. 전송하는 내용"
+
+#: templates/ai_transparency.html:21
+msgid ""
+"Snippet di pagine pubbliche che hai chiesto di analizzare (title, testo "
+"estratto, segnali strutturali)."
+msgstr "고객이 분석을 요청한 공개 페이지의 일부(title, 추출 텍스트, 구조적 신호)입니다."
+
+#: templates/ai_transparency.html:22
+msgid ""
+"Prompt di sistema/utente per generare bozze (es. llms.txt) o per probe di "
+"citazione Misurate."
+msgstr "초안 생성(예: llms.txt) 또는 측정 citation probe를 위한 시스템/사용자 prompt입니다."
+
+#: templates/ai_transparency.html:23
+msgid ""
+"Non inviamo password, carte di pagamento né contenuti di aree autenticate del"
+" tuo sito."
+msgstr "비밀번호, 결제 카드 정보 또는 고객 사이트의 인증 영역 콘텐츠는 전송하지 않습니다."
+
+#: templates/ai_transparency.html:28
+msgid "2. Finalità"
+msgstr "2. 목적"
+
+#: templates/ai_transparency.html:30
+msgid ""
+"Generazione di artifact operativi e campionamento citation share Misurata "
+"sugli engine abilitati dal piano. Gli score Stimati restano basati sul crawl "
+"strutturale senza probe LLM."
+msgstr ""
+"운영용 artifact를 생성하고, 요금제에서 활성화된 engine에서 측정 citation share를 샘플링합니다. 추정 score는 "
+"LLM probe 없이 구조적 crawl을 기반으로 합니다."
+
+#: templates/ai_transparency.html:35
+msgid "3. Provider e training"
+msgstr "3. 제공업체 및 training"
+
+#: templates/ai_transparency.html:37
+msgid "I provider attivi sono elencati nel"
+msgstr "활성 provider는 다음에 기재되어 있습니다"
+
+#: templates/ai_transparency.html:38
+msgid "DPA / Allegato A"
+msgstr "DPA / 부속서 A"
+
+#: templates/ai_transparency.html:39
+msgid ""
+"(OpenAI, Anthropic, Perplexity, Google Gemini, xAI se configurati). Centropic"
+" non usa i tuoi contenuti per addestrare modelli propri. L’uso dei dati per "
+"training da parte dei provider dipende dalle loro policy enterprise/API: "
+"usiamo endpoint API e impostazioni disponibili per limitare "
+"retention/training ove supportato. Per dettagli vincolanti vedi le privacy "
+"policy dei singoli fornitori."
+msgstr ""
+"(설정된 경우 OpenAI, Anthropic, Perplexity, Google Gemini, xAI). Centropic은 고객 "
+"콘텐츠를 자체 모델 학습에 사용하지 않습니다. provider의 training 목적 데이터 사용 여부는 각 enterprise/API "
+"정책에 따릅니다. 지원되는 경우 retention/training을 제한하기 위해 API endpoint와 제공되는 설정을 사용합니다. "
+"구속력 있는 세부 사항은 각 공급업체의 개인정보 처리방침을 확인해 주세요."
+
+#: templates/ai_transparency.html:44
+msgid "4. Log e conservazione"
+msgstr "4. 로그 및 보관"
+
+#: templates/ai_transparency.html:46
+msgid ""
+"Conserviamo metadati di job, addebiti token e risultati necessari al "
+"servizio. I pack artifact possono restare in object storage con retention "
+"configurata (tipicamente 90 giorni per artefatti tecnici). Puoi esportare o "
+"eliminare l’account dalle Impostazioni."
+msgstr ""
+"서비스에 필요한 job 메타데이터, token 과금 내역 및 결과를 보관합니다. pack artifact는 설정된 보관 기간 동안 "
+"object storage에 남을 수 있습니다(기술 artifact는 일반적으로 90일). 계정은 설정에서 내보내거나 삭제할 수 있습니다."
+
+#: templates/ai_transparency.html:51
+msgid "5. Limiti e non-garanzie"
+msgstr "5. 제한 및 비보증"
+
+#: templates/ai_transparency.html:53
+msgid ""
+"I modelli possono produrre output incompleti o imprecisi. Stimato ≠ Misurato."
+" Centropic non garantisce ranking o menzioni nelle UI di terzi. Pubblicazione"
+" degli artifact e conformità restano a tuo carico."
+msgstr ""
+"모델은 불완전하거나 부정확한 출력을 생성할 수 있습니다. 추정 ≠ 측정입니다. Centropic은 제3자 UI에서의 ranking 또는 "
+"언급을 보장하지 않습니다. artifact 게시와 준수 책임은 고객에게 있습니다."
+
+#: templates/ai_transparency.html:58 templates/base.html:274
+#: templates/cookies.html:68 templates/privacy.html:14 templates/privacy.html:34
+#: templates/privacy.html:167 templates/termini.html:14 templates/termini.html:126
+#: templates/topup.html:94
+msgid "DPA"
+msgstr "DPA"
+
+#: templates/ai_transparency.html:59 templates/base.html:246
+#: templates/base.html:266 templates/contact.html:58 templates/cookies.html:14
+#: templates/cookies.html:18 templates/dpa.html:20
+#: templates/partials/auth_help.html:26 templates/pricing.html:171
+#: templates/privacy.html:9 templates/rimborsi.html:98 templates/termini.html:13
+#: templates/termini.html:148 templates/trust.html:60
+msgid "Privacy"
+msgstr "개인정보 보호"
+
 #: templates/base.html:10
 msgid ""
 "Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative "
@@ -2595,14 +2847,15 @@ msgstr "메뉴 열기"
 msgid "Principale"
 msgstr "주 메뉴"
 
-#: templates/base.html:130 templates/base.html:232 templates/dashboard.html:121
-#: templates/dashboard.html:825 templates/history.html:2
-#: templates/partials/app_sidebar.html:59 templates/site_history.html:2
+#: templates/base.html:130 templates/base.html:232 templates/dashboard.html:94
+#: templates/dashboard.html:842 templates/dashboard.html:1115
+#: templates/history.html:2 templates/partials/app_sidebar.html:59
+#: templates/site_history.html:2
 msgid "Storico"
 msgstr "기록"
 
-#: templates/base.html:133 templates/dashboard.html:646
-#: templates/partials/app_sidebar.html:72
+#: templates/base.html:133 templates/dashboard.html:663
+#: templates/dashboard.html:1122 templates/partials/app_sidebar.html:72
 msgid "Impostazioni"
 msgstr "설정"
 
@@ -2614,7 +2867,7 @@ msgstr "커버리지"
 #: templates/base.html:135 templates/base.html:150 templates/base.html:218
 #: templates/faq.html:91 templates/login.html:86 templates/pricing.html:2
 #: templates/pro_interest.html:13 templates/register.html:147
-#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:86
+#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:91
 msgid "Prezzi"
 msgstr "요금제"
 
@@ -2667,53 +2920,95 @@ msgstr "회원가입"
 msgid "Pagina contatti"
 msgstr "연락처 페이지"
 
-#: templates/base.html:246 templates/base.html:260 templates/contact.html:58
-#: templates/partials/auth_help.html:26 templates/pricing.html:155
-#: templates/privacy.html:2 templates/rimborsi.html:98 templates/termini.html:79
-msgid "Privacy"
-msgstr "개인정보 보호"
+#: templates/base.html:247 templates/base.html:268 templates/cookies.html:2
+#: templates/privacy.html:166 templates/trust.html:61
+msgid "Cookie"
+msgstr "쿠키"
 
-#: templates/base.html:247 templates/privacy.html:83 templates/rimborsi.html:87
-#: templates/termini.html:2 templates/termini.html:10
+#: templates/base.html:248 templates/rimborsi.html:87 templates/termini.html:2
+#: templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "서비스 약관"
 
-#: templates/base.html:248 templates/base.html:264 templates/contact.html:60
-#: templates/pricing.html:156 templates/privacy.html:84 templates/termini.html:80
+#: templates/base.html:249 templates/base.html:272 templates/contact.html:60
+#: templates/dpa.html:117 templates/pricing.html:172 templates/termini.html:15
+#: templates/termini.html:149 templates/topup.html:93
 msgid "Rimborsi"
 msgstr "환불"
 
-#: templates/base.html:262 templates/contact.html:59 templates/pricing.html:154
-#: templates/register.html:125 templates/rimborsi.html:97
+#: templates/base.html:250 templates/pricing.html:173 templates/trust.html:32
+msgid "DPA / sub-responsabili"
+msgstr "DPA / 하위처리자"
+
+#: templates/base.html:251 templates/cookies.html:69 templates/trust.html:62
+msgid "AI / LLM"
+msgstr "AI / LLM"
+
+#: templates/base.html:254 templates/cookies.html:17 templates/cookies.html:67
+#: templates/privacy.html:165
+msgid "Gestisci consenso"
+msgstr "동의 관리"
+
+#: templates/base.html:270 templates/contact.html:59 templates/dpa.html:21
+#: templates/pricing.html:170 templates/register.html:125
+#: templates/rimborsi.html:97 templates/trust.html:63
 msgid "Termini"
 msgstr "이용약관"
 
 #: templates/base.html:276
+msgid "AI"
+msgstr "AI"
+
+#: templates/base.html:280
+msgid "Consenso"
+msgstr "동의"
+
+#: templates/base.html:289
 msgid "Cookie e misurazione"
 msgstr "쿠키 및 측정"
 
-#: templates/base.html:278
+#: templates/base.html:291
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o"
-" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o "
-"rifiutare. Dettagli nella"
+" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare, "
+"rifiutare o personalizzare. Dettagli nella"
 msgstr ""
-"우리는 기술적 쿠키와 귀하의 동의 하에 Google 도구(Analytics 및/또는 Ads/AdSense)를 사용하여 트래픽을 측정하고 "
-"광고를 표시합니다. 수락하거나 거부할 수 있습니다. 세부 사항은 다음에 있습니다."
+"기술 쿠키를 사용하며, 고객의 동의가 있는 경우 Google 도구(Analytics 및/또는 Ads/AdSense)를 사용하여 트래픽을 "
+"측정하고 광고를 표시합니다. 수락, 거부 또는 맞춤 설정할 수 있습니다. 자세한 내용은 다음을 확인하세요"
 
-#: templates/base.html:282
-msgid "Accetta"
-msgstr "수락"
+#: templates/base.html:292 templates/privacy.html:13 templates/privacy.html:112
+msgid "Cookie Policy"
+msgstr "쿠키 정책"
 
-#: templates/base.html:283
+#: templates/base.html:297
+msgid "Analytics (GA4)"
+msgstr "Analytics (GA4)"
+
+#: templates/base.html:301
+msgid "Advertising (Ads / AdSense)"
+msgstr "광고 (Ads / AdSense)"
+
+#: templates/base.html:305
+msgid "Accetta tutto"
+msgstr "모두 수락"
+
+#: templates/base.html:306
 msgid "Rifiuta"
 msgstr "거부"
 
-#: templates/base.html:324
+#: templates/base.html:307
+msgid "Personalizza"
+msgstr "맞춤 설정"
+
+#: templates/base.html:308
+msgid "Salva preferenze"
+msgstr "환경설정 저장"
+
+#: templates/base.html:348
 msgid "Copiato"
 msgstr "복사됨"
 
-#: templates/base.html:337 templates/preview_analyze.html:20
+#: templates/base.html:361 templates/preview_analyze.html:20
 msgid "Analisi in corso…"
 msgstr "분석 중…"
 
@@ -2855,7 +3150,7 @@ msgstr "확인 및 분석 시작"
 msgid "Amplia copertura"
 msgstr "커버리지 확대"
 
-#: templates/confirm_analyze.html:158
+#: templates/confirm_analyze.html:158 templates/dashboard.html:1042
 msgid "Annulla"
 msgstr "취소"
 
@@ -2975,6 +3270,91 @@ msgstr "우리는 이메일 목록을 판매하지 않으며, Centropic을 제�
 msgid "Scrivi a info@centropic.ai"
 msgstr "info@centropic.ai로 작성하세요"
 
+#: templates/cookies.html:3
+msgid ""
+"Informativa cookie Centropic: cookie tecnici, analytics e advertising con "
+"consenso granulare."
+msgstr "Centropic 쿠키 정책: 필수 쿠키, analytics 및 advertising에 대한 세분화된 동의입니다."
+
+#: templates/cookies.html:9 templates/rimborsi.html:9
+msgid "Legale"
+msgstr "법적"
+
+#: templates/cookies.html:10
+msgid "Informativa cookie"
+msgstr "쿠키 정책"
+
+#: templates/cookies.html:13
+msgid ""
+"Puoi accettare, rifiutare o personalizzare analytics e advertising. Dettagli "
+"anche in"
+msgstr "analytics 및 advertising을 수락, 거부 또는 맞춤 설정할 수 있습니다. 자세한 내용은 다음에서도 확인할 수 있습니다"
+
+#: templates/cookies.html:23
+msgid "1. Categorie"
+msgstr "1. 범주"
+
+#: templates/cookies.html:25
+msgid "Necessari"
+msgstr "필수"
+
+#: templates/cookies.html:25
+msgid "sessione, CSRF, lingua, memoria del consenso. Sempre attivi."
+msgstr "세션, CSRF, 언어, 동의 기억 기능입니다. 항상 활성화됩니다."
+
+#: templates/cookies.html:26
+msgid "Analytics"
+msgstr "Analytics"
+
+#: templates/cookies.html:26
+msgid "Google Analytics 4, solo con consenso."
+msgstr "Google Analytics 4는 동의가 있는 경우에만 사용됩니다."
+
+#: templates/cookies.html:27
+msgid "Advertising"
+msgstr "Advertising"
+
+#: templates/cookies.html:27
+msgid "Google Ads / AdSense se configurati, solo con consenso ads."
+msgstr "설정된 경우 Google Ads / AdSense는 ads 동의가 있는 경우에만 사용됩니다."
+
+#: templates/cookies.html:32
+msgid "2. Elenco"
+msgstr "2. 목록"
+
+#: templates/cookies.html:37
+msgid "Nome"
+msgstr "이름"
+
+#: templates/cookies.html:38 templates/dpa.html:86 templates/termini.html:24
+msgid "Fornitore"
+msgstr "제공업체"
+
+#: templates/cookies.html:39
+msgid "Scopo"
+msgstr "목적"
+
+#: templates/cookies.html:40
+msgid "Durata"
+msgstr "기간"
+
+#: templates/cookies.html:41
+msgid "Categoria"
+msgstr "범주"
+
+#: templates/cookies.html:60
+msgid "3. Come modificare"
+msgstr "3. 변경 방법"
+
+#: templates/cookies.html:62
+msgid ""
+"Usa “Gestisci consenso” in questa pagina o il link Cookie nel footer. Puoi "
+"anche cancellare i dati del sito dal browser e ricaricare. Consent Mode v2: "
+"di default analytics/ads sono negati nell’UE finché non scegli."
+msgstr ""
+"이 페이지의 “동의 관리” 또는 footer의 쿠키 링크를 사용하세요. 브라우저에서 사이트 데이터를 삭제한 뒤 다시 로드할 수도 있습니다."
+" Consent Mode v2: EU에서는 선택하기 전까지 analytics/ads가 기본적으로 거부됩니다."
+
 #: templates/dashboard.html:9
 msgid "Workspace"
 msgstr "작업 공간"
@@ -2983,13 +3363,9 @@ msgstr "작업 공간"
 msgid "Ciao"
 msgstr "안녕하세요"
 
-#: templates/dashboard.html:22 templates/dashboard.html:98
+#: templates/dashboard.html:22 templates/dashboard.html:77
 msgid "Ultimo report"
 msgstr "최신 보고서"
-
-#: templates/dashboard.html:24
-msgid "prova fino al"
-msgstr "체험 기간 종료:"
 
 #: templates/dashboard.html:28
 msgid "Workspace agenzia: multi-cliente, API e white-label."
@@ -3011,97 +3387,70 @@ msgstr "계정 상태"
 msgid "Piano"
 msgstr "플랜"
 
-#: templates/dashboard.html:43
-msgid "fino al"
-msgstr "까지"
-
-#: templates/dashboard.html:48
+#: templates/dashboard.html:45
 msgid "Siti"
 msgstr "사이트"
 
-#: templates/dashboard.html:52 templates/partials/analyze_overlay.html:102
+#: templates/dashboard.html:49 templates/partials/analyze_overlay.html:102
 msgid "Crawl"
 msgstr "크롤링"
 
-#: templates/dashboard.html:53
+#: templates/dashboard.html:50
 msgid "Intero sito"
 msgstr "전체 사이트"
 
-#: templates/dashboard.html:53
+#: templates/dashboard.html:50
 msgid "pag."
 msgstr "페이지"
 
-#: templates/dashboard.html:56
+#: templates/dashboard.html:53
 msgid "Analisi"
 msgstr "분석"
 
-#: templates/dashboard.html:56
+#: templates/dashboard.html:53
 msgid "Quote 24h"
 msgstr "24시간 견적"
 
-#: templates/dashboard.html:62
-msgid "Servizi del piano"
-msgstr "요금제 서비스"
-
-#: templates/dashboard.html:65
-msgid "Toolkit Business"
-msgstr "Business 툴킷"
-
-#: templates/dashboard.html:67
-msgid "Toolkit Plus"
-msgstr "Plus 툴킷"
-
-#: templates/dashboard.html:69
-msgid "Toolkit Free"
-msgstr "Free 툴킷"
-
-#: templates/dashboard.html:101 templates/dashboard.html:355
+#: templates/dashboard.html:80 templates/dashboard.html:369
 msgid "Centropic Visibility Index"
 msgstr "(AI 기반 가시성) 및"
 
-#: templates/dashboard.html:101 templates/dashboard.html:354
-#: templates/dashboard.html:1028 templates/sample_report.html:28
+#: templates/dashboard.html:80 templates/dashboard.html:291
+#: templates/dashboard.html:368 templates/dashboard.html:1072
+#: templates/partials/competitor_snapshot.html:68
+#: templates/partials/competitor_snapshot.html:138 templates/sample_report.html:28
 msgid "CVI"
 msgstr "CVI"
 
-#: templates/dashboard.html:105 templates/site_history.html:12
+#: templates/dashboard.html:84 templates/site_history.html:12
 msgid "Apri sito"
 msgstr "사이트 열기"
 
-#: templates/dashboard.html:106 templates/dashboard.html:766
-#: templates/partials/dashboard_shell.html:85
-#: templates/partials/dashboard_shell.html:119 templates/pricing.html:31
+#: templates/dashboard.html:85 templates/dashboard.html:783
+#: templates/partials/dashboard_shell.html:64
+#: templates/partials/dashboard_shell.html:98 templates/pricing.html:31
 msgid "pagine"
 msgstr "페이지"
 
-#: templates/dashboard.html:113 templates/dashboard.html:1062
-#: templates/partials/dashboard_shell.html:53
-msgid "Scarica pack"
-msgstr "팩 다운로드"
+#: templates/dashboard.html:88
+msgid "Analizzato"
+msgstr ""
 
-#: templates/dashboard.html:116
-msgid "Email non configurata sul server"
-msgstr "서버에 구성되지 않은 이메일"
-
-#: templates/dashboard.html:117
-msgid "Invia email"
-msgstr "이메일 보내기"
-
-#: templates/dashboard.html:132
+#: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
 msgstr "매우 강력한 AIO 신호"
 
-#: templates/dashboard.html:133
+#: templates/dashboard.html:106
 msgid ""
 "Alta predisposizione strutturale: i crawler generativi trovano segnali chiari"
 " da leggere e citare."
 msgstr "높은 구조적 준비 상태: 생성형 crawler가 읽고 인용할 명확한 신호를 찾습니다."
 
-#: templates/dashboard.html:136
+#: templates/dashboard.html:109
 msgid "Segnali AIO solidi"
 msgstr "견고한 AIO 신호"
 
-#: templates/dashboard.html:137
+#: templates/dashboard.html:110
 msgid ""
 "Buona base machine-readable. Chiudi i gap rimanenti: ogni segnale in più "
 "riduce ambiguità per i crawler generativi."
@@ -3109,397 +3458,409 @@ msgstr ""
 "양호한 machine-readable 기반입니다. 남은 gap을 닫으세요. 신호가 하나 더해질 때마다 생성형 crawler의 모호성이 "
 "줄어듭니다."
 
-#: templates/dashboard.html:140
+#: templates/dashboard.html:113
 msgid "Segnali AIO moderati"
 msgstr "보통 AIO 신호"
 
-#: templates/dashboard.html:141
+#: templates/dashboard.html:114
 msgid "Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn."
 msgstr "일부 자산이 존재하며, 여러 개의 열린 격차가 있습니다. 중요/경고 발견 사항을 우선시하세요."
 
-#: templates/dashboard.html:144
+#: templates/dashboard.html:117
 msgid "Segnali AIO emergenti"
 msgstr "신흥 AIO 신호"
 
-#: templates/dashboard.html:145
+#: templates/dashboard.html:118
 msgid ""
 "Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file "
 "AI."
 msgstr "크롤링에서 약한 신호: 엔티티, 스키마 및 AI 파일에 대한 구조적 작업이 필요합니다."
 
-#: templates/dashboard.html:148
+#: templates/dashboard.html:121
 msgid "Segnali AIO critici"
 msgstr "중요한 AIO 신호"
 
-#: templates/dashboard.html:149
+#: templates/dashboard.html:122
 msgid ""
 "Base insufficiente: intervento prioritario su title, schema, robots/llms e "
 "contenuti citabili."
 msgstr "불충분한 기반: 제목, 스키마, robots/llms 및 인용 가능한 콘텐츠에 대한 우선 개입."
 
-#: templates/dashboard.html:159
+#: templates/dashboard.html:132
 msgid "Metriche chiave"
 msgstr "핵심 지표"
 
-#: templates/dashboard.html:160
+#: templates/dashboard.html:133
 msgid "AI-Driven Visibility"
 msgstr "AI 기반 가시성"
 
-#: templates/dashboard.html:163
+#: templates/dashboard.html:136
 msgid "Generative Engine Opt."
 msgstr "생성 엔진 최적화"
 
-#: templates/dashboard.html:166 templates/dashboard.html:179
-#: templates/partials/dashboard_shell.html:57 templates/preview_analyze.html:43
+#: templates/dashboard.html:139 templates/dashboard.html:163
+#: templates/dashboard.html:1113 templates/preview_analyze.html:43
 #: templates/verify.html:33
 msgid "Findings"
 msgstr "발견"
 
-#: templates/dashboard.html:166
+#: templates/dashboard.html:139
 msgid "critical + warn"
 msgstr "중요 + 경고"
 
-#: templates/dashboard.html:171
-msgid "Vista report"
-msgstr "보고서 보기"
-
-#: templates/dashboard.html:172 templates/dashboard.html:178
-#: templates/dashboard.html:573 templates/partials/analyze_overlay.html:104
-msgid "Score"
-msgstr "점수"
-
-#: templates/dashboard.html:173 templates/dashboard.html:177
-#: templates/dashboard.html:1051 templates/partials/analyze_overlay.html:103
-msgid "SoV"
-msgstr "SoV"
-
-#: templates/dashboard.html:176
+#: templates/dashboard.html:144
 msgid "Sezioni del report"
 msgstr "리포트 섹션"
 
-#: templates/dashboard.html:180
+#: templates/dashboard.html:153 templates/dashboard.html:1095
+#: templates/partials/analyze_overlay.html:103
+msgid "SoV"
+msgstr "SoV"
+
+#: templates/dashboard.html:161 templates/dashboard.html:588
+#: templates/partials/analyze_overlay.html:104
+msgid "Score"
+msgstr "점수"
+
+#: templates/dashboard.html:164
 msgid "Critiche"
 msgstr "심각"
 
-#: templates/dashboard.html:181
+#: templates/dashboard.html:165 templates/dashboard.html:1111
 msgid "Edge"
 msgstr "Edge"
 
-#: templates/dashboard.html:182 templates/partials/analyze_overlay.html:105
+#: templates/dashboard.html:166 templates/dashboard.html:1107
+#: templates/partials/analyze_overlay.html:105
 msgid "Pack"
 msgstr "Pack"
 
-#: templates/dashboard.html:274 templates/dashboard.html:286
-#: templates/dashboard.html:313 templates/dashboard.html:336
-#: templates/dashboard.html:359 templates/dashboard.html:597
-#: templates/dashboard.html:797 templates/partials/sov_ops.html:11
-#: templates/pricing.html:145
-msgid "Stimato"
-msgstr "추정됨"
-
-#: templates/dashboard.html:285 templates/dashboard.html:295
+#: templates/dashboard.html:178 templates/dashboard.html:309
 msgid "Signal diagnostics"
 msgstr "신호 진단"
 
-#: templates/dashboard.html:288
+#: templates/dashboard.html:179 templates/dashboard.html:271
+#: templates/dashboard.html:327 templates/dashboard.html:350
+#: templates/dashboard.html:373 templates/dashboard.html:614
+#: templates/dashboard.html:814 templates/partials/sov_ops.html:11
+#: templates/pricing.html:161
+msgid "Stimato"
+msgstr "추정됨"
+
+#: templates/dashboard.html:181
 msgid "Quanto sono solidi i segnali AIO/GEO"
 msgstr "AIO/GEO 신호는 얼마나 견고한가요"
 
-#: templates/dashboard.html:291
+#: templates/dashboard.html:184
 msgid ""
-"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di "
-"predisposizione strutturale (leggibilità per crawler generativi)."
-msgstr "AIO = AI 기반 가시성 · GEO = 생성 엔진 최적화. 프로브/휴리스틱에서 점수, 보장된 실시간 인용 없음."
+"AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab "
+"SoV mostra Misurato quando il citation monitor ha campionato gli engine "
+"(anche con 0 menzioni)."
+msgstr ""
 
-#: templates/dashboard.html:297
-msgid "Segnale"
-msgstr "신호"
+#: templates/dashboard.html:279
+msgid "Sintesi score"
+msgstr ""
 
-#: templates/dashboard.html:298 templates/dashboard.html:571
-msgid "Evidence"
-msgstr "SoV 근거"
-
-#: templates/dashboard.html:299
-msgid "Lettura"
-msgstr "읽기"
-
-#: templates/dashboard.html:300
-msgid "Valore"
-msgstr "색상"
-
-#: templates/dashboard.html:323 templates/dashboard.html:346
-msgid "score"
-msgstr "점수"
-
-#: templates/dashboard.html:369
-msgid "grade"
-msgstr "AI 등급"
-
-#: templates/dashboard.html:377
+#: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
 msgstr "간섭"
 
-#: templates/dashboard.html:382
-msgid "Nessuna criticità aperta"
-msgstr "열린 문제 없음"
-
-#: templates/dashboard.html:396
+#: templates/dashboard.html:302 templates/dashboard.html:410
+#: templates/partials/competitor_snapshot.html:72
+#: templates/partials/competitor_snapshot.html:142
 msgid "clear"
 msgstr "clear"
 
-#: templates/dashboard.html:406
+#: templates/dashboard.html:311
+msgid "Segnale"
+msgstr "신호"
+
+#: templates/dashboard.html:312 templates/dashboard.html:586
+msgid "Evidence"
+msgstr "SoV 근거"
+
+#: templates/dashboard.html:313
+msgid "Lettura"
+msgstr "읽기"
+
+#: templates/dashboard.html:314
+msgid "Valore"
+msgstr "색상"
+
+#: templates/dashboard.html:337 templates/dashboard.html:360
+msgid "score"
+msgstr "점수"
+
+#: templates/dashboard.html:383
+msgid "grade"
+msgstr "AI 등급"
+
+#: templates/dashboard.html:396
+msgid "Nessuna criticità aperta"
+msgstr "열린 문제 없음"
+
+#: templates/dashboard.html:420
 msgid "open findings"
 msgstr "발견 사항"
 
-#: templates/dashboard.html:410 templates/partials/geo_overview.html:68
+#: templates/dashboard.html:424 templates/partials/geo_overview.html:68
 msgid "findings"
 msgstr "발견 사항"
 
-#: templates/dashboard.html:416
+#: templates/dashboard.html:430
 msgid "Scala CVI"
 msgstr "CVI 스케일"
 
-#: templates/dashboard.html:417
+#: templates/dashboard.html:431
 msgid "Scala da DDD a AAA"
 msgstr "DDD에서 AAA로의 스케일"
 
-#: templates/dashboard.html:434 templates/dashboard.html:563
+#: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
 msgstr "AI 엔진 분석"
 
-#: templates/dashboard.html:437 templates/dashboard.html:473
+#: templates/dashboard.html:450
+msgid "Citation share — probe Misurato eseguito"
+msgstr ""
+
+#: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
 msgid "Citation share"
 msgstr "인용 모니터"
 
-#: templates/dashboard.html:439
+#: templates/dashboard.html:454
 msgid "Citation share (stimata)"
 msgstr "Citation share (추정)"
 
-#: templates/dashboard.html:446
+#: templates/dashboard.html:461
 msgid ""
 "Menzioni generative campionate (stocastiche) + predisposizione strutturale — "
 "non Share of Voice pubblicitaria."
 msgstr "샘플링된 생성형 언급(확률적) + 구조적 준비 상태이며, 광고형 Share of Voice가 아닙니다."
 
-#: templates/dashboard.html:448
+#: templates/dashboard.html:463
 msgid "Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor."
 msgstr "현재 요금제에서 score와 robots를 기반으로 한 SoV estimated."
 
-#: templates/dashboard.html:450
+#: templates/dashboard.html:465
 msgid ""
 "Stima dalla struttura osservata (CVI / score + robots); con Plus puoi "
 "aggiungere campioni Misurati."
 msgstr "관찰된 구조(CVI / score + robots) 기반 추정입니다. Plus에서는 측정 샘플을 추가할 수 있습니다."
 
-#: templates/dashboard.html:456
+#: templates/dashboard.html:471
 msgid "Citation share brand"
 msgstr "브랜드 citation share"
 
-#: templates/dashboard.html:477 templates/dashboard.html:548
+#: templates/dashboard.html:492 templates/dashboard.html:563
 msgid "Campo competitivo"
 msgstr "경쟁 분야"
 
-#: templates/dashboard.html:478 templates/dashboard.html:555
-#: templates/settings.html:176
+#: templates/dashboard.html:493 templates/dashboard.html:570
+#: templates/settings.html:195
 msgid "Brand"
 msgstr "브랜드"
 
-#: templates/dashboard.html:479 templates/dashboard.html:556
+#: templates/dashboard.html:494 templates/dashboard.html:571
 msgid "Rivali"
 msgstr "경쟁자"
 
-#: templates/dashboard.html:480 templates/dashboard.html:557
+#: templates/dashboard.html:495 templates/dashboard.html:572
 msgid "Altro"
 msgstr "기타"
 
-#: templates/dashboard.html:487
+#: templates/dashboard.html:502
 msgid "Propensity snapshot per engine"
 msgstr "엔진에 대한 성향"
 
-#: templates/dashboard.html:489
+#: templates/dashboard.html:504
 msgid "Propensity snapshot"
 msgstr "경쟁사 스냅샷"
 
-#: templates/dashboard.html:520
+#: templates/dashboard.html:535
 msgid "Composizione per engine"
 msgstr "엔진 구성"
 
-#: templates/dashboard.html:524
+#: templates/dashboard.html:539
 msgid "Composizione SoV per engine"
 msgstr "엔진에 대한 SoV 구성"
 
-#: templates/dashboard.html:547
+#: templates/dashboard.html:562
 msgid "Distribuzione competitiva"
 msgstr "경쟁 분포"
 
-#: templates/dashboard.html:567
+#: templates/dashboard.html:582
 msgid "Propensity e citation share per engine"
 msgstr "엔진에 대한 성향"
 
-#: templates/dashboard.html:570
+#: templates/dashboard.html:585
 msgid "Engine"
 msgstr "페이지"
 
-#: templates/dashboard.html:572
+#: templates/dashboard.html:587
 msgid "Propensity"
 msgstr "엔진에 대한 성향"
 
-#: templates/dashboard.html:574 templates/dashboard.html:617
+#: templates/dashboard.html:589 templates/dashboard.html:634
 msgid "Share"
 msgstr "공유"
 
-#: templates/dashboard.html:595
+#: templates/dashboard.html:608
+msgid "Probe LLM eseguito: 0 menzioni su questo engine"
+msgstr ""
+
+#: templates/dashboard.html:608
+msgid "Misurato · 0"
+msgstr ""
+
+#: templates/dashboard.html:612
 msgid "N/D"
 msgstr "N/D"
 
-#: templates/dashboard.html:600
+#: templates/dashboard.html:617
 msgid "blocked"
 msgstr "봇 차단됨"
 
-#: templates/dashboard.html:602
+#: templates/dashboard.html:619
 msgid "allow"
 msgstr "봇 허용"
 
-#: templates/dashboard.html:634
+#: templates/dashboard.html:651
 msgid "Nessun breakdown disponibile."
 msgstr "사용 가능한 세분화 없음."
 
-#: templates/dashboard.html:639
+#: templates/dashboard.html:656
 msgid "GEO suite"
 msgstr "GEO 스위트"
 
-#: templates/dashboard.html:642
+#: templates/dashboard.html:659
 msgid "Suite"
 msgstr "스위트"
 
-#: templates/dashboard.html:643
+#: templates/dashboard.html:660
 msgid "GEO / AIO avanzato"
 msgstr "고급 GEO / AIO"
 
-#: templates/dashboard.html:648 templates/dashboard.html:666
-#: templates/dashboard.html:1078 templates/verify.html:2 templates/verify.html:8
+#: templates/dashboard.html:665 templates/dashboard.html:683
+#: templates/dashboard.html:1118 templates/verify.html:2 templates/verify.html:8
 msgid "Publish verify"
 msgstr "게시 확인"
 
-#: templates/dashboard.html:654
+#: templates/dashboard.html:671
 msgid "Entity graph"
 msgstr "엔티티 그래프"
 
-#: templates/dashboard.html:655
+#: templates/dashboard.html:672
 msgid "nodi"
 msgstr "노드"
 
-#: templates/dashboard.html:658
+#: templates/dashboard.html:675
 msgid "Citability"
 msgstr "인용 가능성"
 
-#: templates/dashboard.html:662
+#: templates/dashboard.html:679
 msgid "Schema quality"
 msgstr "스키마 품질"
 
-#: templates/dashboard.html:670
+#: templates/dashboard.html:687
 msgid "llms lint"
 msgstr "llms 린트"
 
-#: templates/dashboard.html:674
+#: templates/dashboard.html:691
 msgid "Locales"
 msgstr "로케일"
 
-#: templates/dashboard.html:679 templates/site_history.html:31
+#: templates/dashboard.html:696 templates/site_history.html:31
 msgid "SoV measured"
 msgstr "측정된 SoV"
 
-#: templates/dashboard.html:694
+#: templates/dashboard.html:711
 msgid "Confronto con run precedente"
 msgstr "이전 실행과 비교"
 
-#: templates/dashboard.html:696
+#: templates/dashboard.html:713
 msgid "Vs run precedente"
 msgstr "이전 실행 대비"
 
-#: templates/dashboard.html:723 templates/dashboard.html:773
+#: templates/dashboard.html:740 templates/dashboard.html:790
 msgid "Priorità"
 msgstr "우선 순위"
 
-#: templates/dashboard.html:729 templates/dashboard.html:732
+#: templates/dashboard.html:746 templates/dashboard.html:749
 msgid "critiche"
 msgstr "중요한"
 
-#: templates/dashboard.html:729
+#: templates/dashboard.html:746
 msgid "critica"
 msgstr "중요"
 
-#: templates/dashboard.html:730 templates/dashboard.html:734
+#: templates/dashboard.html:747 templates/dashboard.html:751
 msgid "attenzione"
 msgstr "주의"
 
-#: templates/dashboard.html:761
+#: templates/dashboard.html:778
 msgid "Prime 24 criticità · elenco completo nel pack"
 msgstr "상위 24개 심각 문제 · 전체 목록은 pack에서 확인"
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:781
 msgid "Nessuna pagina critica su"
 msgstr "비판적인 페이지 없음"
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:781
 msgid "analizzate."
 msgstr "분석됨."
 
-#: templates/dashboard.html:766
+#: templates/dashboard.html:783
 msgid "Analizzate"
 msgstr "분석됨"
 
-#: templates/dashboard.html:774 templates/dashboard.html:1069
+#: templates/dashboard.html:791
 msgid "Findings critici"
 msgstr "중요한 발견"
 
-#: templates/dashboard.html:805
+#: templates/dashboard.html:822
 msgid "Nessuna criticità."
 msgstr "문제 없음."
 
-#: templates/dashboard.html:805
+#: templates/dashboard.html:822
 msgid "check ok nascosti."
 msgstr "숨겨진 확인 ok."
 
-#: templates/dashboard.html:810
+#: templates/dashboard.html:827
 msgid "Solo critical/warn ·"
 msgstr "오직 중요/경고 ·"
 
-#: templates/dashboard.html:810
+#: templates/dashboard.html:827
 msgid "totali"
 msgstr "총계"
 
-#: templates/dashboard.html:820 templates/site_history.html:21
+#: templates/dashboard.html:837 templates/site_history.html:21
 msgid "Monitoraggio"
 msgstr "모니터링"
 
-#: templates/dashboard.html:838
-msgid "Confronto"
-msgstr "비교"
-
-#: templates/dashboard.html:861
+#: templates/dashboard.html:858
 msgid "Infrastruttura"
 msgstr "인프라"
 
-#: templates/dashboard.html:862 templates/dashboard.html:1064
+#: templates/dashboard.html:859 templates/dashboard.html:1109
 #: templates/partials/app_sidebar.html:47
 msgid "Edge Signals"
 msgstr "Edge Signals"
 
-#: templates/dashboard.html:865
+#: templates/dashboard.html:862
 msgid "Attivo"
 msgstr "활성"
 
-#: templates/dashboard.html:867
+#: templates/dashboard.html:864
 msgid "ZIP only"
 msgstr "ZIP만"
 
-#: templates/dashboard.html:871
+#: templates/dashboard.html:868
 msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr "정적 패키지를 재배포하는 대신 호스팅합니다."
 
-#: templates/dashboard.html:872
+#: templates/dashboard.html:869
 msgid ""
 "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo"
 " dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, "
@@ -3508,30 +3869,30 @@ msgstr ""
 "AI 크롤러가 변경될 때 업데이트된 Centropic 엔드포인트에서. 당신의 도메인을 범용 CMS 커넥터(WordPress, Drupal,"
 " Shopify, PHP, Netlify, Cloudflare, Vercel)로 연결하세요."
 
-#: templates/dashboard.html:877
+#: templates/dashboard.html:874
 msgid "Attiva hosting dinamico"
 msgstr "동적 호스팅 활성화"
 
-#: templates/dashboard.html:880
+#: templates/dashboard.html:877
 msgid "Include"
 msgstr "포함"
 
-#: templates/dashboard.html:882
+#: templates/dashboard.html:879
 msgid "robots live, JSON-LD e snippet Worker/Vercel."
 msgstr "실시간 robots, JSON-LD, Worker/Vercel snippet."
 
-#: templates/dashboard.html:889
+#: templates/dashboard.html:886
 msgid "Snippet avanzati"
 msgstr "고급 snippet"
 
-#: templates/dashboard.html:897 templates/dashboard.html:902
-#: templates/dashboard.html:908 templates/dashboard.html:913
-#: templates/dashboard.html:953 templates/dashboard.html:960
-#: templates/dashboard.html:967 templates/dashboard.html:998
+#: templates/dashboard.html:894 templates/dashboard.html:899
+#: templates/dashboard.html:905 templates/dashboard.html:910
+#: templates/dashboard.html:950 templates/dashboard.html:957
+#: templates/dashboard.html:964
 msgid "Copia"
 msgstr "복사"
 
-#: templates/dashboard.html:919
+#: templates/dashboard.html:916
 msgid ""
 "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, "
 "proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo "
@@ -3540,127 +3901,329 @@ msgstr ""
 "범용 CMS: WordPress 플러그인, Drupal 모듈, Liquid Shopify, PHP 프록시, Netlify/Vercel "
 "재작성 및 Cloudflare 워커가 포함된 ZIP — 모두 동일한 Edge 기본에 연결됩니다."
 
-#: templates/dashboard.html:922 templates/partials/edge_wizard.html:20
+#: templates/dashboard.html:919 templates/partials/edge_wizard.html:20
 msgid "Scarica connector CMS (.zip)"
 msgstr "CMS 커넥터 다운로드 (.zip)"
 
-#: templates/dashboard.html:933
+#: templates/dashboard.html:930
 msgid "Rigenera token"
 msgstr "토큰 재생성"
 
-#: templates/dashboard.html:937
+#: templates/dashboard.html:934
 msgid "Disattiva"
 msgstr "비활성화"
 
-#: templates/dashboard.html:941
+#: templates/dashboard.html:938
 msgid "Crawler IA recenti su Edge:"
 msgstr "Edge의 최신 AI 크롤러:"
 
-#: templates/dashboard.html:944
+#: templates/dashboard.html:941
 msgid "hit"
 msgstr "히트"
 
-#: templates/dashboard.html:981 templates/landing.html:245
+#: templates/dashboard.html:978 templates/dashboard.html:1014
+#: templates/landing.html:245
 msgid "Deliverable"
 msgstr "산출물"
 
-#: templates/dashboard.html:983
-msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
-msgstr "모든 수정 사항이 담긴 단일 HTML 파일: head snippet, llms.txt, robots, checklist."
+#: templates/dashboard.html:980
+msgid ""
+"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
+"applicare sul sito live."
+msgstr "head 스니펫, llms.txt, robots, 체크리스트가 담긴 단일 HTML — 라이브 사이트에 바로 적용할 수 있습니다."
 
 #: templates/dashboard.html:986
-msgid "Scarica"
-msgstr "다운로드"
+msgid "Scarica pack"
+msgstr "팩 다운로드"
 
-#: templates/dashboard.html:990
-msgid "Invia a"
-msgstr "보내기"
+#: templates/dashboard.html:992
+msgid "Email non configurata sul server"
+msgstr "서버에 구성되지 않은 이메일"
 
-#: templates/dashboard.html:1006
+#: templates/dashboard.html:994
+msgid "Invia email"
+msgstr "이메일 보내기"
+
+#: templates/dashboard.html:1015
+msgid "Invia pack via email"
+msgstr "이메일로 팩 보내기"
+
+#: templates/dashboard.html:1017 templates/login.html:34
+#: templates/partials/analyze_overlay.html:127
+msgid "Chiudi"
+msgstr "닫기"
+
+#: templates/dashboard.html:1020
+msgid ""
+"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
+"dominio."
+msgstr "이 도메인의 HTML 팩을 받을 이메일 주소를 입력하세요."
+
+#: templates/dashboard.html:1027
+msgid "Indirizzo email"
+msgstr "이메일 주소"
+
+#: templates/dashboard.html:1040
+msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
+msgstr "본인 또는 동료에게 보낼 수 있습니다. 일일 남용 방지 한도가 적용됩니다."
+
+#: templates/dashboard.html:1043
+msgid "Invia pack"
+msgstr "팩 보내기"
+
+#: templates/dashboard.html:1050
 msgid "Attivazione"
 msgstr "활성화"
 
-#: templates/dashboard.html:1007
+#: templates/dashboard.html:1051
 msgid "Prima diagnosi in un passo"
 msgstr "첫 번째 진단 한 단계에서"
 
-#: templates/dashboard.html:1010
+#: templates/dashboard.html:1054
 msgid "Stiamo già elaborando"
 msgstr "이미 처리 중입니다."
 
-#: templates/dashboard.html:1011
+#: templates/dashboard.html:1055
 msgid "Al termine compariranno qui score, findings e pack."
 msgstr "완료되면 여기에 score, findings, pack이 표시됩니다."
 
-#: templates/dashboard.html:1013
+#: templates/dashboard.html:1057
 msgid "Segui lo stato"
 msgstr "상태 확인하기"
 
-#: templates/dashboard.html:1016
+#: templates/dashboard.html:1060
 msgid ""
 "Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, findings "
 "e pack."
 msgstr "브랜드의 공개 URL을 입력하면 crawl, AIO/GEO 점수, findings, pack을 받을 수 있습니다."
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "Piano Free:"
 msgstr "무료 플랜:"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "sito"
 msgstr "사이트"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "analisi iniziali."
 msgstr "초기 분석."
 
-#: templates/dashboard.html:1019
+#: templates/dashboard.html:1063
 msgid "Avvia la prima analisi"
 msgstr "첫 번째 분석 시작하기"
 
-#: templates/dashboard.html:1026
+#: templates/dashboard.html:1070
 msgid "Contesto report"
 msgstr "보고서 맥락"
 
-#: templates/dashboard.html:1033
+#: templates/dashboard.html:1077
 msgid "Signal"
 msgstr "신호"
 
-#: templates/dashboard.html:1044
+#: templates/dashboard.html:1088
 msgid "Gap"
 msgstr "차이"
 
-#: templates/dashboard.html:1054
+#: templates/dashboard.html:1098
 msgid "Brand share"
 msgstr "브랜드 점유율"
 
-#: templates/dashboard.html:1061 templates/dashboard.html:1076
-msgid "Azioni"
-msgstr "작업"
+#: templates/dashboard.html:1105
+msgid "Vai a"
+msgstr ""
 
-#: templates/dashboard.html:1065
-msgid "Connector CMS"
-msgstr "CMS 커넥터"
+#: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
+msgid "Nuova analisi"
+msgstr "새 분석"
 
-#: templates/dashboard.html:1067
-msgid "Attiva Edge"
-msgstr "Edge 활성화"
+#: templates/dashboard.html:1120
+msgid "White-label"
+msgstr ""
 
-#: templates/dashboard.html:1071 templates/history.html:11
-msgid "Storico run"
-msgstr "실행 기록"
+#: templates/dpa.html:2 templates/dpa.html:10
+msgid "DPA e sub-responsabili"
+msgstr "DPA 및 하위처리자"
 
-#: templates/dashboard.html:1080
-msgid "White-label MD"
-msgstr "화이트 라벨 MD"
+#: templates/dpa.html:3
+msgid ""
+"Data Processing Agreement (Art. 28 GDPR) e elenco sub-responsabili Centropic "
+"per clienti Business e agenzie."
+msgstr ""
+"Business 고객 및 에이전시를 위한 Data Processing Agreement(GDPR 제28조)와 Centropic 하위처리자 "
+"목록입니다."
 
-#: templates/dashboard.html:1081
-msgid "White-label HTML"
-msgstr "화이트 라벨 HTML"
+#: templates/dpa.html:9
+msgid "Legale · GDPR Art. 28"
+msgstr "법무 · GDPR 제28조"
 
-#: templates/dashboard.html:1083
-msgid "GEO suite settings"
-msgstr "GEO 스위트 설정"
+#: templates/dpa.html:12 templates/guide.html:14
+msgid "Aggiornato"
+msgstr "업데이트됨"
+
+#: templates/dpa.html:13
+msgid "Titolare del trattamento (Cliente) / Responsabile del trattamento:"
+msgstr "개인정보 처리자(고객) / 처리수탁자:"
+
+#: templates/dpa.html:15
+msgid "Contatti:"
+msgstr "문의:"
+
+#: templates/dpa.html:19 templates/dpa.html:116
+msgid "Scarica DPA (.txt)"
+msgstr "DPA 다운로드(.txt)"
+
+#: templates/dpa.html:26
+msgid "1. Ruoli"
+msgstr "1. 역할"
+
+#: templates/dpa.html:28
+msgid ""
+"Il Cliente è titolare del trattamento dei dati personali che inserisce o fa "
+"trattare tramite Centropic. Il Provider (Centropic /"
+msgstr "고객은 Centropic에 입력하거나 Centropic을 통해 처리하게 하는 개인정보의 처리자입니다. 제공업체(Centropic /"
+
+#: templates/dpa.html:29
+msgid ""
+") agisce come responsabile del trattamento per erogare il SaaS. Paddle, in "
+"qualità di merchant of record, tratta i dati di pagamento come titolare "
+"autonomo per fatturazione e fiscalità."
+msgstr ""
+")는 SaaS 제공을 위해 처리수탁자로서 역할을 합니다. Paddle은 merchant of record로서 청구 및 세무 목적상 독립적인"
+" 처리자로 결제 데이터를 처리합니다."
+
+#: templates/dpa.html:34
+msgid "2. Oggetto e durata"
+msgstr "2. 대상 및 기간"
+
+#: templates/dpa.html:36
+msgid ""
+"Il trattamento riguarda account, URL pubblici analizzati, risultati (score, "
+"findings, artifact), log tecnici e, se abilitato dal piano, probe LLM. Dura "
+"per la vita dell’account e per i tempi di conservazione indicati "
+"nell’informativa privacy / esigenze di sicurezza e legge."
+msgstr ""
+"처리는 계정, 분석된 공개 URL, 결과(score, findings, artifact), 기술 로그 및 요금제에서 활성화된 경우 LLM "
+"probe를 대상으로 합니다. 계정 존속 기간 및 개인정보 처리방침 / 보안 및 법적 필요에 명시된 보관 기간 동안 지속됩니다."
+
+#: templates/dpa.html:41
+msgid "3. Obblighi del responsabile (Art. 28)"
+msgstr "3. 처리수탁자의 의무(제28조)"
+
+#: templates/dpa.html:43
+msgid ""
+"Tratta i dati solo per erogare Centropic e su istruzioni documentate (uso del"
+" servizio)."
+msgstr "Centropic 제공 및 문서화된 지시(서비스 사용)에 따라서만 데이터를 처리합니다."
+
+#: templates/dpa.html:44
+msgid "Garantisce riservatezza del personale autorizzato."
+msgstr "권한을 부여받은 인력의 기밀유지를 보장합니다."
+
+#: templates/dpa.html:45
+msgid "Applica misure tecniche e organizzative adeguate."
+msgstr "적절한 기술적·관리적 조치를 적용합니다."
+
+#: templates/dpa.html:46
+msgid ""
+"Ricorre ai sub-responsabili elencati nell’Allegato A; variazioni rilevanti "
+"sono comunicate."
+msgstr "부속서 A에 기재된 하위처리자를 이용하며, 중요한 변경 사항은 통지합니다."
+
+#: templates/dpa.html:47
+msgid ""
+"Assiste il Cliente su diritti degli interessati, DPIA e data breach ove "
+"applicabile."
+msgstr "해당되는 경우 정보주체 권리, DPIA 및 data breach와 관련해 고객을 지원합니다."
+
+#: templates/dpa.html:48
+msgid "Cancella o restituisce i dati dopo chiusura account, salvo obblighi di legge."
+msgstr "법적 의무가 있는 경우를 제외하고 계정 종료 후 데이터를 삭제하거나 반환합니다."
+
+#: templates/dpa.html:49
+msgid "Mette a disposizione le informazioni necessarie a dimostrare conformità."
+msgstr "준수 여부를 입증하는 데 필요한 정보를 제공합니다."
+
+#: templates/dpa.html:54
+msgid "4. Trasferimenti internazionali"
+msgstr "4. 국제 이전"
+
+#: templates/dpa.html:56
+msgid ""
+"Alcuni sub-responsabili (in particolare LLM e tool USA) possono trattare dati"
+" fuori SEE/UK. I trasferimenti si basano su garanzie appropriate (es. SCC / "
+"decisioni di adeguatezza) secondo le policy di ciascun fornitore. Per un "
+"riepilogo aggiornato: scrivi a"
+msgstr ""
+"일부 하위처리자(특히 LLM 및 미국 소재 도구)는 EEA/영국 외부에서 데이터를 처리할 수 있습니다. 이전은 각 공급업체 정책에 따른 "
+"적절한 보호조치(예: SCC / 적정성 결정)에 근거합니다. 최신 요약은 다음 주소로 문의해 주세요"
+
+#: templates/dpa.html:62
+msgid "5. Obblighi del Cliente"
+msgstr "5. 고객의 의무"
+
+#: templates/dpa.html:64
+msgid ""
+"Il Cliente garantisce di avere titolo ad analizzare i siti indicati, non deve"
+" caricare categorie particolari di dati senza addendum scritto, e rispetta i "
+"Termini (niente scansioni abusive). Per white-label / multi-cliente Business,"
+" il Cliente resta titolare verso i propri utenti finali."
+msgstr ""
+"고객은 지정한 사이트를 분석할 권한이 있음을 보증하며, 서면 부속합의 없이 특별 범주의 데이터를 업로드해서는 안 되고, 약관을 준수해야 "
+"합니다(남용적 스캔 금지). white-label / 다중 고객 Business의 경우 고객은 자신의 최종 사용자에 대해 처리자 지위를 "
+"유지합니다."
+
+#: templates/dpa.html:69
+msgid "6. Accettazione"
+msgstr "6. 수락"
+
+#: templates/dpa.html:71
+msgid ""
+"L’uso di funzioni Business/agenzia o un ordine che richiama questa versione "
+"DPA costituisce accettazione. Copia controfirmata su richiesta a"
+msgstr ""
+"Business/에이전시 기능을 사용하거나 이 버전의 DPA를 참조하는 주문을 하는 경우 수락한 것으로 간주됩니다. 서명본 사본은 다음 "
+"주소로 요청해 주세요"
+
+#: templates/dpa.html:73
+msgid ""
+"In caso di conflitto su temi privacy, questo DPA prevale sui Termini per gli "
+"obblighi di trattamento."
+msgstr "개인정보 관련 사항에서 충돌이 있는 경우, 처리 의무에 관해서는 이 DPA가 약관보다 우선합니다."
+
+#: templates/dpa.html:78
+msgid "Allegato A — Sub-responsabili attivi"
+msgstr "부속서 A — 활성 하위처리자"
+
+#: templates/dpa.html:80
+msgid ""
+"Elenco aggiornato in base alla configurazione di produzione. Provider non "
+"attivi non ricevono dati da questa istanza."
+msgstr "목록은 production 구성에 따라 업데이트됩니다. 비활성 provider는 이 인스턴스에서 데이터를 수신하지 않습니다."
+
+#: templates/dpa.html:87 templates/register.html:103
+msgid "Ruolo"
+msgstr "역할"
+
+#: templates/dpa.html:88
+msgid "Dati"
+msgstr "데이터"
+
+#: templates/dpa.html:89
+msgid "Sede / regione"
+msgstr "소재지 / 지역"
+
+#: templates/dpa.html:98
+msgid "Policy"
+msgstr "정책"
+
+#: templates/dpa.html:107
+msgid "Nessun sub-responsabile rilevato nella configurazione corrente."
+msgstr "현재 구성에서 감지된 하위처리자가 없습니다."
+
+#: templates/dpa.html:118
+msgid "Richiedi copia firmata"
+msgstr "서명본 요청"
 
 #: templates/faq.html:3
 msgid ""
@@ -3867,8 +4430,7 @@ msgid "Torna all’accesso"
 msgstr "로그인으로 돌아가기"
 
 #: templates/forgot_password.html:34 templates/landing.html:110
-#: templates/login.html:84 templates/privacy.html:85 templates/register.html:24
-#: templates/termini.html:81
+#: templates/login.html:84 templates/register.html:24
 msgid "Crea account"
 msgstr "계정 만들기"
 
@@ -3876,11 +4438,7 @@ msgstr "계정 만들기"
 msgid "GEO Charts"
 msgstr "GEO 차트"
 
-#: templates/guide.html:14
-msgid "Aggiornato"
-msgstr "업데이트됨"
-
-#: templates/guide.html:16 templates/settings.html:186
+#: templates/guide.html:16 templates/settings.html:205
 msgid "Torna alla dashboard"
 msgstr "대시보드로 돌아가기"
 
@@ -3987,6 +4545,10 @@ msgstr "심층 정보"
 #: templates/guide.html:179 templates/status.html:67
 msgid "Apri dashboard"
 msgstr "대시보드 열기"
+
+#: templates/history.html:11
+msgid "Storico run"
+msgstr "실행 기록"
 
 #: templates/history.html:11
 msgid "Ultime analisi"
@@ -4133,7 +4695,7 @@ msgid "In vendita"
 msgstr "판매 중"
 
 #: templates/landing.html:115 templates/landing.html:130 templates/pricing.html:27
-#: templates/pricing.html:44 templates/pricing.html:94
+#: templates/pricing.html:44 templates/pricing.html:102
 msgid "/mese"
 msgstr "/월"
 
@@ -4148,8 +4710,8 @@ msgid ""
 msgstr "지속적인 운영: Measured SoV, 재스캔, 알림, 확장된 crawl."
 
 #: templates/landing.html:121 templates/landing.html:136
-#: templates/partials/dashboard_shell.html:118 templates/pricing.html:47
-#: templates/pricing.html:97
+#: templates/partials/dashboard_shell.html:97 templates/pricing.html:47
+#: templates/pricing.html:105
 msgid "Fino a"
 msgstr "최대"
 
@@ -4165,8 +4727,8 @@ msgstr "Re-scan · 측정 citation monitor(0 hit → 추정)"
 msgid "Alert · Edge completo · no API/WL"
 msgstr "Alert · 전체 Edge · API/WL 없음"
 
-#: templates/landing.html:125 templates/pricing.html:58 templates/pricing.html:64
-#: templates/pricing.html:71
+#: templates/landing.html:125 templates/pricing.html:62 templates/pricing.html:69
+#: templates/pricing.html:77
 msgid "Scegli Plus"
 msgstr "Plus 선택하기"
 
@@ -4184,11 +4746,11 @@ msgid ""
 "partiamo da Plus."
 msgstr "Agency delivery를 위한 API, white-label, site scale은 곧 제공됩니다. 현재는 Plus부터 시작합니다."
 
-#: templates/landing.html:136 templates/pricing.html:97
+#: templates/landing.html:136 templates/pricing.html:105
 msgid "domini / clienti"
 msgstr "사이트 / 고객"
 
-#: templates/landing.html:137 templates/pricing.html:98
+#: templates/landing.html:137 templates/pricing.html:106
 msgid "API"
 msgstr "API"
 
@@ -4422,10 +4984,6 @@ msgstr ""
 "Centropic에 로그인: AIO (AI 기반 가시성) 및 GEO (생성 엔진 최적화)에 대한 대시보드, 결과 및 llms.txt"
 "/JSON-LD 패키지."
 
-#: templates/login.html:34 templates/partials/analyze_overlay.html:127
-msgid "Chiudi"
-msgstr "닫기"
-
 #: templates/login.html:37
 msgid "Accesso"
 msgstr "로그인"
@@ -4438,7 +4996,7 @@ msgstr "다시 오신 것을 환영합니다"
 msgid "Entra in dashboard, analizza il dominio e scarica il pack."
 msgstr "대시보드에 로그인해 도메인을 분석하고 pack을 다운로드하세요."
 
-#: templates/login.html:56 templates/register.html:65 templates/settings.html:162
+#: templates/login.html:56 templates/register.html:65 templates/settings.html:181
 msgid "Password"
 msgstr "비밀번호"
 
@@ -4587,7 +5145,7 @@ msgstr "브랜드를 위한 지속 운영: 모니터링, re-scan, citation monit
 msgid "domini monitorati"
 msgstr "모니터링"
 
-#: templates/pricing.html:48 templates/pricing.html:99
+#: templates/pricing.html:48 templates/pricing.html:107
 msgid "Re-scan giornaliero o settimanale"
 msgstr "일일/주간 재스캔"
 
@@ -4607,27 +5165,27 @@ msgstr "프롬프트 뱅크 + 알림 이메일/웹훅"
 msgid "Edge Signals completo + storico run"
 msgstr "전체 Edge Signals + 실행 기록"
 
-#: templates/pricing.html:80 templates/pricing.html:129
+#: templates/pricing.html:87 templates/pricing.html:144
 msgid "Annuale"
 msgstr "연간"
 
-#: templates/pricing.html:80 templates/pricing.html:129
+#: templates/pricing.html:87 templates/pricing.html:144
 msgid "anno"
 msgstr "년"
 
-#: templates/pricing.html:85
+#: templates/pricing.html:93
 msgid "Accedi e scegli Plus"
 msgstr "로그인 후 Plus 선택"
 
-#: templates/partials/dashboard_shell.html:12 templates/pricing.html:87
+#: templates/partials/dashboard_shell.html:12 templates/pricing.html:95
 msgid "Prenota Plus"
 msgstr "Plus 예약"
 
-#: templates/pricing.html:92
+#: templates/pricing.html:100
 msgid "Sales only"
 msgstr "영업 전용"
 
-#: templates/pricing.html:95
+#: templates/pricing.html:103
 msgid ""
 "Portfolio clienti: API, white-label e scala siti — onboarding assistito, "
 "niente checkout self-serve."
@@ -4635,61 +5193,61 @@ msgstr ""
 "고객 portfolio: API, white-label, site scale — 지원 onboarding, self-serve "
 "checkout 없음."
 
-#: templates/pricing.html:98
+#: templates/pricing.html:106
 msgid "+ white-label"
 msgstr "화이트 라벨 MD"
 
-#: templates/pricing.html:100
+#: templates/pricing.html:108
 msgid "Export report MD/HTML white-label"
 msgstr "White-label MD/HTML 리포트 내보내기"
 
-#: templates/pricing.html:101
+#: templates/pricing.html:109
 msgid "Tutto di Plus: citation monitor, Edge, alert, storico"
 msgstr "Plus의 모든 기능: citation monitor, Edge, alert, history"
 
-#: templates/pricing.html:102
+#: templates/pricing.html:110
 msgid "Ideale per retainer multi-cliente"
 msgstr "다중 고객 에이전시"
 
-#: templates/pricing.html:107 templates/pricing.html:113 templates/pricing.html:120
+#: templates/pricing.html:119 templates/pricing.html:126 templates/pricing.html:134
 msgid "Passa a Business"
 msgstr "Business로 업그레이드"
 
-#: templates/pricing.html:134
+#: templates/pricing.html:150
 msgid "Accedi e passa a Business"
 msgstr "로그인 후 Business로 업그레이드"
 
-#: templates/pricing.html:136
+#: templates/pricing.html:152
 msgid "Oggi vendiamo Plus self-serve. Business si attiva via sales / waitlist."
 msgstr "현재는 Plus self-serve를 판매합니다. Business는 sales / waitlist로 활성화됩니다."
 
-#: templates/pricing.html:137
+#: templates/pricing.html:153
 msgid "Richiedi onboarding Business"
 msgstr "Business onboarding 요청"
 
-#: templates/pricing.html:144
+#: templates/pricing.html:160
 msgid "Evidence:"
 msgstr "Evidence:"
 
-#: templates/pricing.html:145
+#: templates/pricing.html:161
 msgid "= predisposizione strutturale (CVI / AIO / GEO dal crawl)."
 msgstr "= 구조적 준비 상태(crawl 기반 CVI / AIO / GEO)."
 
-#: templates/pricing.html:146
+#: templates/pricing.html:162
 msgid ""
 "= probe LLM su Plus; se nessuna menzione, la share resta Stimata (proxy) — "
 "non azzeriamo i numeri utili."
 msgstr "= Plus의 LLM probe. 언급이 없으면 share는 추정(proxy)으로 유지되며 유용한 수치를 0으로 만들지 않습니다."
 
-#: templates/pricing.html:148
+#: templates/pricing.html:164
 msgid "Business: solo sales / waitlist."
 msgstr "관심 등록 / 대기자 명단"
 
-#: templates/pricing.html:152
+#: templates/pricing.html:168
 msgid "Pagamenti:"
 msgstr "결제:"
 
-#: templates/pricing.html:153
+#: templates/pricing.html:169
 msgid ""
 "I piani si confrontano su domini, re-scan e capability (API / white-label). "
 "La quota operativa è inclusa nel canone; eventuali top-up restano opzionali."
@@ -4697,187 +5255,354 @@ msgstr ""
 "요금제는 도메인, re-scan, capability(API / white-label)로 비교합니다. 운영 한도는 구독료에 포함되며, "
 "top-up은 선택 사항입니다."
 
-#: templates/privacy.html:3
-msgid ""
-"Informativa privacy di Centropic (centropic.ai): dati trattati per account, "
-"analisi siti e contatti. Titolare e diritti dell’interessato."
-msgstr ""
-"Centropic (centropic.ai)의 개인정보 보호정책: 계정, 사이트 분석 및 연락처에 대한 처리 데이터. 소유자 및 데이터 "
-"주체의 권리."
-
-#: templates/privacy.html:9 templates/rimborsi.html:9 templates/termini.html:9
-msgid "Legale"
-msgstr "법적"
-
-#: templates/privacy.html:10 templates/register.html:127 templates/rimborsi.html:88
-msgid "Informativa privacy"
+#: templates/privacy.html:2
+msgid "Privacy Policy"
 msgstr "개인정보 처리방침"
 
-#: templates/privacy.html:12
+#: templates/privacy.html:3
 msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · "
-"Contatti:"
-msgstr "최종 업데이트: 2026년 7월 27일 · 소유자: Centropic (centropic.ai) · 연락처:"
+"Informativa privacy Centropic: titolare, finalità, basi giuridiche, "
+"retention, trasferimenti, AI/LLM e diritti."
+msgstr "Centropic 개인정보 안내: 처리자, 목적, 법적 근거, retention, 이전, AI/LLM 및 권리입니다."
 
-#: templates/privacy.html:18
-msgid "1. Cosa trattiamo"
-msgstr "1. 우리가 처리하는 것"
+#: templates/privacy.html:10
+msgid "Informativa sulla privacy"
+msgstr "개인정보 안내"
+
+#: templates/privacy.html:12 templates/termini.html:12
+msgid "Ultimo aggiornamento:"
+msgstr "최종 업데이트:"
+
+#: templates/privacy.html:15 templates/privacy.html:105 templates/termini.html:80
+msgid "Trasparenza AI"
+msgstr "AI 투명성"
 
 #: templates/privacy.html:20
+msgid "1. Titolare del trattamento"
+msgstr "1. 개인정보 처리자"
+
+#: templates/privacy.html:22
+msgid "Il Titolare è"
+msgstr "처리자는 다음과 같습니다"
+
+#: templates/privacy.html:22
+msgid "P. IVA"
+msgstr "VAT 번호"
+
+#: templates/privacy.html:23
+msgid "Contatto privacy:"
+msgstr "개인정보 문의:"
+
+#: templates/privacy.html:26
 msgid ""
-"Per erogare il servizio SaaS trattiamo: dati di account (nome, email, "
-"password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL "
-"dei siti analizzati, risultati di analisi (score, findings, artifact "
-"generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati "
-"volontariamente (es. waitlist Plus)."
-msgstr ""
-"SaaS 서비스를 제공하기 위해 우리는 다음을 처리합니다: 계정 데이터(이름, 이메일, 해시된 비밀번호, 선택적 회사/역할, 전화번호 및 "
-"제공된 경우 국가), 분석된 사이트의 URL, 분석 결과(점수, 발견 사항, 생성된 아티팩트), 보안 기술 로그(IP, 타임스탬프) 및 "
-"자발적으로 전송된 메시지(예: waitlist Plus)."
+"I dati societari completi (indirizzo e partita IVA) saranno pubblicati non "
+"appena disponibili nel registro imprese / configurazione operativa."
+msgstr "전체 회사 정보(주소 및 VAT 번호)는 기업등록부 / 운영 구성에서 확인되는 즉시 게시됩니다."
 
-#: templates/privacy.html:25
-msgid "2. Finalità e basi giuridiche"
-msgstr "2. 목적 및 법적 근거"
+#: templates/privacy.html:31
+msgid "2. Ambito e ruoli"
+msgstr "2. 범위 및 역할"
 
-#: templates/privacy.html:27
-msgid "Esecuzione del contratto"
-msgstr "계약 이행"
+#: templates/privacy.html:33
+msgid "Titolare"
+msgstr "처리자"
 
-#: templates/privacy.html:27
-msgid "account, analisi, pack, supporto."
-msgstr "계정, 분석, 패키지, 지원."
-
-#: templates/privacy.html:28
-msgid "Legittimo interesse"
-msgstr "정당한 이익"
-
-#: templates/privacy.html:28
-msgid "sicurezza, prevenzione abusi, miglioramento prodotto."
-msgstr "보안, 남용 방지, 제품 개선."
-
-#: templates/privacy.html:29
-msgid "Obblighi di legge"
-msgstr "법적 의무"
-
-#: templates/privacy.html:29
-msgid "ove applicabili (es. richieste autorità)."
-msgstr "적용 가능한 경우(예: 당국의 요청)."
-
-#: templates/privacy.html:30
-msgid "Consenso"
-msgstr "동의"
-
-#: templates/privacy.html:30
-msgid "solo per comunicazioni non essenziali, se richieste in futuro."
-msgstr "향후 요청된 경우 비필수 통신에 대해서만."
-
-#: templates/privacy.html:35
-msgid "3. Analisi dei siti"
-msgstr "3. 사이트 분석"
-
-#: templates/privacy.html:37
+#: templates/privacy.html:33
 msgid ""
-"Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato "
-"(pagine pubbliche raggiungibili) e probe di file come"
-msgstr "URL을 입력하면 Centropic이 지정된 도메인에서 크롤링을 수행합니다(접근 가능한 공개 페이지) 및 파일 프로브와 같은"
+"per account, autenticazione, fatturazione, sicurezza della piattaforma, "
+"analytics e marketing propri."
+msgstr "계정, 인증, 청구, 플랫폼 보안, 자체 analytics 및 마케팅 목적입니다."
+
+#: templates/privacy.html:34
+msgid "Responsabile"
+msgstr "처리수탁자"
+
+#: templates/privacy.html:34
+msgid ""
+"quando trattiamo contenuti dei siti e output di analisi per conto del Cliente"
+" (B2B). Vedi"
+msgstr "Centropic이 고객(B2B)을 대신하여 사이트 콘텐츠와 분석 출력을 처리하는 경우입니다. 다음을 참조하세요"
 
 #: templates/privacy.html:39
+msgid "3. Categorie di dati"
+msgstr "3. 데이터 범주"
+
+#: templates/privacy.html:41
+msgid "Identità e contatto: email, nome, telefono (opzionale), lingua, fuso orario."
+msgstr "신원 및 연락처: 이메일, 이름, 전화번호(선택), 언어, 시간대입니다."
+
+#: templates/privacy.html:42
 msgid ""
-"Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati"
-" restano nel tuo account finché non li elimini o chiudi l’account."
-msgstr ""
-"우리는 귀하의 사이트의 인증된 영역에 접근할 필요가 없습니다. 생성된 아티팩트는 귀하가 삭제하거나 계정을 종료할 때까지 귀하의 계정에 남아"
-" 있습니다."
+"Account e autenticazione: hash password, sessioni, versioni sessione, log di "
+"accesso."
+msgstr "계정 및 인증: 비밀번호 해시, 세션, 세션 버전, 접속 로그입니다."
+
+#: templates/privacy.html:43
+msgid ""
+"Fatturazione: piano, stato abbonamento, ID Paddle, storico crediti, waiver "
+"recesso digitale."
+msgstr "청구: 요금제, 구독 상태, Paddle ID, credits 이력, 디지털 청약철회권 포기 기록입니다."
 
 #: templates/privacy.html:44
-msgid "4. Pagamenti"
-msgstr "4. 결제"
+msgid ""
+"Utilizzo prodotto: siti monitorati, run di analisi, findings, SoV, job "
+"status, preferenze."
+msgstr "제품 사용: 모니터링 사이트, 분석 run, findings, SoV, job status, 환경설정입니다."
+
+#: templates/privacy.html:45
+msgid ""
+"Contenuti del Cliente: URL, testi/HTML acquisiti per analisi, output AI "
+"generati."
+msgstr "고객 콘텐츠: URL, 분석을 위해 수집한 텍스트/HTML, 생성된 AI 출력입니다."
 
 #: templates/privacy.html:46
 msgid ""
-"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
-"Paddle.com Market Limited in qualità di merchant of record. Centropic non "
-"memorizza i dati completi della carta. Paddle tratta i dati di fatturazione "
-"necessari all’incasso e alla fiscalità secondo la propria informativa; "
-"riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e "
-"importi per attivare il piano e accreditare il saldo."
-msgstr ""
-"결제(Plus 구독 및 크레딧 충전)는 기록 상의 상인으로서 Paddle.com Market Limited에 의해 처리됩니다. "
-"Centropic은 카드의 전체 데이터를 저장하지 않습니다. Paddle은 수금 및 세금에 필요한 청구 데이터를 자신의 정책에 따라 "
-"처리합니다. 우리는 Paddle로부터 고객/거래 식별자, 구독 상태 및 요금을 받아 계획을 활성화하고 잔액을 적립합니다."
+"Tecnici: IP, user-agent, cookie/localStorage di preferenza e, se consenso, "
+"analytics/ads."
+msgstr "기술 정보: IP, user-agent, 환경설정 cookie/localStorage 및 동의한 경우 analytics/ads입니다."
 
-#: templates/privacy.html:51
-msgid "5. Conservazione e trasferimenti"
-msgstr "5. 보관 및 전송"
+#: templates/privacy.html:47
+msgid "Supporto: messaggi inviati a"
+msgstr "지원: 다음 주소로 보낸 메시지"
 
-#: templates/privacy.html:53
-msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo"
-" la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; "
-"eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, "
-"OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati "
-"solo per conto del servizio o come autonomi titolari ove indicato (es. "
-"Paddle)."
-msgstr ""
-"데이터는 계정이 활성 상태인 동안 유지되며 종료 후 필요한 기술적 시간(백업, 보안) 동안 보관됩니다. 인프라는 소유자가 관리합니다. "
-"호스팅, 거래 이메일, 결제를 위한 Paddle, OpenAI 및 분석/패키징을 위해 구성된 기타 LLM 공급자와 같은 공급자는 서비스의 "
-"명의로 또는 명시된 대로 독립적인 소유자로서만 데이터를 처리합니다(예: Paddle)."
+#: templates/privacy.html:52
+msgid "4. Finalità e basi giuridiche"
+msgstr "4. 목적 및 법적 근거"
+
+#: templates/privacy.html:57
+msgid "Finalità"
+msgstr "목적"
 
 #: templates/privacy.html:58
-msgid "6. Diritti"
-msgstr "6. 권리"
-
-#: templates/privacy.html:60
-msgid ""
-"Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e "
-"opposizione dalle"
-msgstr "다음 주소로 연락하여 접근, 수정, 삭제, 제한, 이식 및 반대할 수 있습니다:"
-
-#: templates/privacy.html:61
-msgid "Impostazioni account"
-msgstr "GEO 설정"
+msgid "Base giuridica"
+msgstr "법적 근거"
 
 #: templates/privacy.html:62
-msgid "(export dati / elimina account) oppure scrivendo a"
-msgstr "(데이터 export / 계정 삭제) 또는 다음 주소로 문의"
+msgid "Erogazione del Servizio SaaS e gestione account"
+msgstr "SaaS 서비스 제공 및 계정 관리"
+
+#: templates/privacy.html:62
+msgid "Contratto (art. 6.1.b)"
+msgstr "계약(제6.1.b조)"
+
+#: templates/privacy.html:63
+msgid "Fatturazione, crediti, adempimenti fiscali"
+msgstr "청구, credits, 세무 의무"
+
+#: templates/privacy.html:63
+msgid "Contratto / obbligo legale (art. 6.1.b/c)"
+msgstr "계약 / 법적 의무(제6.1.b/c조)"
 
 #: templates/privacy.html:64
-msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
-msgstr "귀하는 또한 관할 감독 기관에 불만을 제기할 권리가 있습니다."
+msgid "Sicurezza, prevenzione abusi, debug"
+msgstr "보안, 남용 방지, debug"
 
-#: templates/privacy.html:69
-msgid "7. Cookie"
-msgstr "7. 쿠키"
+#: templates/privacy.html:64
+msgid "Legittimo interesse (art. 6.1.f)"
+msgstr "정당한 이익(제6.1.f조)"
 
-#: templates/privacy.html:71
+#: templates/privacy.html:65
+msgid "Cookie analitici / pubblicitari"
+msgstr "분석 / 광고 쿠키"
+
+#: templates/privacy.html:65
+msgid "Consenso (art. 6.1.a) — gestibile nel banner"
+msgstr "동의(제6.1.a조) — banner에서 관리 가능"
+
+#: templates/privacy.html:66
+msgid "Comunicazioni di servizio e legali"
+msgstr "서비스 및 법적 고지"
+
+#: templates/privacy.html:66
+msgid "Contratto / obbligo legale"
+msgstr "계약 / 법적 의무"
+
+#: templates/privacy.html:67
+msgid "Miglioramento prodotto (dati aggregati/anonimizzati)"
+msgstr "제품 개선(집계/익명화 데이터)"
+
+#: templates/privacy.html:67
+msgid "Legittimo interesse, con salvaguardie"
+msgstr "정당한 이익, 보호조치 적용"
+
+#: templates/privacy.html:74
+msgid "5. Periodi di conservazione"
+msgstr "5. 보관 기간"
+
+#: templates/privacy.html:76
 msgid ""
-"Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
-"protezione CSRF, preferenza lingua)."
-msgstr "우리는 사이트의 작동에 필요한 기술적 쿠키를 사용합니다(세션, CSRF 보호, 언어 선호)."
-
-#: templates/privacy.html:73
-msgid ""
-"Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, "
-"se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è"
-" gestito con"
-msgstr ""
-"귀하의 동의(쿠키 배너)를 통해 Google Analytics 4를 활성화하고, 구성된 경우 Google Ads / AdSense를 측정 "
-"및 광고를 위해 활성화할 수 있습니다. 동의는 다음과 같이 관리됩니다:"
-
-#: templates/privacy.html:75
-msgid ""
-"di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in"
-" qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non "
-"attiviamo AdSense senza consenso pubblicitario."
-msgstr ""
-"기본적으로 저장 분석/광고는 거부됩니다(UE); 사이트 데이터를 삭제하고 페이지를 새로 고침하여 언제든지 수락하거나 거부할 수 있습니다. "
-"우리는 광고 동의 없이 AdSense를 활성화하지 않습니다."
+"Account attivo: per tutta la durata del rapporto + 30 giorni dopo chiusura "
+"(salvo obblighi legali)."
+msgstr "활성 계정: 관계 지속 기간 + 종료 후 30일(법적 의무가 있는 경우 제외)입니다."
 
 #: templates/privacy.html:77
+msgid "Dati di fatturazione e fiscali: fino a 10 anni ove richiesto dalla legge."
+msgstr "청구 및 세무 데이터: 법에서 요구하는 경우 최대 10년입니다."
+
+#: templates/privacy.html:78
+msgid "Log di sicurezza e accesso: tipicamente 12 mesi."
+msgstr "보안 및 접속 로그: 일반적으로 12개월입니다."
+
+#: templates/privacy.html:79
 msgid ""
-"Attualmente non sono attivi cookie di misurazione o pubblicitari di terze "
-"parti su questo sito."
-msgstr "현재 이 사이트에서는 제3자의 측정 또는 광고 쿠키가 활성화되어 있지 않습니다."
+"Run di analisi e contenuti associati: fino a cancellazione account/sito o "
+"richiesta del Cliente; backup residui fino a 90 giorni."
+msgstr "분석 run 및 관련 콘텐츠: 계정/사이트 삭제 또는 고객 요청 시까지이며, 잔여 백업은 최대 90일입니다."
+
+#: templates/privacy.html:80
+msgid "Preferenze cookie: fino a 12 mesi, poi riesame del consenso."
+msgstr "쿠키 환경설정: 최대 12개월 후 동의를 재검토합니다."
+
+#: templates/privacy.html:81
+msgid "Ticket di supporto: fino a 24 mesi dalla chiusura."
+msgstr "지원 티켓: 종료 후 최대 24개월입니다."
+
+#: templates/privacy.html:86
+msgid "6. Destinatari e sub-responsabili"
+msgstr "6. 수령자 및 하위처리자"
+
+#: templates/privacy.html:88
+msgid ""
+"Trattiamo dati con fornitori strettamente necessari (hosting, database, "
+"email, pagamenti, modelli AI). Elenco attivo:"
+msgstr ""
+"엄격히 필요한 공급업체(hosting, database, email, payments, AI models)와 데이터를 처리합니다. 활성 "
+"목록:"
+
+#: templates/privacy.html:89
+msgid "Sub-responsabili"
+msgstr "하위처리자"
+
+#: templates/privacy.html:90
+msgid "Paddle tratta i dati di pagamento come titolare autonomo per il checkout."
+msgstr "Paddle은 checkout을 위해 결제 데이터를 독립적인 처리자로 처리합니다."
+
+#: templates/privacy.html:95
+msgid "7. Trasferimenti internazionali"
+msgstr "7. 국제 이전"
+
+#: templates/privacy.html:97
+msgid ""
+"Alcuni fornitori possono trattare dati fuori SEE (es. USA). In tali casi "
+"usiamo salvaguardie adeguate (Clausole Contrattuali Standard / meccanismi "
+"equivalenti del fornitore) e minimizzazione. Dettagli per fornitore nella "
+"pagina Sub-responsabili e nelle rispettive DPA."
+msgstr ""
+"일부 공급업체는 EEA 외부(예: 미국)에서 데이터를 처리할 수 있습니다. 이 경우 적절한 보호조치(표준계약조항 / 공급업체의 동등한 "
+"메커니즘)와 최소화 원칙을 적용합니다. 공급업체별 세부 사항은 하위처리자 페이지와 각 DPA에서 확인할 수 있습니다."
+
+#: templates/privacy.html:102
+msgid "8. Decisioni automatizzate e AI"
+msgstr "8. 자동화된 의사결정 및 AI"
+
+#: templates/privacy.html:104
+msgid ""
+"Il Servizio genera score, findings e raccomandazioni tramite modelli AI. Non "
+"prendiamo decisioni esclusivamente automatizzate che producano effetti "
+"giuridici significativi sull’interessato ai sensi dell’art. 22 GDPR senza "
+"intervento umano. Maggiori dettagli:"
+msgstr ""
+"서비스는 AI 모델을 통해 score, findings 및 권고사항을 생성합니다. 사람의 개입 없이 GDPR 제22조에 따른 정보주체에게 "
+"중대한 법적 효과를 발생시키는 전적으로 자동화된 의사결정은 하지 않습니다. 자세한 내용:"
+
+#: templates/privacy.html:110
+msgid "9. Cookie e tracciamento"
+msgstr "9. 쿠키 및 추적"
+
+#: templates/privacy.html:112
+msgid "Vedi la"
+msgstr "다음을 확인해 주세요"
+
+#: templates/privacy.html:113
+msgid ""
+"Puoi modificare il consenso in qualsiasi momento tramite “Gestisci consenso” "
+"nel footer."
+msgstr "footer의 “동의 관리”를 통해 언제든지 동의를 변경할 수 있습니다."
+
+#: templates/privacy.html:118
+msgid "10. Diritti dell’interessato"
+msgstr "10. 정보주체의 권리"
+
+#: templates/privacy.html:120
+msgid ""
+"Hai diritto di accesso, rettifica, cancellazione, limitazione, portabilità, "
+"opposizione e revoca del consenso. Scrivi a"
+msgstr "접근, 정정, 삭제, 처리 제한, 이동성, 반대 및 동의 철회 권리가 있습니다. 다음 주소로 문의해 주세요"
+
+#: templates/privacy.html:122
+msgid ""
+"Puoi reclamare al Garante Privacy (Italia) o all’autorità del tuo Paese "
+"UE/SEE."
+msgstr "이탈리아 Garante Privacy 또는 고객의 EU/EEA 국가 감독기관에 불만을 제기할 수 있습니다."
+
+#: templates/privacy.html:127
+msgid "11. Minori"
+msgstr "11. 미성년자"
+
+#: templates/privacy.html:129
+msgid ""
+"Il Servizio è destinato a utenti professionali maggiorenni. Non raccogliamo "
+"consapevolmente dati di minori di 16 anni. Se ritieni che un minore ci abbia "
+"fornito dati, contattaci per la cancellazione."
+msgstr ""
+"서비스는 성인 전문 사용자를 대상으로 합니다. 16세 미만 미성년자의 데이터를 의도적으로 수집하지 않습니다. 미성년자가 데이터를 제공했다고"
+" 생각하시면 삭제를 위해 연락해 주세요."
+
+#: templates/privacy.html:134
+msgid "12. Sicurezza e data breach"
+msgstr "12. 보안 및 data breach"
+
+#: templates/privacy.html:136
+msgid ""
+"Adottiamo misure tecniche e organizzative appropriate (cifratura in transito,"
+" controlli di accesso, segregazione tenant, backup). In caso di violazione "
+"dei dati personali con rischio per i diritti e le libertà, notificheremo "
+"l’autorità competente e, ove dovuto, gli interessati, nei termini di legge. "
+"Overview:"
+msgstr ""
+"적절한 기술적·관리적 조치(전송 중 암호화, 접근 통제, tenant 분리, 백업)를 적용합니다. 권리와 자유에 위험을 초래하는 개인정보 "
+"침해가 발생한 경우, 법정 기한 내에 관할 기관 및 필요한 경우 정보주체에게 통지합니다. 개요:"
+
+#: templates/privacy.html:137
+msgid "Trust & Security"
+msgstr "신뢰 및 보안"
+
+#: templates/privacy.html:142
+msgid "13. Note internazionali (ove applicabili)"
+msgstr "13. 국제 관련 참고사항(해당 시)"
+
+#: templates/privacy.html:144
+msgid ""
+"se tratti dati di interessati UK, i diritti e le basi restano sostanzialmente"
+" allineati; contatto privacy invariato."
+msgstr "영국 정보주체의 데이터를 처리하는 경우, 권리와 근거는 실질적으로 동일하게 유지되며 개인정보 문의처는 변동 없습니다."
+
+#: templates/privacy.html:145
+msgid ""
+"non vendiamo dati personali. Diritti di accesso/cancellazione/opt-out: "
+"contatta"
+msgstr "개인정보를 판매하지 않습니다. 접근/삭제/opt-out 권리는 다음 주소로 문의해 주세요"
+
+#: templates/privacy.html:145
+msgid "Identificati come residente CA nella richiesta."
+msgstr "요청 시 CA 거주자임을 밝혀 주세요."
+
+#: templates/privacy.html:150
+msgid "14. Modifiche"
+msgstr "14. 변경"
+
+#: templates/privacy.html:152
+msgid ""
+"Possiamo aggiornare questa informativa. La versione corrente e la data sono "
+"indicate in cima. Per modifiche sostanziali, avviso in-app o email ove "
+"appropriato."
+msgstr ""
+"이 안내를 업데이트할 수 있습니다. 현재 버전과 날짜는 상단에 표시됩니다. 중요한 변경의 경우 적절한 경우 앱 내 고지 또는 이메일로 "
+"안내합니다."
+
+#: templates/privacy.html:155
+msgid "Versioni documenti:"
+msgstr "문서 버전:"
 
 #: templates/pro_interest.html:2
 msgid "Interesse piani"
@@ -5151,10 +5876,6 @@ msgstr "비밀번호 확인"
 msgid "Azienda / Brand"
 msgstr "회사 / 브랜드"
 
-#: templates/register.html:103
-msgid "Ruolo"
-msgstr "역할"
-
 #: templates/register.html:109
 msgid "Sito web principale"
 msgstr "주요 웹사이트"
@@ -5174,6 +5895,11 @@ msgstr "다음에 동의합니다"
 #: templates/register.html:126
 msgid "e l’"
 msgstr "및"
+
+#: templates/register.html:127 templates/rimborsi.html:88
+#: templates/termini.html:125
+msgid "Informativa privacy"
+msgstr "개인정보 처리방침"
 
 #: templates/register.html:128
 msgid "di Centropic (centropic.ai)."
@@ -5208,7 +5934,8 @@ msgstr "AIO/GEO 대시보드로 돌아가기 위해 새 비밀번호를 설정�
 msgid "Richiedi un nuovo link"
 msgstr "새 링크 요청"
 
-#: templates/rimborsi.html:2 templates/rimborsi.html:10 templates/termini.html:66
+#: templates/partials/digital_service_waiver.html:14 templates/rimborsi.html:2
+#: templates/rimborsi.html:10
 msgid "Politica di rimborso"
 msgstr "환불 정책"
 
@@ -5221,10 +5948,6 @@ msgstr "Centropic 환불 정책: Plus/Business 구독, 크레딧 패키지 및 �
 #: templates/rimborsi.html:12
 msgid "Ultimo aggiornamento: 30 luglio 2026 · Contatti:"
 msgstr "최종 업데이트: 2026년 7월 30일 · 연락처:"
-
-#: templates/rimborsi.html:18
-msgid "1. Ambito"
-msgstr "1. 범위"
 
 #: templates/rimborsi.html:20
 msgid ""
@@ -5260,9 +5983,9 @@ msgid ""
 "Se richiedi l’erogazione immediata del servizio (accesso al piano o accredito"
 " crediti) e riconosci di perdere il diritto di recesso una volta iniziata "
 "l’erogazione, il recesso non si applica dopo che il servizio è stato avviato."
+" Il consenso è raccolto con checkbox esplicita prima del checkout "
+"Plus/crediti."
 msgstr ""
-"서비스의 즉각적인 제공(요금제 접근 또는 크레딧 적립)을 요청하고 제공이 시작된 후 철회 권리를 잃는 것을 인정하는 경우, 서비스가 시작된"
-" 후에는 철회가 적용되지 않습니다."
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -5638,40 +6361,84 @@ msgid "Esci ovunque"
 msgstr "모든 곳에서 로그아웃"
 
 #: templates/settings.html:150
+msgid "Fatturazione e cancellazione"
+msgstr "결제 및 해지"
+
+#: templates/settings.html:153
+msgid "Piano attuale:"
+msgstr "현재 요금제:"
+
+#: templates/settings.html:154 templates/termini.html:48
+msgid "I pagamenti sono gestiti da Paddle (Merchant of Record)."
+msgstr "결제는 Paddle(Merchant of Record)이 처리합니다."
+
+#: templates/settings.html:157
+msgid ""
+"Per cambiare carta, scaricare fatture o annullare il rinnovo: usa il link "
+"“Manage subscription” nella ricevuta Paddle, oppure invia richiesta a"
+msgstr ""
+"카드 변경, 인보이스 다운로드 또는 갱신 취소는 Paddle 영수증의 “Manage subscription” 링크를 사용하거나 다음 주소로"
+" 요청해 주세요"
+
+#: templates/settings.html:158
+msgid ""
+"Dopo la cancellazione resti attivo fino a fine periodo già pagato; i crediti "
+"consumati non si ripristinano."
+msgstr "취소 후에도 이미 결제한 기간이 끝날 때까지 활성 상태가 유지되며, 사용한 credits는 복원되지 않습니다."
+
+#: templates/settings.html:158 templates/termini.html:49
+msgid "Politica rimborsi"
+msgstr "환불 정책"
+
+#: templates/settings.html:159
+msgid "Vedi piani e prezzi"
+msgstr "요금제 및 가격 보기"
+
+#: templates/settings.html:159
+msgid "Top-up crediti"
+msgstr "credits 충전"
+
+#: templates/settings.html:163
+msgid "Come gestire / annullare abbonamento"
+msgstr "구독 관리 / 취소 방법"
+
+#: templates/settings.html:169
 msgid "Dati e account"
 msgstr "계정 상태"
 
-#: templates/settings.html:154
+#: templates/settings.html:173
 msgid "Scarica un export JSON con profilo e siti (portabilità)."
 msgstr "프로필과 사이트가 포함된 JSON export를 다운로드합니다(이동성)."
 
-#: templates/settings.html:155
+#: templates/settings.html:174
 msgid "Esporta i miei dati"
 msgstr "내 데이터 export"
 
-#: templates/settings.html:160
-msgid ""
-"Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal "
-"billing."
-msgstr "영구 삭제입니다. 활성 구독이 있다면 먼저 billing에서 취소하세요."
+#: templates/settings.html:179
+msgid "Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima da"
+msgstr "영구 삭제입니다. 활성 구독이 있는 경우 먼저 다음에서 취소하세요"
 
-#: templates/settings.html:165
+#: templates/settings.html:179
+msgid "Fatturazione"
+msgstr "청구"
+
+#: templates/settings.html:184
 msgid "Confermo di voler eliminare l’account"
 msgstr "계정 삭제를 원함을 확인합니다"
 
-#: templates/settings.html:172
+#: templates/settings.html:191
 msgid "White-label agenzia"
 msgstr "화이트 라벨 에이전시"
 
-#: templates/settings.html:177
+#: templates/settings.html:196
 msgid "Logo URL"
 msgstr "로고 URL"
 
-#: templates/settings.html:178
+#: templates/settings.html:197
 msgid "Colore"
 msgstr "색상"
 
-#: templates/settings.html:179
+#: templates/settings.html:198
 msgid "Nota"
 msgstr "노트"
 
@@ -5831,142 +6598,292 @@ msgstr "사이트 분석"
 
 #: templates/termini.html:3
 msgid ""
-"Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven "
-"Visibility (AIO) e Generative Engine Optimization (GEO), limiti e "
-"responsabilità."
-msgstr ""
-"Centropic 서비스 약관 (centropic.ai): AI 기반 가시성 (AIO) 및 생성 엔진 최적화 (GEO) SaaS 사용, "
-"제한 및 책임."
+"Termini di servizio Centropic: account, piani, crediti, IP, responsabilità e "
+"legge applicabile."
+msgstr "Centropic 서비스 약관: 계정, 요금제, credits, IP, 책임 및 준거법입니다."
 
-#: templates/termini.html:12
-msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti "
-"questi termini. Contatti:"
-msgstr "최종 업데이트: 2026년 7월 27일 · 등록을 수락함으로써 이 약관에 동의합니다. 연락처:"
-
-#: templates/termini.html:18
-msgid "1. Servizio"
-msgstr "1. 서비스"
+#: templates/termini.html:9
+msgid "Legal"
+msgstr "법무"
 
 #: templates/termini.html:20
+msgid "1. Premessa"
+msgstr "1. 서문"
+
+#: templates/termini.html:22
 msgid ""
-"Centropic è un software-as-a-service che analizza siti web pubblici e genera "
-"score"
-msgstr "Centropic은 공개 웹사이트를 분석하고 점수를 생성하는 서비스형 소프트웨어입니다."
-
-#: templates/termini.html:23
-msgid "findings e artifact (es."
-msgstr "발견 및 아티팩트 (예:"
-
-#: templates/termini.html:23
-msgid "bozza"
-msgstr "초안"
+"Questi Termini regolano l’uso della piattaforma Centropic (“Servizio”) "
+"fornita da"
+msgstr "본 약관은 다음이 제공하는 Centropic 플랫폼(“서비스”)의 사용을 규율합니다"
 
 #: templates/termini.html:24
-msgid "Non è un Geographic Information System (GIS) né una suite All-in-One generica."
-msgstr "지리 정보 시스템(GIS)도 아니고 일반적인 올인원 스위트도 아닙니다."
+msgid ""
+"Accedendo o usando il Servizio accetti i Termini. Se agisci per "
+"un’organizzazione, dichiari di avere autorità a vincolarla."
+msgstr ""
+"서비스에 접근하거나 서비스를 사용하면 본 약관에 동의하는 것입니다. 조직을 대신해 행동하는 경우, 해당 조직을 구속할 권한이 있음을 "
+"진술합니다."
 
 #: templates/termini.html:29
-msgid "2. Natura degli score"
-msgstr "2. 점수의 본질"
+msgid "2. Descrizione del Servizio"
+msgstr "2. 서비스 설명"
 
 #: templates/termini.html:31
-msgid "Gli score AIO/GEO misurano la"
-msgstr "AIO 및 GEO 점수는 AI에 대한 실시간 측정값인가요?"
-
-#: templates/termini.html:33
 msgid ""
-"del sito (contenuto, schema, robots, llms, entity): quanto brand e pagine "
-"sono leggibili dai crawler generativi. Il Centropic Visibility Index (CVI) "
-"sintetizza AIO/GEO; la citation share può essere Stimata (da struttura) o "
-"Misurata (campioni LLM su Plus/Business)."
+"Centropic è un SaaS B2B di intelligence AIO/GEO: analisi di siti, score, "
+"share of voice, findings e deliverable correlati. Le funzionalità dipendono "
+"dal piano e dalle capacità abilitate. Il Servizio può evolvere; funzioni beta"
+" possono essere modificate o ritirate con preavviso ragionevole ove "
+"praticabile."
 msgstr ""
-"사이트의 (content, schema, robots, llms, entity): 브랜드와 페이지가 생성형 crawler에 얼마나 읽기 "
-"쉬운지입니다. Centropic Visibility Index (CVI)는 AIO/GEO를 요약하며, citation share는 "
-"추정(구조 기반) 또는 측정(Plus/Business의 LLM 샘플)일 수 있습니다."
+"Centropic은 사이트 분석, score, share of voice, findings 및 관련 deliverable을 제공하는 B2B"
+" AIO/GEO intelligence SaaS입니다. 기능은 요금제와 활성화된 capability에 따라 달라집니다. 서비스는 발전할 수"
+" 있으며, beta 기능은 실현 가능한 경우 합리적인 사전 고지 후 변경되거나 중단될 수 있습니다."
 
-#: templates/termini.html:34
-msgid ""
-"Centropic garantisce il lavoro di diagnosi e predisposizione sul tuo dominio;"
-" non garantisce ranking o menzioni nelle interfacce di modelli di terzi, che "
-"restano indipendenti."
-msgstr ""
-"Centropic은 귀사 도메인에 대한 진단 및 준비 작업을 보장합니다. 독립적으로 운영되는 타사 모델 인터페이스의 ranking이나 "
-"언급은 보장하지 않습니다."
+#: templates/termini.html:36
+msgid "3. Account e idoneità"
+msgstr "3. 계정 및 자격"
+
+#: templates/termini.html:38
+msgid "Devi fornire informazioni accurate e mantenere la sicurezza delle credenziali."
+msgstr "정확한 정보를 제공하고 인증정보의 보안을 유지해야 합니다."
 
 #: templates/termini.html:39
-msgid "3. Account e uso corretto"
-msgstr "3. 계정 및 올바른 사용"
+msgid "Il Servizio è destinato a utenti professionali maggiorenni."
+msgstr "서비스는 성인 전문 사용자를 대상으로 합니다."
 
-#: templates/termini.html:41
-msgid "Fornisci dati veritieri e custodisci le credenziali."
-msgstr "정확한 데이터를 제공하고 자격 증명을 안전하게 유지하십시오."
-
-#: templates/termini.html:42
-msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
-msgstr "기술 감사 요청 권한이 있는 사이트만 분석하십시오."
-
-#: templates/termini.html:43
+#: templates/termini.html:40
 msgid ""
-"Non usare il servizio per scansioni abusive, attacchi o accesso a reti "
-"private."
-msgstr "서비스를 남용 스캔, 공격 또는 개인 네트워크 접근에 사용하지 마십시오."
+"Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati "
+"della tua organizzazione."
+msgstr "조직의 초대 사용자를 포함하여 계정에서 발생하는 활동에 대해 책임을 집니다."
 
-#: templates/termini.html:44
-msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
-msgstr "요청 제한 및 요금제(Free/Plus/Business)를 준수하세요."
+#: templates/termini.html:45
+msgid "4. Piani, crediti e pagamenti"
+msgstr "4. 요금제, credits 및 결제"
+
+#: templates/termini.html:47
+msgid ""
+"I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. "
+"I prezzi includono IVA ove applicabile secondo checkout Paddle."
+msgstr ""
+"Free / Plus / Business 요금제와 credits 충전은 Pricing에 설명되어 있습니다. 가격에는 Paddle "
+"checkout에 따라 해당되는 경우 VAT가 포함됩니다."
 
 #: templates/termini.html:49
-msgid "4. Artifact e responsabilità"
-msgstr "4. 아티팩트 및 책임"
+msgid ""
+"I crediti consumati per analisi non sono rimborsabili salvo quanto previsto "
+"nella"
+msgstr "분석에 사용된 credits는 다음 정책에 명시된 경우를 제외하고 환불되지 않습니다"
+
+#: templates/termini.html:50
+msgid ""
+"Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o "
+"contattando"
+msgstr "설정 → 청구에서 구독을 관리하거나 취소할 수 있으며, 또는 다음으로 문의할 수 있습니다"
 
 #: templates/termini.html:51
 msgid ""
-"Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la"
-" conformità legale/SEO e l’impatto sulle performance restano a tuo carico. "
-"Centropic non risponde di decisioni di crawler o modelli di terzi."
+"Per contenuti digitali a esecuzione immediata, al checkout ti chiediamo di "
+"richiedere l’esecuzione e accettare la perdita del diritto di recesso 14 "
+"giorni (direttiva 2011/83/UE), ove applicabile."
 msgstr ""
-"생성된 아티팩트는 운영 초안입니다: 귀하의 사이트에 게시, 법적/SEO 준수 및 성능에 미치는 영향은 귀하의 책임입니다. "
-"Centropic은 크롤러 또는 제3자 모델의 결정에 대해 책임을 지지 않습니다."
+"즉시 이행되는 디지털 콘텐츠의 경우, checkout에서 즉시 이행을 요청하고 해당되는 경우 14일 청약철회권 상실(지침 "
+"2011/83/EU)을 수락해 달라고 요청합니다."
 
 #: templates/termini.html:56
-msgid "5. Piani e disponibilità"
-msgstr "5. 요금제 및 가용성"
+msgid "5. Uso consentito e divieti"
+msgstr "5. 허용되는 사용 및 금지 사항"
 
 #: templates/termini.html:58
 msgid ""
-"Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza "
-"reset). Plus e Business sono abbonamenti self-serve via Paddle quando il "
-"catalogo è configurato; altrimenti interesse via waitlist. Il servizio è "
-"fornito “as is”; possiamo sospendere account in caso di abuso o rischio "
-"sicurezza."
+"Non puoi: (a) usare il Servizio in violazione di legge; (b) tentare accesso "
+"non autorizzato; (c) interferire con infrastruttura o altri tenant; (d) "
+"rivendere il Servizio senza accordo; (e) caricare contenuti illeciti; (f) "
+"eludere limiti di piano o misure di sicurezza; (g) usare output per spamming "
+"abusivo o attività fraudolente."
 msgstr ""
-"Free 요금제는 사이트(1개) 및 총 분석 횟수(2회, 리셋 없음)에 엄격한 제한이 있습니다. Plus와 Business는 카탈로그가 "
-"구성되면 Paddle을 통한 self-serve 구독으로 제공되며, 그렇지 않은 경우 대기자 명단을 통해 관심을 등록할 수 있습니다. "
-"서비스는 “있는 그대로” 제공되며, 남용이나 보안 위험이 있는 경우 계정을 정지할 수 있습니다."
+"다음 행위를 할 수 없습니다: (a) 법을 위반하여 서비스 사용, (b) 무단 접근 시도, (c) 인프라 또는 다른 tenant 방해, "
+"(d) 합의 없이 서비스 재판매, (e) 불법 콘텐츠 업로드, (f) 요금제 제한 또는 보안 조치 우회, (g) 출력을 남용적 "
+"spamming 또는 사기 행위에 사용하는 행위."
 
 #: templates/termini.html:63
-msgid "6. Pagamenti e rimborsi"
-msgstr "6. 결제 및 환불"
+msgid "6. Contenuti del Cliente e licenza"
+msgstr "6. 고객 콘텐츠 및 라이선스"
 
 #: templates/termini.html:65
-msgid "Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla"
-msgstr "디지털 구매(구독 및 크레딧)는 다음에 의해 규제됩니다."
+msgid ""
+"Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). "
+"Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, "
+"elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
+"Dichiari di avere i diritti necessari sui siti analizzati."
+msgstr ""
+"고객 콘텐츠(URL, 사이트 자료, 지시사항)는 고객에게 귀속됩니다. 고객은 서비스 제공만을 목적으로 해당 콘텐츠를 호스팅, 처리 및 "
+"표시할 수 있는 비독점적, 전 세계적, royalty-free 라이선스를 당사에 부여합니다. 고객은 분석 대상 사이트에 필요한 권리를 "
+"보유하고 있음을 진술합니다."
 
-#: templates/termini.html:67
-msgid "I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle)."
-msgstr "결제는 제3자 공급업체(예: Paddle)에 의해 처리될 수 있습니다."
+#: templates/termini.html:70
+msgid "7. Proprietà intellettuale del Fornitore"
+msgstr "7. 제공업체의 지식재산권"
 
 #: templates/termini.html:72
-msgid "7. Legge applicabile"
-msgstr "7. 적용 법률"
-
-#: templates/termini.html:74
 msgid ""
-"Salvo norme imperative diverse, si applica la legge italiana. Per "
-"controversie è competente il foro del titolare, fatti salvi i diritti del "
-"consumatore."
-msgstr "다른 강행 규정이 없는 한 이탈리아 법이 적용됩니다. 분쟁의 경우 소유자의 관할권이 있으며 소비자의 권리는 보장됩니다."
+"Piattaforma, software, marchi, UI, modelli di prompt e documentazione restano"
+" di proprietà del Fornitore o dei suoi licenzianti. Ti concediamo un diritto "
+"limitato, non trasferibile, di usare il Servizio durante l’abbonamento. Gli "
+"output generati per te possono essere usati nella tua attività, fermo "
+"restando che non acquisisci diritti sul software sottostante."
+msgstr ""
+"플랫폼, 소프트웨어, 상표, UI, prompt 모델 및 문서는 제공업체 또는 그 라이선스 제공자의 소유로 유지됩니다. 구독 기간 동안 "
+"서비스를 사용할 수 있는 제한적이고 양도 불가능한 권리를 부여합니다. 고객을 위해 생성된 출력은 고객의 사업에 사용할 수 있으나, 기반 "
+"소프트웨어에 대한 권리를 취득하는 것은 아닙니다."
+
+#: templates/termini.html:77
+msgid "8. AI e natura degli output"
+msgstr "8. AI 및 출력의 성격"
+
+#: templates/termini.html:79
+msgid ""
+"Score, findings e raccomandazioni sono strumenti di supporto decisionale "
+"basati su modelli AI e fonti pubbliche/crawl. Non costituiscono consulenza "
+"legale, fiscale o di compliance automatica. Devi verificare informazioni "
+"materialmente rilevanti prima di decisioni operative. Dettagli:"
+msgstr ""
+"Score, findings 및 권고사항은 AI 모델과 공개 출처/crawl에 기반한 의사결정 지원 도구입니다. 법률, 세무 또는 자동화된"
+" compliance 자문이 아닙니다. 운영상 결정을 내리기 전에 실질적으로 중요한 정보를 확인해야 합니다. 자세한 내용:"
+
+#: templates/termini.html:85
+msgid "9. Disponibilità e modifiche"
+msgstr "9. 가용성 및 변경"
+
+#: templates/termini.html:87
+msgid ""
+"Ci impegniamo a mantenere il Servizio ragionevolmente disponibile, ma non "
+"promettiamo disponibilità ininterrotta o assenza di errori. Manutenzioni, "
+"force majeure, dipendenze di terzi (LLM, pagamenti, DNS) possono causare "
+"interruzioni. Possiamo modificare o sospendere funzionalità con comunicazione"
+" ragionevole per cambiamenti sostanziali a pagamento."
+msgstr ""
+"서비스를 합리적으로 이용 가능하게 유지하기 위해 노력하지만, 중단 없는 가용성 또는 오류 없음을 약속하지는 않습니다. 유지보수, 불가항력,"
+" 제3자 의존성(LLM, 결제, DNS)으로 인해 중단이 발생할 수 있습니다. 유료 기능의 중대한 변경에 대해서는 합리적인 통지를 통해 "
+"기능을 변경하거나 중단할 수 있습니다."
+
+#: templates/termini.html:92
+msgid "10. Garanzie e disclaimer"
+msgstr "10. 보증 및 면책"
+
+#: templates/termini.html:94
+msgid ""
+"Il Servizio è fornito “così com’è” e “come disponibile”, nei limiti "
+"consentiti dalla legge. Nella misura massima consentita, escludiamo garanzie "
+"implicite di commerciabilità, idoneità a uno scopo particolare e non "
+"violazione. Nulla in questi Termini limita diritti inderogabili del "
+"consumatore ove tu ne sia uno; per clienti B2B tipici, le limitazioni di "
+"questa sezione si applicano pienamente."
+msgstr ""
+"서비스는 법이 허용하는 범위 내에서 “있는 그대로” 및 “이용 가능한 상태로” 제공됩니다. 허용되는 최대 범위에서 상품성, 특정 목적 "
+"적합성 및 비침해에 대한 묵시적 보증을 배제합니다. 본 약관의 어떤 내용도 고객이 소비자인 경우 포기할 수 없는 권리를 제한하지 않습니다."
+" 일반적인 B2B 고객에게는 본 조의 제한이 전면 적용됩니다."
+
+#: templates/termini.html:99
+msgid "11. Limitazione di responsabilità"
+msgstr "11. 책임 제한"
+
+#: templates/termini.html:100
+msgid "Nella misura massima consentita dalla legge applicabile:"
+msgstr "적용 법률이 허용하는 최대 범위에서:"
+
+#: templates/termini.html:102
+msgid ""
+"non siamo responsabili per danni indiretti, consequenziali, lucro cessante, "
+"perdita di dati o interruzione di attività;"
+msgstr "당사는 간접손해, 결과적 손해, 일실이익, 데이터 손실 또는 영업 중단에 대해 책임지지 않습니다;"
+
+#: templates/termini.html:103
+msgid ""
+"la responsabilità complessiva del Fornitore per eventi connessi al Servizio "
+"in un periodo di 12 mesi non supera l’importo da te pagato al Fornitore per "
+"il Servizio in tali 12 mesi (o €100 se non hai pagato);"
+msgstr ""
+"서비스와 관련된 사건에 대한 제공업체의 총 책임은 12개월 기간 동안 고객이 해당 12개월 동안 서비스에 대해 제공업체에 지급한 "
+"금액(지급한 금액이 없는 경우 €100)을 초과하지 않습니다;"
+
+#: templates/termini.html:104
+msgid ""
+"le limitazioni non si applicano a dolo, colpa grave, o altre responsabilità "
+"che la legge non consente di escludere."
+msgstr "이 제한은 고의, 중과실 또는 법률상 배제할 수 없는 기타 책임에는 적용되지 않습니다."
+
+#: templates/termini.html:109
+msgid "12. Indennizzo"
+msgstr "12. 면책 및 보상"
+
+#: templates/termini.html:111
+msgid ""
+"Accetti di indennizzare il Fornitore da pretese di terzi derivanti dai tuoi "
+"Contenuti, dall’uso illecito del Servizio o dalla violazione di questi "
+"Termini, salvo dove la responsabilità sia esclusivamente imputabile al "
+"Fornitore."
+msgstr ""
+"고객 콘텐츠, 서비스의 불법 사용 또는 본 약관 위반으로 발생하는 제3자 청구에 대해, 책임이 전적으로 제공업체에 귀속되는 경우를 제외하고"
+" 제공업체를 면책하고 보상하는 데 동의합니다."
+
+#: templates/termini.html:116
+msgid "13. Sospensione e risoluzione"
+msgstr "13. 정지 및 해지"
+
+#: templates/termini.html:118
+msgid ""
+"Possiamo sospendere o chiudere l’accesso in caso di violazione, rischio di "
+"sicurezza, mancato pagamento o richiesta legale. Puoi chiudere l’account e "
+"annullare i rinnovi come indicato in Impostazioni / ricevuta Paddle. Alla "
+"cessazione, cessa il diritto d’uso; alcune obbligazioni (IP, responsabilità, "
+"indennizzo) sopravvivono."
+msgstr ""
+"위반, 보안 위험, 미결제 또는 법적 요청이 있는 경우 접근을 정지하거나 종료할 수 있습니다. 고객은 설정 / Paddle 영수증에 안내된"
+" 방식으로 계정을 종료하고 갱신을 취소할 수 있습니다. 종료 시 사용권은 종료되며, 일부 의무(IP, 책임, 면책 및 보상)는 존속합니다."
+
+#: templates/termini.html:123
+msgid "14. Privacy e DPA"
+msgstr "14. 개인정보 및 DPA"
+
+#: templates/termini.html:125
+msgid "Il trattamento dati è descritto nell’"
+msgstr "데이터 처리는 다음에 설명되어 있습니다"
+
+#: templates/termini.html:126
+msgid "Per trattamenti in qualità di responsabile, si applica il"
+msgstr "처리수탁자로서의 처리에는 다음이 적용됩니다"
+
+#: templates/termini.html:131
+msgid "15. Legge applicabile e foro"
+msgstr "15. 준거법 및 관할"
+
+#: templates/termini.html:133
+msgid ""
+"Questi Termini sono regolati dalla legge italiana. Foro competente: tribunali"
+" italiani, salvo foro inderogabile del consumatore ove applicabile."
+msgstr "본 약관은 이탈리아 법의 적용을 받습니다. 관할 법원은 이탈리아 법원이며, 해당되는 경우 소비자의 강행 관할은 제외되지 않습니다."
+
+#: templates/termini.html:138
+msgid "16. Modifiche ai Termini"
+msgstr "16. 약관 변경"
+
+#: templates/termini.html:140
+msgid ""
+"Possiamo aggiornare i Termini pubblicando la nuova versione con data e numero"
+" di versione (attualmente v"
+msgstr "날짜와 버전 번호가 포함된 새 버전을 게시하여 약관을 업데이트할 수 있습니다(현재 v"
+
+#: templates/termini.html:140
+msgid ""
+"). L’uso continuato dopo la data di efficacia costituisce accettazione, salvo"
+" diversamente richiesto dalla legge."
+msgstr "). 법에서 달리 요구하지 않는 한, 시행일 이후 계속 사용하는 경우 수락한 것으로 간주됩니다."
+
+#: templates/termini.html:143
+msgid "Versioni:"
+msgstr "버전:"
 
 #: templates/topup.html:4
 msgid ""
@@ -6019,11 +6936,11 @@ msgstr "잔액 후"
 msgid "Scegli un pacchetto"
 msgstr "패키지를 선택하세요"
 
-#: templates/topup.html:72 templates/topup.html:78
+#: templates/topup.html:77 templates/topup.html:83
 msgid "credito operativo"
 msgstr "세 단계. 운영 출력."
 
-#: templates/topup.html:85
+#: templates/topup.html:90
 msgid ""
 "Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. "
 "Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-"
@@ -6031,6 +6948,102 @@ msgid ""
 msgstr ""
 "추가 크레딧은 잔액에 남아 월간 갱신 한도 이후 사용됩니다. 요금제를 대체하지 않습니다. 더 많은 도메인, re-scan 빈도 또는 API"
 "/white-label이 필요하면 다음으로 이동하세요"
+
+#: templates/topup.html:92
+msgid "Legale:"
+msgstr ""
+
+#: templates/trust.html:2 templates/trust.html:10
+msgid "Trust & security"
+msgstr "신뢰 및 보안"
+
+#: templates/trust.html:3
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA e canali di "
+"supporto per clienti SaaS."
+msgstr "Centropic Trust: SaaS 고객을 위한 보안, 하위처리자, retention, DPA 및 지원 채널입니다."
+
+#: templates/trust.html:13
+msgid "Sintesi operativa per procurement e security review. Contatti:"
+msgstr "procurement 및 security review를 위한 운영 요약입니다. 문의:"
+
+#: templates/trust.html:19
+msgid "1. Controlli"
+msgstr "1. 통제"
+
+#: templates/trust.html:21
+msgid "Sessioni firmate, CSRF su form di stato, CSP con nonce, password hashate."
+msgstr "서명된 세션, 상태 변경 form의 CSRF, nonce가 포함된 CSP, 해시된 비밀번호를 사용합니다."
+
+#: templates/trust.html:22
+msgid "Isolamento tenant su query (user_id / organization)."
+msgstr "query 수준에서 tenant 격리(user_id / organization)를 적용합니다."
+
+#: templates/trust.html:23
+msgid ""
+"Webhook Paddle con verifica firma; billing fail-closed su credito "
+"insufficiente."
+msgstr "Paddle webhook은 서명을 검증하며, credits 부족 시 billing은 fail-closed로 처리됩니다."
+
+#: templates/trust.html:24
+msgid "SSRF guard sulle URL analizzate; rate limit su azioni sensibili."
+msgstr "분석 URL에 SSRF guard를 적용하고, 민감한 작업에는 rate limit을 적용합니다."
+
+#: templates/trust.html:29
+msgid "2. Sub-responsabili"
+msgstr "2. 하위처리자"
+
+#: templates/trust.html:31
+msgid "Elenco attivo e DPA Art. 28 scaricabile:"
+msgstr "활성 목록 및 다운로드 가능한 DPA 제28조:"
+
+#: templates/trust.html:34
+msgid "Download .txt"
+msgstr ".txt 다운로드"
+
+#: templates/trust.html:39
+msgid "3. Retention"
+msgstr "3. Retention"
+
+#: templates/trust.html:41
+msgid ""
+"Account e risultati: finché l’account è attivo + tempi tecnici post-chiusura "
+"(backup/sicurezza)."
+msgstr "계정 및 결과: 계정이 활성 상태인 동안 + 종료 후 기술적 보관 기간(백업/보안)입니다."
+
+#: templates/trust.html:42
+msgid "Pack/object storage analisi: tipicamente 90 giorni (configurabile)."
+msgstr "분석 pack/object storage: 일반적으로 90일(설정 가능)입니다."
+
+#: templates/trust.html:43
+msgid "Log tecnici di sicurezza: finché necessari a prevenzione abusi e debug."
+msgstr "보안 기술 로그: 남용 방지 및 debug에 필요한 기간 동안 보관합니다."
+
+#: templates/trust.html:44
+msgid "Ledger crediti / fatturazione: obblighi contabili e antifrode."
+msgstr "credits / 청구 ledger: 회계 및 사기 방지 의무를 위한 것입니다."
+
+#: templates/trust.html:49
+msgid "4. Diritti e incidenti"
+msgstr "4. 권리 및 사고"
+
+#: templates/trust.html:51
+msgid "Export/delete dalle Impostazioni account. Per data breach o richieste privacy:"
+msgstr "계정 설정에서 export/delete할 수 있습니다. data breach 또는 개인정보 요청은 다음으로 문의해 주세요:"
+
+#: templates/trust.html:53
+msgid ""
+"Miriamo a rispondere entro 30 giorni alle richieste degli interessati, salvo "
+"complessità."
+msgstr "복잡한 사안이 아닌 한 정보주체 요청에 30일 이내 답변하는 것을 목표로 합니다."
+
+#: templates/trust.html:58
+msgid "5. Documenti correlati"
+msgstr "5. 관련 문서"
+
+#: templates/trust.html:70
+msgid "Scarica DPA"
+msgstr "DPA 다운로드"
 
 #: templates/verify.html:11
 msgid "Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio."
@@ -6080,6 +7093,21 @@ msgstr "화이트 라벨 MD 내보내기"
 msgid "Export white-label HTML"
 msgstr "화이트 라벨 HTML 내보내기"
 
+#: templates/partials/analyze_overlay.html:10
+#: templates/partials/analyze_overlay.html:91
+msgid ""
+"Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
+"report."
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:14
+msgid "Stima: 30–90 secondi per crawl e pack"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:15
+msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
+msgstr ""
+
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
 msgstr "LIVE"
@@ -6097,8 +7125,8 @@ msgid "Avanzamento analisi"
 msgstr "진행 상황"
 
 #: templates/partials/analyze_overlay.html:121
-msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
-msgstr "실시간 진행 · 측정 SoV 포함 시 보통 1–3분"
+msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
+msgstr ""
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -6125,7 +7153,6 @@ msgid "White-label pack"
 msgstr "White-label pack"
 
 #: templates/partials/app_sidebar.html:64
-#: templates/partials/dashboard_shell.html:55
 msgid "Grafici"
 msgstr "차트"
 
@@ -6197,6 +7224,51 @@ msgid ""
 "account."
 msgstr "무료 요금제에서는 카드 정보를 요구하지 않습니다; 분석 데이터는 귀하의 계정에 남아 있습니다."
 
+#: templates/partials/competitor_snapshot.html:25
+msgid "Confronto"
+msgstr "비교"
+
+#: templates/partials/competitor_snapshot.html:27
+msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:35
+#: templates/partials/competitor_snapshot.html:47
+msgid "Tu"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:36
+msgid "Tua soglia"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:45
+msgid "Il tuo brand"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:89
+msgid "Snapshot non disponibile"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:92
+msgid "n/d"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:110
+msgid "vs te"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:112
+msgid "Rivale"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:123
+msgid "Tuo AIO"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:131
+msgid "Tuo GEO"
+msgstr ""
+
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
 msgstr "플러스 플랜 보기"
@@ -6213,121 +7285,137 @@ msgstr "이메일 확인"
 msgid "Prima analisi del dominio"
 msgstr "첫 번째 도메인 분석"
 
-#: templates/partials/dashboard_shell.html:32
-msgid "Attiva prova Plus 7 giorni"
-msgstr "Plus 7일 무료 체험 활성화"
-
-#: templates/partials/dashboard_shell.html:37
+#: templates/partials/dashboard_shell.html:31
 msgid "Invita un collega:"
 msgstr "동료 초대:"
 
-#: templates/partials/dashboard_shell.html:39
-msgid "ricevi un bonus sulla quota piano quando conferma l’email."
-msgstr "이메일을 확인할 때 토큰을 받습니다."
+#: templates/partials/dashboard_shell.html:33
+msgid "ricevi un bonus quando attiva il piano Plus."
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:46
-msgid "Sintesi report"
-msgstr "리포트 요약"
+#: templates/partials/dashboard_shell.html:47
+msgid "URL · crawl · score"
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:54
-#: templates/partials/dashboard_shell.html:69
-msgid "Nuova analisi"
-msgstr "새 분석"
+#: templates/partials/dashboard_shell.html:55
+msgid "Dominio da analizzare"
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:76
-msgid "Analizza un dominio"
-msgstr "도메인 분석하기"
-
-#: templates/partials/dashboard_shell.html:79
+#: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
 msgstr "무료 할당량이 소진되었습니다 · 계속하려면 Plus로 업그레이드하세요"
 
-#: templates/partials/dashboard_shell.html:81
+#: templates/partials/dashboard_shell.html:60
 msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
 msgstr "이미 등록된 사이트를 다시 분석할 수 있습니다 · 더 많은 브랜드를 위해 Plus"
 
-#: templates/partials/dashboard_shell.html:83
+#: templates/partials/dashboard_shell.html:62
 msgid "Crawl BFS · intero sito"
 msgstr "크롤링 BFS · 전체 사이트"
 
-#: templates/partials/dashboard_shell.html:85
+#: templates/partials/dashboard_shell.html:64
 msgid "Crawl stesso dominio · max"
 msgstr "동일 도메인 크롤링 · 최대"
 
-#: templates/partials/dashboard_shell.html:91
+#: templates/partials/dashboard_shell.html:70
 msgid "URL del dominio"
 msgstr "도메인 URL"
 
-#: templates/partials/dashboard_shell.html:101
+#: templates/partials/dashboard_shell.html:80
 msgid "Competitor snapshot (max 3)"
 msgstr "경쟁사 스냅샷(최대 3개)"
 
-#: templates/partials/dashboard_shell.html:103
+#: templates/partials/dashboard_shell.html:82
 msgid "Suggerisci automatico"
 msgstr "자동 제안"
 
-#: templates/partials/dashboard_shell.html:116
+#: templates/partials/dashboard_shell.html:95
 msgid "Deep crawl"
 msgstr "딥 크롤링"
 
-#: templates/partials/dashboard_shell.html:118
+#: templates/partials/dashboard_shell.html:97
 msgid "pagine — più lento"
 msgstr "페이지 — 더 느림"
 
-#: templates/partials/dashboard_shell.html:119
+#: templates/partials/dashboard_shell.html:98
 msgid "Standard:"
 msgstr "표준:"
 
-#: templates/partials/dashboard_shell.html:127
+#: templates/partials/dashboard_shell.html:106
 msgid "CVI/AIO/GEO restano"
 msgstr "AIO/GEO 점수 및 SoV"
 
-#: templates/partials/dashboard_shell.html:127
-#: templates/partials/dashboard_shell.html:132
+#: templates/partials/dashboard_shell.html:106
+#: templates/partials/dashboard_shell.html:111
 msgid "Stimati"
 msgstr "추정됨"
 
-#: templates/partials/dashboard_shell.html:128
+#: templates/partials/dashboard_shell.html:107
 msgid ""
 "(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, la share "
 "resta Stimata (proxy)."
 msgstr "(구조). Citation monitor = 측정 LLM probe. 언급이 0이면 share는 추정(proxy)으로 유지됩니다."
 
-#: templates/partials/dashboard_shell.html:132
+#: templates/partials/dashboard_shell.html:111
 msgid "Score AIO/GEO e citation share"
 msgstr "AIO/GEO 점수 및 SoV"
 
-#: templates/partials/dashboard_shell.html:133
+#: templates/partials/dashboard_shell.html:112
 msgid "dalla struttura del dominio. Su Plus: probe LLM Misurati."
 msgstr "도메인 구조 기반. Plus: 측정 LLM probe."
 
-#: templates/partials/dashboard_shell.html:154
+#: templates/partials/dashboard_shell.html:133
 msgid "In coda"
 msgstr "대기 중"
 
-#: templates/partials/dashboard_shell.html:154
+#: templates/partials/dashboard_shell.html:133
 msgid "In esecuzione"
 msgstr "실행 중"
 
-#: templates/partials/dashboard_shell.html:159
+#: templates/partials/dashboard_shell.html:138
 msgid "Worker in avvio — di solito parte entro pochi secondi."
 msgstr "작업자가 시작 중입니다 — 일반적으로 몇 초 이내에 시작됩니다."
 
-#: templates/partials/dashboard_shell.html:161
+#: templates/partials/dashboard_shell.html:140
 msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
 msgstr "크롤링, 프로브 및 점수가 진행 중입니다 (일반적으로 30–90초)."
 
-#: templates/partials/dashboard_shell.html:167
+#: templates/partials/dashboard_shell.html:146
+msgid "SoV measured in aggiornamento"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:147
+msgid ""
+"Il report Stimato è già pronto. Le citation Misurate arrivano in background "
+"(1–3 min) senza bloccare la dashboard."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
 msgstr "분석 실패"
 
-#: templates/partials/dashboard_shell.html:168
+#: templates/partials/dashboard_shell.html:152
 msgid "Errore sconosciuto"
 msgstr "알 수 없는 오류"
 
-#: templates/partials/dashboard_shell.html:170
+#: templates/partials/dashboard_shell.html:154
 msgid "Controlla l’URL e riprova. Supporto:"
 msgstr "URL을 확인하고 다시 시도하세요. 지원:"
+
+#: templates/partials/digital_service_waiver.html:13
+msgid ""
+"Chiedo l’erogazione immediata del servizio digitale (attivazione piano o "
+"accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
+"una volta iniziata l’erogazione, ai sensi della"
+msgstr ""
+"디지털 서비스의 즉시 제공(요금제 활성화 또는 credits 적립)을 요청하며, 제공이 시작되면 다음에 따라 14일 청약철회권을 상실함을 "
+"인정합니다"
+
+#: templates/partials/digital_service_waiver.html:18
+msgid ""
+"Obbligatorio per procedere al checkout. Dettagli su rimborsi e crediti non "
+"usati nella policy."
+msgstr "checkout을 진행하려면 필수입니다. 환불 및 미사용 credits에 대한 자세한 내용은 정책을 확인하세요."
 
 #: templates/partials/edge_wizard.html:2
 msgid "Pubblica Edge Signals"
@@ -6550,47 +7638,459 @@ msgstr "무제한"
 msgid "Azioni SoV"
 msgstr "SoV 작업"
 
-msgid "Invia pack via email"
-msgstr "이메일로 팩 보내기"
+msgid "Trust &amp; Security"
+msgstr "신뢰 및 보안"
 
 msgid ""
-"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
-"dominio."
-msgstr "이 도메인의 HTML 팩을 받을 이메일 주소를 입력하세요."
+"Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). "
+"Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, "
+"elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
+"Dichiaro/dichiari di avere i diritti necessari sui siti analizzati."
+msgstr ""
+"고객 콘텐츠(URL, 사이트 자료, 지시사항)는 고객에게 귀속됩니다. 고객은 서비스 제공만을 목적으로 해당 콘텐츠를 호스팅, 처리 및 "
+"표시할 수 있는 비독점적, 전 세계적, royalty-free 라이선스를 당사에 부여합니다. 고객은 분석 대상 사이트에 필요한 권리를 "
+"보유하고 있음을 진술합니다."
 
-msgid "Indirizzo email"
-msgstr "이메일 주소"
+#~ msgid ""
+#~ "Usiamo cookie tecnici e, con il tuo"
+#~ " consenso, strumenti Google (Analytics e/o "
+#~ "Ads/AdSense) per misurare il traffico e "
+#~ "mostrare annunci. Puoi accettare o "
+#~ "rifiutare. Dettagli nella"
+#~ msgstr ""
+#~ "우리는 기술적 쿠키와 귀하의 동의 하에 Google "
+#~ "도구(Analytics 및/또는 Ads/AdSense)를 사용하여 트래픽을 "
+#~ "측정하고 광고를 표시합니다. 수락하거나 거부할 수 있습니다. "
+#~ "세부 사항은 다음에 있습니다."
 
-msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
-msgstr "본인 또는 동료에게 보낼 수 있습니다. 일일 남용 방지 한도가 적용됩니다."
+#~ msgid "Accetta"
+#~ msgstr "수락"
 
-msgid "Invia pack"
-msgstr "팩 보내기"
+#~ msgid "prova fino al"
+#~ msgstr "체험 기간 종료:"
 
-msgid ""
-"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
-"applicare sul sito live."
-msgstr "head 스니펫, llms.txt, robots, 체크리스트가 담긴 단일 HTML — 라이브 사이트에 바로 적용할 수 있습니다."
+#~ msgid "fino al"
+#~ msgstr "까지"
 
-msgid "Indirizzo email non valido."
-msgstr "유효하지 않은 이메일 주소입니다."
+#~ msgid "Servizi del piano"
+#~ msgstr "요금제 서비스"
 
-#, python-format
-msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
-msgstr "한도 초과: 24시간 내 팩 발송은 최대 %(n)s회입니다."
+#~ msgid "Toolkit Business"
+#~ msgstr "Business 툴킷"
 
-msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
-msgstr "이메일 전송에 실패했습니다. 잠시 후 다시 시도하거나 HTML 파일을 다운로드하세요."
+#~ msgid "Toolkit Plus"
+#~ msgstr "Plus 툴킷"
 
-#, python-format
-msgid "Pack inviato a %(email)s."
-msgstr "%(email)s(으)로 팩을 보냈습니다."
+#~ msgid "Toolkit Free"
+#~ msgstr "Free 툴킷"
 
-msgid ""
-"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
-"intanto."
-msgstr "이 서버에서는 아직 이메일 발송이 활성화되지 않았습니다. 그동안 HTML 파일을 다운로드할 수 있습니다."
+#~ msgid "Vista report"
+#~ msgstr "보고서 보기"
 
-msgid "Analisi non trovata."
-msgstr "분석을 찾을 수 없습니다."
+#~ msgid ""
+#~ "AIO = AI-Driven Visibility · GEO "
+#~ "= Generative Engine Optimization. Score di"
+#~ " predisposizione strutturale (leggibilità per "
+#~ "crawler generativi)."
+#~ msgstr "AIO = AI 기반 가시성 · GEO = 생성 엔진 최적화. 프로브/휴리스틱에서 점수, 보장된 실시간 인용 없음."
+
+#~ msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
+#~ msgstr "모든 수정 사항이 담긴 단일 HTML 파일: head snippet, llms.txt, robots, checklist."
+
+#~ msgid "Scarica"
+#~ msgstr "다운로드"
+
+#~ msgid "Invia a"
+#~ msgstr "보내기"
+
+#~ msgid "Azioni"
+#~ msgstr "작업"
+
+#~ msgid "Connector CMS"
+#~ msgstr "CMS 커넥터"
+
+#~ msgid "Attiva Edge"
+#~ msgstr "Edge 활성화"
+
+#~ msgid "White-label MD"
+#~ msgstr "화이트 라벨 MD"
+
+#~ msgid "White-label HTML"
+#~ msgstr "화이트 라벨 HTML"
+
+#~ msgid "GEO suite settings"
+#~ msgstr "GEO 스위트 설정"
+
+#~ msgid ""
+#~ "Informativa privacy di Centropic (centropic.ai):"
+#~ " dati trattati per account, analisi siti"
+#~ " e contatti. Titolare e diritti "
+#~ "dell’interessato."
+#~ msgstr ""
+#~ "Centropic (centropic.ai)의 개인정보 보호정책: 계정, 사이트"
+#~ " 분석 및 연락처에 대한 처리 데이터. 소유자 및"
+#~ " 데이터 주체의 권리."
+
+#~ msgid ""
+#~ "Ultimo aggiornamento: 27 luglio 2026 · "
+#~ "Titolare: Centropic (centropic.ai) · Contatti:"
+#~ msgstr "최종 업데이트: 2026년 7월 27일 · 소유자: Centropic (centropic.ai) · 연락처:"
+
+#~ msgid "1. Cosa trattiamo"
+#~ msgstr "1. 우리가 처리하는 것"
+
+#~ msgid ""
+#~ "Per erogare il servizio SaaS trattiamo: "
+#~ "dati di account (nome, email, password "
+#~ "hashata, azienda/ruolo opzionali, telefono e "
+#~ "paese se forniti), URL dei siti "
+#~ "analizzati, risultati di analisi (score, "
+#~ "findings, artifact generati), log tecnici di"
+#~ " sicurezza (IP, timestamp) e messaggi "
+#~ "inviati volontariamente (es. waitlist Plus)."
+#~ msgstr ""
+#~ "SaaS 서비스를 제공하기 위해 우리는 다음을 처리합니다: "
+#~ "계정 데이터(이름, 이메일, 해시된 비밀번호, 선택적 회사/역할,"
+#~ " 전화번호 및 제공된 경우 국가), 분석된 사이트의 "
+#~ "URL, 분석 결과(점수, 발견 사항, 생성된 아티팩트), "
+#~ "보안 기술 로그(IP, 타임스탬프) 및 자발적으로 전송된 "
+#~ "메시지(예: waitlist Plus)."
+
+#~ msgid "2. Finalità e basi giuridiche"
+#~ msgstr "2. 목적 및 법적 근거"
+
+#~ msgid "Esecuzione del contratto"
+#~ msgstr "계약 이행"
+
+#~ msgid "account, analisi, pack, supporto."
+#~ msgstr "계정, 분석, 패키지, 지원."
+
+#~ msgid "Legittimo interesse"
+#~ msgstr "정당한 이익"
+
+#~ msgid "sicurezza, prevenzione abusi, miglioramento prodotto."
+#~ msgstr "보안, 남용 방지, 제품 개선."
+
+#~ msgid "Obblighi di legge"
+#~ msgstr "법적 의무"
+
+#~ msgid "ove applicabili (es. richieste autorità)."
+#~ msgstr "적용 가능한 경우(예: 당국의 요청)."
+
+#~ msgid "solo per comunicazioni non essenziali, se richieste in futuro."
+#~ msgstr "향후 요청된 경우 비필수 통신에 대해서만."
+
+#~ msgid "3. Analisi dei siti"
+#~ msgstr "3. 사이트 분석"
+
+#~ msgid ""
+#~ "Quando inserisci un URL, Centropic effettua"
+#~ " un crawl sul dominio indicato (pagine"
+#~ " pubbliche raggiungibili) e probe di file"
+#~ " come"
+#~ msgstr "URL을 입력하면 Centropic이 지정된 도메인에서 크롤링을 수행합니다(접근 가능한 공개 페이지) 및 파일 프로브와 같은"
+
+#~ msgid ""
+#~ "Non dobbiamo accedere ad aree autenticate"
+#~ " del tuo sito. Gli artifact generati "
+#~ "restano nel tuo account finché non li"
+#~ " elimini o chiudi l’account."
+#~ msgstr ""
+#~ "우리는 귀하의 사이트의 인증된 영역에 접근할 필요가 "
+#~ "없습니다. 생성된 아티팩트는 귀하가 삭제하거나 계정을 종료할 "
+#~ "때까지 귀하의 계정에 남아 있습니다."
+
+#~ msgid "4. Pagamenti"
+#~ msgstr "4. 결제"
+
+#~ msgid ""
+#~ "I pagamenti (abbonamento Plus e ricariche"
+#~ " credito) sono elaborati da Paddle.com "
+#~ "Market Limited in qualità di merchant "
+#~ "of record. Centropic non memorizza i "
+#~ "dati completi della carta. Paddle tratta "
+#~ "i dati di fatturazione necessari all’incasso"
+#~ " e alla fiscalità secondo la propria "
+#~ "informativa; riceviamo da Paddle identificativi"
+#~ " cliente/transazione, stato abbonamento e "
+#~ "importi per attivare il piano e "
+#~ "accreditare il saldo."
+#~ msgstr ""
+#~ "결제(Plus 구독 및 크레딧 충전)는 기록 상의 "
+#~ "상인으로서 Paddle.com Market Limited에 의해 처리됩니다."
+#~ " Centropic은 카드의 전체 데이터를 저장하지 않습니다. "
+#~ "Paddle은 수금 및 세금에 필요한 청구 데이터를 자신의"
+#~ " 정책에 따라 처리합니다. 우리는 Paddle로부터 고객/거래 "
+#~ "식별자, 구독 상태 및 요금을 받아 계획을 활성화하고"
+#~ " 잔액을 적립합니다."
+
+#~ msgid "5. Conservazione e trasferimenti"
+#~ msgstr "5. 보관 및 전송"
+
+#~ msgid ""
+#~ "I dati restano finché l’account è "
+#~ "attivo e per i tempi tecnici necessari"
+#~ " dopo la chiusura (backup, sicurezza). "
+#~ "L’infrastruttura è gestita dal titolare; "
+#~ "eventuali fornitori (hosting, email transazionale,"
+#~ " Paddle per i pagamenti, OpenAI e "
+#~ "altri provider LLM se configurati per "
+#~ "analisi/pack) trattano dati solo per conto"
+#~ " del servizio o come autonomi titolari"
+#~ " ove indicato (es. Paddle)."
+#~ msgstr ""
+#~ "데이터는 계정이 활성 상태인 동안 유지되며 종료 후 "
+#~ "필요한 기술적 시간(백업, 보안) 동안 보관됩니다. 인프라는 "
+#~ "소유자가 관리합니다. 호스팅, 거래 이메일, 결제를 위한 "
+#~ "Paddle, OpenAI 및 분석/패키징을 위해 구성된 기타 "
+#~ "LLM 공급자와 같은 공급자는 서비스의 명의로 또는 명시된"
+#~ " 대로 독립적인 소유자로서만 데이터를 처리합니다(예: Paddle)."
+
+#~ msgid "6. Diritti"
+#~ msgstr "6. 권리"
+
+#~ msgid ""
+#~ "Puoi chiedere accesso, rettifica, cancellazione,"
+#~ " limitazione, portabilità e opposizione dalle"
+#~ msgstr "다음 주소로 연락하여 접근, 수정, 삭제, 제한, 이식 및 반대할 수 있습니다:"
+
+#~ msgid "Impostazioni account"
+#~ msgstr "GEO 설정"
+
+#~ msgid "(export dati / elimina account) oppure scrivendo a"
+#~ msgstr "(데이터 export / 계정 삭제) 또는 다음 주소로 문의"
+
+#~ msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
+#~ msgstr "귀하는 또한 관할 감독 기관에 불만을 제기할 권리가 있습니다."
+
+#~ msgid "7. Cookie"
+#~ msgstr "7. 쿠키"
+
+#~ msgid ""
+#~ "Usiamo cookie tecnici necessari al "
+#~ "funzionamento del sito (sessione, protezione "
+#~ "CSRF, preferenza lingua)."
+#~ msgstr "우리는 사이트의 작동에 필요한 기술적 쿠키를 사용합니다(세션, CSRF 보호, 언어 선호)."
+
+#~ msgid ""
+#~ "Con il tuo consenso (banner cookie) "
+#~ "possiamo attivare Google Analytics 4 e, "
+#~ "se configurati, Google Ads / AdSense "
+#~ "per misurazione e annunci. Il consenso "
+#~ "è gestito con"
+#~ msgstr ""
+#~ "귀하의 동의(쿠키 배너)를 통해 Google Analytics 4를"
+#~ " 활성화하고, 구성된 경우 Google Ads / "
+#~ "AdSense를 측정 및 광고를 위해 활성화할 수 "
+#~ "있습니다. 동의는 다음과 같이 관리됩니다:"
+
+#~ msgid ""
+#~ "di default storage analytics/ads è negato"
+#~ " (UE); puoi accettare o rifiutare in "
+#~ "qualsiasi momento cancellando i dati del "
+#~ "sito e ricaricando la pagina. Non "
+#~ "attiviamo AdSense senza consenso pubblicitario."
+#~ msgstr ""
+#~ "기본적으로 저장 분석/광고는 거부됩니다(UE); 사이트 데이터를 "
+#~ "삭제하고 페이지를 새로 고침하여 언제든지 수락하거나 거부할 "
+#~ "수 있습니다. 우리는 광고 동의 없이 AdSense를 "
+#~ "활성화하지 않습니다."
+
+#~ msgid ""
+#~ "Attualmente non sono attivi cookie di "
+#~ "misurazione o pubblicitari di terze parti"
+#~ " su questo sito."
+#~ msgstr "현재 이 사이트에서는 제3자의 측정 또는 광고 쿠키가 활성화되어 있지 않습니다."
+
+#~ msgid ""
+#~ "Se richiedi l’erogazione immediata del "
+#~ "servizio (accesso al piano o accredito "
+#~ "crediti) e riconosci di perdere il "
+#~ "diritto di recesso una volta iniziata "
+#~ "l’erogazione, il recesso non si applica "
+#~ "dopo che il servizio è stato avviato."
+#~ msgstr ""
+#~ "서비스의 즉각적인 제공(요금제 접근 또는 크레딧 적립)을 "
+#~ "요청하고 제공이 시작된 후 철회 권리를 잃는 것을 "
+#~ "인정하는 경우, 서비스가 시작된 후에는 철회가 적용되지 "
+#~ "않습니다."
+
+#~ msgid ""
+#~ "Eliminazione definitiva. Se hai un "
+#~ "abbonamento attivo, cancellalo prima dal "
+#~ "billing."
+#~ msgstr "영구 삭제입니다. 활성 구독이 있다면 먼저 billing에서 취소하세요."
+
+#~ msgid ""
+#~ "Termini di servizio Centropic (centropic.ai): "
+#~ "uso del SaaS di AI-Driven Visibility"
+#~ " (AIO) e Generative Engine Optimization "
+#~ "(GEO), limiti e responsabilità."
+#~ msgstr ""
+#~ "Centropic 서비스 약관 (centropic.ai): AI 기반 "
+#~ "가시성 (AIO) 및 생성 엔진 최적화 (GEO) SaaS"
+#~ " 사용, 제한 및 책임."
+
+#~ msgid ""
+#~ "Ultimo aggiornamento: 27 luglio 2026 · "
+#~ "Accettando la registrazione accetti questi "
+#~ "termini. Contatti:"
+#~ msgstr "최종 업데이트: 2026년 7월 27일 · 등록을 수락함으로써 이 약관에 동의합니다. 연락처:"
+
+#~ msgid "1. Servizio"
+#~ msgstr "1. 서비스"
+
+#~ msgid ""
+#~ "Centropic è un software-as-a-service che "
+#~ "analizza siti web pubblici e genera "
+#~ "score"
+#~ msgstr "Centropic은 공개 웹사이트를 분석하고 점수를 생성하는 서비스형 소프트웨어입니다."
+
+#~ msgid "findings e artifact (es."
+#~ msgstr "발견 및 아티팩트 (예:"
+
+#~ msgid "bozza"
+#~ msgstr "초안"
+
+#~ msgid ""
+#~ "Non è un Geographic Information System "
+#~ "(GIS) né una suite All-in-One "
+#~ "generica."
+#~ msgstr "지리 정보 시스템(GIS)도 아니고 일반적인 올인원 스위트도 아닙니다."
+
+#~ msgid "2. Natura degli score"
+#~ msgstr "2. 점수의 본질"
+
+#~ msgid "Gli score AIO/GEO misurano la"
+#~ msgstr "AIO 및 GEO 점수는 AI에 대한 실시간 측정값인가요?"
+
+#~ msgid ""
+#~ "del sito (contenuto, schema, robots, llms,"
+#~ " entity): quanto brand e pagine sono "
+#~ "leggibili dai crawler generativi. Il "
+#~ "Centropic Visibility Index (CVI) sintetizza "
+#~ "AIO/GEO; la citation share può essere "
+#~ "Stimata (da struttura) o Misurata (campioni"
+#~ " LLM su Plus/Business)."
+#~ msgstr ""
+#~ "사이트의 (content, schema, robots, llms, "
+#~ "entity): 브랜드와 페이지가 생성형 crawler에 얼마나 읽기"
+#~ " 쉬운지입니다. Centropic Visibility Index (CVI)는 "
+#~ "AIO/GEO를 요약하며, citation share는 추정(구조 기반) "
+#~ "또는 측정(Plus/Business의 LLM 샘플)일 수 있습니다."
+
+#~ msgid ""
+#~ "Centropic garantisce il lavoro di diagnosi"
+#~ " e predisposizione sul tuo dominio; non"
+#~ " garantisce ranking o menzioni nelle "
+#~ "interfacce di modelli di terzi, che "
+#~ "restano indipendenti."
+#~ msgstr ""
+#~ "Centropic은 귀사 도메인에 대한 진단 및 준비 "
+#~ "작업을 보장합니다. 독립적으로 운영되는 타사 모델 인터페이스의 "
+#~ "ranking이나 언급은 보장하지 않습니다."
+
+#~ msgid "3. Account e uso corretto"
+#~ msgstr "3. 계정 및 올바른 사용"
+
+#~ msgid "Fornisci dati veritieri e custodisci le credenziali."
+#~ msgstr "정확한 데이터를 제공하고 자격 증명을 안전하게 유지하십시오."
+
+#~ msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
+#~ msgstr "기술 감사 요청 권한이 있는 사이트만 분석하십시오."
+
+#~ msgid ""
+#~ "Non usare il servizio per scansioni "
+#~ "abusive, attacchi o accesso a reti "
+#~ "private."
+#~ msgstr "서비스를 남용 스캔, 공격 또는 개인 네트워크 접근에 사용하지 마십시오."
+
+#~ msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
+#~ msgstr "요청 제한 및 요금제(Free/Plus/Business)를 준수하세요."
+
+#~ msgid "4. Artifact e responsabilità"
+#~ msgstr "4. 아티팩트 및 책임"
+
+#~ msgid ""
+#~ "Gli artifact generati sono bozze operative:"
+#~ " la pubblicazione sul tuo sito, la "
+#~ "conformità legale/SEO e l’impatto sulle "
+#~ "performance restano a tuo carico. Centropic"
+#~ " non risponde di decisioni di crawler "
+#~ "o modelli di terzi."
+#~ msgstr ""
+#~ "생성된 아티팩트는 운영 초안입니다: 귀하의 사이트에 게시, "
+#~ "법적/SEO 준수 및 성능에 미치는 영향은 귀하의 "
+#~ "책임입니다. Centropic은 크롤러 또는 제3자 모델의 결정에"
+#~ " 대해 책임을 지지 않습니다."
+
+#~ msgid "5. Piani e disponibilità"
+#~ msgstr "5. 요금제 및 가용성"
+
+#~ msgid ""
+#~ "Il piano Free ha limiti rigorosi su"
+#~ " siti (1) e analisi totali (2, "
+#~ "senza reset). Plus e Business sono "
+#~ "abbonamenti self-serve via Paddle quando "
+#~ "il catalogo è configurato; altrimenti "
+#~ "interesse via waitlist. Il servizio è "
+#~ "fornito “as is”; possiamo sospendere account"
+#~ " in caso di abuso o rischio "
+#~ "sicurezza."
+#~ msgstr ""
+#~ "Free 요금제는 사이트(1개) 및 총 분석 횟수(2회, "
+#~ "리셋 없음)에 엄격한 제한이 있습니다. Plus와 Business는"
+#~ " 카탈로그가 구성되면 Paddle을 통한 self-serve "
+#~ "구독으로 제공되며, 그렇지 않은 경우 대기자 명단을 통해"
+#~ " 관심을 등록할 수 있습니다. 서비스는 “있는 그대로” "
+#~ "제공되며, 남용이나 보안 위험이 있는 경우 계정을 정지할"
+#~ " 수 있습니다."
+
+#~ msgid "6. Pagamenti e rimborsi"
+#~ msgstr "6. 결제 및 환불"
+
+#~ msgid "Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla"
+#~ msgstr "디지털 구매(구독 및 크레딧)는 다음에 의해 규제됩니다."
+
+#~ msgid "I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle)."
+#~ msgstr "결제는 제3자 공급업체(예: Paddle)에 의해 처리될 수 있습니다."
+
+#~ msgid "7. Legge applicabile"
+#~ msgstr "7. 적용 법률"
+
+#~ msgid ""
+#~ "Salvo norme imperative diverse, si applica"
+#~ " la legge italiana. Per controversie è"
+#~ " competente il foro del titolare, fatti"
+#~ " salvi i diritti del consumatore."
+#~ msgstr "다른 강행 규정이 없는 한 이탈리아 법이 적용됩니다. 분쟁의 경우 소유자의 관할권이 있으며 소비자의 권리는 보장됩니다."
+
+#~ msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
+#~ msgstr "실시간 진행 · 측정 SoV 포함 시 보통 1–3분"
+
+#~ msgid "Attiva prova Plus 7 giorni"
+#~ msgstr "Plus 7일 무료 체험 활성화"
+
+#~ msgid "ricevi un bonus sulla quota piano quando conferma l’email."
+#~ msgstr "이메일을 확인할 때 토큰을 받습니다."
+
+#~ msgid "Sintesi report"
+#~ msgstr "리포트 요약"
+
+#~ msgid "Analizza un dominio"
+#~ msgstr "도메인 분석하기"
+
+#~ msgid "Trust &amp; Security"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Restano tuoi i Contenuti del Cliente "
+#~ "(URL, materiali dei siti, istruzioni). Ci"
+#~ " concedi una licenza non esclusiva, "
+#~ "mondiale, royalty-free, per ospitare, "
+#~ "elaborare e visualizzare tali contenuti al"
+#~ " solo fine di erogare il Servizio. "
+#~ "Dichiaro/dichiari di avere i diritti "
+#~ "necessari sui siti analizzati."
+#~ msgstr ""
 

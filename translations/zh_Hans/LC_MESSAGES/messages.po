@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-12 07:20+0000\n"
+"POT-Creation-Date: 2026-08-12 20:47+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans\n"
@@ -18,9 +18,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2598 templates/about.html:24 templates/contact.html:47
+#: app.py:2889 templates/about.html:24 templates/contact.html:47
 msgid "27 luglio 2026"
 msgstr "2026年7月27日"
+
+#: app.py:8166
+msgid "Analisi non trovata."
+msgstr "未找到分析。"
+
+#: app.py:8174
+msgid ""
+"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
+"intanto."
+msgstr "此服务器尚未启用邮件发送。你可先下载 HTML 文件。"
+
+#: app.py:8192
+msgid "Indirizzo email non valido."
+msgstr "邮箱地址无效。"
+
+#: app.py:8202
+#, python-format
+msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
+msgstr "已达上限：24 小时内最多发送 %(n)s 次优化包。"
+
+#: app.py:8236
+msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
+msgstr "邮件发送失败。请稍后重试，或先下载 HTML 文件。"
+
+#: app.py:8242
+#, python-format
+msgid "Pack inviato a %(email)s."
+msgstr "优化包已发送至 %(email)s。"
 
 #: services/analyze_eta.py:70 services/i18n_findings.py:228
 msgid "Quasi fatto"
@@ -739,7 +767,7 @@ msgstr ""
 "已运行 Citation monitor：样本中品牌提及为 0。显示的是估计 citation share（结构性 proxy），而非 measured "
 "share 为零。"
 
-#: services/i18n_findings.py:68 templates/dashboard.html:444
+#: services/i18n_findings.py:68 templates/dashboard.html:459
 msgid ""
 "Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), "
 "non una measured a zero."
@@ -817,8 +845,7 @@ msgstr "Sitemap 覆盖率"
 msgid "Coverage sitemap non calcolabile"
 msgstr "无法计算 Sitemap 覆盖率"
 
-#: services/i18n_findings.py:87 templates/partials/analyze_overlay.html:10
-#: templates/partials/analyze_overlay.html:91
+#: services/i18n_findings.py:87
 msgid "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina."
 msgstr "Crawl、score，以及（如为 Plus）engine 上的 实测 SoV。请留在此页面。"
 
@@ -838,7 +865,7 @@ msgstr "较弱 — 技术基础不足"
 msgid "Description duplicate"
 msgstr "Description 重复"
 
-#: services/i18n_findings.py:92 templates/partials/analyze_overlay.html:15
+#: services/i18n_findings.py:92
 msgid "Di solito 30–90 s; con SoV measured fino a qualche minuto."
 msgstr "通常 30–90 秒；含 SoV measured 时可达数分钟。"
 
@@ -908,7 +935,7 @@ msgstr "上次运行时在线；当前 probe 失败。"
 msgid "Era presente nella run precedente e ora non è raggiungibile."
 msgstr "上次运行时存在，现已不可达。"
 
-#: services/i18n_findings.py:110 templates/base.html:327
+#: services/i18n_findings.py:110 templates/base.html:351
 msgid "Errore"
 msgstr "错误"
 
@@ -1193,8 +1220,8 @@ msgid "Misto — brand SoV da proxy"
 msgstr "混合 — 来自 proxy 的品牌 SoV"
 
 #: services/i18n_findings.py:182 services/site_guide.py:44
-#: templates/dashboard.html:593 templates/dashboard.html:797
-#: templates/partials/sov_ops.html:7 templates/pricing.html:146
+#: templates/dashboard.html:610 templates/dashboard.html:814
+#: templates/partials/sov_ops.html:7 templates/pricing.html:162
 msgid "Misurato"
 msgstr "测量"
 
@@ -1510,7 +1537,7 @@ msgstr "预估准备中…"
 msgid "Stima:"
 msgstr "预估："
 
-#: services/i18n_findings.py:263 templates/partials/analyze_overlay.html:14
+#: services/i18n_findings.py:263
 msgid "Stima: 1–3 minuti con SoV measured"
 msgstr "预估：含 SoV measured 约 1–3 分钟"
 
@@ -1803,7 +1830,7 @@ msgid ""
 "Share of Voice."
 msgstr "针对引擎（ChatGPT，Gemini*，Claude，Perplexity，Grok，Azure*）的声音份额视图。"
 
-#: services/site_guide.py:218 templates/dashboard.html:724
+#: services/site_guide.py:218 templates/dashboard.html:741
 msgid "Pagine critiche"
 msgstr "关键页面"
 
@@ -1864,7 +1891,7 @@ msgstr "词汇表"
 #: services/site_guide.py:274 templates/base.html:128 templates/base.html:230
 #: templates/dashboard.html:2 templates/history.html:21
 #: templates/partials/app_sidebar.html:38 templates/site_history.html:13
-#: templates/topup.html:91 templates/verify.html:53
+#: templates/topup.html:99 templates/verify.html:53
 msgid "Dashboard"
 msgstr "控制台"
 
@@ -1924,7 +1951,7 @@ msgstr "使用fix-this-week.md作为操作检查表"
 msgid "Le pagine critiche evidenziano URL con gap gravi"
 msgstr "关键页面突出显示具有严重缺口的URL"
 
-#: services/site_guide.py:315 templates/dashboard.html:982
+#: services/site_guide.py:315 templates/dashboard.html:979
 msgid "Pack ottimizzazione"
 msgstr "优化包"
 
@@ -2014,7 +2041,7 @@ msgstr "发布验证：检查 artifact 是否在线"
 msgid "Locales: hreflang e coerenza mercati"
 msgstr "本地化：hreflang 和市场一致性"
 
-#: services/site_guide.py:386 templates/dashboard.html:839
+#: services/site_guide.py:386 templates/partials/competitor_snapshot.html:26
 msgid "Competitor snapshot"
 msgstr "竞争对手快照"
 
@@ -2325,9 +2352,8 @@ msgstr ""
 "搜索的回答不遵循经典排名：它们优先考虑清晰的实体、语义结构和机器可读文件。我们帮助创始人、品牌和代理商通过评分来填补这一差距。"
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/dashboard.html:872 templates/partials/auth_help.html:7
+#: templates/dashboard.html:869 templates/partials/auth_help.html:7
 #: templates/partials/auth_help.html:19 templates/product.html:21
-#: templates/termini.html:21
 msgid "e"
 msgstr "和"
 
@@ -2387,7 +2413,7 @@ msgstr "我们不是一个通用的营销套件。"
 msgid "Garantiamo la"
 msgstr "我们保证"
 
-#: templates/about.html:48 templates/termini.html:32
+#: templates/about.html:48
 msgid "predisposizione strutturale"
 msgstr "结构性准备度"
 
@@ -2421,8 +2447,9 @@ msgid "FAQ"
 msgstr "FAQ"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:242 templates/contact.html:2 templates/contact.html:9
-#: templates/partials/auth_help.html:24 templates/status.html:69
+#: templates/accessibility.html:52 templates/base.html:242 templates/contact.html:2
+#: templates/contact.html:9 templates/partials/auth_help.html:24
+#: templates/status.html:69 templates/trust.html:71
 msgid "Contatti"
 msgstr "联系"
 
@@ -2441,6 +2468,103 @@ msgstr "在线运营总部："
 #: templates/about.html:74
 msgid "Prova Centropic"
 msgstr "试用 Centropic"
+
+#: templates/accessibility.html:2 templates/accessibility.html:9
+#: templates/base.html:253 templates/trust.html:64
+msgid "Accessibilità"
+msgstr "可访问性"
+
+#: templates/accessibility.html:3
+msgid ""
+"Dichiarazione di accessibilità Centropic: impegno WCAG, feedback e limiti "
+"noti del SaaS."
+msgstr "Centropic 可访问性声明：WCAG 承诺、反馈渠道以及 SaaS 的已知限制。"
+
+#: templates/accessibility.html:10
+msgid "Dichiarazione di accessibilità"
+msgstr "可访问性声明"
+
+#: templates/accessibility.html:12 templates/ai_transparency.html:12
+#: templates/cookies.html:12 templates/dpa.html:12 templates/trust.html:12
+msgid "Versione"
+msgstr "版本"
+
+#: templates/accessibility.html:13
+msgid ""
+"Centropic mira a un’interfaccia utilizzabile da tastiera e screen reader, in "
+"linea con WCAG 2.2 livello AA dove praticabile per un SaaS dashboard."
+msgstr "Centropic 致力于提供可通过键盘和屏幕阅读器使用的界面，并在 SaaS 仪表板可行范围内符合 WCAG 2.2 AA 级要求。"
+
+#: templates/accessibility.html:18 templates/rimborsi.html:18
+msgid "1. Ambito"
+msgstr "1. 范围"
+
+#: templates/accessibility.html:20
+msgid ""
+"Copre centropic.ai (marketing + dashboard). Componenti chart React e overlay "
+"di analisi possono avere limiti residuali di accessibilità; li trattiamo come"
+" debito prodotto."
+msgstr "本声明覆盖 centropic.ai（营销页面 + 仪表板）。React 图表组件和分析覆盖层可能仍存在可访问性限制；我们将其视为产品债务持续处理。"
+
+#: templates/accessibility.html:25
+msgid "2. Misure"
+msgstr "2. 措施"
+
+#: templates/accessibility.html:27
+msgid ""
+"Focus visibili, landmark, etichette form, testi alternativi su mark "
+"principali."
+msgstr "可见焦点、landmark、表单标签，以及主要标识的替代文本。"
+
+#: templates/accessibility.html:28
+msgid "Rispetto di prefers-reduced-motion sulle animazioni marketing."
+msgstr "营销动画遵循 prefers-reduced-motion 设置。"
+
+#: templates/accessibility.html:29
+msgid ""
+"Contrasto mirato su chrome Logo / plan accent; stati success/warn/danger "
+"distinti."
+msgstr "针对 Chrome 风格 Logo / 套餐强调色进行对比度优化；success/warn/danger 状态保持清晰区分。"
+
+#: templates/accessibility.html:34
+msgid "3. Limiti noti"
+msgstr "3. 已知限制"
+
+#: templates/accessibility.html:36
+msgid ""
+"Grafici interattivi geo-ui: navigazione da tastiera non completa su tutti i "
+"series."
+msgstr "geo-ui 交互式图表：并非所有 series 都完整支持键盘导航。"
+
+#: templates/accessibility.html:37
+msgid ""
+"Alcune tabelle dense della dashboard possono richiedere scroll orizzontale su"
+" mobile."
+msgstr "仪表板中的部分高密度表格在移动端可能需要横向滚动。"
+
+#: templates/accessibility.html:38
+msgid "PDF/export di terzi non rientrano in questa dichiarazione."
+msgstr "第三方 PDF/导出内容不在本声明范围内。"
+
+#: templates/accessibility.html:43
+msgid "4. Feedback"
+msgstr "4. 反馈"
+
+#: templates/accessibility.html:45
+msgid "Segnala barriere a"
+msgstr "请将障碍反馈至"
+
+#: templates/accessibility.html:47
+msgid ""
+"con URL, browser/AT e descrizione. Rispondiamo di norma entro 10 giorni "
+"lavorativi."
+msgstr "并附上 URL、浏览器/辅助技术及问题描述。我们通常会在 10 个工作日内回复。"
+
+#: templates/accessibility.html:53 templates/ai_transparency.html:60
+#: templates/base.html:252 templates/base.html:278 templates/termini.html:150
+#: templates/trust.html:9
+msgid "Trust"
+msgstr "信任"
 
 #: templates/agencies.html:2
 msgid "Centropic per agenzie"
@@ -2534,6 +2658,127 @@ msgstr "启用 Business"
 msgid "Parla con noi"
 msgstr "联系我们"
 
+#: templates/ai_transparency.html:2 templates/ai_transparency.html:10
+msgid "Trasparenza AI / LLM"
+msgstr "AI / LLM 透明度"
+
+#: templates/ai_transparency.html:3
+msgid ""
+"Cosa Centropic invia ai modelli LLM, finalità, training e limiti — "
+"trasparenza AI per clienti SaaS."
+msgstr "Centropic 向 LLM 模型发送哪些内容、用途、训练与限制 — 面向 SaaS 客户的 AI 透明度说明。"
+
+#: templates/ai_transparency.html:9
+msgid "Legale · AI"
+msgstr "法律 · AI"
+
+#: templates/ai_transparency.html:13
+msgid ""
+"Centropic usa modelli di terze parti solo per funzioni esplicite del prodotto"
+" (artifact e citation monitor). Contatti:"
+msgstr "Centropic 仅为明确的产品功能（artifact 和 citation monitor）使用第三方模型。联系方式："
+
+#: templates/ai_transparency.html:19
+msgid "1. Cosa inviamo"
+msgstr "1. 我们发送的内容"
+
+#: templates/ai_transparency.html:21
+msgid ""
+"Snippet di pagine pubbliche che hai chiesto di analizzare (title, testo "
+"estratto, segnali strutturali)."
+msgstr "你要求分析的公开页面片段（title、提取文本、结构化信号）。"
+
+#: templates/ai_transparency.html:22
+msgid ""
+"Prompt di sistema/utente per generare bozze (es. llms.txt) o per probe di "
+"citazione Misurate."
+msgstr "用于生成草稿（如 llms.txt）或执行实测 citation probe 的系统/用户 prompt。"
+
+#: templates/ai_transparency.html:23
+msgid ""
+"Non inviamo password, carte di pagamento né contenuti di aree autenticate del"
+" tuo sito."
+msgstr "我们不会发送密码、支付卡信息，也不会发送你网站中需登录区域的内容。"
+
+#: templates/ai_transparency.html:28
+msgid "2. Finalità"
+msgstr "2. 用途"
+
+#: templates/ai_transparency.html:30
+msgid ""
+"Generazione di artifact operativi e campionamento citation share Misurata "
+"sugli engine abilitati dal piano. Gli score Stimati restano basati sul crawl "
+"strutturale senza probe LLM."
+msgstr ""
+"生成可执行 artifact，并在套餐启用的 engine 上抽样实测 citation share。估算 score 仍基于结构化 crawl，不使用 "
+"LLM probe。"
+
+#: templates/ai_transparency.html:35
+msgid "3. Provider e training"
+msgstr "3. 提供商与训练"
+
+#: templates/ai_transparency.html:37
+msgid "I provider attivi sono elencati nel"
+msgstr "当前启用的提供商列于"
+
+#: templates/ai_transparency.html:38
+msgid "DPA / Allegato A"
+msgstr "DPA / 附录 A"
+
+#: templates/ai_transparency.html:39
+msgid ""
+"(OpenAI, Anthropic, Perplexity, Google Gemini, xAI se configurati). Centropic"
+" non usa i tuoi contenuti per addestrare modelli propri. L’uso dei dati per "
+"training da parte dei provider dipende dalle loro policy enterprise/API: "
+"usiamo endpoint API e impostazioni disponibili per limitare "
+"retention/training ove supportato. Per dettagli vincolanti vedi le privacy "
+"policy dei singoli fornitori."
+msgstr ""
+"（如已配置，包括 OpenAI、Anthropic、Perplexity、Google Gemini、xAI）。Centropic "
+"不会使用你的内容训练自有模型。提供商是否将数据用于训练取决于其 enterprise/API 政策：在受支持时，我们使用 API endpoint "
+"和可用设置来限制 retention/training。具有约束力的详情请参见各供应商的隐私政策。"
+
+#: templates/ai_transparency.html:44
+msgid "4. Log e conservazione"
+msgstr "4. 日志与保留"
+
+#: templates/ai_transparency.html:46
+msgid ""
+"Conserviamo metadati di job, addebiti token e risultati necessari al "
+"servizio. I pack artifact possono restare in object storage con retention "
+"configurata (tipicamente 90 giorni per artefatti tecnici). Puoi esportare o "
+"eliminare l’account dalle Impostazioni."
+msgstr ""
+"我们保留服务所必需的 job 元数据、token 扣费记录和结果。pack artifact 可能按照配置的保留期保存在 object storage "
+"中（技术 artifact 通常为 90 天）。你可以在“设置”中导出或删除账户。"
+
+#: templates/ai_transparency.html:51
+msgid "5. Limiti e non-garanzie"
+msgstr "5. 限制与非保证"
+
+#: templates/ai_transparency.html:53
+msgid ""
+"I modelli possono produrre output incompleti o imprecisi. Stimato ≠ Misurato."
+" Centropic non garantisce ranking o menzioni nelle UI di terzi. Pubblicazione"
+" degli artifact e conformità restano a tuo carico."
+msgstr "模型可能生成不完整或不准确的输出。估算 ≠ 实测。Centropic 不保证在第三方 UI 中获得排名或提及。artifact 的发布及合规责任仍由你承担。"
+
+#: templates/ai_transparency.html:58 templates/base.html:274
+#: templates/cookies.html:68 templates/privacy.html:14 templates/privacy.html:34
+#: templates/privacy.html:167 templates/termini.html:14 templates/termini.html:126
+#: templates/topup.html:94
+msgid "DPA"
+msgstr "DPA"
+
+#: templates/ai_transparency.html:59 templates/base.html:246
+#: templates/base.html:266 templates/contact.html:58 templates/cookies.html:14
+#: templates/cookies.html:18 templates/dpa.html:20
+#: templates/partials/auth_help.html:26 templates/pricing.html:171
+#: templates/privacy.html:9 templates/rimborsi.html:98 templates/termini.html:13
+#: templates/termini.html:148 templates/trust.html:60
+msgid "Privacy"
+msgstr "隐私"
+
 #: templates/base.html:10
 msgid ""
 "Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative "
@@ -2548,14 +2793,15 @@ msgstr "打开菜单"
 msgid "Principale"
 msgstr "主导航"
 
-#: templates/base.html:130 templates/base.html:232 templates/dashboard.html:121
-#: templates/dashboard.html:825 templates/history.html:2
-#: templates/partials/app_sidebar.html:59 templates/site_history.html:2
+#: templates/base.html:130 templates/base.html:232 templates/dashboard.html:94
+#: templates/dashboard.html:842 templates/dashboard.html:1115
+#: templates/history.html:2 templates/partials/app_sidebar.html:59
+#: templates/site_history.html:2
 msgid "Storico"
 msgstr "历史记录"
 
-#: templates/base.html:133 templates/dashboard.html:646
-#: templates/partials/app_sidebar.html:72
+#: templates/base.html:133 templates/dashboard.html:663
+#: templates/dashboard.html:1122 templates/partials/app_sidebar.html:72
 msgid "Impostazioni"
 msgstr "设置"
 
@@ -2567,7 +2813,7 @@ msgstr "额度"
 #: templates/base.html:135 templates/base.html:150 templates/base.html:218
 #: templates/faq.html:91 templates/login.html:86 templates/pricing.html:2
 #: templates/pro_interest.html:13 templates/register.html:147
-#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:86
+#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:91
 msgid "Prezzi"
 msgstr "定价"
 
@@ -2620,51 +2866,95 @@ msgstr "注册"
 msgid "Pagina contatti"
 msgstr "联系页面"
 
-#: templates/base.html:246 templates/base.html:260 templates/contact.html:58
-#: templates/partials/auth_help.html:26 templates/pricing.html:155
-#: templates/privacy.html:2 templates/rimborsi.html:98 templates/termini.html:79
-msgid "Privacy"
-msgstr "隐私"
+#: templates/base.html:247 templates/base.html:268 templates/cookies.html:2
+#: templates/privacy.html:166 templates/trust.html:61
+msgid "Cookie"
+msgstr "Cookie"
 
-#: templates/base.html:247 templates/privacy.html:83 templates/rimborsi.html:87
-#: templates/termini.html:2 templates/termini.html:10
+#: templates/base.html:248 templates/rimborsi.html:87 templates/termini.html:2
+#: templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "服务条款"
 
-#: templates/base.html:248 templates/base.html:264 templates/contact.html:60
-#: templates/pricing.html:156 templates/privacy.html:84 templates/termini.html:80
+#: templates/base.html:249 templates/base.html:272 templates/contact.html:60
+#: templates/dpa.html:117 templates/pricing.html:172 templates/termini.html:15
+#: templates/termini.html:149 templates/topup.html:93
 msgid "Rimborsi"
 msgstr "退款"
 
-#: templates/base.html:262 templates/contact.html:59 templates/pricing.html:154
-#: templates/register.html:125 templates/rimborsi.html:97
+#: templates/base.html:250 templates/pricing.html:173 templates/trust.html:32
+msgid "DPA / sub-responsabili"
+msgstr "DPA / 子处理方"
+
+#: templates/base.html:251 templates/cookies.html:69 templates/trust.html:62
+msgid "AI / LLM"
+msgstr "AI / LLM"
+
+#: templates/base.html:254 templates/cookies.html:17 templates/cookies.html:67
+#: templates/privacy.html:165
+msgid "Gestisci consenso"
+msgstr "管理同意偏好"
+
+#: templates/base.html:270 templates/contact.html:59 templates/dpa.html:21
+#: templates/pricing.html:170 templates/register.html:125
+#: templates/rimborsi.html:97 templates/trust.html:63
 msgid "Termini"
 msgstr "条款"
 
 #: templates/base.html:276
+msgid "AI"
+msgstr "AI"
+
+#: templates/base.html:280
+msgid "Consenso"
+msgstr "同意"
+
+#: templates/base.html:289
 msgid "Cookie e misurazione"
 msgstr "Cookie和测量"
 
-#: templates/base.html:278
+#: templates/base.html:291
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o"
-" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o "
-"rifiutare. Dettagli nella"
-msgstr "我们使用技术Cookie，并在您的同意下使用Google工具（Analytics和/或Ads/AdSense）来测量流量并显示广告。您可以接受或拒绝。详细信息在"
+" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare, "
+"rifiutare o personalizzare. Dettagli nella"
+msgstr ""
+"我们使用技术性 cookie，并在取得你的同意后使用 Google 工具（Analytics 和/或 "
+"Ads/AdSense）衡量流量并展示广告。你可以接受、拒绝或自定义。详情见"
 
-#: templates/base.html:282
-msgid "Accetta"
-msgstr "接受"
+#: templates/base.html:292 templates/privacy.html:13 templates/privacy.html:112
+msgid "Cookie Policy"
+msgstr "Cookie 政策"
 
-#: templates/base.html:283
+#: templates/base.html:297
+msgid "Analytics (GA4)"
+msgstr "Analytics (GA4)"
+
+#: templates/base.html:301
+msgid "Advertising (Ads / AdSense)"
+msgstr "广告 (Ads / AdSense)"
+
+#: templates/base.html:305
+msgid "Accetta tutto"
+msgstr "全部接受"
+
+#: templates/base.html:306
 msgid "Rifiuta"
 msgstr "拒绝"
 
-#: templates/base.html:324
+#: templates/base.html:307
+msgid "Personalizza"
+msgstr "自定义"
+
+#: templates/base.html:308
+msgid "Salva preferenze"
+msgstr "保存偏好"
+
+#: templates/base.html:348
 msgid "Copiato"
 msgstr "已复制"
 
-#: templates/base.html:337 templates/preview_analyze.html:20
+#: templates/base.html:361 templates/preview_analyze.html:20
 msgid "Analisi in corso…"
 msgstr "分析进行中…"
 
@@ -2804,7 +3094,7 @@ msgstr "确认并启动分析"
 msgid "Amplia copertura"
 msgstr "增加额度"
 
-#: templates/confirm_analyze.html:158
+#: templates/confirm_analyze.html:158 templates/dashboard.html:1042
 msgid "Annulla"
 msgstr "取消"
 
@@ -2916,6 +3206,91 @@ msgstr "我们不出售电子邮件列表；我们使用数据提供 Centropic�
 msgid "Scrivi a info@centropic.ai"
 msgstr "写信至 info@centropic.ai"
 
+#: templates/cookies.html:3
+msgid ""
+"Informativa cookie Centropic: cookie tecnici, analytics e advertising con "
+"consenso granulare."
+msgstr "Centropic Cookie 政策：技术性 Cookie、分析与广告 Cookie，支持细粒度同意。"
+
+#: templates/cookies.html:9 templates/rimborsi.html:9
+msgid "Legale"
+msgstr "法律"
+
+#: templates/cookies.html:10
+msgid "Informativa cookie"
+msgstr "Cookie 政策"
+
+#: templates/cookies.html:13
+msgid ""
+"Puoi accettare, rifiutare o personalizzare analytics e advertising. Dettagli "
+"anche in"
+msgstr "你可以接受、拒绝或自定义 analytics 和 advertising。更多详情见"
+
+#: templates/cookies.html:23
+msgid "1. Categorie"
+msgstr "1. 类别"
+
+#: templates/cookies.html:25
+msgid "Necessari"
+msgstr "必要"
+
+#: templates/cookies.html:25
+msgid "sessione, CSRF, lingua, memoria del consenso. Sempre attivi."
+msgstr "会话、CSRF、语言、同意记忆。始终启用。"
+
+#: templates/cookies.html:26
+msgid "Analytics"
+msgstr "Analytics"
+
+#: templates/cookies.html:26
+msgid "Google Analytics 4, solo con consenso."
+msgstr "Google Analytics 4，仅在取得同意后启用。"
+
+#: templates/cookies.html:27
+msgid "Advertising"
+msgstr "Advertising"
+
+#: templates/cookies.html:27
+msgid "Google Ads / AdSense se configurati, solo con consenso ads."
+msgstr "如已配置，Google Ads / AdSense 仅在取得 ads 同意后启用。"
+
+#: templates/cookies.html:32
+msgid "2. Elenco"
+msgstr "2. 清单"
+
+#: templates/cookies.html:37
+msgid "Nome"
+msgstr "名称"
+
+#: templates/cookies.html:38 templates/dpa.html:86 templates/termini.html:24
+msgid "Fornitore"
+msgstr "提供方"
+
+#: templates/cookies.html:39
+msgid "Scopo"
+msgstr "目的"
+
+#: templates/cookies.html:40
+msgid "Durata"
+msgstr "期限"
+
+#: templates/cookies.html:41
+msgid "Categoria"
+msgstr "类别"
+
+#: templates/cookies.html:60
+msgid "3. Come modificare"
+msgstr "3. 如何修改"
+
+#: templates/cookies.html:62
+msgid ""
+"Usa “Gestisci consenso” in questa pagina o il link Cookie nel footer. Puoi "
+"anche cancellare i dati del sito dal browser e ricaricare. Consent Mode v2: "
+"di default analytics/ads sono negati nell’UE finché non scegli."
+msgstr ""
+"请使用本页的“管理同意偏好”或页脚中的 Cookie 链接。你也可以在浏览器中清除网站数据后重新加载。Consent Mode "
+"v2：在欧盟地区，analytics/ads 默认被拒绝，直到你作出选择。"
+
 #: templates/dashboard.html:9
 msgid "Workspace"
 msgstr "工作区"
@@ -2924,13 +3299,9 @@ msgstr "工作区"
 msgid "Ciao"
 msgstr "你好"
 
-#: templates/dashboard.html:22 templates/dashboard.html:98
+#: templates/dashboard.html:22 templates/dashboard.html:77
 msgid "Ultimo report"
 msgstr "最后报告"
-
-#: templates/dashboard.html:24
-msgid "prova fino al"
-msgstr "试用截止至"
 
 #: templates/dashboard.html:28
 msgid "Workspace agenzia: multi-cliente, API e white-label."
@@ -2952,523 +3323,508 @@ msgstr "账户状态"
 msgid "Piano"
 msgstr "计划"
 
-#: templates/dashboard.html:43
-msgid "fino al"
-msgstr "直到"
-
-#: templates/dashboard.html:48
+#: templates/dashboard.html:45
 msgid "Siti"
 msgstr "网站"
 
-#: templates/dashboard.html:52 templates/partials/analyze_overlay.html:102
+#: templates/dashboard.html:49 templates/partials/analyze_overlay.html:102
 msgid "Crawl"
 msgstr "爬虫"
 
-#: templates/dashboard.html:53
+#: templates/dashboard.html:50
 msgid "Intero sito"
 msgstr "整个网站"
 
-#: templates/dashboard.html:53
+#: templates/dashboard.html:50
 msgid "pag."
 msgstr "页。"
 
-#: templates/dashboard.html:56
+#: templates/dashboard.html:53
 msgid "Analisi"
 msgstr "分析次数"
 
-#: templates/dashboard.html:56
+#: templates/dashboard.html:53
 msgid "Quote 24h"
 msgstr "24小时报价"
 
-#: templates/dashboard.html:62
-msgid "Servizi del piano"
-msgstr "方案服务"
-
-#: templates/dashboard.html:65
-msgid "Toolkit Business"
-msgstr "Business 工具包"
-
-#: templates/dashboard.html:67
-msgid "Toolkit Plus"
-msgstr "Plus 工具包"
-
-#: templates/dashboard.html:69
-msgid "Toolkit Free"
-msgstr "Free 工具包"
-
-#: templates/dashboard.html:101 templates/dashboard.html:355
+#: templates/dashboard.html:80 templates/dashboard.html:369
 msgid "Centropic Visibility Index"
 msgstr "(AI 驱动的可见性) 和"
 
-#: templates/dashboard.html:101 templates/dashboard.html:354
-#: templates/dashboard.html:1028 templates/sample_report.html:28
+#: templates/dashboard.html:80 templates/dashboard.html:291
+#: templates/dashboard.html:368 templates/dashboard.html:1072
+#: templates/partials/competitor_snapshot.html:68
+#: templates/partials/competitor_snapshot.html:138 templates/sample_report.html:28
 msgid "CVI"
 msgstr "CVI"
 
-#: templates/dashboard.html:105 templates/site_history.html:12
+#: templates/dashboard.html:84 templates/site_history.html:12
 msgid "Apri sito"
 msgstr "打开网站"
 
-#: templates/dashboard.html:106 templates/dashboard.html:766
-#: templates/partials/dashboard_shell.html:85
-#: templates/partials/dashboard_shell.html:119 templates/pricing.html:31
+#: templates/dashboard.html:85 templates/dashboard.html:783
+#: templates/partials/dashboard_shell.html:64
+#: templates/partials/dashboard_shell.html:98 templates/pricing.html:31
 msgid "pagine"
 msgstr "页面"
 
-#: templates/dashboard.html:113 templates/dashboard.html:1062
-#: templates/partials/dashboard_shell.html:53
-msgid "Scarica pack"
-msgstr "下载包"
+#: templates/dashboard.html:88
+msgid "Analizzato"
+msgstr ""
 
-#: templates/dashboard.html:116
-msgid "Email non configurata sul server"
-msgstr "电子邮件未在服务器上配置"
-
-#: templates/dashboard.html:117
-msgid "Invia email"
-msgstr "发送电子邮件"
-
-#: templates/dashboard.html:132
+#: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
 msgstr "非常强的 AIO 信号"
 
-#: templates/dashboard.html:133
+#: templates/dashboard.html:106
 msgid ""
 "Alta predisposizione strutturale: i crawler generativi trovano segnali chiari"
 " da leggere e citare."
 msgstr "高结构性准备度：生成式 crawler 能找到清晰信号用于读取和引用。"
 
-#: templates/dashboard.html:136
+#: templates/dashboard.html:109
 msgid "Segnali AIO solidi"
 msgstr "稳固的 AIO 信号"
 
-#: templates/dashboard.html:137
+#: templates/dashboard.html:110
 msgid ""
 "Buona base machine-readable. Chiudi i gap rimanenti: ogni segnale in più "
 "riduce ambiguità per i crawler generativi."
 msgstr "良好的 machine-readable 基础。关闭剩余 gap：每增加一个信号，都会降低生成式 crawler 面临的歧义。"
 
-#: templates/dashboard.html:140
+#: templates/dashboard.html:113
 msgid "Segnali AIO moderati"
 msgstr "适度的 AIO 信号"
 
-#: templates/dashboard.html:141
+#: templates/dashboard.html:114
 msgid "Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn."
 msgstr "存在一些资产，存在多个开放的差距。优先处理关键/警告发现。"
 
-#: templates/dashboard.html:144
+#: templates/dashboard.html:117
 msgid "Segnali AIO emergenti"
 msgstr "新兴的 AIO 信号"
 
-#: templates/dashboard.html:145
+#: templates/dashboard.html:118
 msgid ""
 "Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file "
 "AI."
 msgstr "爬取信号较弱：需要在实体、架构和 AI 文件上进行结构性工作。"
 
-#: templates/dashboard.html:148
+#: templates/dashboard.html:121
 msgid "Segnali AIO critici"
 msgstr "关键 AIO 信号"
 
-#: templates/dashboard.html:149
+#: templates/dashboard.html:122
 msgid ""
 "Base insufficiente: intervento prioritario su title, schema, robots/llms e "
 "contenuti citabili."
 msgstr "基础不足：优先处理标题、架构、robots/llms 和可引用内容。"
 
-#: templates/dashboard.html:159
+#: templates/dashboard.html:132
 msgid "Metriche chiave"
 msgstr "关键指标"
 
-#: templates/dashboard.html:160
+#: templates/dashboard.html:133
 msgid "AI-Driven Visibility"
 msgstr "人工智能驱动的可见性"
 
-#: templates/dashboard.html:163
+#: templates/dashboard.html:136
 msgid "Generative Engine Opt."
 msgstr "生成引擎优化。"
 
-#: templates/dashboard.html:166 templates/dashboard.html:179
-#: templates/partials/dashboard_shell.html:57 templates/preview_analyze.html:43
+#: templates/dashboard.html:139 templates/dashboard.html:163
+#: templates/dashboard.html:1113 templates/preview_analyze.html:43
 #: templates/verify.html:33
 msgid "Findings"
 msgstr "发现"
 
-#: templates/dashboard.html:166
+#: templates/dashboard.html:139
 msgid "critical + warn"
 msgstr "关键 + 警告"
 
-#: templates/dashboard.html:171
-msgid "Vista report"
-msgstr "报告视图"
-
-#: templates/dashboard.html:172 templates/dashboard.html:178
-#: templates/dashboard.html:573 templates/partials/analyze_overlay.html:104
-msgid "Score"
-msgstr "评分"
-
-#: templates/dashboard.html:173 templates/dashboard.html:177
-#: templates/dashboard.html:1051 templates/partials/analyze_overlay.html:103
-msgid "SoV"
-msgstr "SoV"
-
-#: templates/dashboard.html:176
+#: templates/dashboard.html:144
 msgid "Sezioni del report"
 msgstr "报告部分"
 
-#: templates/dashboard.html:180
+#: templates/dashboard.html:153 templates/dashboard.html:1095
+#: templates/partials/analyze_overlay.html:103
+msgid "SoV"
+msgstr "SoV"
+
+#: templates/dashboard.html:161 templates/dashboard.html:588
+#: templates/partials/analyze_overlay.html:104
+msgid "Score"
+msgstr "评分"
+
+#: templates/dashboard.html:164
 msgid "Critiche"
 msgstr "严重问题"
 
-#: templates/dashboard.html:181
+#: templates/dashboard.html:165 templates/dashboard.html:1111
 msgid "Edge"
 msgstr "Edge"
 
-#: templates/dashboard.html:182 templates/partials/analyze_overlay.html:105
+#: templates/dashboard.html:166 templates/dashboard.html:1107
+#: templates/partials/analyze_overlay.html:105
 msgid "Pack"
 msgstr "Pack"
 
-#: templates/dashboard.html:274 templates/dashboard.html:286
-#: templates/dashboard.html:313 templates/dashboard.html:336
-#: templates/dashboard.html:359 templates/dashboard.html:597
-#: templates/dashboard.html:797 templates/partials/sov_ops.html:11
-#: templates/pricing.html:145
-msgid "Stimato"
-msgstr "估计"
-
-#: templates/dashboard.html:285 templates/dashboard.html:295
+#: templates/dashboard.html:178 templates/dashboard.html:309
 msgid "Signal diagnostics"
 msgstr "信号诊断"
 
-#: templates/dashboard.html:288
+#: templates/dashboard.html:179 templates/dashboard.html:271
+#: templates/dashboard.html:327 templates/dashboard.html:350
+#: templates/dashboard.html:373 templates/dashboard.html:614
+#: templates/dashboard.html:814 templates/partials/sov_ops.html:11
+#: templates/pricing.html:161
+msgid "Stimato"
+msgstr "估计"
+
+#: templates/dashboard.html:181
 msgid "Quanto sono solidi i segnali AIO/GEO"
 msgstr "AIO/GEO 信号有多稳固"
 
-#: templates/dashboard.html:291
+#: templates/dashboard.html:184
 msgid ""
-"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di "
-"predisposizione strutturale (leggibilità per crawler generativi)."
-msgstr "AIO = AI 驱动的可见性 · GEO = 生成引擎优化。评分来自探测/启发式，不保证实时引用。"
+"AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab "
+"SoV mostra Misurato quando il citation monitor ha campionato gli engine "
+"(anche con 0 menzioni)."
+msgstr ""
 
-#: templates/dashboard.html:297
-msgid "Segnale"
-msgstr "信号"
+#: templates/dashboard.html:279
+msgid "Sintesi score"
+msgstr ""
 
-#: templates/dashboard.html:298 templates/dashboard.html:571
-msgid "Evidence"
-msgstr "SoV 依据"
-
-#: templates/dashboard.html:299
-msgid "Lettura"
-msgstr "读取"
-
-#: templates/dashboard.html:300
-msgid "Valore"
-msgstr "颜色"
-
-#: templates/dashboard.html:323 templates/dashboard.html:346
-msgid "score"
-msgstr "评分"
-
-#: templates/dashboard.html:369
-msgid "grade"
-msgstr "AI 等级"
-
-#: templates/dashboard.html:377
+#: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
 msgstr "干扰"
 
-#: templates/dashboard.html:382
-msgid "Nessuna criticità aperta"
-msgstr "没有开放的关键问题"
-
-#: templates/dashboard.html:396
+#: templates/dashboard.html:302 templates/dashboard.html:410
+#: templates/partials/competitor_snapshot.html:72
+#: templates/partials/competitor_snapshot.html:142
 msgid "clear"
 msgstr "clear"
 
-#: templates/dashboard.html:406
+#: templates/dashboard.html:311
+msgid "Segnale"
+msgstr "信号"
+
+#: templates/dashboard.html:312 templates/dashboard.html:586
+msgid "Evidence"
+msgstr "SoV 依据"
+
+#: templates/dashboard.html:313
+msgid "Lettura"
+msgstr "读取"
+
+#: templates/dashboard.html:314
+msgid "Valore"
+msgstr "颜色"
+
+#: templates/dashboard.html:337 templates/dashboard.html:360
+msgid "score"
+msgstr "评分"
+
+#: templates/dashboard.html:383
+msgid "grade"
+msgstr "AI 等级"
+
+#: templates/dashboard.html:396
+msgid "Nessuna criticità aperta"
+msgstr "没有开放的关键问题"
+
+#: templates/dashboard.html:420
 msgid "open findings"
 msgstr "发现"
 
-#: templates/dashboard.html:410 templates/partials/geo_overview.html:68
+#: templates/dashboard.html:424 templates/partials/geo_overview.html:68
 msgid "findings"
 msgstr "发现"
 
-#: templates/dashboard.html:416
+#: templates/dashboard.html:430
 msgid "Scala CVI"
 msgstr "CVI 等级"
 
-#: templates/dashboard.html:417
+#: templates/dashboard.html:431
 msgid "Scala da DDD a AAA"
 msgstr "从 DDD 到 AAA 的等级"
 
-#: templates/dashboard.html:434 templates/dashboard.html:563
+#: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
 msgstr "AI 引擎分析"
 
-#: templates/dashboard.html:437 templates/dashboard.html:473
+#: templates/dashboard.html:450
+msgid "Citation share — probe Misurato eseguito"
+msgstr ""
+
+#: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
 msgid "Citation share"
 msgstr "引用监控"
 
-#: templates/dashboard.html:439
+#: templates/dashboard.html:454
 msgid "Citation share (stimata)"
 msgstr "Citation share（估计）"
 
-#: templates/dashboard.html:446
+#: templates/dashboard.html:461
 msgid ""
 "Menzioni generative campionate (stocastiche) + predisposizione strutturale — "
 "non Share of Voice pubblicitaria."
 msgstr "抽样生成式提及（随机）+ 结构性准备度——不是广告意义上的 Share of Voice。"
 
-#: templates/dashboard.html:448
+#: templates/dashboard.html:463
 msgid "Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor."
 msgstr "根据当前方案下的 score 和 robots 得出的 SoV estimated。"
 
-#: templates/dashboard.html:450
+#: templates/dashboard.html:465
 msgid ""
 "Stima dalla struttura osservata (CVI / score + robots); con Plus puoi "
 "aggiungere campioni Misurati."
 msgstr "基于观察到的结构（CVI / score + robots）估计；使用 Plus 可增加实测样本。"
 
-#: templates/dashboard.html:456
+#: templates/dashboard.html:471
 msgid "Citation share brand"
 msgstr "品牌 citation share"
 
-#: templates/dashboard.html:477 templates/dashboard.html:548
+#: templates/dashboard.html:492 templates/dashboard.html:563
 msgid "Campo competitivo"
 msgstr "竞争领域"
 
-#: templates/dashboard.html:478 templates/dashboard.html:555
-#: templates/settings.html:176
+#: templates/dashboard.html:493 templates/dashboard.html:570
+#: templates/settings.html:195
 msgid "Brand"
 msgstr "品牌"
 
-#: templates/dashboard.html:479 templates/dashboard.html:556
+#: templates/dashboard.html:494 templates/dashboard.html:571
 msgid "Rivali"
 msgstr "竞争对手"
 
-#: templates/dashboard.html:480 templates/dashboard.html:557
+#: templates/dashboard.html:495 templates/dashboard.html:572
 msgid "Altro"
 msgstr "其他"
 
-#: templates/dashboard.html:487
+#: templates/dashboard.html:502
 msgid "Propensity snapshot per engine"
 msgstr "引擎倾向"
 
-#: templates/dashboard.html:489
+#: templates/dashboard.html:504
 msgid "Propensity snapshot"
 msgstr "竞争对手快照"
 
-#: templates/dashboard.html:520
+#: templates/dashboard.html:535
 msgid "Composizione per engine"
 msgstr "引擎组成"
 
-#: templates/dashboard.html:524
+#: templates/dashboard.html:539
 msgid "Composizione SoV per engine"
 msgstr "引擎的SoV组成"
 
-#: templates/dashboard.html:547
+#: templates/dashboard.html:562
 msgid "Distribuzione competitiva"
 msgstr "竞争分布"
 
-#: templates/dashboard.html:567
+#: templates/dashboard.html:582
 msgid "Propensity e citation share per engine"
 msgstr "引擎倾向"
 
-#: templates/dashboard.html:570
+#: templates/dashboard.html:585
 msgid "Engine"
 msgstr "页面"
 
-#: templates/dashboard.html:572
+#: templates/dashboard.html:587
 msgid "Propensity"
 msgstr "引擎倾向"
 
-#: templates/dashboard.html:574 templates/dashboard.html:617
+#: templates/dashboard.html:589 templates/dashboard.html:634
 msgid "Share"
 msgstr "分享"
 
-#: templates/dashboard.html:595
+#: templates/dashboard.html:608
+msgid "Probe LLM eseguito: 0 menzioni su questo engine"
+msgstr ""
+
+#: templates/dashboard.html:608
+msgid "Misurato · 0"
+msgstr ""
+
+#: templates/dashboard.html:612
 msgid "N/D"
 msgstr "N/D"
 
-#: templates/dashboard.html:600
+#: templates/dashboard.html:617
 msgid "blocked"
 msgstr "机器人被阻止"
 
-#: templates/dashboard.html:602
+#: templates/dashboard.html:619
 msgid "allow"
 msgstr "允许机器人"
 
-#: templates/dashboard.html:634
+#: templates/dashboard.html:651
 msgid "Nessun breakdown disponibile."
 msgstr "没有可用的细分。"
 
-#: templates/dashboard.html:639
+#: templates/dashboard.html:656
 msgid "GEO suite"
 msgstr "GEO套件"
 
-#: templates/dashboard.html:642
+#: templates/dashboard.html:659
 msgid "Suite"
 msgstr "套件"
 
-#: templates/dashboard.html:643
+#: templates/dashboard.html:660
 msgid "GEO / AIO avanzato"
 msgstr "高级GEO / AIO"
 
-#: templates/dashboard.html:648 templates/dashboard.html:666
-#: templates/dashboard.html:1078 templates/verify.html:2 templates/verify.html:8
+#: templates/dashboard.html:665 templates/dashboard.html:683
+#: templates/dashboard.html:1118 templates/verify.html:2 templates/verify.html:8
 msgid "Publish verify"
 msgstr "发布验证"
 
-#: templates/dashboard.html:654
+#: templates/dashboard.html:671
 msgid "Entity graph"
 msgstr "实体图"
 
-#: templates/dashboard.html:655
+#: templates/dashboard.html:672
 msgid "nodi"
 msgstr "节点"
 
-#: templates/dashboard.html:658
+#: templates/dashboard.html:675
 msgid "Citability"
 msgstr "引用性"
 
-#: templates/dashboard.html:662
+#: templates/dashboard.html:679
 msgid "Schema quality"
 msgstr "架构质量"
 
-#: templates/dashboard.html:670
+#: templates/dashboard.html:687
 msgid "llms lint"
 msgstr "llms lint"
 
-#: templates/dashboard.html:674
+#: templates/dashboard.html:691
 msgid "Locales"
 msgstr "地区"
 
-#: templates/dashboard.html:679 templates/site_history.html:31
+#: templates/dashboard.html:696 templates/site_history.html:31
 msgid "SoV measured"
 msgstr "测量的SoV"
 
-#: templates/dashboard.html:694
+#: templates/dashboard.html:711
 msgid "Confronto con run precedente"
 msgstr "与之前的运行比较"
 
-#: templates/dashboard.html:696
+#: templates/dashboard.html:713
 msgid "Vs run precedente"
 msgstr "与之前的运行对比"
 
-#: templates/dashboard.html:723 templates/dashboard.html:773
+#: templates/dashboard.html:740 templates/dashboard.html:790
 msgid "Priorità"
 msgstr "优先级"
 
-#: templates/dashboard.html:729 templates/dashboard.html:732
+#: templates/dashboard.html:746 templates/dashboard.html:749
 msgid "critiche"
 msgstr "关键"
 
-#: templates/dashboard.html:729
+#: templates/dashboard.html:746
 msgid "critica"
 msgstr "关键"
 
-#: templates/dashboard.html:730 templates/dashboard.html:734
+#: templates/dashboard.html:747 templates/dashboard.html:751
 msgid "attenzione"
 msgstr "注意"
 
-#: templates/dashboard.html:761
+#: templates/dashboard.html:778
 msgid "Prime 24 criticità · elenco completo nel pack"
 msgstr "前 24 个严重问题 · 完整列表见 pack"
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:781
 msgid "Nessuna pagina critica su"
 msgstr "没有关键页面在"
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:781
 msgid "analizzate."
 msgstr "分析。"
 
-#: templates/dashboard.html:766
+#: templates/dashboard.html:783
 msgid "Analizzate"
 msgstr "分析过的"
 
-#: templates/dashboard.html:774 templates/dashboard.html:1069
+#: templates/dashboard.html:791
 msgid "Findings critici"
 msgstr "关键发现"
 
-#: templates/dashboard.html:805
+#: templates/dashboard.html:822
 msgid "Nessuna criticità."
 msgstr "没有关键问题。"
 
-#: templates/dashboard.html:805
+#: templates/dashboard.html:822
 msgid "check ok nascosti."
 msgstr "检查隐藏的ok。"
 
-#: templates/dashboard.html:810
+#: templates/dashboard.html:827
 msgid "Solo critical/warn ·"
 msgstr "仅关键/警告 ·"
 
-#: templates/dashboard.html:810
+#: templates/dashboard.html:827
 msgid "totali"
 msgstr "总计"
 
-#: templates/dashboard.html:820 templates/site_history.html:21
+#: templates/dashboard.html:837 templates/site_history.html:21
 msgid "Monitoraggio"
 msgstr "监控"
 
-#: templates/dashboard.html:838
-msgid "Confronto"
-msgstr "比较"
-
-#: templates/dashboard.html:861
+#: templates/dashboard.html:858
 msgid "Infrastruttura"
 msgstr "基础设施"
 
-#: templates/dashboard.html:862 templates/dashboard.html:1064
+#: templates/dashboard.html:859 templates/dashboard.html:1109
 #: templates/partials/app_sidebar.html:47
 msgid "Edge Signals"
 msgstr "Edge Signals"
 
-#: templates/dashboard.html:865
+#: templates/dashboard.html:862
 msgid "Attivo"
 msgstr "活跃"
 
-#: templates/dashboard.html:867
+#: templates/dashboard.html:864
 msgid "ZIP only"
 msgstr "仅限 ZIP"
 
-#: templates/dashboard.html:871
+#: templates/dashboard.html:868
 msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr "与其重新分发静态包，不如托管"
 
-#: templates/dashboard.html:872
+#: templates/dashboard.html:869
 msgid ""
 "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo"
 " dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, "
 "Netlify, Cloudflare, Vercel)."
 msgstr "在Centropic端点上更新，当AI爬虫发生变化时。通过通用CMS连接器（WordPress，Drupal，Shopify，PHP，Netlify，Cloudflare，Vercel）连接你的域名。"
 
-#: templates/dashboard.html:877
+#: templates/dashboard.html:874
 msgid "Attiva hosting dinamico"
 msgstr "启用动态托管"
 
-#: templates/dashboard.html:880
+#: templates/dashboard.html:877
 msgid "Include"
 msgstr "包含"
 
-#: templates/dashboard.html:882
+#: templates/dashboard.html:879
 msgid "robots live, JSON-LD e snippet Worker/Vercel."
 msgstr "实时 robots、JSON-LD 及 Worker/Vercel snippet。"
 
-#: templates/dashboard.html:889
+#: templates/dashboard.html:886
 msgid "Snippet avanzati"
 msgstr "高级 snippet"
 
-#: templates/dashboard.html:897 templates/dashboard.html:902
-#: templates/dashboard.html:908 templates/dashboard.html:913
-#: templates/dashboard.html:953 templates/dashboard.html:960
-#: templates/dashboard.html:967 templates/dashboard.html:998
+#: templates/dashboard.html:894 templates/dashboard.html:899
+#: templates/dashboard.html:905 templates/dashboard.html:910
+#: templates/dashboard.html:950 templates/dashboard.html:957
+#: templates/dashboard.html:964
 msgid "Copia"
 msgstr "复制"
 
-#: templates/dashboard.html:919
+#: templates/dashboard.html:916
 msgid ""
 "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, "
 "proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo "
@@ -3477,127 +3833,322 @@ msgstr ""
 "通用CMS：一个包含WordPress插件、Drupal模块、Liquid "
 "Shopify、PHP代理、Netlify/Vercel重写和Cloudflare Worker的ZIP — 所有指向相同的基础Edge。"
 
-#: templates/dashboard.html:922 templates/partials/edge_wizard.html:20
+#: templates/dashboard.html:919 templates/partials/edge_wizard.html:20
 msgid "Scarica connector CMS (.zip)"
 msgstr "下载CMS连接器（.zip）"
 
-#: templates/dashboard.html:933
+#: templates/dashboard.html:930
 msgid "Rigenera token"
 msgstr "重新生成令牌"
 
-#: templates/dashboard.html:937
+#: templates/dashboard.html:934
 msgid "Disattiva"
 msgstr "禁用"
 
-#: templates/dashboard.html:941
+#: templates/dashboard.html:938
 msgid "Crawler IA recenti su Edge:"
 msgstr "Edge上的最新AI爬虫："
 
-#: templates/dashboard.html:944
+#: templates/dashboard.html:941
 msgid "hit"
 msgstr "命中"
 
-#: templates/dashboard.html:981 templates/landing.html:245
+#: templates/dashboard.html:978 templates/dashboard.html:1014
+#: templates/landing.html:245
 msgid "Deliverable"
 msgstr "可交付成果"
 
-#: templates/dashboard.html:983
-msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
-msgstr "一个包含所有修复的 HTML 文件:head snippet、llms.txt、robots 及 checklist。"
+#: templates/dashboard.html:980
+msgid ""
+"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
+"applicare sul sito live."
+msgstr "单个 HTML 文件，包含 head 片段、llms.txt、robots 与清单 — 可直接应用到线上站点。"
 
 #: templates/dashboard.html:986
-msgid "Scarica"
-msgstr "下载"
+msgid "Scarica pack"
+msgstr "下载包"
 
-#: templates/dashboard.html:990
-msgid "Invia a"
-msgstr "发送至"
+#: templates/dashboard.html:992
+msgid "Email non configurata sul server"
+msgstr "电子邮件未在服务器上配置"
 
-#: templates/dashboard.html:1006
+#: templates/dashboard.html:994
+msgid "Invia email"
+msgstr "发送电子邮件"
+
+#: templates/dashboard.html:1015
+msgid "Invia pack via email"
+msgstr "通过邮件发送优化包"
+
+#: templates/dashboard.html:1017 templates/login.html:34
+#: templates/partials/analyze_overlay.html:127
+msgid "Chiudi"
+msgstr "关闭"
+
+#: templates/dashboard.html:1020
+msgid ""
+"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
+"dominio."
+msgstr "请输入要接收此域名 HTML 优化包的邮箱地址。"
+
+#: templates/dashboard.html:1027
+msgid "Indirizzo email"
+msgstr "邮箱地址"
+
+#: templates/dashboard.html:1040
+msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
+msgstr "可发给自己或同事。已启用每日防滥用限制。"
+
+#: templates/dashboard.html:1043
+msgid "Invia pack"
+msgstr "发送优化包"
+
+#: templates/dashboard.html:1050
 msgid "Attivazione"
 msgstr "启用"
 
-#: templates/dashboard.html:1007
+#: templates/dashboard.html:1051
 msgid "Prima diagnosi in un passo"
 msgstr "第一次诊断一步到位"
 
-#: templates/dashboard.html:1010
+#: templates/dashboard.html:1054
 msgid "Stiamo già elaborando"
 msgstr "我们正在处理"
 
-#: templates/dashboard.html:1011
+#: templates/dashboard.html:1055
 msgid "Al termine compariranno qui score, findings e pack."
 msgstr "完成后,score、findings 和 pack 将显示在此处。"
 
-#: templates/dashboard.html:1013
+#: templates/dashboard.html:1057
 msgid "Segui lo stato"
 msgstr "查看状态"
 
-#: templates/dashboard.html:1016
+#: templates/dashboard.html:1060
 msgid ""
 "Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, findings "
 "e pack."
 msgstr "粘贴品牌的公开 URL,即可获得 crawl、AIO/GEO 分数、findings 和 pack。"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "Piano Free:"
 msgstr "免费计划："
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "sito"
 msgstr "网站"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "analisi iniziali."
 msgstr "初始分析。"
 
-#: templates/dashboard.html:1019
+#: templates/dashboard.html:1063
 msgid "Avvia la prima analisi"
 msgstr "开始您的第一次分析"
 
-#: templates/dashboard.html:1026
+#: templates/dashboard.html:1070
 msgid "Contesto report"
 msgstr "报告上下文"
 
-#: templates/dashboard.html:1033
+#: templates/dashboard.html:1077
 msgid "Signal"
 msgstr "信号"
 
-#: templates/dashboard.html:1044
+#: templates/dashboard.html:1088
 msgid "Gap"
 msgstr "差距"
 
-#: templates/dashboard.html:1054
+#: templates/dashboard.html:1098
 msgid "Brand share"
 msgstr "品牌份额"
 
-#: templates/dashboard.html:1061 templates/dashboard.html:1076
-msgid "Azioni"
-msgstr "行动"
+#: templates/dashboard.html:1105
+msgid "Vai a"
+msgstr ""
 
-#: templates/dashboard.html:1065
-msgid "Connector CMS"
-msgstr "CMS连接器"
+#: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
+msgid "Nuova analisi"
+msgstr "新分析"
 
-#: templates/dashboard.html:1067
-msgid "Attiva Edge"
-msgstr "启用 Edge"
+#: templates/dashboard.html:1120
+msgid "White-label"
+msgstr ""
 
-#: templates/dashboard.html:1071 templates/history.html:11
-msgid "Storico run"
-msgstr "运行历史"
+#: templates/dpa.html:2 templates/dpa.html:10
+msgid "DPA e sub-responsabili"
+msgstr "DPA 与子处理方"
 
-#: templates/dashboard.html:1080
-msgid "White-label MD"
-msgstr "白标 MD"
+#: templates/dpa.html:3
+msgid ""
+"Data Processing Agreement (Art. 28 GDPR) e elenco sub-responsabili Centropic "
+"per clienti Business e agenzie."
+msgstr "Data Processing Agreement（GDPR 第 28 条）以及面向 Business 客户和代理机构的 Centropic 子处理方清单。"
 
-#: templates/dashboard.html:1081
-msgid "White-label HTML"
-msgstr "白标 HTML"
+#: templates/dpa.html:9
+msgid "Legale · GDPR Art. 28"
+msgstr "法律 · GDPR 第 28 条"
 
-#: templates/dashboard.html:1083
-msgid "GEO suite settings"
-msgstr "GEO 套件设置"
+#: templates/dpa.html:12 templates/guide.html:14
+msgid "Aggiornato"
+msgstr "已更新"
+
+#: templates/dpa.html:13
+msgid "Titolare del trattamento (Cliente) / Responsabile del trattamento:"
+msgstr "数据控制者（客户）/ 数据处理者："
+
+#: templates/dpa.html:15
+msgid "Contatti:"
+msgstr "联系方式："
+
+#: templates/dpa.html:19 templates/dpa.html:116
+msgid "Scarica DPA (.txt)"
+msgstr "下载 DPA (.txt)"
+
+#: templates/dpa.html:26
+msgid "1. Ruoli"
+msgstr "1. 角色"
+
+#: templates/dpa.html:28
+msgid ""
+"Il Cliente è titolare del trattamento dei dati personali che inserisce o fa "
+"trattare tramite Centropic. Il Provider (Centropic /"
+msgstr "客户是其输入或通过 Centropic 处理的个人数据的数据控制者。提供方（Centropic /"
+
+#: templates/dpa.html:29
+msgid ""
+") agisce come responsabile del trattamento per erogare il SaaS. Paddle, in "
+"qualità di merchant of record, tratta i dati di pagamento come titolare "
+"autonomo per fatturazione e fiscalità."
+msgstr "）作为数据处理者提供 SaaS。Paddle 作为 merchant of record，为账单和税务目的以独立控制者身份处理支付数据。"
+
+#: templates/dpa.html:34
+msgid "2. Oggetto e durata"
+msgstr "2. 处理事项与期限"
+
+#: templates/dpa.html:36
+msgid ""
+"Il trattamento riguarda account, URL pubblici analizzati, risultati (score, "
+"findings, artifact), log tecnici e, se abilitato dal piano, probe LLM. Dura "
+"per la vita dell’account e per i tempi di conservazione indicati "
+"nell’informativa privacy / esigenze di sicurezza e legge."
+msgstr ""
+"处理范围包括账户、被分析的公开 URL、结果（score、findings、artifact）、技术日志，以及在套餐启用时的 LLM "
+"probe。处理持续至账户生命周期结束，并遵循隐私说明 / 安全及法律要求中列明的保留期限。"
+
+#: templates/dpa.html:41
+msgid "3. Obblighi del responsabile (Art. 28)"
+msgstr "3. 数据处理者义务（第 28 条）"
+
+#: templates/dpa.html:43
+msgid ""
+"Tratta i dati solo per erogare Centropic e su istruzioni documentate (uso del"
+" servizio)."
+msgstr "仅为提供 Centropic 并依据已记录的指示（服务使用）处理数据。"
+
+#: templates/dpa.html:44
+msgid "Garantisce riservatezza del personale autorizzato."
+msgstr "确保授权人员承担保密义务。"
+
+#: templates/dpa.html:45
+msgid "Applica misure tecniche e organizzative adeguate."
+msgstr "采取适当的技术和组织措施。"
+
+#: templates/dpa.html:46
+msgid ""
+"Ricorre ai sub-responsabili elencati nell’Allegato A; variazioni rilevanti "
+"sono comunicate."
+msgstr "仅使用附录 A 所列子处理方；重大变更将予以通知。"
+
+#: templates/dpa.html:47
+msgid ""
+"Assiste il Cliente su diritti degli interessati, DPIA e data breach ove "
+"applicabile."
+msgstr "在适用情况下协助客户处理数据主体权利、DPIA 和 data breach。"
+
+#: templates/dpa.html:48
+msgid "Cancella o restituisce i dati dopo chiusura account, salvo obblighi di legge."
+msgstr "账户关闭后删除或返还数据，法律义务另有要求的除外。"
+
+#: templates/dpa.html:49
+msgid "Mette a disposizione le informazioni necessarie a dimostrare conformità."
+msgstr "提供证明合规所需的信息。"
+
+#: templates/dpa.html:54
+msgid "4. Trasferimenti internazionali"
+msgstr "4. 国际传输"
+
+#: templates/dpa.html:56
+msgid ""
+"Alcuni sub-responsabili (in particolare LLM e tool USA) possono trattare dati"
+" fuori SEE/UK. I trasferimenti si basano su garanzie appropriate (es. SCC / "
+"decisioni di adeguatezza) secondo le policy di ciascun fornitore. Per un "
+"riepilogo aggiornato: scrivi a"
+msgstr ""
+"部分子处理方（尤其是 LLM 和美国工具）可能在 EEA/英国以外处理数据。传输依据各供应商政策下的适当保障（如 SCC / "
+"充分性认定）。如需最新摘要，请联系"
+
+#: templates/dpa.html:62
+msgid "5. Obblighi del Cliente"
+msgstr "5. 客户义务"
+
+#: templates/dpa.html:64
+msgid ""
+"Il Cliente garantisce di avere titolo ad analizzare i siti indicati, non deve"
+" caricare categorie particolari di dati senza addendum scritto, e rispetta i "
+"Termini (niente scansioni abusive). Per white-label / multi-cliente Business,"
+" il Cliente resta titolare verso i propri utenti finali."
+msgstr ""
+"客户保证其有权分析所指定的网站，未经书面附录不得上传特殊类别数据，并遵守条款（不得进行滥用性扫描）。对于 white-label / 多客户 "
+"Business 场景，客户仍作为其最终用户的数据控制者。"
+
+#: templates/dpa.html:69
+msgid "6. Accettazione"
+msgstr "6. 接受"
+
+#: templates/dpa.html:71
+msgid ""
+"L’uso di funzioni Business/agenzia o un ordine che richiama questa versione "
+"DPA costituisce accettazione. Copia controfirmata su richiesta a"
+msgstr "使用 Business/代理机构功能，或订单引用本版本 DPA，即构成接受。如需会签副本，请联系"
+
+#: templates/dpa.html:73
+msgid ""
+"In caso di conflitto su temi privacy, questo DPA prevale sui Termini per gli "
+"obblighi di trattamento."
+msgstr "如在隐私事项上发生冲突，本 DPA 就处理义务优先于服务条款。"
+
+#: templates/dpa.html:78
+msgid "Allegato A — Sub-responsabili attivi"
+msgstr "附录 A — 当前启用的子处理方"
+
+#: templates/dpa.html:80
+msgid ""
+"Elenco aggiornato in base alla configurazione di produzione. Provider non "
+"attivi non ricevono dati da questa istanza."
+msgstr "清单根据生产配置更新。未启用的提供商不会从本实例接收数据。"
+
+#: templates/dpa.html:87 templates/register.html:103
+msgid "Ruolo"
+msgstr "角色"
+
+#: templates/dpa.html:88
+msgid "Dati"
+msgstr "数据"
+
+#: templates/dpa.html:89
+msgid "Sede / regione"
+msgstr "地点 / 区域"
+
+#: templates/dpa.html:98
+msgid "Policy"
+msgstr "政策"
+
+#: templates/dpa.html:107
+msgid "Nessun sub-responsabile rilevato nella configurazione corrente."
+msgstr "当前配置中未检测到子处理方。"
+
+#: templates/dpa.html:118
+msgid "Richiedi copia firmata"
+msgstr "申请签署副本"
 
 #: templates/faq.html:3
 msgid ""
@@ -3800,8 +4351,7 @@ msgid "Torna all’accesso"
 msgstr "返回登录"
 
 #: templates/forgot_password.html:34 templates/landing.html:110
-#: templates/login.html:84 templates/privacy.html:85 templates/register.html:24
-#: templates/termini.html:81
+#: templates/login.html:84 templates/register.html:24
 msgid "Crea account"
 msgstr "创建账户"
 
@@ -3809,11 +4359,7 @@ msgstr "创建账户"
 msgid "GEO Charts"
 msgstr "GEO 图表"
 
-#: templates/guide.html:14
-msgid "Aggiornato"
-msgstr "已更新"
-
-#: templates/guide.html:16 templates/settings.html:186
+#: templates/guide.html:16 templates/settings.html:205
 msgid "Torna alla dashboard"
 msgstr "返回仪表板"
 
@@ -3920,6 +4466,10 @@ msgstr "深入分析"
 #: templates/guide.html:179 templates/status.html:67
 msgid "Apri dashboard"
 msgstr "打开仪表板"
+
+#: templates/history.html:11
+msgid "Storico run"
+msgstr "运行历史"
 
 #: templates/history.html:11
 msgid "Ultime analisi"
@@ -4063,7 +4613,7 @@ msgid "In vendita"
 msgstr "现已发售"
 
 #: templates/landing.html:115 templates/landing.html:130 templates/pricing.html:27
-#: templates/pricing.html:44 templates/pricing.html:94
+#: templates/pricing.html:44 templates/pricing.html:102
 msgid "/mese"
 msgstr "/月"
 
@@ -4078,8 +4628,8 @@ msgid ""
 msgstr "持续运营:measured SoV、重新扫描、提醒及扩展 crawl。"
 
 #: templates/landing.html:121 templates/landing.html:136
-#: templates/partials/dashboard_shell.html:118 templates/pricing.html:47
-#: templates/pricing.html:97
+#: templates/partials/dashboard_shell.html:97 templates/pricing.html:47
+#: templates/pricing.html:105
 msgid "Fino a"
 msgstr "最多"
 
@@ -4095,8 +4645,8 @@ msgstr "Re-scan · 实测 citation monitor（0 hit → 估计）"
 msgid "Alert · Edge completo · no API/WL"
 msgstr "Alert · 完整 Edge · 无 API/WL"
 
-#: templates/landing.html:125 templates/pricing.html:58 templates/pricing.html:64
-#: templates/pricing.html:71
+#: templates/landing.html:125 templates/pricing.html:62 templates/pricing.html:69
+#: templates/pricing.html:77
 msgid "Scegli Plus"
 msgstr "选择 Plus"
 
@@ -4114,11 +4664,11 @@ msgid ""
 "partiamo da Plus."
 msgstr "面向 agency delivery 的 API、white-label 与站点规模能力即将推出。今天先从 Plus 开始。"
 
-#: templates/landing.html:136 templates/pricing.html:97
+#: templates/landing.html:136 templates/pricing.html:105
 msgid "domini / clienti"
 msgstr "网站 / 客户"
 
-#: templates/landing.html:137 templates/pricing.html:98
+#: templates/landing.html:137 templates/pricing.html:106
 msgid "API"
 msgstr "API"
 
@@ -4345,10 +4895,6 @@ msgid ""
 "(Generative Engine Optimization), findings e pack llms.txt/JSON-LD."
 msgstr "访问 Centropic：AIO（AI 驱动的可见性）和 GEO（生成引擎优化）的仪表板，发现和 llms.txt/JSON-LD 包。"
 
-#: templates/login.html:34 templates/partials/analyze_overlay.html:127
-msgid "Chiudi"
-msgstr "关闭"
-
 #: templates/login.html:37
 msgid "Accesso"
 msgstr "登录"
@@ -4361,7 +4907,7 @@ msgstr "欢迎回来"
 msgid "Entra in dashboard, analizza il dominio e scarica il pack."
 msgstr "登录控制台，分析您的域名并下载 pack。"
 
-#: templates/login.html:56 templates/register.html:65 templates/settings.html:162
+#: templates/login.html:56 templates/register.html:65 templates/settings.html:181
 msgid "Password"
 msgstr "密码"
 
@@ -4508,7 +5054,7 @@ msgstr "围绕你的品牌持续运营：监控、re-scan 和 citation monitor�
 msgid "domini monitorati"
 msgstr "监控"
 
-#: templates/pricing.html:48 templates/pricing.html:99
+#: templates/pricing.html:48 templates/pricing.html:107
 msgid "Re-scan giornaliero o settimanale"
 msgstr "每日/每周重新扫描"
 
@@ -4528,260 +5074,434 @@ msgstr "提示库 + 警报电子邮件/网络钩子"
 msgid "Edge Signals completo + storico run"
 msgstr "完整 Edge Signals + 运行历史记录"
 
-#: templates/pricing.html:80 templates/pricing.html:129
+#: templates/pricing.html:87 templates/pricing.html:144
 msgid "Annuale"
 msgstr "年度"
 
-#: templates/pricing.html:80 templates/pricing.html:129
+#: templates/pricing.html:87 templates/pricing.html:144
 msgid "anno"
 msgstr "年"
 
-#: templates/pricing.html:85
+#: templates/pricing.html:93
 msgid "Accedi e scegli Plus"
 msgstr "登录并选择 Plus"
 
-#: templates/partials/dashboard_shell.html:12 templates/pricing.html:87
+#: templates/partials/dashboard_shell.html:12 templates/pricing.html:95
 msgid "Prenota Plus"
 msgstr "预约 Plus"
 
-#: templates/pricing.html:92
+#: templates/pricing.html:100
 msgid "Sales only"
 msgstr "仅限销售开通"
 
-#: templates/pricing.html:95
+#: templates/pricing.html:103
 msgid ""
 "Portfolio clienti: API, white-label e scala siti — onboarding assistito, "
 "niente checkout self-serve."
 msgstr "客户 portfolio：API、white-label 与站点规模——辅助 onboarding，无 self-serve checkout。"
 
-#: templates/pricing.html:98
+#: templates/pricing.html:106
 msgid "+ white-label"
 msgstr "白标 MD"
 
-#: templates/pricing.html:100
+#: templates/pricing.html:108
 msgid "Export report MD/HTML white-label"
 msgstr "White-label MD/HTML 报告导出"
 
-#: templates/pricing.html:101
+#: templates/pricing.html:109
 msgid "Tutto di Plus: citation monitor, Edge, alert, storico"
 msgstr "Plus 全部内容：citation monitor、Edge、alert、history"
 
-#: templates/pricing.html:102
+#: templates/pricing.html:110
 msgid "Ideale per retainer multi-cliente"
 msgstr "多客户代理机构"
 
-#: templates/pricing.html:107 templates/pricing.html:113 templates/pricing.html:120
+#: templates/pricing.html:119 templates/pricing.html:126 templates/pricing.html:134
 msgid "Passa a Business"
 msgstr "升级到 Business"
 
-#: templates/pricing.html:134
+#: templates/pricing.html:150
 msgid "Accedi e passa a Business"
 msgstr "登录并升级到 Business"
 
-#: templates/pricing.html:136
+#: templates/pricing.html:152
 msgid "Oggi vendiamo Plus self-serve. Business si attiva via sales / waitlist."
 msgstr "目前我们销售 self-serve Plus。Business 通过 sales / waitlist 激活。"
 
-#: templates/pricing.html:137
+#: templates/pricing.html:153
 msgid "Richiedi onboarding Business"
 msgstr "申请 Business onboarding"
 
-#: templates/pricing.html:144
+#: templates/pricing.html:160
 msgid "Evidence:"
 msgstr "Evidence:"
 
-#: templates/pricing.html:145
+#: templates/pricing.html:161
 msgid "= predisposizione strutturale (CVI / AIO / GEO dal crawl)."
 msgstr "= 结构性准备度（crawl 得出的 CVI / AIO / GEO）。"
 
-#: templates/pricing.html:146
+#: templates/pricing.html:162
 msgid ""
 "= probe LLM su Plus; se nessuna menzione, la share resta Stimata (proxy) — "
 "non azzeriamo i numeri utili."
 msgstr "= Plus 上的 LLM probe；如果没有提及，share 保持估计（proxy）——我们不会把有用数字清零。"
 
-#: templates/pricing.html:148
+#: templates/pricing.html:164
 msgid "Business: solo sales / waitlist."
 msgstr "意向登记 / 候补名单"
 
-#: templates/pricing.html:152
+#: templates/pricing.html:168
 msgid "Pagamenti:"
 msgstr "付款："
 
-#: templates/pricing.html:153
+#: templates/pricing.html:169
 msgid ""
 "I piani si confrontano su domini, re-scan e capability (API / white-label). "
 "La quota operativa è inclusa nel canone; eventuali top-up restano opzionali."
 msgstr "计划按域名、re-scan 和 capability（API / white-label）比较。运营额度包含在订阅费中；任何 top-up 都是可选的。"
 
-#: templates/privacy.html:3
-msgid ""
-"Informativa privacy di Centropic (centropic.ai): dati trattati per account, "
-"analisi siti e contatti. Titolare e diritti dell’interessato."
-msgstr "Centropic（centropic.ai）的隐私政策：处理的账户数据、网站分析和联系信息。数据控制者及相关权利。"
-
-#: templates/privacy.html:9 templates/rimborsi.html:9 templates/termini.html:9
-msgid "Legale"
-msgstr "法律"
-
-#: templates/privacy.html:10 templates/register.html:127 templates/rimborsi.html:88
-msgid "Informativa privacy"
+#: templates/privacy.html:2
+msgid "Privacy Policy"
 msgstr "隐私政策"
 
-#: templates/privacy.html:12
+#: templates/privacy.html:3
 msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · "
-"Contatti:"
-msgstr "最后更新：2026年7月27日 · 数据控制者：Centropic（centropic.ai） · 联系方式："
+"Informativa privacy Centropic: titolare, finalità, basi giuridiche, "
+"retention, trasferimenti, AI/LLM e diritti."
+msgstr "Centropic 隐私说明：控制者、目的、法律依据、保留、传输、AI/LLM 与权利。"
 
-#: templates/privacy.html:18
-msgid "1. Cosa trattiamo"
-msgstr "1. 我们处理什么"
+#: templates/privacy.html:10
+msgid "Informativa sulla privacy"
+msgstr "隐私说明"
+
+#: templates/privacy.html:12 templates/termini.html:12
+msgid "Ultimo aggiornamento:"
+msgstr "最后更新："
+
+#: templates/privacy.html:15 templates/privacy.html:105 templates/termini.html:80
+msgid "Trasparenza AI"
+msgstr "AI 透明度"
 
 #: templates/privacy.html:20
+msgid "1. Titolare del trattamento"
+msgstr "1. 数据控制者"
+
+#: templates/privacy.html:22
+msgid "Il Titolare è"
+msgstr "数据控制者为"
+
+#: templates/privacy.html:22
+msgid "P. IVA"
+msgstr "增值税号"
+
+#: templates/privacy.html:23
+msgid "Contatto privacy:"
+msgstr "隐私联系人："
+
+#: templates/privacy.html:26
 msgid ""
-"Per erogare il servizio SaaS trattiamo: dati di account (nome, email, "
-"password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL "
-"dei siti analizzati, risultati di analisi (score, findings, artifact "
-"generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati "
-"volontariamente (es. waitlist Plus)."
-msgstr "为了提供SaaS服务，我们处理：账户数据（姓名、电子邮件、哈希密码、可选的公司/角色、电话和国家（如提供））、分析网站的URL、分析结果（分数、发现、生成的工件）、安全技术日志（IP、时间戳）以及自愿发送的消息（例如，Plus候补名单）。"
+"I dati societari completi (indirizzo e partita IVA) saranno pubblicati non "
+"appena disponibili nel registro imprese / configurazione operativa."
+msgstr "完整公司信息（地址和增值税号）将在企业登记 / 运营配置可用后立即公布。"
 
-#: templates/privacy.html:25
-msgid "2. Finalità e basi giuridiche"
-msgstr "2. 目的和法律基础"
+#: templates/privacy.html:31
+msgid "2. Ambito e ruoli"
+msgstr "2. 范围与角色"
 
-#: templates/privacy.html:27
-msgid "Esecuzione del contratto"
-msgstr "合同的履行"
+#: templates/privacy.html:33
+msgid "Titolare"
+msgstr "控制者"
 
-#: templates/privacy.html:27
-msgid "account, analisi, pack, supporto."
-msgstr "账户、分析、套餐、支持。"
-
-#: templates/privacy.html:28
-msgid "Legittimo interesse"
-msgstr "合法利益"
-
-#: templates/privacy.html:28
-msgid "sicurezza, prevenzione abusi, miglioramento prodotto."
-msgstr "安全、预防滥用、产品改进。"
-
-#: templates/privacy.html:29
-msgid "Obblighi di legge"
-msgstr "法律义务"
-
-#: templates/privacy.html:29
-msgid "ove applicabili (es. richieste autorità)."
-msgstr "在适用的情况下（例如，监管机构的请求）。"
-
-#: templates/privacy.html:30
-msgid "Consenso"
-msgstr "同意"
-
-#: templates/privacy.html:30
-msgid "solo per comunicazioni non essenziali, se richieste in futuro."
-msgstr "仅用于未来请求的非必要通信。"
-
-#: templates/privacy.html:35
-msgid "3. Analisi dei siti"
-msgstr "3. 网站分析"
-
-#: templates/privacy.html:37
+#: templates/privacy.html:33
 msgid ""
-"Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato "
-"(pagine pubbliche raggiungibili) e probe di file come"
-msgstr "当您输入一个URL时，Centropic会对指定域进行爬取（可访问的公共页面）并探测文件，如"
+"per account, autenticazione, fatturazione, sicurezza della piattaforma, "
+"analytics e marketing propri."
+msgstr "用于账户、认证、账单、平台安全、自有 analytics 和营销。"
+
+#: templates/privacy.html:34
+msgid "Responsabile"
+msgstr "处理者"
+
+#: templates/privacy.html:34
+msgid ""
+"quando trattiamo contenuti dei siti e output di analisi per conto del Cliente"
+" (B2B). Vedi"
+msgstr "当我们代表客户（B2B）处理网站内容和分析输出时。参见"
 
 #: templates/privacy.html:39
+msgid "3. Categorie di dati"
+msgstr "3. 数据类别"
+
+#: templates/privacy.html:41
+msgid "Identità e contatto: email, nome, telefono (opzionale), lingua, fuso orario."
+msgstr "身份与联系方式：电子邮件、姓名、电话（可选）、语言、时区。"
+
+#: templates/privacy.html:42
 msgid ""
-"Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati"
-" restano nel tuo account finché non li elimini o chiudi l’account."
-msgstr "我们不应访问您网站的认证区域。生成的工件将保留在您的账户中，直到您删除它们或关闭账户。"
+"Account e autenticazione: hash password, sessioni, versioni sessione, log di "
+"accesso."
+msgstr "账户与认证：密码哈希、会话、会话版本、访问日志。"
+
+#: templates/privacy.html:43
+msgid ""
+"Fatturazione: piano, stato abbonamento, ID Paddle, storico crediti, waiver "
+"recesso digitale."
+msgstr "账单：套餐、订阅状态、Paddle ID、credits 历史、数字内容撤回权豁免记录。"
 
 #: templates/privacy.html:44
-msgid "4. Pagamenti"
-msgstr "4. 付款"
+msgid ""
+"Utilizzo prodotto: siti monitorati, run di analisi, findings, SoV, job "
+"status, preferenze."
+msgstr "产品使用：监控网站、分析 run、findings、SoV、job status、偏好设置。"
+
+#: templates/privacy.html:45
+msgid ""
+"Contenuti del Cliente: URL, testi/HTML acquisiti per analisi, output AI "
+"generati."
+msgstr "客户内容：URL、为分析获取的文本/HTML、生成的 AI 输出。"
 
 #: templates/privacy.html:46
 msgid ""
-"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
-"Paddle.com Market Limited in qualità di merchant of record. Centropic non "
-"memorizza i dati completi della carta. Paddle tratta i dati di fatturazione "
-"necessari all’incasso e alla fiscalità secondo la propria informativa; "
-"riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e "
-"importi per attivare il piano e accreditare il saldo."
-msgstr ""
-"付款（Plus订阅和信用充值）由Paddle.com Market "
-"Limited作为记录商处理。Centropic不存储完整的卡片数据。Paddle根据其隐私政策处理收款和税务所需的账单数据；我们从Paddle收到客户/交易标识、订阅状态和金额，以激活计划并记入余额。"
+"Tecnici: IP, user-agent, cookie/localStorage di preferenza e, se consenso, "
+"analytics/ads."
+msgstr "技术数据：IP、user-agent、偏好 cookie/localStorage，以及在取得同意时的 analytics/ads。"
 
-#: templates/privacy.html:51
-msgid "5. Conservazione e trasferimenti"
-msgstr "5. 数据保留和转移"
+#: templates/privacy.html:47
+msgid "Supporto: messaggi inviati a"
+msgstr "支持：发送至以下地址的消息"
 
-#: templates/privacy.html:53
-msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo"
-" la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; "
-"eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, "
-"OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati "
-"solo per conto del servizio o come autonomi titolari ove indicato (es. "
-"Paddle)."
-msgstr "数据在账户处于活动状态时保留，并在关闭后根据技术需要的时间（备份、安全）保留。基础设施由所有者管理；任何供应商（托管、事务性电子邮件、Paddle用于付款、OpenAI和其他LLM提供商如果配置用于分析/打包）仅代表服务处理数据，或在指明的情况下作为独立控制者（例如Paddle）。"
+#: templates/privacy.html:52
+msgid "4. Finalità e basi giuridiche"
+msgstr "4. 目的与法律依据"
+
+#: templates/privacy.html:57
+msgid "Finalità"
+msgstr "目的"
 
 #: templates/privacy.html:58
-msgid "6. Diritti"
-msgstr "6. 权利"
-
-#: templates/privacy.html:60
-msgid ""
-"Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e "
-"opposizione dalle"
-msgstr "您可以通过写信请求访问、更正、删除、限制、可携带性和反对权："
-
-#: templates/privacy.html:61
-msgid "Impostazioni account"
-msgstr "GEO 设置"
+msgid "Base giuridica"
+msgstr "法律依据"
 
 #: templates/privacy.html:62
-msgid "(export dati / elimina account) oppure scrivendo a"
-msgstr "（导出数据 / 删除账户）或写信至"
+msgid "Erogazione del Servizio SaaS e gestione account"
+msgstr "提供 SaaS 服务并管理账户"
+
+#: templates/privacy.html:62
+msgid "Contratto (art. 6.1.b)"
+msgstr "合同（第 6.1.b 条）"
+
+#: templates/privacy.html:63
+msgid "Fatturazione, crediti, adempimenti fiscali"
+msgstr "账单、credits、税务合规"
+
+#: templates/privacy.html:63
+msgid "Contratto / obbligo legale (art. 6.1.b/c)"
+msgstr "合同 / 法定义务（第 6.1.b/c 条）"
 
 #: templates/privacy.html:64
-msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
-msgstr "您还有权向主管机关投诉。"
+msgid "Sicurezza, prevenzione abusi, debug"
+msgstr "安全、防止滥用、debug"
 
-#: templates/privacy.html:69
-msgid "7. Cookie"
-msgstr "7. Cookie"
+#: templates/privacy.html:64
+msgid "Legittimo interesse (art. 6.1.f)"
+msgstr "合法利益（第 6.1.f 条）"
 
-#: templates/privacy.html:71
+#: templates/privacy.html:65
+msgid "Cookie analitici / pubblicitari"
+msgstr "分析 / 广告 cookie"
+
+#: templates/privacy.html:65
+msgid "Consenso (art. 6.1.a) — gestibile nel banner"
+msgstr "同意（第 6.1.a 条）— 可在 banner 中管理"
+
+#: templates/privacy.html:66
+msgid "Comunicazioni di servizio e legali"
+msgstr "服务与法律通知"
+
+#: templates/privacy.html:66
+msgid "Contratto / obbligo legale"
+msgstr "合同 / 法定义务"
+
+#: templates/privacy.html:67
+msgid "Miglioramento prodotto (dati aggregati/anonimizzati)"
+msgstr "产品改进（汇总/匿名化数据）"
+
+#: templates/privacy.html:67
+msgid "Legittimo interesse, con salvaguardie"
+msgstr "合法利益，并采取保障措施"
+
+#: templates/privacy.html:74
+msgid "5. Periodi di conservazione"
+msgstr "5. 保留期限"
+
+#: templates/privacy.html:76
 msgid ""
-"Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
-"protezione CSRF, preferenza lingua)."
-msgstr "我们使用网站运行所需的技术Cookie（会话、CSRF保护、语言偏好）。"
-
-#: templates/privacy.html:73
-msgid ""
-"Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, "
-"se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è"
-" gestito con"
-msgstr ""
-"在您的同意下（Cookie横幅），我们可以启用Google Analytics 4，并在配置的情况下启用Google Ads / "
-"AdSense进行测量和广告。该同意通过以下方式管理："
-
-#: templates/privacy.html:75
-msgid ""
-"di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in"
-" qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non "
-"attiviamo AdSense senza consenso pubblicitario."
-msgstr "默认情况下，存储分析/广告被拒绝（欧盟）；您可以随时通过删除网站数据并重新加载页面来接受或拒绝。我们不会在没有广告同意的情况下启用AdSense。"
+"Account attivo: per tutta la durata del rapporto + 30 giorni dopo chiusura "
+"(salvo obblighi legali)."
+msgstr "活跃账户：在关系持续期间 + 关闭后 30 天（法定义务另有要求的除外）。"
 
 #: templates/privacy.html:77
+msgid "Dati di fatturazione e fiscali: fino a 10 anni ove richiesto dalla legge."
+msgstr "账单与税务数据：在法律要求时最长保留 10 年。"
+
+#: templates/privacy.html:78
+msgid "Log di sicurezza e accesso: tipicamente 12 mesi."
+msgstr "安全与访问日志：通常为 12 个月。"
+
+#: templates/privacy.html:79
 msgid ""
-"Attualmente non sono attivi cookie di misurazione o pubblicitari di terze "
-"parti su questo sito."
-msgstr "目前此网站上没有激活第三方测量或广告Cookie。"
+"Run di analisi e contenuti associati: fino a cancellazione account/sito o "
+"richiesta del Cliente; backup residui fino a 90 giorni."
+msgstr "分析 run 及关联内容：保留至账户/网站删除或客户提出请求；残余备份最长 90 天。"
+
+#: templates/privacy.html:80
+msgid "Preferenze cookie: fino a 12 mesi, poi riesame del consenso."
+msgstr "Cookie 偏好：最长 12 个月，之后重新评估同意。"
+
+#: templates/privacy.html:81
+msgid "Ticket di supporto: fino a 24 mesi dalla chiusura."
+msgstr "支持工单：关闭后最长 24 个月。"
+
+#: templates/privacy.html:86
+msgid "6. Destinatari e sub-responsabili"
+msgstr "6. 接收方与子处理方"
+
+#: templates/privacy.html:88
+msgid ""
+"Trattiamo dati con fornitori strettamente necessari (hosting, database, "
+"email, pagamenti, modelli AI). Elenco attivo:"
+msgstr "我们与严格必要的供应商处理数据（hosting、database、email、payments、AI models）。当前清单："
+
+#: templates/privacy.html:89
+msgid "Sub-responsabili"
+msgstr "子处理方"
+
+#: templates/privacy.html:90
+msgid "Paddle tratta i dati di pagamento come titolare autonomo per il checkout."
+msgstr "Paddle 作为独立控制者处理 checkout 所需的支付数据。"
+
+#: templates/privacy.html:95
+msgid "7. Trasferimenti internazionali"
+msgstr "7. 国际传输"
+
+#: templates/privacy.html:97
+msgid ""
+"Alcuni fornitori possono trattare dati fuori SEE (es. USA). In tali casi "
+"usiamo salvaguardie adeguate (Clausole Contrattuali Standard / meccanismi "
+"equivalenti del fornitore) e minimizzazione. Dettagli per fornitore nella "
+"pagina Sub-responsabili e nelle rispettive DPA."
+msgstr ""
+"部分供应商可能在 EEA 以外（如美国）处理数据。在此类情况下，我们采用适当保障（标准合同条款 / "
+"供应商等效机制）并实施最小化。各供应商详情见子处理方页面及其各自 DPA。"
+
+#: templates/privacy.html:102
+msgid "8. Decisioni automatizzate e AI"
+msgstr "8. 自动化决策与 AI"
+
+#: templates/privacy.html:104
+msgid ""
+"Il Servizio genera score, findings e raccomandazioni tramite modelli AI. Non "
+"prendiamo decisioni esclusivamente automatizzate che producano effetti "
+"giuridici significativi sull’interessato ai sensi dell’art. 22 GDPR senza "
+"intervento umano. Maggiori dettagli:"
+msgstr ""
+"本服务通过 AI 模型生成 score、findings 和建议。未经人工介入，我们不会作出 GDPR 第 22 "
+"条意义下会对数据主体产生重大法律影响的完全自动化决策。更多详情："
+
+#: templates/privacy.html:110
+msgid "9. Cookie e tracciamento"
+msgstr "9. Cookie 与跟踪"
+
+#: templates/privacy.html:112
+msgid "Vedi la"
+msgstr "请参见"
+
+#: templates/privacy.html:113
+msgid ""
+"Puoi modificare il consenso in qualsiasi momento tramite “Gestisci consenso” "
+"nel footer."
+msgstr "你可以随时通过页脚中的“管理同意偏好”修改同意设置。"
+
+#: templates/privacy.html:118
+msgid "10. Diritti dell’interessato"
+msgstr "10. 数据主体权利"
+
+#: templates/privacy.html:120
+msgid ""
+"Hai diritto di accesso, rettifica, cancellazione, limitazione, portabilità, "
+"opposizione e revoca del consenso. Scrivi a"
+msgstr "你享有访问、更正、删除、限制处理、数据可携带、反对以及撤回同意的权利。请联系"
+
+#: templates/privacy.html:122
+msgid ""
+"Puoi reclamare al Garante Privacy (Italia) o all’autorità del tuo Paese "
+"UE/SEE."
+msgstr "你可以向意大利 Garante Privacy 或你所在欧盟/EEA 国家/地区的监管机构投诉。"
+
+#: templates/privacy.html:127
+msgid "11. Minori"
+msgstr "11. 未成年人"
+
+#: templates/privacy.html:129
+msgid ""
+"Il Servizio è destinato a utenti professionali maggiorenni. Non raccogliamo "
+"consapevolmente dati di minori di 16 anni. Se ritieni che un minore ci abbia "
+"fornito dati, contattaci per la cancellazione."
+msgstr "本服务面向成年专业用户。我们不会有意收集 16 岁以下未成年人的数据。如果你认为未成年人向我们提供了数据，请联系我们删除。"
+
+#: templates/privacy.html:134
+msgid "12. Sicurezza e data breach"
+msgstr "12. 安全与 data breach"
+
+#: templates/privacy.html:136
+msgid ""
+"Adottiamo misure tecniche e organizzative appropriate (cifratura in transito,"
+" controlli di accesso, segregazione tenant, backup). In caso di violazione "
+"dei dati personali con rischio per i diritti e le libertà, notificheremo "
+"l’autorità competente e, ove dovuto, gli interessati, nei termini di legge. "
+"Overview:"
+msgstr ""
+"我们采取适当的技术和组织措施（传输加密、访问控制、tenant "
+"隔离、备份）。如发生可能影响权利和自由的个人数据泄露，我们将在法定期限内通知主管机构，并在需要时通知相关数据主体。概览："
+
+#: templates/privacy.html:137
+msgid "Trust & Security"
+msgstr "信任与安全"
+
+#: templates/privacy.html:142
+msgid "13. Note internazionali (ove applicabili)"
+msgstr "13. 国际说明（如适用）"
+
+#: templates/privacy.html:144
+msgid ""
+"se tratti dati di interessati UK, i diritti e le basi restano sostanzialmente"
+" allineati; contatto privacy invariato."
+msgstr "如果你处理英国数据主体的数据，其权利和法律依据总体保持一致；隐私联系人不变。"
+
+#: templates/privacy.html:145
+msgid ""
+"non vendiamo dati personali. Diritti di accesso/cancellazione/opt-out: "
+"contatta"
+msgstr "我们不出售个人数据。如需行使访问/删除/opt-out 权利，请联系"
+
+#: templates/privacy.html:145
+msgid "Identificati come residente CA nella richiesta."
+msgstr "请在请求中说明你是加州居民。"
+
+#: templates/privacy.html:150
+msgid "14. Modifiche"
+msgstr "14. 变更"
+
+#: templates/privacy.html:152
+msgid ""
+"Possiamo aggiornare questa informativa. La versione corrente e la data sono "
+"indicate in cima. Per modifiche sostanziali, avviso in-app o email ove "
+"appropriato."
+msgstr "我们可能更新本说明。当前版本和日期列于顶部。对于重大变更，我们将在适当情况下通过应用内通知或电子邮件告知。"
+
+#: templates/privacy.html:155
+msgid "Versioni documenti:"
+msgstr "文档版本："
 
 #: templates/pro_interest.html:2
 msgid "Interesse piani"
@@ -5051,10 +5771,6 @@ msgstr "确认密码"
 msgid "Azienda / Brand"
 msgstr "公司 / 品牌"
 
-#: templates/register.html:103
-msgid "Ruolo"
-msgstr "角色"
-
 #: templates/register.html:109
 msgid "Sito web principale"
 msgstr "主网站"
@@ -5074,6 +5790,11 @@ msgstr "我同意"
 #: templates/register.html:126
 msgid "e l’"
 msgstr "和"
+
+#: templates/register.html:127 templates/rimborsi.html:88
+#: templates/termini.html:125
+msgid "Informativa privacy"
+msgstr "隐私政策"
 
 #: templates/register.html:128
 msgid "di Centropic (centropic.ai)."
@@ -5108,7 +5829,8 @@ msgstr "设置新密码以返回 AIO/GEO 仪表板。使用唯一密码。"
 msgid "Richiedi un nuovo link"
 msgstr "请求一个新链接"
 
-#: templates/rimborsi.html:2 templates/rimborsi.html:10 templates/termini.html:66
+#: templates/partials/digital_service_waiver.html:14 templates/rimborsi.html:2
+#: templates/rimborsi.html:10
 msgid "Politica di rimborso"
 msgstr "退款政策"
 
@@ -5121,10 +5843,6 @@ msgstr "Centropic 退款政策:Plus/Business 订阅、积分套餐及撤销权�
 #: templates/rimborsi.html:12
 msgid "Ultimo aggiornamento: 30 luglio 2026 · Contatti:"
 msgstr "最后更新：2026年7月30日 · 联系方式："
-
-#: templates/rimborsi.html:18
-msgid "1. Ambito"
-msgstr "1. 范围"
 
 #: templates/rimborsi.html:20
 msgid ""
@@ -5160,7 +5878,9 @@ msgid ""
 "Se richiedi l’erogazione immediata del servizio (accesso al piano o accredito"
 " crediti) e riconosci di perdere il diritto di recesso una volta iniziata "
 "l’erogazione, il recesso non si applica dopo che il servizio è stato avviato."
-msgstr "如果您请求立即提供服务（访问计划或信用额度），并承认在服务开始后失去撤销权，则在服务启动后不适用撤销。"
+" Il consenso è raccolto con checkbox esplicita prima del checkout "
+"Plus/crediti."
+msgstr ""
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -5522,40 +6242,82 @@ msgid "Esci ovunque"
 msgstr "在所有地方注销"
 
 #: templates/settings.html:150
+msgid "Fatturazione e cancellazione"
+msgstr "账单与退订"
+
+#: templates/settings.html:153
+msgid "Piano attuale:"
+msgstr "当前套餐："
+
+#: templates/settings.html:154 templates/termini.html:48
+msgid "I pagamenti sono gestiti da Paddle (Merchant of Record)."
+msgstr "付款由 Paddle（Merchant of Record）处理。"
+
+#: templates/settings.html:157
+msgid ""
+"Per cambiare carta, scaricare fatture o annullare il rinnovo: usa il link "
+"“Manage subscription” nella ricevuta Paddle, oppure invia richiesta a"
+msgstr "如需更换银行卡、下载发票或取消续订：请使用 Paddle 收据中的“Manage subscription”链接，或发送请求至"
+
+#: templates/settings.html:158
+msgid ""
+"Dopo la cancellazione resti attivo fino a fine periodo già pagato; i crediti "
+"consumati non si ripristinano."
+msgstr "取消后，服务将保持可用至已付费周期结束；已消耗的 credits 不会恢复。"
+
+#: templates/settings.html:158 templates/termini.html:49
+msgid "Politica rimborsi"
+msgstr "退款政策"
+
+#: templates/settings.html:159
+msgid "Vedi piani e prezzi"
+msgstr "查看套餐与价格"
+
+#: templates/settings.html:159
+msgid "Top-up crediti"
+msgstr "充值 credits"
+
+#: templates/settings.html:163
+msgid "Come gestire / annullare abbonamento"
+msgstr "如何管理 / 取消订阅"
+
+#: templates/settings.html:169
 msgid "Dati e account"
 msgstr "账户状态"
 
-#: templates/settings.html:154
+#: templates/settings.html:173
 msgid "Scarica un export JSON con profilo e siti (portabilità)."
 msgstr "下载包含 profile 和 sites 的 JSON export（可移植性）。"
 
-#: templates/settings.html:155
+#: templates/settings.html:174
 msgid "Esporta i miei dati"
 msgstr "导出我的数据"
 
-#: templates/settings.html:160
-msgid ""
-"Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal "
-"billing."
-msgstr "永久删除。如果你有有效订阅，请先从 billing 取消。"
+#: templates/settings.html:179
+msgid "Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima da"
+msgstr "永久删除。如果你有有效订阅，请先从以下位置取消"
 
-#: templates/settings.html:165
+#: templates/settings.html:179
+msgid "Fatturazione"
+msgstr "账单"
+
+#: templates/settings.html:184
 msgid "Confermo di voler eliminare l’account"
 msgstr "我确认要删除账户"
 
-#: templates/settings.html:172
+#: templates/settings.html:191
 msgid "White-label agenzia"
 msgstr "白标代理"
 
-#: templates/settings.html:177
+#: templates/settings.html:196
 msgid "Logo URL"
 msgstr "Logo URL"
 
-#: templates/settings.html:178
+#: templates/settings.html:197
 msgid "Colore"
 msgstr "颜色"
 
-#: templates/settings.html:179
+#: templates/settings.html:198
 msgid "Nota"
 msgstr "注意"
 
@@ -5711,135 +6473,275 @@ msgstr "分析一个网站"
 
 #: templates/termini.html:3
 msgid ""
-"Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven "
-"Visibility (AIO) e Generative Engine Optimization (GEO), limiti e "
-"responsabilità."
-msgstr "Centropic 服务条款 (centropic.ai)：使用 AI 驱动的可见性 SaaS (AIO) 和生成引擎优化 (GEO)，限制和责任。"
+"Termini di servizio Centropic: account, piani, crediti, IP, responsabilità e "
+"legge applicabile."
+msgstr "Centropic 服务条款：账户、套餐、credits、IP、责任和适用法律。"
 
-#: templates/termini.html:12
-msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti "
-"questi termini. Contatti:"
-msgstr "最后更新：2026 年 7 月 27 日 · 接受注册即表示您接受这些条款。联系方式："
-
-#: templates/termini.html:18
-msgid "1. Servizio"
-msgstr "1. 服务"
+#: templates/termini.html:9
+msgid "Legal"
+msgstr "法律"
 
 #: templates/termini.html:20
+msgid "1. Premessa"
+msgstr "1. 前言"
+
+#: templates/termini.html:22
 msgid ""
-"Centropic è un software-as-a-service che analizza siti web pubblici e genera "
-"score"
-msgstr "Centropic 是一种软件即服务，分析公共网站并生成评分"
-
-#: templates/termini.html:23
-msgid "findings e artifact (es."
-msgstr "发现和文物（例如："
-
-#: templates/termini.html:23
-msgid "bozza"
-msgstr "草稿"
+"Questi Termini regolano l’uso della piattaforma Centropic (“Servizio”) "
+"fornita da"
+msgstr "本条款规范由以下主体提供的 Centropic 平台（“服务”）的使用："
 
 #: templates/termini.html:24
-msgid "Non è un Geographic Information System (GIS) né una suite All-in-One generica."
-msgstr "这不是地理信息系统 (GIS) 也不是通用的一体化套件。"
+msgid ""
+"Accedendo o usando il Servizio accetti i Termini. Se agisci per "
+"un’organizzazione, dichiari di avere autorità a vincolarla."
+msgstr "访问或使用本服务即表示你接受本条款。如果你代表某组织行事，你声明自己有权约束该组织。"
 
 #: templates/termini.html:29
-msgid "2. Natura degli score"
-msgstr "2. 评分的性质"
+msgid "2. Descrizione del Servizio"
+msgstr "2. 服务说明"
 
 #: templates/termini.html:31
-msgid "Gli score AIO/GEO misurano la"
-msgstr "AIO 和 GEO 的分数是对 AI 的实时测量吗？"
-
-#: templates/termini.html:33
 msgid ""
-"del sito (contenuto, schema, robots, llms, entity): quanto brand e pagine "
-"sono leggibili dai crawler generativi. Il Centropic Visibility Index (CVI) "
-"sintetizza AIO/GEO; la citation share può essere Stimata (da struttura) o "
-"Misurata (campioni LLM su Plus/Business)."
+"Centropic è un SaaS B2B di intelligence AIO/GEO: analisi di siti, score, "
+"share of voice, findings e deliverable correlati. Le funzionalità dipendono "
+"dal piano e dalle capacità abilitate. Il Servizio può evolvere; funzioni beta"
+" possono essere modificate o ritirate con preavviso ragionevole ove "
+"praticabile."
 msgstr ""
-"站点的（content、schema、robots、llms、entity）：品牌和页面对生成式 crawler 的可读程度。Centropic "
-"Visibility Index (CVI) 概括 AIO/GEO；citation share 可以是估计（来自结构）或实测（Plus/Business"
-" 上的 LLM 样本）。"
+"Centropic 是面向 B2B 的 AIO/GEO intelligence SaaS：提供网站分析、score、share of "
+"voice、findings 及相关 deliverable。功能取决于套餐和已启用能力。服务可能持续演进；beta "
+"功能在可行情况下经合理提前通知后可被修改或撤回。"
 
-#: templates/termini.html:34
-msgid ""
-"Centropic garantisce il lavoro di diagnosi e predisposizione sul tuo dominio;"
-" non garantisce ranking o menzioni nelle interfacce di modelli di terzi, che "
-"restano indipendenti."
-msgstr "Centropic 保证对你的域名完成诊断和准备工作；不保证第三方模型界面中的 ranking 或提及，因为这些界面保持独立。"
+#: templates/termini.html:36
+msgid "3. Account e idoneità"
+msgstr "3. 账户与资格"
+
+#: templates/termini.html:38
+msgid "Devi fornire informazioni accurate e mantenere la sicurezza delle credenziali."
+msgstr "你必须提供准确的信息并维护凭证安全。"
 
 #: templates/termini.html:39
-msgid "3. Account e uso corretto"
-msgstr "3. 账户和正确使用"
+msgid "Il Servizio è destinato a utenti professionali maggiorenni."
+msgstr "本服务面向成年专业用户。"
 
-#: templates/termini.html:41
-msgid "Fornisci dati veritieri e custodisci le credenziali."
-msgstr "提供真实数据并保护凭据。"
-
-#: templates/termini.html:42
-msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
-msgstr "仅分析您有权请求技术审计的网站。"
-
-#: templates/termini.html:43
+#: templates/termini.html:40
 msgid ""
-"Non usare il servizio per scansioni abusive, attacchi o accesso a reti "
-"private."
-msgstr "请勿将此服务用于恶意扫描、攻击或访问私人网络。"
+"Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati "
+"della tua organizzazione."
+msgstr "你需对账户下的活动负责，包括你组织中受邀用户的活动。"
 
-#: templates/termini.html:44
-msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
-msgstr "请遵守速率限制及方案规则(Free / Plus / Business)。"
+#: templates/termini.html:45
+msgid "4. Piani, crediti e pagamenti"
+msgstr "4. 套餐、credits 与付款"
+
+#: templates/termini.html:47
+msgid ""
+"I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. "
+"I prezzi includono IVA ove applicabile secondo checkout Paddle."
+msgstr ""
+"Free / Plus / Business 套餐和 credits 充值见 Pricing。价格根据 Paddle checkout "
+"在适用情况下包含增值税。"
 
 #: templates/termini.html:49
-msgid "4. Artifact e responsabilità"
-msgstr "4. 产物和责任"
+msgid ""
+"I crediti consumati per analisi non sono rimborsabili salvo quanto previsto "
+"nella"
+msgstr "除以下政策另有规定外，用于分析且已消耗的 credits 不予退款："
+
+#: templates/termini.html:50
+msgid ""
+"Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o "
+"contattando"
+msgstr "你可以在“设置 → 账单”中管理或取消订阅，或联系"
 
 #: templates/termini.html:51
 msgid ""
-"Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la"
-" conformità legale/SEO e l’impatto sulle performance restano a tuo carico. "
-"Centropic non risponde di decisioni di crawler o modelli di terzi."
-msgstr "生成的产物是操作草稿：在您的网站上发布、法律/SEO 合规性和对性能的影响由您负责。Centropic 不对爬虫或第三方模型的决策负责。"
+"Per contenuti digitali a esecuzione immediata, al checkout ti chiediamo di "
+"richiedere l’esecuzione e accettare la perdita del diritto di recesso 14 "
+"giorni (direttiva 2011/83/UE), ove applicabile."
+msgstr "对于即时履行的数字内容，在 checkout 时我们会要求你请求立即履行，并在适用时同意放弃 14 天撤回权（2011/83/EU 指令）。"
 
 #: templates/termini.html:56
-msgid "5. Piani e disponibilità"
-msgstr "5. 计划和可用性"
+msgid "5. Uso consentito e divieti"
+msgstr "5. 允许使用与禁止事项"
 
 #: templates/termini.html:58
 msgid ""
-"Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza "
-"reset). Plus e Business sono abbonamenti self-serve via Paddle quando il "
-"catalogo è configurato; altrimenti interesse via waitlist. Il servizio è "
-"fornito “as is”; possiamo sospendere account in caso di abuso o rischio "
-"sicurezza."
+"Non puoi: (a) usare il Servizio in violazione di legge; (b) tentare accesso "
+"non autorizzato; (c) interferire con infrastruttura o altri tenant; (d) "
+"rivendere il Servizio senza accordo; (e) caricare contenuti illeciti; (f) "
+"eludere limiti di piano o misure di sicurezza; (g) usare output per spamming "
+"abusivo o attività fraudolente."
 msgstr ""
-"Free 方案对网站数量(1 个)及分析总次数(2 次,不重置)有严格限制。一旦目录配置完成,Plus 和 Business 即可通过 Paddle "
-"进行自助订阅;否则可通过候补名单登记意向。本服务按“现状”提供;如发生滥用或存在安全风险,我们可暂停相关账户。"
+"你不得：(a) 违法使用本服务；(b) 尝试未经授权访问；(c) 干扰基础设施或其他 tenant；(d) 未经协议转售本服务；(e) "
+"上传违法内容；(f) 规避套餐限制或安全措施；(g) 将输出用于滥发 spam 或欺诈活动。"
 
 #: templates/termini.html:63
-msgid "6. Pagamenti e rimborsi"
-msgstr "6. 付款和退款"
+msgid "6. Contenuti del Cliente e licenza"
+msgstr "6. 客户内容与许可"
 
 #: templates/termini.html:65
-msgid "Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla"
-msgstr "数字购买（订阅和积分）受以下条款的约束："
+msgid ""
+"Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). "
+"Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, "
+"elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
+"Dichiari di avere i diritti necessari sui siti analizzati."
+msgstr "客户内容（URL、网站材料、指令）仍归你所有。你授予我们一项非独占、全球、免版税许可，仅为提供本服务而托管、处理和展示该等内容。你声明已拥有被分析网站所需的权利。"
 
-#: templates/termini.html:67
-msgid "I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle)."
-msgstr "付款可能由第三方供应商处理（例如：Paddle）。"
+#: templates/termini.html:70
+msgid "7. Proprietà intellettuale del Fornitore"
+msgstr "7. 提供方知识产权"
 
 #: templates/termini.html:72
-msgid "7. Legge applicabile"
-msgstr "7. 适用法律"
-
-#: templates/termini.html:74
 msgid ""
-"Salvo norme imperative diverse, si applica la legge italiana. Per "
-"controversie è competente il foro del titolare, fatti salvi i diritti del "
-"consumatore."
-msgstr "除非有强制性规定，否则适用意大利法律。对于争议，适用持有者的管辖权，消费者的权利不受影响。"
+"Piattaforma, software, marchi, UI, modelli di prompt e documentazione restano"
+" di proprietà del Fornitore o dei suoi licenzianti. Ti concediamo un diritto "
+"limitato, non trasferibile, di usare il Servizio durante l’abbonamento. Gli "
+"output generati per te possono essere usati nella tua attività, fermo "
+"restando che non acquisisci diritti sul software sottostante."
+msgstr ""
+"平台、软件、商标、UI、prompt "
+"模型和文档仍归提供方或其许可方所有。我们授予你在订阅期间使用本服务的有限、不可转让权利。为你生成的输出可用于你的业务，但你不会因此取得底层软件的任何权利。"
+
+#: templates/termini.html:77
+msgid "8. AI e natura degli output"
+msgstr "8. AI 与输出性质"
+
+#: templates/termini.html:79
+msgid ""
+"Score, findings e raccomandazioni sono strumenti di supporto decisionale "
+"basati su modelli AI e fonti pubbliche/crawl. Non costituiscono consulenza "
+"legale, fiscale o di compliance automatica. Devi verificare informazioni "
+"materialmente rilevanti prima di decisioni operative. Dettagli:"
+msgstr ""
+"Score、findings 和建议是基于 AI 模型及公开来源/crawl "
+"的决策支持工具，不构成法律、税务或自动合规建议。在作出运营决策前，你必须核验具有重大影响的信息。详情："
+
+#: templates/termini.html:85
+msgid "9. Disponibilità e modifiche"
+msgstr "9. 可用性与变更"
+
+#: templates/termini.html:87
+msgid ""
+"Ci impegniamo a mantenere il Servizio ragionevolmente disponibile, ma non "
+"promettiamo disponibilità ininterrotta o assenza di errori. Manutenzioni, "
+"force majeure, dipendenze di terzi (LLM, pagamenti, DNS) possono causare "
+"interruzioni. Possiamo modificare o sospendere funzionalità con comunicazione"
+" ragionevole per cambiamenti sostanziali a pagamento."
+msgstr "我们努力保持服务在合理范围内可用，但不承诺不间断可用或无错误。维护、不可抗力、第三方依赖（LLM、支付、DNS）可能导致中断。对于重大付费变更，我们可在合理通知后修改或暂停功能。"
+
+#: templates/termini.html:92
+msgid "10. Garanzie e disclaimer"
+msgstr "10. 保证与免责声明"
+
+#: templates/termini.html:94
+msgid ""
+"Il Servizio è fornito “così com’è” e “come disponibile”, nei limiti "
+"consentiti dalla legge. Nella misura massima consentita, escludiamo garanzie "
+"implicite di commerciabilità, idoneità a uno scopo particolare e non "
+"violazione. Nulla in questi Termini limita diritti inderogabili del "
+"consumatore ove tu ne sia uno; per clienti B2B tipici, le limitazioni di "
+"questa sezione si applicano pienamente."
+msgstr ""
+"在法律允许范围内，本服务按“现状”和“可用状态”提供。在最大允许范围内，我们排除适销性、特定用途适用性和不侵权的默示保证。本条款中的任何内容均不限制你作为消费者（如适用）不可放弃的权利；对于典型"
+" B2B 客户，本节限制完全适用。"
+
+#: templates/termini.html:99
+msgid "11. Limitazione di responsabilità"
+msgstr "11. 责任限制"
+
+#: templates/termini.html:100
+msgid "Nella misura massima consentita dalla legge applicabile:"
+msgstr "在适用法律允许的最大范围内："
+
+#: templates/termini.html:102
+msgid ""
+"non siamo responsabili per danni indiretti, consequenziali, lucro cessante, "
+"perdita di dati o interruzione di attività;"
+msgstr "我们不对间接损害、后果性损害、利润损失、数据丢失或业务中断负责；"
+
+#: templates/termini.html:103
+msgid ""
+"la responsabilità complessiva del Fornitore per eventi connessi al Servizio "
+"in un periodo di 12 mesi non supera l’importo da te pagato al Fornitore per "
+"il Servizio in tali 12 mesi (o €100 se non hai pagato);"
+msgstr "提供方因服务相关事件在任一 12 个月期间承担的总责任，不超过你在该 12 个月内为服务向提供方支付的金额（如未支付，则为 €100）；"
+
+#: templates/termini.html:104
+msgid ""
+"le limitazioni non si applicano a dolo, colpa grave, o altre responsabilità "
+"che la legge non consente di escludere."
+msgstr "上述限制不适用于故意、重大过失或法律不允许排除的其他责任。"
+
+#: templates/termini.html:109
+msgid "12. Indennizzo"
+msgstr "12. 赔偿"
+
+#: templates/termini.html:111
+msgid ""
+"Accetti di indennizzare il Fornitore da pretese di terzi derivanti dai tuoi "
+"Contenuti, dall’uso illecito del Servizio o dalla violazione di questi "
+"Termini, salvo dove la responsabilità sia esclusivamente imputabile al "
+"Fornitore."
+msgstr "你同意就因你的内容、非法使用本服务或违反本条款而产生的第三方索赔向提供方作出赔偿，但责任完全归属于提供方的情形除外。"
+
+#: templates/termini.html:116
+msgid "13. Sospensione e risoluzione"
+msgstr "13. 暂停与终止"
+
+#: templates/termini.html:118
+msgid ""
+"Possiamo sospendere o chiudere l’accesso in caso di violazione, rischio di "
+"sicurezza, mancato pagamento o richiesta legale. Puoi chiudere l’account e "
+"annullare i rinnovi come indicato in Impostazioni / ricevuta Paddle. Alla "
+"cessazione, cessa il diritto d’uso; alcune obbligazioni (IP, responsabilità, "
+"indennizzo) sopravvivono."
+msgstr ""
+"如发生违约、安全风险、未付款或法律要求，我们可以暂停或关闭访问权限。你可以按照“设置”/ Paddle "
+"收据中的说明关闭账户并取消续订。终止后，使用权终止；部分义务（IP、责任、赔偿）继续有效。"
+
+#: templates/termini.html:123
+msgid "14. Privacy e DPA"
+msgstr "14. 隐私与 DPA"
+
+#: templates/termini.html:125
+msgid "Il trattamento dati è descritto nell’"
+msgstr "数据处理见"
+
+#: templates/termini.html:126
+msgid "Per trattamenti in qualità di responsabile, si applica il"
+msgstr "对于作为数据处理者进行的处理，适用"
+
+#: templates/termini.html:131
+msgid "15. Legge applicabile e foro"
+msgstr "15. 适用法律与管辖"
+
+#: templates/termini.html:133
+msgid ""
+"Questi Termini sono regolati dalla legge italiana. Foro competente: tribunali"
+" italiani, salvo foro inderogabile del consumatore ove applicabile."
+msgstr "本条款受意大利法律管辖。管辖法院：意大利法院，但适用的消费者强制管辖地除外。"
+
+#: templates/termini.html:138
+msgid "16. Modifiche ai Termini"
+msgstr "16. 条款变更"
+
+#: templates/termini.html:140
+msgid ""
+"Possiamo aggiornare i Termini pubblicando la nuova versione con data e numero"
+" di versione (attualmente v"
+msgstr "我们可以通过发布带有日期和版本号的新版本来更新条款（当前为 v"
+
+#: templates/termini.html:140
+msgid ""
+"). L’uso continuato dopo la data di efficacia costituisce accettazione, salvo"
+" diversamente richiesto dalla legge."
+msgstr "）。除法律另有要求外，在生效日期后继续使用即构成接受。"
+
+#: templates/termini.html:143
+msgid "Versioni:"
+msgstr "版本："
 
 #: templates/topup.html:4
 msgid ""
@@ -5890,16 +6792,112 @@ msgstr "余额后"
 msgid "Scegli un pacchetto"
 msgstr "选择一个套餐"
 
-#: templates/topup.html:72 templates/topup.html:78
+#: templates/topup.html:77 templates/topup.html:83
 msgid "credito operativo"
 msgstr "三个阶段。操作输出。"
 
-#: templates/topup.html:85
+#: templates/topup.html:90
 msgid ""
 "Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. "
 "Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-"
 "label vai su"
 msgstr "额外额度会保留在余额中，并在月度续费额度之后使用。它不替代计划：如需更多域名、更高 re-scan 频率或 API/white-label，请前往"
+
+#: templates/topup.html:92
+msgid "Legale:"
+msgstr ""
+
+#: templates/trust.html:2 templates/trust.html:10
+msgid "Trust & security"
+msgstr "信任与安全"
+
+#: templates/trust.html:3
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA e canali di "
+"supporto per clienti SaaS."
+msgstr "Centropic Trust：面向 SaaS 客户的安全、子处理方、retention、DPA 和支持渠道。"
+
+#: templates/trust.html:13
+msgid "Sintesi operativa per procurement e security review. Contatti:"
+msgstr "面向采购与安全审查的运营摘要。联系方式："
+
+#: templates/trust.html:19
+msgid "1. Controlli"
+msgstr "1. 控制措施"
+
+#: templates/trust.html:21
+msgid "Sessioni firmate, CSRF su form di stato, CSP con nonce, password hashate."
+msgstr "签名会话、状态变更表单的 CSRF、带 nonce 的 CSP、哈希密码。"
+
+#: templates/trust.html:22
+msgid "Isolamento tenant su query (user_id / organization)."
+msgstr "查询层面的 tenant 隔离（user_id / organization）。"
+
+#: templates/trust.html:23
+msgid ""
+"Webhook Paddle con verifica firma; billing fail-closed su credito "
+"insufficiente."
+msgstr "Paddle webhook 进行签名验证；credits 不足时 billing fail-closed。"
+
+#: templates/trust.html:24
+msgid "SSRF guard sulle URL analizzate; rate limit su azioni sensibili."
+msgstr "对被分析 URL 进行 SSRF guard；对敏感操作实施 rate limit。"
+
+#: templates/trust.html:29
+msgid "2. Sub-responsabili"
+msgstr "2. 子处理方"
+
+#: templates/trust.html:31
+msgid "Elenco attivo e DPA Art. 28 scaricabile:"
+msgstr "当前清单与可下载的 DPA 第 28 条文件："
+
+#: templates/trust.html:34
+msgid "Download .txt"
+msgstr "下载 .txt"
+
+#: templates/trust.html:39
+msgid "3. Retention"
+msgstr "3. Retention"
+
+#: templates/trust.html:41
+msgid ""
+"Account e risultati: finché l’account è attivo + tempi tecnici post-chiusura "
+"(backup/sicurezza)."
+msgstr "账户与结果：账户有效期间 + 关闭后的技术保留期（备份/安全）。"
+
+#: templates/trust.html:42
+msgid "Pack/object storage analisi: tipicamente 90 giorni (configurabile)."
+msgstr "分析 pack/object storage：通常为 90 天（可配置）。"
+
+#: templates/trust.html:43
+msgid "Log tecnici di sicurezza: finché necessari a prevenzione abusi e debug."
+msgstr "安全技术日志：在防止滥用和 debug 所需期间保留。"
+
+#: templates/trust.html:44
+msgid "Ledger crediti / fatturazione: obblighi contabili e antifrode."
+msgstr "credits / 账单 ledger：用于会计与反欺诈义务。"
+
+#: templates/trust.html:49
+msgid "4. Diritti e incidenti"
+msgstr "4. 权利与事件"
+
+#: templates/trust.html:51
+msgid "Export/delete dalle Impostazioni account. Per data breach o richieste privacy:"
+msgstr "可在账户设置中导出/删除。关于 data breach 或隐私请求："
+
+#: templates/trust.html:53
+msgid ""
+"Miriamo a rispondere entro 30 giorni alle richieste degli interessati, salvo "
+"complessità."
+msgstr "除复杂情况外，我们目标是在 30 天内回复数据主体请求。"
+
+#: templates/trust.html:58
+msgid "5. Documenti correlati"
+msgstr "5. 相关文档"
+
+#: templates/trust.html:70
+msgid "Scarica DPA"
+msgstr "下载 DPA"
 
 #: templates/verify.html:11
 msgid "Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio."
@@ -5949,6 +6947,21 @@ msgstr "导出白标 MD"
 msgid "Export white-label HTML"
 msgstr "导出白标 HTML"
 
+#: templates/partials/analyze_overlay.html:10
+#: templates/partials/analyze_overlay.html:91
+msgid ""
+"Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
+"report."
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:14
+msgid "Stima: 30–90 secondi per crawl e pack"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:15
+msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
+msgstr ""
+
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
 msgstr "LIVE"
@@ -5966,8 +6979,8 @@ msgid "Avanzamento analisi"
 msgstr "进度"
 
 #: templates/partials/analyze_overlay.html:121
-msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
-msgstr "实时进度 · 含 实测 SoV 时通常 1–3 分钟"
+msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
+msgstr ""
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -5994,7 +7007,6 @@ msgid "White-label pack"
 msgstr "White-label pack"
 
 #: templates/partials/app_sidebar.html:64
-#: templates/partials/dashboard_shell.html:55
 msgid "Grafici"
 msgstr "图表"
 
@@ -6066,6 +7078,51 @@ msgid ""
 "account."
 msgstr "我们在免费计划中不要求信用卡；分析数据保留在您的账户中。"
 
+#: templates/partials/competitor_snapshot.html:25
+msgid "Confronto"
+msgstr "比较"
+
+#: templates/partials/competitor_snapshot.html:27
+msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:35
+#: templates/partials/competitor_snapshot.html:47
+msgid "Tu"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:36
+msgid "Tua soglia"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:45
+msgid "Il tuo brand"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:89
+msgid "Snapshot non disponibile"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:92
+msgid "n/d"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:110
+msgid "vs te"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:112
+msgid "Rivale"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:123
+msgid "Tuo AIO"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:131
+msgid "Tuo GEO"
+msgstr ""
+
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
 msgstr "查看 Plus 计划"
@@ -6082,121 +7139,135 @@ msgstr "确认电子邮件"
 msgid "Prima analisi del dominio"
 msgstr "域名的初步分析"
 
-#: templates/partials/dashboard_shell.html:32
-msgid "Attiva prova Plus 7 giorni"
-msgstr "激活7天Plus试用"
-
-#: templates/partials/dashboard_shell.html:37
+#: templates/partials/dashboard_shell.html:31
 msgid "Invita un collega:"
 msgstr "邀请同事："
 
-#: templates/partials/dashboard_shell.html:39
-msgid "ricevi un bonus sulla quota piano quando conferma l’email."
-msgstr "在确认电子邮件时的令牌。"
+#: templates/partials/dashboard_shell.html:33
+msgid "ricevi un bonus quando attiva il piano Plus."
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:46
-msgid "Sintesi report"
-msgstr "报告摘要"
+#: templates/partials/dashboard_shell.html:47
+msgid "URL · crawl · score"
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:54
-#: templates/partials/dashboard_shell.html:69
-msgid "Nuova analisi"
-msgstr "新分析"
+#: templates/partials/dashboard_shell.html:55
+msgid "Dominio da analizzare"
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:76
-msgid "Analizza un dominio"
-msgstr "分析一个域名"
-
-#: templates/partials/dashboard_shell.html:79
+#: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
 msgstr "免费额度已用完 · 升级到 Plus 以继续"
 
-#: templates/partials/dashboard_shell.html:81
+#: templates/partials/dashboard_shell.html:60
 msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
 msgstr "您可以重新分析已注册的网站 · Plus 适用于更多品牌"
 
-#: templates/partials/dashboard_shell.html:83
+#: templates/partials/dashboard_shell.html:62
 msgid "Crawl BFS · intero sito"
 msgstr "爬取 BFS · 整个网站"
 
-#: templates/partials/dashboard_shell.html:85
+#: templates/partials/dashboard_shell.html:64
 msgid "Crawl stesso dominio · max"
 msgstr "爬取同一域 · 最大"
 
-#: templates/partials/dashboard_shell.html:91
+#: templates/partials/dashboard_shell.html:70
 msgid "URL del dominio"
 msgstr "域名 URL"
 
-#: templates/partials/dashboard_shell.html:101
+#: templates/partials/dashboard_shell.html:80
 msgid "Competitor snapshot (max 3)"
 msgstr "竞争对手快照(最多 3 个)"
 
-#: templates/partials/dashboard_shell.html:103
+#: templates/partials/dashboard_shell.html:82
 msgid "Suggerisci automatico"
 msgstr "自动建议"
 
-#: templates/partials/dashboard_shell.html:116
+#: templates/partials/dashboard_shell.html:95
 msgid "Deep crawl"
 msgstr "深度爬虫"
 
-#: templates/partials/dashboard_shell.html:118
+#: templates/partials/dashboard_shell.html:97
 msgid "pagine — più lento"
 msgstr "页面 — 更慢"
 
-#: templates/partials/dashboard_shell.html:119
+#: templates/partials/dashboard_shell.html:98
 msgid "Standard:"
 msgstr "标准："
 
-#: templates/partials/dashboard_shell.html:127
+#: templates/partials/dashboard_shell.html:106
 msgid "CVI/AIO/GEO restano"
 msgstr "AIO/GEO 分数与 SoV"
 
-#: templates/partials/dashboard_shell.html:127
-#: templates/partials/dashboard_shell.html:132
+#: templates/partials/dashboard_shell.html:106
+#: templates/partials/dashboard_shell.html:111
 msgid "Stimati"
 msgstr "估计"
 
-#: templates/partials/dashboard_shell.html:128
+#: templates/partials/dashboard_shell.html:107
 msgid ""
 "(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, la share "
 "resta Stimata (proxy)."
 msgstr "（结构）。Citation monitor = 实测 LLM probe；如 0 次提及，share 保持估计（proxy）。"
 
-#: templates/partials/dashboard_shell.html:132
+#: templates/partials/dashboard_shell.html:111
 msgid "Score AIO/GEO e citation share"
 msgstr "AIO/GEO 分数与 SoV"
 
-#: templates/partials/dashboard_shell.html:133
+#: templates/partials/dashboard_shell.html:112
 msgid "dalla struttura del dominio. Su Plus: probe LLM Misurati."
 msgstr "来自域名结构。Plus：实测 LLM probe。"
 
-#: templates/partials/dashboard_shell.html:154
+#: templates/partials/dashboard_shell.html:133
 msgid "In coda"
 msgstr "排队中"
 
-#: templates/partials/dashboard_shell.html:154
+#: templates/partials/dashboard_shell.html:133
 msgid "In esecuzione"
 msgstr "正在进行"
 
-#: templates/partials/dashboard_shell.html:159
+#: templates/partials/dashboard_shell.html:138
 msgid "Worker in avvio — di solito parte entro pochi secondi."
 msgstr "工作者正在启动 — 通常在几秒钟内开始。"
 
-#: templates/partials/dashboard_shell.html:161
+#: templates/partials/dashboard_shell.html:140
 msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
 msgstr "爬取、探测和评分进行中（通常 30–90 秒）。"
 
-#: templates/partials/dashboard_shell.html:167
+#: templates/partials/dashboard_shell.html:146
+msgid "SoV measured in aggiornamento"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:147
+msgid ""
+"Il report Stimato è già pronto. Le citation Misurate arrivano in background "
+"(1–3 min) senza bloccare la dashboard."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
 msgstr "分析失败"
 
-#: templates/partials/dashboard_shell.html:168
+#: templates/partials/dashboard_shell.html:152
 msgid "Errore sconosciuto"
 msgstr "未知错误"
 
-#: templates/partials/dashboard_shell.html:170
+#: templates/partials/dashboard_shell.html:154
 msgid "Controlla l’URL e riprova. Supporto:"
 msgstr "检查 URL 并重试。支持："
+
+#: templates/partials/digital_service_waiver.html:13
+msgid ""
+"Chiedo l’erogazione immediata del servizio digitale (attivazione piano o "
+"accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
+"una volta iniziata l’erogazione, ai sensi della"
+msgstr "我请求立即提供数字服务（激活套餐或充值 credits），并确认一旦服务开始履行，即根据以下规定失去 14 天撤回权："
+
+#: templates/partials/digital_service_waiver.html:18
+msgid ""
+"Obbligatorio per procedere al checkout. Dettagli su rimborsi e crediti non "
+"usati nella policy."
+msgstr "这是继续 checkout 的必填项。关于退款和未使用 credits 的详情见相关政策。"
 
 #: templates/partials/edge_wizard.html:2
 msgid "Pubblica Edge Signals"
@@ -6419,47 +7490,404 @@ msgstr "无限制"
 msgid "Azioni SoV"
 msgstr "SoV 操作"
 
-msgid "Invia pack via email"
-msgstr "通过邮件发送优化包"
+msgid "Trust &amp; Security"
+msgstr "信任与安全"
 
 msgid ""
-"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
-"dominio."
-msgstr "请输入要接收此域名 HTML 优化包的邮箱地址。"
+"Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). "
+"Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, "
+"elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
+"Dichiaro/dichiari di avere i diritti necessari sui siti analizzati."
+msgstr "客户内容（URL、网站材料、指令）仍归你所有。你授予我们一项非独占、全球、免版税许可，仅为提供本服务而托管、处理和展示该等内容。你声明已拥有被分析网站所需的权利。"
 
-msgid "Indirizzo email"
-msgstr "邮箱地址"
+#~ msgid ""
+#~ "Usiamo cookie tecnici e, con il tuo"
+#~ " consenso, strumenti Google (Analytics e/o "
+#~ "Ads/AdSense) per misurare il traffico e "
+#~ "mostrare annunci. Puoi accettare o "
+#~ "rifiutare. Dettagli nella"
+#~ msgstr "我们使用技术Cookie，并在您的同意下使用Google工具（Analytics和/或Ads/AdSense）来测量流量并显示广告。您可以接受或拒绝。详细信息在"
 
-msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
-msgstr "可发给自己或同事。已启用每日防滥用限制。"
+#~ msgid "Accetta"
+#~ msgstr "接受"
 
-msgid "Invia pack"
-msgstr "发送优化包"
+#~ msgid "prova fino al"
+#~ msgstr "试用截止至"
 
-msgid ""
-"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
-"applicare sul sito live."
-msgstr "单个 HTML 文件，包含 head 片段、llms.txt、robots 与清单 — 可直接应用到线上站点。"
+#~ msgid "fino al"
+#~ msgstr "直到"
 
-msgid "Indirizzo email non valido."
-msgstr "邮箱地址无效。"
+#~ msgid "Servizi del piano"
+#~ msgstr "方案服务"
 
-#, python-format
-msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
-msgstr "已达上限：24 小时内最多发送 %(n)s 次优化包。"
+#~ msgid "Toolkit Business"
+#~ msgstr "Business 工具包"
 
-msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
-msgstr "邮件发送失败。请稍后重试，或先下载 HTML 文件。"
+#~ msgid "Toolkit Plus"
+#~ msgstr "Plus 工具包"
 
-#, python-format
-msgid "Pack inviato a %(email)s."
-msgstr "优化包已发送至 %(email)s。"
+#~ msgid "Toolkit Free"
+#~ msgstr "Free 工具包"
 
-msgid ""
-"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
-"intanto."
-msgstr "此服务器尚未启用邮件发送。你可先下载 HTML 文件。"
+#~ msgid "Vista report"
+#~ msgstr "报告视图"
 
-msgid "Analisi non trovata."
-msgstr "未找到分析。"
+#~ msgid ""
+#~ "AIO = AI-Driven Visibility · GEO "
+#~ "= Generative Engine Optimization. Score di"
+#~ " predisposizione strutturale (leggibilità per "
+#~ "crawler generativi)."
+#~ msgstr "AIO = AI 驱动的可见性 · GEO = 生成引擎优化。评分来自探测/启发式，不保证实时引用。"
+
+#~ msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
+#~ msgstr "一个包含所有修复的 HTML 文件:head snippet、llms.txt、robots 及 checklist。"
+
+#~ msgid "Scarica"
+#~ msgstr "下载"
+
+#~ msgid "Invia a"
+#~ msgstr "发送至"
+
+#~ msgid "Azioni"
+#~ msgstr "行动"
+
+#~ msgid "Connector CMS"
+#~ msgstr "CMS连接器"
+
+#~ msgid "Attiva Edge"
+#~ msgstr "启用 Edge"
+
+#~ msgid "White-label MD"
+#~ msgstr "白标 MD"
+
+#~ msgid "White-label HTML"
+#~ msgstr "白标 HTML"
+
+#~ msgid "GEO suite settings"
+#~ msgstr "GEO 套件设置"
+
+#~ msgid ""
+#~ "Informativa privacy di Centropic (centropic.ai):"
+#~ " dati trattati per account, analisi siti"
+#~ " e contatti. Titolare e diritti "
+#~ "dell’interessato."
+#~ msgstr "Centropic（centropic.ai）的隐私政策：处理的账户数据、网站分析和联系信息。数据控制者及相关权利。"
+
+#~ msgid ""
+#~ "Ultimo aggiornamento: 27 luglio 2026 · "
+#~ "Titolare: Centropic (centropic.ai) · Contatti:"
+#~ msgstr "最后更新：2026年7月27日 · 数据控制者：Centropic（centropic.ai） · 联系方式："
+
+#~ msgid "1. Cosa trattiamo"
+#~ msgstr "1. 我们处理什么"
+
+#~ msgid ""
+#~ "Per erogare il servizio SaaS trattiamo: "
+#~ "dati di account (nome, email, password "
+#~ "hashata, azienda/ruolo opzionali, telefono e "
+#~ "paese se forniti), URL dei siti "
+#~ "analizzati, risultati di analisi (score, "
+#~ "findings, artifact generati), log tecnici di"
+#~ " sicurezza (IP, timestamp) e messaggi "
+#~ "inviati volontariamente (es. waitlist Plus)."
+#~ msgstr "为了提供SaaS服务，我们处理：账户数据（姓名、电子邮件、哈希密码、可选的公司/角色、电话和国家（如提供））、分析网站的URL、分析结果（分数、发现、生成的工件）、安全技术日志（IP、时间戳）以及自愿发送的消息（例如，Plus候补名单）。"
+
+#~ msgid "2. Finalità e basi giuridiche"
+#~ msgstr "2. 目的和法律基础"
+
+#~ msgid "Esecuzione del contratto"
+#~ msgstr "合同的履行"
+
+#~ msgid "account, analisi, pack, supporto."
+#~ msgstr "账户、分析、套餐、支持。"
+
+#~ msgid "Legittimo interesse"
+#~ msgstr "合法利益"
+
+#~ msgid "sicurezza, prevenzione abusi, miglioramento prodotto."
+#~ msgstr "安全、预防滥用、产品改进。"
+
+#~ msgid "Obblighi di legge"
+#~ msgstr "法律义务"
+
+#~ msgid "ove applicabili (es. richieste autorità)."
+#~ msgstr "在适用的情况下（例如，监管机构的请求）。"
+
+#~ msgid "solo per comunicazioni non essenziali, se richieste in futuro."
+#~ msgstr "仅用于未来请求的非必要通信。"
+
+#~ msgid "3. Analisi dei siti"
+#~ msgstr "3. 网站分析"
+
+#~ msgid ""
+#~ "Quando inserisci un URL, Centropic effettua"
+#~ " un crawl sul dominio indicato (pagine"
+#~ " pubbliche raggiungibili) e probe di file"
+#~ " come"
+#~ msgstr "当您输入一个URL时，Centropic会对指定域进行爬取（可访问的公共页面）并探测文件，如"
+
+#~ msgid ""
+#~ "Non dobbiamo accedere ad aree autenticate"
+#~ " del tuo sito. Gli artifact generati "
+#~ "restano nel tuo account finché non li"
+#~ " elimini o chiudi l’account."
+#~ msgstr "我们不应访问您网站的认证区域。生成的工件将保留在您的账户中，直到您删除它们或关闭账户。"
+
+#~ msgid "4. Pagamenti"
+#~ msgstr "4. 付款"
+
+#~ msgid ""
+#~ "I pagamenti (abbonamento Plus e ricariche"
+#~ " credito) sono elaborati da Paddle.com "
+#~ "Market Limited in qualità di merchant "
+#~ "of record. Centropic non memorizza i "
+#~ "dati completi della carta. Paddle tratta "
+#~ "i dati di fatturazione necessari all’incasso"
+#~ " e alla fiscalità secondo la propria "
+#~ "informativa; riceviamo da Paddle identificativi"
+#~ " cliente/transazione, stato abbonamento e "
+#~ "importi per attivare il piano e "
+#~ "accreditare il saldo."
+#~ msgstr ""
+#~ "付款（Plus订阅和信用充值）由Paddle.com Market "
+#~ "Limited作为记录商处理。Centropic不存储完整的卡片数据。Paddle根据其隐私政策处理收款和税务所需的账单数据；我们从Paddle收到客户/交易标识、订阅状态和金额，以激活计划并记入余额。"
+
+#~ msgid "5. Conservazione e trasferimenti"
+#~ msgstr "5. 数据保留和转移"
+
+#~ msgid ""
+#~ "I dati restano finché l’account è "
+#~ "attivo e per i tempi tecnici necessari"
+#~ " dopo la chiusura (backup, sicurezza). "
+#~ "L’infrastruttura è gestita dal titolare; "
+#~ "eventuali fornitori (hosting, email transazionale,"
+#~ " Paddle per i pagamenti, OpenAI e "
+#~ "altri provider LLM se configurati per "
+#~ "analisi/pack) trattano dati solo per conto"
+#~ " del servizio o come autonomi titolari"
+#~ " ove indicato (es. Paddle)."
+#~ msgstr "数据在账户处于活动状态时保留，并在关闭后根据技术需要的时间（备份、安全）保留。基础设施由所有者管理；任何供应商（托管、事务性电子邮件、Paddle用于付款、OpenAI和其他LLM提供商如果配置用于分析/打包）仅代表服务处理数据，或在指明的情况下作为独立控制者（例如Paddle）。"
+
+#~ msgid "6. Diritti"
+#~ msgstr "6. 权利"
+
+#~ msgid ""
+#~ "Puoi chiedere accesso, rettifica, cancellazione,"
+#~ " limitazione, portabilità e opposizione dalle"
+#~ msgstr "您可以通过写信请求访问、更正、删除、限制、可携带性和反对权："
+
+#~ msgid "Impostazioni account"
+#~ msgstr "GEO 设置"
+
+#~ msgid "(export dati / elimina account) oppure scrivendo a"
+#~ msgstr "（导出数据 / 删除账户）或写信至"
+
+#~ msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
+#~ msgstr "您还有权向主管机关投诉。"
+
+#~ msgid "7. Cookie"
+#~ msgstr "7. Cookie"
+
+#~ msgid ""
+#~ "Usiamo cookie tecnici necessari al "
+#~ "funzionamento del sito (sessione, protezione "
+#~ "CSRF, preferenza lingua)."
+#~ msgstr "我们使用网站运行所需的技术Cookie（会话、CSRF保护、语言偏好）。"
+
+#~ msgid ""
+#~ "Con il tuo consenso (banner cookie) "
+#~ "possiamo attivare Google Analytics 4 e, "
+#~ "se configurati, Google Ads / AdSense "
+#~ "per misurazione e annunci. Il consenso "
+#~ "è gestito con"
+#~ msgstr ""
+#~ "在您的同意下（Cookie横幅），我们可以启用Google Analytics 4，并在配置的情况下启用Google "
+#~ "Ads / AdSense进行测量和广告。该同意通过以下方式管理："
+
+#~ msgid ""
+#~ "di default storage analytics/ads è negato"
+#~ " (UE); puoi accettare o rifiutare in "
+#~ "qualsiasi momento cancellando i dati del "
+#~ "sito e ricaricando la pagina. Non "
+#~ "attiviamo AdSense senza consenso pubblicitario."
+#~ msgstr "默认情况下，存储分析/广告被拒绝（欧盟）；您可以随时通过删除网站数据并重新加载页面来接受或拒绝。我们不会在没有广告同意的情况下启用AdSense。"
+
+#~ msgid ""
+#~ "Attualmente non sono attivi cookie di "
+#~ "misurazione o pubblicitari di terze parti"
+#~ " su questo sito."
+#~ msgstr "目前此网站上没有激活第三方测量或广告Cookie。"
+
+#~ msgid ""
+#~ "Se richiedi l’erogazione immediata del "
+#~ "servizio (accesso al piano o accredito "
+#~ "crediti) e riconosci di perdere il "
+#~ "diritto di recesso una volta iniziata "
+#~ "l’erogazione, il recesso non si applica "
+#~ "dopo che il servizio è stato avviato."
+#~ msgstr "如果您请求立即提供服务（访问计划或信用额度），并承认在服务开始后失去撤销权，则在服务启动后不适用撤销。"
+
+#~ msgid ""
+#~ "Eliminazione definitiva. Se hai un "
+#~ "abbonamento attivo, cancellalo prima dal "
+#~ "billing."
+#~ msgstr "永久删除。如果你有有效订阅，请先从 billing 取消。"
+
+#~ msgid ""
+#~ "Termini di servizio Centropic (centropic.ai): "
+#~ "uso del SaaS di AI-Driven Visibility"
+#~ " (AIO) e Generative Engine Optimization "
+#~ "(GEO), limiti e responsabilità."
+#~ msgstr "Centropic 服务条款 (centropic.ai)：使用 AI 驱动的可见性 SaaS (AIO) 和生成引擎优化 (GEO)，限制和责任。"
+
+#~ msgid ""
+#~ "Ultimo aggiornamento: 27 luglio 2026 · "
+#~ "Accettando la registrazione accetti questi "
+#~ "termini. Contatti:"
+#~ msgstr "最后更新：2026 年 7 月 27 日 · 接受注册即表示您接受这些条款。联系方式："
+
+#~ msgid "1. Servizio"
+#~ msgstr "1. 服务"
+
+#~ msgid ""
+#~ "Centropic è un software-as-a-service che "
+#~ "analizza siti web pubblici e genera "
+#~ "score"
+#~ msgstr "Centropic 是一种软件即服务，分析公共网站并生成评分"
+
+#~ msgid "findings e artifact (es."
+#~ msgstr "发现和文物（例如："
+
+#~ msgid "bozza"
+#~ msgstr "草稿"
+
+#~ msgid ""
+#~ "Non è un Geographic Information System "
+#~ "(GIS) né una suite All-in-One "
+#~ "generica."
+#~ msgstr "这不是地理信息系统 (GIS) 也不是通用的一体化套件。"
+
+#~ msgid "2. Natura degli score"
+#~ msgstr "2. 评分的性质"
+
+#~ msgid "Gli score AIO/GEO misurano la"
+#~ msgstr "AIO 和 GEO 的分数是对 AI 的实时测量吗？"
+
+#~ msgid ""
+#~ "del sito (contenuto, schema, robots, llms,"
+#~ " entity): quanto brand e pagine sono "
+#~ "leggibili dai crawler generativi. Il "
+#~ "Centropic Visibility Index (CVI) sintetizza "
+#~ "AIO/GEO; la citation share può essere "
+#~ "Stimata (da struttura) o Misurata (campioni"
+#~ " LLM su Plus/Business)."
+#~ msgstr ""
+#~ "站点的（content、schema、robots、llms、entity）：品牌和页面对生成式 crawler "
+#~ "的可读程度。Centropic Visibility Index (CVI) 概括 "
+#~ "AIO/GEO；citation share 可以是估计（来自结构）或实测（Plus/Business 上的"
+#~ " LLM 样本）。"
+
+#~ msgid ""
+#~ "Centropic garantisce il lavoro di diagnosi"
+#~ " e predisposizione sul tuo dominio; non"
+#~ " garantisce ranking o menzioni nelle "
+#~ "interfacce di modelli di terzi, che "
+#~ "restano indipendenti."
+#~ msgstr "Centropic 保证对你的域名完成诊断和准备工作；不保证第三方模型界面中的 ranking 或提及，因为这些界面保持独立。"
+
+#~ msgid "3. Account e uso corretto"
+#~ msgstr "3. 账户和正确使用"
+
+#~ msgid "Fornisci dati veritieri e custodisci le credenziali."
+#~ msgstr "提供真实数据并保护凭据。"
+
+#~ msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
+#~ msgstr "仅分析您有权请求技术审计的网站。"
+
+#~ msgid ""
+#~ "Non usare il servizio per scansioni "
+#~ "abusive, attacchi o accesso a reti "
+#~ "private."
+#~ msgstr "请勿将此服务用于恶意扫描、攻击或访问私人网络。"
+
+#~ msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
+#~ msgstr "请遵守速率限制及方案规则(Free / Plus / Business)。"
+
+#~ msgid "4. Artifact e responsabilità"
+#~ msgstr "4. 产物和责任"
+
+#~ msgid ""
+#~ "Gli artifact generati sono bozze operative:"
+#~ " la pubblicazione sul tuo sito, la "
+#~ "conformità legale/SEO e l’impatto sulle "
+#~ "performance restano a tuo carico. Centropic"
+#~ " non risponde di decisioni di crawler "
+#~ "o modelli di terzi."
+#~ msgstr "生成的产物是操作草稿：在您的网站上发布、法律/SEO 合规性和对性能的影响由您负责。Centropic 不对爬虫或第三方模型的决策负责。"
+
+#~ msgid "5. Piani e disponibilità"
+#~ msgstr "5. 计划和可用性"
+
+#~ msgid ""
+#~ "Il piano Free ha limiti rigorosi su"
+#~ " siti (1) e analisi totali (2, "
+#~ "senza reset). Plus e Business sono "
+#~ "abbonamenti self-serve via Paddle quando "
+#~ "il catalogo è configurato; altrimenti "
+#~ "interesse via waitlist. Il servizio è "
+#~ "fornito “as is”; possiamo sospendere account"
+#~ " in caso di abuso o rischio "
+#~ "sicurezza."
+#~ msgstr ""
+#~ "Free 方案对网站数量(1 个)及分析总次数(2 次,不重置)有严格限制。一旦目录配置完成,Plus "
+#~ "和 Business 即可通过 Paddle "
+#~ "进行自助订阅;否则可通过候补名单登记意向。本服务按“现状”提供;如发生滥用或存在安全风险,我们可暂停相关账户。"
+
+#~ msgid "6. Pagamenti e rimborsi"
+#~ msgstr "6. 付款和退款"
+
+#~ msgid "Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla"
+#~ msgstr "数字购买（订阅和积分）受以下条款的约束："
+
+#~ msgid "I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle)."
+#~ msgstr "付款可能由第三方供应商处理（例如：Paddle）。"
+
+#~ msgid "7. Legge applicabile"
+#~ msgstr "7. 适用法律"
+
+#~ msgid ""
+#~ "Salvo norme imperative diverse, si applica"
+#~ " la legge italiana. Per controversie è"
+#~ " competente il foro del titolare, fatti"
+#~ " salvi i diritti del consumatore."
+#~ msgstr "除非有强制性规定，否则适用意大利法律。对于争议，适用持有者的管辖权，消费者的权利不受影响。"
+
+#~ msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
+#~ msgstr "实时进度 · 含 实测 SoV 时通常 1–3 分钟"
+
+#~ msgid "Attiva prova Plus 7 giorni"
+#~ msgstr "激活7天Plus试用"
+
+#~ msgid "ricevi un bonus sulla quota piano quando conferma l’email."
+#~ msgstr "在确认电子邮件时的令牌。"
+
+#~ msgid "Sintesi report"
+#~ msgstr "报告摘要"
+
+#~ msgid "Analizza un dominio"
+#~ msgstr "分析一个域名"
+
+#~ msgid "Trust &amp; Security"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Restano tuoi i Contenuti del Cliente "
+#~ "(URL, materiali dei siti, istruzioni). Ci"
+#~ " concedi una licenza non esclusiva, "
+#~ "mondiale, royalty-free, per ospitare, "
+#~ "elaborare e visualizzare tali contenuti al"
+#~ " solo fine di erogare il Servizio. "
+#~ "Dichiaro/dichiari di avere i diritti "
+#~ "necessari sui siti analizzati."
+#~ msgstr ""
 

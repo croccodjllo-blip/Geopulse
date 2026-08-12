@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-12 07:20+0000\n"
+"POT-Creation-Date: 2026-08-12 20:47+0000\n"
 "PO-Revision-Date: 2026-07-29 19:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,9 +18,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:2598 templates/about.html:24 templates/contact.html:47
+#: app.py:2889 templates/about.html:24 templates/contact.html:47
 msgid "27 luglio 2026"
 msgstr "27. Juli 2026"
+
+#: app.py:8166
+msgid "Analisi non trovata."
+msgstr "Analyse nicht gefunden."
+
+#: app.py:8174
+msgid ""
+"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
+"intanto."
+msgstr ""
+"Der E-Mail-Versand ist auf diesem Server noch nicht aktiv. Sie können die "
+"HTML-Datei vorerst herunterladen."
+
+#: app.py:8192
+msgid "Indirizzo email non valido."
+msgstr "Ungültige E-Mail-Adresse."
+
+#: app.py:8202
+#, python-format
+msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
+msgstr "Limit erreicht: maximal %(n)s Pack-Sendungen / 24 Std."
+
+#: app.py:8236
+msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
+msgstr ""
+"E-Mail-Versand fehlgeschlagen. Bitte versuchen Sie es gleich erneut oder "
+"laden Sie die HTML-Datei herunter."
+
+#: app.py:8242
+#, python-format
+msgid "Pack inviato a %(email)s."
+msgstr "Pack an %(email)s gesendet."
 
 #: services/analyze_eta.py:70 services/i18n_findings.py:228
 msgid "Quasi fatto"
@@ -800,7 +832,7 @@ msgstr ""
 " geschätzte Citation Share (struktureller proxy), keine measured Share bei "
 "null."
 
-#: services/i18n_findings.py:68 templates/dashboard.html:444
+#: services/i18n_findings.py:68 templates/dashboard.html:459
 msgid ""
 "Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), "
 "non una measured a zero."
@@ -884,8 +916,7 @@ msgstr "Sitemap-Coverage"
 msgid "Coverage sitemap non calcolabile"
 msgstr "Sitemap-Coverage nicht berechenbar"
 
-#: services/i18n_findings.py:87 templates/partials/analyze_overlay.html:10
-#: templates/partials/analyze_overlay.html:91
+#: services/i18n_findings.py:87
 msgid "Crawl, score e (se Plus) SoV measured sugli engine. Resta su questa pagina."
 msgstr ""
 "Crawl, Scores und (bei Plus) SoV Measured über Engines. Bleiben Sie auf "
@@ -907,7 +938,7 @@ msgstr "Schwach — technische Basis unzureichend"
 msgid "Description duplicate"
 msgstr "Description duplicate"
 
-#: services/i18n_findings.py:92 templates/partials/analyze_overlay.html:15
+#: services/i18n_findings.py:92
 msgid "Di solito 30–90 s; con SoV measured fino a qualche minuto."
 msgstr "Meist 30–90 s; mit SoV measured bis zu einigen Minuten."
 
@@ -979,7 +1010,7 @@ msgstr "War in der vorherigen Run online; jetzt schlägt der Probe fehl."
 msgid "Era presente nella run precedente e ora non è raggiungibile."
 msgstr "War in der vorherigen Run vorhanden und ist jetzt nicht erreichbar."
 
-#: services/i18n_findings.py:110 templates/base.html:327
+#: services/i18n_findings.py:110 templates/base.html:351
 msgid "Errore"
 msgstr "Fehler"
 
@@ -1266,8 +1297,8 @@ msgid "Misto — brand SoV da proxy"
 msgstr "Gemischt — Marken-SoV per proxy"
 
 #: services/i18n_findings.py:182 services/site_guide.py:44
-#: templates/dashboard.html:593 templates/dashboard.html:797
-#: templates/partials/sov_ops.html:7 templates/pricing.html:146
+#: templates/dashboard.html:610 templates/dashboard.html:814
+#: templates/partials/sov_ops.html:7 templates/pricing.html:162
 msgid "Misurato"
 msgstr "Gemessen"
 
@@ -1594,7 +1625,7 @@ msgstr "Schätzung in Vorbereitung…"
 msgid "Stima:"
 msgstr "Schätzung:"
 
-#: services/i18n_findings.py:263 templates/partials/analyze_overlay.html:14
+#: services/i18n_findings.py:263
 msgid "Stima: 1–3 minuti con SoV measured"
 msgstr "Schätzung: 1–3 Minuten mit SoV measured"
 
@@ -1938,7 +1969,7 @@ msgstr ""
 "Ansicht für Motor (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) des "
 "Share of Voice."
 
-#: services/site_guide.py:218 templates/dashboard.html:724
+#: services/site_guide.py:218 templates/dashboard.html:741
 msgid "Pagine critiche"
 msgstr "Kritische Seiten"
 
@@ -2001,7 +2032,7 @@ msgstr "Glossar"
 #: services/site_guide.py:274 templates/base.html:128 templates/base.html:230
 #: templates/dashboard.html:2 templates/history.html:21
 #: templates/partials/app_sidebar.html:38 templates/site_history.html:13
-#: templates/topup.html:91 templates/verify.html:53
+#: templates/topup.html:99 templates/verify.html:53
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -2065,7 +2096,7 @@ msgstr "Verwende fix-this-week.md als operative Checkliste"
 msgid "Le pagine critiche evidenziano URL con gap gravi"
 msgstr "Die kritischen Seiten heben URLs mit schweren Lücken hervor"
 
-#: services/site_guide.py:315 templates/dashboard.html:982
+#: services/site_guide.py:315 templates/dashboard.html:979
 msgid "Pack ottimizzazione"
 msgstr "Optimierungspaket"
 
@@ -2165,7 +2196,7 @@ msgstr "Publish Verify: Überprüfen, ob die Artefakte live sind."
 msgid "Locales: hreflang e coerenza mercati"
 msgstr "Locales: hreflang und Markt-Kohärenz."
 
-#: services/site_guide.py:386 templates/dashboard.html:839
+#: services/site_guide.py:386 templates/partials/competitor_snapshot.html:26
 msgid "Competitor snapshot"
 msgstr "Wettbewerber-Snapshot"
 
@@ -2525,9 +2556,8 @@ msgstr ""
 "Lücke mit Scores zu schließen."
 
 #: templates/about.html:20 templates/about.html:56 templates/about.html:59
-#: templates/dashboard.html:872 templates/partials/auth_help.html:7
+#: templates/dashboard.html:869 templates/partials/auth_help.html:7
 #: templates/partials/auth_help.html:19 templates/product.html:21
-#: templates/termini.html:21
 msgid "e"
 msgstr "und"
 
@@ -2592,7 +2622,7 @@ msgstr "wir sind kein generisches Marketingpaket."
 msgid "Garantiamo la"
 msgstr "Wir garantieren die"
 
-#: templates/about.html:48 templates/termini.html:32
+#: templates/about.html:48
 msgid "predisposizione strutturale"
 msgstr "strukturelle Bereitschaft"
 
@@ -2629,8 +2659,9 @@ msgid "FAQ"
 msgstr "FAQ"
 
 #: templates/about.html:65 templates/about.html:68 templates/about.html:75
-#: templates/base.html:242 templates/contact.html:2 templates/contact.html:9
-#: templates/partials/auth_help.html:24 templates/status.html:69
+#: templates/accessibility.html:52 templates/base.html:242 templates/contact.html:2
+#: templates/contact.html:9 templates/partials/auth_help.html:24
+#: templates/status.html:69 templates/trust.html:71
 msgid "Contatti"
 msgstr "Kontakt"
 
@@ -2649,6 +2680,121 @@ msgstr "Online-Betriebsstandort:"
 #: templates/about.html:74
 msgid "Prova Centropic"
 msgstr "Teste Centropic"
+
+#: templates/accessibility.html:2 templates/accessibility.html:9
+#: templates/base.html:253 templates/trust.html:64
+msgid "Accessibilità"
+msgstr "Barrierefreiheit"
+
+#: templates/accessibility.html:3
+msgid ""
+"Dichiarazione di accessibilità Centropic: impegno WCAG, feedback e limiti "
+"noti del SaaS."
+msgstr ""
+"Barrierefreiheitserklärung von Centropic: WCAG-Verpflichtung, Feedback und "
+"bekannte Grenzen des SaaS."
+
+#: templates/accessibility.html:10
+msgid "Dichiarazione di accessibilità"
+msgstr "Barrierefreiheitserklärung"
+
+#: templates/accessibility.html:12 templates/ai_transparency.html:12
+#: templates/cookies.html:12 templates/dpa.html:12 templates/trust.html:12
+msgid "Versione"
+msgstr "Version"
+
+#: templates/accessibility.html:13
+msgid ""
+"Centropic mira a un’interfaccia utilizzabile da tastiera e screen reader, in "
+"linea con WCAG 2.2 livello AA dove praticabile per un SaaS dashboard."
+msgstr ""
+"Centropic strebt eine Oberfläche an, die per Tastatur und Screenreader "
+"nutzbar ist und, soweit für ein SaaS-Dashboard praktikabel, WCAG 2.2 Level AA"
+" entspricht."
+
+#: templates/accessibility.html:18 templates/rimborsi.html:18
+msgid "1. Ambito"
+msgstr "1. Geltungsbereich"
+
+#: templates/accessibility.html:20
+msgid ""
+"Copre centropic.ai (marketing + dashboard). Componenti chart React e overlay "
+"di analisi possono avere limiti residuali di accessibilità; li trattiamo come"
+" debito prodotto."
+msgstr ""
+"Dies umfasst centropic.ai (Marketing + Dashboard). React-Chart-Komponenten "
+"und Analyse-Overlays können noch verbleibende Einschränkungen bei der "
+"Barrierefreiheit aufweisen; wir behandeln sie als Produktschuld."
+
+#: templates/accessibility.html:25
+msgid "2. Misure"
+msgstr "2. Maßnahmen"
+
+#: templates/accessibility.html:27
+msgid ""
+"Focus visibili, landmark, etichette form, testi alternativi su mark "
+"principali."
+msgstr ""
+"Sichtbare Fokuszustände, Landmarks, Formularbeschriftungen und "
+"Alternativtexte für zentrale Marken-Elemente."
+
+#: templates/accessibility.html:28
+msgid "Rispetto di prefers-reduced-motion sulle animazioni marketing."
+msgstr "Berücksichtigung von prefers-reduced-motion bei Marketing-Animationen."
+
+#: templates/accessibility.html:29
+msgid ""
+"Contrasto mirato su chrome Logo / plan accent; stati success/warn/danger "
+"distinti."
+msgstr ""
+"Gezielte Kontraste für Logo-Chrome / Plan-Akzente; klar unterscheidbare "
+"Success-/Warn-/Danger-Zustände."
+
+#: templates/accessibility.html:34
+msgid "3. Limiti noti"
+msgstr "3. Bekannte Grenzen"
+
+#: templates/accessibility.html:36
+msgid ""
+"Grafici interattivi geo-ui: navigazione da tastiera non completa su tutti i "
+"series."
+msgstr ""
+"Interaktive geo-ui-Diagramme: Die Tastaturnavigation ist noch nicht für alle "
+"Datenreihen vollständig."
+
+#: templates/accessibility.html:37
+msgid ""
+"Alcune tabelle dense della dashboard possono richiedere scroll orizzontale su"
+" mobile."
+msgstr ""
+"Einige dichte Dashboard-Tabellen können auf Mobilgeräten horizontales "
+"Scrollen erfordern."
+
+#: templates/accessibility.html:38
+msgid "PDF/export di terzi non rientrano in questa dichiarazione."
+msgstr "PDFs/Exporte Dritter fallen nicht unter diese Erklärung."
+
+#: templates/accessibility.html:43
+msgid "4. Feedback"
+msgstr "4. Feedback"
+
+#: templates/accessibility.html:45
+msgid "Segnala barriere a"
+msgstr "Melden Sie Barrieren an"
+
+#: templates/accessibility.html:47
+msgid ""
+"con URL, browser/AT e descrizione. Rispondiamo di norma entro 10 giorni "
+"lavorativi."
+msgstr ""
+"mit URL, Browser/assistiver Technologie und Beschreibung. Wir antworten in "
+"der Regel innerhalb von 10 Werktagen."
+
+#: templates/accessibility.html:53 templates/ai_transparency.html:60
+#: templates/base.html:252 templates/base.html:278 templates/termini.html:150
+#: templates/trust.html:9
+msgid "Trust"
+msgstr "Trust"
 
 #: templates/agencies.html:2
 msgid "Centropic per agenzie"
@@ -2746,6 +2892,149 @@ msgstr "Business aktivieren"
 msgid "Parla con noi"
 msgstr "Sprich mit uns"
 
+#: templates/ai_transparency.html:2 templates/ai_transparency.html:10
+msgid "Trasparenza AI / LLM"
+msgstr "KI-/LLM-Transparenz"
+
+#: templates/ai_transparency.html:3
+msgid ""
+"Cosa Centropic invia ai modelli LLM, finalità, training e limiti — "
+"trasparenza AI per clienti SaaS."
+msgstr ""
+"Was Centropic an LLM-Modelle sendet, zu welchen Zwecken, zu Training und "
+"Grenzen — AI-Transparenz für SaaS-Kunden."
+
+#: templates/ai_transparency.html:9
+msgid "Legale · AI"
+msgstr "Rechtliches · AI"
+
+#: templates/ai_transparency.html:13
+msgid ""
+"Centropic usa modelli di terze parti solo per funzioni esplicite del prodotto"
+" (artifact e citation monitor). Contatti:"
+msgstr ""
+"Centropic verwendet Modelle Dritter nur für ausdrücklich vorgesehene "
+"Produktfunktionen (Artefakte und Citation-Monitor). Kontakt:"
+
+#: templates/ai_transparency.html:19
+msgid "1. Cosa inviamo"
+msgstr "1. Was wir senden"
+
+#: templates/ai_transparency.html:21
+msgid ""
+"Snippet di pagine pubbliche che hai chiesto di analizzare (title, testo "
+"estratto, segnali strutturali)."
+msgstr ""
+"Ausschnitte öffentlicher Seiten, deren Analyse Sie angefordert haben (Titel, "
+"extrahierter Text, strukturelle Signale)."
+
+#: templates/ai_transparency.html:22
+msgid ""
+"Prompt di sistema/utente per generare bozze (es. llms.txt) o per probe di "
+"citazione Misurate."
+msgstr ""
+"System-/Nutzer-Prompts zur Erstellung von Entwürfen (z. B. llms.txt) oder für"
+" Gemessene Citation-Probes."
+
+#: templates/ai_transparency.html:23
+msgid ""
+"Non inviamo password, carte di pagamento né contenuti di aree autenticate del"
+" tuo sito."
+msgstr ""
+"Wir senden keine Passwörter, Zahlungskarten oder Inhalte aus "
+"authentifizierten Bereichen Ihrer Website."
+
+#: templates/ai_transparency.html:28
+msgid "2. Finalità"
+msgstr "2. Zwecke"
+
+#: templates/ai_transparency.html:30
+msgid ""
+"Generazione di artifact operativi e campionamento citation share Misurata "
+"sugli engine abilitati dal piano. Gli score Stimati restano basati sul crawl "
+"strutturale senza probe LLM."
+msgstr ""
+"Erstellung operativer Artefakte und Stichproben der Gemessenen Citation-Share"
+" auf den im Plan aktivierten Engines. Geschätzte Scores basieren weiterhin "
+"auf dem strukturellen Crawl ohne LLM-Probes."
+
+#: templates/ai_transparency.html:35
+msgid "3. Provider e training"
+msgstr "3. Provider und Training"
+
+#: templates/ai_transparency.html:37
+msgid "I provider attivi sono elencati nel"
+msgstr "Die aktiven Provider sind aufgeführt im"
+
+#: templates/ai_transparency.html:38
+msgid "DPA / Allegato A"
+msgstr "DPA / Anhang A"
+
+#: templates/ai_transparency.html:39
+msgid ""
+"(OpenAI, Anthropic, Perplexity, Google Gemini, xAI se configurati). Centropic"
+" non usa i tuoi contenuti per addestrare modelli propri. L’uso dei dati per "
+"training da parte dei provider dipende dalle loro policy enterprise/API: "
+"usiamo endpoint API e impostazioni disponibili per limitare "
+"retention/training ove supportato. Per dettagli vincolanti vedi le privacy "
+"policy dei singoli fornitori."
+msgstr ""
+"(OpenAI, Anthropic, Perplexity, Google Gemini, xAI, sofern konfiguriert). "
+"Centropic nutzt Ihre Inhalte nicht zum Trainieren eigener Modelle. Die "
+"Nutzung von Daten für Training durch Provider hängt von deren Enterprise"
+"-/API-Richtlinien ab: Wir verwenden API-Endpunkte und verfügbare "
+"Einstellungen, um Retention/Training zu begrenzen, soweit unterstützt. "
+"Verbindliche Details finden Sie in den Privacy Policies der jeweiligen "
+"Anbieter."
+
+#: templates/ai_transparency.html:44
+msgid "4. Log e conservazione"
+msgstr "4. Logs und Aufbewahrung"
+
+#: templates/ai_transparency.html:46
+msgid ""
+"Conserviamo metadati di job, addebiti token e risultati necessari al "
+"servizio. I pack artifact possono restare in object storage con retention "
+"configurata (tipicamente 90 giorni per artefatti tecnici). Puoi esportare o "
+"eliminare l’account dalle Impostazioni."
+msgstr ""
+"Wir speichern Job-Metadaten, Token-Abbuchungen und Ergebnisse, die für den "
+"Dienst erforderlich sind. Artefakt-Packs können mit konfigurierter "
+"Aufbewahrungsfrist im Object Storage verbleiben (typischerweise 90 Tage für "
+"technische Artefakte). Sie können Ihr Konto in den Einstellungen exportieren "
+"oder löschen."
+
+#: templates/ai_transparency.html:51
+msgid "5. Limiti e non-garanzie"
+msgstr "5. Grenzen und Nicht-Garantien"
+
+#: templates/ai_transparency.html:53
+msgid ""
+"I modelli possono produrre output incompleti o imprecisi. Stimato ≠ Misurato."
+" Centropic non garantisce ranking o menzioni nelle UI di terzi. Pubblicazione"
+" degli artifact e conformità restano a tuo carico."
+msgstr ""
+"Modelle können unvollständige oder ungenaue Ausgaben erzeugen. Geschätzt ≠ "
+"Gemessen. Centropic garantiert keine Rankings oder Erwähnungen in UIs "
+"Dritter. Veröffentlichung der Artefakte und Compliance bleiben in Ihrer "
+"Verantwortung."
+
+#: templates/ai_transparency.html:58 templates/base.html:274
+#: templates/cookies.html:68 templates/privacy.html:14 templates/privacy.html:34
+#: templates/privacy.html:167 templates/termini.html:14 templates/termini.html:126
+#: templates/topup.html:94
+msgid "DPA"
+msgstr "DPA"
+
+#: templates/ai_transparency.html:59 templates/base.html:246
+#: templates/base.html:266 templates/contact.html:58 templates/cookies.html:14
+#: templates/cookies.html:18 templates/dpa.html:20
+#: templates/partials/auth_help.html:26 templates/pricing.html:171
+#: templates/privacy.html:9 templates/rimborsi.html:98 templates/termini.html:13
+#: templates/termini.html:148 templates/trust.html:60
+msgid "Privacy"
+msgstr "Datenschutz"
+
 #: templates/base.html:10
 msgid ""
 "Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative "
@@ -2763,14 +3052,15 @@ msgstr "Menü öffnen"
 msgid "Principale"
 msgstr "Hauptnavigation"
 
-#: templates/base.html:130 templates/base.html:232 templates/dashboard.html:121
-#: templates/dashboard.html:825 templates/history.html:2
-#: templates/partials/app_sidebar.html:59 templates/site_history.html:2
+#: templates/base.html:130 templates/base.html:232 templates/dashboard.html:94
+#: templates/dashboard.html:842 templates/dashboard.html:1115
+#: templates/history.html:2 templates/partials/app_sidebar.html:59
+#: templates/site_history.html:2
 msgid "Storico"
 msgstr "Verlauf"
 
-#: templates/base.html:133 templates/dashboard.html:646
-#: templates/partials/app_sidebar.html:72
+#: templates/base.html:133 templates/dashboard.html:663
+#: templates/dashboard.html:1122 templates/partials/app_sidebar.html:72
 msgid "Impostazioni"
 msgstr "Einstellungen"
 
@@ -2782,7 +3072,7 @@ msgstr "Abdeckung"
 #: templates/base.html:135 templates/base.html:150 templates/base.html:218
 #: templates/faq.html:91 templates/login.html:86 templates/pricing.html:2
 #: templates/pro_interest.html:13 templates/register.html:147
-#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:86
+#: templates/rimborsi.html:89 templates/rimborsi.html:99 templates/topup.html:91
 msgid "Prezzi"
 msgstr "Preise"
 
@@ -2837,54 +3127,97 @@ msgstr "Registrieren"
 msgid "Pagina contatti"
 msgstr "Kontaktseite"
 
-#: templates/base.html:246 templates/base.html:260 templates/contact.html:58
-#: templates/partials/auth_help.html:26 templates/pricing.html:155
-#: templates/privacy.html:2 templates/rimborsi.html:98 templates/termini.html:79
-msgid "Privacy"
-msgstr "Datenschutz"
+#: templates/base.html:247 templates/base.html:268 templates/cookies.html:2
+#: templates/privacy.html:166 templates/trust.html:61
+msgid "Cookie"
+msgstr "Cookies"
 
-#: templates/base.html:247 templates/privacy.html:83 templates/rimborsi.html:87
-#: templates/termini.html:2 templates/termini.html:10
+#: templates/base.html:248 templates/rimborsi.html:87 templates/termini.html:2
+#: templates/termini.html:10
 msgid "Termini di servizio"
 msgstr "Nutzungsbedingungen"
 
-#: templates/base.html:248 templates/base.html:264 templates/contact.html:60
-#: templates/pricing.html:156 templates/privacy.html:84 templates/termini.html:80
+#: templates/base.html:249 templates/base.html:272 templates/contact.html:60
+#: templates/dpa.html:117 templates/pricing.html:172 templates/termini.html:15
+#: templates/termini.html:149 templates/topup.html:93
 msgid "Rimborsi"
 msgstr "Rückerstattungen"
 
-#: templates/base.html:262 templates/contact.html:59 templates/pricing.html:154
-#: templates/register.html:125 templates/rimborsi.html:97
+#: templates/base.html:250 templates/pricing.html:173 templates/trust.html:32
+msgid "DPA / sub-responsabili"
+msgstr "DPA / Unterauftragsverarbeiter"
+
+#: templates/base.html:251 templates/cookies.html:69 templates/trust.html:62
+msgid "AI / LLM"
+msgstr "AI / LLM"
+
+#: templates/base.html:254 templates/cookies.html:17 templates/cookies.html:67
+#: templates/privacy.html:165
+msgid "Gestisci consenso"
+msgstr "Einwilligung verwalten"
+
+#: templates/base.html:270 templates/contact.html:59 templates/dpa.html:21
+#: templates/pricing.html:170 templates/register.html:125
+#: templates/rimborsi.html:97 templates/trust.html:63
 msgid "Termini"
 msgstr "Bedingungen"
 
 #: templates/base.html:276
+msgid "AI"
+msgstr "AI"
+
+#: templates/base.html:280
+msgid "Consenso"
+msgstr "Einwilligung"
+
+#: templates/base.html:289
 msgid "Cookie e misurazione"
 msgstr "Cookies und Messung"
 
-#: templates/base.html:278
+#: templates/base.html:291
 msgid ""
 "Usiamo cookie tecnici e, con il tuo consenso, strumenti Google (Analytics e/o"
-" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare o "
-"rifiutare. Dettagli nella"
+" Ads/AdSense) per misurare il traffico e mostrare annunci. Puoi accettare, "
+"rifiutare o personalizzare. Dettagli nella"
 msgstr ""
-"Wir verwenden technische Cookies und, mit deiner Zustimmung, Google-Tools "
-"(Analytics und/oder Ads/AdSense), um den Verkehr zu messen und Anzeigen zu "
-"zeigen. Du kannst zustimmen oder ablehnen. Einzelheiten in der"
+"Wir verwenden technische Cookies und, mit Ihrer Einwilligung, Google-Tools "
+"(Analytics und/oder Ads/AdSense), um Traffic zu messen und Anzeigen "
+"auszuspielen. Sie können akzeptieren, ablehnen oder anpassen. Details finden "
+"Sie in der"
 
-#: templates/base.html:282
-msgid "Accetta"
-msgstr "Akzeptieren"
+#: templates/base.html:292 templates/privacy.html:13 templates/privacy.html:112
+msgid "Cookie Policy"
+msgstr "Cookie-Richtlinie"
 
-#: templates/base.html:283
+#: templates/base.html:297
+msgid "Analytics (GA4)"
+msgstr "Analytics (GA4)"
+
+#: templates/base.html:301
+msgid "Advertising (Ads / AdSense)"
+msgstr "Advertising (Ads / AdSense)"
+
+#: templates/base.html:305
+msgid "Accetta tutto"
+msgstr "Alle akzeptieren"
+
+#: templates/base.html:306
 msgid "Rifiuta"
 msgstr "Ablehnen"
 
-#: templates/base.html:324
+#: templates/base.html:307
+msgid "Personalizza"
+msgstr "Anpassen"
+
+#: templates/base.html:308
+msgid "Salva preferenze"
+msgstr "Einstellungen speichern"
+
+#: templates/base.html:348
 msgid "Copiato"
 msgstr "Kopiert"
 
-#: templates/base.html:337 templates/preview_analyze.html:20
+#: templates/base.html:361 templates/preview_analyze.html:20
 msgid "Analisi in corso…"
 msgstr "Analyse läuft…"
 
@@ -3030,7 +3363,7 @@ msgstr "Bestätigen und Analyse starten"
 msgid "Amplia copertura"
 msgstr "Abdeckung erweitern"
 
-#: templates/confirm_analyze.html:158
+#: templates/confirm_analyze.html:158 templates/dashboard.html:1042
 msgid "Annulla"
 msgstr "Abbrechen"
 
@@ -3159,6 +3492,97 @@ msgstr ""
 msgid "Scrivi a info@centropic.ai"
 msgstr "Schreibe an info@centropic.ai"
 
+#: templates/cookies.html:3
+msgid ""
+"Informativa cookie Centropic: cookie tecnici, analytics e advertising con "
+"consenso granulare."
+msgstr ""
+"Cookie-Richtlinie von Centropic: technisch notwendige Cookies, Analytics und "
+"Advertising mit granularer Einwilligung."
+
+#: templates/cookies.html:9 templates/rimborsi.html:9
+msgid "Legale"
+msgstr "Rechtlich"
+
+#: templates/cookies.html:10
+msgid "Informativa cookie"
+msgstr "Cookie-Richtlinie"
+
+#: templates/cookies.html:13
+msgid ""
+"Puoi accettare, rifiutare o personalizzare analytics e advertising. Dettagli "
+"anche in"
+msgstr ""
+"Sie können Analytics und Advertising akzeptieren, ablehnen oder anpassen. "
+"Weitere Details auch in der"
+
+#: templates/cookies.html:23
+msgid "1. Categorie"
+msgstr "1. Kategorien"
+
+#: templates/cookies.html:25
+msgid "Necessari"
+msgstr "Erforderlich"
+
+#: templates/cookies.html:25
+msgid "sessione, CSRF, lingua, memoria del consenso. Sempre attivi."
+msgstr "Sitzung, CSRF, Sprache, Speicherung der Einwilligung. Immer aktiv."
+
+#: templates/cookies.html:26
+msgid "Analytics"
+msgstr "Analytics"
+
+#: templates/cookies.html:26
+msgid "Google Analytics 4, solo con consenso."
+msgstr "Google Analytics 4, nur mit Einwilligung."
+
+#: templates/cookies.html:27
+msgid "Advertising"
+msgstr "Advertising"
+
+#: templates/cookies.html:27
+msgid "Google Ads / AdSense se configurati, solo con consenso ads."
+msgstr "Google Ads / AdSense, sofern konfiguriert, nur mit Ads-Einwilligung."
+
+#: templates/cookies.html:32
+msgid "2. Elenco"
+msgstr "2. Liste"
+
+#: templates/cookies.html:37
+msgid "Nome"
+msgstr "Name"
+
+#: templates/cookies.html:38 templates/dpa.html:86 templates/termini.html:24
+msgid "Fornitore"
+msgstr "Anbieter"
+
+#: templates/cookies.html:39
+msgid "Scopo"
+msgstr "Zweck"
+
+#: templates/cookies.html:40
+msgid "Durata"
+msgstr "Dauer"
+
+#: templates/cookies.html:41
+msgid "Categoria"
+msgstr "Kategorie"
+
+#: templates/cookies.html:60
+msgid "3. Come modificare"
+msgstr "3. So ändern Sie Ihre Auswahl"
+
+#: templates/cookies.html:62
+msgid ""
+"Usa “Gestisci consenso” in questa pagina o il link Cookie nel footer. Puoi "
+"anche cancellare i dati del sito dal browser e ricaricare. Consent Mode v2: "
+"di default analytics/ads sono negati nell’UE finché non scegli."
+msgstr ""
+"Nutzen Sie „Einwilligung verwalten“ auf dieser Seite oder den Cookie-Link im "
+"Footer. Sie können auch die Website-Daten im Browser löschen und die Seite "
+"neu laden. Consent Mode v2: Standardmäßig sind Analytics/Ads in der EU "
+"deaktiviert, bis Sie eine Auswahl treffen."
+
 #: templates/dashboard.html:9
 msgid "Workspace"
 msgstr "Arbeitsbereich"
@@ -3167,13 +3591,9 @@ msgstr "Arbeitsbereich"
 msgid "Ciao"
 msgstr "Hallo"
 
-#: templates/dashboard.html:22 templates/dashboard.html:98
+#: templates/dashboard.html:22 templates/dashboard.html:77
 msgid "Ultimo report"
 msgstr "Letzter Bericht"
-
-#: templates/dashboard.html:24
-msgid "prova fino al"
-msgstr "Testphase bis"
 
 #: templates/dashboard.html:28
 msgid "Workspace agenzia: multi-cliente, API e white-label."
@@ -3195,87 +3615,60 @@ msgstr "Kontostatus"
 msgid "Piano"
 msgstr "Plan"
 
-#: templates/dashboard.html:43
-msgid "fino al"
-msgstr "bis zu"
-
-#: templates/dashboard.html:48
+#: templates/dashboard.html:45
 msgid "Siti"
 msgstr "Websites"
 
-#: templates/dashboard.html:52 templates/partials/analyze_overlay.html:102
+#: templates/dashboard.html:49 templates/partials/analyze_overlay.html:102
 msgid "Crawl"
 msgstr "Crawl"
 
-#: templates/dashboard.html:53
+#: templates/dashboard.html:50
 msgid "Intero sito"
 msgstr "Gesamte Website"
 
-#: templates/dashboard.html:53
+#: templates/dashboard.html:50
 msgid "pag."
 msgstr "Seite"
 
-#: templates/dashboard.html:56
+#: templates/dashboard.html:53
 msgid "Analisi"
 msgstr "Analysen"
 
-#: templates/dashboard.html:56
+#: templates/dashboard.html:53
 msgid "Quote 24h"
 msgstr "24h-Zitate"
 
-#: templates/dashboard.html:62
-msgid "Servizi del piano"
-msgstr "Plan-Dienste"
-
-#: templates/dashboard.html:65
-msgid "Toolkit Business"
-msgstr "Toolkit Business"
-
-#: templates/dashboard.html:67
-msgid "Toolkit Plus"
-msgstr "Toolkit Plus"
-
-#: templates/dashboard.html:69
-msgid "Toolkit Free"
-msgstr "Toolkit Free"
-
-#: templates/dashboard.html:101 templates/dashboard.html:355
+#: templates/dashboard.html:80 templates/dashboard.html:369
 msgid "Centropic Visibility Index"
 msgstr "(KI-gesteuerte Sichtbarkeit) und"
 
-#: templates/dashboard.html:101 templates/dashboard.html:354
-#: templates/dashboard.html:1028 templates/sample_report.html:28
+#: templates/dashboard.html:80 templates/dashboard.html:291
+#: templates/dashboard.html:368 templates/dashboard.html:1072
+#: templates/partials/competitor_snapshot.html:68
+#: templates/partials/competitor_snapshot.html:138 templates/sample_report.html:28
 msgid "CVI"
 msgstr "CVI"
 
-#: templates/dashboard.html:105 templates/site_history.html:12
+#: templates/dashboard.html:84 templates/site_history.html:12
 msgid "Apri sito"
 msgstr "Website öffnen"
 
-#: templates/dashboard.html:106 templates/dashboard.html:766
-#: templates/partials/dashboard_shell.html:85
-#: templates/partials/dashboard_shell.html:119 templates/pricing.html:31
+#: templates/dashboard.html:85 templates/dashboard.html:783
+#: templates/partials/dashboard_shell.html:64
+#: templates/partials/dashboard_shell.html:98 templates/pricing.html:31
 msgid "pagine"
 msgstr "Seiten"
 
-#: templates/dashboard.html:113 templates/dashboard.html:1062
-#: templates/partials/dashboard_shell.html:53
-msgid "Scarica pack"
-msgstr "Paket herunterladen"
+#: templates/dashboard.html:88
+msgid "Analizzato"
+msgstr ""
 
-#: templates/dashboard.html:116
-msgid "Email non configurata sul server"
-msgstr "E-Mail nicht auf dem Server konfiguriert"
-
-#: templates/dashboard.html:117
-msgid "Invia email"
-msgstr "E-Mail senden"
-
-#: templates/dashboard.html:132
+#: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
 msgstr "Sehr starke AIO-Signale"
 
-#: templates/dashboard.html:133
+#: templates/dashboard.html:106
 msgid ""
 "Alta predisposizione strutturale: i crawler generativi trovano segnali chiari"
 " da leggere e citare."
@@ -3283,11 +3676,11 @@ msgstr ""
 "Hohe strukturelle Bereitschaft: Generative Crawler finden klare Signale zum "
 "Lesen und Zitieren."
 
-#: templates/dashboard.html:136
+#: templates/dashboard.html:109
 msgid "Segnali AIO solidi"
 msgstr "Solide AIO-Signale"
 
-#: templates/dashboard.html:137
+#: templates/dashboard.html:110
 msgid ""
 "Buona base machine-readable. Chiudi i gap rimanenti: ogni segnale in più "
 "riduce ambiguità per i crawler generativi."
@@ -3295,21 +3688,21 @@ msgstr ""
 "Solide machine-readable Basis. Schließen Sie die verbleibenden Lücken: Jedes "
 "zusätzliche Signal reduziert Ambiguität für generative Crawler."
 
-#: templates/dashboard.html:140
+#: templates/dashboard.html:113
 msgid "Segnali AIO moderati"
 msgstr "Mäßige AIO-Signale"
 
-#: templates/dashboard.html:141
+#: templates/dashboard.html:114
 msgid "Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn."
 msgstr ""
 "Einige Assets vorhanden, verschiedene offene Lücken. Priorisiere "
 "kritische/warnende Erkenntnisse."
 
-#: templates/dashboard.html:144
+#: templates/dashboard.html:117
 msgid "Segnali AIO emergenti"
 msgstr "Aufkommende AIO-Signale"
 
-#: templates/dashboard.html:145
+#: templates/dashboard.html:118
 msgid ""
 "Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file "
 "AI."
@@ -3317,11 +3710,11 @@ msgstr ""
 "Schwache Signale beim Crawlen: strukturelle Arbeit an Entitäten, Schema und "
 "AI-Dateien erforderlich."
 
-#: templates/dashboard.html:148
+#: templates/dashboard.html:121
 msgid "Segnali AIO critici"
 msgstr "Kritische AIO-Signale"
 
-#: templates/dashboard.html:149
+#: templates/dashboard.html:122
 msgid ""
 "Base insufficiente: intervento prioritario su title, schema, robots/llms e "
 "contenuti citabili."
@@ -3329,148 +3722,154 @@ msgstr ""
 "Unzureichende Basis: prioritärer Eingriff bei Titel, Schema, Robots/llms und "
 "zitierbaren Inhalten."
 
-#: templates/dashboard.html:159
+#: templates/dashboard.html:132
 msgid "Metriche chiave"
 msgstr "Schlüsselmetriken"
 
-#: templates/dashboard.html:160
+#: templates/dashboard.html:133
 msgid "AI-Driven Visibility"
 msgstr "KI-gesteuerte Sichtbarkeit"
 
-#: templates/dashboard.html:163
+#: templates/dashboard.html:136
 msgid "Generative Engine Opt."
 msgstr "Generative Engine Opt."
 
-#: templates/dashboard.html:166 templates/dashboard.html:179
-#: templates/partials/dashboard_shell.html:57 templates/preview_analyze.html:43
+#: templates/dashboard.html:139 templates/dashboard.html:163
+#: templates/dashboard.html:1113 templates/preview_analyze.html:43
 #: templates/verify.html:33
 msgid "Findings"
 msgstr "Ergebnisse"
 
-#: templates/dashboard.html:166
+#: templates/dashboard.html:139
 msgid "critical + warn"
 msgstr "kritisch + warnen"
 
-#: templates/dashboard.html:171
-msgid "Vista report"
-msgstr "Bericht anzeigen"
-
-#: templates/dashboard.html:172 templates/dashboard.html:178
-#: templates/dashboard.html:573 templates/partials/analyze_overlay.html:104
-msgid "Score"
-msgstr "Punktzahl"
-
-#: templates/dashboard.html:173 templates/dashboard.html:177
-#: templates/dashboard.html:1051 templates/partials/analyze_overlay.html:103
-msgid "SoV"
-msgstr "SoV"
-
-#: templates/dashboard.html:176
+#: templates/dashboard.html:144
 msgid "Sezioni del report"
 msgstr "Report-Abschnitte"
 
-#: templates/dashboard.html:180
+#: templates/dashboard.html:153 templates/dashboard.html:1095
+#: templates/partials/analyze_overlay.html:103
+msgid "SoV"
+msgstr "SoV"
+
+#: templates/dashboard.html:161 templates/dashboard.html:588
+#: templates/partials/analyze_overlay.html:104
+msgid "Score"
+msgstr "Punktzahl"
+
+#: templates/dashboard.html:164
 msgid "Critiche"
 msgstr "Kritisch"
 
-#: templates/dashboard.html:181
+#: templates/dashboard.html:165 templates/dashboard.html:1111
 msgid "Edge"
 msgstr "Edge"
 
-#: templates/dashboard.html:182 templates/partials/analyze_overlay.html:105
+#: templates/dashboard.html:166 templates/dashboard.html:1107
+#: templates/partials/analyze_overlay.html:105
 msgid "Pack"
 msgstr "Pack"
 
-#: templates/dashboard.html:274 templates/dashboard.html:286
-#: templates/dashboard.html:313 templates/dashboard.html:336
-#: templates/dashboard.html:359 templates/dashboard.html:597
-#: templates/dashboard.html:797 templates/partials/sov_ops.html:11
-#: templates/pricing.html:145
-msgid "Stimato"
-msgstr "Geschätzt"
-
-#: templates/dashboard.html:285 templates/dashboard.html:295
+#: templates/dashboard.html:178 templates/dashboard.html:309
 msgid "Signal diagnostics"
 msgstr "Signaldiagnosen"
 
-#: templates/dashboard.html:288
+#: templates/dashboard.html:179 templates/dashboard.html:271
+#: templates/dashboard.html:327 templates/dashboard.html:350
+#: templates/dashboard.html:373 templates/dashboard.html:614
+#: templates/dashboard.html:814 templates/partials/sov_ops.html:11
+#: templates/pricing.html:161
+msgid "Stimato"
+msgstr "Geschätzt"
+
+#: templates/dashboard.html:181
 msgid "Quanto sono solidi i segnali AIO/GEO"
 msgstr "Wie solide sind die AIO/GEO-Signale"
 
-#: templates/dashboard.html:291
+#: templates/dashboard.html:184
 msgid ""
-"AIO = AI-Driven Visibility · GEO = Generative Engine Optimization. Score di "
-"predisposizione strutturale (leggibilità per crawler generativi)."
+"AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab "
+"SoV mostra Misurato quando il citation monitor ha campionato gli engine "
+"(anche con 0 menzioni)."
 msgstr ""
-"AIO = KI-gesteuerte Sichtbarkeit · GEO = Generative Engine Optimization. "
-"Punktzahl von Proben/Heuristiken, keine garantierten Live-Zitationen."
 
-#: templates/dashboard.html:297
-msgid "Segnale"
-msgstr "Signal"
+#: templates/dashboard.html:279
+msgid "Sintesi score"
+msgstr ""
 
-#: templates/dashboard.html:298 templates/dashboard.html:571
-msgid "Evidence"
-msgstr "SoV-Evidenz"
-
-#: templates/dashboard.html:299
-msgid "Lettura"
-msgstr "Lesbarkeit"
-
-#: templates/dashboard.html:300
-msgid "Valore"
-msgstr "Farbe"
-
-#: templates/dashboard.html:323 templates/dashboard.html:346
-msgid "score"
-msgstr "Punktzahl"
-
-#: templates/dashboard.html:369
-msgid "grade"
-msgstr "KI-Grad"
-
-#: templates/dashboard.html:377
+#: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
 msgstr "Interferenzen"
 
-#: templates/dashboard.html:382
-msgid "Nessuna criticità aperta"
-msgstr "Keine offenen Kritikalitäten"
-
-#: templates/dashboard.html:396
+#: templates/dashboard.html:302 templates/dashboard.html:410
+#: templates/partials/competitor_snapshot.html:72
+#: templates/partials/competitor_snapshot.html:142
 msgid "clear"
 msgstr "clear"
 
-#: templates/dashboard.html:406
+#: templates/dashboard.html:311
+msgid "Segnale"
+msgstr "Signal"
+
+#: templates/dashboard.html:312 templates/dashboard.html:586
+msgid "Evidence"
+msgstr "SoV-Evidenz"
+
+#: templates/dashboard.html:313
+msgid "Lettura"
+msgstr "Lesbarkeit"
+
+#: templates/dashboard.html:314
+msgid "Valore"
+msgstr "Farbe"
+
+#: templates/dashboard.html:337 templates/dashboard.html:360
+msgid "score"
+msgstr "Punktzahl"
+
+#: templates/dashboard.html:383
+msgid "grade"
+msgstr "KI-Grad"
+
+#: templates/dashboard.html:396
+msgid "Nessuna criticità aperta"
+msgstr "Keine offenen Kritikalitäten"
+
+#: templates/dashboard.html:420
 msgid "open findings"
 msgstr "Ergebnisse"
 
-#: templates/dashboard.html:410 templates/partials/geo_overview.html:68
+#: templates/dashboard.html:424 templates/partials/geo_overview.html:68
 msgid "findings"
 msgstr "Ergebnisse"
 
-#: templates/dashboard.html:416
+#: templates/dashboard.html:430
 msgid "Scala CVI"
 msgstr "CVI-Skala"
 
-#: templates/dashboard.html:417
+#: templates/dashboard.html:431
 msgid "Scala da DDD a AAA"
 msgstr "Skala von DDD zu AAA"
 
-#: templates/dashboard.html:434 templates/dashboard.html:563
+#: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
 msgstr "AI-Engine-Analyse"
 
-#: templates/dashboard.html:437 templates/dashboard.html:473
+#: templates/dashboard.html:450
+msgid "Citation share — probe Misurato eseguito"
+msgstr ""
+
+#: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
 msgid "Citation share"
 msgstr "Zitationsmonitor"
 
-#: templates/dashboard.html:439
+#: templates/dashboard.html:454
 msgid "Citation share (stimata)"
 msgstr "Citation Share (estimated)"
 
-#: templates/dashboard.html:446
+#: templates/dashboard.html:461
 msgid ""
 "Menzioni generative campionate (stocastiche) + predisposizione strutturale — "
 "non Share of Voice pubblicitaria."
@@ -3478,11 +3877,11 @@ msgstr ""
 "Stichprobenbasierte generative Erwähnungen (stochastisch) + strukturelle "
 "Bereitschaft — keine werbliche Share of Voice."
 
-#: templates/dashboard.html:448
+#: templates/dashboard.html:463
 msgid "Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor."
 msgstr "SoV estimated aus Score und robots im aktuellen Plan."
 
-#: templates/dashboard.html:450
+#: templates/dashboard.html:465
 msgid ""
 "Stima dalla struttura osservata (CVI / score + robots); con Plus puoi "
 "aggiungere campioni Misurati."
@@ -3490,214 +3889,218 @@ msgstr ""
 "Estimated aus der beobachteten Struktur (CVI / Score + robots); mit Plus "
 "können Sie Measured Stichproben hinzufügen."
 
-#: templates/dashboard.html:456
+#: templates/dashboard.html:471
 msgid "Citation share brand"
 msgstr "Marken-Citation-Share"
 
-#: templates/dashboard.html:477 templates/dashboard.html:548
+#: templates/dashboard.html:492 templates/dashboard.html:563
 msgid "Campo competitivo"
 msgstr "Wettbewerbsfeld"
 
-#: templates/dashboard.html:478 templates/dashboard.html:555
-#: templates/settings.html:176
+#: templates/dashboard.html:493 templates/dashboard.html:570
+#: templates/settings.html:195
 msgid "Brand"
 msgstr "Marke"
 
-#: templates/dashboard.html:479 templates/dashboard.html:556
+#: templates/dashboard.html:494 templates/dashboard.html:571
 msgid "Rivali"
 msgstr "Rivalen"
 
-#: templates/dashboard.html:480 templates/dashboard.html:557
+#: templates/dashboard.html:495 templates/dashboard.html:572
 msgid "Altro"
 msgstr "Sonstiges"
 
-#: templates/dashboard.html:487
+#: templates/dashboard.html:502
 msgid "Propensity snapshot per engine"
 msgstr "Neigung nach Engine"
 
-#: templates/dashboard.html:489
+#: templates/dashboard.html:504
 msgid "Propensity snapshot"
 msgstr "Wettbewerber-Snapshot"
 
-#: templates/dashboard.html:520
+#: templates/dashboard.html:535
 msgid "Composizione per engine"
 msgstr "Zusammensetzung nach Engine"
 
-#: templates/dashboard.html:524
+#: templates/dashboard.html:539
 msgid "Composizione SoV per engine"
 msgstr "SoV-Zusammensetzung für Engine"
 
-#: templates/dashboard.html:547
+#: templates/dashboard.html:562
 msgid "Distribuzione competitiva"
 msgstr "Wettbewerbsverteilung"
 
-#: templates/dashboard.html:567
+#: templates/dashboard.html:582
 msgid "Propensity e citation share per engine"
 msgstr "Neigung nach Engine"
 
-#: templates/dashboard.html:570
+#: templates/dashboard.html:585
 msgid "Engine"
 msgstr "Seiten"
 
-#: templates/dashboard.html:572
+#: templates/dashboard.html:587
 msgid "Propensity"
 msgstr "Neigung nach Engine"
 
-#: templates/dashboard.html:574 templates/dashboard.html:617
+#: templates/dashboard.html:589 templates/dashboard.html:634
 msgid "Share"
 msgstr "Teilen"
 
-#: templates/dashboard.html:595
+#: templates/dashboard.html:608
+msgid "Probe LLM eseguito: 0 menzioni su questo engine"
+msgstr ""
+
+#: templates/dashboard.html:608
+msgid "Misurato · 0"
+msgstr ""
+
+#: templates/dashboard.html:612
 msgid "N/D"
 msgstr "N/A"
 
-#: templates/dashboard.html:600
+#: templates/dashboard.html:617
 msgid "blocked"
 msgstr "Bot blockiert"
 
-#: templates/dashboard.html:602
+#: templates/dashboard.html:619
 msgid "allow"
 msgstr "Bot erlauben"
 
-#: templates/dashboard.html:634
+#: templates/dashboard.html:651
 msgid "Nessun breakdown disponibile."
 msgstr "Keine Aufschlüsselung verfügbar."
 
-#: templates/dashboard.html:639
+#: templates/dashboard.html:656
 msgid "GEO suite"
 msgstr "GEO Suite"
 
-#: templates/dashboard.html:642
+#: templates/dashboard.html:659
 msgid "Suite"
 msgstr "Suite"
 
-#: templates/dashboard.html:643
+#: templates/dashboard.html:660
 msgid "GEO / AIO avanzato"
 msgstr "GEO / AIO erweitert"
 
-#: templates/dashboard.html:648 templates/dashboard.html:666
-#: templates/dashboard.html:1078 templates/verify.html:2 templates/verify.html:8
+#: templates/dashboard.html:665 templates/dashboard.html:683
+#: templates/dashboard.html:1118 templates/verify.html:2 templates/verify.html:8
 msgid "Publish verify"
 msgstr "Veröffentlichen überprüfen"
 
-#: templates/dashboard.html:654
+#: templates/dashboard.html:671
 msgid "Entity graph"
 msgstr "Entitätsgraph"
 
-#: templates/dashboard.html:655
+#: templates/dashboard.html:672
 msgid "nodi"
 msgstr "Knoten"
 
-#: templates/dashboard.html:658
+#: templates/dashboard.html:675
 msgid "Citability"
 msgstr "Zitierbarkeit"
 
-#: templates/dashboard.html:662
+#: templates/dashboard.html:679
 msgid "Schema quality"
 msgstr "Schemaqualität"
 
-#: templates/dashboard.html:670
+#: templates/dashboard.html:687
 msgid "llms lint"
 msgstr "llms lint"
 
-#: templates/dashboard.html:674
+#: templates/dashboard.html:691
 msgid "Locales"
 msgstr "Lokalisierungen"
 
-#: templates/dashboard.html:679 templates/site_history.html:31
+#: templates/dashboard.html:696 templates/site_history.html:31
 msgid "SoV measured"
 msgstr "SoV gemessen"
 
-#: templates/dashboard.html:694
+#: templates/dashboard.html:711
 msgid "Confronto con run precedente"
 msgstr "Vergleich mit vorherigem Lauf"
 
-#: templates/dashboard.html:696
+#: templates/dashboard.html:713
 msgid "Vs run precedente"
 msgstr "Vs vorherigem Lauf"
 
-#: templates/dashboard.html:723 templates/dashboard.html:773
+#: templates/dashboard.html:740 templates/dashboard.html:790
 msgid "Priorità"
 msgstr "Priorität"
 
-#: templates/dashboard.html:729 templates/dashboard.html:732
+#: templates/dashboard.html:746 templates/dashboard.html:749
 msgid "critiche"
 msgstr "kritisch"
 
-#: templates/dashboard.html:729
+#: templates/dashboard.html:746
 msgid "critica"
 msgstr "Kritik"
 
-#: templates/dashboard.html:730 templates/dashboard.html:734
+#: templates/dashboard.html:747 templates/dashboard.html:751
 msgid "attenzione"
 msgstr "Aufmerksamkeit"
 
-#: templates/dashboard.html:761
+#: templates/dashboard.html:778
 msgid "Prime 24 criticità · elenco completo nel pack"
 msgstr "Top 24 kritische Punkte · vollständige Liste im Pack"
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:781
 msgid "Nessuna pagina critica su"
 msgstr "Keine kritische Seite auf"
 
-#: templates/dashboard.html:764
+#: templates/dashboard.html:781
 msgid "analizzate."
 msgstr "analysiert."
 
-#: templates/dashboard.html:766
+#: templates/dashboard.html:783
 msgid "Analizzate"
 msgstr "Analysiert"
 
-#: templates/dashboard.html:774 templates/dashboard.html:1069
+#: templates/dashboard.html:791
 msgid "Findings critici"
 msgstr "Kritische Ergebnisse"
 
-#: templates/dashboard.html:805
+#: templates/dashboard.html:822
 msgid "Nessuna criticità."
 msgstr "Keine Kritikalitäten."
 
-#: templates/dashboard.html:805
+#: templates/dashboard.html:822
 msgid "check ok nascosti."
 msgstr "Überprüfung ok versteckt."
 
-#: templates/dashboard.html:810
+#: templates/dashboard.html:827
 msgid "Solo critical/warn ·"
 msgstr "Nur kritisch/warn ·"
 
-#: templates/dashboard.html:810
+#: templates/dashboard.html:827
 msgid "totali"
 msgstr "gesamt"
 
-#: templates/dashboard.html:820 templates/site_history.html:21
+#: templates/dashboard.html:837 templates/site_history.html:21
 msgid "Monitoraggio"
 msgstr "Überwachung"
 
-#: templates/dashboard.html:838
-msgid "Confronto"
-msgstr "Vergleich"
-
-#: templates/dashboard.html:861
+#: templates/dashboard.html:858
 msgid "Infrastruttura"
 msgstr "Infrastruktur"
 
-#: templates/dashboard.html:862 templates/dashboard.html:1064
+#: templates/dashboard.html:859 templates/dashboard.html:1109
 #: templates/partials/app_sidebar.html:47
 msgid "Edge Signals"
 msgstr "Edge Signals"
 
-#: templates/dashboard.html:865
+#: templates/dashboard.html:862
 msgid "Attivo"
 msgstr "Aktiv"
 
-#: templates/dashboard.html:867
+#: templates/dashboard.html:864
 msgid "ZIP only"
 msgstr "Nur ZIP"
 
-#: templates/dashboard.html:871
+#: templates/dashboard.html:868
 msgid "Invece di ridistribuire un pack statico, ospita"
 msgstr "Anstatt ein statisches Paket neu zu verteilen, hoste"
 
-#: templates/dashboard.html:872
+#: templates/dashboard.html:869
 msgid ""
 "su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo"
 " dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, "
@@ -3707,30 +4110,30 @@ msgstr ""
 "ändern. Verbinden Sie Ihre Domain mit dem universellen CMS-Connector "
 "(WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel)."
 
-#: templates/dashboard.html:877
+#: templates/dashboard.html:874
 msgid "Attiva hosting dinamico"
 msgstr "Aktiviere dynamisches Hosting"
 
-#: templates/dashboard.html:880
+#: templates/dashboard.html:877
 msgid "Include"
 msgstr "Beinhaltet"
 
-#: templates/dashboard.html:882
+#: templates/dashboard.html:879
 msgid "robots live, JSON-LD e snippet Worker/Vercel."
 msgstr "live robots, JSON-LD und Worker/Vercel-Snippets."
 
-#: templates/dashboard.html:889
+#: templates/dashboard.html:886
 msgid "Snippet avanzati"
 msgstr "Erweiterte Snippets"
 
-#: templates/dashboard.html:897 templates/dashboard.html:902
-#: templates/dashboard.html:908 templates/dashboard.html:913
-#: templates/dashboard.html:953 templates/dashboard.html:960
-#: templates/dashboard.html:967 templates/dashboard.html:998
+#: templates/dashboard.html:894 templates/dashboard.html:899
+#: templates/dashboard.html:905 templates/dashboard.html:910
+#: templates/dashboard.html:950 templates/dashboard.html:957
+#: templates/dashboard.html:964
 msgid "Copia"
 msgstr "Kopie"
 
-#: templates/dashboard.html:919
+#: templates/dashboard.html:916
 msgid ""
 "CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, "
 "proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo "
@@ -3740,65 +4143,103 @@ msgstr ""
 "Shopify, PHP-Proxy, Netlify/Vercel-Rewrite und Cloudflare-Worker — alle "
 "zielen auf dasselbe Edge-Basis."
 
-#: templates/dashboard.html:922 templates/partials/edge_wizard.html:20
+#: templates/dashboard.html:919 templates/partials/edge_wizard.html:20
 msgid "Scarica connector CMS (.zip)"
 msgstr "Laden Sie den CMS-Connector (.zip) herunter"
 
-#: templates/dashboard.html:933
+#: templates/dashboard.html:930
 msgid "Rigenera token"
 msgstr "Token regenerieren"
 
-#: templates/dashboard.html:937
+#: templates/dashboard.html:934
 msgid "Disattiva"
 msgstr "Deaktivieren"
 
-#: templates/dashboard.html:941
+#: templates/dashboard.html:938
 msgid "Crawler IA recenti su Edge:"
 msgstr "Aktuelle KI-Crawler auf Edge:"
 
-#: templates/dashboard.html:944
+#: templates/dashboard.html:941
 msgid "hit"
 msgstr "Treffer"
 
-#: templates/dashboard.html:981 templates/landing.html:245
+#: templates/dashboard.html:978 templates/dashboard.html:1014
+#: templates/landing.html:245
 msgid "Deliverable"
 msgstr "Liefergegenstand"
 
-#: templates/dashboard.html:983
-msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
+#: templates/dashboard.html:980
+msgid ""
+"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
+"applicare sul sito live."
 msgstr ""
-"Eine einzige HTML-Datei mit allen Fixes: head-Snippet, llms.txt, robots und "
-"Checklist."
+"Eine einzelne HTML-Datei mit Head-Snippet, llms.txt, robots und Checkliste — "
+"bereit zur Anwendung auf der Live-Website."
 
 #: templates/dashboard.html:986
-msgid "Scarica"
-msgstr "Herunterladen"
+msgid "Scarica pack"
+msgstr "Paket herunterladen"
 
-#: templates/dashboard.html:990
-msgid "Invia a"
-msgstr "Senden an"
+#: templates/dashboard.html:992
+msgid "Email non configurata sul server"
+msgstr "E-Mail nicht auf dem Server konfiguriert"
 
-#: templates/dashboard.html:1006
+#: templates/dashboard.html:994
+msgid "Invia email"
+msgstr "E-Mail senden"
+
+#: templates/dashboard.html:1015
+msgid "Invia pack via email"
+msgstr "Pack per E-Mail senden"
+
+#: templates/dashboard.html:1017 templates/login.html:34
+#: templates/partials/analyze_overlay.html:127
+msgid "Chiudi"
+msgstr "Schließen"
+
+#: templates/dashboard.html:1020
+msgid ""
+"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
+"dominio."
+msgstr ""
+"Geben Sie die E-Mail-Adresse ein, an die Sie das HTML-Pack für diese Domain "
+"erhalten möchten."
+
+#: templates/dashboard.html:1027
+msgid "Indirizzo email"
+msgstr "E-Mail-Adresse"
+
+#: templates/dashboard.html:1040
+msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
+msgstr ""
+"Sie können es an sich selbst oder an einen Kollegen senden. Es gilt ein "
+"tägliches Anti-Missbrauchs-Limit."
+
+#: templates/dashboard.html:1043
+msgid "Invia pack"
+msgstr "Pack senden"
+
+#: templates/dashboard.html:1050
 msgid "Attivazione"
 msgstr "Aktivierung"
 
-#: templates/dashboard.html:1007
+#: templates/dashboard.html:1051
 msgid "Prima diagnosi in un passo"
 msgstr "Erste Diagnose in einem Schritt"
 
-#: templates/dashboard.html:1010
+#: templates/dashboard.html:1054
 msgid "Stiamo già elaborando"
 msgstr "Wir verarbeiten bereits"
 
-#: templates/dashboard.html:1011
+#: templates/dashboard.html:1055
 msgid "Al termine compariranno qui score, findings e pack."
 msgstr "Nach Abschluss erscheinen hier Score, Findings und Pack."
 
-#: templates/dashboard.html:1013
+#: templates/dashboard.html:1057
 msgid "Segui lo stato"
 msgstr "Status verfolgen"
 
-#: templates/dashboard.html:1016
+#: templates/dashboard.html:1060
 msgid ""
 "Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, findings "
 "e pack."
@@ -3806,65 +4247,257 @@ msgstr ""
 "Füge die öffentliche URL der Marke ein, um Crawl, AIO/GEO-Score, Findings und"
 " Pack zu erhalten."
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "Piano Free:"
 msgstr "Kostenloser Plan:"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "sito"
 msgstr "Website"
 
-#: templates/dashboard.html:1017
+#: templates/dashboard.html:1061
 msgid "analisi iniziali."
 msgstr "erste Analysen."
 
-#: templates/dashboard.html:1019
+#: templates/dashboard.html:1063
 msgid "Avvia la prima analisi"
 msgstr "Starte die erste Analyse"
 
-#: templates/dashboard.html:1026
+#: templates/dashboard.html:1070
 msgid "Contesto report"
 msgstr "Berichtskontext"
 
-#: templates/dashboard.html:1033
+#: templates/dashboard.html:1077
 msgid "Signal"
 msgstr "Signal"
 
-#: templates/dashboard.html:1044
+#: templates/dashboard.html:1088
 msgid "Gap"
 msgstr "Lücke"
 
-#: templates/dashboard.html:1054
+#: templates/dashboard.html:1098
 msgid "Brand share"
 msgstr "Markenanteil"
 
-#: templates/dashboard.html:1061 templates/dashboard.html:1076
-msgid "Azioni"
-msgstr "Aktionen"
+#: templates/dashboard.html:1105
+msgid "Vai a"
+msgstr ""
 
-#: templates/dashboard.html:1065
-msgid "Connector CMS"
-msgstr "CMS-Connector"
+#: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
+msgid "Nuova analisi"
+msgstr "Neue Analyse"
 
-#: templates/dashboard.html:1067
-msgid "Attiva Edge"
-msgstr "Aktiviere Edge"
+#: templates/dashboard.html:1120
+msgid "White-label"
+msgstr ""
 
-#: templates/dashboard.html:1071 templates/history.html:11
-msgid "Storico run"
-msgstr "Laufhistorie"
+#: templates/dpa.html:2 templates/dpa.html:10
+msgid "DPA e sub-responsabili"
+msgstr "DPA und Unterauftragsverarbeiter"
 
-#: templates/dashboard.html:1080
-msgid "White-label MD"
-msgstr "White-Label MD"
+#: templates/dpa.html:3
+msgid ""
+"Data Processing Agreement (Art. 28 GDPR) e elenco sub-responsabili Centropic "
+"per clienti Business e agenzie."
+msgstr ""
+"Data Processing Agreement (Art. 28 GDPR) und Liste der "
+"Unterauftragsverarbeiter von Centropic für Business-Kunden und Agenturen."
 
-#: templates/dashboard.html:1081
-msgid "White-label HTML"
-msgstr "White-Label HTML"
+#: templates/dpa.html:9
+msgid "Legale · GDPR Art. 28"
+msgstr "Rechtliches · GDPR Art. 28"
 
-#: templates/dashboard.html:1083
-msgid "GEO suite settings"
-msgstr "GEO-Suite-Einstellungen"
+#: templates/dpa.html:12 templates/guide.html:14
+msgid "Aggiornato"
+msgstr "Aktualisiert"
+
+#: templates/dpa.html:13
+msgid "Titolare del trattamento (Cliente) / Responsabile del trattamento:"
+msgstr "Verantwortlicher (Kunde) / Auftragsverarbeiter:"
+
+#: templates/dpa.html:15
+msgid "Contatti:"
+msgstr "Kontakt:"
+
+#: templates/dpa.html:19 templates/dpa.html:116
+msgid "Scarica DPA (.txt)"
+msgstr "DPA herunterladen (.txt)"
+
+#: templates/dpa.html:26
+msgid "1. Ruoli"
+msgstr "1. Rollen"
+
+#: templates/dpa.html:28
+msgid ""
+"Il Cliente è titolare del trattamento dei dati personali che inserisce o fa "
+"trattare tramite Centropic. Il Provider (Centropic /"
+msgstr ""
+"Der Kunde ist Verantwortlicher für die personenbezogenen Daten, die er in "
+"Centropic eingibt oder über Centropic verarbeiten lässt. Der Provider "
+"(Centropic /"
+
+#: templates/dpa.html:29
+msgid ""
+") agisce come responsabile del trattamento per erogare il SaaS. Paddle, in "
+"qualità di merchant of record, tratta i dati di pagamento come titolare "
+"autonomo per fatturazione e fiscalità."
+msgstr ""
+") handelt als Auftragsverarbeiter, um das SaaS bereitzustellen. Paddle "
+"verarbeitet Zahlungsdaten als Merchant of Record als eigenständiger "
+"Verantwortlicher für Abrechnung und Steuern."
+
+#: templates/dpa.html:34
+msgid "2. Oggetto e durata"
+msgstr "2. Gegenstand und Dauer"
+
+#: templates/dpa.html:36
+msgid ""
+"Il trattamento riguarda account, URL pubblici analizzati, risultati (score, "
+"findings, artifact), log tecnici e, se abilitato dal piano, probe LLM. Dura "
+"per la vita dell’account e per i tempi di conservazione indicati "
+"nell’informativa privacy / esigenze di sicurezza e legge."
+msgstr ""
+"Die Verarbeitung betrifft Konten, analysierte öffentliche URLs, Ergebnisse "
+"(Scores, Findings, Artefakte), technische Logs und, sofern durch den Plan "
+"aktiviert, LLM-Probes. Sie dauert für die Laufzeit des Kontos und für die in "
+"den Datenschutzhinweisen genannten Aufbewahrungsfristen / Erfordernisse aus "
+"Sicherheit und Recht."
+
+#: templates/dpa.html:41
+msgid "3. Obblighi del responsabile (Art. 28)"
+msgstr "3. Pflichten des Auftragsverarbeiters (Art. 28)"
+
+#: templates/dpa.html:43
+msgid ""
+"Tratta i dati solo per erogare Centropic e su istruzioni documentate (uso del"
+" servizio)."
+msgstr ""
+"Er verarbeitet Daten nur zur Bereitstellung von Centropic und auf "
+"dokumentierte Weisung (Nutzung des Dienstes)."
+
+#: templates/dpa.html:44
+msgid "Garantisce riservatezza del personale autorizzato."
+msgstr "Er stellt die Vertraulichkeit des autorisierten Personals sicher."
+
+#: templates/dpa.html:45
+msgid "Applica misure tecniche e organizzative adeguate."
+msgstr "Er setzt angemessene technische und organisatorische Maßnahmen um."
+
+#: templates/dpa.html:46
+msgid ""
+"Ricorre ai sub-responsabili elencati nell’Allegato A; variazioni rilevanti "
+"sono comunicate."
+msgstr ""
+"Er setzt die in Anhang A aufgeführten Unterauftragsverarbeiter ein; "
+"wesentliche Änderungen werden mitgeteilt."
+
+#: templates/dpa.html:47
+msgid ""
+"Assiste il Cliente su diritti degli interessati, DPIA e data breach ove "
+"applicabile."
+msgstr ""
+"Er unterstützt den Kunden, soweit anwendbar, bei Betroffenenrechten, DPIA und"
+" Data Breaches."
+
+#: templates/dpa.html:48
+msgid "Cancella o restituisce i dati dopo chiusura account, salvo obblighi di legge."
+msgstr ""
+"Er löscht oder gibt Daten nach Schließung des Kontos zurück, vorbehaltlich "
+"gesetzlicher Pflichten."
+
+#: templates/dpa.html:49
+msgid "Mette a disposizione le informazioni necessarie a dimostrare conformità."
+msgstr "Er stellt die erforderlichen Informationen bereit, um Compliance nachzuweisen."
+
+#: templates/dpa.html:54
+msgid "4. Trasferimenti internazionali"
+msgstr "4. Internationale Übermittlungen"
+
+#: templates/dpa.html:56
+msgid ""
+"Alcuni sub-responsabili (in particolare LLM e tool USA) possono trattare dati"
+" fuori SEE/UK. I trasferimenti si basano su garanzie appropriate (es. SCC / "
+"decisioni di adeguatezza) secondo le policy di ciascun fornitore. Per un "
+"riepilogo aggiornato: scrivi a"
+msgstr ""
+"Einige Unterauftragsverarbeiter (insbesondere LLM- und US-Tools) können Daten"
+" außerhalb des EWR/UK verarbeiten. Übermittlungen beruhen auf geeigneten "
+"Garantien (z. B. SCC / Angemessenheitsbeschlüssen) gemäß den Richtlinien des "
+"jeweiligen Anbieters. Für eine aktuelle Übersicht schreiben Sie an"
+
+#: templates/dpa.html:62
+msgid "5. Obblighi del Cliente"
+msgstr "5. Pflichten des Kunden"
+
+#: templates/dpa.html:64
+msgid ""
+"Il Cliente garantisce di avere titolo ad analizzare i siti indicati, non deve"
+" caricare categorie particolari di dati senza addendum scritto, e rispetta i "
+"Termini (niente scansioni abusive). Per white-label / multi-cliente Business,"
+" il Cliente resta titolare verso i propri utenti finali."
+msgstr ""
+"Der Kunde gewährleistet, zur Analyse der angegebenen Websites berechtigt zu "
+"sein, darf ohne schriftliches Addendum keine besonderen Kategorien "
+"personenbezogener Daten hochladen und hält die Bedingungen ein (keine "
+"missbräuchlichen Scans). Bei White-Label-/Multi-Client-Business-Nutzung "
+"bleibt der Kunde gegenüber seinen eigenen Endnutzern Verantwortlicher."
+
+#: templates/dpa.html:69
+msgid "6. Accettazione"
+msgstr "6. Annahme"
+
+#: templates/dpa.html:71
+msgid ""
+"L’uso di funzioni Business/agenzia o un ordine che richiama questa versione "
+"DPA costituisce accettazione. Copia controfirmata su richiesta a"
+msgstr ""
+"Die Nutzung von Business-/Agenturfunktionen oder eine Bestellung, die auf "
+"diese DPA-Version verweist, gilt als Annahme. Eine gegengezeichnete Kopie "
+"erhalten Sie auf Anfrage unter"
+
+#: templates/dpa.html:73
+msgid ""
+"In caso di conflitto su temi privacy, questo DPA prevale sui Termini per gli "
+"obblighi di trattamento."
+msgstr ""
+"Bei Konflikten zu Datenschutzthemen geht dieses DPA den Bedingungen "
+"hinsichtlich der Verarbeitungspflichten vor."
+
+#: templates/dpa.html:78
+msgid "Allegato A — Sub-responsabili attivi"
+msgstr "Anhang A — Aktive Unterauftragsverarbeiter"
+
+#: templates/dpa.html:80
+msgid ""
+"Elenco aggiornato in base alla configurazione di produzione. Provider non "
+"attivi non ricevono dati da questa istanza."
+msgstr ""
+"Die Liste wird anhand der Produktionskonfiguration aktualisiert. Nicht aktive"
+" Provider erhalten von dieser Instanz keine Daten."
+
+#: templates/dpa.html:87 templates/register.html:103
+msgid "Ruolo"
+msgstr "Rolle"
+
+#: templates/dpa.html:88
+msgid "Dati"
+msgstr "Daten"
+
+#: templates/dpa.html:89
+msgid "Sede / regione"
+msgstr "Sitz / Region"
+
+#: templates/dpa.html:98
+msgid "Policy"
+msgstr "Policy"
+
+#: templates/dpa.html:107
+msgid "Nessun sub-responsabile rilevato nella configurazione corrente."
+msgstr "In der aktuellen Konfiguration wurde kein Unterauftragsverarbeiter erkannt."
+
+#: templates/dpa.html:118
+msgid "Richiedi copia firmata"
+msgstr "Signierte Kopie anfordern"
 
 #: templates/faq.html:3
 msgid ""
@@ -4080,8 +4713,7 @@ msgid "Torna all’accesso"
 msgstr "Zurück zur Anmeldung"
 
 #: templates/forgot_password.html:34 templates/landing.html:110
-#: templates/login.html:84 templates/privacy.html:85 templates/register.html:24
-#: templates/termini.html:81
+#: templates/login.html:84 templates/register.html:24
 msgid "Crea account"
 msgstr "Konto erstellen"
 
@@ -4089,11 +4721,7 @@ msgstr "Konto erstellen"
 msgid "GEO Charts"
 msgstr "GEO Charts"
 
-#: templates/guide.html:14
-msgid "Aggiornato"
-msgstr "Aktualisiert"
-
-#: templates/guide.html:16 templates/settings.html:186
+#: templates/guide.html:16 templates/settings.html:205
 msgid "Torna alla dashboard"
 msgstr "Zurück zum Dashboard"
 
@@ -4210,6 +4838,10 @@ msgstr "Vertiefungen"
 #: templates/guide.html:179 templates/status.html:67
 msgid "Apri dashboard"
 msgstr "Dashboard öffnen"
+
+#: templates/history.html:11
+msgid "Storico run"
+msgstr "Laufhistorie"
 
 #: templates/history.html:11
 msgid "Ultime analisi"
@@ -4362,7 +4994,7 @@ msgid "In vendita"
 msgstr "Jetzt verfügbar"
 
 #: templates/landing.html:115 templates/landing.html:130 templates/pricing.html:27
-#: templates/pricing.html:44 templates/pricing.html:94
+#: templates/pricing.html:44 templates/pricing.html:102
 msgid "/mese"
 msgstr "/Monat"
 
@@ -4377,8 +5009,8 @@ msgid ""
 msgstr "Kontinuierlicher Betrieb: measured SoV, Re-Scan, Alert und erweiterter Crawl."
 
 #: templates/landing.html:121 templates/landing.html:136
-#: templates/partials/dashboard_shell.html:118 templates/pricing.html:47
-#: templates/pricing.html:97
+#: templates/partials/dashboard_shell.html:97 templates/pricing.html:47
+#: templates/pricing.html:105
 msgid "Fino a"
 msgstr "Bis zu"
 
@@ -4394,8 +5026,8 @@ msgstr "Re-Scan · Citation Monitor Measured (0 Treffer → Estimated)"
 msgid "Alert · Edge completo · no API/WL"
 msgstr "Alerts · vollständiges Edge · keine API/WL"
 
-#: templates/landing.html:125 templates/pricing.html:58 templates/pricing.html:64
-#: templates/pricing.html:71
+#: templates/landing.html:125 templates/pricing.html:62 templates/pricing.html:69
+#: templates/pricing.html:77
 msgid "Scegli Plus"
 msgstr "Plus wählen"
 
@@ -4415,11 +5047,11 @@ msgstr ""
 "API, White-Label und Site-Skalierung für Agentur-Delivery — demnächst "
 "verfügbar. Heute starten wir mit Plus."
 
-#: templates/landing.html:136 templates/pricing.html:97
+#: templates/landing.html:136 templates/pricing.html:105
 msgid "domini / clienti"
 msgstr "Websites / Kunden"
 
-#: templates/landing.html:137 templates/pricing.html:98
+#: templates/landing.html:137 templates/pricing.html:106
 msgid "API"
 msgstr "API"
 
@@ -4676,10 +5308,6 @@ msgstr ""
 "(Generative Engine Optimization) Scores, Ergebnisse und Paket llms.txt/JSON-"
 "LD."
 
-#: templates/login.html:34 templates/partials/analyze_overlay.html:127
-msgid "Chiudi"
-msgstr "Schließen"
-
 #: templates/login.html:37
 msgid "Accesso"
 msgstr "Anmeldung"
@@ -4694,7 +5322,7 @@ msgstr ""
 "Melden Sie sich im Dashboard an, analysieren Sie Ihre Domain und laden Sie "
 "das Pack herunter."
 
-#: templates/login.html:56 templates/register.html:65 templates/settings.html:162
+#: templates/login.html:56 templates/register.html:65 templates/settings.html:181
 msgid "Password"
 msgstr "Passwort"
 
@@ -4855,7 +5483,7 @@ msgstr "Laufender Betrieb für Ihre Marke: Monitoring, Re-Scans und Citation Mon
 msgid "domini monitorati"
 msgstr "Überwachung"
 
-#: templates/pricing.html:48 templates/pricing.html:99
+#: templates/pricing.html:48 templates/pricing.html:107
 msgid "Re-scan giornaliero o settimanale"
 msgstr "Täglicher/wöchentlicher erneuter Scan"
 
@@ -4875,27 +5503,27 @@ msgstr "Prompt-Bank + Alert-E-Mail/Webhook"
 msgid "Edge Signals completo + storico run"
 msgstr "Vollständiges Edge Signals + Run-Verlauf"
 
-#: templates/pricing.html:80 templates/pricing.html:129
+#: templates/pricing.html:87 templates/pricing.html:144
 msgid "Annuale"
 msgstr "Jährlich"
 
-#: templates/pricing.html:80 templates/pricing.html:129
+#: templates/pricing.html:87 templates/pricing.html:144
 msgid "anno"
 msgstr "Jahr"
 
-#: templates/pricing.html:85
+#: templates/pricing.html:93
 msgid "Accedi e scegli Plus"
 msgstr "Anmelden und Plus wählen"
 
-#: templates/partials/dashboard_shell.html:12 templates/pricing.html:87
+#: templates/partials/dashboard_shell.html:12 templates/pricing.html:95
 msgid "Prenota Plus"
 msgstr "Plus buchen"
 
-#: templates/pricing.html:92
+#: templates/pricing.html:100
 msgid "Sales only"
 msgstr "Nur über Sales"
 
-#: templates/pricing.html:95
+#: templates/pricing.html:103
 msgid ""
 "Portfolio clienti: API, white-label e scala siti — onboarding assistito, "
 "niente checkout self-serve."
@@ -4903,49 +5531,49 @@ msgstr ""
 "Kundenportfolio: API, White-Label und Site-Skalierung — betreutes Onboarding,"
 " kein Self-Serve-Checkout."
 
-#: templates/pricing.html:98
+#: templates/pricing.html:106
 msgid "+ white-label"
 msgstr "White-Label MD"
 
-#: templates/pricing.html:100
+#: templates/pricing.html:108
 msgid "Export report MD/HTML white-label"
 msgstr "White-label MD/HTML-Report-Export"
 
-#: templates/pricing.html:101
+#: templates/pricing.html:109
 msgid "Tutto di Plus: citation monitor, Edge, alert, storico"
 msgstr "Alles aus Plus: Citation Monitor, Edge, Alerts, Verlauf"
 
-#: templates/pricing.html:102
+#: templates/pricing.html:110
 msgid "Ideale per retainer multi-cliente"
 msgstr "Agenturen mit mehreren Kunden"
 
-#: templates/pricing.html:107 templates/pricing.html:113 templates/pricing.html:120
+#: templates/pricing.html:119 templates/pricing.html:126 templates/pricing.html:134
 msgid "Passa a Business"
 msgstr "Zu Business wechseln"
 
-#: templates/pricing.html:134
+#: templates/pricing.html:150
 msgid "Accedi e passa a Business"
 msgstr "Anmelden und zu Business wechseln"
 
-#: templates/pricing.html:136
+#: templates/pricing.html:152
 msgid "Oggi vendiamo Plus self-serve. Business si attiva via sales / waitlist."
 msgstr ""
 "Heute verkaufen wir Plus im Self-Service. Business wird über Sales / Waitlist"
 " aktiviert."
 
-#: templates/pricing.html:137
+#: templates/pricing.html:153
 msgid "Richiedi onboarding Business"
 msgstr "Business-Onboarding anfragen"
 
-#: templates/pricing.html:144
+#: templates/pricing.html:160
 msgid "Evidence:"
 msgstr "Evidence:"
 
-#: templates/pricing.html:145
+#: templates/pricing.html:161
 msgid "= predisposizione strutturale (CVI / AIO / GEO dal crawl)."
 msgstr "= strukturelle Bereitschaft (CVI / AIO / GEO aus dem Crawl)."
 
-#: templates/pricing.html:146
+#: templates/pricing.html:162
 msgid ""
 "= probe LLM su Plus; se nessuna menzione, la share resta Stimata (proxy) — "
 "non azzeriamo i numeri utili."
@@ -4953,15 +5581,15 @@ msgstr ""
 "= LLM-Probes auf Plus; wenn es keine Erwähnung gibt, bleibt die Share "
 "Estimated (Proxy) — wir setzen nützliche Werte nicht auf null."
 
-#: templates/pricing.html:148
+#: templates/pricing.html:164
 msgid "Business: solo sales / waitlist."
 msgstr "Interesse / Waitlist"
 
-#: templates/pricing.html:152
+#: templates/pricing.html:168
 msgid "Pagamenti:"
 msgstr "Zahlungen:"
 
-#: templates/pricing.html:153
+#: templates/pricing.html:169
 msgid ""
 "I piani si confrontano su domini, re-scan e capability (API / white-label). "
 "La quota operativa è inclusa nel canone; eventuali top-up restano opzionali."
@@ -4970,213 +5598,406 @@ msgstr ""
 "verglichen. Das operative Kontingent ist in der Gebühr enthalten; eventuelle "
 "Top-ups bleiben optional."
 
+#: templates/privacy.html:2
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
 #: templates/privacy.html:3
 msgid ""
-"Informativa privacy di Centropic (centropic.ai): dati trattati per account, "
-"analisi siti e contatti. Titolare e diritti dell’interessato."
+"Informativa privacy Centropic: titolare, finalità, basi giuridiche, "
+"retention, trasferimenti, AI/LLM e diritti."
 msgstr ""
-"Datenschutzerklärung von Centropic (centropic.ai): verarbeitete Daten für "
-"Konten, Website-Analysen und Kontakte. Verantwortlicher und Rechte der "
-"betroffenen Person."
+"Datenschutzhinweise von Centropic: Verantwortlicher, Zwecke, "
+"Rechtsgrundlagen, Retention, Übermittlungen, AI/LLM und Rechte."
 
-#: templates/privacy.html:9 templates/rimborsi.html:9 templates/termini.html:9
-msgid "Legale"
-msgstr "Rechtlich"
+#: templates/privacy.html:10
+msgid "Informativa sulla privacy"
+msgstr "Datenschutzhinweise"
 
-#: templates/privacy.html:10 templates/register.html:127 templates/rimborsi.html:88
-msgid "Informativa privacy"
-msgstr "Datenschutzerklärung"
+#: templates/privacy.html:12 templates/termini.html:12
+msgid "Ultimo aggiornamento:"
+msgstr "Zuletzt aktualisiert:"
 
-#: templates/privacy.html:12
-msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Titolare: Centropic (centropic.ai) · "
-"Contatti:"
-msgstr ""
-"Letzte Aktualisierung: 27. Juli 2026 · Verantwortlicher: Centropic "
-"(centropic.ai) · Kontakte:"
-
-#: templates/privacy.html:18
-msgid "1. Cosa trattiamo"
-msgstr "1. Was wir verarbeiten"
+#: templates/privacy.html:15 templates/privacy.html:105 templates/termini.html:80
+msgid "Trasparenza AI"
+msgstr "AI-Transparenz"
 
 #: templates/privacy.html:20
+msgid "1. Titolare del trattamento"
+msgstr "1. Verantwortlicher"
+
+#: templates/privacy.html:22
+msgid "Il Titolare è"
+msgstr "Der Verantwortliche ist"
+
+#: templates/privacy.html:22
+msgid "P. IVA"
+msgstr "USt-IdNr."
+
+#: templates/privacy.html:23
+msgid "Contatto privacy:"
+msgstr "Datenschutzkontakt:"
+
+#: templates/privacy.html:26
 msgid ""
-"Per erogare il servizio SaaS trattiamo: dati di account (nome, email, "
-"password hashata, azienda/ruolo opzionali, telefono e paese se forniti), URL "
-"dei siti analizzati, risultati di analisi (score, findings, artifact "
-"generati), log tecnici di sicurezza (IP, timestamp) e messaggi inviati "
-"volontariamente (es. waitlist Plus)."
+"I dati societari completi (indirizzo e partita IVA) saranno pubblicati non "
+"appena disponibili nel registro imprese / configurazione operativa."
 msgstr ""
-"Um den SaaS-Dienst bereitzustellen, verarbeiten wir: Kontodaten (Name, "
-"E-Mail, gehashte Passwort, optional Unternehmen/Rolle, Telefon und Land, "
-"falls angegeben), URLs der analysierten Websites, Analyseergebnisse (Punkte, "
-"Erkenntnisse, generierte Artefakte), technische Sicherheitsprotokolle (IP, "
-"Zeitstempel) und freiwillig gesendete Nachrichten (z. B. Warteliste Plus)."
+"Die vollständigen Unternehmensdaten (Adresse und Umsatzsteuer-ID) werden "
+"veröffentlicht, sobald sie im Unternehmensregister / in der operativen "
+"Konfiguration verfügbar sind."
 
-#: templates/privacy.html:25
-msgid "2. Finalità e basi giuridiche"
-msgstr "2. Zwecke und Rechtsgrundlagen"
+#: templates/privacy.html:31
+msgid "2. Ambito e ruoli"
+msgstr "2. Umfang und Rollen"
 
-#: templates/privacy.html:27
-msgid "Esecuzione del contratto"
-msgstr "Vertragserfüllung"
+#: templates/privacy.html:33
+msgid "Titolare"
+msgstr "Verantwortlicher"
 
-#: templates/privacy.html:27
-msgid "account, analisi, pack, supporto."
-msgstr "Konto, Analysen, Paket, Unterstützung."
-
-#: templates/privacy.html:28
-msgid "Legittimo interesse"
-msgstr "Berechtigtes Interesse"
-
-#: templates/privacy.html:28
-msgid "sicurezza, prevenzione abusi, miglioramento prodotto."
-msgstr "Sicherheit, Missbrauchsverhütung, Produktverbesserung."
-
-#: templates/privacy.html:29
-msgid "Obblighi di legge"
-msgstr "Gesetzliche Verpflichtungen"
-
-#: templates/privacy.html:29
-msgid "ove applicabili (es. richieste autorità)."
-msgstr "sofern anwendbar (z. B. Anfragen von Behörden)."
-
-#: templates/privacy.html:30
-msgid "Consenso"
-msgstr "Einwilligung"
-
-#: templates/privacy.html:30
-msgid "solo per comunicazioni non essenziali, se richieste in futuro."
-msgstr "nur für nicht wesentliche Kommunikationen, falls in Zukunft angefordert."
-
-#: templates/privacy.html:35
-msgid "3. Analisi dei siti"
-msgstr "3. Website-Analysen"
-
-#: templates/privacy.html:37
+#: templates/privacy.html:33
 msgid ""
-"Quando inserisci un URL, Centropic effettua un crawl sul dominio indicato "
-"(pagine pubbliche raggiungibili) e probe di file come"
+"per account, autenticazione, fatturazione, sicurezza della piattaforma, "
+"analytics e marketing propri."
 msgstr ""
-"Wenn du eine URL eingibst, führt Centropic einen Crawl auf der angegebenen "
-"Domain durch (öffentliche, erreichbare Seiten) und prüft Dateien wie"
+"für Konto, Authentifizierung, Abrechnung, Plattformsicherheit, eigene "
+"Analytics- und Marketingzwecke."
+
+#: templates/privacy.html:34
+msgid "Responsabile"
+msgstr "Auftragsverarbeiter"
+
+#: templates/privacy.html:34
+msgid ""
+"quando trattiamo contenuti dei siti e output di analisi per conto del Cliente"
+" (B2B). Vedi"
+msgstr ""
+"wenn wir Website-Inhalte und Analyse-Outputs im Auftrag des Kunden (B2B) "
+"verarbeiten. Siehe"
 
 #: templates/privacy.html:39
+msgid "3. Categorie di dati"
+msgstr "3. Datenkategorien"
+
+#: templates/privacy.html:41
+msgid "Identità e contatto: email, nome, telefono (opzionale), lingua, fuso orario."
+msgstr "Identität und Kontakt: E-Mail, Name, Telefon (optional), Sprache, Zeitzone."
+
+#: templates/privacy.html:42
 msgid ""
-"Non dobbiamo accedere ad aree autenticate del tuo sito. Gli artifact generati"
-" restano nel tuo account finché non li elimini o chiudi l’account."
+"Account e autenticazione: hash password, sessioni, versioni sessione, log di "
+"accesso."
 msgstr ""
-"Wir müssen nicht auf authentifizierte Bereiche deiner Website zugreifen. Die "
-"generierten Artefakte bleiben in deinem Konto, bis du sie löschst oder das "
-"Konto schließt."
+"Konto und Authentifizierung: Passwort-Hashes, Sitzungen, Sitzungsversionen, "
+"Zugriffslogs."
+
+#: templates/privacy.html:43
+msgid ""
+"Fatturazione: piano, stato abbonamento, ID Paddle, storico crediti, waiver "
+"recesso digitale."
+msgstr ""
+"Abrechnung: Plan, Abonnementstatus, Paddle-ID, Credit-Historie, Verzicht auf "
+"digitales Widerrufsrecht."
 
 #: templates/privacy.html:44
-msgid "4. Pagamenti"
-msgstr "4. Zahlungen"
+msgid ""
+"Utilizzo prodotto: siti monitorati, run di analisi, findings, SoV, job "
+"status, preferenze."
+msgstr ""
+"Produktnutzung: überwachte Websites, Analyse-Runs, Findings, SoV, Job-Status,"
+" Präferenzen."
+
+#: templates/privacy.html:45
+msgid ""
+"Contenuti del Cliente: URL, testi/HTML acquisiti per analisi, output AI "
+"generati."
+msgstr ""
+"Kundeninhalte: URLs, für die Analyse erfasste Texte/HTML, generierte AI-"
+"Outputs."
 
 #: templates/privacy.html:46
 msgid ""
-"I pagamenti (abbonamento Plus e ricariche credito) sono elaborati da "
-"Paddle.com Market Limited in qualità di merchant of record. Centropic non "
-"memorizza i dati completi della carta. Paddle tratta i dati di fatturazione "
-"necessari all’incasso e alla fiscalità secondo la propria informativa; "
-"riceviamo da Paddle identificativi cliente/transazione, stato abbonamento e "
-"importi per attivare il piano e accreditare il saldo."
+"Tecnici: IP, user-agent, cookie/localStorage di preferenza e, se consenso, "
+"analytics/ads."
 msgstr ""
-"Zahlungen (Plus-Abonnement und Guthabenaufladungen) werden von Paddle.com "
-"Market Limited als Merchant of Record verarbeitet. Centropic speichert keine "
-"vollständigen Kartendaten. Paddle verarbeitet die für die Abrechnung und "
-"Besteuerung erforderlichen Rechnungsdaten gemäß seiner Datenschutzrichtlinie;"
-" wir erhalten von Paddle Kunden-/Transaktionsidentifikatoren, "
-"Abonnementstatus und Beträge, um den Plan zu aktivieren und das Guthaben "
-"gutzuschreiben."
+"Technische Daten: IP, User-Agent, Präferenz-Cookies/localStorage und, bei "
+"Einwilligung, Analytics/Ads."
 
-#: templates/privacy.html:51
-msgid "5. Conservazione e trasferimenti"
-msgstr "5. Aufbewahrung und Übertragungen"
+#: templates/privacy.html:47
+msgid "Supporto: messaggi inviati a"
+msgstr "Support: Nachrichten an"
 
-#: templates/privacy.html:53
-msgid ""
-"I dati restano finché l’account è attivo e per i tempi tecnici necessari dopo"
-" la chiusura (backup, sicurezza). L’infrastruttura è gestita dal titolare; "
-"eventuali fornitori (hosting, email transazionale, Paddle per i pagamenti, "
-"OpenAI e altri provider LLM se configurati per analisi/pack) trattano dati "
-"solo per conto del servizio o come autonomi titolari ove indicato (es. "
-"Paddle)."
-msgstr ""
-"Die Daten bleiben gespeichert, solange das Konto aktiv ist und für die "
-"technischen Zeiträume, die nach der Schließung erforderlich sind (Backup, "
-"Sicherheit). Die Infrastruktur wird vom Inhaber verwaltet; etwaige Anbieter "
-"(Hosting, transaktionale E-Mails, Paddle für Zahlungen, OpenAI und andere "
-"LLM-Anbieter, wenn sie für Analysen/Pack konfiguriert sind) verarbeiten Daten"
-" nur im Auftrag des Dienstes oder als eigenständige Verantwortliche, wo "
-"angegeben (z. B. Paddle)."
+#: templates/privacy.html:52
+msgid "4. Finalità e basi giuridiche"
+msgstr "4. Zwecke und Rechtsgrundlagen"
+
+#: templates/privacy.html:57
+msgid "Finalità"
+msgstr "Zweck"
 
 #: templates/privacy.html:58
-msgid "6. Diritti"
-msgstr "6. Rechte"
-
-#: templates/privacy.html:60
-msgid ""
-"Puoi chiedere accesso, rettifica, cancellazione, limitazione, portabilità e "
-"opposizione dalle"
-msgstr ""
-"Du kannst Zugang, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit"
-" und Widerspruch beantragen, indem du an schreibst:"
-
-#: templates/privacy.html:61
-msgid "Impostazioni account"
-msgstr "GEO-Einstellungen"
+msgid "Base giuridica"
+msgstr "Rechtsgrundlage"
 
 #: templates/privacy.html:62
-msgid "(export dati / elimina account) oppure scrivendo a"
-msgstr "(Datenexport / Konto löschen) oder per Nachricht an"
+msgid "Erogazione del Servizio SaaS e gestione account"
+msgstr "Bereitstellung des SaaS-Dienstes und Kontoverwaltung"
+
+#: templates/privacy.html:62
+msgid "Contratto (art. 6.1.b)"
+msgstr "Vertrag (Art. 6.1.b)"
+
+#: templates/privacy.html:63
+msgid "Fatturazione, crediti, adempimenti fiscali"
+msgstr "Abrechnung, Credits, steuerliche Pflichten"
+
+#: templates/privacy.html:63
+msgid "Contratto / obbligo legale (art. 6.1.b/c)"
+msgstr "Vertrag / rechtliche Verpflichtung (Art. 6.1.b/c)"
 
 #: templates/privacy.html:64
-msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
-msgstr ""
-"Du hast auch das Recht, bei der zuständigen Aufsichtsbehörde Beschwerde "
-"einzulegen."
+msgid "Sicurezza, prevenzione abusi, debug"
+msgstr "Sicherheit, Missbrauchsprävention, Debugging"
 
-#: templates/privacy.html:69
-msgid "7. Cookie"
-msgstr "7. Cookies"
+#: templates/privacy.html:64
+msgid "Legittimo interesse (art. 6.1.f)"
+msgstr "Berechtigtes Interesse (Art. 6.1.f)"
 
-#: templates/privacy.html:71
+#: templates/privacy.html:65
+msgid "Cookie analitici / pubblicitari"
+msgstr "Analyse-/Werbe-Cookies"
+
+#: templates/privacy.html:65
+msgid "Consenso (art. 6.1.a) — gestibile nel banner"
+msgstr "Einwilligung (Art. 6.1.a) — im Banner verwaltbar"
+
+#: templates/privacy.html:66
+msgid "Comunicazioni di servizio e legali"
+msgstr "Service- und Rechtsmitteilungen"
+
+#: templates/privacy.html:66
+msgid "Contratto / obbligo legale"
+msgstr "Vertrag / rechtliche Verpflichtung"
+
+#: templates/privacy.html:67
+msgid "Miglioramento prodotto (dati aggregati/anonimizzati)"
+msgstr "Produktverbesserung (aggregierte/anonymisierte Daten)"
+
+#: templates/privacy.html:67
+msgid "Legittimo interesse, con salvaguardie"
+msgstr "Berechtigtes Interesse, mit Schutzmaßnahmen"
+
+#: templates/privacy.html:74
+msgid "5. Periodi di conservazione"
+msgstr "5. Aufbewahrungsfristen"
+
+#: templates/privacy.html:76
 msgid ""
-"Usiamo cookie tecnici necessari al funzionamento del sito (sessione, "
-"protezione CSRF, preferenza lingua)."
+"Account attivo: per tutta la durata del rapporto + 30 giorni dopo chiusura "
+"(salvo obblighi legali)."
 msgstr ""
-"Wir verwenden technische Cookies, die für den Betrieb der Website "
-"erforderlich sind (Sitzung, CSRF-Schutz, Sprachpräferenz)."
-
-#: templates/privacy.html:73
-msgid ""
-"Con il tuo consenso (banner cookie) possiamo attivare Google Analytics 4 e, "
-"se configurati, Google Ads / AdSense per misurazione e annunci. Il consenso è"
-" gestito con"
-msgstr ""
-"Mit deiner Einwilligung (Cookie-Banner) können wir Google Analytics 4 "
-"aktivieren und, falls konfiguriert, Google Ads / AdSense für Messungen und "
-"Anzeigen aktivieren. Die Einwilligung wird verwaltet mit"
-
-#: templates/privacy.html:75
-msgid ""
-"di default storage analytics/ads è negato (UE); puoi accettare o rifiutare in"
-" qualsiasi momento cancellando i dati del sito e ricaricando la pagina. Non "
-"attiviamo AdSense senza consenso pubblicitario."
-msgstr ""
-"standardmäßig ist die Speicherung von Analysen/Werbung abgelehnt (EU); du "
-"kannst jederzeit zustimmen oder ablehnen, indem du die Site-Daten löschst und"
-" die Seite neu lädst. Wir aktivieren AdSense nicht ohne Werbeeinwilligung."
+"Aktives Konto: für die Dauer der Geschäftsbeziehung + 30 Tage nach Schließung"
+" (vorbehaltlich gesetzlicher Pflichten)."
 
 #: templates/privacy.html:77
+msgid "Dati di fatturazione e fiscali: fino a 10 anni ove richiesto dalla legge."
+msgstr "Abrechnungs- und Steuerdaten: bis zu 10 Jahre, soweit gesetzlich erforderlich."
+
+#: templates/privacy.html:78
+msgid "Log di sicurezza e accesso: tipicamente 12 mesi."
+msgstr "Sicherheits- und Zugriffslogs: typischerweise 12 Monate."
+
+#: templates/privacy.html:79
 msgid ""
-"Attualmente non sono attivi cookie di misurazione o pubblicitari di terze "
-"parti su questo sito."
+"Run di analisi e contenuti associati: fino a cancellazione account/sito o "
+"richiesta del Cliente; backup residui fino a 90 giorni."
 msgstr ""
-"Derzeit sind auf dieser Website keine Mess- oder Werbe-Cookies von "
-"Drittanbietern aktiv."
+"Analyse-Runs und zugehörige Inhalte: bis zur Löschung des Kontos/der Website "
+"oder auf Anfrage des Kunden; verbleibende Backups bis zu 90 Tage."
+
+#: templates/privacy.html:80
+msgid "Preferenze cookie: fino a 12 mesi, poi riesame del consenso."
+msgstr ""
+"Cookie-Präferenzen: bis zu 12 Monate, anschließend erneute Prüfung der "
+"Einwilligung."
+
+#: templates/privacy.html:81
+msgid "Ticket di supporto: fino a 24 mesi dalla chiusura."
+msgstr "Support-Tickets: bis zu 24 Monate nach Abschluss."
+
+#: templates/privacy.html:86
+msgid "6. Destinatari e sub-responsabili"
+msgstr "6. Empfänger und Unterauftragsverarbeiter"
+
+#: templates/privacy.html:88
+msgid ""
+"Trattiamo dati con fornitori strettamente necessari (hosting, database, "
+"email, pagamenti, modelli AI). Elenco attivo:"
+msgstr ""
+"Wir verarbeiten Daten mit strikt erforderlichen Anbietern (Hosting, "
+"Datenbank, E-Mail, Zahlungen, AI-Modelle). Aktive Liste:"
+
+#: templates/privacy.html:89
+msgid "Sub-responsabili"
+msgstr "Unterauftragsverarbeiter"
+
+#: templates/privacy.html:90
+msgid "Paddle tratta i dati di pagamento come titolare autonomo per il checkout."
+msgstr ""
+"Paddle verarbeitet Zahlungsdaten als eigenständiger Verantwortlicher für den "
+"Checkout."
+
+#: templates/privacy.html:95
+msgid "7. Trasferimenti internazionali"
+msgstr "7. Internationale Übermittlungen"
+
+#: templates/privacy.html:97
+msgid ""
+"Alcuni fornitori possono trattare dati fuori SEE (es. USA). In tali casi "
+"usiamo salvaguardie adeguate (Clausole Contrattuali Standard / meccanismi "
+"equivalenti del fornitore) e minimizzazione. Dettagli per fornitore nella "
+"pagina Sub-responsabili e nelle rispettive DPA."
+msgstr ""
+"Einige Anbieter können Daten außerhalb des EWR verarbeiten (z. B. USA). In "
+"solchen Fällen verwenden wir geeignete Schutzmaßnahmen "
+"(Standardvertragsklauseln / gleichwertige Mechanismen des Anbieters) und "
+"Datenminimierung. Details je Anbieter finden Sie auf der Seite "
+"Unterauftragsverarbeiter und in den jeweiligen DPA."
+
+#: templates/privacy.html:102
+msgid "8. Decisioni automatizzate e AI"
+msgstr "8. Automatisierte Entscheidungen und AI"
+
+#: templates/privacy.html:104
+msgid ""
+"Il Servizio genera score, findings e raccomandazioni tramite modelli AI. Non "
+"prendiamo decisioni esclusivamente automatizzate che producano effetti "
+"giuridici significativi sull’interessato ai sensi dell’art. 22 GDPR senza "
+"intervento umano. Maggiori dettagli:"
+msgstr ""
+"Der Dienst generiert Scores, Findings und Empfehlungen mithilfe von AI-"
+"Modellen. Wir treffen ohne menschliches Eingreifen keine ausschließlich "
+"automatisierten Entscheidungen, die gegenüber der betroffenen Person "
+"erhebliche rechtliche Wirkungen im Sinne von Art. 22 GDPR entfalten. Weitere "
+"Details:"
+
+#: templates/privacy.html:110
+msgid "9. Cookie e tracciamento"
+msgstr "9. Cookies und Tracking"
+
+#: templates/privacy.html:112
+msgid "Vedi la"
+msgstr "Siehe die"
+
+#: templates/privacy.html:113
+msgid ""
+"Puoi modificare il consenso in qualsiasi momento tramite “Gestisci consenso” "
+"nel footer."
+msgstr ""
+"Sie können Ihre Einwilligung jederzeit über „Einwilligung verwalten“ im "
+"Footer ändern."
+
+#: templates/privacy.html:118
+msgid "10. Diritti dell’interessato"
+msgstr "10. Rechte der betroffenen Person"
+
+#: templates/privacy.html:120
+msgid ""
+"Hai diritto di accesso, rettifica, cancellazione, limitazione, portabilità, "
+"opposizione e revoca del consenso. Scrivi a"
+msgstr ""
+"Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, "
+"Datenübertragbarkeit, Widerspruch und Widerruf Ihrer Einwilligung. Schreiben "
+"Sie an"
+
+#: templates/privacy.html:122
+msgid ""
+"Puoi reclamare al Garante Privacy (Italia) o all’autorità del tuo Paese "
+"UE/SEE."
+msgstr ""
+"Sie können Beschwerde bei der italienischen Datenschutzaufsicht oder bei der "
+"Behörde Ihres EU-/EWR-Landes einlegen."
+
+#: templates/privacy.html:127
+msgid "11. Minori"
+msgstr "11. Minderjährige"
+
+#: templates/privacy.html:129
+msgid ""
+"Il Servizio è destinato a utenti professionali maggiorenni. Non raccogliamo "
+"consapevolmente dati di minori di 16 anni. Se ritieni che un minore ci abbia "
+"fornito dati, contattaci per la cancellazione."
+msgstr ""
+"Der Dienst richtet sich an volljährige professionelle Nutzer. Wir erheben "
+"wissentlich keine Daten von Minderjährigen unter 16 Jahren. Wenn Sie glauben,"
+" dass uns ein Minderjähriger Daten bereitgestellt hat, kontaktieren Sie uns "
+"bitte zur Löschung."
+
+#: templates/privacy.html:134
+msgid "12. Sicurezza e data breach"
+msgstr "12. Sicherheit und Data Breaches"
+
+#: templates/privacy.html:136
+msgid ""
+"Adottiamo misure tecniche e organizzative appropriate (cifratura in transito,"
+" controlli di accesso, segregazione tenant, backup). In caso di violazione "
+"dei dati personali con rischio per i diritti e le libertà, notificheremo "
+"l’autorità competente e, ove dovuto, gli interessati, nei termini di legge. "
+"Overview:"
+msgstr ""
+"Wir setzen geeignete technische und organisatorische Maßnahmen ein "
+"(Verschlüsselung bei Übertragung, Zugriffskontrollen, Tenant-Segregation, "
+"Backups). Bei einer Verletzung personenbezogener Daten mit Risiko für Rechte "
+"und Freiheiten benachrichtigen wir die zuständige Behörde und, soweit "
+"erforderlich, die betroffenen Personen innerhalb der gesetzlichen Fristen. "
+"Übersicht:"
+
+#: templates/privacy.html:137
+msgid "Trust & Security"
+msgstr "Vertrauen & Sicherheit"
+
+#: templates/privacy.html:142
+msgid "13. Note internazionali (ove applicabili)"
+msgstr "13. Internationale Hinweise (falls anwendbar)"
+
+#: templates/privacy.html:144
+msgid ""
+"se tratti dati di interessati UK, i diritti e le basi restano sostanzialmente"
+" allineati; contatto privacy invariato."
+msgstr ""
+"wenn Sie Daten von betroffenen Personen im UK verarbeiten, bleiben Rechte und"
+" Grundlagen im Wesentlichen abgestimmt; der Datenschutzkontakt bleibt "
+"unverändert."
+
+#: templates/privacy.html:145
+msgid ""
+"non vendiamo dati personali. Diritti di accesso/cancellazione/opt-out: "
+"contatta"
+msgstr ""
+"wir verkaufen keine personenbezogenen Daten. Rechte auf Auskunft/Löschung"
+"/Opt-out: kontaktieren Sie"
+
+#: templates/privacy.html:145
+msgid "Identificati come residente CA nella richiesta."
+msgstr "Weisen Sie sich in der Anfrage als in Kalifornien ansässig aus."
+
+#: templates/privacy.html:150
+msgid "14. Modifiche"
+msgstr "14. Änderungen"
+
+#: templates/privacy.html:152
+msgid ""
+"Possiamo aggiornare questa informativa. La versione corrente e la data sono "
+"indicate in cima. Per modifiche sostanziali, avviso in-app o email ove "
+"appropriato."
+msgstr ""
+"Wir können diese Hinweise aktualisieren. Die aktuelle Version und das Datum "
+"sind oben angegeben. Bei wesentlichen Änderungen informieren wir, soweit "
+"angemessen, per In-App-Hinweis oder E-Mail."
+
+#: templates/privacy.html:155
+msgid "Versioni documenti:"
+msgstr "Dokumentversionen:"
 
 #: templates/pro_interest.html:2
 msgid "Interesse piani"
@@ -5462,10 +6283,6 @@ msgstr "Passwort bestätigen"
 msgid "Azienda / Brand"
 msgstr "Unternehmen / Marke"
 
-#: templates/register.html:103
-msgid "Ruolo"
-msgstr "Rolle"
-
 #: templates/register.html:109
 msgid "Sito web principale"
 msgstr "Hauptwebsite"
@@ -5485,6 +6302,11 @@ msgstr "Ich akzeptiere die"
 #: templates/register.html:126
 msgid "e l’"
 msgstr "und die"
+
+#: templates/register.html:127 templates/rimborsi.html:88
+#: templates/termini.html:125
+msgid "Informativa privacy"
+msgstr "Datenschutzerklärung"
 
 #: templates/register.html:128
 msgid "di Centropic (centropic.ai)."
@@ -5525,7 +6347,8 @@ msgstr ""
 msgid "Richiedi un nuovo link"
 msgstr "Fordere einen neuen Link an"
 
-#: templates/rimborsi.html:2 templates/rimborsi.html:10 templates/termini.html:66
+#: templates/partials/digital_service_waiver.html:14 templates/rimborsi.html:2
+#: templates/rimborsi.html:10
 msgid "Politica di rimborso"
 msgstr "Rückerstattungsrichtlinie"
 
@@ -5540,10 +6363,6 @@ msgstr ""
 #: templates/rimborsi.html:12
 msgid "Ultimo aggiornamento: 30 luglio 2026 · Contatti:"
 msgstr "Letzte Aktualisierung: 30. Juli 2026 · Kontakte:"
-
-#: templates/rimborsi.html:18
-msgid "1. Ambito"
-msgstr "1. Geltungsbereich"
 
 #: templates/rimborsi.html:20
 msgid ""
@@ -5583,11 +6402,9 @@ msgid ""
 "Se richiedi l’erogazione immediata del servizio (accesso al piano o accredito"
 " crediti) e riconosci di perdere il diritto di recesso una volta iniziata "
 "l’erogazione, il recesso non si applica dopo che il servizio è stato avviato."
+" Il consenso è raccolto con checkbox esplicita prima del checkout "
+"Plus/crediti."
 msgstr ""
-"Wenn du die sofortige Bereitstellung des Dienstes (Zugang zum Plan oder "
-"Gutschrift von Krediten) anforderst und anerkennst, dass du dein "
-"Widerrufsrecht verlierst, sobald die Bereitstellung begonnen hat, gilt das "
-"Widerrufsrecht nicht mehr, nachdem der Dienst gestartet wurde."
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -6001,42 +6818,89 @@ msgid "Esci ovunque"
 msgstr "Überall abmelden"
 
 #: templates/settings.html:150
+msgid "Fatturazione e cancellazione"
+msgstr "Abrechnung und Kündigung"
+
+#: templates/settings.html:153
+msgid "Piano attuale:"
+msgstr "Aktueller Plan:"
+
+#: templates/settings.html:154 templates/termini.html:48
+msgid "I pagamenti sono gestiti da Paddle (Merchant of Record)."
+msgstr "Zahlungen werden von Paddle (Merchant of Record) abgewickelt."
+
+#: templates/settings.html:157
+msgid ""
+"Per cambiare carta, scaricare fatture o annullare il rinnovo: usa il link "
+"“Manage subscription” nella ricevuta Paddle, oppure invia richiesta a"
+msgstr ""
+"Um die Karte zu ändern, Rechnungen herunterzuladen oder die Verlängerung zu "
+"kündigen: Nutzen Sie den Link „Manage subscription“ in der Paddle-Quittung "
+"oder senden Sie eine Anfrage an"
+
+#: templates/settings.html:158
+msgid ""
+"Dopo la cancellazione resti attivo fino a fine periodo già pagato; i crediti "
+"consumati non si ripristinano."
+msgstr ""
+"Nach der Kündigung bleibt Ihr Zugang bis zum Ende des bereits bezahlten "
+"Zeitraums aktiv; verbrauchte Credits werden nicht wiederhergestellt."
+
+#: templates/settings.html:158 templates/termini.html:49
+msgid "Politica rimborsi"
+msgstr "Erstattungsrichtlinie"
+
+#: templates/settings.html:159
+msgid "Vedi piani e prezzi"
+msgstr "Pläne und Preise ansehen"
+
+#: templates/settings.html:159
+msgid "Top-up crediti"
+msgstr "Credit-Top-up"
+
+#: templates/settings.html:163
+msgid "Come gestire / annullare abbonamento"
+msgstr "Abonnement verwalten / kündigen"
+
+#: templates/settings.html:169
 msgid "Dati e account"
 msgstr "Kontostatus"
 
-#: templates/settings.html:154
+#: templates/settings.html:173
 msgid "Scarica un export JSON con profilo e siti (portabilità)."
 msgstr "Laden Sie einen JSON-Export mit Profil und Websites herunter (Portabilität)."
 
-#: templates/settings.html:155
+#: templates/settings.html:174
 msgid "Esporta i miei dati"
 msgstr "Meine Daten exportieren"
 
-#: templates/settings.html:160
-msgid ""
-"Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima dal "
-"billing."
+#: templates/settings.html:179
+msgid "Eliminazione definitiva. Se hai un abbonamento attivo, cancellalo prima da"
 msgstr ""
 "Endgültige Löschung. Wenn Sie ein aktives Abonnement haben, kündigen Sie es "
-"zuerst im Billing."
+"zuerst unter"
 
-#: templates/settings.html:165
+#: templates/settings.html:179
+msgid "Fatturazione"
+msgstr "Abrechnung"
+
+#: templates/settings.html:184
 msgid "Confermo di voler eliminare l’account"
 msgstr "Ich bestätige, dass ich das Konto löschen möchte"
 
-#: templates/settings.html:172
+#: templates/settings.html:191
 msgid "White-label agenzia"
 msgstr "White-Label-Agentur"
 
-#: templates/settings.html:177
+#: templates/settings.html:196
 msgid "Logo URL"
 msgstr "Logo-URL"
 
-#: templates/settings.html:178
+#: templates/settings.html:197
 msgid "Colore"
 msgstr "Farbe"
 
-#: templates/settings.html:179
+#: templates/settings.html:198
 msgid "Nota"
 msgstr "Hinweis"
 
@@ -6205,162 +7069,342 @@ msgstr "Analysiere eine Website"
 
 #: templates/termini.html:3
 msgid ""
-"Termini di servizio Centropic (centropic.ai): uso del SaaS di AI-Driven "
-"Visibility (AIO) e Generative Engine Optimization (GEO), limiti e "
-"responsabilità."
+"Termini di servizio Centropic: account, piani, crediti, IP, responsabilità e "
+"legge applicabile."
 msgstr ""
-"Nutzungsbedingungen von Centropic (centropic.ai): Nutzung der SaaS für AI-"
-"Driven Visibility (AIO) und Generative Engine Optimization (GEO), Grenzen und"
-" Haftung."
+"Nutzungsbedingungen von Centropic: Konto, Pläne, Credits, IP, Haftung und "
+"anwendbares Recht."
 
-#: templates/termini.html:12
-msgid ""
-"Ultimo aggiornamento: 27 luglio 2026 · Accettando la registrazione accetti "
-"questi termini. Contatti:"
-msgstr ""
-"Letzte Aktualisierung: 27. Juli 2026 · Mit der Registrierung akzeptierst du "
-"diese Bedingungen. Kontakte:"
-
-#: templates/termini.html:18
-msgid "1. Servizio"
-msgstr "1. Dienst"
+#: templates/termini.html:9
+msgid "Legal"
+msgstr "Rechtliches"
 
 #: templates/termini.html:20
+msgid "1. Premessa"
+msgstr "1. Einleitung"
+
+#: templates/termini.html:22
 msgid ""
-"Centropic è un software-as-a-service che analizza siti web pubblici e genera "
-"score"
+"Questi Termini regolano l’uso della piattaforma Centropic (“Servizio”) "
+"fornita da"
 msgstr ""
-"Centropic ist eine Software-as-a-Service, die öffentliche Websites analysiert"
-" und Scores generiert"
-
-#: templates/termini.html:23
-msgid "findings e artifact (es."
-msgstr "Ergebnisse und Artefakte (z. B."
-
-#: templates/termini.html:23
-msgid "bozza"
-msgstr "Entwurf"
+"Diese Bedingungen regeln die Nutzung der von folgender Stelle "
+"bereitgestellten Centropic-Plattform („Dienst“):"
 
 #: templates/termini.html:24
-msgid "Non è un Geographic Information System (GIS) né una suite All-in-One generica."
+msgid ""
+"Accedendo o usando il Servizio accetti i Termini. Se agisci per "
+"un’organizzazione, dichiari di avere autorità a vincolarla."
 msgstr ""
-"Es ist kein Geographic Information System (GIS) und auch kein generisches "
-"All-in-One-Paket."
+"Durch Zugriff auf den Dienst oder seine Nutzung akzeptieren Sie die "
+"Bedingungen. Wenn Sie für eine Organisation handeln, erklären Sie, dass Sie "
+"befugt sind, diese zu binden."
 
 #: templates/termini.html:29
-msgid "2. Natura degli score"
-msgstr "2. Natur der Scores"
+msgid "2. Descrizione del Servizio"
+msgstr "2. Beschreibung des Dienstes"
 
 #: templates/termini.html:31
-msgid "Gli score AIO/GEO misurano la"
-msgstr "Sind die Scores AIO und GEO Live-Messungen der IA?"
-
-#: templates/termini.html:33
 msgid ""
-"del sito (contenuto, schema, robots, llms, entity): quanto brand e pagine "
-"sono leggibili dai crawler generativi. Il Centropic Visibility Index (CVI) "
-"sintetizza AIO/GEO; la citation share può essere Stimata (da struttura) o "
-"Misurata (campioni LLM su Plus/Business)."
+"Centropic è un SaaS B2B di intelligence AIO/GEO: analisi di siti, score, "
+"share of voice, findings e deliverable correlati. Le funzionalità dipendono "
+"dal piano e dalle capacità abilitate. Il Servizio può evolvere; funzioni beta"
+" possono essere modificate o ritirate con preavviso ragionevole ove "
+"praticabile."
 msgstr ""
-"der Website (content, schema, robots, llms, entity): wie gut Marke und Seiten"
-" für generative Crawler lesbar sind. Der Centropic Visibility Index (CVI) "
-"fasst AIO/GEO zusammen; Citation Share kann Estimated (aus Struktur) oder "
-"Measured (LLM-Stichproben auf Plus/Business) sein."
+"Centropic ist ein B2B-SaaS für AIO/GEO-Intelligence: Website-Analysen, "
+"Scores, Share of Voice, Findings und zugehörige Deliverables. Funktionen "
+"hängen vom Plan und den aktivierten Fähigkeiten ab. Der Dienst kann sich "
+"weiterentwickeln; Beta-Funktionen können, soweit praktikabel, mit "
+"angemessener Vorankündigung geändert oder eingestellt werden."
 
-#: templates/termini.html:34
-msgid ""
-"Centropic garantisce il lavoro di diagnosi e predisposizione sul tuo dominio;"
-" non garantisce ranking o menzioni nelle interfacce di modelli di terzi, che "
-"restano indipendenti."
+#: templates/termini.html:36
+msgid "3. Account e idoneità"
+msgstr "3. Konto und Berechtigung"
+
+#: templates/termini.html:38
+msgid "Devi fornire informazioni accurate e mantenere la sicurezza delle credenziali."
 msgstr ""
-"Centropic garantiert die Diagnose- und Bereitschaftsarbeit auf Ihrer Domain; "
-"Rankings oder Erwähnungen in den Oberflächen von Drittanbieter-Modellen, die "
-"unabhängig bleiben, werden nicht garantiert."
+"Sie müssen korrekte Informationen bereitstellen und die Sicherheit Ihrer "
+"Zugangsdaten wahren."
 
 #: templates/termini.html:39
-msgid "3. Account e uso corretto"
-msgstr "3. Konto und ordnungsgemäße Nutzung"
+msgid "Il Servizio è destinato a utenti professionali maggiorenni."
+msgstr "Der Dienst richtet sich an volljährige professionelle Nutzer."
 
-#: templates/termini.html:41
-msgid "Fornisci dati veritieri e custodisci le credenziali."
-msgstr "Gib wahrheitsgemäße Daten an und bewahre die Anmeldeinformationen sicher auf."
-
-#: templates/termini.html:42
-msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
-msgstr ""
-"Analysiere nur Websites, für die du das Recht hast, ein technisches Audit "
-"anzufordern."
-
-#: templates/termini.html:43
+#: templates/termini.html:40
 msgid ""
-"Non usare il servizio per scansioni abusive, attacchi o accesso a reti "
-"private."
+"Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati "
+"della tua organizzazione."
 msgstr ""
-"Verwende den Dienst nicht für missbräuchliche Scans, Angriffe oder den "
-"Zugriff auf private Netzwerke."
+"Sie sind für Aktivitäten unter Ihrem Konto verantwortlich, einschließlich "
+"eingeladener Nutzer Ihrer Organisation."
 
-#: templates/termini.html:44
-msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
-msgstr "Beachte die Rate-Limits und Pläne (Free / Plus / Business)."
+#: templates/termini.html:45
+msgid "4. Piani, crediti e pagamenti"
+msgstr "4. Pläne, Credits und Zahlungen"
+
+#: templates/termini.html:47
+msgid ""
+"I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. "
+"I prezzi includono IVA ove applicabile secondo checkout Paddle."
+msgstr ""
+"Die Pläne Free / Plus / Business und Credit-Top-ups sind im Pricing "
+"beschrieben. Preise enthalten, soweit anwendbar, Umsatzsteuer gemäß Paddle-"
+"Checkout."
 
 #: templates/termini.html:49
-msgid "4. Artifact e responsabilità"
-msgstr "4. Artefakte und Verantwortung"
+msgid ""
+"I crediti consumati per analisi non sono rimborsabili salvo quanto previsto "
+"nella"
+msgstr ""
+"Für Analysen verbrauchte Credits sind nicht erstattungsfähig, außer wie "
+"vorgesehen in der"
+
+#: templates/termini.html:50
+msgid ""
+"Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o "
+"contattando"
+msgstr ""
+"Sie können Ihr Abonnement unter Einstellungen → Abrechnung verwalten oder "
+"kündigen oder sich wenden an"
 
 #: templates/termini.html:51
 msgid ""
-"Gli artifact generati sono bozze operative: la pubblicazione sul tuo sito, la"
-" conformità legale/SEO e l’impatto sulle performance restano a tuo carico. "
-"Centropic non risponde di decisioni di crawler o modelli di terzi."
+"Per contenuti digitali a esecuzione immediata, al checkout ti chiediamo di "
+"richiedere l’esecuzione e accettare la perdita del diritto di recesso 14 "
+"giorni (direttiva 2011/83/UE), ove applicabile."
 msgstr ""
-"Die generierten Artefakte sind Arbeitsentwürfe: Die Veröffentlichung auf "
-"deiner Website, die rechtliche/SEO-Konformität und die Auswirkungen auf die "
-"Leistung liegen in deiner Verantwortung. Centropic haftet nicht für "
-"Entscheidungen von Crawlern oder Modellen Dritter."
+"Bei digitalen Inhalten mit sofortiger Ausführung bitten wir Sie im Checkout, "
+"die Ausführung zu verlangen und, soweit anwendbar, den Verlust des 14-tägigen"
+" Widerrufsrechts zu akzeptieren (Richtlinie 2011/83/EU)."
 
 #: templates/termini.html:56
-msgid "5. Piani e disponibilità"
-msgstr "5. Pläne und Verfügbarkeit"
+msgid "5. Uso consentito e divieti"
+msgstr "5. Zulässige Nutzung und Verbote"
 
 #: templates/termini.html:58
 msgid ""
-"Il piano Free ha limiti rigorosi su siti (1) e analisi totali (2, senza "
-"reset). Plus e Business sono abbonamenti self-serve via Paddle quando il "
-"catalogo è configurato; altrimenti interesse via waitlist. Il servizio è "
-"fornito “as is”; possiamo sospendere account in caso di abuso o rischio "
-"sicurezza."
+"Non puoi: (a) usare il Servizio in violazione di legge; (b) tentare accesso "
+"non autorizzato; (c) interferire con infrastruttura o altri tenant; (d) "
+"rivendere il Servizio senza accordo; (e) caricare contenuti illeciti; (f) "
+"eludere limiti di piano o misure di sicurezza; (g) usare output per spamming "
+"abusivo o attività fraudolente."
 msgstr ""
-"Der Free-Plan hat strenge Limits bei Websites (1) und Gesamtanalysen (2, ohne"
-" Reset). Plus und Business sind Self-Serve-Abonnements über Paddle, sobald "
-"der Katalog konfiguriert ist; andernfalls Interesse über die Waitlist. Der "
-"Dienst wird „wie er ist“ bereitgestellt; wir können Konten bei Missbrauch "
-"oder Sicherheitsrisiko sperren."
+"Sie dürfen nicht: (a) den Dienst rechtswidrig nutzen; (b) unbefugten Zugriff "
+"versuchen; (c) Infrastruktur oder andere Tenants beeinträchtigen; (d) den "
+"Dienst ohne Vereinbarung weiterverkaufen; (e) rechtswidrige Inhalte "
+"hochladen; (f) Plan-Limits oder Sicherheitsmaßnahmen umgehen; (g) Outputs für"
+" missbräuchliches Spamming oder betrügerische Aktivitäten verwenden."
 
 #: templates/termini.html:63
-msgid "6. Pagamenti e rimborsi"
-msgstr "6. Zahlungen und Rückerstattungen"
+msgid "6. Contenuti del Cliente e licenza"
+msgstr "6. Kundeninhalte und Lizenz"
 
 #: templates/termini.html:65
-msgid "Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla"
-msgstr "Digitale Käufe (Abonnements und Credits) unterliegen der"
+msgid ""
+"Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). "
+"Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, "
+"elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
+"Dichiari di avere i diritti necessari sui siti analizzati."
+msgstr ""
+"Die Kundeninhalte (URLs, Website-Materialien, Anweisungen) bleiben Ihre. Sie "
+"gewähren uns eine nicht ausschließliche, weltweite, gebührenfreie Lizenz, "
+"diese Inhalte ausschließlich zur Bereitstellung des Dienstes zu hosten, zu "
+"verarbeiten und anzuzeigen. Sie erklären, dass Sie die erforderlichen Rechte "
+"an den analysierten Websites besitzen."
 
-#: templates/termini.html:67
-msgid "I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle)."
-msgstr "Zahlungen können von einem Drittanbieter verarbeitet werden (z. B. Paddle)."
+#: templates/termini.html:70
+msgid "7. Proprietà intellettuale del Fornitore"
+msgstr "7. Geistiges Eigentum des Providers"
 
 #: templates/termini.html:72
-msgid "7. Legge applicabile"
-msgstr "7. Anwendbares Recht"
-
-#: templates/termini.html:74
 msgid ""
-"Salvo norme imperative diverse, si applica la legge italiana. Per "
-"controversie è competente il foro del titolare, fatti salvi i diritti del "
-"consumatore."
+"Piattaforma, software, marchi, UI, modelli di prompt e documentazione restano"
+" di proprietà del Fornitore o dei suoi licenzianti. Ti concediamo un diritto "
+"limitato, non trasferibile, di usare il Servizio durante l’abbonamento. Gli "
+"output generati per te possono essere usati nella tua attività, fermo "
+"restando che non acquisisci diritti sul software sottostante."
 msgstr ""
-"Sofern nicht anders vorgeschrieben, gilt das italienische Recht. Für "
-"Streitigkeiten ist das Gericht des Inhabers zuständig, unbeschadet der "
-"Verbraucherrechte."
+"Plattform, Software, Marken, UI, Prompt-Modelle und Dokumentation bleiben "
+"Eigentum des Providers oder seiner Lizenzgeber. Wir gewähren Ihnen ein "
+"beschränktes, nicht übertragbares Recht, den Dienst während des Abonnements "
+"zu nutzen. Die für Sie generierten Outputs dürfen Sie in Ihrem Geschäft "
+"verwenden; Sie erwerben jedoch keine Rechte an der zugrunde liegenden "
+"Software."
+
+#: templates/termini.html:77
+msgid "8. AI e natura degli output"
+msgstr "8. AI und Art der Outputs"
+
+#: templates/termini.html:79
+msgid ""
+"Score, findings e raccomandazioni sono strumenti di supporto decisionale "
+"basati su modelli AI e fonti pubbliche/crawl. Non costituiscono consulenza "
+"legale, fiscale o di compliance automatica. Devi verificare informazioni "
+"materialmente rilevanti prima di decisioni operative. Dettagli:"
+msgstr ""
+"Scores, Findings und Empfehlungen sind Entscheidungshilfen auf Basis von AI-"
+"Modellen und öffentlichen Quellen/Crawls. Sie stellen keine Rechts-, Steuer- "
+"oder automatische Compliance-Beratung dar. Sie müssen wesentlich relevante "
+"Informationen vor operativen Entscheidungen prüfen. Details:"
+
+#: templates/termini.html:85
+msgid "9. Disponibilità e modifiche"
+msgstr "9. Verfügbarkeit und Änderungen"
+
+#: templates/termini.html:87
+msgid ""
+"Ci impegniamo a mantenere il Servizio ragionevolmente disponibile, ma non "
+"promettiamo disponibilità ininterrotta o assenza di errori. Manutenzioni, "
+"force majeure, dipendenze di terzi (LLM, pagamenti, DNS) possono causare "
+"interruzioni. Possiamo modificare o sospendere funzionalità con comunicazione"
+" ragionevole per cambiamenti sostanziali a pagamento."
+msgstr ""
+"Wir bemühen uns, den Dienst angemessen verfügbar zu halten, versprechen "
+"jedoch keine ununterbrochene Verfügbarkeit oder Fehlerfreiheit. Wartung, "
+"höhere Gewalt und Abhängigkeiten von Dritten (LLM, Zahlungen, DNS) können "
+"Unterbrechungen verursachen. Bei wesentlichen kostenpflichtigen Änderungen "
+"können wir Funktionen mit angemessener Mitteilung ändern oder aussetzen."
+
+#: templates/termini.html:92
+msgid "10. Garanzie e disclaimer"
+msgstr "10. Gewährleistungen und Haftungsausschluss"
+
+#: templates/termini.html:94
+msgid ""
+"Il Servizio è fornito “così com’è” e “come disponibile”, nei limiti "
+"consentiti dalla legge. Nella misura massima consentita, escludiamo garanzie "
+"implicite di commerciabilità, idoneità a uno scopo particolare e non "
+"violazione. Nulla in questi Termini limita diritti inderogabili del "
+"consumatore ove tu ne sia uno; per clienti B2B tipici, le limitazioni di "
+"questa sezione si applicano pienamente."
+msgstr ""
+"Der Dienst wird im gesetzlich zulässigen Umfang „wie besehen“ und „wie "
+"verfügbar“ bereitgestellt. Soweit maximal zulässig, schließen wir "
+"stillschweigende Gewährleistungen der Marktgängigkeit, Eignung für einen "
+"bestimmten Zweck und Nichtverletzung von Rechten aus. Nichts in diesen "
+"Bedingungen beschränkt zwingende Verbraucherrechte, sofern Sie Verbraucher "
+"sind; für typische B2B-Kunden gelten die Beschränkungen dieses Abschnitts "
+"vollständig."
+
+#: templates/termini.html:99
+msgid "11. Limitazione di responsabilità"
+msgstr "11. Haftungsbeschränkung"
+
+#: templates/termini.html:100
+msgid "Nella misura massima consentita dalla legge applicabile:"
+msgstr "Im größtmöglichen Umfang nach anwendbarem Recht:"
+
+#: templates/termini.html:102
+msgid ""
+"non siamo responsabili per danni indiretti, consequenziali, lucro cessante, "
+"perdita di dati o interruzione di attività;"
+msgstr ""
+"haften wir nicht für indirekte Schäden, Folgeschäden, entgangenen Gewinn, "
+"Datenverlust oder Betriebsunterbrechungen;"
+
+#: templates/termini.html:103
+msgid ""
+"la responsabilità complessiva del Fornitore per eventi connessi al Servizio "
+"in un periodo di 12 mesi non supera l’importo da te pagato al Fornitore per "
+"il Servizio in tali 12 mesi (o €100 se non hai pagato);"
+msgstr ""
+"übersteigt die Gesamthaftung des Providers für Ereignisse im Zusammenhang mit"
+" dem Dienst innerhalb eines Zeitraums von 12 Monaten nicht den Betrag, den "
+"Sie dem Provider für den Dienst in diesen 12 Monaten gezahlt haben (oder 100 "
+"€, wenn Sie nicht gezahlt haben);"
+
+#: templates/termini.html:104
+msgid ""
+"le limitazioni non si applicano a dolo, colpa grave, o altre responsabilità "
+"che la legge non consente di escludere."
+msgstr ""
+"gelten die Beschränkungen nicht bei Vorsatz, grober Fahrlässigkeit oder "
+"sonstiger Haftung, deren Ausschluss gesetzlich nicht zulässig ist."
+
+#: templates/termini.html:109
+msgid "12. Indennizzo"
+msgstr "12. Freistellung"
+
+#: templates/termini.html:111
+msgid ""
+"Accetti di indennizzare il Fornitore da pretese di terzi derivanti dai tuoi "
+"Contenuti, dall’uso illecito del Servizio o dalla violazione di questi "
+"Termini, salvo dove la responsabilità sia esclusivamente imputabile al "
+"Fornitore."
+msgstr ""
+"Sie erklären sich bereit, den Provider von Ansprüchen Dritter freizustellen, "
+"die aus Ihren Inhalten, der rechtswidrigen Nutzung des Dienstes oder der "
+"Verletzung dieser Bedingungen entstehen, außer soweit die Verantwortung "
+"ausschließlich dem Provider zuzurechnen ist."
+
+#: templates/termini.html:116
+msgid "13. Sospensione e risoluzione"
+msgstr "13. Aussetzung und Beendigung"
+
+#: templates/termini.html:118
+msgid ""
+"Possiamo sospendere o chiudere l’accesso in caso di violazione, rischio di "
+"sicurezza, mancato pagamento o richiesta legale. Puoi chiudere l’account e "
+"annullare i rinnovi come indicato in Impostazioni / ricevuta Paddle. Alla "
+"cessazione, cessa il diritto d’uso; alcune obbligazioni (IP, responsabilità, "
+"indennizzo) sopravvivono."
+msgstr ""
+"Wir können den Zugriff bei Verstoß, Sicherheitsrisiko, Nichtzahlung oder "
+"rechtlicher Anforderung aussetzen oder schließen. Sie können das Konto "
+"schließen und Verlängerungen wie in den Einstellungen / der Paddle-Quittung "
+"angegeben kündigen. Bei Beendigung endet das Nutzungsrecht; bestimmte "
+"Pflichten (IP, Haftung, Freistellung) bestehen fort."
+
+#: templates/termini.html:123
+msgid "14. Privacy e DPA"
+msgstr "14. Datenschutz und DPA"
+
+#: templates/termini.html:125
+msgid "Il trattamento dati è descritto nell’"
+msgstr "Die Datenverarbeitung ist beschrieben in den"
+
+#: templates/termini.html:126
+msgid "Per trattamenti in qualità di responsabile, si applica il"
+msgstr "Für Verarbeitungen als Auftragsverarbeiter gilt das"
+
+#: templates/termini.html:131
+msgid "15. Legge applicabile e foro"
+msgstr "15. Anwendbares Recht und Gerichtsstand"
+
+#: templates/termini.html:133
+msgid ""
+"Questi Termini sono regolati dalla legge italiana. Foro competente: tribunali"
+" italiani, salvo foro inderogabile del consumatore ove applicabile."
+msgstr ""
+"Diese Bedingungen unterliegen italienischem Recht. Zuständiger Gerichtsstand:"
+" italienische Gerichte, vorbehaltlich eines zwingenden "
+"Verbrauchergerichtsstands, soweit anwendbar."
+
+#: templates/termini.html:138
+msgid "16. Modifiche ai Termini"
+msgstr "16. Änderungen der Bedingungen"
+
+#: templates/termini.html:140
+msgid ""
+"Possiamo aggiornare i Termini pubblicando la nuova versione con data e numero"
+" di versione (attualmente v"
+msgstr ""
+"Wir können die Bedingungen aktualisieren, indem wir die neue Version mit "
+"Datum und Versionsnummer veröffentlichen (derzeit v"
+
+#: templates/termini.html:140
+msgid ""
+"). L’uso continuato dopo la data di efficacia costituisce accettazione, salvo"
+" diversamente richiesto dalla legge."
+msgstr ""
+"). Die fortgesetzte Nutzung nach dem Wirksamkeitsdatum gilt als Annahme, "
+"sofern gesetzlich nichts anderes erforderlich ist."
+
+#: templates/termini.html:143
+msgid "Versioni:"
+msgstr "Versionen:"
 
 #: templates/topup.html:4
 msgid ""
@@ -6416,11 +7460,11 @@ msgstr "Saldo nach"
 msgid "Scegli un pacchetto"
 msgstr "Wähle ein Paket"
 
-#: templates/topup.html:72 templates/topup.html:78
+#: templates/topup.html:77 templates/topup.html:83
 msgid "credito operativo"
 msgstr "Drei Phasen. Operativer Output."
 
-#: templates/topup.html:85
+#: templates/topup.html:90
 msgid ""
 "Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. "
 "Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-"
@@ -6429,6 +7473,116 @@ msgstr ""
 "Extra-Guthaben bleibt im Saldo und wird nach dem monatlichen "
 "Verlängerungskontingent genutzt. Es ersetzt den Tarif nicht: Für mehr "
 "Domains, Re-Scan-Frequenz oder API/White-Label gehen Sie zu"
+
+#: templates/topup.html:92
+msgid "Legale:"
+msgstr ""
+
+#: templates/trust.html:2 templates/trust.html:10
+msgid "Trust & security"
+msgstr "Vertrauen & Sicherheit"
+
+#: templates/trust.html:3
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA e canali di "
+"supporto per clienti SaaS."
+msgstr ""
+"Centropic Trust: Sicherheit, Unterauftragsverarbeiter, Retention, DPA und "
+"Support-Kanäle für SaaS-Kunden."
+
+#: templates/trust.html:13
+msgid "Sintesi operativa per procurement e security review. Contatti:"
+msgstr "Operative Zusammenfassung für Procurement und Security Reviews. Kontakt:"
+
+#: templates/trust.html:19
+msgid "1. Controlli"
+msgstr "1. Kontrollen"
+
+#: templates/trust.html:21
+msgid "Sessioni firmate, CSRF su form di stato, CSP con nonce, password hashate."
+msgstr ""
+"Signierte Sitzungen, CSRF für zustandsändernde Formulare, CSP mit Nonce, "
+"gehashte Passwörter."
+
+#: templates/trust.html:22
+msgid "Isolamento tenant su query (user_id / organization)."
+msgstr "Tenant-Isolierung in Abfragen (user_id / organization)."
+
+#: templates/trust.html:23
+msgid ""
+"Webhook Paddle con verifica firma; billing fail-closed su credito "
+"insufficiente."
+msgstr ""
+"Paddle-Webhook mit Signaturprüfung; Billing fail-closed bei unzureichendem "
+"Credit."
+
+#: templates/trust.html:24
+msgid "SSRF guard sulle URL analizzate; rate limit su azioni sensibili."
+msgstr "SSRF-Schutz für analysierte URLs; Rate Limits für sensible Aktionen."
+
+#: templates/trust.html:29
+msgid "2. Sub-responsabili"
+msgstr "2. Unterauftragsverarbeiter"
+
+#: templates/trust.html:31
+msgid "Elenco attivo e DPA Art. 28 scaricabile:"
+msgstr "Aktive Liste und DPA Art. 28 zum Herunterladen:"
+
+#: templates/trust.html:34
+msgid "Download .txt"
+msgstr ".txt herunterladen"
+
+#: templates/trust.html:39
+msgid "3. Retention"
+msgstr "3. Retention"
+
+#: templates/trust.html:41
+msgid ""
+"Account e risultati: finché l’account è attivo + tempi tecnici post-chiusura "
+"(backup/sicurezza)."
+msgstr ""
+"Konto und Ergebnisse: solange das Konto aktiv ist + technische Fristen nach "
+"Schließung (Backup/Sicherheit)."
+
+#: templates/trust.html:42
+msgid "Pack/object storage analisi: tipicamente 90 giorni (configurabile)."
+msgstr "Analyse-Pack/Object Storage: typischerweise 90 Tage (konfigurierbar)."
+
+#: templates/trust.html:43
+msgid "Log tecnici di sicurezza: finché necessari a prevenzione abusi e debug."
+msgstr ""
+"Technische Sicherheitslogs: solange zur Missbrauchsprävention und zum "
+"Debugging erforderlich."
+
+#: templates/trust.html:44
+msgid "Ledger crediti / fatturazione: obblighi contabili e antifrode."
+msgstr "Credit-Ledger / Abrechnung: Buchführungs- und Betrugspräventionspflichten."
+
+#: templates/trust.html:49
+msgid "4. Diritti e incidenti"
+msgstr "4. Rechte und Vorfälle"
+
+#: templates/trust.html:51
+msgid "Export/delete dalle Impostazioni account. Per data breach o richieste privacy:"
+msgstr ""
+"Export/Löschung in den Kontoeinstellungen. Für Data Breaches oder "
+"Datenschutzanfragen:"
+
+#: templates/trust.html:53
+msgid ""
+"Miriamo a rispondere entro 30 giorni alle richieste degli interessati, salvo "
+"complessità."
+msgstr ""
+"Wir streben an, Anfragen betroffener Personen innerhalb von 30 Tagen zu "
+"beantworten, vorbehaltlich besonderer Komplexität."
+
+#: templates/trust.html:58
+msgid "5. Documenti correlati"
+msgstr "5. Zugehörige Dokumente"
+
+#: templates/trust.html:70
+msgid "Scarica DPA"
+msgstr "DPA herunterladen"
 
 #: templates/verify.html:11
 msgid "Controllo live: llms.txt / robots / ai.txt / sitemap / JSON-LD sul dominio."
@@ -6480,6 +7634,21 @@ msgstr "Export White-Label MD"
 msgid "Export white-label HTML"
 msgstr "Exportiere White-Label-HTML"
 
+#: templates/partials/analyze_overlay.html:10
+#: templates/partials/analyze_overlay.html:91
+msgid ""
+"Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
+"report."
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:14
+msgid "Stima: 30–90 secondi per crawl e pack"
+msgstr ""
+
+#: templates/partials/analyze_overlay.html:15
+msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
+msgstr ""
+
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
 msgstr "LIVE"
@@ -6497,8 +7666,8 @@ msgid "Avanzamento analisi"
 msgstr "Fortschritt"
 
 #: templates/partials/analyze_overlay.html:121
-msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
-msgstr "Fortschritt in Echtzeit · mit SoV Measured oft 1-3 Min."
+msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
+msgstr ""
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -6525,7 +7694,6 @@ msgid "White-label pack"
 msgstr "White-label Pack"
 
 #: templates/partials/app_sidebar.html:64
-#: templates/partials/dashboard_shell.html:55
 msgid "Grafici"
 msgstr "Diagramme"
 
@@ -6603,6 +7771,51 @@ msgstr ""
 "Wir verlangen keine Kreditkarte für den kostenlosen Plan; die Analysedaten "
 "bleiben in deinem Konto."
 
+#: templates/partials/competitor_snapshot.html:25
+msgid "Confronto"
+msgstr "Vergleich"
+
+#: templates/partials/competitor_snapshot.html:27
+msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:35
+#: templates/partials/competitor_snapshot.html:47
+msgid "Tu"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:36
+msgid "Tua soglia"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:45
+msgid "Il tuo brand"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:89
+msgid "Snapshot non disponibile"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:92
+msgid "n/d"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:110
+msgid "vs te"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:112
+msgid "Rivale"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:123
+msgid "Tuo AIO"
+msgstr ""
+
+#: templates/partials/competitor_snapshot.html:131
+msgid "Tuo GEO"
+msgstr ""
+
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
 msgstr "Siehe Plus-Plan"
@@ -6619,83 +7832,74 @@ msgstr "E-Mail bestätigen"
 msgid "Prima analisi del dominio"
 msgstr "Erste Domainanalyse"
 
-#: templates/partials/dashboard_shell.html:32
-msgid "Attiva prova Plus 7 giorni"
-msgstr "Aktivieren Sie die Plus-Testversion für 7 Tage"
-
-#: templates/partials/dashboard_shell.html:37
+#: templates/partials/dashboard_shell.html:31
 msgid "Invita un collega:"
 msgstr "Lade einen Kollegen ein:"
 
-#: templates/partials/dashboard_shell.html:39
-msgid "ricevi un bonus sulla quota piano quando conferma l’email."
-msgstr "Token, wenn du die E-Mail bestätigst."
+#: templates/partials/dashboard_shell.html:33
+msgid "ricevi un bonus quando attiva il piano Plus."
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:46
-msgid "Sintesi report"
-msgstr "Report-Zusammenfassung"
+#: templates/partials/dashboard_shell.html:47
+msgid "URL · crawl · score"
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:54
-#: templates/partials/dashboard_shell.html:69
-msgid "Nuova analisi"
-msgstr "Neue Analyse"
+#: templates/partials/dashboard_shell.html:55
+msgid "Dominio da analizzare"
+msgstr ""
 
-#: templates/partials/dashboard_shell.html:76
-msgid "Analizza un dominio"
-msgstr "Eine Domain analysieren"
-
-#: templates/partials/dashboard_shell.html:79
+#: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
 msgstr "Free-Kontingent aufgebraucht · auf Plus upgraden, um fortzufahren"
 
-#: templates/partials/dashboard_shell.html:81
+#: templates/partials/dashboard_shell.html:60
 msgid "Puoi ri-analizzare il sito già registrato · Plus per più brand"
 msgstr ""
 "Du kannst die bereits registrierte Website erneut analysieren · Plus für mehr"
 " Marken"
 
-#: templates/partials/dashboard_shell.html:83
+#: templates/partials/dashboard_shell.html:62
 msgid "Crawl BFS · intero sito"
 msgstr "Crawl BFS · gesamte Website"
 
-#: templates/partials/dashboard_shell.html:85
+#: templates/partials/dashboard_shell.html:64
 msgid "Crawl stesso dominio · max"
 msgstr "Crawl derselbe Domain · max"
 
-#: templates/partials/dashboard_shell.html:91
+#: templates/partials/dashboard_shell.html:70
 msgid "URL del dominio"
 msgstr "Domain-URL"
 
-#: templates/partials/dashboard_shell.html:101
+#: templates/partials/dashboard_shell.html:80
 msgid "Competitor snapshot (max 3)"
 msgstr "Wettbewerber-Snapshot (max. 3)"
 
-#: templates/partials/dashboard_shell.html:103
+#: templates/partials/dashboard_shell.html:82
 msgid "Suggerisci automatico"
 msgstr "Automatische Vorschläge"
 
-#: templates/partials/dashboard_shell.html:116
+#: templates/partials/dashboard_shell.html:95
 msgid "Deep crawl"
 msgstr "Deep Crawl"
 
-#: templates/partials/dashboard_shell.html:118
+#: templates/partials/dashboard_shell.html:97
 msgid "pagine — più lento"
 msgstr "Seiten — langsamer"
 
-#: templates/partials/dashboard_shell.html:119
+#: templates/partials/dashboard_shell.html:98
 msgid "Standard:"
 msgstr "Standard:"
 
-#: templates/partials/dashboard_shell.html:127
+#: templates/partials/dashboard_shell.html:106
 msgid "CVI/AIO/GEO restano"
 msgstr "AIO/GEO-Score und SoV"
 
-#: templates/partials/dashboard_shell.html:127
-#: templates/partials/dashboard_shell.html:132
+#: templates/partials/dashboard_shell.html:106
+#: templates/partials/dashboard_shell.html:111
 msgid "Stimati"
 msgstr "geschätzt"
 
-#: templates/partials/dashboard_shell.html:128
+#: templates/partials/dashboard_shell.html:107
 msgid ""
 "(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, la share "
 "resta Stimata (proxy)."
@@ -6703,41 +7907,70 @@ msgstr ""
 "(Struktur). Citation Monitor = Measured LLM-Probes; bei 0 Erwähnungen bleibt "
 "die Share Estimated (Proxy)."
 
-#: templates/partials/dashboard_shell.html:132
+#: templates/partials/dashboard_shell.html:111
 msgid "Score AIO/GEO e citation share"
 msgstr "AIO/GEO-Score und SoV"
 
-#: templates/partials/dashboard_shell.html:133
+#: templates/partials/dashboard_shell.html:112
 msgid "dalla struttura del dominio. Su Plus: probe LLM Misurati."
 msgstr "aus der Domain-Struktur. Auf Plus: Measured LLM-Probes."
 
-#: templates/partials/dashboard_shell.html:154
+#: templates/partials/dashboard_shell.html:133
 msgid "In coda"
 msgstr "In Warteschlange"
 
-#: templates/partials/dashboard_shell.html:154
+#: templates/partials/dashboard_shell.html:133
 msgid "In esecuzione"
 msgstr "Wird ausgeführt"
 
-#: templates/partials/dashboard_shell.html:159
+#: templates/partials/dashboard_shell.html:138
 msgid "Worker in avvio — di solito parte entro pochi secondi."
 msgstr "Worker wird gestartet — normalerweise innerhalb weniger Sekunden."
 
-#: templates/partials/dashboard_shell.html:161
+#: templates/partials/dashboard_shell.html:140
 msgid "Crawl, probe e scoring in corso (tipicamente 30–90 secondi)."
 msgstr "Crawl, Probe und Scoring laufen (typischerweise 30–90 Sekunden)."
 
-#: templates/partials/dashboard_shell.html:167
+#: templates/partials/dashboard_shell.html:146
+msgid "SoV measured in aggiornamento"
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:147
+msgid ""
+"Il report Stimato è già pronto. Le citation Misurate arrivano in background "
+"(1–3 min) senza bloccare la dashboard."
+msgstr ""
+
+#: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
 msgstr "Analyse fehlgeschlagen"
 
-#: templates/partials/dashboard_shell.html:168
+#: templates/partials/dashboard_shell.html:152
 msgid "Errore sconosciuto"
 msgstr "Unbekannter Fehler"
 
-#: templates/partials/dashboard_shell.html:170
+#: templates/partials/dashboard_shell.html:154
 msgid "Controlla l’URL e riprova. Supporto:"
 msgstr "Überprüfe die URL und versuche es erneut. Unterstützung:"
+
+#: templates/partials/digital_service_waiver.html:13
+msgid ""
+"Chiedo l’erogazione immediata del servizio digitale (attivazione piano o "
+"accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
+"una volta iniziata l’erogazione, ai sensi della"
+msgstr ""
+"Ich verlange die sofortige Bereitstellung des digitalen Dienstes (Aktivierung"
+" des Plans oder Gutschrift von Credits) und erkenne an, dass ich mein "
+"14-tägiges Widerrufsrecht verliere, sobald die Bereitstellung begonnen hat, "
+"gemäß der"
+
+#: templates/partials/digital_service_waiver.html:18
+msgid ""
+"Obbligatorio per procedere al checkout. Dettagli su rimborsi e crediti non "
+"usati nella policy."
+msgstr ""
+"Erforderlich, um mit dem Checkout fortzufahren. Details zu Erstattungen und "
+"nicht genutzten Credits finden Sie in der Richtlinie."
 
 #: templates/partials/edge_wizard.html:2
 msgid "Pubblica Edge Signals"
@@ -6962,57 +8195,545 @@ msgstr "unbegrenzt"
 msgid "Azioni SoV"
 msgstr "SoV-Aktionen"
 
-msgid "Invia pack via email"
-msgstr "Pack per E-Mail senden"
+msgid "Trust &amp; Security"
+msgstr "Vertrauen &amp; Sicherheit"
 
 msgid ""
-"Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo "
-"dominio."
+"Restano tuoi i Contenuti del Cliente (URL, materiali dei siti, istruzioni). "
+"Ci concedi una licenza non esclusiva, mondiale, royalty-free, per ospitare, "
+"elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
+"Dichiaro/dichiari di avere i diritti necessari sui siti analizzati."
 msgstr ""
-"Geben Sie die E-Mail-Adresse ein, an die Sie das HTML-Pack für diese Domain "
-"erhalten möchten."
+"Die Kundeninhalte (URLs, Website-Materialien, Anweisungen) bleiben Ihre. Sie "
+"gewähren uns eine nicht ausschließliche, weltweite, gebührenfreie Lizenz, "
+"diese Inhalte ausschließlich zur Bereitstellung des Dienstes zu hosten, zu "
+"verarbeiten und anzuzeigen. Sie erklären, dass Sie die erforderlichen Rechte "
+"an den analysierten Websites besitzen."
 
-msgid "Indirizzo email"
-msgstr "E-Mail-Adresse"
+#~ msgid ""
+#~ "Usiamo cookie tecnici e, con il tuo"
+#~ " consenso, strumenti Google (Analytics e/o "
+#~ "Ads/AdSense) per misurare il traffico e "
+#~ "mostrare annunci. Puoi accettare o "
+#~ "rifiutare. Dettagli nella"
+#~ msgstr ""
+#~ "Wir verwenden technische Cookies und, mit"
+#~ " deiner Zustimmung, Google-Tools (Analytics "
+#~ "und/oder Ads/AdSense), um den Verkehr zu "
+#~ "messen und Anzeigen zu zeigen. Du "
+#~ "kannst zustimmen oder ablehnen. Einzelheiten "
+#~ "in der"
 
-msgid "Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo."
-msgstr ""
-"Sie können es an sich selbst oder an einen Kollegen senden. Es gilt ein "
-"tägliches Anti-Missbrauchs-Limit."
+#~ msgid "Accetta"
+#~ msgstr "Akzeptieren"
 
-msgid "Invia pack"
-msgstr "Pack senden"
+#~ msgid "prova fino al"
+#~ msgstr "Testphase bis"
 
-msgid ""
-"Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da "
-"applicare sul sito live."
-msgstr ""
-"Eine einzelne HTML-Datei mit Head-Snippet, llms.txt, robots und Checkliste — "
-"bereit zur Anwendung auf der Live-Website."
+#~ msgid "fino al"
+#~ msgstr "bis zu"
 
-msgid "Indirizzo email non valido."
-msgstr "Ungültige E-Mail-Adresse."
+#~ msgid "Servizi del piano"
+#~ msgstr "Plan-Dienste"
 
-#, python-format
-msgid "Limite raggiunto: massimo %(n)s invii pack / 24h."
-msgstr "Limit erreicht: maximal %(n)s Pack-Sendungen / 24 Std."
+#~ msgid "Toolkit Business"
+#~ msgstr "Toolkit Business"
 
-msgid "Invio email non riuscito. Riprova tra poco o scarica il file HTML."
-msgstr ""
-"E-Mail-Versand fehlgeschlagen. Bitte versuchen Sie es gleich erneut oder "
-"laden Sie die HTML-Datei herunter."
+#~ msgid "Toolkit Plus"
+#~ msgstr "Toolkit Plus"
 
-#, python-format
-msgid "Pack inviato a %(email)s."
-msgstr "Pack an %(email)s gesendet."
+#~ msgid "Toolkit Free"
+#~ msgstr "Toolkit Free"
 
-msgid ""
-"Invio email non ancora attivo su questo server. Puoi scaricare il file HTML "
-"intanto."
-msgstr ""
-"Der E-Mail-Versand ist auf diesem Server noch nicht aktiv. Sie können die "
-"HTML-Datei vorerst herunterladen."
+#~ msgid "Vista report"
+#~ msgstr "Bericht anzeigen"
 
-msgid "Analisi non trovata."
-msgstr "Analyse nicht gefunden."
+#~ msgid ""
+#~ "AIO = AI-Driven Visibility · GEO "
+#~ "= Generative Engine Optimization. Score di"
+#~ " predisposizione strutturale (leggibilità per "
+#~ "crawler generativi)."
+#~ msgstr ""
+#~ "AIO = KI-gesteuerte Sichtbarkeit · GEO"
+#~ " = Generative Engine Optimization. Punktzahl"
+#~ " von Proben/Heuristiken, keine garantierten "
+#~ "Live-Zitationen."
+
+#~ msgid "Pack HTML con tutti i fix: head snippet, llms.txt, robots e checklist."
+#~ msgstr ""
+#~ "Eine einzige HTML-Datei mit allen "
+#~ "Fixes: head-Snippet, llms.txt, robots und"
+#~ " Checklist."
+
+#~ msgid "Scarica"
+#~ msgstr "Herunterladen"
+
+#~ msgid "Invia a"
+#~ msgstr "Senden an"
+
+#~ msgid "Azioni"
+#~ msgstr "Aktionen"
+
+#~ msgid "Connector CMS"
+#~ msgstr "CMS-Connector"
+
+#~ msgid "Attiva Edge"
+#~ msgstr "Aktiviere Edge"
+
+#~ msgid "White-label MD"
+#~ msgstr "White-Label MD"
+
+#~ msgid "White-label HTML"
+#~ msgstr "White-Label HTML"
+
+#~ msgid "GEO suite settings"
+#~ msgstr "GEO-Suite-Einstellungen"
+
+#~ msgid ""
+#~ "Informativa privacy di Centropic (centropic.ai):"
+#~ " dati trattati per account, analisi siti"
+#~ " e contatti. Titolare e diritti "
+#~ "dell’interessato."
+#~ msgstr ""
+#~ "Datenschutzerklärung von Centropic (centropic.ai): "
+#~ "verarbeitete Daten für Konten, Website-"
+#~ "Analysen und Kontakte. Verantwortlicher und "
+#~ "Rechte der betroffenen Person."
+
+#~ msgid ""
+#~ "Ultimo aggiornamento: 27 luglio 2026 · "
+#~ "Titolare: Centropic (centropic.ai) · Contatti:"
+#~ msgstr ""
+#~ "Letzte Aktualisierung: 27. Juli 2026 · "
+#~ "Verantwortlicher: Centropic (centropic.ai) · "
+#~ "Kontakte:"
+
+#~ msgid "1. Cosa trattiamo"
+#~ msgstr "1. Was wir verarbeiten"
+
+#~ msgid ""
+#~ "Per erogare il servizio SaaS trattiamo: "
+#~ "dati di account (nome, email, password "
+#~ "hashata, azienda/ruolo opzionali, telefono e "
+#~ "paese se forniti), URL dei siti "
+#~ "analizzati, risultati di analisi (score, "
+#~ "findings, artifact generati), log tecnici di"
+#~ " sicurezza (IP, timestamp) e messaggi "
+#~ "inviati volontariamente (es. waitlist Plus)."
+#~ msgstr ""
+#~ "Um den SaaS-Dienst bereitzustellen, "
+#~ "verarbeiten wir: Kontodaten (Name, E-Mail, "
+#~ "gehashte Passwort, optional Unternehmen/Rolle, "
+#~ "Telefon und Land, falls angegeben), URLs "
+#~ "der analysierten Websites, Analyseergebnisse "
+#~ "(Punkte, Erkenntnisse, generierte Artefakte), "
+#~ "technische Sicherheitsprotokolle (IP, Zeitstempel) "
+#~ "und freiwillig gesendete Nachrichten (z. B."
+#~ " Warteliste Plus)."
+
+#~ msgid "2. Finalità e basi giuridiche"
+#~ msgstr "2. Zwecke und Rechtsgrundlagen"
+
+#~ msgid "Esecuzione del contratto"
+#~ msgstr "Vertragserfüllung"
+
+#~ msgid "account, analisi, pack, supporto."
+#~ msgstr "Konto, Analysen, Paket, Unterstützung."
+
+#~ msgid "Legittimo interesse"
+#~ msgstr "Berechtigtes Interesse"
+
+#~ msgid "sicurezza, prevenzione abusi, miglioramento prodotto."
+#~ msgstr "Sicherheit, Missbrauchsverhütung, Produktverbesserung."
+
+#~ msgid "Obblighi di legge"
+#~ msgstr "Gesetzliche Verpflichtungen"
+
+#~ msgid "ove applicabili (es. richieste autorità)."
+#~ msgstr "sofern anwendbar (z. B. Anfragen von Behörden)."
+
+#~ msgid "solo per comunicazioni non essenziali, se richieste in futuro."
+#~ msgstr "nur für nicht wesentliche Kommunikationen, falls in Zukunft angefordert."
+
+#~ msgid "3. Analisi dei siti"
+#~ msgstr "3. Website-Analysen"
+
+#~ msgid ""
+#~ "Quando inserisci un URL, Centropic effettua"
+#~ " un crawl sul dominio indicato (pagine"
+#~ " pubbliche raggiungibili) e probe di file"
+#~ " come"
+#~ msgstr ""
+#~ "Wenn du eine URL eingibst, führt "
+#~ "Centropic einen Crawl auf der angegebenen"
+#~ " Domain durch (öffentliche, erreichbare Seiten)"
+#~ " und prüft Dateien wie"
+
+#~ msgid ""
+#~ "Non dobbiamo accedere ad aree autenticate"
+#~ " del tuo sito. Gli artifact generati "
+#~ "restano nel tuo account finché non li"
+#~ " elimini o chiudi l’account."
+#~ msgstr ""
+#~ "Wir müssen nicht auf authentifizierte "
+#~ "Bereiche deiner Website zugreifen. Die "
+#~ "generierten Artefakte bleiben in deinem "
+#~ "Konto, bis du sie löschst oder das "
+#~ "Konto schließt."
+
+#~ msgid "4. Pagamenti"
+#~ msgstr "4. Zahlungen"
+
+#~ msgid ""
+#~ "I pagamenti (abbonamento Plus e ricariche"
+#~ " credito) sono elaborati da Paddle.com "
+#~ "Market Limited in qualità di merchant "
+#~ "of record. Centropic non memorizza i "
+#~ "dati completi della carta. Paddle tratta "
+#~ "i dati di fatturazione necessari all’incasso"
+#~ " e alla fiscalità secondo la propria "
+#~ "informativa; riceviamo da Paddle identificativi"
+#~ " cliente/transazione, stato abbonamento e "
+#~ "importi per attivare il piano e "
+#~ "accreditare il saldo."
+#~ msgstr ""
+#~ "Zahlungen (Plus-Abonnement und "
+#~ "Guthabenaufladungen) werden von Paddle.com Market"
+#~ " Limited als Merchant of Record "
+#~ "verarbeitet. Centropic speichert keine "
+#~ "vollständigen Kartendaten. Paddle verarbeitet die"
+#~ " für die Abrechnung und Besteuerung "
+#~ "erforderlichen Rechnungsdaten gemäß seiner "
+#~ "Datenschutzrichtlinie; wir erhalten von Paddle "
+#~ "Kunden-/Transaktionsidentifikatoren, Abonnementstatus und "
+#~ "Beträge, um den Plan zu aktivieren und"
+#~ " das Guthaben gutzuschreiben."
+
+#~ msgid "5. Conservazione e trasferimenti"
+#~ msgstr "5. Aufbewahrung und Übertragungen"
+
+#~ msgid ""
+#~ "I dati restano finché l’account è "
+#~ "attivo e per i tempi tecnici necessari"
+#~ " dopo la chiusura (backup, sicurezza). "
+#~ "L’infrastruttura è gestita dal titolare; "
+#~ "eventuali fornitori (hosting, email transazionale,"
+#~ " Paddle per i pagamenti, OpenAI e "
+#~ "altri provider LLM se configurati per "
+#~ "analisi/pack) trattano dati solo per conto"
+#~ " del servizio o come autonomi titolari"
+#~ " ove indicato (es. Paddle)."
+#~ msgstr ""
+#~ "Die Daten bleiben gespeichert, solange das"
+#~ " Konto aktiv ist und für die "
+#~ "technischen Zeiträume, die nach der "
+#~ "Schließung erforderlich sind (Backup, Sicherheit)."
+#~ " Die Infrastruktur wird vom Inhaber "
+#~ "verwaltet; etwaige Anbieter (Hosting, "
+#~ "transaktionale E-Mails, Paddle für Zahlungen, "
+#~ "OpenAI und andere LLM-Anbieter, wenn "
+#~ "sie für Analysen/Pack konfiguriert sind) "
+#~ "verarbeiten Daten nur im Auftrag des "
+#~ "Dienstes oder als eigenständige Verantwortliche,"
+#~ " wo angegeben (z. B. Paddle)."
+
+#~ msgid "6. Diritti"
+#~ msgstr "6. Rechte"
+
+#~ msgid ""
+#~ "Puoi chiedere accesso, rettifica, cancellazione,"
+#~ " limitazione, portabilità e opposizione dalle"
+#~ msgstr ""
+#~ "Du kannst Zugang, Berichtigung, Löschung, "
+#~ "Einschränkung, Datenübertragbarkeit und Widerspruch "
+#~ "beantragen, indem du an schreibst:"
+
+#~ msgid "Impostazioni account"
+#~ msgstr "GEO-Einstellungen"
+
+#~ msgid "(export dati / elimina account) oppure scrivendo a"
+#~ msgstr "(Datenexport / Konto löschen) oder per Nachricht an"
+
+#~ msgid "Hai anche diritto di reclamare presso l’autorità di controllo competente."
+#~ msgstr ""
+#~ "Du hast auch das Recht, bei der "
+#~ "zuständigen Aufsichtsbehörde Beschwerde einzulegen."
+
+#~ msgid "7. Cookie"
+#~ msgstr "7. Cookies"
+
+#~ msgid ""
+#~ "Usiamo cookie tecnici necessari al "
+#~ "funzionamento del sito (sessione, protezione "
+#~ "CSRF, preferenza lingua)."
+#~ msgstr ""
+#~ "Wir verwenden technische Cookies, die für"
+#~ " den Betrieb der Website erforderlich "
+#~ "sind (Sitzung, CSRF-Schutz, Sprachpräferenz)."
+
+#~ msgid ""
+#~ "Con il tuo consenso (banner cookie) "
+#~ "possiamo attivare Google Analytics 4 e, "
+#~ "se configurati, Google Ads / AdSense "
+#~ "per misurazione e annunci. Il consenso "
+#~ "è gestito con"
+#~ msgstr ""
+#~ "Mit deiner Einwilligung (Cookie-Banner) "
+#~ "können wir Google Analytics 4 aktivieren "
+#~ "und, falls konfiguriert, Google Ads / "
+#~ "AdSense für Messungen und Anzeigen "
+#~ "aktivieren. Die Einwilligung wird verwaltet "
+#~ "mit"
+
+#~ msgid ""
+#~ "di default storage analytics/ads è negato"
+#~ " (UE); puoi accettare o rifiutare in "
+#~ "qualsiasi momento cancellando i dati del "
+#~ "sito e ricaricando la pagina. Non "
+#~ "attiviamo AdSense senza consenso pubblicitario."
+#~ msgstr ""
+#~ "standardmäßig ist die Speicherung von "
+#~ "Analysen/Werbung abgelehnt (EU); du kannst "
+#~ "jederzeit zustimmen oder ablehnen, indem du"
+#~ " die Site-Daten löschst und die "
+#~ "Seite neu lädst. Wir aktivieren AdSense "
+#~ "nicht ohne Werbeeinwilligung."
+
+#~ msgid ""
+#~ "Attualmente non sono attivi cookie di "
+#~ "misurazione o pubblicitari di terze parti"
+#~ " su questo sito."
+#~ msgstr ""
+#~ "Derzeit sind auf dieser Website keine "
+#~ "Mess- oder Werbe-Cookies von Drittanbietern"
+#~ " aktiv."
+
+#~ msgid ""
+#~ "Se richiedi l’erogazione immediata del "
+#~ "servizio (accesso al piano o accredito "
+#~ "crediti) e riconosci di perdere il "
+#~ "diritto di recesso una volta iniziata "
+#~ "l’erogazione, il recesso non si applica "
+#~ "dopo che il servizio è stato avviato."
+#~ msgstr ""
+#~ "Wenn du die sofortige Bereitstellung des "
+#~ "Dienstes (Zugang zum Plan oder Gutschrift"
+#~ " von Krediten) anforderst und anerkennst, "
+#~ "dass du dein Widerrufsrecht verlierst, "
+#~ "sobald die Bereitstellung begonnen hat, gilt"
+#~ " das Widerrufsrecht nicht mehr, nachdem "
+#~ "der Dienst gestartet wurde."
+
+#~ msgid ""
+#~ "Eliminazione definitiva. Se hai un "
+#~ "abbonamento attivo, cancellalo prima dal "
+#~ "billing."
+#~ msgstr ""
+#~ "Endgültige Löschung. Wenn Sie ein aktives"
+#~ " Abonnement haben, kündigen Sie es zuerst"
+#~ " im Billing."
+
+#~ msgid ""
+#~ "Termini di servizio Centropic (centropic.ai): "
+#~ "uso del SaaS di AI-Driven Visibility"
+#~ " (AIO) e Generative Engine Optimization "
+#~ "(GEO), limiti e responsabilità."
+#~ msgstr ""
+#~ "Nutzungsbedingungen von Centropic (centropic.ai): "
+#~ "Nutzung der SaaS für AI-Driven "
+#~ "Visibility (AIO) und Generative Engine "
+#~ "Optimization (GEO), Grenzen und Haftung."
+
+#~ msgid ""
+#~ "Ultimo aggiornamento: 27 luglio 2026 · "
+#~ "Accettando la registrazione accetti questi "
+#~ "termini. Contatti:"
+#~ msgstr ""
+#~ "Letzte Aktualisierung: 27. Juli 2026 · "
+#~ "Mit der Registrierung akzeptierst du diese"
+#~ " Bedingungen. Kontakte:"
+
+#~ msgid "1. Servizio"
+#~ msgstr "1. Dienst"
+
+#~ msgid ""
+#~ "Centropic è un software-as-a-service che "
+#~ "analizza siti web pubblici e genera "
+#~ "score"
+#~ msgstr ""
+#~ "Centropic ist eine Software-as-a-Service, "
+#~ "die öffentliche Websites analysiert und "
+#~ "Scores generiert"
+
+#~ msgid "findings e artifact (es."
+#~ msgstr "Ergebnisse und Artefakte (z. B."
+
+#~ msgid "bozza"
+#~ msgstr "Entwurf"
+
+#~ msgid ""
+#~ "Non è un Geographic Information System "
+#~ "(GIS) né una suite All-in-One "
+#~ "generica."
+#~ msgstr ""
+#~ "Es ist kein Geographic Information System"
+#~ " (GIS) und auch kein generisches All-"
+#~ "in-One-Paket."
+
+#~ msgid "2. Natura degli score"
+#~ msgstr "2. Natur der Scores"
+
+#~ msgid "Gli score AIO/GEO misurano la"
+#~ msgstr "Sind die Scores AIO und GEO Live-Messungen der IA?"
+
+#~ msgid ""
+#~ "del sito (contenuto, schema, robots, llms,"
+#~ " entity): quanto brand e pagine sono "
+#~ "leggibili dai crawler generativi. Il "
+#~ "Centropic Visibility Index (CVI) sintetizza "
+#~ "AIO/GEO; la citation share può essere "
+#~ "Stimata (da struttura) o Misurata (campioni"
+#~ " LLM su Plus/Business)."
+#~ msgstr ""
+#~ "der Website (content, schema, robots, llms,"
+#~ " entity): wie gut Marke und Seiten "
+#~ "für generative Crawler lesbar sind. Der "
+#~ "Centropic Visibility Index (CVI) fasst "
+#~ "AIO/GEO zusammen; Citation Share kann "
+#~ "Estimated (aus Struktur) oder Measured "
+#~ "(LLM-Stichproben auf Plus/Business) sein."
+
+#~ msgid ""
+#~ "Centropic garantisce il lavoro di diagnosi"
+#~ " e predisposizione sul tuo dominio; non"
+#~ " garantisce ranking o menzioni nelle "
+#~ "interfacce di modelli di terzi, che "
+#~ "restano indipendenti."
+#~ msgstr ""
+#~ "Centropic garantiert die Diagnose- und "
+#~ "Bereitschaftsarbeit auf Ihrer Domain; Rankings "
+#~ "oder Erwähnungen in den Oberflächen von "
+#~ "Drittanbieter-Modellen, die unabhängig bleiben,"
+#~ " werden nicht garantiert."
+
+#~ msgid "3. Account e uso corretto"
+#~ msgstr "3. Konto und ordnungsgemäße Nutzung"
+
+#~ msgid "Fornisci dati veritieri e custodisci le credenziali."
+#~ msgstr ""
+#~ "Gib wahrheitsgemäße Daten an und bewahre "
+#~ "die Anmeldeinformationen sicher auf."
+
+#~ msgid "Analizza solo siti per cui hai diritto di richiedere un audit tecnico."
+#~ msgstr ""
+#~ "Analysiere nur Websites, für die du "
+#~ "das Recht hast, ein technisches Audit "
+#~ "anzufordern."
+
+#~ msgid ""
+#~ "Non usare il servizio per scansioni "
+#~ "abusive, attacchi o accesso a reti "
+#~ "private."
+#~ msgstr ""
+#~ "Verwende den Dienst nicht für "
+#~ "missbräuchliche Scans, Angriffe oder den "
+#~ "Zugriff auf private Netzwerke."
+
+#~ msgid "Rispetta i rate limit e i piani (Free / Plus / Business)."
+#~ msgstr "Beachte die Rate-Limits und Pläne (Free / Plus / Business)."
+
+#~ msgid "4. Artifact e responsabilità"
+#~ msgstr "4. Artefakte und Verantwortung"
+
+#~ msgid ""
+#~ "Gli artifact generati sono bozze operative:"
+#~ " la pubblicazione sul tuo sito, la "
+#~ "conformità legale/SEO e l’impatto sulle "
+#~ "performance restano a tuo carico. Centropic"
+#~ " non risponde di decisioni di crawler "
+#~ "o modelli di terzi."
+#~ msgstr ""
+#~ "Die generierten Artefakte sind Arbeitsentwürfe:"
+#~ " Die Veröffentlichung auf deiner Website, "
+#~ "die rechtliche/SEO-Konformität und die "
+#~ "Auswirkungen auf die Leistung liegen in "
+#~ "deiner Verantwortung. Centropic haftet nicht "
+#~ "für Entscheidungen von Crawlern oder "
+#~ "Modellen Dritter."
+
+#~ msgid "5. Piani e disponibilità"
+#~ msgstr "5. Pläne und Verfügbarkeit"
+
+#~ msgid ""
+#~ "Il piano Free ha limiti rigorosi su"
+#~ " siti (1) e analisi totali (2, "
+#~ "senza reset). Plus e Business sono "
+#~ "abbonamenti self-serve via Paddle quando "
+#~ "il catalogo è configurato; altrimenti "
+#~ "interesse via waitlist. Il servizio è "
+#~ "fornito “as is”; possiamo sospendere account"
+#~ " in caso di abuso o rischio "
+#~ "sicurezza."
+#~ msgstr ""
+#~ "Der Free-Plan hat strenge Limits bei"
+#~ " Websites (1) und Gesamtanalysen (2, ohne"
+#~ " Reset). Plus und Business sind Self-"
+#~ "Serve-Abonnements über Paddle, sobald der"
+#~ " Katalog konfiguriert ist; andernfalls "
+#~ "Interesse über die Waitlist. Der Dienst "
+#~ "wird „wie er ist“ bereitgestellt; wir "
+#~ "können Konten bei Missbrauch oder "
+#~ "Sicherheitsrisiko sperren."
+
+#~ msgid "6. Pagamenti e rimborsi"
+#~ msgstr "6. Zahlungen und Rückerstattungen"
+
+#~ msgid "Gli acquisti digitali (abbonamenti e crediti) sono regolati dalla"
+#~ msgstr "Digitale Käufe (Abonnements und Credits) unterliegen der"
+
+#~ msgid "I pagamenti possono essere elaborati da un fornitore terzo (es. Paddle)."
+#~ msgstr "Zahlungen können von einem Drittanbieter verarbeitet werden (z. B. Paddle)."
+
+#~ msgid "7. Legge applicabile"
+#~ msgstr "7. Anwendbares Recht"
+
+#~ msgid ""
+#~ "Salvo norme imperative diverse, si applica"
+#~ " la legge italiana. Per controversie è"
+#~ " competente il foro del titolare, fatti"
+#~ " salvi i diritti del consumatore."
+#~ msgstr ""
+#~ "Sofern nicht anders vorgeschrieben, gilt das"
+#~ " italienische Recht. Für Streitigkeiten ist "
+#~ "das Gericht des Inhabers zuständig, "
+#~ "unbeschadet der Verbraucherrechte."
+
+#~ msgid "Avanzamento in tempo reale · con SoV measured spesso 1–3 min"
+#~ msgstr "Fortschritt in Echtzeit · mit SoV Measured oft 1-3 Min."
+
+#~ msgid "Attiva prova Plus 7 giorni"
+#~ msgstr "Aktivieren Sie die Plus-Testversion für 7 Tage"
+
+#~ msgid "ricevi un bonus sulla quota piano quando conferma l’email."
+#~ msgstr "Token, wenn du die E-Mail bestätigst."
+
+#~ msgid "Sintesi report"
+#~ msgstr "Report-Zusammenfassung"
+
+#~ msgid "Analizza un dominio"
+#~ msgstr "Eine Domain analysieren"
+
+#~ msgid "Trust &amp; Security"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Restano tuoi i Contenuti del Cliente "
+#~ "(URL, materiali dei siti, istruzioni). Ci"
+#~ " concedi una licenza non esclusiva, "
+#~ "mondiale, royalty-free, per ospitare, "
+#~ "elaborare e visualizzare tali contenuti al"
+#~ " solo fine di erogare il Servizio. "
+#~ "Dichiaro/dichiari di avere i diritti "
+#~ "necessari sui siti analizzati."
+#~ msgstr ""
 
