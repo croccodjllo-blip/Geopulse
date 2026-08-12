@@ -114,7 +114,16 @@ def resolve_measured_brand(
         return entity
     if title:
         token = title.split("|")[0].split("-")[0].split("–")[0].strip()
-        if token and len(token.split()) <= 3:
+        # Ignore titles that are just a hostname / URL remnant.
+        hostish = _host(token) or (
+            token.lower()[4:] if token.lower().startswith("www.") else ""
+        )
+        if (
+            token
+            and len(token.split()) <= 3
+            and "." not in token
+            and not hostish
+        ):
             return token
     return domain_brand or domain
 

@@ -27,18 +27,14 @@ def test_is_user_owned_domain():
     assert is_user_owned_domain(user, "nike.com") is False
 
 
-def test_resolve_measured_brand_third_party_ignores_company():
-    user = SimpleNamespace(
-        website_url="https://centropic.ai/",
-        company="centropic.ai",
-    )
+def test_resolve_measured_brand_ignores_host_title():
+    user = SimpleNamespace(website_url="https://centropic.ai/", company="centropic.ai")
     brand = resolve_measured_brand(
         user=user,
         domain="www.nike.com",
-        scraped={"title": "Nike. Just Do It.", "entity": {"brand_name": ""}},
+        scraped={"title": "www.nike.com", "entity": {"brand_name": ""}},
     )
-    assert "centropic" not in brand.lower()
-    assert "nike" in brand.lower()
+    assert brand == "Nike"
 
 
 def test_resolve_measured_brand_own_site_uses_company_name():
