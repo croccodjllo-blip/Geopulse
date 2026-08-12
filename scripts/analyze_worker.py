@@ -58,9 +58,21 @@ def run_loop(*, concurrency: int, idle_sleep: float) -> None:
     workers = max(1, int(concurrency))
     sleep_s = max(0.2, float(idle_sleep))
     use_redis = _redis_mode()
+    # Reserve a slice of slots for measured follow-ups (rest = crawl).
+    measured_reserve = max(
+        0,
+        min(
+            workers // 4,
+            int(os.getenv("MEASURED_WORKER_RESERVE", "4")),
+        ),
+    )
+    crawl_slots = max(1, workers - measured_reserve)
     logging.info(
-        "Analyze worker loop starting concurrency=%s idle_sleep=%.2fs redis_queue=%s",
+        "Analyze worker loop starting concurrency=%s crawl_slots=%s "
+        "measured_reserve=%s idle_sleep=%.2fs redis_queue=%s",
         workers,
+        crawl_slots,
+        measured_reserve,
         sleep_s,
         use_redis,
     )
@@ -70,9 +82,27 @@ def run_loop(*, concurrency: int, idle_sleep: float) -> None:
             if use_redis:
                 try:
                     from services.analyze_queue import pop_batch
+                    from services.measured_queue import pop_measured_batch
 
-                    ids = pop_batch(workers, block_timeout=max(1.0, sleep_s))
-                    for i, jid in enumerate(ids):
+                    crawl_ids = pop_batch(
+                        crawl_slots, block_timeout=max(1.0, sleep_s)
+                    )
+                    measured_ids: list[int] = []
+                    remain = workers - len(crawl_ids)
+                    if remain > 0 and measured_reserve > 0:
+                        measured_ids = pop_measured_batch(
+                            min(remain, measured_reserve),
+                            block_timeout=1.0 if not crawl_ids else 0.1,
+                        )
+                    # If crawl empty, allow measured to fill more slots.
+                    if not crawl_ids and remain > len(measured_ids):
+                        extra = pop_measured_batch(
+                            remain - len(measured_ids),
+                            block_timeout=max(1.0, sleep_s),
+                        )
+                        measured_ids.extend(extra)
+                    merged = list(crawl_ids) + list(measured_ids)
+                    for i, jid in enumerate(merged[:workers]):
                         preferred_ids[i] = jid
                 except Exception:
                     logging.exception("redis pop failed; falling back to DB claim")

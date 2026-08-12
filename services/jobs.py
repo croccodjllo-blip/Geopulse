@@ -116,18 +116,33 @@ def enqueue_analysis(
     db_session.add(job)
     db_session.commit()
     try:
-        from services.analyze_queue import dispatch_analyze_job
+        src = str(kwargs.get("source") or source or "job").strip().lower()
+        if src == "measured":
+            from services.measured_queue import dispatch_measured_job
 
-        if dispatch_analyze_job(
-            int(job.id),
-            plan=plan,
-            is_admin=bool(is_admin),
-        ):
-            logger.info(
-                "analyze job %s dispatched to redis queue plan=%s",
-                job.id,
-                plan or "free",
-            )
+            if dispatch_measured_job(
+                int(job.id),
+                plan=plan,
+                is_admin=bool(is_admin),
+            ):
+                logger.info(
+                    "measured job %s dispatched to measured queue plan=%s",
+                    job.id,
+                    plan or "plus",
+                )
+        else:
+            from services.analyze_queue import dispatch_analyze_job
+
+            if dispatch_analyze_job(
+                int(job.id),
+                plan=plan,
+                is_admin=bool(is_admin),
+            ):
+                logger.info(
+                    "analyze job %s dispatched to redis queue plan=%s",
+                    job.id,
+                    plan or "free",
+                )
     except Exception:
         logger.exception("redis dispatch failed for job %s (DB pending still valid)", job.id)
     return job

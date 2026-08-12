@@ -65,6 +65,36 @@ class _FakeRedis:
             return [(m, s) for m, s in sliced]
         return [m for m, _ in sliced]
 
+    def zrem(self, key, *members):
+        z = self.zsets.setdefault(key, {})
+        n = 0
+        for m in members:
+            if str(m) in z:
+                del z[str(m)]
+                n += 1
+            elif m in z:
+                del z[m]
+                n += 1
+        return n
+
+    def zcard(self, key):
+        return len(self.zsets.get(key) or {})
+
+    def zadd(self, key, mapping):
+        z = self.zsets.setdefault(key, {})
+        z.update({str(k): float(v) for k, v in mapping.items()})
+        return len(mapping)
+
+    def zremrangebyscore(self, key, min_s, max_s):
+        z = self.zsets.setdefault(key, {})
+        drop = [m for m, s in z.items() if s <= max_s]
+        for m in drop:
+            del z[m]
+        return len(drop)
+
+    def expire(self, key, ttl):
+        return True
+
 
 class _FakePipe:
     def __init__(self, r: _FakeRedis):

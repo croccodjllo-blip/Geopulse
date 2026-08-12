@@ -2072,6 +2072,120 @@ def _should_run_measured_with_budget(
     return True
 
 
+def _enqueue_measured_followup(
+    *,
+    user: User,
+    url: str,
+    max_pages: int,
+) -> int | None:
+    """Enqueue async measured SoV after Stimato/pack completed.
+
+    Returns new job id or None when skipped / duplicate / credit fail.
+    """
+    from services.measured_queue import measured_defer_enabled
+
+    if not measured_defer_enabled():
+        return None
+    # Follow-ups ignore crawl-queue shed (that is why we deferred). Still gate
+    # on plan/env/connectors + daily SoV budget.
+    if not should_run_measured(
+        user=user,
+        requested=True,
+        env_enabled=MEASURED_SOV_ON_ANALYZE,
+    ):
+        return None
+    try:
+        status = _current_sov_budget(user)
+    except Exception:
+        app.logger.exception(
+            "measured follow-up budget check failed user=%s", user.id
+        )
+        return None
+    if not status["unlimited"] and int(status["remaining_cents"]) <= 0:
+        app.logger.info(
+            "measured follow-up skipped: SoV budget exhausted user=%s",
+            user.id,
+        )
+        return None
+    # Avoid stacking measured follow-ups for the same URL.
+    if active_analyze_job_for_url(user.id, url) is not None:
+        return None
+    est = estimate_analysis_cost(
+        openai_model=OPENAI_MODEL,
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
+        perplexity_model=os.getenv("PERPLEXITY_MODEL", "sonar"),
+        run_measured=True,
+        n_prompts=sov_prompt_limit(),
+        has_openai=bool(OPENAI_API_KEY),
+        has_perplexity=bool(os.getenv("PERPLEXITY_API_KEY")),
+        has_anthropic=bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")),
+        has_gemini=bool(
+            os.getenv("GEMINI_API_KEY")
+            or os.getenv("GOOGLE_AI_API_KEY")
+            or os.getenv("GOOGLE_API_KEY")
+        ),
+        gemini_model=os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
+        has_xai=bool(os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")),
+        xai_model=os.getenv("XAI_MODEL") or os.getenv("GROK_MODEL") or "grok-4-1-fast-non-reasoning",
+        has_azure=bool(
+            os.getenv("AZURE_AI_PROJECT_ENDPOINT")
+            or os.getenv("FOUNDRY_PROJECT_ENDPOINT")
+        ),
+        azure_model=os.getenv("AZURE_AI_MODEL")
+        or os.getenv("FOUNDRY_MODEL_NAME")
+        or "gpt-4o-mini",
+    )
+    need = max(1, int(est.service_cost_eur_cents or 0))
+    held = 0
+    if not is_unlimited_user(user) and need > 0:
+        try:
+            held = int(
+                hold_credit(db.session, CreditLedger, user, amount_cents=need) or 0
+            )
+            db.session.commit()
+        except InsufficientCreditError:
+            db.session.rollback()
+            app.logger.info(
+                "measured follow-up skipped: insufficient credit user=%s",
+                user.id,
+            )
+            return None
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("measured follow-up hold failed user=%s", user.id)
+            return None
+    try:
+        job = enqueue_analysis(
+            db.session,
+            AnalysisJob,
+            user_id=user.id,
+            url=url,
+            max_pages=max(1, int(max_pages or 1)),
+            competitor_urls=[],
+            run_measured=True,
+            held_cents=held,
+            source="measured",
+            plan=getattr(user, "plan", None),
+            is_admin=bool(getattr(user, "is_admin", False)),
+            active_check=lambda: active_analyze_job_for_url(user.id, url),
+        )
+        return int(job.id)
+    except DuplicateAnalyzeJobError as dup:
+        if held:
+            release_hold(db.session, user, amount_cents=held)
+            db.session.commit()
+        return int(getattr(dup.job, "id", 0) or 0) or None
+    except Exception:
+        app.logger.exception("measured follow-up enqueue failed user=%s", user.id)
+        if held:
+            try:
+                release_hold(db.session, user, amount_cents=held)
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+        return None
+
+
 def _assert_current_sov_debit(user: User, debit_cents: int) -> None:
     if debit_cents <= 0 or not is_sov_usage_call():
         return
@@ -2168,12 +2282,58 @@ def process_pending_analyze_jobs(
                 db.session.commit()
             stats["error"] += 1
             continue
+        measured_slot_token: str | None = None
         try:
-            run_measured_job = _should_run_measured_with_budget(
-                user=user,
-                requested=bool(getattr(job, "run_measured", False)),
-                env_enabled=MEASURED_SOV_ON_ANALYZE,
+            from services.measured_queue import (
+                acquire_measured_slot,
+                measured_defer_enabled,
+                release_measured_slot,
             )
+
+            job_source = str(getattr(job, "source", None) or "").strip().lower()
+            want_measured = bool(getattr(job, "run_measured", False))
+            is_measured_followup = job_source == "measured"
+            defer_after = False
+
+            if is_measured_followup:
+                measured_slot_token = acquire_measured_slot()
+                if measured_slot_token is None:
+                    # Soft requeue: back to pending + measured Redis lane.
+                    job.status = "pending"
+                    job.lease_token = None
+                    job.started_at = None
+                    job.heartbeat_at = None
+                    db.session.commit()
+                    try:
+                        from services.measured_queue import dispatch_measured_job
+
+                        dispatch_measured_job(
+                            int(job.id),
+                            plan=getattr(user, "plan", None),
+                            is_admin=bool(getattr(user, "is_admin", False)),
+                        )
+                    except Exception:
+                        app.logger.exception(
+                            "re-dispatch measured job %s after slot miss failed",
+                            job.id,
+                        )
+                    stats["empty"] += 1
+                    continue
+                run_measured_job = _should_run_measured_with_budget(
+                    user=user,
+                    requested=True,
+                    env_enabled=MEASURED_SOV_ON_ANALYZE,
+                )
+            elif want_measured and measured_defer_enabled():
+                # Crawl path: always Stimato+pack first; measured follows async.
+                run_measured_job = False
+                defer_after = True
+            else:
+                run_measured_job = _should_run_measured_with_budget(
+                    user=user,
+                    requested=want_measured,
+                    env_enabled=MEASURED_SOV_ON_ANALYZE,
+                )
             est = estimate_analysis_cost(
                 openai_model=model,
                 anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
@@ -2388,6 +2548,23 @@ def process_pending_analyze_jobs(
                     maybe_send_lifecycle_emails(user)
                 except Exception:
                     app.logger.exception("lifecycle email hook failed")
+                if defer_after and want_measured:
+                    try:
+                        follow_id = _enqueue_measured_followup(
+                            user=user,
+                            url=str(job.url),
+                            max_pages=int(getattr(job, "max_pages", None) or 1),
+                        )
+                        if follow_id:
+                            app.logger.info(
+                                "measured follow-up enqueued job=%s parent=%s",
+                                follow_id,
+                                job.id,
+                            )
+                    except Exception:
+                        app.logger.exception(
+                            "measured follow-up hook failed parent=%s", job.id
+                        )
                 stats["ok"] += 1
             else:
                 # Lease lost mid-run: do not release hold (new owner / reclaim path).
@@ -2445,6 +2622,17 @@ def process_pending_analyze_jobs(
                             )
                         db.session.commit()
             stats["error"] += 1
+        finally:
+            if measured_slot_token:
+                try:
+                    from services.measured_queue import release_measured_slot
+
+                    release_measured_slot(measured_slot_token)
+                except Exception:
+                    app.logger.exception(
+                        "release measured slot failed job=%s",
+                        getattr(job, "id", None),
+                    )
     return stats
 
 
