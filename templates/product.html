@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Prodotto') }}{% endblock %}
+{% block title %}{{ _('Prodotto') }} — Centropic AIO/GEO{% endblock %}
 {% block meta_description %}{{ _('Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 14,99€, Business 49,99€ con API e white-label.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
@@ -87,6 +87,7 @@
   <div class="page-cta">
     <a class="btn btn-primary" href="{{ url_for('register') }}">{{ _('Prova Free') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Confronta i piani') }}</a>
+    <a class="btn btn-ghost" href="{{ url_for('trust_security') }}">{{ _('Trust & security') }}</a>
   </div>
 </article>
 {% endblock %}

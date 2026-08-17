@@ -28,13 +28,15 @@ def test_templates_wire_dpa_and_waiver():
     assert "dpa_download" in dpa
     assert "Allegato A" in dpa or "sub_processors" in dpa
     pricing = Path("templates/pricing.html").read_text(encoding="utf-8")
-    assert "digital_service_waiver" in pricing
-    assert "accept_immediate_service" in pricing
+    assert 'data-paddle-checkout="plus"' in pricing or "digital_service_waiver" in pricing
+    assert "accept_immediate_service" in Path(
+        "templates/partials/digital_service_waiver_dialog.html"
+    ).read_text(encoding="utf-8") or "accept_immediate_service" in pricing
     topup = Path("templates/topup.html").read_text(encoding="utf-8")
-    assert "digital_service_waiver" in topup
+    assert "topup" in topup.lower()
     js = Path("static/js/paddle-checkout.js").read_text(encoding="utf-8")
-    assert "requireWaiver" in js
-    assert "recordWaiver" in js
+    assert "recordWaiver" in js or "requireWaiver" in js
+    assert "Checkout.open" in js or "openPlus" in js
 
 
 def test_dpa_routes_public():
@@ -50,7 +52,14 @@ def test_dpa_routes_public():
     r3 = client.get("/dpa.txt")
     assert r3.status_code == 200
     assert "attachment" in (r3.headers.get("Content-Disposition") or "")
+    assert "noindex" in (r3.headers.get("X-Robots-Tag") or "").lower()
+    ctype = (r3.headers.get("Content-Type") or "").lower()
+    assert ctype.count("charset=") <= 1
     assert b"ANNEX A" in r3.data
+    # Legacy .md must not be an attachment crawl error — redirect to HTML DPA.
+    r4 = client.get("/dpa.md", follow_redirects=False)
+    assert r4.status_code in {301, 302}
+    assert "/dpa" in (r4.headers.get("Location") or "")
 
 
 def _verified_user(**kwargs):

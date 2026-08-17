@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}{{ _('Trust & security') }}{% endblock %}
-{% block meta_description %}{{ _('Trust Centropic: sicurezza, sub-responsabili, retention, DPA e canali di supporto per clienti SaaS.') }}{% endblock %}
+{% block title %}{{ _('Trust & security') }} — Centropic{% endblock %}
+{% block meta_description %}{{ _('Trust Centropic: sicurezza, sub-responsabili, retention, DPA Art. 28 e canali di supporto per procurement SaaS.') }}{% endblock %}
 {% block canonical %}{{ canonical_base }}/trust{% endblock %}
 
 {% block content %}
@@ -12,6 +12,11 @@
       {{ _('Versione') }} {{ policy_version }} ·
       {{ _('Sintesi operativa per procurement e security review. Contatti:') }}
       <a href="mailto:info@centropic.ai">info@centropic.ai</a>
+    </p>
+    <p class="page-intro__actions">
+      <a class="btn btn-primary" href="{{ url_for('dpa') }}">{{ _('Apri DPA') }}</a>
+      <a class="btn btn-ghost" href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+      <a class="btn btn-ghost" href="{{ url_for('product') }}">{{ _('Prodotto') }}</a>
     </p>
   </header>
 

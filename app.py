@@ -4100,6 +4100,12 @@ def robots_txt():
         "Disallow: /lang/\n"
         "Disallow: /crediti\n"
         "Disallow: /crediti/\n"
+        # Query-string locale mirrors share titles/descriptions with the canonical
+        # path; keep them out of crawl samples (session/cookie sets UI lang).
+        "Disallow: /*?lang=\n"
+        "Disallow: /*?*lang=\n"
+        "Disallow: /dpa.txt\n"
+        "Disallow: /dpa.md\n"
         "\n"
         "User-agent: GPTBot\n"
         "Allow: /\n"
@@ -4305,9 +4311,8 @@ def dpa():
 
 
 @app.route("/dpa.txt")
-@app.route("/dpa.md")
 def dpa_download():
-    """Plain-text DPA for download / countersign workflows."""
+    """Plain-text DPA attachment for countersign / procurement (not for HTML crawl)."""
     from services.legal_docs import DPA_VERSION, render_dpa_plaintext
 
     body = render_dpa_plaintext(
@@ -4317,12 +4322,25 @@ def dpa_download():
     filename = f"centropic-dpa-{DPA_VERSION}.txt"
     return Response(
         body,
-        mimetype="text/plain; charset=utf-8",
         headers={
+            "Content-Type": "text/plain; charset=utf-8",
             "Content-Disposition": f'attachment; filename="{filename}"',
             "Cache-Control": "public, max-age=3600",
+            # Attachment downloads are not HTML pages — keep them out of SEO samples.
+            "X-Robots-Tag": "noindex, nofollow",
         },
     )
+
+
+@app.route("/dpa.md")
+def dpa_md_redirect():
+    """Legacy .md URL → canonical HTML DPA.
+
+    Crawlers that hit ``/dpa.md`` with ``Content-Disposition: attachment``
+    often report HTTP/crawl errors or non-scorable pages. Send them to ``/dpa``.
+    """
+    # Hard-code /dpa (not url_for): endpoint also mounts /sub-responsabili.
+    return redirect("/dpa", code=301)
 
 
 @app.route("/chi-siamo")
