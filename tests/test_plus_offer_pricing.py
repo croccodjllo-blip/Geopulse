@@ -19,8 +19,11 @@ def test_pricing_shows_list_and_offer(monkeypatch):
     assert "19,99" in html
     assert "14,99" in html
     assert "price-offer__list" in html
-    assert "price-offer__now" in html
+    assert "price-offer__row" in html
+    assert "price-offer__amount" in html
     assert "<s>19,99" in html or "<s>19,99&nbsp;€</s>" in html
+    # Offer amount uses <strong>, not a nested span that inherits /mese sizing.
+    assert 'class="price-offer__now"' not in html
 
 
 def test_landing_shows_plus_offer():

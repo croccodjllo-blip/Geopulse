@@ -1406,20 +1406,52 @@ body.app-body:not(.body-dash) {
   margin-left: 0.2rem;
 }
 
+/* Plus offer: list above, offer amount same display size as Free/Business. */
 .plan__price--offer,
 .profile-card__price--offer {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.45rem 0.65rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  line-height: 1;
 }
 
-.price-offer__list {
+.plan__price--offer > .price-offer__row,
+.profile-card__price--offer > .price-offer__row {
+  display: block;
+  margin: 0;
+  margin-left: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  color: inherit;
+  opacity: 1;
+}
+
+.plan__price--offer .price-offer__amount,
+.profile-card__price--offer .price-offer__amount {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+.plan__price--offer > .price-offer__list,
+.profile-card__price--offer > .price-offer__list {
+  display: block;
+  margin: 0;
+  margin-left: 0;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--slate);
+  line-height: 1.2;
   letter-spacing: 0;
+  color: var(--slate);
+  opacity: 1;
 }
 
 .price-offer__list s {
@@ -1428,23 +1460,8 @@ body.app-body:not(.body-dash) {
   text-decoration-color: color-mix(in srgb, var(--slate) 70%, transparent);
 }
 
-.price-offer__now {
-  font-family: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
-  color: inherit;
-}
-
-.price-offer__period {
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--slate);
-  margin-left: 0.1rem;
-}
-
 .price-offer__note {
-  margin: -0.35rem 0 0;
+  margin: -0.15rem 0 0;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -10218,6 +10235,11 @@ body.body-login-popup .site-footer {
   font-weight: 500;
   opacity: 0.7;
   margin-left: 0.15rem;
+}
+
+.profile-card__price--offer .price-offer__list {
+  opacity: 1;
+  font-size: 0.85rem;
 }
 
 .profile-card__who {
