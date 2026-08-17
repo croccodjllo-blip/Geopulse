@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi') }}{% endblock %}
-{% block meta_description %}{{ _('Prezzi Centropic: Free (CVI/AIO/GEO Stimati), Plus 14,99€ con citation monitor Misurato (probe LLM; può risultare 0 hit). Business solo sales/waitlist.') }}{% endblock %}
+{% block meta_description %}{{ _('Prezzi Centropic: Free (CVI/AIO/GEO Stimati), Plus 19,99€ in offerta a 14,99€ con citation monitor Misurato (probe LLM; può risultare 0 hit). Business solo sales/waitlist.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -39,9 +39,11 @@
     </section>
 
     <section class="plan plan--v2 plan--featured" role="listitem" id="plus">
-      <p class="plan__badge">{{ _('In vendita') }}</p>
+      <p class="plan__badge">{{ _('Offerta') }}</p>
       <p class="plan__name">Plus</p>
-      <p class="plan__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
+      {% with price_class='plan__price', show_offer_note=true %}
+        {% include "partials/plus_price_offer.html" %}
+      {% endwith %}
       <p class="plan__desc">{{ _('Operatività continua sul tuo brand: monitoraggio, re-scan e citation monitor.') }}</p>
       <ul class="plan__features">
         <li><strong>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('domini monitorati') }}</strong></li>

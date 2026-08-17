@@ -569,7 +569,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Plus · €14,99",
+                "name": "Plus · €19,99 → offerta €14,99",
                 "points": [
                     _(
                         "Fino a 5 domini, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"

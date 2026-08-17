@@ -110,9 +110,11 @@
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
     </article>
     <article class="profile-card profile-card--featured" role="listitem">
-      <p class="profile-card__badge">{{ _('In vendita') }}</p>
+      <p class="profile-card__badge">{{ _('Offerta') }}</p>
       <p class="profile-card__tier">Plus</p>
-      <p class="profile-card__price">14,99&nbsp;€<span>{{ _('/mese') }}</span></p>
+      {% with price_class='profile-card__price', show_offer_note=true %}
+        {% include "partials/plus_price_offer.html" %}
+      {% endwith %}
       <p class="profile-card__who">{{ _('Startup sul proprio brand') }}</p>
       <p class="profile-card__desc">
         {{ _('Operatività continua: citation monitor (probe LLM), re-scan, alert e crawl esteso.') }}

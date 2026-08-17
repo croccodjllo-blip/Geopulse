@@ -42,6 +42,7 @@ def test_pricing_hides_yearly_without_catalog_price(monkeypatch):
     client = app.test_client()
     html = client.get("/prezzi").get_data(as_text=True)
     assert "14,99" in html or "14.99" in html
+    assert "19,99" in html or "19.99" in html
     assert "143.90" not in html
     assert "143,90" not in html
 

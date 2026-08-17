@@ -307,6 +307,8 @@ PRO_DEEP_CRAWL_PAGES = max(
     PRO_CRAWL_PAGES if not PRO_CRAWL_UNLIMITED else FREE_CRAWL_PAGES,
     min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
+PLUS_LIST_EUR = float(os.environ.get("PLUS_LIST_EUR", "19.99"))
+PLUS_MONTHLY_EUR = float(os.environ.get("PLUS_MONTHLY_EUR", "14.99"))  # offer / checkout
 PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "143.90"))  # ~−20% vs 12×14.99
 BUSINESS_MONTHLY_EUR = float(os.environ.get("BUSINESS_MONTHLY_EUR", "89.99"))
 BUSINESS_YEARLY_EUR = float(
@@ -1661,6 +1663,8 @@ def inject_globals() -> dict[str, Any]:
         "abs_max_crawl_pages": ABS_MAX_CRAWL_PAGES,
         "plus_monthly_tokens": PLUS_MONTHLY_TOKENS,
         "business_monthly_tokens": BUSINESS_MONTHLY_TOKENS,
+        "plus_list_eur": PLUS_LIST_EUR,
+        "plus_monthly_eur": PLUS_MONTHLY_EUR,
         "business_monthly_eur": BUSINESS_MONTHLY_EUR,
         "mail_ready": mail_configured(),
         "now_year": datetime.now(timezone.utc).year,
@@ -4753,6 +4757,8 @@ def pricing():
         plus_yearly_ready=bool(
             (os.environ.get("PADDLE_PRICE_PLUS_YEARLY") or "").strip()
         ),
+        plus_list_eur=PLUS_LIST_EUR,
+        plus_monthly_eur=PLUS_MONTHLY_EUR,
         business_monthly_eur=BUSINESS_MONTHLY_EUR,
         business_yearly_eur=BUSINESS_YEARLY_EUR,
         business_yearly_ready=bool(

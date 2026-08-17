@@ -1,0 +1,17 @@
+{# Plus list vs offer price. Expects plus_list_eur + plus_monthly_eur. #}
+{% set _list = '%.2f'|format(plus_list_eur)|replace('.', ',') %}
+{% set _offer = '%.2f'|format(plus_monthly_eur)|replace('.', ',') %}
+{% set _price_class = price_class|default('plan__price') %}
+<p class="{{ _price_class }} {{ _price_class }}--offer">
+  <span class="price-offer__list">
+    <span class="visually-hidden">{{ _('Prezzo di listino') }} </span>
+    <s>{{ _list }}&nbsp;€</s>
+  </span>
+  <span class="price-offer__now">
+    <span class="visually-hidden">{{ _('In offerta a') }} </span>
+    {{ _offer }}&nbsp;€
+  </span><span class="price-offer__period">{{ _('/mese') }}</span>
+</p>
+{% if show_offer_note|default(true) %}
+<p class="price-offer__note">{{ _('Offerta') }} · {{ _('listino') }} {{ _list }}&nbsp;€</p>
+{% endif %}
