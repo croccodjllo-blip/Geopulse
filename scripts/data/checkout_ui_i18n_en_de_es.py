@@ -28,7 +28,14 @@ EN: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Required to open Paddle checkout. Without this checkbox, payment will not start."
     ),
-    "Paga Plus · 14,99€/mese": "Pay Plus · €14.99/mo",
+    "Paga Plus · 14,99€/mese": "Pay Plus · €14.99/mo excl. VAT",
+    "Paga Plus · 14,99€/mese IVA esclusa": "Pay Plus · €14.99/mo excl. VAT",
+    "IVA esclusa": "excl. VAT",
+    "Tutti i prezzi sono IVA esclusa.": "All prices exclude VAT.",
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+        "The Free / Plus / Business plans and credit top-ups are described in Pricing. "
+        "All listed prices exclude VAT; VAT, where due, is calculated at Paddle checkout."
+    ),
     "Apri checkout / aggiorna pagamento": "Open checkout / update payment",
     "Paga Business": "Pay Business",
     "Accedi e scegli Plus": "Sign in and choose Plus",
@@ -125,7 +132,14 @@ DE: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Erforderlich, um den Paddle-Checkout zu öffnen. Ohne Häkchen startet die Zahlung nicht."
     ),
-    "Paga Plus · 14,99€/mese": "Plus bezahlen · 14,99 €/Monat",
+    "Paga Plus · 14,99€/mese": "Plus bezahlen · 14,99 €/Monat zzgl. MwSt.",
+    "Paga Plus · 14,99€/mese IVA esclusa": "Plus bezahlen · 14,99 €/Monat zzgl. MwSt.",
+    "IVA esclusa": "zzgl. MwSt.",
+    "Tutti i prezzi sono IVA esclusa.": "Alle Preise verstehen sich zzgl. MwSt.",
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+        "Die Pläne Free / Plus / Business und Credit-Top-ups sind im Pricing beschrieben. "
+        "Alle angegebenen Preise verstehen sich zzgl. MwSt.; die MwSt. wird, soweit geschuldet, im Paddle-Checkout berechnet."
+    ),
     "Apri checkout / aggiorna pagamento": "Checkout öffnen / Zahlung aktualisieren",
     "Paga Business": "Business bezahlen",
     "Accedi e scegli Plus": "Anmelden und Plus wählen",
@@ -222,7 +236,14 @@ ES: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Obligatorio para abrir el checkout de Paddle. Sin la casilla, el pago no se inicia."
     ),
-    "Paga Plus · 14,99€/mese": "Pagar Plus · 14,99 €/mes",
+    "Paga Plus · 14,99€/mese": "Pagar Plus · 14,99 €/mes + IVA",
+    "Paga Plus · 14,99€/mese IVA esclusa": "Pagar Plus · 14,99 €/mes + IVA",
+    "IVA esclusa": "IVA no incluida",
+    "Tutti i prezzi sono IVA esclusa.": "Todos los precios son sin IVA.",
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+        "Los planes Free / Plus / Business y los top-ups de créditos se describen en Pricing. "
+        "Todos los precios indicados son sin IVA; el IVA, cuando proceda, se calcula en el checkout de Paddle."
+    ),
     "Apri checkout / aggiorna pagamento": "Abrir checkout / actualizar pago",
     "Paga Business": "Pagar Business",
     "Accedi e scegli Plus": "Inicie sesión y elija Plus",

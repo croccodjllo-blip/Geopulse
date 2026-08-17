@@ -195,7 +195,10 @@ EN: dict[str, str] = {
     "Il Servizio è destinato a utenti professionali maggiorenni.": "The Service is intended for adult professional users.",
     "Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati della tua organizzazione.": "You are responsible for activity under your account, including invited users in your organization.",
     "4. Piani, crediti e pagamenti": "4. Plans, Credits, and Payments",
-    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. I prezzi includono IVA ove applicabile secondo checkout Paddle.": "The Free / Plus / Business plans and credit top-ups are described in Pricing. Prices include VAT where applicable according to Paddle checkout.",
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+        "The Free / Plus / Business plans and credit top-ups are described in Pricing. "
+        "All listed prices exclude VAT; VAT, where due, is calculated at Paddle checkout."
+    ),
     "I crediti consumati per analisi non sono rimborsabili salvo quanto previsto nella": "Credits consumed for analysis are non-refundable except as provided in the",
     "Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o contattando": "You can manage or cancel your subscription from Settings → Billing or by contacting",
     "Per contenuti digitali a esecuzione immediata, al checkout ti chiediamo di richiedere l’esecuzione e accettare la perdita del diritto di recesso 14 giorni (direttiva 2011/83/UE), ove applicabile.": "For digital content with immediate performance, at checkout we ask you to request performance and accept the loss of the 14-day right of withdrawal (Directive 2011/83/EU), where applicable.",

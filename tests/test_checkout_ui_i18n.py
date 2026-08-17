@@ -10,7 +10,7 @@ from services.i18n import babel_locale
 CHECKOUT_UI = [
     "Continua al pagamento",
     "Conferma obbligatoria prima del pagamento",
-    "Paga Plus · 14,99€/mese",
+    "Paga Plus · 14,99€/mese IVA esclusa",
     "Apri checkout / aggiorna pagamento",
     "Paga Business",
     "Spunta la casella per continuare.",

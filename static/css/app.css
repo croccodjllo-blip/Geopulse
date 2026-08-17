@@ -1406,6 +1406,32 @@ body.app-body:not(.body-dash) {
   margin-left: 0.2rem;
 }
 
+.price-period {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--slate);
+  margin-left: 0.2rem;
+}
+
+.price-vat {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-left: 0.45rem;
+  opacity: 0.9;
+  vertical-align: middle;
+}
+
+.plan__price--offer .price-vat,
+.profile-card__price--offer .price-vat {
+  margin-left: 0.35rem;
+}
+
 /* Plus offer: list above, offer amount same display size as Free/Business. */
 .plan__price--offer,
 .profile-card__price--offer {

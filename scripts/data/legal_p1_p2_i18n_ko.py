@@ -194,7 +194,10 @@ KO: dict[str, str] = {
     "Il Servizio è destinato a utenti professionali maggiorenni.": "서비스는 성인 전문 사용자를 대상으로 합니다.",
     "Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati della tua organizzazione.": "조직의 초대 사용자를 포함하여 계정에서 발생하는 활동에 대해 책임을 집니다.",
     "4. Piani, crediti e pagamenti": "4. 요금제, credits 및 결제",
-    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. I prezzi includono IVA ove applicabile secondo checkout Paddle.": "Free / Plus / Business 요금제와 credits 충전은 Pricing에 설명되어 있습니다. 가격에는 Paddle checkout에 따라 해당되는 경우 VAT가 포함됩니다.",
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+        "Free / Plus / Business 요금제와 credits 충전은 Pricing에 설명되어 있습니다. "
+        "표시된 모든 가격은 부가세 별도이며, 해당 시 VAT는 Paddle 결제에서 계산됩니다."
+    ),
     "I crediti consumati per analisi non sono rimborsabili salvo quanto previsto nella": "분석에 사용된 credits는 다음 정책에 명시된 경우를 제외하고 환불되지 않습니다",
     "Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o contattando": "설정 → 청구에서 구독을 관리하거나 취소할 수 있으며, 또는 다음으로 문의할 수 있습니다",
     "Per contenuti digitali a esecuzione immediata, al checkout ti chiediamo di richiedere l’esecuzione e accettare la perdita del diritto di recesso 14 giorni (direttiva 2011/83/UE), ove applicabile.": "즉시 이행되는 디지털 콘텐츠의 경우, checkout에서 즉시 이행을 요청하고 해당되는 경우 14일 청약철회권 상실(지침 2011/83/EU)을 수락해 달라고 요청합니다.",

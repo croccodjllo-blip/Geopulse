@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi Centropic') }} — Free, Plus, Business{% endblock %}
-{% block meta_description %}{{ _('Listino Plus 19,99€ in offerta a 14,99€/mese; Free con CVI/AIO/GEO Stimati; Business 89,99€ in waitlist. Citation monitor Misurato solo su Plus.') }}{% endblock %}
+{% block meta_description %}{{ _('Listino Plus 19,99€ in offerta a 14,99€/mese IVA esclusa; Free con CVI/AIO/GEO Stimati; Business 89,99€ IVA esclusa in waitlist. Citation monitor Misurato solo su Plus.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -14,6 +14,7 @@
     <h1 class="h-display page-intro__title hero-headline--rise">{{ _('Tre modi di possedere il segnale.') }}</h1>
     <p class="lede page-intro__lede">
       {{ _('Scegli per domini monitorati, frequenza di re-scan e toolkit agenzia — senza calcoli astratti in fase di checkout.') }}
+      {{ _('Tutti i prezzi sono IVA esclusa.') }}
     </p>
     <div class="cta-row">
       <a class="btn btn-core" href="#piani">{{ _('Confronta i piani') }}</a>
@@ -24,7 +25,7 @@
   <div class="plan-grid plan-grid--v2 plan-grid--tiers plan-grid--stagger" id="piani" role="list">
     <section class="plan plan--v2" role="listitem" id="free">
       <p class="plan__name">Free</p>
-      <p class="plan__price">0&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="plan__price">0&nbsp;€{% include "partials/price_period_ex_vat.html" %}</p>
       <p class="plan__desc">{{ _('Prova la diagnosi AIO/GEO sul primo dominio — senza carta.') }}</p>
       <ul class="plan__features">
         <li><strong>{{ _('1 dominio monitorato') }}</strong></li>
@@ -58,7 +59,7 @@
         <div class="plan-checkout">
           {% if current_user %}
             {% set _plan = (current_user.plan or '')|lower %}
-            {% set _plus_cta = _('Apri checkout / aggiorna pagamento') if _plan in ['plus', 'pro', 'business', 'admin'] else _('Paga Plus · 14,99€/mese') %}
+            {% set _plus_cta = _('Apri checkout / aggiorna pagamento') if _plan in ['plus', 'pro', 'business', 'admin'] else _('Paga Plus · 14,99€/mese IVA esclusa') %}
             {% if paddle_overlay %}
             <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
               {{ _plus_cta }}
@@ -92,7 +93,7 @@
                 {% include "partials/digital_service_waiver.html" %}
               {% endwith %}
               <button type="submit" class="btn btn-ghost-light btn-block">
-                {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+                {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur)|replace('.', ',') }}&nbsp;€/{{ _('anno') }} (−20%) · {{ _('IVA esclusa') }}
               </button>
             </form>
             {% endif %}
@@ -108,7 +109,7 @@
     <section class="plan plan--v2" role="listitem" id="business">
       <p class="plan__badge">{{ _('Waitlist') }}</p>
       <p class="plan__name">Business</p>
-      <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€<span>{{ _('/mese') }}</span></p>
+      <p class="plan__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€{% include "partials/price_period_ex_vat.html" %}</p>
       <p class="plan__desc">{{ _('Portfolio clienti: API, white-label e scala siti — onboarding assistito, niente checkout self-serve.') }}</p>
       <ul class="plan__features">
         <li><strong>{{ _('Fino a') }} {{ max_sites_business }} {{ _('domini / clienti') }}</strong></li>
@@ -125,6 +126,7 @@
   </div>
 
   <p class="plan-note">
+    {{ _('Tutti i prezzi sono IVA esclusa.') }}
     {{ _('Evidence:') }}
     <strong>{{ _('Stimato') }}</strong> {{ _('= predisposizione strutturale (CVI / AIO / GEO dal crawl).') }}
     <strong>{{ _('Misurato') }}</strong> {{ _('= probe LLM su Plus; se 0 menzioni mostriamo 0 (niente share proxy spacciata per measured).') }}

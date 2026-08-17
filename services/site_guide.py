@@ -569,7 +569,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Plus · €19,99 → offerta €14,99",
+                "name": "Plus · €19,99 → offerta €14,99 IVA esclusa",
                 "points": [
                     _(
                         "Fino a 5 domini, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"
@@ -579,7 +579,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Business · €89,99",
+                "name": "Business · €89,99 IVA esclusa",
                 "points": [
                     _("Tutto Plus + fino a 50 domini / clienti"),
                     _("API /api/v1 e white-label MD/HTML con brand agenzia"),
