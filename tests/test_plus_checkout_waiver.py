@@ -12,9 +12,8 @@ from services.legal_docs import DIGITAL_WAIVER_VERSION
 def test_templates_and_js_wire_waiver_popup():
     pricing = Path("templates/pricing.html").read_text(encoding="utf-8")
     assert 'data-paddle-checkout="plus"' in pricing
-    assert "Paga Plus" in pricing
+    assert "Paga Plus" in pricing or "Apri checkout" in pricing
     plus_block = pricing[pricing.index('id="plus"') : pricing.index('id="business"')]
-    # Overlay path: button only; waiver lives in shared dialog (base), not always-on card.
     assert 'data-paddle-checkout="plus"' in plus_block
     assert "data-digital-waiver-dialog" not in plus_block
 
@@ -26,11 +25,13 @@ def test_templates_and_js_wire_waiver_popup():
     )
     assert "data-digital-waiver-dialog" in dialog
     assert "data-digital-waiver-input" in dialog
+    assert "data-digital-waiver-confirm" in dialog
     assert "Conferma obbligatoria prima del pagamento" in dialog
     assert "Continua al pagamento" in dialog
 
     js = Path("static/js/paddle-checkout.js").read_text(encoding="utf-8")
     assert "openWaiverDialog" in js
+    assert "onConfirmWaiver" in js
     assert "/billing/accept-immediate-service" in js
     assert "Checkout.open" in js
     assert "recordWaiver" in js
@@ -177,8 +178,54 @@ def test_logged_in_prezzi_has_checkout_button_and_dialog(monkeypatch):
     html = page.get_data(as_text=True)
     assert page.status_code == 200
     assert 'data-paddle-checkout="plus"' in html
-    assert "Paga Plus" in html
+    assert ("Paga Plus" in html) or ("Apri checkout" in html)
     assert "data-digital-waiver-dialog" in html
     assert "Conferma obbligatoria prima del pagamento" in html
     # Title must live in the dialog, not as always-visible card chrome.
     assert html.count("Conferma obbligatoria prima del pagamento") >= 1
+
+
+def test_overlay_checkout_allowed_for_existing_plus(monkeypatch):
+    """Subscribers can still open overlay (card update / re-checkout)."""
+    import services.paddle_billing as pb
+    from app import app, ensure_schema
+
+    monkeypatch.setattr(pb, "PADDLE_API_KEY", "test_key")
+    monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
+    monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus_test")
+    monkeypatch.setattr(pb, "paddle_enabled", lambda: True)
+    monkeypatch.setattr(pb, "paddle_overlay_ready", lambda: True)
+    monkeypatch.setattr(pb, "paddle_plus_enabled", lambda: True)
+    monkeypatch.setattr("app.payments_enabled", lambda: True)
+    monkeypatch.setattr("app.payments_provider", lambda: "paddle")
+    monkeypatch.setattr("app.paddle_overlay_ready", lambda: True)
+    app.config["WTF_CSRF_ENABLED"] = False
+
+    with app.app_context():
+        ensure_schema()
+        user = _verified_user(plan="plus")
+        uid = user.id
+        sv = int(user.session_version or 0)
+
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["user_id"] = uid
+        sess["session_version"] = sv
+
+    page = client.get("/prezzi")
+    html = page.get_data(as_text=True)
+    assert 'data-paddle-checkout="plus"' in html
+    assert "Apri checkout / aggiorna pagamento" in html
+
+    allowed = client.post(
+        "/billing/checkout",
+        data={
+            "product": "plus",
+            "overlay": "1",
+            "accept_immediate_service": "y",
+        },
+        headers={"Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
+    )
+    assert allowed.status_code == 200
+    assert allowed.get_json()["ok"] is True
+    assert allowed.get_json()["mode"] == "overlay"

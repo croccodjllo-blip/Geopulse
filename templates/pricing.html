@@ -55,9 +55,11 @@
       {% if paddle_plus_ready %}
         <div class="plan-checkout">
           {% if current_user %}
+            {% set _plan = (current_user.plan or '')|lower %}
+            {% set _plus_cta = _('Apri checkout / aggiorna pagamento') if _plan in ['plus', 'pro', 'business', 'admin'] else _('Paga Plus · 14,99€/mese') %}
             {% if paddle_overlay %}
             <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
-              {{ _('Paga Plus · 14,99€/mese') }}
+              {{ _plus_cta }}
             </button>
             <noscript>
               <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-gate data-checkout-form>
@@ -66,7 +68,7 @@
                 {% with waiver_id='accept_immediate_service_plus_noscript' %}
                   {% include "partials/digital_service_waiver.html" %}
                 {% endwith %}
-                <button type="submit" class="btn btn-core btn-block">{{ _('Paga Plus · 14,99€/mese') }}</button>
+                <button type="submit" class="btn btn-core btn-block">{{ _plus_cta }}</button>
               </form>
             </noscript>
             {% else %}
@@ -76,7 +78,7 @@
               {% with waiver_id='accept_immediate_service_plus' %}
                 {% include "partials/digital_service_waiver.html" %}
               {% endwith %}
-              <button type="submit" class="btn btn-core btn-block">{{ _('Paga Plus · 14,99€/mese') }}</button>
+              <button type="submit" class="btn btn-core btn-block">{{ _plus_cta }}</button>
             </form>
             {% endif %}
             {% if plus_yearly_ready %}

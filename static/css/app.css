@@ -1589,6 +1589,12 @@ body.app-body:not(.body-dash) {
   color: #EF4444;
 }
 
+.digital-waiver-dialog__status {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--slate-light);
+}
+
 .digital-waiver-dialog__foot {
   display: flex;
   flex-wrap: wrap;

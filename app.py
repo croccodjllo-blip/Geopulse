@@ -4843,8 +4843,11 @@ def billing_checkout():
     if product not in {"plus", "business"}:
         product = "plus"
     plan = (user.plan or "").lower()
+    wants_overlay = paddle_overlay_ready() and request.form.get("overlay") == "1"
 
-    if not user.is_admin:
+    # Overlay / Paddle.js: allow existing subscribers (card update, re-open checkout).
+    # Hosted API checkout still blocks duplicate plan purchases for non-admins.
+    if not user.is_admin and not wants_overlay:
         if product == "business" and plan == "business":
             flash("Hai già un piano Business attivo.", "success")
             return redirect(url_for("dashboard"))
@@ -4865,7 +4868,7 @@ def billing_checkout():
             return redirect(url_for("pricing") + "#business")
 
     # Overlay is preferred; server transaction is the fallback when only API key is set.
-    if paddle_overlay_ready() and request.form.get("overlay") == "1":
+    if wants_overlay:
         return jsonify({"ok": True, "provider": "paddle", "mode": "overlay", "product": product})
 
     interval = (request.form.get("interval") or "month").strip().lower()

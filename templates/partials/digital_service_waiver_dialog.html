@@ -6,7 +6,7 @@
   aria-labelledby="digital-waiver-title"
   aria-describedby="digital-waiver-desc"
 >
-  <form method="dialog" class="digital-waiver-dialog__panel" data-digital-waiver-form>
+  <div class="digital-waiver-dialog__panel" data-digital-waiver-form>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" data-digital-waiver-csrf />
     <header class="digital-waiver-dialog__head">
       <div>
@@ -15,10 +15,10 @@
           {{ _('Conferma obbligatoria prima del pagamento') }}
         </h2>
       </div>
-      <button type="submit" value="cancel" class="digital-waiver-dialog__close" aria-label="{{ _('Chiudi') }}">×</button>
+      <button type="button" class="digital-waiver-dialog__close" data-digital-waiver-cancel aria-label="{{ _('Chiudi') }}">×</button>
     </header>
     <p class="digital-waiver-dialog__lede" id="digital-waiver-desc">
-      {{ _('Per aprire il checkout Paddle conferma l’erogazione immediata del servizio digitale. Senza questa spunta il pagamento non parte.') }}
+      {{ _('Per aprire il checkout Paddle conferma l’erogazione immediata del servizio digitale. Vale anche se hai già un piano (rinnovo / aggiornamento metodo di pagamento).') }}
     </p>
     <label class="digital-waiver-dialog__check">
       <input
@@ -26,7 +26,6 @@
         name="accept_immediate_service"
         id="accept_immediate_service_dialog"
         value="y"
-        required
         data-digital-waiver-input
       />
       <span>
@@ -34,14 +33,20 @@
         <a href="{{ url_for('refunds') }}" target="_blank" rel="noopener">{{ _('Politica di rimborso') }}</a>.
       </span>
     </label>
-    <p class="digital-waiver-dialog__error" data-digital-waiver-error hidden>
+    <p
+      class="digital-waiver-dialog__error"
+      data-digital-waiver-error
+      data-default-error="{{ _('Spunta la casella per continuare.') }}"
+      hidden
+    >
       {{ _('Spunta la casella per continuare.') }}
     </p>
+    <p class="digital-waiver-dialog__status" data-digital-waiver-status hidden></p>
     <footer class="digital-waiver-dialog__foot">
-      <button type="submit" value="cancel" class="btn btn-ghost">{{ _('Annulla') }}</button>
-      <button type="submit" value="confirm" class="btn btn-core" data-digital-waiver-confirm>
+      <button type="button" class="btn btn-ghost" data-digital-waiver-cancel>{{ _('Annulla') }}</button>
+      <button type="button" class="btn btn-core" data-digital-waiver-confirm>
         {{ _('Continua al pagamento') }}
       </button>
     </footer>
-  </form>
+  </div>
 </dialog>

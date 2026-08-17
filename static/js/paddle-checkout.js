@@ -1,17 +1,15 @@
 /**
  * Centropic Paddle.js checkout (Plus + credit top-ups).
  *
- * Flow (payments-safe):
- *  1. User clicks [data-paddle-checkout]
- *  2. Modal waiver dialog opens (consumer immediate-delivery consent)
- *  3. On confirm → POST /billing/accept-immediate-service → Paddle.Checkout.open overlay
- *
- * Expects window.__CENTROPIC_PADDLE__:
- *   { enabled, overlay, environment, clientToken, pricePlus, topupPrices,
- *     userId, email, successPlus, successTopup }
+ * Flow:
+ *  1. Click [data-paddle-checkout] → waiver <dialog>
+ *  2. Confirm → POST /billing/accept-immediate-service
+ *  3. Paddle.Checkout.open (overlay) — works for new AND existing subscribers
+ *     (card update / re-checkout; Paddle enforces product rules server-side)
  */
 (function () {
   var pending = null;
+  var _inited = false;
 
   function cfg() {
     return window.__CENTROPIC_PADDLE__ || {};
@@ -27,6 +25,34 @@
       (dialog && dialog.querySelector("[data-digital-waiver-csrf]")) ||
       document.querySelector('input[name="csrf_token"]');
     return el ? el.value : "";
+  }
+
+  function setDialogBusy(busy, msg) {
+    var dialog = dialogEl();
+    if (!dialog) return;
+    var confirmBtn = dialog.querySelector("[data-digital-waiver-confirm]");
+    var status = dialog.querySelector("[data-digital-waiver-status]");
+    if (confirmBtn) confirmBtn.disabled = !!busy;
+    if (status) {
+      if (msg) {
+        status.hidden = false;
+        status.textContent = msg;
+      } else {
+        status.hidden = true;
+        status.textContent = "";
+      }
+    }
+  }
+
+  function showDialogError(msg) {
+    var dialog = dialogEl();
+    var err = dialog && dialog.querySelector("[data-digital-waiver-error]");
+    if (err) {
+      err.hidden = false;
+      err.textContent = msg;
+    } else {
+      showCheckoutError(msg);
+    }
   }
 
   function ready() {
@@ -63,7 +89,6 @@
     return false;
   }
 
-  var _inited = false;
   function ensureInit() {
     if (_inited) return ready();
     _inited = init();
@@ -92,6 +117,7 @@
       },
       body: body.toString(),
       credentials: "same-origin",
+      referrerPolicy: "same-origin",
     }).then(function (res) {
       if (!res.ok) throw new Error("waiver_http_" + res.status);
       var ct = res.headers.get("content-type") || "";
@@ -105,17 +131,38 @@
     });
   }
 
+  function explainCheckoutFailure(err) {
+    var detail =
+      (err && (err.message || err.detail || err.code || err.error)) ||
+      String(err || "");
+    var text = String(detail);
+    if (
+      text.indexOf("default_checkout_url") !== -1 ||
+      text.indexOf("payment link") !== -1 ||
+      text.indexOf("transaction_default_checkout_url_not_set") !== -1
+    ) {
+      return (
+        "Paddle: manca il Default payment link. In Paddle Dashboard → Checkout → " +
+        "Checkout settings imposta https://centropic.ai poi riprova."
+      );
+    }
+    if (!text || text === "undefined" || text === "null") {
+      return "Checkout Paddle non disponibile. Riprova o contatta supporto.";
+    }
+    return "Checkout non disponibile: " + text;
+  }
+
   function openItems(items, extra) {
     if (!ensureInit()) {
       showCheckoutError(
         "Checkout Paddle non pronto. Ricarica la pagina o contatta supporto."
       );
-      return false;
+      return Promise.resolve(false);
     }
     var c = cfg();
     if (!c.userId) {
       showCheckoutError("Accedi per completare il pagamento.");
-      return false;
+      return Promise.resolve(false);
     }
     var opts = {
       items: items,
@@ -135,33 +182,23 @@
     if (c.email) {
       opts.customer = { email: c.email };
     }
-    function explainCheckoutFailure(err) {
-      var detail =
-        (err && (err.message || err.detail || err.code || err.error)) ||
-        String(err || "");
-      var text = String(detail);
-      if (
-        text.indexOf("default_checkout_url") !== -1 ||
-        text.indexOf("payment link") !== -1 ||
-        text.indexOf("transaction_default_checkout_url_not_set") !== -1
-      ) {
-        showCheckoutError(
-          "Paddle: manca il Default payment link. In dashboard Paddle → Checkout → Checkout settings imposta https://centropic.ai poi riprova."
-        );
-        return;
-      }
-      showCheckoutError("Checkout non disponibile: " + text);
-    }
 
     try {
       var opened = window.Paddle.Checkout.open(opts);
       if (opened && typeof opened.then === "function") {
-        opened.catch(explainCheckoutFailure);
+        return opened
+          .then(function () {
+            return true;
+          })
+          .catch(function (err) {
+            showCheckoutError(explainCheckoutFailure(err));
+            return false;
+          });
       }
-      return true;
+      return Promise.resolve(true);
     } catch (e) {
-      explainCheckoutFailure(e);
-      return false;
+      showCheckoutError(explainCheckoutFailure(e));
+      return Promise.resolve(false);
     }
   }
 
@@ -169,7 +206,7 @@
     var c = cfg();
     if (!c.pricePlus) {
       showCheckoutError("Prezzo Plus non configurato (PADDLE_PRICE_PLUS).");
-      return false;
+      return Promise.resolve(false);
     }
     return openItems(
       [{ priceId: c.pricePlus, quantity: 1 }],
@@ -181,7 +218,7 @@
     var c = cfg();
     if (!c.priceBusiness) {
       showCheckoutError("Business non in vendita self-serve.");
-      return false;
+      return Promise.resolve(false);
     }
     return openItems(
       [{ priceId: c.priceBusiness, quantity: 1 }],
@@ -194,7 +231,7 @@
     var priceId = (c.topupPrices || {})[String(cents)];
     if (!priceId) {
       showCheckoutError("Prezzo top-up non configurato.");
-      return false;
+      return Promise.resolve(false);
     }
     return openItems(
       [{ priceId: priceId, quantity: 1 }],
@@ -206,48 +243,51 @@
   }
 
   function runPendingCheckout() {
-    if (!pending) return;
+    if (!pending) return Promise.resolve(false);
     var kind = pending.kind;
     var cents = pending.cents;
     pending = null;
-    if (kind === "plus") {
-      openPlus();
-      return;
-    }
-    if (kind === "business") {
-      openBusiness();
-      return;
-    }
-    if (kind === "topup") {
-      openTopup(cents);
-    }
+    if (kind === "plus") return openPlus();
+    if (kind === "business") return openBusiness();
+    if (kind === "topup") return openTopup(cents);
+    return Promise.resolve(false);
   }
 
   function openWaiverDialog(kind, cents) {
     var dialog = dialogEl();
+    pending = { kind: kind, cents: cents || 0 };
+
     if (!dialog || typeof dialog.showModal !== "function") {
-      // Fallback: alert + confirm (older browsers)
       if (
         window.confirm(
           "Confermi l’erogazione immediata del servizio digitale e la perdita del recesso di 14 giorni?"
         )
       ) {
-        pending = { kind: kind, cents: cents || 0 };
+        setDialogBusy(true);
         recordWaiver()
           .then(runPendingCheckout)
           .catch(function () {
             showCheckoutError(
               "Conferma il consenso all’erogazione immediata e riprova."
             );
+          })
+          .finally(function () {
+            setDialogBusy(false);
           });
+      } else {
+        pending = null;
       }
       return;
     }
-    pending = { kind: kind, cents: cents || 0 };
+
     var input = dialog.querySelector("[data-digital-waiver-input]");
     var err = dialog.querySelector("[data-digital-waiver-error]");
     if (input) input.checked = false;
-    if (err) err.hidden = true;
+    if (err) {
+      err.hidden = true;
+      err.textContent = err.getAttribute("data-default-error") || err.textContent;
+    }
+    setDialogBusy(false);
     dialog.showModal();
     if (input && typeof input.focus === "function") input.focus();
   }
@@ -257,10 +297,64 @@
     if (dialog && dialog.open) dialog.close();
   }
 
+  function onConfirmWaiver() {
+    var dialog = dialogEl();
+    var input = dialog && dialog.querySelector("[data-digital-waiver-input]");
+    var err = dialog && dialog.querySelector("[data-digital-waiver-error]");
+    if (!input || !input.checked) {
+      if (err) {
+        err.hidden = false;
+        err.textContent =
+          err.getAttribute("data-default-error") ||
+          "Spunta la casella per continuare.";
+      }
+      if (input && typeof input.focus === "function") input.focus();
+      return;
+    }
+    if (err) err.hidden = true;
+    if (!pending) {
+      showDialogError("Sessione checkout scaduta. Chiudi e riprova.");
+      return;
+    }
+    setDialogBusy(true, "Apertura checkout Paddle…");
+    recordWaiver()
+      .then(function () {
+        closeWaiverDialog();
+        return runPendingCheckout();
+      })
+      .catch(function (e) {
+        var msg =
+          "Conferma non registrata (sessione/CSRF). Ricarica la pagina e riprova.";
+        if (e && String(e.message || "").indexOf("waiver_http_429") !== -1) {
+          msg = "Troppe richieste. Attendi un minuto e riprova.";
+        }
+        showDialogError(msg);
+      })
+      .finally(function () {
+        setDialogBusy(false);
+      });
+  }
+
   function bindClicks() {
+    // Warm Paddle as soon as the page is interactive.
+    ensureInit();
+
     document.addEventListener("click", function (ev) {
       var t = ev.target;
       if (!(t instanceof Element)) return;
+
+      if (t.closest("[data-digital-waiver-confirm]")) {
+        ev.preventDefault();
+        onConfirmWaiver();
+        return;
+      }
+      if (t.closest("[data-digital-waiver-cancel]")) {
+        ev.preventDefault();
+        pending = null;
+        closeWaiverDialog();
+        return;
+      }
+
       var btn = t.closest("[data-paddle-checkout]");
       if (!btn) return;
       var kind = btn.getAttribute("data-paddle-checkout");
@@ -272,64 +366,15 @@
           "/login?next=" + encodeURIComponent("/prezzi#plus");
         return;
       }
-      if (!ready() && !ensureInit()) {
+      if (!ensureInit()) {
         showCheckoutError(
-          "Checkout Paddle non pronto. Ricarica la pagina o contatta supporto."
+          "Checkout Paddle non pronto (script o client token). Ricarica o contatta supporto."
         );
         return;
       }
       var cents = parseInt(btn.getAttribute("data-paddle-cents") || "0", 10);
       openWaiverDialog(kind, cents);
     });
-
-    var dialog = dialogEl();
-    if (dialog) {
-      var form = dialog.querySelector("[data-digital-waiver-form]");
-      if (form) {
-        form.addEventListener("submit", function (ev) {
-          var submitter = ev.submitter;
-          var value =
-            (submitter && submitter.value) ||
-            (ev.target &&
-              ev.target.querySelector &&
-              (ev.target.querySelector("[value=confirm]:focus") || {}).value) ||
-            "";
-          // method=dialog: cancel closes; confirm we intercept
-          if (value === "cancel" || value === "") {
-            pending = null;
-            return;
-          }
-          if (value !== "confirm") return;
-          ev.preventDefault();
-          var input = dialog.querySelector("[data-digital-waiver-input]");
-          var err = dialog.querySelector("[data-digital-waiver-error]");
-          if (!input || !input.checked) {
-            if (err) err.hidden = false;
-            if (input && typeof input.focus === "function") input.focus();
-            return;
-          }
-          if (err) err.hidden = true;
-          var confirmBtn = dialog.querySelector("[data-digital-waiver-confirm]");
-          if (confirmBtn) confirmBtn.disabled = true;
-          recordWaiver()
-            .then(function () {
-              closeWaiverDialog();
-              runPendingCheckout();
-            })
-            .catch(function () {
-              showCheckoutError(
-                "Conferma il consenso all’erogazione immediata e riprova (sessione o CSRF scaduti: ricarica)."
-              );
-            })
-            .finally(function () {
-              if (confirmBtn) confirmBtn.disabled = false;
-            });
-        });
-      }
-      dialog.addEventListener("close", function () {
-        if (dialog.returnValue === "cancel") pending = null;
-      });
-    }
 
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
