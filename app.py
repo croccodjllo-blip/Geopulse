@@ -4792,6 +4792,35 @@ def _require_digital_service_waiver(user: "User", *, redirect_to: str):
     return None
 
 
+@app.route("/billing/accept-immediate-service", methods=["POST"])
+@login_required
+def billing_accept_immediate_service():
+    """Record digital-service waiver only (before Paddle.js overlay open).
+
+    Separated from /billing/checkout so consent is not mixed with transaction
+    creation, already-plan redirects, or API-key fallbacks.
+    """
+    user = current_user()
+    if not limiter.allow(f"billing-waiver:{user.id}", limit=30, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    blocked = _require_digital_service_waiver(user, redirect_to=url_for("pricing"))
+    if blocked is not None:
+        return blocked
+    from services.legal_docs import DIGITAL_WAIVER_VERSION
+
+    return jsonify(
+        {
+            "ok": True,
+            "waiver_version": DIGITAL_WAIVER_VERSION,
+            "recorded_at": (
+                user.digital_service_waiver_at.isoformat()
+                if user.digital_service_waiver_at
+                else None
+            ),
+        }
+    )
+
+
 @app.route("/billing/checkout", methods=["POST"])
 @login_required
 def billing_checkout():

@@ -1,0 +1,47 @@
+{# Post-click digital-service waiver (consumer withdrawal / immediate performance). #}
+<dialog
+  class="digital-waiver-dialog"
+  id="digital-waiver-dialog"
+  data-digital-waiver-dialog
+  aria-labelledby="digital-waiver-title"
+  aria-describedby="digital-waiver-desc"
+>
+  <form method="dialog" class="digital-waiver-dialog__panel" data-digital-waiver-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" data-digital-waiver-csrf />
+    <header class="digital-waiver-dialog__head">
+      <div>
+        <p class="digital-waiver-dialog__eyebrow">{{ _('Checkout') }}</p>
+        <h2 class="digital-waiver-dialog__title" id="digital-waiver-title">
+          {{ _('Conferma obbligatoria prima del pagamento') }}
+        </h2>
+      </div>
+      <button type="submit" value="cancel" class="digital-waiver-dialog__close" aria-label="{{ _('Chiudi') }}">×</button>
+    </header>
+    <p class="digital-waiver-dialog__lede" id="digital-waiver-desc">
+      {{ _('Per aprire il checkout Paddle conferma l’erogazione immediata del servizio digitale. Senza questa spunta il pagamento non parte.') }}
+    </p>
+    <label class="digital-waiver-dialog__check">
+      <input
+        type="checkbox"
+        name="accept_immediate_service"
+        id="accept_immediate_service_dialog"
+        value="y"
+        required
+        data-digital-waiver-input
+      />
+      <span>
+        {{ _('Chiedo l’erogazione immediata del servizio digitale (attivazione piano o accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni una volta iniziata l’erogazione, ai sensi della') }}
+        <a href="{{ url_for('refunds') }}" target="_blank" rel="noopener">{{ _('Politica di rimborso') }}</a>.
+      </span>
+    </label>
+    <p class="digital-waiver-dialog__error" data-digital-waiver-error hidden>
+      {{ _('Spunta la casella per continuare.') }}
+    </p>
+    <footer class="digital-waiver-dialog__foot">
+      <button type="submit" value="cancel" class="btn btn-ghost">{{ _('Annulla') }}</button>
+      <button type="submit" value="confirm" class="btn btn-core" data-digital-waiver-confirm>
+        {{ _('Continua al pagamento') }}
+      </button>
+    </footer>
+  </form>
+</dialog>

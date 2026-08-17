@@ -53,32 +53,29 @@
     {% endif %}
   </div>
 
-  <div class="page-section" data-checkout-gate>
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <div class="page-section">
     <h2 class="page-section__title">{{ _('Scegli un pacchetto') }}</h2>
-    {% with waiver_id='accept_immediate_service_topup' %}
-      {% include "partials/digital_service_waiver.html" %}
-    {% endwith %}
     <div class="topup-grid">
       {% for pkg in packages %}
-      <form method="POST" action="{{ url_for('topup_checkout') }}" data-checkout-form>
+      <form method="POST" action="{{ url_for('topup_checkout') }}" {% if not (paddle_overlay and paddle_config.topupPrices and paddle_config.topupPrices[pkg.cents|string]) %}data-checkout-gate data-checkout-form{% endif %}>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="amount_cents" value="{{ pkg.cents }}">
-        <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
         {% if paddle_overlay and paddle_config.topupPrices and paddle_config.topupPrices[pkg.cents|string] %}
         <button
           class="topup-btn"
           type="button"
           data-paddle-checkout="topup"
           data-paddle-cents="{{ pkg.cents }}"
-          data-checkout-needs-waiver
         >
           <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
           <span class="topup-btn__desc">{{ pkg.label }}</span>
           <span class="topup-btn__approx">{{ _('credito operativo') }}</span>
         </button>
         {% else %}
-        <button class="topup-btn" type="submit" data-checkout-needs-waiver>
+        {% with waiver_id='accept_immediate_service_topup_' ~ pkg.cents %}
+          {% include "partials/digital_service_waiver.html" %}
+        {% endwith %}
+        <button class="topup-btn" type="submit">
           <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
           <span class="topup-btn__desc">{{ pkg.label }}</span>
           <span class="topup-btn__approx">{{ _('credito operativo') }}</span>
@@ -86,8 +83,7 @@
         {% endif %}
       </form>
       {% endfor %}
-    </div>
-    <p class="topup-footnote">
+    </div>    <p class="topup-footnote">
       {{ _('Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-label vai su') }}
       <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
       {{ _('Legale:') }}

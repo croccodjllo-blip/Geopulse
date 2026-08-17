@@ -1,52 +1,32 @@
 /**
  * Centropic Paddle.js checkout (Plus + credit top-ups).
  *
- * Expects window.__CENTROPIC_PADDLE__ from the page:
+ * Flow (payments-safe):
+ *  1. User clicks [data-paddle-checkout]
+ *  2. Modal waiver dialog opens (consumer immediate-delivery consent)
+ *  3. On confirm → POST /billing/accept-immediate-service → Paddle.Checkout.open overlay
+ *
+ * Expects window.__CENTROPIC_PADDLE__:
  *   { enabled, overlay, environment, clientToken, pricePlus, topupPrices,
  *     userId, email, successPlus, successTopup }
- *
- * Digital-service waiver: checkout buttons require
- * [data-digital-waiver-input] checked inside [data-checkout-gate].
  */
 (function () {
+  var pending = null;
+
   function cfg() {
     return window.__CENTROPIC_PADDLE__ || {};
   }
 
+  function dialogEl() {
+    return document.querySelector("[data-digital-waiver-dialog]");
+  }
+
   function csrfToken() {
-    var el = document.querySelector('input[name="csrf_token"]');
+    var dialog = dialogEl();
+    var el =
+      (dialog && dialog.querySelector("[data-digital-waiver-csrf]")) ||
+      document.querySelector('input[name="csrf_token"]');
     return el ? el.value : "";
-  }
-
-  function gateFor(el) {
-    return el.closest("[data-checkout-gate]") || document;
-  }
-
-  function waiverChecked(el) {
-    var gate = gateFor(el);
-    var input = gate.querySelector("[data-digital-waiver-input]");
-    return !!(input && input.checked);
-  }
-
-  function syncWaiverMirrors(gate) {
-    var input = gate.querySelector("[data-digital-waiver-input]");
-    var on = !!(input && input.checked);
-    gate.querySelectorAll("[data-waiver-mirror]").forEach(function (hidden) {
-      hidden.value = on ? "y" : "";
-    });
-  }
-
-  function requireWaiver(el) {
-    if (waiverChecked(el)) {
-      syncWaiverMirrors(gateFor(el));
-      return true;
-    }
-    showCheckoutError(
-      "Conferma l’erogazione immediata del servizio digitale (perdi il recesso di 14 giorni) prima di procedere al checkout."
-    );
-    var input = gateFor(el).querySelector("[data-digital-waiver-input]");
-    if (input && typeof input.focus === "function") input.focus();
-    return false;
   }
 
   function ready() {
@@ -93,27 +73,17 @@
   function showCheckoutError(msg) {
     try {
       console.error("Paddle checkout:", msg);
-      if (window.alert) {
-        window.alert(msg);
-      }
+      if (window.alert) window.alert(msg);
     } catch (_e) {
       /* ignore */
     }
   }
 
-  function recordWaiver(kind, extra) {
-    var endpoint =
-      kind === "topup" ? "/crediti/checkout" : "/billing/checkout";
+  function recordWaiver() {
     var body = new URLSearchParams();
     body.set("csrf_token", csrfToken());
     body.set("accept_immediate_service", "y");
-    body.set("overlay", "1");
-    if (kind === "topup") {
-      body.set("amount_cents", String((extra && extra.cents) || 0));
-    } else {
-      body.set("product", kind === "business" ? "business" : "plus");
-    }
-    return fetch(endpoint, {
+    return fetch("/billing/accept-immediate-service", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -122,20 +92,17 @@
       },
       body: body.toString(),
       credentials: "same-origin",
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error("waiver_http_" + res.status);
-        var ct = res.headers.get("content-type") || "";
-        if (ct.indexOf("application/json") === -1) {
-          // Redirect HTML flash page — treat as blocked.
-          throw new Error("waiver_rejected");
-        }
-        return res.json();
-      })
-      .then(function (data) {
+    }).then(function (res) {
+      if (!res.ok) throw new Error("waiver_http_" + res.status);
+      var ct = res.headers.get("content-type") || "";
+      if (ct.indexOf("application/json") === -1) {
+        throw new Error("waiver_rejected");
+      }
+      return res.json().then(function (data) {
         if (!data || !data.ok) throw new Error("waiver_rejected");
         return data;
       });
+    });
   }
 
   function openItems(items, extra) {
@@ -146,6 +113,10 @@
       return false;
     }
     var c = cfg();
+    if (!c.userId) {
+      showCheckoutError("Accedi per completare il pagamento.");
+      return false;
+    }
     var opts = {
       items: items,
       customData: Object.assign(
@@ -153,7 +124,8 @@
         (extra && extra.customData) || {}
       ),
       settings: {
-        successUrl: (extra && extra.successUrl) || c.successPlus || window.location.href,
+        successUrl:
+          (extra && extra.successUrl) || c.successPlus || window.location.href,
         allowLogout: false,
         displayMode: "overlay",
         theme: "dark",
@@ -195,7 +167,10 @@
 
   function openPlus() {
     var c = cfg();
-    if (!c.pricePlus) return false;
+    if (!c.pricePlus) {
+      showCheckoutError("Prezzo Plus non configurato (PADDLE_PRICE_PLUS).");
+      return false;
+    }
     return openItems(
       [{ priceId: c.pricePlus, quantity: 1 }],
       { customData: { product: "plus" }, successUrl: c.successPlus }
@@ -204,7 +179,10 @@
 
   function openBusiness() {
     var c = cfg();
-    if (!c.priceBusiness) return false;
+    if (!c.priceBusiness) {
+      showCheckoutError("Business non in vendita self-serve.");
+      return false;
+    }
     return openItems(
       [{ priceId: c.priceBusiness, quantity: 1 }],
       { customData: { product: "business" }, successUrl: c.successPlus }
@@ -214,7 +192,10 @@
   function openTopup(cents) {
     var c = cfg();
     var priceId = (c.topupPrices || {})[String(cents)];
-    if (!priceId) return false;
+    if (!priceId) {
+      showCheckoutError("Prezzo top-up non configurato.");
+      return false;
+    }
     return openItems(
       [{ priceId: priceId, quantity: 1 }],
       {
@@ -222,6 +203,58 @@
         successUrl: c.successTopup,
       }
     );
+  }
+
+  function runPendingCheckout() {
+    if (!pending) return;
+    var kind = pending.kind;
+    var cents = pending.cents;
+    pending = null;
+    if (kind === "plus") {
+      openPlus();
+      return;
+    }
+    if (kind === "business") {
+      openBusiness();
+      return;
+    }
+    if (kind === "topup") {
+      openTopup(cents);
+    }
+  }
+
+  function openWaiverDialog(kind, cents) {
+    var dialog = dialogEl();
+    if (!dialog || typeof dialog.showModal !== "function") {
+      // Fallback: alert + confirm (older browsers)
+      if (
+        window.confirm(
+          "Confermi l’erogazione immediata del servizio digitale e la perdita del recesso di 14 giorni?"
+        )
+      ) {
+        pending = { kind: kind, cents: cents || 0 };
+        recordWaiver()
+          .then(runPendingCheckout)
+          .catch(function () {
+            showCheckoutError(
+              "Conferma il consenso all’erogazione immediata e riprova."
+            );
+          });
+      }
+      return;
+    }
+    pending = { kind: kind, cents: cents || 0 };
+    var input = dialog.querySelector("[data-digital-waiver-input]");
+    var err = dialog.querySelector("[data-digital-waiver-error]");
+    if (input) input.checked = false;
+    if (err) err.hidden = true;
+    dialog.showModal();
+    if (input && typeof input.focus === "function") input.focus();
+  }
+
+  function closeWaiverDialog() {
+    var dialog = dialogEl();
+    if (dialog && dialog.open) dialog.close();
   }
 
   function bindClicks() {
@@ -233,59 +266,83 @@
       var kind = btn.getAttribute("data-paddle-checkout");
       if (!kind) return;
       ev.preventDefault();
-      if (!requireWaiver(btn)) return;
-
-      var run = function () {
-        if (kind === "plus") {
-          if (!openPlus()) {
-            var form = btn.closest("form");
-            if (form) form.submit();
-          }
-          return;
-        }
-        if (kind === "business") {
-          if (!openBusiness()) {
-            var formBiz = btn.closest("form");
-            if (formBiz) formBiz.submit();
-          }
-          return;
-        }
-        if (kind === "topup") {
-          var cents = parseInt(btn.getAttribute("data-paddle-cents") || "0", 10);
-          if (!openTopup(cents)) {
-            var form2 = btn.closest("form");
-            if (form2) form2.submit();
-          }
-        }
-      };
-
-      recordWaiver(kind, {
-        cents: parseInt(btn.getAttribute("data-paddle-cents") || "0", 10),
-      })
-        .then(run)
-        .catch(function () {
-          showCheckoutError(
-            "Conferma il consenso all’erogazione immediata e riprova."
-          );
-        });
+      var c = cfg();
+      if (!c.userId) {
+        window.location.href =
+          "/login?next=" + encodeURIComponent("/prezzi#plus");
+        return;
+      }
+      if (!ready() && !ensureInit()) {
+        showCheckoutError(
+          "Checkout Paddle non pronto. Ricarica la pagina o contatta supporto."
+        );
+        return;
+      }
+      var cents = parseInt(btn.getAttribute("data-paddle-cents") || "0", 10);
+      openWaiverDialog(kind, cents);
     });
+
+    var dialog = dialogEl();
+    if (dialog) {
+      var form = dialog.querySelector("[data-digital-waiver-form]");
+      if (form) {
+        form.addEventListener("submit", function (ev) {
+          var submitter = ev.submitter;
+          var value =
+            (submitter && submitter.value) ||
+            (ev.target &&
+              ev.target.querySelector &&
+              (ev.target.querySelector("[value=confirm]:focus") || {}).value) ||
+            "";
+          // method=dialog: cancel closes; confirm we intercept
+          if (value === "cancel" || value === "") {
+            pending = null;
+            return;
+          }
+          if (value !== "confirm") return;
+          ev.preventDefault();
+          var input = dialog.querySelector("[data-digital-waiver-input]");
+          var err = dialog.querySelector("[data-digital-waiver-error]");
+          if (!input || !input.checked) {
+            if (err) err.hidden = false;
+            if (input && typeof input.focus === "function") input.focus();
+            return;
+          }
+          if (err) err.hidden = true;
+          var confirmBtn = dialog.querySelector("[data-digital-waiver-confirm]");
+          if (confirmBtn) confirmBtn.disabled = true;
+          recordWaiver()
+            .then(function () {
+              closeWaiverDialog();
+              runPendingCheckout();
+            })
+            .catch(function () {
+              showCheckoutError(
+                "Conferma il consenso all’erogazione immediata e riprova (sessione o CSRF scaduti: ricarica)."
+              );
+            })
+            .finally(function () {
+              if (confirmBtn) confirmBtn.disabled = false;
+            });
+        });
+      }
+      dialog.addEventListener("close", function () {
+        if (dialog.returnValue === "cancel") pending = null;
+      });
+    }
 
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
       if (!(form instanceof HTMLFormElement)) return;
       if (!form.hasAttribute("data-checkout-form")) return;
-      if (!requireWaiver(form)) {
+      var input = form.querySelector("[data-digital-waiver-input]");
+      if (input && !input.checked) {
         ev.preventDefault();
+        showCheckoutError(
+          "Conferma l’erogazione immediata del servizio digitale prima di procedere."
+        );
+        if (typeof input.focus === "function") input.focus();
       }
-    });
-
-    document.querySelectorAll("[data-checkout-gate]").forEach(function (gate) {
-      var input = gate.querySelector("[data-digital-waiver-input]");
-      if (!input) return;
-      input.addEventListener("change", function () {
-        syncWaiverMirrors(gate);
-      });
-      syncWaiverMirrors(gate);
     });
   }
 

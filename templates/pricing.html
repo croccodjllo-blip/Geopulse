@@ -53,39 +53,41 @@
         <li>{{ _('API / white-label: non inclusi') }}</li>
       </ul>
       {% if paddle_plus_ready %}
-        <div class="plan-checkout" data-checkout-gate>
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          {% with waiver_id='accept_immediate_service_plus' %}
-            {% include "partials/digital_service_waiver.html" %}
-          {% endwith %}
+        <div class="plan-checkout">
           {% if current_user %}
             {% if paddle_overlay %}
-            <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus" data-checkout-needs-waiver>
-              {{ _('Scegli Plus') }}
+            <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
+              {{ _('Paga Plus · 14,99€/mese') }}
             </button>
             <noscript>
-              <form method="post" action="{{ url_for('billing_checkout') }}">
+              <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-gate data-checkout-form>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <input type="hidden" name="product" value="plus" />
-                <input type="hidden" name="accept_immediate_service" value="y" />
-                <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
+                {% with waiver_id='accept_immediate_service_plus_noscript' %}
+                  {% include "partials/digital_service_waiver.html" %}
+                {% endwith %}
+                <button type="submit" class="btn btn-core btn-block">{{ _('Paga Plus · 14,99€/mese') }}</button>
               </form>
             </noscript>
             {% else %}
-            <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-form>
+            <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-gate data-checkout-form>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <input type="hidden" name="product" value="plus" />
-              <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
-              <button type="submit" class="btn btn-core btn-block" data-checkout-needs-waiver>{{ _('Scegli Plus') }}</button>
+              {% with waiver_id='accept_immediate_service_plus' %}
+                {% include "partials/digital_service_waiver.html" %}
+              {% endwith %}
+              <button type="submit" class="btn btn-core btn-block">{{ _('Paga Plus · 14,99€/mese') }}</button>
             </form>
             {% endif %}
             {% if plus_yearly_ready %}
-            <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-form>
+            <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-gate data-checkout-form>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <input type="hidden" name="product" value="plus" />
               <input type="hidden" name="interval" value="year" />
-              <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
-              <button type="submit" class="btn btn-ghost-light btn-block" data-checkout-needs-waiver>
+              {% with waiver_id='accept_immediate_service_plus_year' %}
+                {% include "partials/digital_service_waiver.html" %}
+              {% endwith %}
+              <button type="submit" class="btn btn-ghost-light btn-block">
                 {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
               </button>
             </form>
@@ -113,38 +115,40 @@
         <li>{{ _('Ideale per retainer multi-cliente') }}</li>
       </ul>
       {% if business_ready and current_user %}
-        <div class="plan-checkout" data-checkout-gate>
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          {% with waiver_id='accept_immediate_service_business' %}
-            {% include "partials/digital_service_waiver.html" %}
-          {% endwith %}
+        <div class="plan-checkout">
           {% if paddle_overlay %}
-          <button type="button" class="btn btn-core btn-block" data-paddle-checkout="business" data-checkout-needs-waiver>
-            {{ _('Passa a Business') }}
+          <button type="button" class="btn btn-core btn-block" data-paddle-checkout="business">
+            {{ _('Paga Business') }}
           </button>
           <noscript>
-            <form method="post" action="{{ url_for('billing_checkout') }}">
+            <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-gate data-checkout-form>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <input type="hidden" name="product" value="business" />
-              <input type="hidden" name="accept_immediate_service" value="y" />
-              <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Business') }}</button>
+              {% with waiver_id='accept_immediate_service_business_noscript' %}
+                {% include "partials/digital_service_waiver.html" %}
+              {% endwith %}
+              <button type="submit" class="btn btn-core btn-block">{{ _('Paga Business') }}</button>
             </form>
           </noscript>
           {% else %}
-          <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-form>
+          <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-gate data-checkout-form>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="product" value="business" />
-            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
-            <button type="submit" class="btn btn-core btn-block" data-checkout-needs-waiver>{{ _('Passa a Business') }}</button>
+            {% with waiver_id='accept_immediate_service_business' %}
+              {% include "partials/digital_service_waiver.html" %}
+            {% endwith %}
+            <button type="submit" class="btn btn-core btn-block">{{ _('Paga Business') }}</button>
           </form>
           {% endif %}
           {% if business_yearly_ready %}
-          <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-form>
+          <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-gate data-checkout-form>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="product" value="business" />
             <input type="hidden" name="interval" value="year" />
-            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
-            <button type="submit" class="btn btn-ghost-light btn-block" data-checkout-needs-waiver>
+            {% with waiver_id='accept_immediate_service_business_year' %}
+              {% include "partials/digital_service_waiver.html" %}
+            {% endwith %}
+            <button type="submit" class="btn btn-ghost-light btn-block">
               {{ _('Annuale') }} {{ '%.2f'|format(business_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
             </button>
           </form>

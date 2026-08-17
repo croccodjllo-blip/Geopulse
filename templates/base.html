@@ -335,6 +335,9 @@
       );
     </script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/paddle-checkout.js') }}" defer></script>
+    {% if current_user %}
+      {% include "partials/digital_service_waiver_dialog.html" %}
+    {% endif %}
     {% endif %}
 
     <script nonce="{{ csp_nonce }}">
