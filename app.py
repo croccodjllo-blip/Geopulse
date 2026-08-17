@@ -2542,6 +2542,16 @@ def process_pending_analyze_jobs(
                         projected = peek_usage_accum_cents(accum_key)
                         if projected > 0:
                             _assert_current_sov_debit(thread_user, max(debit_cents, projected))
+                        # Hold ceiling: stop LLM when projected spend exceeds lease.
+                        held_cap = int(getattr(thread_job, "held_cents", 0) or 0)
+                        if (
+                            held_cap > 0
+                            and projected > held_cap
+                            and not is_unlimited_user(thread_user)
+                        ):
+                            raise InsufficientCreditError(
+                                f"usage projected {projected}c exceeds hold {held_cap}c"
+                            )
                         if debit_cents <= 0:
                             db.session.commit()
                             return

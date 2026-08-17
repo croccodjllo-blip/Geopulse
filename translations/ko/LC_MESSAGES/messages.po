@@ -7832,6 +7832,60 @@ msgstr "AI를 위한 사이트"
 msgid "Business non è in vendita self-serve. Richiedi onboarding o entra in waitlist."
 msgstr "Business는 셀프서브로 판매되지 않습니다. 온보딩을 요청하거나 대기열에 등록하세요."
 
+msgid "Citation monitor Misurato (probe LLM; 0 hit → Misurato 0%)"
+msgstr "실측 인용 모니터(LLM 프로브; 0 hit → 실측 0%)"
+
+msgid "Re-scan · citation monitor Misurato (0 hit → Misurato 0%)"
+msgstr "재스캔 · 실측 인용 모니터(0 hit → 실측 0%)"
+
+msgid ""
+"Citation monitor eseguito: 0 menzioni brand sui campioni. Mostriamo 0% "
+"measured — non riusiamo la share stimata (proxy)."
+msgstr "인용 모니터 실행됨: 샘플에서 브랜드 언급 0건. 추정(프록시) 점유율을 재사용하지 않고 측정값 0%를 표시합니다."
+
+msgid ""
+"Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo "
+"la share stimata."
+msgstr "인용 모니터 실행됨: 언급 0건. 추정 점유율을 재사용하지 않고 측정값 0%를 표시합니다."
+
+msgid "Citation monitor attivo"
+msgstr "인용 모니터 활성"
+
+msgid "Citation monitor non configurato"
+msgstr "인용 모니터 미설정"
+
+msgid "Misurato · 0 menzioni"
+msgstr "측정됨 · 언급 0건"
+
+msgid "Stimato — probe senza sample utili"
+msgstr "추정 — 사용 가능한 샘플 없는 프로브"
+
+msgid "SoV measured basso"
+msgstr "측정된 SoV 낮음"
+
+msgid ""
+"Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti "
+"citabili; amplia il prompt bank."
+msgstr "프로브 프롬프트에서 브랜드 언급이 적습니다. 엔티티, llms.txt, 인용 가능한 콘텐츠를 강화하고 프롬프트 뱅크를 확장하세요."
+
+msgid ""
+"aggiunge probe Misurati (se 0 menzioni, mostriamo Misurato 0% — non riusiamo "
+"la share Stimata)."
+msgstr "실측 프로브를 추가합니다(멘션 0이면 실측 0% 표시 — 추정 점유율을 재사용하지 않음)."
+
+msgid ""
+"(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, mostriamo "
+"Misurato 0% (non riusiamo la share Stimata/proxy)."
+msgstr "(구조). 인용 모니터 = 실측 LLM 프로브; 멘션 0이면 실측 0% 표시(추정/프록시 점유율 재사용 안 함)."
+
+msgid ""
+"Su Plus, il citation monitor aggiunge probe LLM Misurati (campioni "
+"stocastici). Se nessun engine menziona il brand, mostriamo Misurato 0% — non "
+"inventiamo menzioni e non riusiamo la share Stimata (proxy)."
+msgstr ""
+"Plus에서는 인용 모니터가 실측 LLM 프로브(확률 샘플)를 추가합니다. 어떤 엔진도 브랜드를 언급하지 않으면 실측 0%를 표시합니다 —"
+" 멘션을 꾸며내거나 추정(프록시) 점유율을 재사용하지 않습니다."
+
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"
 #~ " consenso, strumenti Google (Analytics e/o "
@@ -8275,33 +8329,3 @@ msgstr "Business는 셀프서브로 판매되지 않습니다. 온보딩을 요�
 #~ "necessari sui siti analizzati."
 #~ msgstr ""
 
-
-msgid "Citation monitor Misurato (probe LLM; 0 hit → Misurato 0%)"
-msgstr "측정된 인용 모니터 (LLM 프로브; 0건 적중 → 측정값 0%)"
-
-msgid "Re-scan · citation monitor Misurato (0 hit → Misurato 0%)"
-msgstr "재스캔 · 측정된 인용 모니터 (0건 적중 → 측정값 0%)"
-
-msgid "Citation monitor eseguito: 0 menzioni brand sui campioni. Mostriamo 0% measured — non riusiamo la share stimata (proxy)."
-msgstr "인용 모니터 실행됨: 샘플에서 브랜드 언급 0건. 추정(프록시) 점유율을 재사용하지 않고 측정값 0%를 표시합니다."
-
-msgid "Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo la share stimata."
-msgstr "인용 모니터 실행됨: 언급 0건. 추정 점유율을 재사용하지 않고 측정값 0%를 표시합니다."
-
-msgid "Citation monitor attivo"
-msgstr "인용 모니터 활성"
-
-msgid "Citation monitor non configurato"
-msgstr "인용 모니터 미설정"
-
-msgid "Misurato · 0 menzioni"
-msgstr "측정됨 · 언급 0건"
-
-msgid "Stimato — probe senza sample utili"
-msgstr "추정 — 사용 가능한 샘플 없는 프로브"
-
-msgid "SoV measured basso"
-msgstr "측정된 SoV 낮음"
-
-msgid "Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti citabili; amplia il prompt bank."
-msgstr "프로브 프롬프트에서 브랜드 언급이 적습니다. 엔티티, llms.txt, 인용 가능한 콘텐츠를 강화하고 프롬프트 뱅크를 확장하세요."

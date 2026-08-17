@@ -7677,6 +7677,58 @@ msgstr "网站对 AI 的就绪度"
 msgid "Business non è in vendita self-serve. Richiedi onboarding o entra in waitlist."
 msgstr "Business 不提供自助购买。请申请开通或加入候补名单。"
 
+msgid "Citation monitor Misurato (probe LLM; 0 hit → Misurato 0%)"
+msgstr "实测引用监测（LLM 探测；0 次命中 → 实测 0%）"
+
+msgid "Re-scan · citation monitor Misurato (0 hit → Misurato 0%)"
+msgstr "重新扫描 · 实测引用监测（0 次命中 → 实测 0%）"
+
+msgid ""
+"Citation monitor eseguito: 0 menzioni brand sui campioni. Mostriamo 0% "
+"measured — non riusiamo la share stimata (proxy)."
+msgstr "引用监测已运行:样本中品牌提及 0 次。我们显示 0% 已测量——不再复用估算(代理)份额。"
+
+msgid ""
+"Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo "
+"la share stimata."
+msgstr "引用监测已运行:0 次提及。我们显示 0% 已测量——不再复用估算份额。"
+
+msgid "Citation monitor attivo"
+msgstr "引用监测已启用"
+
+msgid "Citation monitor non configurato"
+msgstr "引用监测未配置"
+
+msgid "Misurato · 0 menzioni"
+msgstr "已测量 · 0 次提及"
+
+msgid "Stimato — probe senza sample utili"
+msgstr "估算 — 探测无可用样本"
+
+msgid "SoV measured basso"
+msgstr "已测量 SoV 偏低"
+
+msgid ""
+"Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti "
+"citabili; amplia il prompt bank."
+msgstr "探测提示中的品牌提及很少。请加强实体信息、llms.txt 和可引用内容;扩充提示库。"
+
+msgid ""
+"aggiunge probe Misurati (se 0 menzioni, mostriamo Misurato 0% — non riusiamo "
+"la share Stimata)."
+msgstr "会加入实测探测（若提及为 0，显示实测 0%——不会复用估算份额）。"
+
+msgid ""
+"(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, mostriamo "
+"Misurato 0% (non riusiamo la share Stimata/proxy)."
+msgstr "（结构）引用监测 = 实测 LLM 探测；若提及为 0，显示实测 0%（不复用估算/代理份额）。"
+
+msgid ""
+"Su Plus, il citation monitor aggiunge probe LLM Misurati (campioni "
+"stocastici). Se nessun engine menziona il brand, mostriamo Misurato 0% — non "
+"inventiamo menzioni e non riusiamo la share Stimata (proxy)."
+msgstr "在 Plus 中，引用监测会加入实测 LLM 探测（随机样本）。若没有任何引擎提及品牌，我们显示实测 0%——不会虚构提及，也不会复用估算（代理）份额。"
+
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"
 #~ " consenso, strumenti Google (Analytics e/o "
@@ -8068,33 +8120,3 @@ msgstr "Business 不提供自助购买。请申请开通或加入候补名单。
 #~ "necessari sui siti analizzati."
 #~ msgstr ""
 
-
-msgid "Citation monitor Misurato (probe LLM; 0 hit → Misurato 0%)"
-msgstr "已测量引用监测（LLM 探测；0 命中 → 已测量 0%）"
-
-msgid "Re-scan · citation monitor Misurato (0 hit → Misurato 0%)"
-msgstr "重新扫描 · 已测量引用监测（0 命中 → 已测量 0%）"
-
-msgid "Citation monitor eseguito: 0 menzioni brand sui campioni. Mostriamo 0% measured — non riusiamo la share stimata (proxy)."
-msgstr "引用监测已运行:样本中品牌提及 0 次。我们显示 0% 已测量——不再复用估算(代理)份额。"
-
-msgid "Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo la share stimata."
-msgstr "引用监测已运行:0 次提及。我们显示 0% 已测量——不再复用估算份额。"
-
-msgid "Citation monitor attivo"
-msgstr "引用监测已启用"
-
-msgid "Citation monitor non configurato"
-msgstr "引用监测未配置"
-
-msgid "Misurato · 0 menzioni"
-msgstr "已测量 · 0 次提及"
-
-msgid "Stimato — probe senza sample utili"
-msgstr "估算 — 探测无可用样本"
-
-msgid "SoV measured basso"
-msgstr "已测量 SoV 偏低"
-
-msgid "Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti citabili; amplia il prompt bank."
-msgstr "探测提示中的品牌提及很少。请加强实体信息、llms.txt 和可引用内容;扩充提示库。"

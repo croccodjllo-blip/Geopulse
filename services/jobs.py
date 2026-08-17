@@ -318,6 +318,42 @@ def reclaim_stale_jobs(
             )
             n += 1
             continue
+        # Aggregate debit mode: measured jobs may have spent LLM before flush
+        # (billed_cents still 0). Soft-reclaim would re-run probes — fail closed.
+        held_left = int(getattr(job, "held_cents", 0) or 0)
+        measuredish = bool(getattr(job, "run_measured", False)) or (
+            str(getattr(job, "source", "") or "").lower() == "measured"
+        )
+        if (
+            measuredish
+            and held_left > 0
+            and attempts >= 1
+            and billed <= 0
+            and not _job_already_persisted(job)
+        ):
+            try:
+                from services.usage_billing import usage_debit_aggregate
+
+                aggregate = usage_debit_aggregate()
+            except Exception:
+                aggregate = False
+            if aggregate:
+                job.status = "error"
+                job.finished_at = datetime.now(timezone.utc)
+                job.lease_token = None
+                job.error = (
+                    "Job measured interrotto prima del flush addebito "
+                    "(worker perso / timeout) — non rieseguito per evitare doppia spesa LLM. "
+                    "L’eventuale hold verrà rilasciato/rimborsato."
+                )[:500]
+                _call_abandon()
+                logger.error(
+                    "Permanently failed aggregate measured stale job %s (held=%s)",
+                    job.id,
+                    held_left,
+                )
+                n += 1
+                continue
         # If persist already wrote a run for this attempt, mark done instead of
         # soft-reclaiming (avoids duplicate AnalysisRun when billed_cents==0).
         if _job_already_persisted(job):
