@@ -1422,10 +1422,12 @@ def run_citation_monitor(
                 "category": "geo",
                 "severity": "ok",
                 "title": "Citation monitor attivo",
+                # Short + static-shaped so the template's _(f.detail) call can
+                # match a msgid regardless of the locale active when the
+                # analysis ran (numbers still vary; title carries the meaning).
                 "detail": (
                     f"Probe measured su {len(measured_rates)} engine · "
-                    f"brand mention rate medio {brand_rate}% · "
-                    f"{len(prompts)} prompt · parallel={workers}."
+                    f"brand mention rate medio {brand_rate}%."
                 ),
                 "evidence": "measured",
             }

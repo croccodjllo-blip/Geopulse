@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 from urllib.parse import parse_qsl, urldefrag, urlencode, urljoin, urlparse, urlunparse
+from urllib.robotparser import RobotFileParser
 
 import requests
 from bs4 import BeautifulSoup
@@ -650,6 +651,38 @@ def _enqueue_links(
         queue.append(canon)
 
 
+def _robots_parser_from_probe(robots_probe: dict[str, Any] | None) -> RobotFileParser | None:
+    """Build a parser from the robots.txt probe snippet.
+
+    Returns ``None`` (fail-open) when the probe failed or is empty — BFS then
+    behaves as before, unaffected by robots.txt.
+    """
+    snippet = (robots_probe or {}).get("snippet")
+    if not snippet:
+        return None
+    try:
+        parser = RobotFileParser()
+        parser.parse(str(snippet).splitlines())
+        return parser
+    except Exception:
+        logger.debug("robots.txt parse failed for BFS gate", exc_info=True)
+        return None
+
+
+def _robots_allows_bfs(parser: RobotFileParser | None, url: str) -> bool:
+    """True when robots.txt allows fetching ``url`` for our UA (or ``*``).
+
+    Fails open (allow) when there is no parser or ``can_fetch`` itself errors —
+    never blocks the crawl on a robots.txt parsing bug.
+    """
+    if parser is None:
+        return True
+    try:
+        return parser.can_fetch(USER_AGENT, url)
+    except Exception:
+        return True
+
+
 def crawl_domain_bfs(
     seed_url: str,
     seed_scraped: dict[str, Any],
@@ -667,6 +700,7 @@ def crawl_domain_bfs(
     seed_report = score_page_signals(seed_scraped)
     seed_report["scraped"] = seed_scraped
     reports: list[dict[str, Any]] = [seed_report]
+    robots_parser = _robots_parser_from_probe(probes.get("robots"))
 
     seed_canon = canonicalize_page_url(
         seed_scraped.get("final_url") or seed_url, seed=seed_url
@@ -688,6 +722,18 @@ def crawl_domain_bfs(
     )
 
     while queue and len(reports) < max_pages:
+        if robots_parser is not None:
+            allowed = [u for u in queue if _robots_allows_bfs(robots_parser, u)]
+            skipped_n = len(queue) - len(allowed)
+            if skipped_n:
+                logger.info(
+                    "robots.txt disallow: skipping %d BFS url(s) for %s",
+                    skipped_n,
+                    urlparse(seed_url).netloc,
+                )
+            queue[:] = allowed
+            if not queue:
+                break
         batch_n = min(max_workers, max_pages - len(reports), len(queue))
         batch = queue[:batch_n]
         del queue[:batch_n]

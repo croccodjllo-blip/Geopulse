@@ -142,8 +142,31 @@ def measured_queue_depth() -> int | None:
         return None
 
 
+_ACQUIRE_SLOT_LUA = """
+local key = KEYS[1]
+local now = tonumber(ARGV[1])
+local ttl = tonumber(ARGV[2])
+local cap = tonumber(ARGV[3])
+local token = ARGV[4]
+local key_ttl = tonumber(ARGV[5])
+redis.call('ZREMRANGEBYSCORE', key, 0, now - ttl)
+local active = redis.call('ZCARD', key)
+if active >= cap then
+  return 0
+end
+redis.call('ZADD', key, now, token)
+redis.call('EXPIRE', key, key_ttl)
+return 1
+"""
+
+
 def acquire_measured_slot(*, ttl_seconds: int = 3600) -> str | None:
-    """Reserve one global measured slot. Returns lease token or None."""
+    """Reserve one global measured slot. Returns lease token or None.
+
+    ZCARD-then-ZADD would race under concurrency (two callers could both
+    pass the cap check before either ZADDs). Run the check-and-reserve as a
+    single Lua script so ZADD only happens when the slot is still free.
+    """
     cap = max_concurrent_measured()
     if cap <= 0:
         return f"unlimited:{secrets.token_hex(4)}"
@@ -153,17 +176,18 @@ def acquire_measured_slot(*, ttl_seconds: int = 3600) -> str | None:
         return f"local:{secrets.token_hex(4)}"
     token = secrets.token_hex(8)
     try:
-        # Hold set members expire so crashed workers free slots.
         now = _now_score()
-        pipe = client.pipeline()
-        pipe.zremrangebyscore(MEASURED_SLOT_HOLD_KEY, 0, now - ttl_seconds)
-        pipe.zadd(MEASURED_SLOT_HOLD_KEY, {token: now})
-        pipe.zcard(MEASURED_SLOT_HOLD_KEY)
-        pipe.expire(MEASURED_SLOT_HOLD_KEY, max(60, ttl_seconds * 2))
-        results = pipe.execute()
-        active = int(results[2] or 0)
-        if active > cap:
-            client.zrem(MEASURED_SLOT_HOLD_KEY, token)
+        acquired = client.eval(
+            _ACQUIRE_SLOT_LUA,
+            1,
+            MEASURED_SLOT_HOLD_KEY,
+            now,
+            ttl_seconds,
+            cap,
+            token,
+            max(60, ttl_seconds * 2),
+        )
+        if not int(acquired or 0):
             return None
         return token
     except Exception:

@@ -45,12 +45,15 @@ def result_skeleton_from_site(site: Any, *, url: str) -> dict[str, Any]:
         or urlparse(url).netloc
         or ""
     )
+    entity = signals.get("entity") if isinstance(signals.get("entity"), dict) else None
+    if not entity or not str(entity.get("brand_name") or "").strip():
+        entity = {"brand_name": domain}
     scraped = {
         "domain": domain,
         "title": getattr(site, "page_title", None) or "",
         "url": url,
         "crawled_pages": pages,
-        "entity": {"brand_name": domain},
+        "entity": entity,
     }
     return {
         "aio_score": getattr(site, "aio_score", None),

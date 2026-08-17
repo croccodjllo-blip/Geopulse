@@ -95,6 +95,20 @@ class _FakeRedis:
     def expire(self, key, ttl):
         return True
 
+    def eval(self, script, numkeys, *args):
+        """Minimal interpreter for the measured-slot check-and-reserve script."""
+        keys = args[:numkeys]
+        argv = args[numkeys:]
+        key = keys[0]
+        now, ttl, cap, token, key_ttl = argv
+        now, ttl, cap = float(now), float(ttl), float(cap)
+        self.zremrangebyscore(key, 0, now - ttl)
+        if self.zcard(key) >= cap:
+            return 0
+        self.zadd(key, {str(token): now})
+        self.expire(key, key_ttl)
+        return 1
+
 
 class _FakePipe:
     def __init__(self, r: _FakeRedis):

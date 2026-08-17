@@ -2140,6 +2140,7 @@ def _enqueue_measured_followup(
     user: User,
     url: str,
     max_pages: int,
+    locale: str | None = None,
 ) -> int | None:
     """Enqueue async measured SoV after Stimato/pack completed.
 
@@ -2199,13 +2200,34 @@ def _enqueue_measured_followup(
         or "gpt-4o-mini",
     )
     need = max(1, int(est.service_cost_eur_cents or 0))
+    # Atomic lock: re-check credit + concurrent job cap under row lock, same
+    # gate the normal analyze flow uses before hold/enqueue.
+    try:
+        assert_can_start_analysis(
+            db.session,
+            user,
+            AnalysisJob=AnalysisJob,
+            required_cents=required_credit_with_grace_cents(need),
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
+        )
+    except ConcurrentAnalysisError as exc:
+        app.logger.info(
+            "measured follow-up skipped: %s user=%s", exc, user.id
+        )
+        return None
+    except InsufficientCreditError:
+        app.logger.info(
+            "measured follow-up skipped: insufficient credit user=%s",
+            user.id,
+        )
+        return None
     held = 0
     if not is_unlimited_user(user) and need > 0:
         try:
             held = int(
                 hold_credit(db.session, CreditLedger, user, amount_cents=need) or 0
             )
-            db.session.commit()
+            # Do not commit yet — enqueue_analysis commits hold+job together.
         except InsufficientCreditError:
             db.session.rollback()
             app.logger.info(
@@ -2231,6 +2253,7 @@ def _enqueue_measured_followup(
             plan=getattr(user, "plan", None),
             is_admin=bool(getattr(user, "is_admin", False)),
             active_check=lambda: active_analyze_job_for_url(user.id, url),
+            locale=locale,
         )
         return int(job.id)
     except DuplicateAnalyzeJobError as dup:
@@ -2240,6 +2263,7 @@ def _enqueue_measured_followup(
         return int(getattr(dup.job, "id", 0) or 0) or None
     except Exception:
         app.logger.exception("measured follow-up enqueue failed user=%s", user.id)
+        db.session.rollback()
         if held:
             try:
                 release_hold(db.session, user, amount_cents=held)
@@ -2635,6 +2659,7 @@ def process_pending_analyze_jobs(
                             user=user,
                             url=str(job.url),
                             max_pages=int(getattr(job, "max_pages", None) or 1),
+                            locale=getattr(job, "locale", None),
                         )
                         if follow_id:
                             app.logger.info(
