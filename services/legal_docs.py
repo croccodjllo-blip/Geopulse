@@ -309,4 +309,3 @@ def legal_nav_links() -> list[dict[str, str]]:
         {"endpoint": "trust_security", "label_it": "Trust"},
         {"endpoint": "accessibility_statement", "label_it": "Accessibilità"},
     ]
- (fix(billing): enforce Plus immediate-delivery waiver on checkout)
