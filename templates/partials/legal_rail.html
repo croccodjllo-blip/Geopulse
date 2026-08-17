@@ -1,0 +1,12 @@
+{# Cross-links so legal URLs stay in the crawl graph (not orphaned). #}
+<nav class="legal-rail" aria-label="{{ _('Pagine legali') }}">
+  <a href="{{ url_for('privacy') }}">{{ _('Privacy') }}</a>
+  <a href="{{ url_for('cookies_policy') }}">{{ _('Cookie') }}</a>
+  <a href="{{ url_for('terms') }}">{{ _('Termini') }}</a>
+  <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
+  <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>
+  <a href="{{ url_for('trust_security') }}">{{ _('Trust') }}</a>
+  <a href="{{ url_for('ai_transparency') }}">{{ _('Trasparenza AI') }}</a>
+  <a href="{{ url_for('accessibility_statement') }}">{{ _('Accessibilità') }}</a>
+  <a href="{{ url_for('contact') }}">{{ _('Contatti') }}</a>
+</nav>

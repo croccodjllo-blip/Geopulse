@@ -118,5 +118,6 @@
     <a class="btn btn-ghost" href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a>
     <a class="btn btn-ghost" href="mailto:{{ dpa_contact_email }}">{{ _('Richiedi copia firmata') }}</a>
   </div>
+  {% include "partials/legal_rail.html" %}
 </article>
 {% endblock %}

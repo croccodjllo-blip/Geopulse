@@ -270,8 +270,13 @@ def _parse_scraped_html(
 
     blocking_scripts = 0
     for script in soup.find_all("script"):
-        if script.get("src") and not script.get("async") and not script.get("defer"):
-            blocking_scripts += 1
+        src = script.get("src")
+        if not src:
+            continue
+        # HTML5 boolean attrs parse as "" in BeautifulSoup — use has_attr.
+        if script.has_attr("async") or script.has_attr("defer"):
+            continue
+        blocking_scripts += 1
 
     clean = BeautifulSoup(html, "lxml")
     for tag in clean(["script", "style", "noscript"]):

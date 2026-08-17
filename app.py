@@ -4246,22 +4246,28 @@ def privacy():
     return render_template("privacy.html")
 
 
-@app.route("/terms")
 @app.route("/termini")
 def terms():
     return render_template("termini.html")
 
 
-@app.route("/refund")
-@app.route("/refund-policy")
+@app.route("/terms")
+def terms_alias():
+    return redirect(url_for("terms"), code=301)
+
+
 @app.route("/rimborsi")
 def refunds():
     return render_template("rimborsi.html")
 
 
+@app.route("/refund")
+@app.route("/refund-policy")
+def refunds_alias():
+    return redirect(url_for("refunds"), code=301)
+
+
 @app.route("/cookie")
-@app.route("/cookies")
-@app.route("/cookie-policy")
 def cookies_policy():
     """Cookie inventory + granular consent entrypoint."""
     from services.legal_docs import POLICY_VERSIONS, cookie_inventory
@@ -4276,9 +4282,13 @@ def cookies_policy():
     )
 
 
+@app.route("/cookies")
+@app.route("/cookie-policy")
+def cookies_policy_alias():
+    return redirect(url_for("cookies_policy"), code=301)
+
+
 @app.route("/ai")
-@app.route("/ai-transparency")
-@app.route("/trasparenza-ai")
 def ai_transparency():
     from services.legal_docs import POLICY_VERSIONS
 
@@ -4288,9 +4298,13 @@ def ai_transparency():
     )
 
 
+@app.route("/ai-transparency")
+@app.route("/trasparenza-ai")
+def ai_transparency_alias():
+    return redirect(url_for("ai_transparency"), code=301)
+
+
 @app.route("/trust")
-@app.route("/security")
-@app.route("/trust-security")
 def trust_security():
     from services.legal_docs import POLICY_VERSIONS
 
@@ -4300,8 +4314,13 @@ def trust_security():
     )
 
 
+@app.route("/security")
+@app.route("/trust-security")
+def trust_security_alias():
+    return redirect(url_for("trust_security"), code=301)
+
+
 @app.route("/accessibilita")
-@app.route("/accessibility")
 def accessibility_statement():
     from services.legal_docs import POLICY_VERSIONS
 
@@ -4311,8 +4330,12 @@ def accessibility_statement():
     )
 
 
+@app.route("/accessibility")
+def accessibility_statement_alias():
+    return redirect(url_for("accessibility_statement"), code=301)
+
+
 @app.route("/dpa")
-@app.route("/sub-responsabili")
 def dpa():
     """Art. 28 DPA + active sub-processor register (B2B procurement)."""
     from services.legal_docs import dpa_context
@@ -4322,6 +4345,11 @@ def dpa():
         company_email=(LEGAL_PEC or "info@centropic.ai"),
     )
     return render_template("dpa.html", **ctx)
+
+
+@app.route("/sub-responsabili")
+def dpa_alias():
+    return redirect(url_for("dpa"), code=301)
 
 
 @app.route("/dpa.txt")
@@ -4362,10 +4390,14 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/contact")
 @app.route("/contatti")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/contact")
+def contact_alias():
+    return redirect(url_for("contact"), code=301)
 
 
 @app.route("/esempio-report")

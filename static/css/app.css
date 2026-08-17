@@ -10982,3 +10982,22 @@ body.dash-plan--business .workspace {
 .app-sidebar__bar-fill[data-credits-bar] {
   width: var(--credits-bar-pct, 0%);
 }
+
+
+.legal-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--slate) 25%, transparent);
+  font-size: 0.85rem;
+}
+.legal-rail a {
+  color: var(--slate);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-rail a:hover {
+  color: var(--ink);
+}
