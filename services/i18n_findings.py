@@ -63,7 +63,7 @@ def _catalog() -> tuple[object, ...]:
         _('Buono — buona base, margini chiari'),
         _('Canonical cross-domain'),
         _('Canonical URL mancante'),
-        _('ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI (proxy Copilot): mention rate da prompt pack. Non equivale a ranking garantito nelle risposte live.'),
+        _('ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: mention rate da prompt pack. Non è AI Overview o Copilot nativo, né ranking garantito nelle risposte live.'),
         _('Circa %(lo)s–%(hi)s s'),
         _('Circa %(minutes)s minuti'),
         _('Circa 1 minuto'),

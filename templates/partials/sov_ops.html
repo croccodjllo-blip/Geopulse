@@ -26,6 +26,9 @@
       {% endif %}
     </strong>
   </div>
+  {% if can_measured_sov and engine_breakdown and engine_breakdown.evidence == 'proxy' %}
+  <p class="sov-ops__hint">{{ _('SoV Misurato può restare in coda/budget: finché non completa, vedi solo la stima strutturale.') }}</p>
+  {% endif %}
   <nav class="sov-ops__links" aria-label="{{ _('Azioni SoV') }}">
     <a href="{{ url_for('dashboard_settings') }}#connectors">{{ _('Connector') }}</a>
     <a href="{{ url_for('pricing') }}">{{ _('Piani') }}</a>

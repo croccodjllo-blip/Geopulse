@@ -1,4 +1,4 @@
-"""P0: measured SoV must not wipe healthy proxy SoV."""
+"""Measured SoV honesty: zero hits show 0, not proxy share."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def _proxy() -> dict:
     )
 
 
-def test_all_zero_measured_keeps_proxy_brand_sov():
+def test_all_zero_measured_shows_zero_brand_sov():
     proxy = _proxy()
     assert proxy["brand_sov"] > 20
     measured = {
@@ -31,25 +31,22 @@ def test_all_zero_measured_keeps_proxy_brand_sov():
         ],
     }
     out = apply_measured_sov(proxy, measured)
-    assert out["brand_sov"] == proxy["brand_sov"]
+    assert out["brand_sov"] == 0
     assert out.get("measured_zero_all") is True
-    # Probe ran: engines marked Misurato·0 so UI is not all-"Stimato".
-    assert out["evidence"] == "mixed"
+    assert out["evidence"] == "measured"
     label = (out.get("label") or "").lower()
     note = (out.get("note") or "").lower()
-    assert "0 menzioni" in label or "0 menzioni" in note or "proxy" in note
+    assert "0 menzioni" in label or "0 menzioni" in note
     zeroed = [e for e in out["engines"] if e.get("measured_zero")]
     assert len(zeroed) >= 4
-    assert all(e.get("evidence") == "measured" for e in zeroed)
+    assert all(e.get("propensity") == 0 for e in zeroed)
 
 
-def test_sparse_measured_keeps_proxy_brand_and_propensity_on_zeros():
+def test_sparse_measured_zeros_engine_propensity_not_proxy():
     proxy = _proxy()
-    openai_proxy = next(e for e in proxy["engines"] if e["id"] == "openai")
-    google_proxy = next(e for e in proxy["engines"] if e["id"] == "google")
     measured = {
         "available": True,
-        "brand_mention_rate": 2,
+        "brand_mention_rate": 12,
         "engines": [
             {"id": "openai", "mention_rate": 12, "evidence": "measured", "samples": 8},
             {"id": "perplexity", "mention_rate": 0, "evidence": "measured"},
@@ -60,19 +57,15 @@ def test_sparse_measured_keeps_proxy_brand_and_propensity_on_zeros():
         ],
     }
     out = apply_measured_sov(proxy, measured)
-    # Brand SoV stays on proxy (2% would look broken vs AIO 96).
-    assert out["brand_sov"] == proxy["brand_sov"]
-    assert out["brand_sov"] >= 15
+    assert out["brand_sov"] == 12
     assert out["evidence"] == "mixed"
     openai = next(e for e in out["engines"] if e["id"] == "openai")
     google = next(e for e in out["engines"] if e["id"] == "google")
     assert openai["propensity"] == 12
     assert openai["evidence"] == "measured"
-    # Zero measured must not erase proxy propensity.
-    assert google["propensity"] == google_proxy["propensity"]
+    assert google["propensity"] == 0
     assert google.get("mention_rate") == 0
     assert google.get("measured_zero") is True
-    assert openai_proxy["propensity"] != 12 or True  # sanity
 
 
 def test_strong_measured_overrides_brand_sov():

@@ -32,7 +32,7 @@ ZH: dict[str, str] = {
     "Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, llms/robots).": (
         "%(host)s 分析：完整 AIO/GEO 套件（内容、品牌、GEO、技术、llms/robots）。"
     ),
-    "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI (proxy Copilot): mention rate da prompt pack. Non equivale a ranking garantito nelle risposte live.": (
+    "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: mention rate da prompt pack. Non è AI Overview o Copilot nativo, né ranking garantito nelle risposte live.": (
         "ChatGPT / Perplexity / Claude / Gemini（AI Overview 代理）/ Grok / "
         "Azure AI（Copilot 代理）：来自提示词包的提及率。"
         "并不等同于实时回答中的保证排名。"
@@ -78,7 +78,7 @@ KO: dict[str, str] = {
     "Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, llms/robots).": (
         "%(host)s 분석: 전체 AIO/GEO 스위트(콘텐츠, 브랜드, GEO, 기술, llms/robots)."
     ),
-    "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI (proxy Copilot): mention rate da prompt pack. Non equivale a ranking garantito nelle risposte live.": (
+    "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: mention rate da prompt pack. Non è AI Overview o Copilot nativo, né ranking garantito nelle risposte live.": (
         "ChatGPT / Perplexity / Claude / Gemini(AI Overview 프록시) / Grok / "
         "Azure AI(Copilot 프록시): 프롬프트 팩 기반 멘션률. "
         "라이브 응답의 보장된 순위와는 다릅니다."

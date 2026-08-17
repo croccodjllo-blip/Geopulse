@@ -33,7 +33,7 @@ EN: dict[str, str] = {
     "Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, llms/robots).": (
         "Analysis of %(host)s: full AIO/GEO suite (content, brand, GEO, technical, llms/robots)."
     ),
-    "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI (proxy Copilot): mention rate da prompt pack. Non equivale a ranking garantito nelle risposte live.": (
+    "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: mention rate da prompt pack. Non è AI Overview o Copilot nativo, né ranking garantito nelle risposte live.": (
         "ChatGPT / Perplexity / Claude / Gemini (AI Overview proxy) / Grok / "
         "Azure AI (Copilot proxy): mention rate from the prompt pack. "
         "Not a guaranteed ranking in live answers."
@@ -80,7 +80,7 @@ DE: dict[str, str] = {
     "Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, llms/robots).": (
         "Analyse von %(host)s: vollständige AIO/GEO-Suite (Content, Brand, GEO, Technik, llms/robots)."
     ),
-    "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI (proxy Copilot): mention rate da prompt pack. Non equivale a ranking garantito nelle risposte live.": (
+    "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: mention rate da prompt pack. Non è AI Overview o Copilot nativo, né ranking garantito nelle risposte live.": (
         "ChatGPT / Perplexity / Claude / Gemini (AI-Overview-Proxy) / Grok / "
         "Azure AI (Copilot-Proxy): Mention-Rate aus dem Prompt-Pack. "
         "Kein garantiertes Ranking in Live-Antworten."
@@ -127,7 +127,7 @@ ES: dict[str, str] = {
     "Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, llms/robots).": (
         "Análisis de %(host)s: suite AIO/GEO completa (contenido, marca, GEO, técnico, llms/robots)."
     ),
-    "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI (proxy Copilot): mention rate da prompt pack. Non equivale a ranking garantito nelle risposte live.": (
+    "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: mention rate da prompt pack. Non è AI Overview o Copilot nativo, né ranking garantito nelle risposte live.": (
         "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / "
         "Azure AI (proxy Copilot): tasa de mención del prompt pack. "
         "No equivale a un ranking garantizado en respuestas en vivo."

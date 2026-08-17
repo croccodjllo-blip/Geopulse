@@ -447,20 +447,20 @@
                   <p class="eyebrow">{{ _('AI Engine Breakdown') }}</p>
                   <h3 class="sov-panel__title" id="sov-title">
                     {% if engine_breakdown.measured_zero_all %}
-                    {{ _('Citation share — probe Misurato eseguito') }}
+                    {{ _('Citation share — Misurato 0 menzioni') }}
                     {% elif engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
                     {{ _('Citation share') }}
                     {% else %}
-                    {{ _('Citation share (stimata)') }}
+                    {{ _('Citation share (stimata · readiness)') }}
                     {% endif %}
                   </h3>
                   <p class="sov-panel__lede">
                     {% if engine_breakdown.measured_zero_all %}
-                    {{ _(engine_breakdown.note) if engine_breakdown.note else _('Citation monitor eseguito: 0 menzioni. Mostriamo la share stimata (proxy), non una measured a zero.') }}
+                    {{ _(engine_breakdown.note) if engine_breakdown.note else _('Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo la share stimata.') }}
                     {% elif can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
                     {{ _('Menzioni generative campionate (stocastiche) + predisposizione strutturale — non Share of Voice pubblicitaria.') }}
                     {% elif not can_measured_sov %}
-                    {{ _('Stima da CVI / AIO+GEO + robots sul piano attuale. Su Plus: citation monitor.') }}
+                    {{ _('Stima di readiness strutturale (CVI / AIO+GEO + robots). Su Plus: citation monitor Misurato.') }}
                     {% else %}
                     {{ _('Stima dalla struttura osservata (CVI / score + robots); con Plus puoi aggiungere campioni Misurati.') }}
                     {% endif %}

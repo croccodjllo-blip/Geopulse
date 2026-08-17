@@ -2349,6 +2349,13 @@ def process_pending_analyze_jobs(
                 measured_slot_token = acquire_measured_slot()
                 if measured_slot_token is None:
                     # Soft requeue: back to pending + measured Redis lane.
+                    # Do not burn attempt_count on capacity misses.
+                    try:
+                        cur_attempts = int(getattr(job, "attempt_count", 0) or 0)
+                        if cur_attempts > 0:
+                            job.attempt_count = cur_attempts - 1
+                    except Exception:
+                        pass
                     job.status = "pending"
                     job.lease_token = None
                     job.started_at = None
@@ -5105,8 +5112,37 @@ def billing_paddle_webhook():
                 paid = subscription_paid_plan(
                     data, current_plan=getattr(user, "plan", None)
                 )
+                if paid == "business" and sell_plus_only():
+                    # Keep existing Business tenants; never self-serve-activate new ones.
+                    if (user.plan or "").lower() != "business":
+                        app.logger.warning(
+                            "Paddle business subscription blocked (waitlist) sub=%s user=%s",
+                            data.get("id"),
+                            user.id,
+                        )
+                        app_metrics.incr("billing.business_waitlist_block")
+                        paid = None
                 if status in {"active", "trialing"}:
                     if paid:
+                        # First paid activation: require persisted digital-service waiver.
+                        prior = (user.plan or "").lower()
+                        if (
+                            paid in {"plus", "business"}
+                            and prior not in {"plus", "pro", "business", "admin"}
+                            and not getattr(user, "digital_service_waiver_at", None)
+                        ):
+                            app.logger.warning(
+                                "Paddle plan grant without waiver user=%s paid=%s sub=%s",
+                                user.id,
+                                paid,
+                                data.get("id"),
+                            )
+                            app_metrics.incr("billing.plan_grant_missing_waiver")
+                            # Persist customer/sub ids but do not activate plan yet.
+                            db.session.commit()
+                            return jsonify(
+                                {"ok": False, "error": "digital_service_waiver_required"}
+                            ), 409
                         user.plan = paid
                     else:
                         app.logger.warning(
@@ -5145,6 +5181,13 @@ def billing_paddle_webhook():
             user = _user_from_paddle(data)
 
             if transaction_grants_business(data):
+                if sell_plus_only():
+                    app.logger.warning(
+                        "Paddle business grant blocked (SELL_PLUS_ONLY/waitlist) txn=%s",
+                        data.get("id"),
+                    )
+                    app_metrics.incr("billing.business_waitlist_block")
+                    return jsonify({"ok": True, "ignored": "business_waitlist"})
                 if user is None:
                     app.logger.error(
                         "Paddle business grant no_user txn=%s customer=%s",
@@ -5202,6 +5245,19 @@ def billing_paddle_webhook():
                     # 5xx so Paddle retries after ops maps the customer.
                     return jsonify({"ok": False, "error": "no_user"}), 500
                 if (user.plan or "").lower() != "admin":
+                    prior = (user.plan or "").lower()
+                    if prior not in {"plus", "pro", "business", "admin"} and not getattr(
+                        user, "digital_service_waiver_at", None
+                    ):
+                        app.logger.warning(
+                            "Paddle plus grant without waiver user=%s txn=%s",
+                            user.id,
+                            data.get("id"),
+                        )
+                        app_metrics.incr("billing.plan_grant_missing_waiver")
+                        return jsonify(
+                            {"ok": False, "error": "digital_service_waiver_required"}
+                        ), 409
                     txn_id = str(data.get("id") or "").strip()
                     customer_id = data.get("customer_id")
                     sub = data.get("subscription_id")
@@ -8250,6 +8306,9 @@ def email_pack(analysis_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash(_("Analisi non trovata."), "error")
+        return redirect(url_for("dashboard", site=analysis_id))
+    if not user_can_write_site(user, analysis):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
         return redirect(url_for("dashboard", site=analysis_id))
 
     dash_url = url_for("dashboard", site=analysis.id)

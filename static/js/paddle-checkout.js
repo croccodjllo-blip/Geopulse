@@ -216,8 +216,10 @@
 
   function openBusiness() {
     var c = cfg();
-    if (!c.priceBusiness) {
-      showCheckoutError("Business non in vendita self-serve.");
+    if (!c.businessReady || !c.priceBusiness) {
+      showCheckoutError(
+        "Business è in waitlist: niente checkout self-serve. Scrivi a info@centropic.ai."
+      );
       return Promise.resolve(false);
     }
     return openItems(
@@ -317,15 +319,17 @@
       return;
     }
     setDialogBusy(true, "Apertura checkout Paddle…");
-    // Consent first (best-effort), then ALWAYS open Paddle if checkbox is on.
-    // Previously a CSRF/referrer 400 on the waiver POST aborted Checkout.open.
+    // Fail-closed: Paddle opens only after consent is persisted server-side.
     recordWaiver()
-      .catch(function (e) {
-        console.warn("waiver record failed; opening checkout anyway", e);
-      })
       .then(function () {
         closeWaiverDialog();
         return runPendingCheckout();
+      })
+      .catch(function (e) {
+        console.warn("waiver record failed; checkout blocked", e);
+        showDialogError(
+          "Conferma non registrata. Aggiorna la pagina e riprova, oppure disattiva blocchi privacy sul dominio."
+        );
       })
       .finally(function () {
         setDialogBusy(false);

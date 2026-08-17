@@ -369,10 +369,10 @@ def apply_measured_sov(
 ) -> dict[str, Any]:
     """Sovrappone SoV measured (LLM probe) sul breakdown proxy.
 
-    P0: never let empty/near-zero measured probes wipe a healthy proxy SoV.
-    - ``mention_rate == 0`` keeps proxy propensity (annotates measured-zero).
-    - If no engine has a positive measured rate, return proxy unchanged.
-    - Weak brand_mention_rate does not replace a solid proxy brand_sov.
+    Honesty:
+    - Positive measured rates replace proxy propensity for that engine.
+    - Full zero-hit probe shows 0% measured share (never keeps proxy % as if measured).
+    - Per-engine zero hits set propensity/mention_rate to 0 with ``measured_zero``.
     """
     if not measured or not measured.get("available"):
         return breakdown
@@ -392,19 +392,19 @@ def apply_measured_sov(
         if rate_f > 0:
             positive_rates.append(rate_f)
 
-    # Full fallback: measured available but no positive mentions → keep proxy
-    # share/propensity, but mark probed engines as measured-zero so the UI does
-    # not look like citation monitor never ran (all "Stimato").
+    # Full zero: probe ran, no brand mentions — show measured 0, not proxy %.
     if not positive_rates:
         out = dict(breakdown)
         out["measured"] = measured
         out["measured_zero_all"] = True
+        out["brand_sov"] = 0
+        out["rivals_sov"] = 0
+        out["other_sov"] = 100
         out["note"] = (
             (measured.get("note") or "").strip()
             or (
                 "Citation monitor eseguito: 0 menzioni brand sui campioni. "
-                "Mostriamo la citation share stimata (proxy strutturale), "
-                "non una share measured a zero."
+                "Mostriamo 0% measured — non riusiamo la share stimata (proxy)."
             )
         )
         engines = [dict(e) for e in (out.get("engines") or [])]
@@ -412,9 +412,14 @@ def apply_measured_sov(
         for eng in engines:
             m = measured_engines.get(str(eng.get("id")))
             if not m:
+                eng["propensity"] = 0
+                eng["mention_rate"] = 0
+                eng["share"] = 0
                 continue
             if m.get("evidence") in {"unavailable", "pending"}:
                 eng["evidence"] = m.get("evidence")
+                eng["propensity"] = 0
+                eng["share"] = 0
                 if m.get("reason"):
                     eng["reason"] = m.get("reason")
                 continue
@@ -423,16 +428,22 @@ def apply_measured_sov(
                 continue
             eng["evidence"] = "measured"
             eng["mention_rate"] = 0
+            eng["propensity"] = 0
+            eng["share"] = 0
             eng["measured_zero"] = True
             if m.get("samples") is not None:
                 eng["samples"] = m.get("samples")
             probed += 1
         out["engines"] = engines
+        out["composition"] = engines
+        out["columns"] = _column_geometry(engines)
+        out["radar"] = _radar_geometry(engines)
         if probed:
-            out["evidence"] = "mixed"
-            out["label"] = "Misurato · 0 menzioni (share Stimata)"
-        elif out.get("evidence") == "proxy":
-            out["label"] = "Stimato — probe 0 menzioni"
+            out["evidence"] = "measured"
+            out["label"] = "Misurato · 0 menzioni"
+        else:
+            out["evidence"] = "proxy"
+            out["label"] = "Stimato — probe senza sample utili"
         return out
 
     out = dict(breakdown)
@@ -454,9 +465,10 @@ def apply_measured_sov(
         except (TypeError, ValueError):
             continue
         if rate_f <= 0:
-            # Zero hit is observed, but do not erase proxy propensity/share.
+            # Zero hit observed: show 0 for that engine (do not keep proxy %).
             eng["evidence"] = "measured"
             eng["mention_rate"] = 0
+            eng["propensity"] = 0
             eng["measured_zero"] = True
             if m.get("samples") is not None:
                 eng["samples"] = m.get("samples")
@@ -496,7 +508,6 @@ def apply_measured_sov(
         if engines:
             engines[-1]["share"] = round(engines[-1]["share"] + drift, 1)
 
-        proxy_brand = float(out.get("brand_sov") or 0)
         brand_rate = measured.get("brand_mention_rate")
         brand_f: float | None
         try:
@@ -504,38 +515,27 @@ def apply_measured_sov(
         except (TypeError, ValueError):
             brand_f = None
 
-        positive_n = sum(
-            1
-            for e in engines
-            if e.get("evidence") == "measured" and float(e.get("mention_rate") or 0) > 0
-        )
-        # Weak measured brand must not collapse a healthy proxy SoV.
-        weak_brand = (
-            brand_f is None
-            or brand_f <= 0
-            or (
-                brand_f < 5
-                and positive_n < 2
-                and proxy_brand >= 15
-            )
-        )
-        if brand_f is not None and not weak_brand:
+        if brand_f is not None and brand_f > 0:
             out["brand_sov"] = _clamp(brand_f)
             out["other_sov"] = round(100.0 - out["brand_sov"], 1)
             out["rivals_sov"] = 0.0
             out["evidence"] = "mixed"
             out["label"] = "Misto (proxy + measured)"
         else:
+            # Positive engine hits but brand aggregate ~0: still show measured truth.
+            out["brand_sov"] = 0
+            out["other_sov"] = 100.0
+            out["rivals_sov"] = 0.0
             out["evidence"] = "mixed"
-            out["label"] = "Misto — brand SoV da proxy"
+            out["label"] = "Misto — brand measured ~0"
             out["note"] = measured.get("note") or (
-                "Probe measured con pochi hit: brand SoV resta sulla stima proxy; "
-                "gli engine con menzioni positive restano evidenza measured."
+                "Probe measured con hit su engine ma brand mention rate ~0; "
+                "non riusiamo la share proxy per il brand."
             )
         if not out.get("note"):
             out["note"] = measured.get("note") or (
                 "Engine con menzioni LLM: evidence measured. "
-                "Altri engine restano proxy euristico."
+                "Altri engine restano stima strutturale (non citazioni live)."
             )
     out["engines"] = engines
     out["composition"] = engines

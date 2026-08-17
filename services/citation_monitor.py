@@ -1302,7 +1302,7 @@ def run_citation_monitor(
             {
                 "id": "google",
                 "label": "Gemini",
-                "vendor": "Google (proxy AI Overview)",
+                "vendor": "Google Gemini API (not native AI Overview)",
                 "mention_rate": gemini["mention_rate"],
                 "hits": gemini["hits"],
                 "samples": gemini["samples"],
@@ -1317,7 +1317,7 @@ def run_citation_monitor(
             {
                 "id": "google",
                 "label": "Gemini",
-                "vendor": "Google (proxy AI Overview)",
+                "vendor": "Google Gemini API (not native AI Overview)",
                 "mention_rate": None,
                 "evidence": "unavailable" if _gemini_key() else "pending",
                 "reason": gemini.get("reason")
@@ -1386,7 +1386,7 @@ def run_citation_monitor(
                 "evidence": "unavailable" if _azure_project_endpoint() else "pending",
                 "reason": copilot.get("reason")
                 or (
-                    "Probe via Azure AI Foundry (proxy Copilot). "
+                    "Probe via Azure OpenAI / Foundry (not native Microsoft Copilot). "
                     "Imposta AZURE_AI_PROJECT_ENDPOINT + AZURE_AI_API_KEY "
                     "(oppure Entra ID: AZURE_TENANT_ID / CLIENT_ID / CLIENT_SECRET)."
                 ),
@@ -1472,9 +1472,9 @@ def run_citation_monitor(
         "findings": findings,
         "parallel_engines": workers,
         "note": (
-            "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / "
-            "Azure AI (proxy Copilot): mention rate da prompt pack. "
-            "Non equivale a ranking garantito nelle risposte live."
+            "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: "
+            "mention rate da prompt pack. Non è AI Overview o Copilot nativo, "
+            "né ranking garantito nelle risposte live."
         ),
     }
 

@@ -96,8 +96,9 @@ def resolve_prompts(
 ) -> list[str]:
     """Resolve SoV prompts for the analyzed site.
 
-    - Own-site / custom bank: Centropic GEO defaults (or user bank).
-    - Third-party domain: site-scoped prompts for that brand (not the account company).
+    Prefer category/brand-scoped prompts for the domain under analysis.
+    Account prompt bank overrides when the domain is owned by the user.
+    Legacy Centropic GEO defaults remain only as last-resort fallback.
     """
     custom: list[str] = []
     if user is not None:
@@ -113,19 +114,15 @@ def resolve_prompts(
 
     if custom and own_site:
         base = list(custom)
-    elif own_site or not domain:
-        base = custom or default_prompts(locale=locale)
-        if domain and not custom:
-            base = list(base)
-            base.append(
-                f"Per il dominio {domain}, quali alternative conosci nel mercato GEO/AIO?"
-            )
-    else:
+    elif domain:
+        # Always scope to the brand/domain being audited (own or third-party).
         base = site_prompts(
             brand=brand or domain,
             domain=domain,
             locale=locale,
         )
+    else:
+        base = default_prompts(locale=locale)
 
     # Dedup preserve order
     seen: set[str] = set()

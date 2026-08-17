@@ -126,17 +126,19 @@ def topup_price_map() -> dict[int, str]:
 def client_config() -> dict[str, Any]:
     """Public config for Paddle.js (safe to embed in HTML)."""
     overlay = paddle_overlay_ready()
+    biz_ready = paddle_business_enabled()
     return {
         "enabled": paddle_enabled() or paddle_topups_enabled(),
         "overlay": overlay,
         "plusReady": paddle_plus_enabled(),
-        "businessReady": paddle_business_enabled(),
+        "businessReady": biz_ready,
         "environment": paddle_environment(),
         "clientToken": PADDLE_CLIENT_TOKEN if overlay else "",
         "pricePlus": PADDLE_PRICE_PLUS,
         "pricePlusYearly": PADDLE_PRICE_PLUS_YEARLY,
-        "priceBusiness": PADDLE_PRICE_BUSINESS,
-        "priceBusinessYearly": PADDLE_PRICE_BUSINESS_YEARLY,
+        # Never leak Business price IDs while waitlist / SELL_PLUS_ONLY is on.
+        "priceBusiness": PADDLE_PRICE_BUSINESS if biz_ready else "",
+        "priceBusinessYearly": PADDLE_PRICE_BUSINESS_YEARLY if biz_ready else "",
         "topupPrices": {str(k): v for k, v in topup_price_map().items()},
     }
 

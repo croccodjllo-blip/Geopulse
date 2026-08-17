@@ -60,9 +60,9 @@ NOTES_EXPECTED = {
 }
 
 SOV_NOTE = (
-    "ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / "
-    "Azure AI (proxy Copilot): mention rate da prompt pack. "
-    "Non equivale a ranking garantito nelle risposte live."
+    "ChatGPT / Perplexity / Claude / Gemini API / Grok / Azure OpenAI: "
+    "mention rate da prompt pack. Non è AI Overview o Copilot nativo, "
+    "né ranking garantito nelle risposte live."
 )
 
 

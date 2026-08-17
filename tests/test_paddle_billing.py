@@ -97,6 +97,7 @@ def test_stripe_disabled_always():
 
 
 def test_client_config_shape(monkeypatch):
+    monkeypatch.setenv("SELL_PLUS_ONLY", "0")
     monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus")
     monkeypatch.setattr(pb, "PADDLE_PRICE_BUSINESS", "pri_biz")
     monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
@@ -109,6 +110,16 @@ def test_client_config_shape(monkeypatch):
     assert cfg["pricePlus"] == "pri_plus"
     assert cfg["priceBusiness"] == "pri_biz"
     assert cfg["businessReady"] is True
+
+
+def test_client_config_hides_business_when_waitlist(monkeypatch):
+    monkeypatch.setenv("SELL_PLUS_ONLY", "1")
+    monkeypatch.setattr(pb, "PADDLE_PRICE_PLUS", "pri_plus")
+    monkeypatch.setattr(pb, "PADDLE_PRICE_BUSINESS", "pri_biz")
+    monkeypatch.setattr(pb, "PADDLE_CLIENT_TOKEN", "test_token")
+    cfg = pb.client_config()
+    assert cfg["businessReady"] is False
+    assert cfg["priceBusiness"] == ""
 
 
 def test_transaction_grants_business_by_price_id(monkeypatch):
