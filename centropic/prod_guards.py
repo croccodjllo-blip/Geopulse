@@ -46,6 +46,7 @@ def evaluate_env_guards() -> dict[str, Any]:
     paddle_webhook = (os.getenv("PADDLE_WEBHOOK_SECRET") or "").strip()
     paddle_api = (os.getenv("PADDLE_API_KEY") or "").strip()
     paddle_client = (os.getenv("PADDLE_CLIENT_TOKEN") or "").strip()
+    paddle_price_plus = (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or "").strip()
     health_detail = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     sentry_dsn = (os.getenv("SENTRY_DSN") or "").strip()
     require_sentry = _truthy(os.getenv("REQUIRE_SENTRY"), "0")
@@ -115,6 +116,14 @@ def evaluate_env_guards() -> dict[str, Any]:
                 else ("api" if paddle_api else ("client" if paddle_client else "missing"))
             ),
             "required": "PADDLE_API_KEY and/or PADDLE_CLIENT_TOKEN",
+        },
+        "PADDLE_PRICE_PLUS_MONTHLY": {
+            # Paddle auth without a Plus catalog price silently disables
+            # checkout/overlay (paddle_plus_enabled() == False) or, worse,
+            # leaves the amount-assert helpers with no expected price.
+            "ok": bool(paddle_price_plus) or not (paddle_api or paddle_client),
+            "value": "set" if paddle_price_plus else "missing",
+            "required": "set when PADDLE_API_KEY or PADDLE_CLIENT_TOKEN is set",
         },
         "HEALTH_DETAIL_TOKEN": {
             "ok": bool(health_detail),

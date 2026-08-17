@@ -107,6 +107,16 @@ def classify_analyze_error(exc: BaseException | str | None) -> dict[str, str]:
             "Usa solo URL pubblici https:// (niente localhost, IP privati o file://).",
         )
 
+    if "addebito parziale" in low or "doppia fatturazione" in low:
+        return pack(
+            "billing_reclaim_partial",
+            "Job interrotto dopo addebito parziale",
+            "Il job è stato interrotto per un problema tecnico dopo un addebito parziale; "
+            "non è stato rieseguito per evitare una doppia fatturazione.",
+            "Il credito addebitato viene rimborsato automaticamente. Se non lo vedi in "
+            "bacheca entro pochi minuti, scrivi a info@centropic.ai con l’ID del job.",
+        )
+
     if isinstance(exc, requests.RequestException) or "request" in low:
         return pack(
             "unreachable",

@@ -13,6 +13,9 @@ services:
       FLASK_DEBUG: "0"
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
       WEB_THREADS: ${WEB_THREADS:-4}
+      # Optional: point at the `redis` profile service (or an external Redis)
+      # for analyze-queue dispatch + shared RPM. Empty = DB FIFO fallback.
+      REDIS_URL: ${REDIS_URL:-}
     volumes:
       - aio_bot_data:/data
     # Bind localhost only so X-Forwarded-* cannot be spoofed via the published port.
@@ -25,6 +28,24 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+
+  # Redis opzionale (dispatch code + RPM condiviso): docker compose --profile redis up -d
+  # Senza REDIS_URL/profilo attivo i worker usano il fallback DB FIFO.
+  redis:
+    profiles: ["redis"]
+    image: redis:7-alpine
+    container_name: aio-bot-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - aio_bot_redis:/data
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Postgres opzionale: docker compose --profile postgres up -d
   db:
@@ -64,3 +85,4 @@ services:
 volumes:
   aio_bot_data:
   aio_bot_pg:
+  aio_bot_redis:

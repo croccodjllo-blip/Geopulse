@@ -307,7 +307,8 @@ def reclaim_stale_jobs(
             job.lease_token = None
             job.error = (
                 "Job interrotto dopo addebito parziale "
-                "(worker perso / timeout heartbeat) — non rieseguito per evitare doppia fatturazione."
+                "(worker perso / timeout heartbeat) — non rieseguito per evitare doppia fatturazione. "
+                "Il credito addebitato verrà rimborsato automaticamente."
             )[:500]
             _call_abandon()
             logger.error(

@@ -19,6 +19,7 @@ def test_evaluate_env_guards_defaults_ok(monkeypatch):
     monkeypatch.setenv("BEHIND_NGINX", "1")
     monkeypatch.setenv("PADDLE_WEBHOOK_SECRET", "pdl_ntfsec_test")
     monkeypatch.setenv("PADDLE_API_KEY", "pdl_live_test")
+    monkeypatch.setenv("PADDLE_PRICE_PLUS_MONTHLY", "pri_plus_test")
     monkeypatch.setenv("HEALTH_DETAIL_TOKEN", "health-test-token")
     monkeypatch.delenv("REQUIRE_SENTRY", raising=False)
     result = evaluate_env_guards()

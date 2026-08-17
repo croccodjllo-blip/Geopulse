@@ -18,7 +18,7 @@
   "offers": {
     "@type": "AggregateOffer",
     "lowPrice": "0",
-    "highPrice": "89.99",
+    "highPrice": "{{ '14.99' if sell_plus_only else '89.99' }}",
     "priceCurrency": "EUR",
     "offerCount": "3",
     "url": "{{ canonical_base }}/prezzi",
@@ -36,14 +36,21 @@
         "price": "14.99",
         "priceCurrency": "EUR",
         "description": "Startup: fino a {{ max_sites_plus }} domini, re-scan, SoV measured"
-      },
+      }{% if not sell_plus_only %},
       {
         "@type": "Offer",
         "name": "Business",
         "price": "89.99",
         "priceCurrency": "EUR",
         "description": "Agenzie: API, white-label, fino a {{ max_sites_business }} domini clienti"
-      }
+      }{% else %},
+      {
+        "@type": "Offer",
+        "name": "Business",
+        "availability": "https://schema.org/PreOrder",
+        "priceCurrency": "EUR",
+        "description": "Agenzie: API, white-label — attualmente in waitlist, non acquistabile online"
+      }{% endif %}
     ]
   },
   "provider": { "@id": "{{ canonical_base }}/#organization" },

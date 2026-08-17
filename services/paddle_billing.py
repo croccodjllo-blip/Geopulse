@@ -682,3 +682,174 @@ def transaction_gross_cents(data: dict[str, Any]) -> int | None:
         except (TypeError, ValueError):
             continue
     return None
+
+
+def _parse_minor_cents(raw: Any) -> int | None:
+    """Parse a Paddle minor-unit amount (string int cents, or float euros)."""
+    if raw is None:
+        return None
+    try:
+        if isinstance(raw, (int, float)):
+            return int(round(float(raw)))
+        text = str(raw).strip()
+        if not text:
+            return None
+        if "." in text:
+            return int(round(float(text) * 100))
+        return int(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def transaction_unit_cents(data: dict[str, Any]) -> int | None:
+    """Best-effort per-item/subtotal price in EUR cents, excluding tax.
+
+    Prefers, in order: settled line-item unit price, line-item subtotal,
+    then the transaction-level ``details.totals.subtotal``. Never returns
+    ``grand_total``, which includes tax and would over-count the catalog
+    comparison.
+    """
+    for item in data.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        price = item.get("price") if isinstance(item.get("price"), dict) else {}
+        unit_price = (price or {}).get("unit_price") or {}
+        cents = _parse_minor_cents(unit_price.get("amount"))
+        if cents is not None:
+            return cents
+
+    details = data.get("details") or {}
+    for line_item in details.get("line_items") or []:
+        if not isinstance(line_item, dict):
+            continue
+        unit_totals = line_item.get("unit_totals") or {}
+        cents = _parse_minor_cents(unit_totals.get("subtotal") or unit_totals.get("total"))
+        if cents is not None:
+            return cents
+        totals = line_item.get("totals") or {}
+        cents = _parse_minor_cents(totals.get("subtotal"))
+        if cents is not None:
+            return cents
+
+    totals = details.get("totals") or {}
+    cents = _parse_minor_cents(totals.get("subtotal"))
+    if cents is not None:
+        return cents
+    return None
+
+
+def transaction_catalog_cents(data: dict[str, Any]) -> int | None:
+    """Settled amount to compare against the server catalog price.
+
+    Prefers the tax-free unit/subtotal (``transaction_unit_cents``); falls
+    back to ``transaction_gross_cents`` (grand_total) only when no
+    unit/subtotal figure is present, so older payloads still get a
+    mismatch check.
+    """
+    unit_cents = transaction_unit_cents(data)
+    if unit_cents is not None:
+        return unit_cents
+    return transaction_gross_cents(data)
+
+
+def _env_eur_cents(name: str, default: str) -> int:
+    raw = (os.getenv(name) or default).strip()
+    try:
+        return int(round(float(raw) * 100))
+    except (TypeError, ValueError):
+        return int(round(float(default) * 100))
+
+
+def expected_plus_unit_cents(interval: str = "month") -> int | None:
+    """Expected Plus subscription price in EUR cents, read from env.
+
+    Read at call time (same pattern as ``plus_price_id``) to avoid a
+    circular import with ``app.py``, where the canonical PLUS_MONTHLY_EUR /
+    PLUS_YEARLY_EUR env vars are also read.
+    """
+    yearly = (interval or "").lower() in {"year", "yearly", "annual", "annuale"}
+    if yearly:
+        raw = (os.getenv("PLUS_YEARLY_EUR") or "").strip()
+        if not raw:
+            return None
+        try:
+            return int(round(float(raw) * 100))
+        except (TypeError, ValueError):
+            return None
+    return _env_eur_cents("PLUS_MONTHLY_EUR", "14.99")
+
+
+def expected_business_unit_cents(interval: str = "month") -> int | None:
+    """Expected Business subscription price in EUR cents, read from env."""
+    yearly = (interval or "").lower() in {"year", "yearly", "annual", "annuale"}
+    if yearly:
+        raw = (os.getenv("BUSINESS_YEARLY_EUR") or "").strip()
+        if not raw:
+            return None
+        try:
+            return int(round(float(raw) * 100))
+        except (TypeError, ValueError):
+            return None
+    return _env_eur_cents("BUSINESS_MONTHLY_EUR", "89.99")
+
+
+def assert_transaction_matches_catalog(
+    data: dict[str, Any], *, product: str, interval: str = "month"
+) -> str | None:
+    """Fail-closed sanity check: settled amount must match the server catalog.
+
+    Returns ``None`` when the amounts match, or when the settled amount /
+    expected catalog price is unavailable (soft-skip, so older webhook
+    payloads that omit totals or env overrides don't get refused — but this
+    logs a warning). Returns a short error string when the settled unit
+    price does not match the expected catalog price for ``product``.
+    """
+    unit_cents = transaction_unit_cents(data)
+    if unit_cents is None:
+        logger.warning(
+            "Paddle catalog assert skipped: no unit/subtotal amount txn=%s product=%s",
+            data.get("id"),
+            product,
+        )
+        return None
+    product_key = (product or "").strip().lower()
+    if product_key == "plus":
+        expected = expected_plus_unit_cents(interval)
+    elif product_key == "business":
+        expected = expected_business_unit_cents(interval)
+    else:
+        return None
+    if expected is None:
+        logger.warning(
+            "Paddle catalog assert skipped: expected price unknown product=%s interval=%s txn=%s",
+            product_key,
+            interval,
+            data.get("id"),
+        )
+        return None
+    if int(unit_cents) != int(expected):
+        return (
+            f"catalog_amount_mismatch product={product_key} interval={interval} "
+            f"expected_cents={expected} got_cents={unit_cents}"
+        )
+    return None
+
+
+def transaction_interval(data: dict[str, Any]) -> str:
+    """Best-effort billing interval ('month'/'year') from settled price ids.
+
+    Falls back to ``month`` when no yearly price id is present/settled.
+    """
+    price_ids = set(transaction_price_ids(data))
+    if plus_yearly_price_id() and plus_yearly_price_id() in price_ids:
+        return "year"
+    if business_yearly_price_id() and business_yearly_price_id() in price_ids:
+        return "year"
+    for item in data.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        price = item.get("price") if isinstance(item.get("price"), dict) else {}
+        billing = (price or {}).get("billing_cycle") or {}
+        if str(billing.get("interval") or "").lower() in {"year", "yearly", "annual"}:
+            return "year"
+    return "month"

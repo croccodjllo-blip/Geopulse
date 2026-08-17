@@ -47,6 +47,7 @@ from flask_babel import Babel, gettext as _, lazy_gettext as _l
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
+from markupsafe import Markup
 from sqlalchemy import UniqueConstraint, func, inspect, or_, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -87,6 +88,7 @@ from services.analyzer import (
 from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
     assert_paddle_env_matches_site,
+    assert_transaction_matches_catalog as paddle_assert_transaction_matches_catalog,
     client_config as paddle_client_config,
     create_business_checkout as paddle_create_business_checkout,
     create_plus_checkout as paddle_create_plus_checkout,
@@ -104,9 +106,10 @@ from services.paddle_billing import (
     plan_from_paddle_subscription_status,
     subscription_paid_plan,
     topup_cents_for_transaction,
+    transaction_catalog_cents,
     transaction_grants_business,
     transaction_grants_plus,
-    transaction_gross_cents,
+    transaction_interval as paddle_transaction_interval,
     transaction_is_subscription,
     verify_webhook_signature as paddle_verify_webhook_signature,
 )
@@ -404,12 +407,30 @@ app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
 app.config["BABEL_DEFAULT_LOCALE"] = "it"
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(BASE_DIR, "translations")
 
-# Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix solo se TRUST_PROXY=1.
+# Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix solo se TRUST_PROXY=1
+# *e* BEHIND_NGINX=1 — fail-closed: senza un proxy fidato davanti, gli header
+# X-Forwarded-* sono forgeable direttamente dal client (spoofed IP/scheme).
 # Do NOT trust X-Forwarded-Host (x_host=0): forged Host enables
 # password-reset and absolute-URL phishing.
 # Keep the app bound to 127.0.0.1 (see docker-compose) so clients cannot
 # spoof XFF by hitting Gunicorn directly.
-if os.getenv("TRUST_PROXY", "1").strip().lower() in {"1", "true", "yes", "on"}:
+_trust_proxy_env = os.getenv("TRUST_PROXY", "1").strip().lower() in {"1", "true", "yes", "on"}
+_behind_nginx_env = os.getenv("BEHIND_NGINX", "0").strip().lower() in {"1", "true", "yes", "on"}
+if _trust_proxy_env and not _behind_nginx_env:
+    from centropic.prod_guards import prod_guards_enforced
+
+    app.logger.critical(
+        "TRUST_PROXY=1 without BEHIND_NGINX=1 — refusing to enable ProxyFix "
+        "(X-Forwarded-* would be spoofable directly from the client). Set "
+        "BEHIND_NGINX=1 when Nginx/Caddy is the sole public entrypoint, or "
+        "TRUST_PROXY=0 otherwise."
+    )
+    if prod_guards_enforced():
+        raise RuntimeError(
+            "TRUST_PROXY=1 requires BEHIND_NGINX=1 in production "
+            "(set BEHIND_NGINX=1 behind a trusted reverse proxy, or TRUST_PROXY=0)."
+        )
+elif _trust_proxy_env and _behind_nginx_env:
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=0, x_prefix=1)
 
 babel = Babel(app, locale_selector=select_locale)
@@ -3685,17 +3706,16 @@ def health():
 @app.post("/ops/reclaim-jobs")
 @csrf.exempt
 def ops_reclaim_jobs():
-    """Admin/token-gated reclaim of stale jobs + stranded holds (not on GET /health)."""
+    """Token-gated reclaim of stale jobs + stranded holds (not on GET /health).
+
+    Fail-closed: HEALTH_DETAIL_TOKEN is always required, even for an admin
+    session — an authenticated admin browser session alone is not sufficient
+    (this endpoint is CSRF-exempt, so a session-only check would let a
+    cross-site POST from an admin's browser trigger reclaim/refund logic).
+    """
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     provided = (request.args.get("token") or request.headers.get("X-Ops-Token") or "").strip()
-    allowed = False
-    if detail_token and provided and secrets.compare_digest(detail_token, provided):
-        allowed = True
-    else:
-        user = current_user()
-        if user is not None and user.is_admin:
-            allowed = True
-    if not allowed:
+    if not detail_token or not provided or not secrets.compare_digest(detail_token, provided):
         return jsonify({"ok": False, "error": "forbidden"}), 403
 
     def _on_abandon(abandoned_job: AnalysisJob) -> None:
@@ -4855,6 +4875,18 @@ def _require_digital_service_waiver(user: "User", *, redirect_to: str):
     except Exception:
         db.session.rollback()
         app.logger.exception("digital_service_waiver persist failed")
+        err_msg = (
+            "Impossibile registrare il consenso all’erogazione immediata. Riprova più tardi."
+        )
+        wants_json = (
+            request.form.get("overlay") == "1"
+            or "application/json" in (request.headers.get("Accept") or "")
+            or request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        )
+        if wants_json:
+            return jsonify({"ok": False, "error": "digital_service_waiver_persist_failed", "message": err_msg}), 503
+        flash(err_msg, "error")
+        return redirect(redirect_to)
     return None
 
 
@@ -4899,17 +4931,21 @@ def billing_accept_immediate_service():
     blocked = _require_digital_service_waiver(user, redirect_to=url_for("pricing"))
     if blocked is not None:
         return blocked
+    if user.digital_service_waiver_at is None:
+        return jsonify(
+            {
+                "ok": False,
+                "error": "digital_service_waiver_not_recorded",
+                "message": "Impossibile registrare il consenso all’erogazione immediata. Riprova più tardi.",
+            }
+        ), 503
     from services.legal_docs import DIGITAL_WAIVER_VERSION
 
     return jsonify(
         {
             "ok": True,
             "waiver_version": DIGITAL_WAIVER_VERSION,
-            "recorded_at": (
-                user.digital_service_waiver_at.isoformat()
-                if user.digital_service_waiver_at
-                else None
-            ),
+            "recorded_at": user.digital_service_waiver_at.isoformat(),
         }
     )
 
@@ -5039,11 +5075,23 @@ def billing_checkout():
 @app.route("/billing/portal", methods=["POST"])
 @login_required
 def billing_portal():
+    """Manage-subscription entry point.
+
+    Paddle Billing has no self-serve customer-portal API endpoint we can
+    redirect to (unlike Stripe's billing portal), so point the user at the
+    "Manage subscription" link in their Paddle receipt email, plus the
+    refunds policy and a support mailto as a fallback.
+    """
     flash(
-        "Per annullare o gestire l’abbonamento: apri il link “Manage "
-        "subscription” nella ricevuta Paddle, oppure scrivi a info@centropic.ai "
-        "indicando l’email dell’account. I crediti già consumati non si "
-        "ripristinano (vedi Politica rimborsi).",
+        Markup(
+            "Per annullare o gestire l’abbonamento: apri il link “Manage "
+            "subscription” nella ricevuta Paddle (email di conferma pagamento), "
+            "oppure scrivi a "
+            '<a href="mailto:info@centropic.ai">info@centropic.ai</a> indicando '
+            "l’email dell’account. I crediti già consumati non si ripristinano — "
+            'consulta la <a href="%s">Politica rimborsi</a>.'
+        )
+        % (url_for("refunds"),),
         "info",
     )
     return redirect(url_for("dashboard_settings") + "#billing")
@@ -5230,9 +5278,25 @@ def billing_paddle_webhook():
                     # 5xx so Paddle retries after ops maps the customer.
                     return jsonify({"ok": False, "error": "no_user"}), 500
                 if (user.plan or "").lower() != "admin":
+                    interval = paddle_transaction_interval(data)
+                    catalog_err = paddle_assert_transaction_matches_catalog(
+                        data, product="business", interval=interval
+                    )
+                    if catalog_err:
+                        app.logger.warning(
+                            "Paddle business grant refused: %s txn=%s user=%s",
+                            catalog_err,
+                            data.get("id"),
+                            user.id,
+                        )
+                        app_metrics.incr("billing.plan_grant_amount_mismatch")
+                        return jsonify({"ok": False, "error": "amount_mismatch"}), 409
                     txn_id = str(data.get("id") or "").strip()
                     customer_id = data.get("customer_id")
                     sub = data.get("subscription_id")
+                    business_credit_cents = BUSINESS_MONTHLY_CREDIT_CENTS * (
+                        12 if interval == "year" else 1
+                    )
 
                     def _apply_business(u: User) -> None:
                         if customer_id:
@@ -5242,15 +5306,15 @@ def billing_paddle_webhook():
                         u.plan = "business"
 
                     _apply_business(user)
-                    if txn_id and BUSINESS_MONTHLY_CREDIT_CENTS > 0:
+                    if txn_id and business_credit_cents > 0:
                         try:
                             granted = grant_plus_monthly_tokens(
                                 user=user,
                                 idempotency_key=f"paddle-business-tokens:{txn_id}",
-                                credit_cents=BUSINESS_MONTHLY_CREDIT_CENTS,
+                                credit_cents=business_credit_cents,
                                 description=(
-                                    f"Business mensile: "
-                                    f"{format_token_amount(BUSINESS_MONTHLY_CREDIT_CENTS)}"
+                                    f"Business {'annuale' if interval == 'year' else 'mensile'}: "
+                                    f"{format_token_amount(business_credit_cents)}"
                                 ),
                             )
                         except LedgerIndexMissingError:
@@ -5290,9 +5354,25 @@ def billing_paddle_webhook():
                         return jsonify(
                             {"ok": False, "error": "digital_service_waiver_required"}
                         ), 409
+                    interval = paddle_transaction_interval(data)
+                    catalog_err = paddle_assert_transaction_matches_catalog(
+                        data, product="plus", interval=interval
+                    )
+                    if catalog_err:
+                        app.logger.warning(
+                            "Paddle plus grant refused: %s txn=%s user=%s",
+                            catalog_err,
+                            data.get("id"),
+                            user.id,
+                        )
+                        app_metrics.incr("billing.plan_grant_amount_mismatch")
+                        return jsonify({"ok": False, "error": "amount_mismatch"}), 409
                     txn_id = str(data.get("id") or "").strip()
                     customer_id = data.get("customer_id")
                     sub = data.get("subscription_id")
+                    plus_credit_cents = PLUS_MONTHLY_CREDIT_CENTS * (
+                        12 if interval == "year" else 1
+                    )
 
                     def _apply_plus(u: User) -> None:
                         if customer_id:
@@ -5304,11 +5384,16 @@ def billing_paddle_webhook():
                             u.plan = "plus"
 
                     _apply_plus(user)
-                    if txn_id and PLUS_MONTHLY_CREDIT_CENTS > 0:
+                    if txn_id and plus_credit_cents > 0:
                         try:
                             granted = grant_plus_monthly_tokens(
                                 user=user,
                                 idempotency_key=f"paddle-plus-tokens:{txn_id}",
+                                credit_cents=plus_credit_cents,
+                                description=(
+                                    f"Plus {'annuale' if interval == 'year' else 'mensile'}: "
+                                    f"{format_token_amount(plus_credit_cents)}"
+                                ),
                             )
                         except LedgerIndexMissingError:
                             app_metrics.incr("billing.plan_grant_index_missing")
@@ -5333,15 +5418,20 @@ def billing_paddle_webhook():
                 return jsonify({"ok": True, "ignored": "not_topup"})
 
             credit_cents = _topup_credit_cents(int(payment_cents))
-            gross = transaction_gross_cents(data)
-            if gross is not None and int(gross) != int(payment_cents):
+            catalog_cents = transaction_catalog_cents(data)
+            if catalog_cents is not None and int(catalog_cents) != int(payment_cents):
                 app.logger.warning(
-                    "Paddle top-up catalog/gross mismatch catalog=%s gross=%s txn=%s",
+                    "Paddle top-up catalog/settled mismatch catalog=%s settled=%s txn=%s",
                     payment_cents,
-                    gross,
+                    catalog_cents,
                     data.get("id"),
                 )
                 return jsonify({"ok": False, "error": "amount_mismatch"}), 400
+            if catalog_cents is None:
+                app.logger.warning(
+                    "Paddle top-up amount unavailable; skipping mismatch check txn=%s",
+                    data.get("id"),
+                )
 
             txn_id = str(data.get("id") or "").strip()
             if not txn_id:
@@ -8367,6 +8457,23 @@ def email_pack(analysis_id: int):
         to_email = ""
     if not to_email or "@" not in to_email or len(to_email) > 255:
         flash(_("Indirizzo email non valido."), "error")
+        return redirect(dash_url)
+
+    account_email = (user.email or "").strip().lower()
+    account_domain = account_email.rsplit("@", 1)[-1] if "@" in account_email else ""
+    to_domain = to_email.rsplit("@", 1)[-1].lower() if "@" in to_email else ""
+    same_account = to_email.lower() == account_email
+    same_domain_verified = bool(
+        user.email_verified and account_domain and to_domain == account_domain
+    )
+    if not (same_account or same_domain_verified):
+        flash(
+            _(
+                "Per motivi di sicurezza puoi inviare il pack solo al tuo indirizzo "
+                "email o a un indirizzo con lo stesso dominio (richiede email verificata)."
+            ),
+            "error",
+        )
         return redirect(dash_url)
 
     if not limiter.allow(
