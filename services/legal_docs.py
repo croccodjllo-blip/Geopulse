@@ -11,6 +11,9 @@ from typing import Any
 DPA_VERSION = "2026-08-12"
 DPA_LAST_UPDATED = date(2026, 8, 12)
 
+# Digital-service waiver (consumer withdrawal / immediate performance)
+DIGITAL_WAIVER_VERSION = "2026-08-12"
+
 
 @dataclass(frozen=True)
 class SubProcessor:
@@ -215,8 +218,6 @@ def render_dpa_plaintext(*, company_name: str, company_email: str = "info@centro
     return "\n".join(lines)
 
 
-# Digital-service waiver (consumer withdrawal / immediate performance)
-DIGITAL_WAIVER_VERSION = "2026-08-12"
 
 # Public policy versions (changelog surface)
 POLICY_VERSIONS: dict[str, str] = {
@@ -308,3 +309,4 @@ def legal_nav_links() -> list[dict[str, str]]:
         {"endpoint": "trust_security", "label_it": "Trust"},
         {"endpoint": "accessibility_statement", "label_it": "Accessibilità"},
     ]
+ (fix(billing): enforce Plus immediate-delivery waiver on checkout)

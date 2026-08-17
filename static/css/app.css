@@ -1478,6 +1478,42 @@ body.app-body:not(.body-dash) {
   background: var(--signal);
 }
 
+.digital-waiver {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: rgba(201, 211, 221, 0.04);
+}
+
+.digital-waiver__check {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.digital-waiver__check input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  accent-color: var(--plan-accent, var(--brand-cyan));
+}
+
+.digital-waiver__hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.72rem;
+  color: var(--slate);
+}
+
+.plan-checkout {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+}
+
 .plan-note {
   margin: 1.75rem 0 0;
   color: var(--slate);
