@@ -55,6 +55,7 @@
   </div>
 
   <div class="page-section" data-checkout-gate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <h2 class="page-section__title">{{ _('Scegli un pacchetto') }}</h2>
     {% with waiver_id='accept_immediate_service_topup' %}
       {% include "partials/digital_service_waiver.html" %}

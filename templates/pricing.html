@@ -53,6 +53,7 @@
       </ul>
       {% if paddle_plus_ready and current_user %}
         <div class="plan-checkout" data-checkout-gate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           {% with waiver_id='accept_immediate_service_plus' %}
             {% include "partials/digital_service_waiver.html" %}
           {% endwith %}
@@ -112,6 +113,7 @@
       </ul>
       {% if business_ready and current_user %}
         <div class="plan-checkout" data-checkout-gate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           {% with waiver_id='accept_immediate_service_business' %}
             {% include "partials/digital_service_waiver.html" %}
           {% endwith %}
