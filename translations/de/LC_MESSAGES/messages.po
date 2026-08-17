@@ -4080,7 +4080,7 @@ msgstr "gesamt"
 
 #: templates/dashboard.html:837 templates/site_history.html:21
 msgid "Monitoraggio"
-msgstr "Überwachung"
+msgstr "Monitoring"
 
 #: templates/dashboard.html:858
 msgid "Infrastruttura"
@@ -8152,7 +8152,7 @@ msgstr "FAQ zu Edge Signals"
 
 #: templates/partials/schedule_form.html:9
 msgid "Frequenza"
-msgstr "Häufigkeit"
+msgstr "Frequenz"
 
 #: templates/partials/schedule_form.html:13
 msgid "Orario (UTC)"
@@ -8175,8 +8175,8 @@ msgid ""
 "Scegli frequenza e orario, poi salva. Il worker Plus/Business esegue i "
 "controlli in automatico."
 msgstr ""
-"Frequenz und Uhrzeit wählen, dann speichern. Der Plus/Business-Worker führt "
-"Checks automatisch aus."
+"Frequenz und Uhrzeit wählen, dann speichern. Der Plus-/Business-Worker führt "
+"die Checks automatisch aus."
 
 #: templates/partials/sov_ops.html:1
 msgid "Operatività citation share"
@@ -8276,6 +8276,93 @@ msgstr "Centropic FAQ"
 
 msgid "Continua"
 msgstr "Weiter"
+
+msgid "Avvia"
+msgstr "Starten"
+
+msgid "Salva"
+msgstr "Speichern"
+
+msgid "Salva alert"
+msgstr "Alerts speichern"
+
+msgid "Salva prompt bank"
+msgstr "Prompt-Bank speichern"
+
+msgid "Salva white-label"
+msgstr "White-Label speichern"
+
+msgid "Salva nuova password"
+msgstr "Neues Passwort speichern"
+
+msgid "Aggiorna password"
+msgstr "Passwort aktualisieren"
+
+msgid "Disattivato"
+msgstr "Aus"
+
+msgid "Ogni giorno"
+msgstr "Täglich"
+
+msgid "Ogni settimana"
+msgstr "Wöchentlich"
+
+msgid "Frequenza re-scan"
+msgstr "Rescan-Frequenz"
+
+msgid "Email alert su regressioni"
+msgstr "E-Mail-Alerts bei Regressionen"
+
+msgid "Prompt bank (un prompt per riga)"
+msgstr "Prompt-Bank (ein Prompt pro Zeile)"
+
+msgid "Applica pack al prompt bank"
+msgstr "Pack auf Prompt-Bank anwenden"
+
+msgid "— seleziona —"
+msgstr "— auswählen —"
+
+msgid "Brand agenzia"
+msgstr "Agenturmarke"
+
+msgid "Colore primario"
+msgstr "Primärfarbe"
+
+msgid "Nota piè di pagina"
+msgstr "Fußzeilenhinweis"
+
+msgid "Competitor (max 3 URL, uno per riga)"
+msgstr "Wettbewerber (max. 3 URLs, eine pro Zeile)"
+
+msgid "Deep crawl (Plus: più pagine, più lento)"
+msgstr "Deep Crawl (Plus: mehr Seiten, langsamer)"
+
+#, python-format
+msgid "Analisi dominio %(host)s: %(n)s pagine · suite AIO/GEO completa."
+msgstr "Domainanalyse %(host)s: %(n)s Seiten · vollständige AIO/GEO-Suite."
+
+#, python-format
+msgid ""
+"Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, "
+"llms/robots)."
+msgstr ""
+"Analyse von %(host)s: vollständige AIO/GEO-Suite (Content, Brand, GEO, "
+"Technik, llms/robots)."
+
+msgid ""
+"ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI "
+"(proxy Copilot): mention rate da prompt pack. Non equivale a ranking "
+"garantito nelle risposte live."
+msgstr ""
+"ChatGPT / Perplexity / Claude / Gemini (AI-Overview-Proxy) / Grok / Azure AI "
+"(Copilot-Proxy): Mention-Rate aus dem Prompt-Pack. Kein garantiertes Ranking "
+"in Live-Antworten."
+
+msgid "Misurato (multi-engine probe)"
+msgstr "Gemessen (Multi-Engine-Probe)"
+
+msgid "Non disponibile"
+msgstr "Nicht verfügbar"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

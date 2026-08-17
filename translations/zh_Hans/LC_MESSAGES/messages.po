@@ -7454,13 +7454,13 @@ msgstr "上次"
 
 #: templates/partials/schedule_form.html:28
 msgid "Schedule attivo, in coda al worker."
-msgstr "计划已启用，正在排队等待 worker。"
+msgstr "计划已启用，已进入 worker 队列。"
 
 #: templates/partials/schedule_form.html:31
 msgid ""
 "Scegli frequenza e orario, poi salva. Il worker Plus/Business esegue i "
 "controlli in automatico."
-msgstr "选择频率和时间后保存。Plus/Business worker 会自动运行检查。"
+msgstr "选择频率和时间后保存。Plus/Business worker 会自动执行检查。"
 
 #: templates/partials/sov_ops.html:1
 msgid "Operatività citation share"
@@ -7548,6 +7548,90 @@ msgstr "Centropic 常见问题"
 
 msgid "Continua"
 msgstr "继续"
+
+msgid "Avvia"
+msgstr "开始"
+
+msgid "Salva"
+msgstr "保存"
+
+msgid "Salva alert"
+msgstr "保存告警"
+
+msgid "Salva prompt bank"
+msgstr "保存提示词库"
+
+msgid "Salva white-label"
+msgstr "保存白标"
+
+msgid "Salva nuova password"
+msgstr "保存新密码"
+
+msgid "Aggiorna password"
+msgstr "更新密码"
+
+msgid "Disattivato"
+msgstr "关闭"
+
+msgid "Ogni giorno"
+msgstr "每天"
+
+msgid "Ogni settimana"
+msgstr "每周"
+
+msgid "Frequenza re-scan"
+msgstr "重新扫描频率"
+
+msgid "Email alert su regressioni"
+msgstr "回归时发送邮件告警"
+
+msgid "Prompt bank (un prompt per riga)"
+msgstr "提示词库（每行一条）"
+
+msgid "Applica pack al prompt bank"
+msgstr "将套件应用到提示词库"
+
+msgid "— seleziona —"
+msgstr "— 请选择 —"
+
+msgid "Brand agenzia"
+msgstr "代理商品牌"
+
+msgid "Colore primario"
+msgstr "主色"
+
+msgid "Nota piè di pagina"
+msgstr "页脚说明"
+
+msgid "Competitor (max 3 URL, uno per riga)"
+msgstr "竞品（最多 3 个 URL，每行一个）"
+
+msgid "Deep crawl (Plus: più pagine, più lento)"
+msgstr "深度抓取（Plus：更多页面，更慢）"
+
+#, python-format
+msgid "Analisi dominio %(host)s: %(n)s pagine · suite AIO/GEO completa."
+msgstr "域名分析 %(host)s：%(n)s 个页面 · 完整 AIO/GEO 套件。"
+
+#, python-format
+msgid ""
+"Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, "
+"llms/robots)."
+msgstr "%(host)s 分析：完整 AIO/GEO 套件（内容、品牌、GEO、技术、llms/robots）。"
+
+msgid ""
+"ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI "
+"(proxy Copilot): mention rate da prompt pack. Non equivale a ranking "
+"garantito nelle risposte live."
+msgstr ""
+"ChatGPT / Perplexity / Claude / Gemini（AI Overview 代理）/ Grok / Azure "
+"AI（Copilot 代理）：来自提示词包的提及率。并不等同于实时回答中的保证排名。"
+
+msgid "Misurato (multi-engine probe)"
+msgstr "实测（多引擎探测）"
+
+msgid "Non disponibile"
+msgstr "不可用"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

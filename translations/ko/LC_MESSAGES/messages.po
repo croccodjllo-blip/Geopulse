@@ -7604,13 +7604,13 @@ msgstr "최근"
 
 #: templates/partials/schedule_form.html:28
 msgid "Schedule attivo, in coda al worker."
-msgstr "스케줄 활성, worker 대기열에 있음."
+msgstr "스케줄 활성, 워커 대기열에 있음."
 
 #: templates/partials/schedule_form.html:31
 msgid ""
 "Scegli frequenza e orario, poi salva. Il worker Plus/Business esegue i "
 "controlli in automatico."
-msgstr "주기와 시간을 선택한 뒤 저장하세요. Plus/Business worker가 자동으로 검사를 실행합니다."
+msgstr "주기와 시간을 선택한 뒤 저장하세요. Plus/Business 워커가 자동으로 검사를 실행합니다."
 
 #: templates/partials/sov_ops.html:1
 msgid "Operatività citation share"
@@ -7703,6 +7703,90 @@ msgstr "Centropic FAQ"
 
 msgid "Continua"
 msgstr "계속"
+
+msgid "Avvia"
+msgstr "시작"
+
+msgid "Salva"
+msgstr "저장"
+
+msgid "Salva alert"
+msgstr "알림 저장"
+
+msgid "Salva prompt bank"
+msgstr "프롬프트 뱅크 저장"
+
+msgid "Salva white-label"
+msgstr "화이트라벨 저장"
+
+msgid "Salva nuova password"
+msgstr "새 비밀번호 저장"
+
+msgid "Aggiorna password"
+msgstr "비밀번호 업데이트"
+
+msgid "Disattivato"
+msgstr "끔"
+
+msgid "Ogni giorno"
+msgstr "매일"
+
+msgid "Ogni settimana"
+msgstr "매주"
+
+msgid "Frequenza re-scan"
+msgstr "재스캔 주기"
+
+msgid "Email alert su regressioni"
+msgstr "회귀 시 이메일 알림"
+
+msgid "Prompt bank (un prompt per riga)"
+msgstr "프롬프트 뱅크(한 줄에 하나)"
+
+msgid "Applica pack al prompt bank"
+msgstr "팩을 프롬프트 뱅크에 적용"
+
+msgid "— seleziona —"
+msgstr "— 선택 —"
+
+msgid "Brand agenzia"
+msgstr "에이전시 브랜드"
+
+msgid "Colore primario"
+msgstr "기본 색상"
+
+msgid "Nota piè di pagina"
+msgstr "바닥글 메모"
+
+msgid "Competitor (max 3 URL, uno per riga)"
+msgstr "경쟁사(최대 3개 URL, 한 줄에 하나)"
+
+msgid "Deep crawl (Plus: più pagine, più lento)"
+msgstr "딥 크롤(Plus: 더 많은 페이지, 더 느림)"
+
+#, python-format
+msgid "Analisi dominio %(host)s: %(n)s pagine · suite AIO/GEO completa."
+msgstr "도메인 분석 %(host)s: %(n)s페이지 · 전체 AIO/GEO 스위트."
+
+#, python-format
+msgid ""
+"Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, "
+"llms/robots)."
+msgstr "%(host)s 분석: 전체 AIO/GEO 스위트(콘텐츠, 브랜드, GEO, 기술, llms/robots)."
+
+msgid ""
+"ChatGPT / Perplexity / Claude / Gemini (proxy AI Overview) / Grok / Azure AI "
+"(proxy Copilot): mention rate da prompt pack. Non equivale a ranking "
+"garantito nelle risposte live."
+msgstr ""
+"ChatGPT / Perplexity / Claude / Gemini(AI Overview 프록시) / Grok / Azure "
+"AI(Copilot 프록시): 프롬프트 팩 기반 멘션률. 라이브 응답의 보장된 순위와는 다릅니다."
+
+msgid "Misurato (multi-engine probe)"
+msgstr "실측(멀티 엔진 프로브)"
+
+msgid "Non disponibile"
+msgstr "사용 불가"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

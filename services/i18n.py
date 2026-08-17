@@ -106,6 +106,38 @@ def translate_stored(message: str | None) -> str:
     return gettext(message)
 
 
+_ANALYSIS_NOTES_PATTERNS: tuple[tuple[str, str, tuple[str, ...]], ...] = (
+    (
+        r"^Analisi dominio (.+): (\d+) pagine · suite AIO/GEO completa\.$",
+        "Analisi dominio %(host)s: %(n)s pagine · suite AIO/GEO completa.",
+        ("host", "n"),
+    ),
+    (
+        r"^Analisi di (.+): suite AIO/GEO completa \(content, brand, GEO, tecnico, llms/robots\)\.$",
+        "Analisi di %(host)s: suite AIO/GEO completa (content, brand, GEO, tecnico, llms/robots).",
+        ("host",),
+    ),
+)
+
+
+def translate_analysis_notes(notes: str | None) -> str:
+    """Localize stored analysis subtitle notes (host / page count vary)."""
+    if not notes:
+        return ""
+    import re
+
+    from flask_babel import gettext
+
+    text = str(notes).strip()
+    for pattern, msgid, keys in _ANALYSIS_NOTES_PATTERNS:
+        m = re.match(pattern, text)
+        if not m:
+            continue
+        mapping = {k: m.group(i + 1) for i, k in enumerate(keys)}
+        return gettext(msgid) % mapping
+    return gettext(text)
+
+
 def language_switcher_items(current: str | None = None) -> list[dict[str, Any]]:
     cur = normalize_locale(current or active_ui_locale())
     items = []

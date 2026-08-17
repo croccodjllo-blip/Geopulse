@@ -43,7 +43,7 @@ from flask import (
     session,
     url_for,
 )
-from flask_babel import Babel, gettext as _
+from flask_babel import Babel, gettext as _, lazy_gettext as _l
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, FlaskForm
 from flask_wtf.csrf import generate_csrf
@@ -202,6 +202,7 @@ from services.i18n import (
     normalize_locale,
     select_locale,
     translate_stored,
+    translate_analysis_notes,
 )
 from services.phone_prefixes import (
     DEFAULT_PHONE_PREFIX,
@@ -1124,7 +1125,7 @@ class DeleteAccountForm(FlaskForm):
         "Confermo di voler eliminare definitivamente l’account",
         validators=[DataRequired(message="Devi confermare l’eliminazione.")],
     )
-    submit = SubmitField("Elimina account")
+    submit = SubmitField(_l("Elimina account"))
 
 
 class RegisterForm(FlaskForm):
@@ -1182,7 +1183,7 @@ class RegisterForm(FlaskForm):
         "Accetto termini e privacy",
         validators=[DataRequired(message="Devi accettare termini e privacy.")],
     )
-    submit = SubmitField("Crea account")
+    submit = SubmitField(_l("Crea account"))
 
     def validate_password(self, field: PasswordField) -> None:
         err = password_policy_error(field.data)
@@ -1232,7 +1233,7 @@ class LoginForm(FlaskForm):
     )
     password = PasswordField("Password", validators=[DataRequired()])
     remember_me = BooleanField("Resta connesso", default=False)
-    submit = SubmitField("Accedi")
+    submit = SubmitField(_l("Accedi"))
 
 
 class ForgotPasswordForm(FlaskForm):
@@ -1244,7 +1245,7 @@ class ForgotPasswordForm(FlaskForm):
             Length(max=255),
         ],
     )
-    submit = SubmitField("Invia link di recupero")
+    submit = SubmitField(_l("Invia link di recupero"))
 
 
 class ResetPasswordForm(FlaskForm):
@@ -1259,7 +1260,7 @@ class ResetPasswordForm(FlaskForm):
             EqualTo("password", message="Le password non coincidono."),
         ],
     )
-    submit = SubmitField("Salva nuova password")
+    submit = SubmitField(_l("Salva nuova password"))
 
     def validate_password(self, field: PasswordField) -> None:
         err = password_policy_error(field.data)
@@ -1283,7 +1284,7 @@ class ChangePasswordForm(FlaskForm):
             EqualTo("password", message="Le password non coincidono."),
         ],
     )
-    submit = SubmitField("Aggiorna password")
+    submit = SubmitField(_l("Aggiorna password"))
 
     def validate_password(self, field: PasswordField) -> None:
         err = password_policy_error(field.data)
@@ -1293,19 +1294,19 @@ class ChangePasswordForm(FlaskForm):
 
 class AnalyzeForm(FlaskForm):
     url = StringField(
-        "URL del sito",
+        _l("URL del sito"),
         validators=[DataRequired(), Length(max=500), validate_http_url],
     )
     competitors = TextAreaField(
-        "Competitor (max 3 URL, uno per riga)",
+        _l("Competitor (max 3 URL, uno per riga)"),
         validators=[Optional(), Length(max=1500)],
     )
     deep_crawl = BooleanField(
-        "Deep crawl (Plus: più pagine, più lento)",
+        _l("Deep crawl (Plus: più pagine, più lento)"),
         default=False,
         validators=[Optional()],
     )
-    submit = SubmitField("Analizza dominio")
+    submit = SubmitField(_l("Avvia"))
 
 
 class ProInterestForm(FlaskForm):
@@ -1333,7 +1334,7 @@ class ProInterestForm(FlaskForm):
         "Cosa ti serve da Plus",
         validators=[Optional(), Length(max=500)],
     )
-    submit = SubmitField("Prenota l’interesse")
+    submit = SubmitField(_l("Prenota l’interesse"))
 
 
 RESCAN_HOUR_CHOICES = [(str(h), f"{h:02d}:00 UTC") for h in range(24)]
@@ -1342,60 +1343,60 @@ RESCAN_HOUR_CHOICES = [(str(h), f"{h:02d}:00 UTC") for h in range(24)]
 class RescanScheduleForm(FlaskForm):
     analysis_id = HiddenField(validators=[DataRequired()])
     interval = SelectField(
-        "Frequenza re-scan",
+        _l("Frequenza re-scan"),
         choices=[
-            ("off", "Disattivato"),
-            ("daily", "Ogni giorno"),
-            ("weekly", "Ogni settimana"),
+            ("off", _l("Disattivato")),
+            ("daily", _l("Ogni giorno")),
+            ("weekly", _l("Ogni settimana")),
         ],
         validators=[DataRequired()],
     )
     hour = SelectField(
-        "Orario (UTC)",
+        _l("Orario (UTC)"),
         choices=RESCAN_HOUR_CHOICES,
         default=str(DEFAULT_RESCAN_HOUR),
         validators=[DataRequired()],
     )
-    submit = SubmitField("Salva")
+    submit = SubmitField(_l("Salva"))
 
 
 class AlertSettingsForm(FlaskForm):
-    alert_email_enabled = BooleanField("Email alert su regressioni", default=True)
+    alert_email_enabled = BooleanField(_l("Email alert su regressioni"), default=True)
     webhook_url = StringField(
         "Webhook URL",
         validators=[Optional(), Length(max=500)],
     )
     webhook_secret = StringField(
-        "Webhook secret (HMAC)",
+        _l("Webhook secret (HMAC)"),
         validators=[Optional(), Length(max=120)],
     )
-    submit = SubmitField("Salva alert")
+    submit = SubmitField(_l("Salva alert"))
 
 
 class PromptBankForm(FlaskForm):
     prompts = TextAreaField(
-        "Prompt bank (un prompt per riga)",
+        _l("Prompt bank (un prompt per riga)"),
         validators=[Optional(), Length(max=8000)],
     )
-    submit = SubmitField("Salva prompt bank")
+    submit = SubmitField(_l("Salva prompt bank"))
 
 
 class VerticalPackForm(FlaskForm):
     vertical = SelectField(
         "Vertical pack",
-        choices=[("", "— seleziona —")]
+        choices=[("", _l("— seleziona —"))]
         + [(v["slug"], v["label"]) for v in list_verticals()],
         validators=[Optional()],
     )
-    submit = SubmitField("Applica pack al prompt bank")
+    submit = SubmitField(_l("Applica pack al prompt bank"))
 
 
 class AgencyBrandForm(FlaskForm):
-    brand_name = StringField("Brand agenzia", validators=[Optional(), Length(max=80)])
+    brand_name = StringField(_l("Brand agenzia"), validators=[Optional(), Length(max=80)])
     logo_url = StringField("Logo URL", validators=[Optional(), Length(max=300)])
-    primary_color = StringField("Colore primario", validators=[Optional(), Length(max=20)])
-    footer_note = StringField("Nota piè di pagina", validators=[Optional(), Length(max=200)])
-    submit = SubmitField("Salva white-label")
+    primary_color = StringField(_l("Colore primario"), validators=[Optional(), Length(max=20)])
+    footer_note = StringField(_l("Nota piè di pagina"), validators=[Optional(), Length(max=200)])
+    submit = SubmitField(_l("Salva white-label"))
 
 
 # ---------------------------------------------------------------------------
@@ -1704,6 +1705,8 @@ def inject_globals() -> dict[str, Any]:
         "format_token_amount": format_token_amount,
         "format_tokens_short": format_tokens_short,
         "cents_to_tokens": cents_to_tokens,
+        "translate_analysis_notes": translate_analysis_notes,
+        "translate_stored": translate_stored,
         "csp_nonce": getattr(g, "csp_nonce", ""),
         "policy_versions": _policy_versions_for_templates(),
     }
