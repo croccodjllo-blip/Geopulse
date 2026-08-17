@@ -54,26 +54,31 @@
     {% endif %}
   </div>
 
-  <div class="page-section">
+  <div class="page-section" data-checkout-gate>
     <h2 class="page-section__title">{{ _('Scegli un pacchetto') }}</h2>
+    {% with waiver_id='accept_immediate_service_topup' %}
+      {% include "partials/digital_service_waiver.html" %}
+    {% endwith %}
     <div class="topup-grid">
       {% for pkg in packages %}
-      <form method="POST" action="{{ url_for('topup_checkout') }}">
+      <form method="POST" action="{{ url_for('topup_checkout') }}" data-checkout-form>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="amount_cents" value="{{ pkg.cents }}">
+        <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
         {% if paddle_overlay and paddle_config.topupPrices and paddle_config.topupPrices[pkg.cents|string] %}
         <button
           class="topup-btn"
           type="button"
           data-paddle-checkout="topup"
           data-paddle-cents="{{ pkg.cents }}"
+          data-checkout-needs-waiver
         >
           <span class="topup-btn__amount">{{ pkg.tokens }} {{ _('token') }}</span>
           <span class="topup-btn__desc">{{ pkg.label }} · {{ _('paga') }} €&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
         </button>
         {% else %}
-        <button class="topup-btn" type="submit">
+        <button class="topup-btn" type="submit" data-checkout-needs-waiver>
           <span class="topup-btn__amount">{{ pkg.tokens }} {{ _('token') }}</span>
           <span class="topup-btn__desc">{{ pkg.label }} · {{ _('paga') }} €&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
           <span class="topup-btn__approx">≈ {{ pkg.analyses }} {{ _('analisi') }}</span>

@@ -52,34 +52,42 @@
         <li>{{ _('Edge Signals completo + storico run') }}</li>
       </ul>
       {% if paddle_plus_ready and current_user %}
-        {% if paddle_overlay %}
-        <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
-          {{ _('Scegli Plus') }}
-        </button>
-        <noscript>
-          <form method="post" action="{{ url_for('billing_checkout') }}">
+        <div class="plan-checkout" data-checkout-gate>
+          {% with waiver_id='accept_immediate_service_plus' %}
+            {% include "partials/digital_service_waiver.html" %}
+          {% endwith %}
+          {% if paddle_overlay %}
+          <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus" data-checkout-needs-waiver>
+            {{ _('Scegli Plus') }}
+          </button>
+          <noscript>
+            <form method="post" action="{{ url_for('billing_checkout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="product" value="plus" />
+              <input type="hidden" name="accept_immediate_service" value="y" />
+              <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
+            </form>
+          </noscript>
+          {% else %}
+          <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-form>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="product" value="plus" />
-            <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
+            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
+            <button type="submit" class="btn btn-core btn-block" data-checkout-needs-waiver>{{ _('Scegli Plus') }}</button>
           </form>
-        </noscript>
-        {% else %}
-        <form method="post" action="{{ url_for('billing_checkout') }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <input type="hidden" name="product" value="plus" />
-          <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
-        </form>
-        {% endif %}
-        {% if plus_yearly_ready %}
-        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <input type="hidden" name="product" value="plus" />
-          <input type="hidden" name="interval" value="year" />
-          <button type="submit" class="btn btn-ghost-light btn-block">
-            {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
-          </button>
-        </form>
-        {% endif %}
+          {% endif %}
+          {% if plus_yearly_ready %}
+          <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-form>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="product" value="plus" />
+            <input type="hidden" name="interval" value="year" />
+            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
+            <button type="submit" class="btn btn-ghost-light btn-block" data-checkout-needs-waiver>
+              {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+            </button>
+          </form>
+          {% endif %}
+        </div>
       {% elif paddle_plus_ready %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#plus') }}">{{ _('Accedi e scegli Plus') }}</a>
       {% else %}
@@ -103,34 +111,42 @@
         <li>{{ _('Ideale per portfolio clienti e retainer') }}</li>
       </ul>
       {% if business_ready and current_user %}
-        {% if paddle_overlay %}
-        <button type="button" class="btn btn-core btn-block" data-paddle-checkout="business">
-          {{ _('Passa a Business') }}
-        </button>
-        <noscript>
-          <form method="post" action="{{ url_for('billing_checkout') }}">
+        <div class="plan-checkout" data-checkout-gate>
+          {% with waiver_id='accept_immediate_service_business' %}
+            {% include "partials/digital_service_waiver.html" %}
+          {% endwith %}
+          {% if paddle_overlay %}
+          <button type="button" class="btn btn-core btn-block" data-paddle-checkout="business" data-checkout-needs-waiver>
+            {{ _('Passa a Business') }}
+          </button>
+          <noscript>
+            <form method="post" action="{{ url_for('billing_checkout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="product" value="business" />
+              <input type="hidden" name="accept_immediate_service" value="y" />
+              <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Business') }}</button>
+            </form>
+          </noscript>
+          {% else %}
+          <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-form>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="product" value="business" />
-            <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Business') }}</button>
+            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
+            <button type="submit" class="btn btn-core btn-block" data-checkout-needs-waiver>{{ _('Passa a Business') }}</button>
           </form>
-        </noscript>
-        {% else %}
-        <form method="post" action="{{ url_for('billing_checkout') }}">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <input type="hidden" name="product" value="business" />
-          <button type="submit" class="btn btn-core btn-block">{{ _('Passa a Business') }}</button>
-        </form>
-        {% endif %}
-        {% if business_yearly_ready %}
-        <form method="post" action="{{ url_for('billing_checkout') }}" style="margin-top:0.5rem">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          <input type="hidden" name="product" value="business" />
-          <input type="hidden" name="interval" value="year" />
-          <button type="submit" class="btn btn-ghost-light btn-block">
-            {{ _('Annuale') }} {{ '%.2f'|format(business_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
-          </button>
-        </form>
-        {% endif %}
+          {% endif %}
+          {% if business_yearly_ready %}
+          <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-form>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="product" value="business" />
+            <input type="hidden" name="interval" value="year" />
+            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
+            <button type="submit" class="btn btn-ghost-light btn-block" data-checkout-needs-waiver>
+              {{ _('Annuale') }} {{ '%.2f'|format(business_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+            </button>
+          </form>
+          {% endif %}
+        </div>
       {% elif business_ready %}
       <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#business') }}">{{ _('Accedi e passa a Business') }}</a>
       {% else %}
