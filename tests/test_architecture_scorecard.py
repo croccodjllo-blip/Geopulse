@@ -65,6 +65,22 @@ def test_csp_style_src_split_no_blanket_unsafe_inline():
     assert "'unsafe-inline'" not in attr_part
 
 
+def test_csp_paddle_allows_overlay_styles_and_checkout_service():
+    header = build_csp_header(
+        nonce="paddleNonce",
+        paddle=True,
+        analytics=False,
+        adsense=False,
+    )
+    assert "checkout-service.paddle.com" in header
+    assert "cdn.paddle.com" in header
+    attr_part = header.split("style-src-attr ")[1].split(";")[0]
+    assert "'unsafe-inline'" in attr_part
+    # Still no blanket unsafe-inline on script-src.
+    script_part = header.split("script-src ")[1].split(";")[0]
+    assert "'unsafe-inline'" not in script_part
+
+
 def test_metrics_counters():
     before = snapshot()["counters"].get("arch.test", 0)
     incr("arch.test", 2)

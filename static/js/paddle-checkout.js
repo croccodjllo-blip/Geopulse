@@ -114,10 +114,10 @@
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
         "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": csrfToken(),
       },
       body: body.toString(),
       credentials: "same-origin",
-      referrerPolicy: "same-origin",
     }).then(function (res) {
       if (!res.ok) throw new Error("waiver_http_" + res.status);
       var ct = res.headers.get("content-type") || "";
@@ -317,18 +317,15 @@
       return;
     }
     setDialogBusy(true, "Apertura checkout Paddle…");
+    // Consent first (best-effort), then ALWAYS open Paddle if checkbox is on.
+    // Previously a CSRF/referrer 400 on the waiver POST aborted Checkout.open.
     recordWaiver()
+      .catch(function (e) {
+        console.warn("waiver record failed; opening checkout anyway", e);
+      })
       .then(function () {
         closeWaiverDialog();
         return runPendingCheckout();
-      })
-      .catch(function (e) {
-        var msg =
-          "Conferma non registrata (sessione/CSRF). Ricarica la pagina e riprova.";
-        if (e && String(e.message || "").indexOf("waiver_http_429") !== -1) {
-          msg = "Troppe richieste. Attendi un minuto e riprova.";
-        }
-        showDialogError(msg);
       })
       .finally(function () {
         setDialogBusy(false);

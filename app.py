@@ -4794,15 +4794,42 @@ def _require_digital_service_waiver(user: "User", *, redirect_to: str):
 
 @app.route("/billing/accept-immediate-service", methods=["POST"])
 @login_required
+@csrf.exempt
 def billing_accept_immediate_service():
     """Record digital-service waiver only (before Paddle.js overlay open).
 
-    Separated from /billing/checkout so consent is not mixed with transaction
-    creation, already-plan redirects, or API-key fallbacks.
+    CSRF: validated via token (body/header) without the flask-wtf referrer/
+    SSL_STRICT gate — fetch()+Referrer-Policy combinations were blocking
+    consent and therefore never reaching Paddle.Checkout.open.
+    Origin, when present, must match this site.
     """
+    from flask_wtf.csrf import validate_csrf
+    from wtforms.validators import ValidationError
+
     user = current_user()
     if not limiter.allow(f"billing-waiver:{user.id}", limit=30, window_seconds=3600):
         return jsonify({"ok": False, "error": "rate_limited"}), 429
+
+    token = (
+        (request.form.get("csrf_token") or "").strip()
+        or (request.headers.get("X-CSRFToken") or "").strip()
+        or (request.headers.get("X-CSRF-Token") or "").strip()
+    )
+    if app.config.get("WTF_CSRF_ENABLED", True):
+        try:
+            validate_csrf(token)
+        except ValidationError:
+            return jsonify({"ok": False, "error": "csrf_failed"}), 400
+
+    origin = (request.headers.get("Origin") or "").strip()
+    if origin:
+        allowed = {
+            (os.getenv("PUBLIC_SITE_URL") or "https://centropic.ai").rstrip("/"),
+            "https://centropic.ai",
+        }
+        if origin.rstrip("/") not in allowed:
+            return jsonify({"ok": False, "error": "origin_denied"}), 403
+
     blocked = _require_digital_service_waiver(user, redirect_to=url_for("pricing"))
     if blocked is not None:
         return blocked
