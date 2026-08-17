@@ -36,7 +36,7 @@ PRO_DEEP_CRAWL_PAGES = max(
     min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
 PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "143.90"))
-BUSINESS_MONTHLY_EUR = float(os.environ.get("BUSINESS_MONTHLY_EUR", "49.99"))
+BUSINESS_MONTHLY_EUR = float(os.environ.get("BUSINESS_MONTHLY_EUR", "89.99"))
 BUSINESS_YEARLY_EUR = float(
     os.environ.get("BUSINESS_YEARLY_EUR", f"{BUSINESS_MONTHLY_EUR * 12 * 0.8:.2f}")
 )

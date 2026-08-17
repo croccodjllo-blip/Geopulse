@@ -579,7 +579,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Business · €49,99",
+                "name": "Business · €89,99",
                 "points": [
                     _("Tutto Plus + fino a 50 domini / clienti"),
                     _("API /api/v1 e white-label MD/HTML con brand agenzia"),
