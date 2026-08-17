@@ -2886,7 +2886,7 @@ msgstr "로그인"
 
 #: templates/base.html:153 templates/landing.html:72
 msgid "Analizza gratis"
-msgstr "무료로 분석"
+msgstr "무료 분석"
 
 #: templates/base.html:161
 msgid "Seleziona lingua"
@@ -3434,7 +3434,7 @@ msgstr "페이지"
 
 #: templates/dashboard.html:88
 msgid "Analizzato"
-msgstr ""
+msgstr "분석됨"
 
 #: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
@@ -3557,10 +3557,12 @@ msgid ""
 "SoV mostra Misurato quando il citation monitor ha campionato gli engine "
 "(anche con 0 menzioni)."
 msgstr ""
+"AIO/GEO는 항상 추정값입니다(크롤 기반 구조 준비도). 인용 모니터가 엔진을 샘플링하면 (언급 0회여도) SoV 탭에 실측이 "
+"표시됩니다."
 
 #: templates/dashboard.html:279
 msgid "Sintesi score"
-msgstr ""
+msgstr "점수 요약"
 
 #: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
@@ -3622,7 +3624,7 @@ msgstr "AI 엔진 분석"
 
 #: templates/dashboard.html:450
 msgid "Citation share — probe Misurato eseguito"
-msgstr ""
+msgstr "인용 점유율 — 실측 프로브 완료"
 
 #: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
@@ -3708,11 +3710,11 @@ msgstr "공유"
 
 #: templates/dashboard.html:608
 msgid "Probe LLM eseguito: 0 menzioni su questo engine"
-msgstr ""
+msgstr "LLM 프로브 완료: 이 엔진에서 언급 0회"
 
 #: templates/dashboard.html:608
 msgid "Misurato · 0"
-msgstr ""
+msgstr "실측 · 0"
 
 #: templates/dashboard.html:612
 msgid "N/D"
@@ -4031,7 +4033,7 @@ msgstr "브랜드 점유율"
 
 #: templates/dashboard.html:1105
 msgid "Vai a"
-msgstr ""
+msgstr "이동"
 
 #: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
 msgid "Nuova analisi"
@@ -4039,7 +4041,7 @@ msgstr "새 분석"
 
 #: templates/dashboard.html:1120
 msgid "White-label"
-msgstr ""
+msgstr "화이트라벨"
 
 #: templates/dpa.html:2 templates/dpa.html:10
 msgid "DPA e sub-responsabili"
@@ -4071,7 +4073,7 @@ msgstr "문의:"
 
 #: templates/dpa.html:19 templates/dpa.html:116
 msgid "Scarica DPA (.txt)"
-msgstr "DPA 다운로드(.txt)"
+msgstr "DPA 다운로드 (.txt)"
 
 #: templates/dpa.html:26
 msgid "1. Ruoli"
@@ -4399,7 +4401,7 @@ msgstr "— 지원, 에이전시 파트너십, Business 온보딩."
 #: templates/faq.html:105 templates/guide.html:18 templates/guide.html:182
 #: templates/pricing.html:20 templates/pricing.html:38
 msgid "Inizia gratis"
-msgstr "무료로 시작하기"
+msgstr "무료로 시작"
 
 #: templates/faq.html:106 templates/pricing.html:19 templates/product.html:89
 msgid "Confronta i piani"
@@ -4620,7 +4622,7 @@ msgstr ""
 
 #: templates/landing.html:55
 msgid "Analizza il tuo dominio"
-msgstr "도메인 분석"
+msgstr "내 도메인 분석"
 
 #: templates/landing.html:58
 msgid "URL del sito"
@@ -5179,7 +5181,7 @@ msgstr "로그인 후 Plus 선택"
 
 #: templates/partials/dashboard_shell.html:12 templates/pricing.html:95
 msgid "Prenota Plus"
-msgstr "Plus 예약"
+msgstr "Plus 대기 신청"
 
 #: templates/pricing.html:100
 msgid "Sales only"
@@ -5986,6 +5988,8 @@ msgid ""
 " Il consenso è raccolto con checkbox esplicita prima del checkout "
 "Plus/crediti."
 msgstr ""
+"서비스의 즉시 제공(요금제 이용 또는 크레딧 충전)을 요청하고 제공 시작 시 철회권을 상실함을 인정하면, 서비스가 시작된 후에는 철회가 "
+"적용되지 않습니다. 동의는 Plus/크레딧 결제 전 명시적 체크박스로 수집됩니다."
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -6180,7 +6184,7 @@ msgstr ""
 
 #: templates/sample_report.html:66
 msgid "Analizza il tuo sito"
-msgstr "당신의 사이트를 분석하세요"
+msgstr "내 사이트 분석"
 
 #: templates/sample_report.html:67
 msgid "Vedi i piani"
@@ -6951,7 +6955,7 @@ msgstr ""
 
 #: templates/topup.html:92
 msgid "Legale:"
-msgstr ""
+msgstr "법률:"
 
 #: templates/trust.html:2 templates/trust.html:10
 msgid "Trust & security"
@@ -7098,15 +7102,15 @@ msgstr "화이트 라벨 HTML 내보내기"
 msgid ""
 "Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
 "report."
-msgstr ""
+msgstr "크롤, 점수, 팩. Plus에서는 실측 SoV가 리포트 이후 백그라운드로 도착합니다."
 
 #: templates/partials/analyze_overlay.html:14
 msgid "Stima: 30–90 secondi per crawl e pack"
-msgstr ""
+msgstr "예상: 크롤·팩 30–90초"
 
 #: templates/partials/analyze_overlay.html:15
 msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
-msgstr ""
+msgstr "보통 30–90초. Plus 실측 SoV는 이 화면을 막지 않습니다."
 
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
@@ -7126,7 +7130,7 @@ msgstr "진행 상황"
 
 #: templates/partials/analyze_overlay.html:121
 msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
-msgstr ""
+msgstr "실시간 진행 · 크롤/팩 후 리포트 준비"
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -7230,44 +7234,44 @@ msgstr "비교"
 
 #: templates/partials/competitor_snapshot.html:27
 msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
-msgstr ""
+msgstr "샘플의 브랜드·경쟁사에 맞춘 AIO/GEO 및 CVI."
 
 #: templates/partials/competitor_snapshot.html:35
 #: templates/partials/competitor_snapshot.html:47
 msgid "Tu"
-msgstr ""
+msgstr "나"
 
 #: templates/partials/competitor_snapshot.html:36
 msgid "Tua soglia"
-msgstr ""
+msgstr "내 기준선"
 
 #: templates/partials/competitor_snapshot.html:45
 msgid "Il tuo brand"
-msgstr ""
+msgstr "내 브랜드"
 
 #: templates/partials/competitor_snapshot.html:89
 msgid "Snapshot non disponibile"
-msgstr ""
+msgstr "스냅샷 없음"
 
 #: templates/partials/competitor_snapshot.html:92
 msgid "n/d"
-msgstr ""
+msgstr "없음"
 
 #: templates/partials/competitor_snapshot.html:110
 msgid "vs te"
-msgstr ""
+msgstr "나와 비교"
 
 #: templates/partials/competitor_snapshot.html:112
 msgid "Rivale"
-msgstr ""
+msgstr "경쟁사"
 
 #: templates/partials/competitor_snapshot.html:123
 msgid "Tuo AIO"
-msgstr ""
+msgstr "내 AIO"
 
 #: templates/partials/competitor_snapshot.html:131
 msgid "Tuo GEO"
-msgstr ""
+msgstr "내 GEO"
 
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
@@ -7291,15 +7295,15 @@ msgstr "동료 초대:"
 
 #: templates/partials/dashboard_shell.html:33
 msgid "ricevi un bonus quando attiva il piano Plus."
-msgstr ""
+msgstr "추천인이 Plus 요금제를 활성화하면 보너스를 받습니다."
 
 #: templates/partials/dashboard_shell.html:47
 msgid "URL · crawl · score"
-msgstr ""
+msgstr "URL · 크롤 · 점수"
 
 #: templates/partials/dashboard_shell.html:55
 msgid "Dominio da analizzare"
-msgstr ""
+msgstr "분석할 도메인"
 
 #: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
@@ -7382,13 +7386,13 @@ msgstr "크롤링, 프로브 및 점수가 진행 중입니다 (일반적으로 
 
 #: templates/partials/dashboard_shell.html:146
 msgid "SoV measured in aggiornamento"
-msgstr ""
+msgstr "실측 SoV 업데이트 중"
 
 #: templates/partials/dashboard_shell.html:147
 msgid ""
 "Il report Stimato è già pronto. Le citation Misurate arrivano in background "
 "(1–3 min) senza bloccare la dashboard."
-msgstr ""
+msgstr "추정 리포트는 이미 준비되었습니다. 실측 인용은 백그라운드(1–3분)로 도착하며 대시보드를 막지 않습니다."
 
 #: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
@@ -7407,9 +7411,7 @@ msgid ""
 "Chiedo l’erogazione immediata del servizio digitale (attivazione piano o "
 "accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
 "una volta iniziata l’erogazione, ai sensi della"
-msgstr ""
-"디지털 서비스의 즉시 제공(요금제 활성화 또는 credits 적립)을 요청하며, 제공이 시작되면 다음에 따라 14일 청약철회권을 상실함을 "
-"인정합니다"
+msgstr "디지털 서비스의 즉시 제공(요금제 활성화 또는 크레딧 충전)을 요청하며, 제공이 시작되면 14일 철회권을 상실함을 인정합니다. 근거:"
 
 #: templates/partials/digital_service_waiver.html:18
 msgid ""
@@ -7650,6 +7652,57 @@ msgstr ""
 "고객 콘텐츠(URL, 사이트 자료, 지시사항)는 고객에게 귀속됩니다. 고객은 서비스 제공만을 목적으로 해당 콘텐츠를 호스팅, 처리 및 "
 "표시할 수 있는 비독점적, 전 세계적, royalty-free 라이선스를 당사에 부여합니다. 고객은 분석 대상 사이트에 필요한 권리를 "
 "보유하고 있음을 진술합니다."
+
+msgid "Checkout"
+msgstr "결제"
+
+msgid "Conferma obbligatoria prima del pagamento"
+msgstr "결제 전 필수 확인"
+
+msgid ""
+"Per aprire il checkout Paddle conferma l’erogazione immediata del servizio "
+"digitale. Vale anche se hai già un piano (rinnovo / aggiornamento metodo di "
+"pagamento)."
+msgstr ""
+"Paddle 결제를 열려면 디지털 서비스의 즉시 제공에 동의해 주세요. 이미 요금제를 이용 중인 경우(갱신 / 결제 수단 변경)에도 "
+"동일하게 적용됩니다."
+
+msgid "Spunta la casella per continuare."
+msgstr "계속하려면 체크박스를 선택하세요."
+
+msgid "Continua al pagamento"
+msgstr "결제 계속하기"
+
+msgid "Obbligatorio per procedere al checkout."
+msgstr "결제를 진행하려면 필수입니다."
+
+msgid ""
+"Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non "
+"parte."
+msgstr "Paddle 결제를 열려면 필수입니다. 체크하지 않으면 결제가 시작되지 않습니다."
+
+msgid "Paga Plus · 14,99€/mese"
+msgstr "Plus 결제 · €14.99/월"
+
+msgid "Apri checkout / aggiorna pagamento"
+msgstr "결제 열기 / 결제 수단 업데이트"
+
+msgid "Paga Business"
+msgstr "Business 결제"
+
+msgid "Apri DPA"
+msgstr "DPA 열기"
+
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA Art. 28 e canali"
+" di supporto per procurement SaaS."
+msgstr "Centropic 신뢰 센터: 보안, 하위처리자, 보관 기간, 제28조 DPA 및 SaaS 조달용 지원 채널."
+
+msgid "FAQ Centropic"
+msgstr "Centropic FAQ"
+
+msgid "Continua"
+msgstr "계속"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

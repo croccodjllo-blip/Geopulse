@@ -2482,7 +2482,7 @@ msgstr "Centropic 可访问性声明：WCAG 承诺、反馈渠道以及 SaaS 的
 
 #: templates/accessibility.html:10
 msgid "Dichiarazione di accessibilità"
-msgstr "可访问性声明"
+msgstr "无障碍声明"
 
 #: templates/accessibility.html:12 templates/ai_transparency.html:12
 #: templates/cookies.html:12 templates/dpa.html:12 templates/trust.html:12
@@ -3370,7 +3370,7 @@ msgstr "页面"
 
 #: templates/dashboard.html:88
 msgid "Analizzato"
-msgstr ""
+msgstr "已分析"
 
 #: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
@@ -3490,11 +3490,11 @@ msgid ""
 "AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab "
 "SoV mostra Misurato quando il citation monitor ha campionato gli engine "
 "(anche con 0 menzioni)."
-msgstr ""
+msgstr "AIO/GEO 始终为“估算”：来自抓取的结构就绪度。当引用监测已对引擎完成采样时（即使提及次数为 0），SoV 选项卡会显示“实测”。"
 
 #: templates/dashboard.html:279
 msgid "Sintesi score"
-msgstr ""
+msgstr "分数摘要"
 
 #: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
@@ -3556,7 +3556,7 @@ msgstr "AI 引擎分析"
 
 #: templates/dashboard.html:450
 msgid "Citation share — probe Misurato eseguito"
-msgstr ""
+msgstr "引用份额 — 实测探测已完成"
 
 #: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
@@ -3642,11 +3642,11 @@ msgstr "分享"
 
 #: templates/dashboard.html:608
 msgid "Probe LLM eseguito: 0 menzioni su questo engine"
-msgstr ""
+msgstr "LLM 探测已完成：该引擎提及 0 次"
 
 #: templates/dashboard.html:608
 msgid "Misurato · 0"
-msgstr ""
+msgstr "实测 · 0"
 
 #: templates/dashboard.html:612
 msgid "N/D"
@@ -3963,7 +3963,7 @@ msgstr "品牌份额"
 
 #: templates/dashboard.html:1105
 msgid "Vai a"
-msgstr ""
+msgstr "前往"
 
 #: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
 msgid "Nuova analisi"
@@ -3971,7 +3971,7 @@ msgstr "新分析"
 
 #: templates/dashboard.html:1120
 msgid "White-label"
-msgstr ""
+msgstr "白标"
 
 #: templates/dpa.html:2 templates/dpa.html:10
 msgid "DPA e sub-responsabili"
@@ -4001,7 +4001,7 @@ msgstr "联系方式："
 
 #: templates/dpa.html:19 templates/dpa.html:116
 msgid "Scarica DPA (.txt)"
-msgstr "下载 DPA (.txt)"
+msgstr "下载 DPA（.txt）"
 
 #: templates/dpa.html:26
 msgid "1. Ruoli"
@@ -4465,7 +4465,7 @@ msgstr "深入分析"
 
 #: templates/guide.html:179 templates/status.html:67
 msgid "Apri dashboard"
-msgstr "打开仪表板"
+msgstr "打开控制台"
 
 #: templates/history.html:11
 msgid "Storico run"
@@ -4539,7 +4539,7 @@ msgstr "输入你的域名：立即查看 AIO score 和关键问题。只有在�
 
 #: templates/landing.html:55
 msgid "Analizza il tuo dominio"
-msgstr "分析您的域名"
+msgstr "分析你的域名"
 
 #: templates/landing.html:58
 msgid "URL del sito"
@@ -5880,7 +5880,7 @@ msgid ""
 "l’erogazione, il recesso non si applica dopo che il servizio è stato avviato."
 " Il consenso è raccolto con checkbox esplicita prima del checkout "
 "Plus/crediti."
-msgstr ""
+msgstr "若您要求立即提供服务（开通套餐或充值额度），并确认服务开始后即失去撤回权，则服务启动后不再适用撤回。同意通过 Plus/额度结账前的显式复选框收集。"
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -6469,7 +6469,7 @@ msgstr "请附上 UTC 时间及相关 URL。如遇支付问题,请注明服务�
 
 #: templates/status.html:67
 msgid "Analizza un sito"
-msgstr "分析一个网站"
+msgstr "分析网站"
 
 #: templates/termini.html:3
 msgid ""
@@ -6805,7 +6805,7 @@ msgstr "额外额度会保留在余额中，并在月度续费额度之后使用
 
 #: templates/topup.html:92
 msgid "Legale:"
-msgstr ""
+msgstr "法律："
 
 #: templates/trust.html:2 templates/trust.html:10
 msgid "Trust & security"
@@ -6952,15 +6952,15 @@ msgstr "导出白标 HTML"
 msgid ""
 "Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
 "report."
-msgstr ""
+msgstr "抓取、评分与 pack。Plus 上，实测 SoV 会在报告之后于后台到达。"
 
 #: templates/partials/analyze_overlay.html:14
 msgid "Stima: 30–90 secondi per crawl e pack"
-msgstr ""
+msgstr "预计：抓取与 pack 约 30–90 秒"
 
 #: templates/partials/analyze_overlay.html:15
 msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
-msgstr ""
+msgstr "通常 30–90 秒。Plus 的实测 SoV 不会阻塞此界面。"
 
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
@@ -6980,7 +6980,7 @@ msgstr "进度"
 
 #: templates/partials/analyze_overlay.html:121
 msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
-msgstr ""
+msgstr "实时进度 · 抓取/pack 完成后报告就绪"
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -7084,44 +7084,44 @@ msgstr "比较"
 
 #: templates/partials/competitor_snapshot.html:27
 msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
-msgstr ""
+msgstr "AIO/GEO 与 CVI 对齐到您的品牌及样本中的竞品。"
 
 #: templates/partials/competitor_snapshot.html:35
 #: templates/partials/competitor_snapshot.html:47
 msgid "Tu"
-msgstr ""
+msgstr "您"
 
 #: templates/partials/competitor_snapshot.html:36
 msgid "Tua soglia"
-msgstr ""
+msgstr "您的阈值"
 
 #: templates/partials/competitor_snapshot.html:45
 msgid "Il tuo brand"
-msgstr ""
+msgstr "您的品牌"
 
 #: templates/partials/competitor_snapshot.html:89
 msgid "Snapshot non disponibile"
-msgstr ""
+msgstr "快照不可用"
 
 #: templates/partials/competitor_snapshot.html:92
 msgid "n/d"
-msgstr ""
+msgstr "无"
 
 #: templates/partials/competitor_snapshot.html:110
 msgid "vs te"
-msgstr ""
+msgstr "对比您"
 
 #: templates/partials/competitor_snapshot.html:112
 msgid "Rivale"
-msgstr ""
+msgstr "竞品"
 
 #: templates/partials/competitor_snapshot.html:123
 msgid "Tuo AIO"
-msgstr ""
+msgstr "您的 AIO"
 
 #: templates/partials/competitor_snapshot.html:131
 msgid "Tuo GEO"
-msgstr ""
+msgstr "您的 GEO"
 
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
@@ -7145,15 +7145,15 @@ msgstr "邀请同事："
 
 #: templates/partials/dashboard_shell.html:33
 msgid "ricevi un bonus quando attiva il piano Plus."
-msgstr ""
+msgstr "对方开通 Plus 套餐后您将获得奖励。"
 
 #: templates/partials/dashboard_shell.html:47
 msgid "URL · crawl · score"
-msgstr ""
+msgstr "URL · 抓取 · 评分"
 
 #: templates/partials/dashboard_shell.html:55
 msgid "Dominio da analizzare"
-msgstr ""
+msgstr "待分析域名"
 
 #: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
@@ -7236,13 +7236,13 @@ msgstr "爬取、探测和评分进行中（通常 30–90 秒）。"
 
 #: templates/partials/dashboard_shell.html:146
 msgid "SoV measured in aggiornamento"
-msgstr ""
+msgstr "实测 SoV 更新中"
 
 #: templates/partials/dashboard_shell.html:147
 msgid ""
 "Il report Stimato è già pronto. Le citation Misurate arrivano in background "
 "(1–3 min) senza bloccare la dashboard."
-msgstr ""
+msgstr "估算报告已就绪。实测引用将在后台到达（1–3 分钟），不会阻塞控制台。"
 
 #: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
@@ -7261,7 +7261,7 @@ msgid ""
 "Chiedo l’erogazione immediata del servizio digitale (attivazione piano o "
 "accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
 "una volta iniziata l’erogazione, ai sensi della"
-msgstr "我请求立即提供数字服务（激活套餐或充值 credits），并确认一旦服务开始履行，即根据以下规定失去 14 天撤回权："
+msgstr "我要求立即提供数字服务（开通套餐或充值额度），并确认服务开始提供后即失去 14 天冷静期/撤回权，依据"
 
 #: templates/partials/digital_service_waiver.html:18
 msgid ""
@@ -7499,6 +7499,55 @@ msgid ""
 "elaborare e visualizzare tali contenuti al solo fine di erogare il Servizio. "
 "Dichiaro/dichiari di avere i diritti necessari sui siti analizzati."
 msgstr "客户内容（URL、网站材料、指令）仍归你所有。你授予我们一项非独占、全球、免版税许可，仅为提供本服务而托管、处理和展示该等内容。你声明已拥有被分析网站所需的权利。"
+
+msgid "Checkout"
+msgstr "结账"
+
+msgid "Conferma obbligatoria prima del pagamento"
+msgstr "付款前必须确认"
+
+msgid ""
+"Per aprire il checkout Paddle conferma l’erogazione immediata del servizio "
+"digitale. Vale anche se hai già un piano (rinnovo / aggiornamento metodo di "
+"pagamento)."
+msgstr "要打开 Paddle 结账，请确认立即提供数字服务。即使您已有套餐（续订 / 更新付款方式），也需要确认。"
+
+msgid "Spunta la casella per continuare."
+msgstr "请勾选后继续。"
+
+msgid "Continua al pagamento"
+msgstr "继续付款"
+
+msgid "Obbligatorio per procedere al checkout."
+msgstr "结账前必须勾选。"
+
+msgid ""
+"Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non "
+"parte."
+msgstr "打开 Paddle 结账前必须勾选。未勾选将无法开始付款。"
+
+msgid "Paga Plus · 14,99€/mese"
+msgstr "支付 Plus · €14.99/月"
+
+msgid "Apri checkout / aggiorna pagamento"
+msgstr "打开结账 / 更新付款方式"
+
+msgid "Paga Business"
+msgstr "支付 Business"
+
+msgid "Apri DPA"
+msgstr "打开 DPA"
+
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA Art. 28 e canali"
+" di supporto per procurement SaaS."
+msgstr "Centropic 信任中心：安全、分包处理方、数据留存、第 28 条 DPA，以及面向 SaaS 采购的支持渠道。"
+
+msgid "FAQ Centropic"
+msgstr "Centropic 常见问题"
+
+msgid "Continua"
+msgstr "继续"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

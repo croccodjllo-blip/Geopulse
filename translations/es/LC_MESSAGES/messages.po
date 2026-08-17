@@ -3621,7 +3621,7 @@ msgstr "páginas"
 
 #: templates/dashboard.html:88
 msgid "Analizzato"
-msgstr ""
+msgstr "Analizado"
 
 #: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
@@ -3752,10 +3752,13 @@ msgid ""
 "SoV mostra Misurato quando il citation monitor ha campionato gli engine "
 "(anche con 0 menzioni)."
 msgstr ""
+"AIO/GEO son siempre Estimado: predisposición estructural del crawl. La "
+"pestaña SoV muestra Medido cuando el citation monitor ha muestreado los "
+"motores (incluso con 0 menciones)."
 
 #: templates/dashboard.html:279
 msgid "Sintesi score"
-msgstr ""
+msgstr "Resumen de score"
 
 #: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
@@ -3817,7 +3820,7 @@ msgstr "Desglose del motor de IA"
 
 #: templates/dashboard.html:450
 msgid "Citation share — probe Misurato eseguito"
-msgstr ""
+msgstr "Citation share — sonda Medida completada"
 
 #: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
@@ -3907,11 +3910,11 @@ msgstr "Compartir"
 
 #: templates/dashboard.html:608
 msgid "Probe LLM eseguito: 0 menzioni su questo engine"
-msgstr ""
+msgstr "Sonda LLM completada: 0 menciones en este motor"
 
 #: templates/dashboard.html:608
 msgid "Misurato · 0"
-msgstr ""
+msgstr "Medido · 0"
 
 #: templates/dashboard.html:612
 msgid "N/D"
@@ -4238,7 +4241,7 @@ msgstr "Participación de marca"
 
 #: templates/dashboard.html:1105
 msgid "Vai a"
-msgstr ""
+msgstr "Ir a"
 
 #: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
 msgid "Nuova analisi"
@@ -4246,7 +4249,7 @@ msgstr "Nuevo análisis"
 
 #: templates/dashboard.html:1120
 msgid "White-label"
-msgstr ""
+msgstr "White-label"
 
 #: templates/dpa.html:2 templates/dpa.html:10
 msgid "DPA e sub-responsabili"
@@ -4787,7 +4790,7 @@ msgstr "Profundizaciones"
 
 #: templates/guide.html:179 templates/status.html:67
 msgid "Apri dashboard"
-msgstr "Abrir panel"
+msgstr "Abrir dashboard"
 
 #: templates/history.html:11
 msgid "Storico run"
@@ -5451,11 +5454,11 @@ msgstr "año"
 
 #: templates/pricing.html:93
 msgid "Accedi e scegli Plus"
-msgstr "Inicia sesión y elige Plus"
+msgstr "Inicie sesión y elija Plus"
 
 #: templates/partials/dashboard_shell.html:12 templates/pricing.html:95
 msgid "Prenota Plus"
-msgstr "Reserva Plus"
+msgstr "Lista de espera Plus"
 
 #: templates/pricing.html:100
 msgid "Sales only"
@@ -6275,7 +6278,7 @@ msgstr "Solicita un nuevo enlace"
 #: templates/partials/digital_service_waiver.html:14 templates/rimborsi.html:2
 #: templates/rimborsi.html:10
 msgid "Politica di rimborso"
-msgstr "Política de reembolso"
+msgstr "Política de reembolsos"
 
 #: templates/rimborsi.html:3
 msgid ""
@@ -6332,6 +6335,11 @@ msgid ""
 " Il consenso è raccolto con checkbox esplicita prima del checkout "
 "Plus/crediti."
 msgstr ""
+"Si solicita la prestación inmediata del servicio (acceso al plan o recarga de"
+" créditos) y reconoce que pierde el derecho de desistimiento una vez iniciada"
+" la prestación, el desistimiento no aplica después de iniciado el servicio. "
+"El consentimiento se recoge con una casilla explícita antes del checkout "
+"Plus/créditos."
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -7394,11 +7402,11 @@ msgstr ""
 
 #: templates/topup.html:92
 msgid "Legale:"
-msgstr ""
+msgstr "Legal:"
 
 #: templates/trust.html:2 templates/trust.html:10
 msgid "Trust & security"
-msgstr "Confianza y seguridad"
+msgstr "Trust & security"
 
 #: templates/trust.html:3
 msgid ""
@@ -7556,14 +7564,16 @@ msgid ""
 "Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
 "report."
 msgstr ""
+"Crawl, score y pack. En Plus, el SoV medido llega en segundo plano tras el "
+"informe."
 
 #: templates/partials/analyze_overlay.html:14
 msgid "Stima: 30–90 secondi per crawl e pack"
-msgstr ""
+msgstr "Estimación: 30–90 segundos para crawl y pack"
 
 #: templates/partials/analyze_overlay.html:15
 msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
-msgstr ""
+msgstr "Suele ser 30–90 s. El SoV medido de Plus no bloquea esta pantalla."
 
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
@@ -7583,7 +7593,7 @@ msgstr "Progreso"
 
 #: templates/partials/analyze_overlay.html:121
 msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
-msgstr ""
+msgstr "Progreso en tiempo real · informe listo tras crawl/pack"
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -7695,44 +7705,44 @@ msgstr "Comparación"
 
 #: templates/partials/competitor_snapshot.html:27
 msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
-msgstr ""
+msgstr "AIO/GEO y CVI alineados con su marca y los rivales de la muestra."
 
 #: templates/partials/competitor_snapshot.html:35
 #: templates/partials/competitor_snapshot.html:47
 msgid "Tu"
-msgstr ""
+msgstr "Usted"
 
 #: templates/partials/competitor_snapshot.html:36
 msgid "Tua soglia"
-msgstr ""
+msgstr "Su umbral"
 
 #: templates/partials/competitor_snapshot.html:45
 msgid "Il tuo brand"
-msgstr ""
+msgstr "Su marca"
 
 #: templates/partials/competitor_snapshot.html:89
 msgid "Snapshot non disponibile"
-msgstr ""
+msgstr "Snapshot no disponible"
 
 #: templates/partials/competitor_snapshot.html:92
 msgid "n/d"
-msgstr ""
+msgstr "n/d"
 
 #: templates/partials/competitor_snapshot.html:110
 msgid "vs te"
-msgstr ""
+msgstr "vs usted"
 
 #: templates/partials/competitor_snapshot.html:112
 msgid "Rivale"
-msgstr ""
+msgstr "Rival"
 
 #: templates/partials/competitor_snapshot.html:123
 msgid "Tuo AIO"
-msgstr ""
+msgstr "Su AIO"
 
 #: templates/partials/competitor_snapshot.html:131
 msgid "Tuo GEO"
-msgstr ""
+msgstr "Su GEO"
 
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
@@ -7756,15 +7766,15 @@ msgstr "Invita a un colega:"
 
 #: templates/partials/dashboard_shell.html:33
 msgid "ricevi un bonus quando attiva il piano Plus."
-msgstr ""
+msgstr "recibe un bonus cuando active el plan Plus."
 
 #: templates/partials/dashboard_shell.html:47
 msgid "URL · crawl · score"
-msgstr ""
+msgstr "URL · crawl · score"
 
 #: templates/partials/dashboard_shell.html:55
 msgid "Dominio da analizzare"
-msgstr ""
+msgstr "Dominio a analizar"
 
 #: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
@@ -7849,13 +7859,15 @@ msgstr "Crawl, sonda y puntuación en curso (típicamente 30–90 segundos)."
 
 #: templates/partials/dashboard_shell.html:146
 msgid "SoV measured in aggiornamento"
-msgstr ""
+msgstr "SoV medido actualizándose"
 
 #: templates/partials/dashboard_shell.html:147
 msgid ""
 "Il report Stimato è già pronto. Le citation Misurate arrivano in background "
 "(1–3 min) senza bloccare la dashboard."
 msgstr ""
+"El informe Estimado ya está listo. Las citas Medidas llegan en segundo plano "
+"(1–3 min) sin bloquear el dashboard."
 
 #: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
@@ -7876,8 +7888,8 @@ msgid ""
 "una volta iniziata l’erogazione, ai sensi della"
 msgstr ""
 "Solicito la prestación inmediata del servicio digital (activación del plan o "
-"abono de créditos) y reconozco que pierdo el derecho de desistimiento de 14 "
-"días una vez iniciada la prestación, de conformidad con la"
+"recarga de créditos) y reconozco que pierdo el derecho de desistimiento de 14"
+" días una vez iniciada la prestación, conforme a la"
 
 #: templates/partials/digital_service_waiver.html:18
 msgid ""
@@ -8124,6 +8136,62 @@ msgstr ""
 "de royalties para alojar, tratar y mostrar dichos contenidos únicamente con "
 "el fin de prestar el Servicio. Declaras que tienes los derechos necesarios "
 "sobre los sitios analizados."
+
+msgid "Checkout"
+msgstr "Checkout"
+
+msgid "Conferma obbligatoria prima del pagamento"
+msgstr "Confirmación obligatoria antes del pago"
+
+msgid ""
+"Per aprire il checkout Paddle conferma l’erogazione immediata del servizio "
+"digitale. Vale anche se hai già un piano (rinnovo / aggiornamento metodo di "
+"pagamento)."
+msgstr ""
+"Para abrir el checkout de Paddle, confirme la prestación inmediata del "
+"servicio digital. También aplica si ya tiene un plan (renovación / "
+"actualización del método de pago)."
+
+msgid "Spunta la casella per continuare."
+msgstr "Marque la casilla para continuar."
+
+msgid "Continua al pagamento"
+msgstr "Continuar al pago"
+
+msgid "Obbligatorio per procedere al checkout."
+msgstr "Obligatorio para continuar al checkout."
+
+msgid ""
+"Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non "
+"parte."
+msgstr ""
+"Obligatorio para abrir el checkout de Paddle. Sin la casilla, el pago no se "
+"inicia."
+
+msgid "Paga Plus · 14,99€/mese"
+msgstr "Pagar Plus · 14,99 €/mes"
+
+msgid "Apri checkout / aggiorna pagamento"
+msgstr "Abrir checkout / actualizar pago"
+
+msgid "Paga Business"
+msgstr "Pagar Business"
+
+msgid "Apri DPA"
+msgstr "Abrir DPA"
+
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA Art. 28 e canali"
+" di supporto per procurement SaaS."
+msgstr ""
+"Centro de confianza Centropic: seguridad, subencargados, retención, DPA art. "
+"28 y canales de soporte para procurement SaaS."
+
+msgid "FAQ Centropic"
+msgstr "FAQ de Centropic"
+
+msgid "Continua"
+msgstr "Continuar"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

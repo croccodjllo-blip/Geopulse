@@ -3341,7 +3341,7 @@ msgstr "Ein höherer Tarif ist erforderlich"
 
 #: templates/confirm_analyze.html:127 templates/confirm_analyze.html:155
 msgid "Passa a Plus"
-msgstr "Auf Plus upgraden"
+msgstr "Zu Plus wechseln"
 
 #: templates/confirm_analyze.html:128
 msgid "(domini + re-scan + SoV Misurato) o"
@@ -3662,7 +3662,7 @@ msgstr "Seiten"
 
 #: templates/dashboard.html:88
 msgid "Analizzato"
-msgstr ""
+msgstr "Analysiert"
 
 #: templates/dashboard.html:105
 msgid "Segnali AIO molto forti"
@@ -3793,10 +3793,13 @@ msgid ""
 "SoV mostra Misurato quando il citation monitor ha campionato gli engine "
 "(anche con 0 menzioni)."
 msgstr ""
+"AIO/GEO sind immer Geschätzt: strukturelle Bereitschaft aus dem Crawl. Der "
+"SoV-Tab zeigt Gemessen, wenn der Citation Monitor die Engines gesampelt hat "
+"(auch bei 0 Erwähnungen)."
 
 #: templates/dashboard.html:279
 msgid "Sintesi score"
-msgstr ""
+msgstr "Score-Übersicht"
 
 #: templates/dashboard.html:296 templates/dashboard.html:391
 msgid "Interferenze"
@@ -3858,7 +3861,7 @@ msgstr "AI-Engine-Analyse"
 
 #: templates/dashboard.html:450
 msgid "Citation share — probe Misurato eseguito"
-msgstr ""
+msgstr "Citation Share — Gemessener Probe abgeschlossen"
 
 #: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
@@ -3948,11 +3951,11 @@ msgstr "Teilen"
 
 #: templates/dashboard.html:608
 msgid "Probe LLM eseguito: 0 menzioni su questo engine"
-msgstr ""
+msgstr "LLM-Probe abgeschlossen: 0 Erwähnungen auf dieser Engine"
 
 #: templates/dashboard.html:608
 msgid "Misurato · 0"
-msgstr ""
+msgstr "Gemessen · 0"
 
 #: templates/dashboard.html:612
 msgid "N/D"
@@ -4281,7 +4284,7 @@ msgstr "Markenanteil"
 
 #: templates/dashboard.html:1105
 msgid "Vai a"
-msgstr ""
+msgstr "Gehe zu"
 
 #: templates/dashboard.html:1106 templates/partials/dashboard_shell.html:46
 msgid "Nuova analisi"
@@ -4289,7 +4292,7 @@ msgstr "Neue Analyse"
 
 #: templates/dashboard.html:1120
 msgid "White-label"
-msgstr ""
+msgstr "White-Label"
 
 #: templates/dpa.html:2 templates/dpa.html:10
 msgid "DPA e sub-responsabili"
@@ -4914,7 +4917,7 @@ msgstr ""
 
 #: templates/landing.html:55
 msgid "Analizza il tuo dominio"
-msgstr "Domain analysieren"
+msgstr "Ihre Domain analysieren"
 
 #: templates/landing.html:58
 msgid "URL del sito"
@@ -5517,7 +5520,7 @@ msgstr "Anmelden und Plus wählen"
 
 #: templates/partials/dashboard_shell.html:12 templates/pricing.html:95
 msgid "Prenota Plus"
-msgstr "Plus buchen"
+msgstr "Plus-Warteliste"
 
 #: templates/pricing.html:100
 msgid "Sales only"
@@ -6405,6 +6408,11 @@ msgid ""
 " Il consenso è raccolto con checkbox esplicita prima del checkout "
 "Plus/crediti."
 msgstr ""
+"Wenn Sie die sofortige Erbringung des Dienstes verlangen (Plan-Zugang oder "
+"Guthabenaufladung) und anerkennen, dass Sie das Widerrufsrecht mit Beginn der"
+" Erbringung verlieren, gilt der Widerruf nach Start des Dienstes nicht mehr. "
+"Die Zustimmung wird vor dem Plus-/Guthaben-Checkout per explizitem "
+"Kontrollkästchen eingeholt."
 
 #: templates/rimborsi.html:36
 msgid ""
@@ -6627,7 +6635,7 @@ msgstr ""
 
 #: templates/sample_report.html:66
 msgid "Analizza il tuo sito"
-msgstr "Analysiere deine Website"
+msgstr "Ihre Website analysieren"
 
 #: templates/sample_report.html:67
 msgid "Vedi i piani"
@@ -7065,7 +7073,7 @@ msgstr ""
 
 #: templates/status.html:67
 msgid "Analizza un sito"
-msgstr "Analysiere eine Website"
+msgstr "Eine Website analysieren"
 
 #: templates/termini.html:3
 msgid ""
@@ -7476,11 +7484,11 @@ msgstr ""
 
 #: templates/topup.html:92
 msgid "Legale:"
-msgstr ""
+msgstr "Rechtliches:"
 
 #: templates/trust.html:2 templates/trust.html:10
 msgid "Trust & security"
-msgstr "Vertrauen & Sicherheit"
+msgstr "Trust & Security"
 
 #: templates/trust.html:3
 msgid ""
@@ -7530,7 +7538,7 @@ msgstr "Aktive Liste und DPA Art. 28 zum Herunterladen:"
 
 #: templates/trust.html:34
 msgid "Download .txt"
-msgstr ".txt herunterladen"
+msgstr "Download .txt"
 
 #: templates/trust.html:39
 msgid "3. Retention"
@@ -7640,14 +7648,16 @@ msgid ""
 "Crawl, score e pack. Su Plus il SoV measured arriva in background dopo il "
 "report."
 msgstr ""
+"Crawl, Score und Pack. Bei Plus kommt der gemessene SoV nach dem Report im "
+"Hintergrund."
 
 #: templates/partials/analyze_overlay.html:14
 msgid "Stima: 30–90 secondi per crawl e pack"
-msgstr ""
+msgstr "Schätzung: 30–90 Sekunden für Crawl und Pack"
 
 #: templates/partials/analyze_overlay.html:15
 msgid "Di solito 30–90 s. Il SoV measured Plus non blocca questa schermata."
-msgstr ""
+msgstr "Meist 30–90 s. Der gemessene SoV bei Plus blockiert diesen Bildschirm nicht."
 
 #: templates/partials/analyze_overlay.html:45
 msgid "LIVE"
@@ -7667,7 +7677,7 @@ msgstr "Fortschritt"
 
 #: templates/partials/analyze_overlay.html:121
 msgid "Avanzamento in tempo reale · report pronto dopo crawl/pack"
-msgstr ""
+msgstr "Live-Fortschritt · Report bereit nach Crawl/Pack"
 
 #: templates/partials/app_sidebar.html:13
 msgid "Navigazione workspace"
@@ -7777,44 +7787,44 @@ msgstr "Vergleich"
 
 #: templates/partials/competitor_snapshot.html:27
 msgid "AIO/GEO e CVI allineati sul tuo brand e sui rivali del campione."
-msgstr ""
+msgstr "AIO/GEO und CVI ausgerichtet auf Ihre Marke und die Rivalen in der Stichprobe."
 
 #: templates/partials/competitor_snapshot.html:35
 #: templates/partials/competitor_snapshot.html:47
 msgid "Tu"
-msgstr ""
+msgstr "Sie"
 
 #: templates/partials/competitor_snapshot.html:36
 msgid "Tua soglia"
-msgstr ""
+msgstr "Ihre Schwelle"
 
 #: templates/partials/competitor_snapshot.html:45
 msgid "Il tuo brand"
-msgstr ""
+msgstr "Ihre Marke"
 
 #: templates/partials/competitor_snapshot.html:89
 msgid "Snapshot non disponibile"
-msgstr ""
+msgstr "Snapshot nicht verfügbar"
 
 #: templates/partials/competitor_snapshot.html:92
 msgid "n/d"
-msgstr ""
+msgstr "k. A."
 
 #: templates/partials/competitor_snapshot.html:110
 msgid "vs te"
-msgstr ""
+msgstr "vs. Sie"
 
 #: templates/partials/competitor_snapshot.html:112
 msgid "Rivale"
-msgstr ""
+msgstr "Rivale"
 
 #: templates/partials/competitor_snapshot.html:123
 msgid "Tuo AIO"
-msgstr ""
+msgstr "Ihr AIO"
 
 #: templates/partials/competitor_snapshot.html:131
 msgid "Tuo GEO"
-msgstr ""
+msgstr "Ihr GEO"
 
 #: templates/partials/dashboard_shell.html:10
 msgid "Vedi piano Plus"
@@ -7838,15 +7848,15 @@ msgstr "Lade einen Kollegen ein:"
 
 #: templates/partials/dashboard_shell.html:33
 msgid "ricevi un bonus quando attiva il piano Plus."
-msgstr ""
+msgstr "erhalten Sie einen Bonus, wenn der Empfohlene den Plus-Plan aktiviert."
 
 #: templates/partials/dashboard_shell.html:47
 msgid "URL · crawl · score"
-msgstr ""
+msgstr "URL · Crawl · Score"
 
 #: templates/partials/dashboard_shell.html:55
 msgid "Dominio da analizzare"
-msgstr ""
+msgstr "Zu analysierende Domain"
 
 #: templates/partials/dashboard_shell.html:58
 msgid "Quote Free esaurite · passa a Plus per continuare"
@@ -7933,13 +7943,15 @@ msgstr "Crawl, Probe und Scoring laufen (typischerweise 30–90 Sekunden)."
 
 #: templates/partials/dashboard_shell.html:146
 msgid "SoV measured in aggiornamento"
-msgstr ""
+msgstr "Gemessener SoV wird aktualisiert"
 
 #: templates/partials/dashboard_shell.html:147
 msgid ""
 "Il report Stimato è già pronto. Le citation Misurate arrivano in background "
 "(1–3 min) senza bloccare la dashboard."
 msgstr ""
+"Der geschätzte Report ist bereits fertig. Gemessene Citations kommen im "
+"Hintergrund (1–3 Min.), ohne das Dashboard zu blockieren."
 
 #: templates/partials/dashboard_shell.html:151
 msgid "Analisi fallita"
@@ -7959,10 +7971,9 @@ msgid ""
 "accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
 "una volta iniziata l’erogazione, ai sensi della"
 msgstr ""
-"Ich verlange die sofortige Bereitstellung des digitalen Dienstes (Aktivierung"
-" des Plans oder Gutschrift von Credits) und erkenne an, dass ich mein "
-"14-tägiges Widerrufsrecht verliere, sobald die Bereitstellung begonnen hat, "
-"gemäß der"
+"Ich verlange die sofortige Erbringung des digitalen Dienstes (Planaktivierung"
+" oder Guthabenaufladung) und erkenne an, dass ich das 14-tägige "
+"Widerrufsrecht verliere, sobald die Erbringung beginnt, gemäß der"
 
 #: templates/partials/digital_service_waiver.html:18
 msgid ""
@@ -8209,6 +8220,62 @@ msgstr ""
 "diese Inhalte ausschließlich zur Bereitstellung des Dienstes zu hosten, zu "
 "verarbeiten und anzuzeigen. Sie erklären, dass Sie die erforderlichen Rechte "
 "an den analysierten Websites besitzen."
+
+msgid "Checkout"
+msgstr "Checkout"
+
+msgid "Conferma obbligatoria prima del pagamento"
+msgstr "Erforderliche Bestätigung vor der Zahlung"
+
+msgid ""
+"Per aprire il checkout Paddle conferma l’erogazione immediata del servizio "
+"digitale. Vale anche se hai già un piano (rinnovo / aggiornamento metodo di "
+"pagamento)."
+msgstr ""
+"Um den Paddle-Checkout zu öffnen, bestätigen Sie die sofortige Erbringung des"
+" digitalen Dienstes. Das gilt auch, wenn Sie bereits einen Plan haben "
+"(Verlängerung / Aktualisierung der Zahlungsmethode)."
+
+msgid "Spunta la casella per continuare."
+msgstr "Aktivieren Sie das Kontrollkästchen, um fortzufahren."
+
+msgid "Continua al pagamento"
+msgstr "Weiter zur Zahlung"
+
+msgid "Obbligatorio per procedere al checkout."
+msgstr "Erforderlich, um zum Checkout fortzufahren."
+
+msgid ""
+"Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non "
+"parte."
+msgstr ""
+"Erforderlich, um den Paddle-Checkout zu öffnen. Ohne Häkchen startet die "
+"Zahlung nicht."
+
+msgid "Paga Plus · 14,99€/mese"
+msgstr "Plus bezahlen · 14,99 €/Monat"
+
+msgid "Apri checkout / aggiorna pagamento"
+msgstr "Checkout öffnen / Zahlung aktualisieren"
+
+msgid "Paga Business"
+msgstr "Business bezahlen"
+
+msgid "Apri DPA"
+msgstr "DPA öffnen"
+
+msgid ""
+"Trust Centropic: sicurezza, sub-responsabili, retention, DPA Art. 28 e canali"
+" di supporto per procurement SaaS."
+msgstr ""
+"Centropic Trust Center: Sicherheit, Unterauftragsverarbeiter, Aufbewahrung, "
+"Art.-28-DPA und Supportkanäle für SaaS-Procurement."
+
+msgid "FAQ Centropic"
+msgstr "Centropic FAQ"
+
+msgid "Continua"
+msgstr "Weiter"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"
