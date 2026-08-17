@@ -52,46 +52,48 @@
         <li>{{ _('Edge Signals completo + storico run') }}</li>
         <li>{{ _('API / white-label: non inclusi') }}</li>
       </ul>
-      {% if paddle_plus_ready and current_user %}
+      {% if paddle_plus_ready %}
         <div class="plan-checkout" data-checkout-gate>
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           {% with waiver_id='accept_immediate_service_plus' %}
             {% include "partials/digital_service_waiver.html" %}
           {% endwith %}
-          {% if paddle_overlay %}
-          <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus" data-checkout-needs-waiver>
-            {{ _('Scegli Plus') }}
-          </button>
-          <noscript>
-            <form method="post" action="{{ url_for('billing_checkout') }}">
+          {% if current_user %}
+            {% if paddle_overlay %}
+            <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus" data-checkout-needs-waiver>
+              {{ _('Scegli Plus') }}
+            </button>
+            <noscript>
+              <form method="post" action="{{ url_for('billing_checkout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="product" value="plus" />
+                <input type="hidden" name="accept_immediate_service" value="y" />
+                <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
+              </form>
+            </noscript>
+            {% else %}
+            <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-form>
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <input type="hidden" name="product" value="plus" />
-              <input type="hidden" name="accept_immediate_service" value="y" />
-              <button type="submit" class="btn btn-core btn-block">{{ _('Scegli Plus') }}</button>
+              <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
+              <button type="submit" class="btn btn-core btn-block" data-checkout-needs-waiver>{{ _('Scegli Plus') }}</button>
             </form>
-          </noscript>
+            {% endif %}
+            {% if plus_yearly_ready %}
+            <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-form>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="product" value="plus" />
+              <input type="hidden" name="interval" value="year" />
+              <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
+              <button type="submit" class="btn btn-ghost-light btn-block" data-checkout-needs-waiver>
+                {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
+              </button>
+            </form>
+            {% endif %}
           {% else %}
-          <form method="post" action="{{ url_for('billing_checkout') }}" data-checkout-form>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <input type="hidden" name="product" value="plus" />
-            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
-            <button type="submit" class="btn btn-core btn-block" data-checkout-needs-waiver>{{ _('Scegli Plus') }}</button>
-          </form>
-          {% endif %}
-          {% if plus_yearly_ready %}
-          <form method="post" action="{{ url_for('billing_checkout') }}" class="u-mt-05" data-checkout-form>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <input type="hidden" name="product" value="plus" />
-            <input type="hidden" name="interval" value="year" />
-            <input type="hidden" name="accept_immediate_service" value="" data-waiver-mirror />
-            <button type="submit" class="btn btn-ghost-light btn-block" data-checkout-needs-waiver>
-              {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur) }}&nbsp;€/{{ _('anno') }} (−20%)
-            </button>
-          </form>
+            <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#plus') }}">{{ _('Accedi e scegli Plus') }}</a>
           {% endif %}
         </div>
-      {% elif paddle_plus_ready %}
-      <a class="btn btn-core btn-block" href="{{ url_for('login', next=url_for('pricing') + '#plus') }}">{{ _('Accedi e scegli Plus') }}</a>
       {% else %}
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Prenota Plus') }}</a>
       {% endif %}

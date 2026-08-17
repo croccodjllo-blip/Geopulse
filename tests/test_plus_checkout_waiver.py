@@ -15,6 +15,12 @@ def test_templates_and_js_wire_waiver_gate():
     assert "accept_immediate_service" in pricing
     assert "data-checkout-gate" in pricing
     assert 'data-paddle-checkout="plus"' in pricing
+    # Waiver must render for Plus even before login (CTA may still be Accedi).
+    plus_block_start = pricing.index('id="plus"')
+    plus_block = pricing[plus_block_start : pricing.index('id="business"')]
+    assert "data-checkout-gate" in plus_block
+    assert "digital_service_waiver" in plus_block
+    assert "Accedi e scegli Plus" in plus_block
     topup = Path("templates/topup.html").read_text(encoding="utf-8")
     assert "digital_service_waiver" in topup
     assert "data-checkout-gate" in topup
@@ -23,6 +29,7 @@ def test_templates_and_js_wire_waiver_gate():
     )
     assert "data-digital-waiver-input" in partial
     assert "accept_immediate_service" in partial
+    assert "digital-waiver__title" in partial
     js = Path("static/js/paddle-checkout.js").read_text(encoding="utf-8")
     assert "requireWaiver" in js
     assert "recordWaiver" in js
