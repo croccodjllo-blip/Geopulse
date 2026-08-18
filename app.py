@@ -1992,17 +1992,33 @@ def ensure_schema() -> None:
             if name not in user_cols:
                 _add_column("users", name, col_type)
         # Widen webhook_secret for Fernet ciphertext (was VARCHAR(120)).
+        # Only ALTER when still narrow — an unconditional ALTER takes a strong
+        # lock on ``users`` and can stall analyze workers + /health under load
+        # (seen 2026-08-18: ALTER blocked behind idle-in-transaction → lock storm).
         try:
             bind = db.session.get_bind()
             dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
             if dialect == "postgresql":
-                db.session.execute(
+                cur_len = db.session.execute(
                     text(
-                        "ALTER TABLE users "
-                        "ALTER COLUMN webhook_secret TYPE VARCHAR(512)"
+                        "SELECT character_maximum_length "
+                        "FROM information_schema.columns "
+                        "WHERE table_schema = current_schema() "
+                        "AND table_name = 'users' "
+                        "AND column_name = 'webhook_secret'"
                     )
-                )
-                db.session.commit()
+                ).scalar()
+                if cur_len is not None and int(cur_len) < 512:
+                    # Fail fast if another session holds users — never block
+                    # the whole SaaS waiting on ACCESS EXCLUSIVE.
+                    db.session.execute(text("SET LOCAL lock_timeout = '3s'"))
+                    db.session.execute(
+                        text(
+                            "ALTER TABLE users "
+                            "ALTER COLUMN webhook_secret TYPE VARCHAR(512)"
+                        )
+                    )
+                    db.session.commit()
             elif dialect == "sqlite":
                 # SQLite ignores length; no-op.
                 pass
