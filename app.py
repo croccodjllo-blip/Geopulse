@@ -5841,6 +5841,21 @@ def register():
             if role_val and role_val.lower() in PRIVILEGE_ROLES:
                 role_val = None
             mail_ok = mail_configured()
+            # Dev/test hatch only: never auto-verify in production when SMTP/Resend
+            # is down (audit P1 — would grant full accounts without email proof).
+            allow_unverified_hatch = (
+                os.getenv("FLASK_DEBUG", "0") == "1"
+                or bool(app.config.get("TESTING"))
+            )
+            if not mail_ok and not allow_unverified_hatch:
+                flash(
+                    "Registrazione temporaneamente non disponibile: invio email non attivo. "
+                    "Riprova tra poco o contatta info@centropic.ai.",
+                    "error",
+                )
+                return render_template(
+                    "register.html", form=form, preview_token=preview_token
+                )
             user = User(
                 email=email,
                 name=form.name.data.strip(),

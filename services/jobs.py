@@ -260,13 +260,41 @@ def reclaim_stale_jobs(
 
     When ``SiteAnalysis`` is provided, reclaim reconciles the crash window
     after ``persist_analysis`` committed but before ``mark_job_site``.
+
+    Each candidate is **seized atomically** (conditional UPDATE on status +
+    lease + stale heartbeat) so a live worker heartbeat cannot race a soft
+    re-queue into duplicate LLM spend.
     """
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(2, older_than_minutes))
-    stale = (
-        AnalysisJob.query.filter(AnalysisJob.status == "running")
-        .limit(50)
-        .all()
-    )
+    if hasattr(AnalysisJob, "__mapper__") or hasattr(AnalysisJob, "__table__"):
+        from sqlalchemy import func, or_
+
+        try:
+            beat_col = func.coalesce(AnalysisJob.heartbeat_at, AnalysisJob.started_at)
+            stale = (
+                AnalysisJob.query.filter(
+                    AnalysisJob.status == "running",
+                    or_(
+                        AnalysisJob.lease_token.is_(None),
+                        beat_col.is_(None),
+                        beat_col < cutoff,
+                    ),
+                )
+                .limit(50)
+                .all()
+            )
+        except Exception:
+            stale = (
+                AnalysisJob.query.filter(AnalysisJob.status == "running")
+                .limit(50)
+                .all()
+            )
+    else:
+        stale = (
+            AnalysisJob.query.filter(AnalysisJob.status == "running")
+            .limit(50)
+            .all()
+        )
     n = 0
     for job in stale:
         # Running without a lease is always reclaimable (zombie / legacy claim).
@@ -278,6 +306,11 @@ def reclaim_stale_jobs(
             logger.warning(
                 "Reclaiming running job %s with missing lease_token", job.id
             )
+        # Win the race against a late heartbeat before mutating status.
+        if not _try_begin_reclaim(
+            db_session, AnalysisJob, job, expected_lease=token, cutoff=cutoff
+        ):
+            continue
         attempts = int(getattr(job, "attempt_count", 0) or 0)
         billed = int(getattr(job, "billed_cents", 0) or 0)
         # site_id set by the worker after persist — do NOT treat a recovered
@@ -402,6 +435,62 @@ def reclaim_stale_jobs(
     if n:
         db_session.commit()
     return n
+
+
+def _try_begin_reclaim(
+    db_session: Any,
+    AnalysisJob: Any,
+    job: Any,
+    *,
+    expected_lease: str | None,
+    cutoff: datetime,
+) -> bool:
+    """Atomically seize a stale running job for reclaim.
+
+    Returns False if a live worker heartbeated (or another reclaim won) between
+    the candidate read and this UPDATE — caller must skip the job.
+    """
+    # Real SQLAlchemy models expose ``__mapper__``; unit-test doubles do not.
+    if not hasattr(AnalysisJob, "__mapper__") and not hasattr(AnalysisJob, "__table__"):
+        return True
+
+    from sqlalchemy import func, or_
+
+    reclaim_tok = f"reclaim:{secrets.token_hex(8)}"
+    beat = func.coalesce(AnalysisJob.heartbeat_at, AnalysisJob.started_at)
+    filters = [
+        AnalysisJob.id == job.id,
+        AnalysisJob.status == "running",
+        or_(
+            AnalysisJob.lease_token.is_(None),
+            beat.is_(None),
+            beat < cutoff,
+        ),
+    ]
+    if expected_lease:
+        filters.append(AnalysisJob.lease_token == expected_lease)
+    else:
+        filters.append(AnalysisJob.lease_token.is_(None))
+    try:
+        updated = AnalysisJob.query.filter(*filters).update(
+            {"lease_token": reclaim_tok},
+            synchronize_session=False,
+        )
+    except Exception:
+        logger.debug(
+            "reclaim atomic seize unavailable for job %s; using in-memory path",
+            getattr(job, "id", None),
+            exc_info=True,
+        )
+        return True
+    if int(updated or 0) != 1:
+        try:
+            db_session.rollback()
+        except Exception:
+            pass
+        return False
+    job.lease_token = reclaim_tok
+    return True
 
 
 def claim_next_job(
