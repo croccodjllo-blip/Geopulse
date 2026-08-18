@@ -197,21 +197,24 @@ def _ensure_stress_users(app, *, n: int, plan: str) -> list[int]:
             email = f"stress-cap-{plan}-{i:04d}@stress.invalid"
             user = User.query.filter_by(email=email).first()
             if user is None:
-                user = User(email=email, name=f"Stress {plan} {i}", plan=plan)
+                user = User(
+                    email=email,
+                    name=f"Stress {plan} {i}",
+                    plan="admin" if plan == "admin" else plan,
+                    role="admin" if plan == "admin" else "user",
+                    welcome_credit_granted=True,
+                    email_verified_at=datetime.now(timezone.utc),
+                    credit_balance_cents=10_000_000,
+                    credit_held_cents=0,
+                )
                 user.set_password(uuid.uuid4().hex + "Aa1!")
-                if plan == "admin":
-                    user.role = "admin"
-                    user.is_admin = True
-                # Large balance so non-unlimited plans pass credit checks.
-                user.credit_balance_cents = 10_000_000
-                user.credit_held_cents = 0
                 db.session.add(user)
                 db.session.commit()
             else:
-                user.plan = plan
-                if plan == "admin":
-                    user.role = "admin"
-                    user.is_admin = True
+                user.plan = "admin" if plan == "admin" else plan
+                user.role = "admin" if plan == "admin" else (user.role or "user")
+                if hasattr(user, "welcome_credit_granted"):
+                    user.welcome_credit_granted = True
                 user.credit_balance_cents = max(
                     int(user.credit_balance_cents or 0), 10_000_000
                 )
