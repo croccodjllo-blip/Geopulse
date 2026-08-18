@@ -8,6 +8,7 @@ def test_analyze_overlay_partial_renders_on_dashboard(monkeypatch):
     with app.app_context():
         html = app.jinja_env.get_template("partials/analyze_overlay.html").render(
             pending_job=None,
+            analyze_overlay_job=None,
             url_for=lambda *a, **k: "/x",
             _=lambda s: s,
         )
@@ -29,6 +30,7 @@ def test_analyze_overlay_auto_open_attrs_when_job():
     with app.test_request_context("/dashboard"):
         html = app.jinja_env.get_template("partials/analyze_overlay.html").render(
             pending_job=job,
+            analyze_overlay_job=job,
             url_for=lambda endpoint, **k: f"/{endpoint}/{k.get('job_id', '')}",
             _=lambda s: s,
         )

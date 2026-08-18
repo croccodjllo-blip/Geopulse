@@ -3185,12 +3185,69 @@ def wants_json_response() -> bool:
         return True
     if request.is_json:
         return True
+    if (request.headers.get("X-Requested-With") or "").lower() == "xmlhttprequest":
+        return True
+    if (request.form.get("ajax") or request.args.get("ajax") or "") == "1":
+        return True
     accept = request.accept_mimetypes
     best = accept.best_match(["application/json", "text/html"])
     return bool(
         best == "application/json"
         and accept[best] >= accept["text/html"]
     )
+
+
+def analyze_job_json_payload(job: AnalysisJob) -> dict[str, Any]:
+    """JSON body after enqueue/confirm — keeps the overlay on the confirm page."""
+    return {
+        "ok": True,
+        "job_id": int(job.id),
+        "status": job.status,
+        "url": job.url,
+        "status_url": url_for("dashboard_job_status", job_id=int(job.id)),
+        "done_url": url_for("dashboard"),
+        "site_id": int(job.site_id) if getattr(job, "site_id", None) else None,
+    }
+
+
+def analyze_error_json(
+    message: str,
+    *,
+    status: int = 400,
+    redirect_url: str | None = None,
+    error: str = "analyze_error",
+) -> Any:
+    body: dict[str, Any] = {"ok": False, "error": error, "message": message}
+    if redirect_url:
+        body["redirect"] = redirect_url
+    return jsonify(body), status
+
+
+def resolve_analyze_overlay_job(job: AnalysisJob | None) -> AnalysisJob | None:
+    """Which job should auto-open the crawl progress overlay.
+
+    Includes just-finished crawl jobs (≤120s): on remisure of a warm active site
+    the worker often beats the browser redirect, so ``?job=`` lands as ``done``
+    and without this the overlay never opens (user snaps back to Stimato).
+    """
+    if job is None:
+        return None
+    status = str(getattr(job, "status", "") or "")
+    if status in {"pending", "running"}:
+        return job
+    if status != "done":
+        return None
+    if str(getattr(job, "source", None) or "").lower() == "measured":
+        return None
+    finished = getattr(job, "finished_at", None)
+    if finished is None:
+        return None
+    if finished.tzinfo is None:
+        finished = finished.replace(tzinfo=timezone.utc)
+    age = datetime.now(timezone.utc) - finished
+    if age <= timedelta(seconds=120):
+        return job
+    return None
 
 
 FREE_QUOTA_BANNER = (
@@ -6749,6 +6806,7 @@ def dashboard():
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
+        analyze_overlay_job=resolve_analyze_overlay_job(pending_job),
         measured_bg_job=measured_bg_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
@@ -6777,18 +6835,30 @@ def dashboard_analyze_confirmed():
     # Ignore client cost_cents — recomputed server-side below.
 
     if not url_raw:
+        if wants_json_response():
+            return analyze_error_json(
+                "URL mancante.",
+                redirect_url=url_for("dashboard"),
+            )
         flash("URL mancante.", "error")
         return redirect(url_for("dashboard"))
 
     try:
         url = normalize_url(url_raw)
     except ValueError as exc:
+        if wants_json_response():
+            return analyze_error_json(str(exc), redirect_url=url_for("dashboard"))
         flash(str(exc), "error")
         return redirect(url_for("dashboard"))
 
     # Rate limit (idempotent check)
     if not limiter.allow(f"analyze:user:{user.id}", limit=20, window_seconds=3600):
-        flash("Troppe analisi in poco tempo. Attendi qualche minuto e riprova.", "warning")
+        msg = "Troppe analisi in poco tempo. Attendi qualche minuto e riprova."
+        if wants_json_response():
+            return analyze_error_json(
+                msg, status=429, redirect_url=url_for("dashboard"), error="rate_limited"
+            )
+        flash(msg, "warning")
         return redirect(url_for("dashboard"))
 
     # Recompute cost server-side — never trust client-supplied cost_cents.
@@ -6830,12 +6900,19 @@ def dashboard_analyze_confirmed():
         unlimited=is_unlimited_user(user),
     )
     if preflight.is_giant:
-        flash(
+        msg = (
             "Richiesta bloccata prima dell'analisi AI. "
             + preflight.message
-            + " Passa a Plus o ricarica token, oppure riduci la pagina target.",
-            "warning",
+            + " Passa a Plus o ricarica token, oppure riduci la pagina target."
         )
+        if wants_json_response():
+            return analyze_error_json(
+                msg,
+                status=402,
+                redirect_url=url_for("pricing") + "#plus",
+                error="page_too_large",
+            )
+        flash(msg, "warning")
         return redirect(url_for("pricing") + "#plus")
     cost.service_cost_eur_cents = preflight.required_cost_cents
     cost_cents = cost.service_cost_eur_cents
@@ -6883,6 +6960,14 @@ def dashboard_analyze_confirmed():
 
     dup = active_analyze_job_for_url(user.id, url, site=existing)
     if dup is not None:
+        if wants_json_response():
+            return jsonify(
+                {
+                    **analyze_job_json_payload(dup),
+                    "message": "Analisi già in coda per questo URL.",
+                    "duplicate": True,
+                }
+            )
         flash("Analisi già in coda per questo URL.", "info")
         return redirect(url_for("dashboard", job=dup.id))
 
@@ -6896,6 +6981,13 @@ def dashboard_analyze_confirmed():
             max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
+        if wants_json_response():
+            return analyze_error_json(
+                str(exc),
+                status=409,
+                redirect_url=url_for("dashboard"),
+                error="concurrent",
+            )
         flash(str(exc), "warning")
         return redirect(url_for("dashboard"))
     except InsufficientCreditError:
@@ -6952,9 +7044,19 @@ def dashboard_analyze_confirmed():
             if held:
                 release_hold(db.session, user, amount_cents=held)
                 db.session.commit()
+            if wants_json_response():
+                return jsonify(
+                    {
+                        **analyze_job_json_payload(dup.job),
+                        "message": "Analisi già in coda per questo URL.",
+                        "duplicate": True,
+                    }
+                )
             flash("Analisi già in coda per questo URL.", "info")
             return redirect(url_for("dashboard", job=dup.job.id))
         kick_analyze_worker()
+        if wants_json_response():
+            return jsonify(analyze_job_json_payload(job))
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
 
