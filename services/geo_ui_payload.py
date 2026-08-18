@@ -255,7 +255,11 @@ def build_geo_ui_payload(
         "findingsCount": len(findings_all),
         "issuePressure": issue_n,
         "issuePressureLabel": issue_label,
-        "evidenceLabel": (engine_breakdown or {}).get("label"),
+        "evidenceLabel": (
+            translate_stored(str(ev_label))
+            if (ev_label := (engine_breakdown or {}).get("label"))
+            else None
+        ),
         "engines": engines,
         "engineBars": engine_bars,
         "insights": insights,
