@@ -130,7 +130,14 @@ def dispatch_alerts(
 
     email_on = bool(getattr(user, "alert_email_enabled", True))
     webhook_url = (getattr(user, "webhook_url", None) or "").strip()
-    webhook_secret = (getattr(user, "webhook_secret", None) or "").strip()
+    from services.webhook_crypto import (
+        reveal_webhook_secret,
+        upgrade_webhook_secret_if_plaintext,
+    )
+
+    # Lazy-upgrade legacy plaintext secrets when we have a session.
+    upgrade_webhook_secret_if_plaintext(user, db_session)
+    webhook_secret = reveal_webhook_secret(getattr(user, "webhook_secret", None))
 
     lines = [
         f"Centropic alert — {getattr(site, 'domain', '') or getattr(site, 'url', '')}",

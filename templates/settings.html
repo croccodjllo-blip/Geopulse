@@ -49,9 +49,9 @@
         {{ alert_form.webhook_secret(id="webhook_secret", type="password", autocomplete="new-password", placeholder=_('Nuovo secret…') if webhook_secret_set else _('Opzionale')) }}
         <p class="field-hint">
           {% if webhook_secret_set %}
-          {{ _('Secret già impostato. Lascia vuoto per mantenerlo; scrivi “clear” per rimuoverlo.') }}
+          {{ _('Secret già impostato (cifrato a riposo). Lascia vuoto per mantenerlo; scrivi “clear” per rimuoverlo.') }}
           {% else %}
-          {{ _('Opzionale. Non viene mai rimostrato in chiaro dopo il salvataggio.') }}
+          {{ _('Opzionale. Salvato cifrato a riposo; non viene mai rimostrato in chiaro dopo il salvataggio.') }}
           {% endif %}
         </p>
       </div>

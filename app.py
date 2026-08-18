@@ -614,7 +614,8 @@ class User(db.Model):
     # GEO suite settings
     alert_email_enabled = db.Column(db.Boolean, nullable=False, default=True)
     webhook_url = db.Column(db.String(500))
-    webhook_secret = db.Column(db.String(120))
+    # Sealed ciphertext (enc:v1:…) — widened beyond raw secret length.
+    webhook_secret = db.Column(db.String(512))
     api_key_hash = db.Column(db.String(64))
     api_key_prefix = db.Column(db.String(16))
     prompt_bank_json = db.Column(db.Text, nullable=False, default="")
@@ -1408,6 +1409,7 @@ class AlertSettingsForm(FlaskForm):
     webhook_secret = StringField(
         _l("Webhook secret (HMAC)"),
         validators=[Optional(), Length(max=120)],
+        render_kw={"autocomplete": "new-password"},
     )
     submit = SubmitField(_l("Salva alert"))
 
@@ -1989,6 +1991,23 @@ def ensure_schema() -> None:
         for name, col_type in user_alters.items():
             if name not in user_cols:
                 _add_column("users", name, col_type)
+        # Widen webhook_secret for Fernet ciphertext (was VARCHAR(120)).
+        try:
+            bind = db.session.get_bind()
+            dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
+            if dialect == "postgresql":
+                db.session.execute(
+                    text(
+                        "ALTER TABLE users "
+                        "ALTER COLUMN webhook_secret TYPE VARCHAR(512)"
+                    )
+                )
+                db.session.commit()
+            elif dialect == "sqlite":
+                # SQLite ignores length; no-op.
+                pass
+        except Exception:
+            db.session.rollback()
 
     if "analysis_runs" in tables:
         run_cols = {col["name"] for col in inspector.get_columns("analysis_runs")}
@@ -7440,7 +7459,19 @@ def dashboard_settings():
             if new_secret in {"-", "clear", "DELETE"}:
                 user.webhook_secret = None
             elif new_secret:
-                user.webhook_secret = new_secret
+                from services.webhook_crypto import store_webhook_secret
+
+                try:
+                    user.webhook_secret = store_webhook_secret(new_secret)
+                except Exception:
+                    app.logger.exception(
+                        "webhook secret seal failed user=%s", user.id
+                    )
+                    flash(
+                        "Impossibile salvare il webhook secret (crypto non disponibile).",
+                        "error",
+                    )
+                    return redirect(url_for("dashboard_settings"))
             # Blank keeps the existing secret (write-only field).
             db.session.commit()
             flash("Impostazioni alert salvate.", "success")
