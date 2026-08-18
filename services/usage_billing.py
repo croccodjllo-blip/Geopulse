@@ -457,27 +457,43 @@ def _refresh_label(
     run_measured: bool,
     crawl_pages: int,
 ) -> tuple[str, str]:
-    """Honest confirm copy — re-measure signals, do not sell score uplift."""
-    depth = f"Crawl fino a {int(crawl_pages)} pagine. " if crawl_pages else ""
-    measured = (
-        "Include probe SoV Misurato (Plus). "
-        if run_measured
+    """Honest confirm copy — re-measure signals, do not sell score uplift.
+
+    Strings are gettext msgids (Italian source); translated for the active UI locale.
+    """
+    from flask_babel import gettext as _
+
+    def _g(msg: str) -> str:
+        try:
+            return _(msg)
+        except RuntimeError:
+            # No request/app locale (unit tests / offline) — keep Italian source.
+            return msg
+
+    depth = (
+        _g("Crawl fino a %(n)s pagine. ") % {"n": int(crawl_pages)}
+        if crawl_pages
         else ""
     )
+    measured = _g("Include probe SoV Misurato (Plus). ") if run_measured else ""
     if not has_baseline:
         return (
-            "Prima diagnosi",
+            _g("Prima diagnosi"),
             depth
             + measured
-            + "Misura i segnali pubblici attuali e produce score AIO/GEO, findings e pack. "
-            "Non prevede un guadagno di score: il risultato dipende dal sito.",
+            + _g(
+                "Misura i segnali pubblici attuali e produce score AIO/GEO, findings e pack. "
+                "Non prevede un guadagno di score: il risultato dipende dal sito."
+            ),
         )
     return (
-        "Ri-misurazione",
+        _g("Ri-misurazione"),
         depth
         + measured
-        + "Ricalcola score e findings dopo eventuali fix pubblicati. "
-        "Gli score possono salire o scendere — non è un miglioramento garantito.",
+        + _g(
+            "Ricalcola score e findings dopo eventuali fix pubblicati. "
+            "Gli score possono salire o scendere — non è un miglioramento garantito."
+        ),
     )
 
 
