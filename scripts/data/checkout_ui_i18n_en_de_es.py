@@ -32,6 +32,7 @@ EN: dict[str, str] = {
     "Paga Plus · 14,99€/mese IVA esclusa": "Pay Plus · €14.99/mo excl. VAT",
     "IVA esclusa": "excl. VAT",
     "Tutti i prezzi sono IVA esclusa.": "All prices exclude VAT.",
+    "I prezzi dei piani a pagamento sono IVA esclusa.": "Paid plan prices exclude VAT.",
     "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
         "The Free / Plus / Business plans and credit top-ups are described in Pricing. "
         "All listed prices exclude VAT; VAT, where due, is calculated at Paddle checkout."
@@ -136,6 +137,7 @@ DE: dict[str, str] = {
     "Paga Plus · 14,99€/mese IVA esclusa": "Plus bezahlen · 14,99 €/Monat zzgl. MwSt.",
     "IVA esclusa": "zzgl. MwSt.",
     "Tutti i prezzi sono IVA esclusa.": "Alle Preise verstehen sich zzgl. MwSt.",
+    "I prezzi dei piani a pagamento sono IVA esclusa.": "Preise der kostenpflichtigen Pläne verstehen sich zzgl. MwSt.",
     "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
         "Die Pläne Free / Plus / Business und Credit-Top-ups sind im Pricing beschrieben. "
         "Alle angegebenen Preise verstehen sich zzgl. MwSt.; die MwSt. wird, soweit geschuldet, im Paddle-Checkout berechnet."
@@ -240,6 +242,7 @@ ES: dict[str, str] = {
     "Paga Plus · 14,99€/mese IVA esclusa": "Pagar Plus · 14,99 €/mes + IVA",
     "IVA esclusa": "IVA no incluida",
     "Tutti i prezzi sono IVA esclusa.": "Todos los precios son sin IVA.",
+    "I prezzi dei piani a pagamento sono IVA esclusa.": "Los precios de los planes de pago son sin IVA.",
     "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
         "Los planes Free / Plus / Business y los top-ups de créditos se describen en Pricing. "
         "Todos los precios indicados son sin IVA; el IVA, cuando proceda, se calcula en el checkout de Paddle."

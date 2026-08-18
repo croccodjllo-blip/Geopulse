@@ -26,6 +26,7 @@ ZH: dict[str, str] = {
     "Paga Plus · 14,99€/mese IVA esclusa": "支付 Plus · €14.99/月（不含税）",
     "IVA esclusa": "不含增值税",
     "Tutti i prezzi sono IVA esclusa.": "所有价格均为不含税。",
+    "I prezzi dei piani a pagamento sono IVA esclusa.": "付费套餐价格均为不含税。",
     "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
         "Free / Plus / Business 套餐和 credits 充值见 Pricing。"
         "所列价格均为不含税；应付增值税在 Paddle 结账时计算。"
@@ -127,6 +128,7 @@ KO: dict[str, str] = {
     "Paga Plus · 14,99€/mese IVA esclusa": "Plus 결제 · €14.99/월(부가세 별도)",
     "IVA esclusa": "부가세 별도",
     "Tutti i prezzi sono IVA esclusa.": "모든 가격은 부가세 별도입니다.",
+    "I prezzi dei piani a pagamento sono IVA esclusa.": "유료 요금제 가격은 부가세 별도입니다.",
     "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
         "Free / Plus / Business 요금제와 credits 충전은 Pricing에 설명되어 있습니다. "
         "표시된 모든 가격은 부가세 별도이며, 해당 시 VAT는 Paddle 결제에서 계산됩니다."
