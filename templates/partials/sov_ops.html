@@ -27,7 +27,21 @@
     </strong>
   </div>
   {% if can_measured_sov and engine_breakdown and engine_breakdown.evidence == 'proxy' %}
-  <p class="sov-ops__hint">{{ _('SoV Misurato può restare in coda/budget: finché non completa, vedi solo la stima strutturale.') }}</p>
+    {% set measured_job = measured_bg_job if measured_bg_job is defined else none %}
+    {% set measured_running = measured_job and measured_job.status in ('pending', 'running') %}
+  <p
+    class="sov-ops__hint{% if measured_running %} sov-ops__hint--live{% endif %}"
+    role="status"
+    aria-live="polite"
+  >
+    {% if measured_running and measured_job.status == 'running' %}
+      {{ _('SoV Misurato in corso: stiamo campionando le citazioni sugli engine. Intanto vedi solo la stima strutturale.') }}
+    {% elif measured_running %}
+      {{ _('SoV Misurato in coda: i probe LLM partono a breve. Intanto vedi solo la stima strutturale.') }}
+    {% else %}
+      {{ _('SoV Misurato in attesa di coda o budget. Finché i probe non completano, vedi solo la stima strutturale — non è ancora una misurazione live.') }}
+    {% endif %}
+  </p>
   {% endif %}
   <nav class="sov-ops__links" aria-label="{{ _('Azioni SoV') }}">
     <a href="{{ url_for('dashboard_settings') }}#connectors">{{ _('Connector') }}</a>

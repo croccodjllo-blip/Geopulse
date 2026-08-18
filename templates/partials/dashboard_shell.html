@@ -143,8 +143,15 @@ https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input'
 </div>
 {% elif measured_bg_job and measured_bg_job.status in ('pending', 'running') %}
 <div class="job-status job-status--fallback" id="job-status-measured" role="status" aria-live="polite">
-  <p class="job-status__label">{{ _('SoV measured in aggiornamento') }} · <code>{{ measured_bg_job.url }}</code></p>
-  <p class="job-status__hint">{{ _('Il report Stimato è già pronto. Le citation Misurate arrivano in background (1–3 min) senza bloccare la dashboard.') }}</p>
+  <p class="job-status__label">
+    {% if measured_bg_job.status == 'pending' %}
+      {{ _('SoV Misurato in coda') }}
+    {% else %}
+      {{ _('SoV Misurato in corso') }}
+    {% endif %}
+    · <code>{{ measured_bg_job.url }}</code>
+  </p>
+  <p class="job-status__hint">{{ _('Il report Stimato è già pronto. I probe LLM stanno misurando le citazioni in background (1–3 min): i valori Misurati aggiornano questa vista a job completato.') }}</p>
 </div>
 {% elif pending_job and pending_job.status == 'error' %}
 <div class="job-status job-status--error" role="alert">

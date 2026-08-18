@@ -46,6 +46,24 @@ ZH: dict[str, str] = {
     ),
     "Misurato (multi-engine probe)": "实测（多引擎探测）",
     "Non disponibile": "不可用",
+    "SoV Misurato in corso": "实测 SoV 进行中",
+    "SoV Misurato in coda": "实测 SoV 排队中",
+    "SoV Misurato in corso: stiamo campionando le citazioni sugli engine. Intanto vedi solo la stima strutturale.": (
+        "实测 SoV 进行中：正在对各引擎采样引用。"
+        "目前只显示结构性估算。"
+    ),
+    "SoV Misurato in coda: i probe LLM partono a breve. Intanto vedi solo la stima strutturale.": (
+        "实测 SoV 排队中：LLM 探测即将开始。"
+        "目前只显示结构性估算。"
+    ),
+    "SoV Misurato in attesa di coda o budget. Finché i probe non completano, vedi solo la stima strutturale — non è ancora una misurazione live.": (
+        "实测 SoV 在等待队列或每日预算。探测完成前，"
+        "只显示结构性估算——还不是实时测量。"
+    ),
+    "Il report Stimato è già pronto. I probe LLM stanno misurando le citazioni in background (1–3 min): i valori Misurati aggiornano questa vista a job completato.": (
+        "估算报告已就绪。LLM 探测在后台测量引用（约 1–3 分钟）："
+        "任务完成后实测数值会刷新此视图。"
+    ),
 }
 
 KO: dict[str, str] = {
@@ -92,4 +110,22 @@ KO: dict[str, str] = {
     ),
     "Misurato (multi-engine probe)": "실측(멀티 엔진 프로브)",
     "Non disponibile": "사용 불가",
+    "SoV Misurato in corso": "실측 SoV 진행 중",
+    "SoV Misurato in coda": "실측 SoV 대기열",
+    "SoV Misurato in corso: stiamo campionando le citazioni sugli engine. Intanto vedi solo la stima strutturale.": (
+        "실측 SoV 진행 중: 엔진별 인용을 샘플링하고 있습니다. "
+        "지금은 구조적 추정만 보입니다."
+    ),
+    "SoV Misurato in coda: i probe LLM partono a breve. Intanto vedi solo la stima strutturale.": (
+        "실측 SoV 대기열: LLM 프로브가 곧 시작됩니다. "
+        "지금은 구조적 추정만 보입니다."
+    ),
+    "SoV Misurato in attesa di coda o budget. Finché i probe non completano, vedi solo la stima strutturale — non è ancora una misurazione live.": (
+        "실측 SoV가 대기열 또는 일일 예산을 기다립니다. 프로브가 끝날 때까지 "
+        "구조적 추정만 보입니다 — 아직 실시간 측정이 아닙니다."
+    ),
+    "Il report Stimato è già pronto. I probe LLM stanno misurando le citazioni in background (1–3 min): i valori Misurati aggiornano questa vista a job completato.": (
+        "추정 리포트는 이미 준비되었습니다. LLM 프로브가 백그라운드에서 인용을 측정합니다"
+        "(1–3분): 작업이 끝나면 실측 값이 이 화면을 갱신합니다."
+    ),
 }

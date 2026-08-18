@@ -47,6 +47,24 @@ EN: dict[str, str] = {
     ),
     "Misurato (multi-engine probe)": "Measured (multi-engine probe)",
     "Non disponibile": "Unavailable",
+    "SoV Misurato in corso": "Measured SoV in progress",
+    "SoV Misurato in coda": "Measured SoV queued",
+    "SoV Misurato in corso: stiamo campionando le citazioni sugli engine. Intanto vedi solo la stima strutturale.": (
+        "Measured SoV in progress: we're sampling citations across engines. "
+        "For now you only see the structural estimate."
+    ),
+    "SoV Misurato in coda: i probe LLM partono a breve. Intanto vedi solo la stima strutturale.": (
+        "Measured SoV queued: LLM probes start shortly. "
+        "For now you only see the structural estimate."
+    ),
+    "SoV Misurato in attesa di coda o budget. Finché i probe non completano, vedi solo la stima strutturale — non è ancora una misurazione live.": (
+        "Measured SoV is waiting on queue or daily budget. Until probes finish, "
+        "you only see the structural estimate — not a live measurement yet."
+    ),
+    "Il report Stimato è già pronto. I probe LLM stanno misurando le citazioni in background (1–3 min): i valori Misurati aggiornano questa vista a job completato.": (
+        "The Estimated report is already ready. LLM probes are measuring citations "
+        "in the background (1–3 min): Measured values refresh this view when the job finishes."
+    ),
 }
 
 # German (DE) — formal Sie / infinitive CTAs
@@ -94,6 +112,24 @@ DE: dict[str, str] = {
     ),
     "Misurato (multi-engine probe)": "Gemessen (Multi-Engine-Probe)",
     "Non disponibile": "Nicht verfügbar",
+    "SoV Misurato in corso": "Gemessenes SoV läuft",
+    "SoV Misurato in coda": "Gemessenes SoV in Warteschlange",
+    "SoV Misurato in corso: stiamo campionando le citazioni sugli engine. Intanto vedi solo la stima strutturale.": (
+        "Gemessenes SoV läuft: Wir sampeln Zitationen über die Engines. "
+        "Bis dahin sehen Sie nur die strukturelle Schätzung."
+    ),
+    "SoV Misurato in coda: i probe LLM partono a breve. Intanto vedi solo la stima strutturale.": (
+        "Gemessenes SoV in Warteschlange: LLM-Probes starten in Kürze. "
+        "Bis dahin sehen Sie nur die strukturelle Schätzung."
+    ),
+    "SoV Misurato in attesa di coda o budget. Finché i probe non completano, vedi solo la stima strutturale — non è ancora una misurazione live.": (
+        "Gemessenes SoV wartet auf Warteschlange oder Tagesbudget. Bis die Probes "
+        "fertig sind, sehen Sie nur die strukturelle Schätzung — noch keine Live-Messung."
+    ),
+    "Il report Stimato è già pronto. I probe LLM stanno misurando le citazioni in background (1–3 min): i valori Misurati aggiornano questa vista a job completato.": (
+        "Der geschätzte Report ist bereits fertig. LLM-Probes messen Zitationen "
+        "im Hintergrund (1–3 Min.): Gemessene Werte aktualisieren diese Ansicht nach Jobende."
+    ),
 }
 
 # Spanish (ES) — Spain B2B
@@ -141,4 +177,22 @@ ES: dict[str, str] = {
     ),
     "Misurato (multi-engine probe)": "Medido (sonda multi-motor)",
     "Non disponibile": "No disponible",
+    "SoV Misurato in corso": "SoV Medido en curso",
+    "SoV Misurato in coda": "SoV Medido en cola",
+    "SoV Misurato in corso: stiamo campionando le citazioni sugli engine. Intanto vedi solo la stima strutturale.": (
+        "SoV Medido en curso: estamos muestreando citas en los motores. "
+        "Por ahora solo ve la estimación estructural."
+    ),
+    "SoV Misurato in coda: i probe LLM partono a breve. Intanto vedi solo la stima strutturale.": (
+        "SoV Medido en cola: las sondas LLM arrancan en breve. "
+        "Por ahora solo ve la estimación estructural."
+    ),
+    "SoV Misurato in attesa di coda o budget. Finché i probe non completano, vedi solo la stima strutturale — non è ancora una misurazione live.": (
+        "SoV Medido en espera de cola o presupuesto. Hasta que las sondas terminen, "
+        "solo ve la estimación estructural — aún no es una medición en vivo."
+    ),
+    "Il report Stimato è già pronto. I probe LLM stanno misurando le citazioni in background (1–3 min): i valori Misurati aggiornano questa vista a job completato.": (
+        "El informe Estimado ya está listo. Las sondas LLM miden citas en segundo "
+        "plano (1–3 min): los valores Medidos actualizan esta vista al completar el job."
+    ),
 }

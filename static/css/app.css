@@ -10635,6 +10635,24 @@ body.body-login-popup .site-footer {
   font-size: 0.82rem;
 }
 
+.sov-ops__hint {
+  flex: 1 1 100%;
+  margin: 0.15rem 0 0;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 80%, transparent);
+  background: rgba(4, 6, 10, 0.35);
+  color: var(--brand-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.sov-ops__hint--live {
+  border-color: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 35%, transparent);
+  background: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 10%, rgba(4, 6, 10, 0.45));
+  color: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 55%, #e8eef4);
+}
+
 .sov-ops__links {
   display: inline-flex;
   gap: 0.85rem;
