@@ -2262,6 +2262,10 @@ def _enqueue_measured_followup(
         or "gpt-4o-mini",
     )
     need = max(1, int(est.service_cost_eur_cents or 0))
+    # Hold must include grace — the worker ceiling compares projected spend to
+    # job.held_cents and fail-closes when projected exceeds the lease (job #924:
+    # held base 3¢, Azure Copilot pushed projected to 4¢ → Measured stuck).
+    required = required_credit_with_grace_cents(need)
     # Atomic lock: re-check credit + concurrent job cap under row lock, same
     # gate the normal analyze flow uses before hold/enqueue.
     try:
@@ -2269,7 +2273,7 @@ def _enqueue_measured_followup(
             db.session,
             user,
             AnalysisJob=AnalysisJob,
-            required_cents=required_credit_with_grace_cents(need),
+            required_cents=required,
             max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
@@ -2284,10 +2288,13 @@ def _enqueue_measured_followup(
         )
         return None
     held = 0
-    if not is_unlimited_user(user) and need > 0:
+    if not is_unlimited_user(user) and required > 0:
         try:
             held = int(
-                hold_credit(db.session, CreditLedger, user, amount_cents=need) or 0
+                hold_credit(
+                    db.session, CreditLedger, user, amount_cents=required
+                )
+                or 0
             )
             # Do not commit yet — enqueue_analysis commits hold+job together.
         except InsufficientCreditError:
@@ -2604,15 +2611,19 @@ def process_pending_analyze_jobs(
                         projected = peek_usage_accum_cents(accum_key)
                         if projected > 0:
                             _assert_current_sov_debit(thread_user, max(debit_cents, projected))
-                        # Hold ceiling: stop LLM when projected spend exceeds lease.
-                        held_cap = int(getattr(thread_job, "held_cents", 0) or 0)
+                        # Hold ceiling: stop LLM when projected spend exceeds the
+                        # original lease (remaining held + already billed), not
+                        # only remaining held_cents (which shrinks as we debit).
+                        lease_cap = int(getattr(thread_job, "held_cents", 0) or 0) + int(
+                            getattr(thread_job, "billed_cents", 0) or 0
+                        )
                         if (
-                            held_cap > 0
-                            and projected > held_cap
+                            lease_cap > 0
+                            and projected > lease_cap
                             and not is_unlimited_user(thread_user)
                         ):
                             raise InsufficientCreditError(
-                                f"usage projected {projected}c exceeds hold {held_cap}c"
+                                f"usage projected {projected}c exceeds hold {lease_cap}c"
                             )
                         if debit_cents <= 0:
                             db.session.commit()
