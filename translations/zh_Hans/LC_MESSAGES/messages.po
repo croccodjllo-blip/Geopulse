@@ -7331,7 +7331,7 @@ msgstr "正常"
 
 #: templates/partials/geo_overview.html:13
 msgid "Attenzione"
-msgstr "注意"
+msgstr "警告"
 
 #: templates/partials/geo_overview.html:16
 msgid "Elevata"
@@ -7699,7 +7699,7 @@ msgid "Citation monitor attivo"
 msgstr "引用监测已启用"
 
 msgid "Citation monitor non configurato"
-msgstr "引用监测未配置"
+msgstr "未配置引用监测"
 
 msgid "Misurato · 0 menzioni"
 msgstr "已测量 · 0 次提及"
@@ -7708,12 +7708,12 @@ msgid "Stimato — probe senza sample utili"
 msgstr "估算 — 探测无可用样本"
 
 msgid "SoV measured basso"
-msgstr "已测量 SoV 偏低"
+msgstr "实测 SoV 偏低"
 
 msgid ""
 "Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti "
 "citabili; amplia il prompt bank."
-msgstr "探测提示中的品牌提及很少。请加强实体信息、llms.txt 和可引用内容;扩充提示库。"
+msgstr "探测提示词中的品牌提及很少。请加强实体信号、llms.txt 与可引用内容，并扩充提示词库。"
 
 msgid ""
 "aggiunge probe Misurati (se 0 menzioni, mostriamo Misurato 0% — non riusiamo "
@@ -7923,6 +7923,23 @@ msgstr "无法解析主机名。请检查域名后重试。"
 
 msgid "URL non consentito per l’anteprima."
 msgstr "该 URL 不允许用于预览。"
+
+msgid "Critico"
+msgstr "严重"
+
+msgid "critical"
+msgstr "严重"
+
+msgid "warn"
+msgstr "警告"
+
+msgid ""
+"Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
+"GEMINI_API_KEY, XAI_API_KEY e/o AZURE_AI_PROJECT_ENDPOINT per SoV measured."
+msgstr ""
+"请配置 "
+"OPENAI_API_KEY、PERPLEXITY_API_KEY、ANTHROPIC_API_KEY、GEMINI_API_KEY、XAI_API_KEY"
+" 和/或 AZURE_AI_PROJECT_ENDPOINT 以启用实测 SoV。"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

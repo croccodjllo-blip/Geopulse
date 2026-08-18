@@ -8045,7 +8045,7 @@ msgstr "Unbedenklich"
 
 #: templates/partials/geo_overview.html:13
 msgid "Attenzione"
-msgstr "Achtung"
+msgstr "Warnung"
 
 #: templates/partials/geo_overview.html:16
 msgid "Elevata"
@@ -8437,7 +8437,7 @@ msgid "Citation monitor attivo"
 msgstr "Citation-Monitor aktiv"
 
 msgid "Citation monitor non configurato"
-msgstr "Citation-Monitor nicht konfiguriert"
+msgstr "Citation Monitor nicht konfiguriert"
 
 msgid "Misurato · 0 menzioni"
 msgstr "Gemessen · 0 Erwähnungen"
@@ -8446,14 +8446,14 @@ msgid "Stimato — probe senza sample utili"
 msgstr "Geschätzt — Probe ohne verwertbare Stichproben"
 
 msgid "SoV measured basso"
-msgstr "Niedriger gemessener SoV"
+msgstr "Niedriger Measured SoV"
 
 msgid ""
 "Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti "
 "citabili; amplia il prompt bank."
 msgstr ""
-"Wenige Markenerwähnungen in den Probe-Prompts. Stärke Entity, llms.txt und "
-"zitierbare Inhalte; erweitere die Prompt-Bank."
+"Wenige Markenerwähnungen in den Probe-Prompts. Stärken Sie Entity-Signale, "
+"llms.txt und zitierfähige Inhalte; erweitern Sie die Prompt-Bank."
 
 msgid ""
 "aggiunge probe Misurati (se 0 menzioni, mostriamo Misurato 0% — non riusiamo "
@@ -8710,6 +8710,23 @@ msgstr "Host nicht auflösbar. Prüfen Sie die Domain und versuchen Sie es erneu
 
 msgid "URL non consentito per l’anteprima."
 msgstr "URL für die Vorschau nicht erlaubt."
+
+msgid "Critico"
+msgstr "Kritisch"
+
+msgid "critical"
+msgstr "kritisch"
+
+msgid "warn"
+msgstr "Warnung"
+
+msgid ""
+"Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
+"GEMINI_API_KEY, XAI_API_KEY e/o AZURE_AI_PROJECT_ENDPOINT per SoV measured."
+msgstr ""
+"Setzen Sie OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
+"GEMINI_API_KEY, XAI_API_KEY und/oder AZURE_AI_PROJECT_ENDPOINT für Measured "
+"SoV."
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

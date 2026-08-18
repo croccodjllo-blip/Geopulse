@@ -7854,7 +7854,7 @@ msgid "Citation monitor attivo"
 msgstr "인용 모니터 활성"
 
 msgid "Citation monitor non configurato"
-msgstr "인용 모니터 미설정"
+msgstr "인용 모니터가 구성되지 않음"
 
 msgid "Misurato · 0 menzioni"
 msgstr "측정됨 · 언급 0건"
@@ -7863,12 +7863,12 @@ msgid "Stimato — probe senza sample utili"
 msgstr "추정 — 사용 가능한 샘플 없는 프로브"
 
 msgid "SoV measured basso"
-msgstr "측정된 SoV 낮음"
+msgstr "측정 SoV 낮음"
 
 msgid ""
 "Poche menzioni brand nei prompt probe. Rafforza entity, llms.txt e contenuti "
 "citabili; amplia il prompt bank."
-msgstr "프로브 프롬프트에서 브랜드 언급이 적습니다. 엔티티, llms.txt, 인용 가능한 콘텐츠를 강화하고 프롬프트 뱅크를 확장하세요."
+msgstr "프로브 프롬프트에서 브랜드 언급이 적습니다. 엔티티 신호, llms.txt, 인용 가능한 콘텐츠를 강화하고 프롬프트 뱅크를 확장하세요."
 
 msgid ""
 "aggiunge probe Misurati (se 0 menzioni, mostriamo Misurato 0% — non riusiamo "
@@ -8092,6 +8092,22 @@ msgstr "호스트를 확인할 수 없습니다. 도메인을 확인한 뒤 다�
 
 msgid "URL non consentito per l’anteprima."
 msgstr "미리보기에 허용되지 않는 URL입니다."
+
+msgid "Critico"
+msgstr "심각"
+
+msgid "critical"
+msgstr "심각"
+
+msgid "warn"
+msgstr "주의"
+
+msgid ""
+"Imposta OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
+"GEMINI_API_KEY, XAI_API_KEY e/o AZURE_AI_PROJECT_ENDPOINT per SoV measured."
+msgstr ""
+"Measured SoV를 사용하려면 OPENAI_API_KEY, PERPLEXITY_API_KEY, ANTHROPIC_API_KEY, "
+"GEMINI_API_KEY, XAI_API_KEY 및/또는 AZURE_AI_PROJECT_ENDPOINT를 설정하세요."
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

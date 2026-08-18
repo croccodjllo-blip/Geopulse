@@ -793,19 +793,19 @@
                 <div class="dash-block__meta">
                   <span class="dash-block__count">{{ findings|length }}</span>
                   {% if crit_n and warn_n %}
-                  <span class="dash-block__chip" data-severity="critical">{{ crit_n }} critical</span>
-                  <span class="dash-block__chip" data-severity="warn">{{ warn_n }} warn</span>
+                  <span class="dash-block__chip" data-severity="critical">{{ crit_n }} {{ _('Critico') }}</span>
+                  <span class="dash-block__chip" data-severity="warn">{{ warn_n }} {{ _('Attenzione') }}</span>
                   {% elif crit_n %}
-                  <span class="dash-block__chip" data-severity="critical">critical</span>
+                  <span class="dash-block__chip" data-severity="critical">{{ _('Critico') }}</span>
                   {% elif warn_n %}
-                  <span class="dash-block__chip" data-severity="warn">warn</span>
+                  <span class="dash-block__chip" data-severity="warn">{{ _('Attenzione') }}</span>
                   {% endif %}
                 </div>
               </header>
               <ul class="finding-list">
                 {% for f in findings %}
                 <li data-severity="{{ f.severity }}">
-                  <em>{{ f.severity }}</em>
+                  <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Attenzione') }}{% else %}{{ f.severity }}{% endif %}</em>
                   <div class="finding-list__body">
                     <strong>
                       {{ _(f.title) }}
