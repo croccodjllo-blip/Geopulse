@@ -2482,7 +2482,7 @@ msgstr "Centropic 可访问性声明：WCAG 承诺、反馈渠道以及 SaaS 的
 
 #: templates/accessibility.html:10
 msgid "Dichiarazione di accessibilità"
-msgstr "无障碍声明"
+msgstr "可访问性声明"
 
 #: templates/accessibility.html:12 templates/ai_transparency.html:12
 #: templates/cookies.html:12 templates/dpa.html:12 templates/trust.html:12
@@ -4001,7 +4001,7 @@ msgstr "联系方式："
 
 #: templates/dpa.html:19 templates/dpa.html:116
 msgid "Scarica DPA (.txt)"
-msgstr "下载 DPA（.txt）"
+msgstr "下载 DPA (.txt)"
 
 #: templates/dpa.html:26
 msgid "1. Ruoli"
@@ -6760,9 +6760,9 @@ msgstr "增加本月额度"
 #: templates/topup.html:12
 msgid ""
 "Aggiungi credito operativo senza cambiare piano — ideale per picchi di ri-"
-"analisi o clienti straordinari. Importo in euro (IVA esclusa); il credito si "
-"applica subito al saldo."
-msgstr "在不更改计划的情况下添加运营额度——适合再分析峰值或特殊客户。金额以欧元计（不含 VAT）；额度会立即应用到账户余额。"
+"analisi o clienti straordinari. Importo in euro (tasse escluse); il credito "
+"si applica subito al saldo."
+msgstr "在不更改套餐的情况下增加运营额度 — 适合重新分析高峰或临时客户。金额以欧元计（不含税）；额度立即计入余额。"
 
 #: templates/topup.html:17
 msgid "Copertura residua"
@@ -7261,7 +7261,7 @@ msgid ""
 "Chiedo l’erogazione immediata del servizio digitale (attivazione piano o "
 "accredito crediti) e riconosco di perdere il diritto di recesso di 14 giorni "
 "una volta iniziata l’erogazione, ai sensi della"
-msgstr "我要求立即提供数字服务（开通套餐或充值额度），并确认服务开始提供后即失去 14 天冷静期/撤回权，依据"
+msgstr "我请求立即提供数字服务（激活套餐或充值 credits），并确认一旦服务开始履行，即根据以下规定失去 14 天撤回权："
 
 #: templates/partials/digital_service_waiver.html:18
 msgid ""
@@ -7731,24 +7731,24 @@ msgid ""
 "inventiamo menzioni e non riusiamo la share Stimata (proxy)."
 msgstr "在 Plus 中，引用监测会加入实测 LLM 探测（随机样本）。若没有任何引擎提及品牌，我们显示实测 0%——不会虚构提及，也不会复用估算（代理）份额。"
 
-msgid "Paga Plus · 14,99€/mese IVA esclusa"
+msgid "Paga Plus · 14,99€/mese Tasse escluse"
 msgstr "支付 Plus · €14.99/月（不含税）"
 
-msgid "IVA esclusa"
-msgstr "不含增值税"
+msgid "Tasse escluse"
+msgstr "不含税"
 
-msgid "Tutti i prezzi sono IVA esclusa."
+msgid "Tutti i prezzi sono tasse escluse."
 msgstr "所有价格均为不含税。"
 
 msgid ""
 "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. "
-"Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al "
-"checkout Paddle."
+"Tutti i prezzi indicati sono tasse escluse; l’IVA, ove dovuta, è calcolata al"
+" checkout Paddle."
 msgstr "Free / Plus / Business 套餐和 credits 充值见 Pricing。所列价格均为不含税；应付增值税在 Paddle 结账时计算。"
 
 msgid ""
-"Listino Plus 19,99€ in offerta a 14,99€/mese IVA esclusa; Free con "
-"CVI/AIO/GEO Stimati; Business 89,99€ IVA esclusa in waitlist. Citation "
+"Listino Plus 19,99€ in offerta a 14,99€/mese Tasse escluse; Free con "
+"CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation "
 "monitor Misurato solo su Plus."
 msgstr ""
 "Plus 原价 €19.99，优惠 €14.99/月（不含税）；Free 含估算 CVI/AIO/GEO；Business "
@@ -7756,30 +7756,36 @@ msgstr ""
 
 msgid ""
 "Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre profili"
-" SaaS — Free, Plus 19,99€ in offerta a 14,99€ IVA esclusa, Business 89,99€ "
-"IVA esclusa con API e white-label."
+" SaaS — Free, Plus 19,99€ in offerta a 14,99€ Tasse escluse, Business 89,99€ "
+"Tasse escluse con API e white-label."
 msgstr ""
 "Centropic Visibility Index（CVI）、AIO/GEO 评分、发现项与交付包。三种 SaaS 方案 — Free、Plus 原价 "
 "€19.99 优惠 €14.99（不含税）、含 API 与白标的 Business €89.99（不含税）。"
 
 msgid ""
-"Plus (14,99€ IVA esclusa) è per startup sul proprio brand: pochi domini, re-"
-"scan e SoV Misurato. Business (89,99€ IVA esclusa) è il profilo agenzia: "
-"scala clienti, API, white-label e brand vostro sui deliverable."
+"Plus (14,99€ Tasse escluse) è per startup sul proprio brand: pochi domini, "
+"re-scan e SoV Misurato. Business (89,99€ Tasse escluse) è il profilo agenzia:"
+" scala clienti, API, white-label e brand vostro sui deliverable."
 msgstr ""
 "Plus（€14.99 不含税）面向自有品牌初创：少量域名、重新扫描与实测 SoV。Business（€89.99 "
 "不含税）面向代理商：客户规模、API、白标与自有品牌交付。"
 
-msgid "Free: 1 dominio. Plus (14,99€ IVA esclusa): fino a"
+msgid "Free: 1 dominio. Plus (14,99€ Tasse escluse): fino a"
 msgstr "Free：1 个域名。Plus（€14.99 不含税）：最多"
 
 msgid ""
-"Business 89,99€ IVA esclusa: white-label, API e fino a 50 domini clienti per "
-"agenzie GEO/AIO. Plus resta per startup sul proprio brand."
+"Business 89,99€ Tasse escluse: white-label, API e fino a 50 domini clienti "
+"per agenzie GEO/AIO. Plus resta per startup sul proprio brand."
 msgstr "Business €89.99（不含税）：面向 GEO/AIO 代理商的白标、API 与最多 50 个客户域名。Plus 仍面向自有品牌初创。"
 
-msgid "I prezzi dei piani a pagamento sono IVA esclusa."
+msgid "I prezzi dei piani a pagamento sono tasse escluse."
 msgstr "付费套餐价格均为不含税。"
+
+msgid ""
+"I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. "
+"Tutti i prezzi indicati sono tasse escluse; le tasse, ove dovute, sono "
+"calcolate al checkout Paddle."
+msgstr "Free / Plus / Business 套餐和 credits 充值见 Pricing。所列价格均为不含税；应付税费在 Paddle 结账时计算。"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

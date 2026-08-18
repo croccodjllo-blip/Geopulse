@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prezzi Centropic') }} — Free, Plus, Business{% endblock %}
-{% block meta_description %}{{ _('Listino Plus 19,99€ in offerta a 14,99€/mese IVA esclusa; Free con CVI/AIO/GEO Stimati; Business 89,99€ IVA esclusa in waitlist. Citation monitor Misurato solo su Plus.') }}{% endblock %}
+{% block meta_description %}{{ _('Listino Plus 19,99€ in offerta a 14,99€/mese Tasse escluse; Free con CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation monitor Misurato solo su Plus.') }}{% endblock %}
 {% block body_class %}body-marketing{% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
     <h1 class="h-display page-intro__title hero-headline--rise">{{ _('Tre modi di possedere il segnale.') }}</h1>
     <p class="lede page-intro__lede">
       {{ _('Scegli per domini monitorati, frequenza di re-scan e toolkit agenzia — senza calcoli astratti in fase di checkout.') }}
-      {{ _('I prezzi dei piani a pagamento sono IVA esclusa.') }}
+      {{ _('I prezzi dei piani a pagamento sono tasse escluse.') }}
     </p>
     <div class="cta-row">
       <a class="btn btn-core" href="#piani">{{ _('Confronta i piani') }}</a>
@@ -59,7 +59,7 @@
         <div class="plan-checkout">
           {% if current_user %}
             {% set _plan = (current_user.plan or '')|lower %}
-            {% set _plus_cta = _('Apri checkout / aggiorna pagamento') if _plan in ['plus', 'pro', 'business', 'admin'] else _('Paga Plus · 14,99€/mese IVA esclusa') %}
+            {% set _plus_cta = _('Apri checkout / aggiorna pagamento') if _plan in ['plus', 'pro', 'business', 'admin'] else _('Paga Plus · 14,99€/mese Tasse escluse') %}
             {% if paddle_overlay %}
             <button type="button" class="btn btn-core btn-block" data-paddle-checkout="plus">
               {{ _plus_cta }}
@@ -93,7 +93,7 @@
                 {% include "partials/digital_service_waiver.html" %}
               {% endwith %}
               <button type="submit" class="btn btn-ghost-light btn-block">
-                {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur)|replace('.', ',') }}&nbsp;€/{{ _('anno') }} (−20%) · {{ _('IVA esclusa') }}
+                {{ _('Annuale') }} {{ '%.2f'|format(plus_yearly_eur)|replace('.', ',') }}&nbsp;€/{{ _('anno') }} (−20%) · {{ _('Tasse escluse') }}
               </button>
             </form>
             {% endif %}
@@ -126,7 +126,7 @@
   </div>
 
   <p class="plan-note">
-    {{ _('I prezzi dei piani a pagamento sono IVA esclusa.') }}
+    {{ _('I prezzi dei piani a pagamento sono tasse escluse.') }}
     {{ _('Evidence:') }}
     <strong>{{ _('Stimato') }}</strong> {{ _('= predisposizione strutturale (CVI / AIO / GEO dal crawl).') }}
     <strong>{{ _('Misurato') }}</strong> {{ _('= probe LLM su Plus; se 0 menzioni mostriamo 0 (niente share proxy spacciata per measured).') }}

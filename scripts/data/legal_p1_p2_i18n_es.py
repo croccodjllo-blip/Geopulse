@@ -194,9 +194,9 @@ ES: dict[str, str] = {
     "Il Servizio è destinato a utenti professionali maggiorenni.": "El Servicio está destinado a usuarios profesionales mayores de edad.",
     "Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati della tua organizzazione.": "Eres responsable de la actividad realizada bajo tu cuenta, incluidos los usuarios invitados de tu organización.",
     "4. Piani, crediti e pagamenti": "4. Planes, créditos y pagos",
-    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono tasse escluse; le tasse, ove dovute, sono calcolate al checkout Paddle.": (
         "Los planes Free / Plus / Business y los top-ups de créditos se describen en Pricing. "
-        "Todos los precios indicados son sin IVA; el IVA, cuando proceda, se calcula en el checkout de Paddle."
+        "Todos los precios indicados no incluyen impuestos; los impuestos, cuando procedan, se calculan en el checkout de Paddle."
     ),
     "I crediti consumati per analisi non sono rimborsabili salvo quanto previsto nella": "Los créditos consumidos por análisis no son reembolsables salvo lo previsto en la",
     "Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o contattando": "Puedes gestionar o cancelar la suscripción desde Configuración → Facturación o contactando con",

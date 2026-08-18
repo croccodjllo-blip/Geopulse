@@ -194,9 +194,9 @@ ZH: dict[str, str] = {
     "Il Servizio è destinato a utenti professionali maggiorenni.": "本服务面向成年专业用户。",
     "Sei responsabile dell’attività sotto il tuo account, inclusi utenti invitati della tua organizzazione.": "你需对账户下的活动负责，包括你组织中受邀用户的活动。",
     "4. Piani, crediti e pagamenti": "4. 套餐、credits 与付款",
-    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono IVA esclusa; l’IVA, ove dovuta, è calcolata al checkout Paddle.": (
+    "I piani Free / Plus / Business e i top-up crediti sono descritti in Pricing. Tutti i prezzi indicati sono tasse escluse; le tasse, ove dovute, sono calcolate al checkout Paddle.": (
         "Free / Plus / Business 套餐和 credits 充值见 Pricing。"
-        "所列价格均为不含税；应付增值税在 Paddle 结账时计算。"
+        "所列价格均为不含税；应付税费在 Paddle 结账时计算。"
     ),
     "I crediti consumati per analisi non sono rimborsabili salvo quanto previsto nella": "除以下政策另有规定外，用于分析且已消耗的 credits 不予退款：",
     "Puoi gestire o annullare l’abbonamento da Impostazioni → Fatturazione o contattando": "你可以在“设置 → 账单”中管理或取消订阅，或联系",

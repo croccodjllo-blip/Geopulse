@@ -18,9 +18,9 @@ def test_pricing_shows_list_and_offer(monkeypatch):
     html = client.get("/prezzi").get_data(as_text=True)
     assert "19,99" in html
     assert "14,99" in html
-    assert "IVA esclusa" in html
+    assert "Tasse escluse" in html
     free_block = html.split('id="free"', 1)[1].split('id="plus"', 1)[0]
-    assert "IVA esclusa" not in free_block
+    assert "Tasse escluse" not in free_block
     assert "price-offer__list" in html
     assert "price-offer__row" in html
     assert "price-offer__amount" in html
@@ -33,5 +33,5 @@ def test_landing_shows_plus_offer():
     html = app.test_client().get("/").get_data(as_text=True)
     assert "19,99" in html
     assert "14,99" in html
-    assert "IVA esclusa" in html
+    assert "Tasse escluse" in html
     assert "price-offer__list" in html
