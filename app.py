@@ -6259,11 +6259,10 @@ def dashboard():
     user = current_user()
     form = AnalyzeForm()
     if request.method == "GET" and not form.url.data:
+        # One-shot from landing/hero; otherwise wait until active site is known.
         prefill = session.pop("prefill_analyze_url", None)
         if prefill:
             form.url.data = prefill
-        elif user and user.website_url:
-            form.url.data = user.website_url
     # Claim a completed guest preview once the user lands in-app.
     pending_preview = (session.get("guest_preview_token") or "").strip()
     if pending_preview and user is not None:
@@ -6501,6 +6500,12 @@ def dashboard():
         session["dashboard_site_id"] = int(latest.id)
     elif "dashboard_site_id" in session:
         session.pop("dashboard_site_id", None)
+
+    # Analyze composer: default URL = active site from switcher/sticky.
+    # No sites → leave empty (do not fall back to profile website_url).
+    if request.method == "GET" and not (form.url.data or "").strip():
+        if latest is not None and (latest.url or "").strip():
+            form.url.data = latest.url
 
     user_sites = (
         sites_query_for_user(SiteAnalysis, user)
