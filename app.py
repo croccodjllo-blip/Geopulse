@@ -6747,13 +6747,13 @@ def dashboard_analyze_confirmed():
 #
 # GEO token pricing (product unit of credit purchase):
 #   1 token == 10 EUR cents == €0.10  →  100 token = €10.00 (base rate)
-# Packs:
-#   €10 → 100 token, €20 → 200 token, €50 → 600 token (bonus)
+# Packs (Plus/Business only — Free cannot top up):
+#   €10 → 100 token, €20 → 200 token, €50 → 550 token (bonus lieve)
 # Plus subscription (€14.99/mo): includes 100 token each billing cycle.
 # Pre-analysis estimate mirrors realtime per-call ceil debit (citation probes
 # count as one call each). Typical holds with SoV Misurato:
 #   OpenAI-only ≈ 7¢ · OAI+Pplx ≈ 10¢ · multi-engine ≈ 20–23¢
-# Packs advertise ~40 / ~80 / ~250 analisi (multi-engine hold ≈23–24¢).
+# Packs advertise ~40 / ~80 / ~230 analisi (multi-engine hold ≈23–24¢).
 
 _TOPUP_PACKAGES = [
     {
@@ -6774,13 +6774,20 @@ _TOPUP_PACKAGES = [
     },
     {
         "cents": 5000,
-        "tokens": 600,
-        "credit_cents": 6000,  # bonus vs €50 payment
+        "tokens": 550,
+        "credit_cents": 5500,  # bonus vs €50 payment (€55 face)
         "label": "Scale",
-        "analyses": "~250",
+        "analyses": "~230",
         "price_eur": 50,
     },
 ]
+
+
+def _user_can_purchase_topup(user: "User | None") -> bool:
+    """Top-ups are an add-on for paying plans only (Plus / Business / Admin)."""
+    if user is None:
+        return False
+    return bool(getattr(user, "is_pro", False))
 
 
 def _topup_package_by_payment_cents(payment_cents: int) -> dict[str, Any] | None:
@@ -6801,15 +6808,16 @@ def _topup_credit_cents(payment_cents: int) -> int:
 @login_required
 def topup_credit_page():
     user = current_user()
+    can_topup = _user_can_purchase_topup(user)
     ledger = (
         CreditLedger.query.filter_by(user_id=user.id)
         .order_by(CreditLedger.created_at.desc())
         .limit(20)
         .all()
     )
-    packages = list(_TOPUP_PACKAGES)
+    packages = list(_TOPUP_PACKAGES) if can_topup else []
     # Hide packs that cannot be purchased on the active Paddle catalog.
-    if payments_provider() == "paddle" and (
+    if can_topup and payments_provider() == "paddle" and (
         paddle_enabled() or paddle_topups_enabled()
     ):
         priced = [
@@ -6824,6 +6832,7 @@ def topup_credit_page():
         balance_cents=get_balance_cents(user),
         ledger=ledger,
         packages=packages,
+        can_topup=can_topup,
     )
 
 
@@ -6832,6 +6841,12 @@ def topup_credit_page():
 def topup_checkout():
     """Create a Paddle checkout for a credit top-up."""
     user = current_user()
+    if not _user_can_purchase_topup(user):
+        flash(
+            "La ricarica token è disponibile solo con piano Plus o Business.",
+            "warning",
+        )
+        return redirect(url_for("pricing"))
     if not limiter.allow(f"topup-checkout:{user.id}", limit=10, window_seconds=3600):
         flash("Troppe richieste di ricarica. Riprova tra poco.", "warning")
         return redirect(url_for("topup_credit_page"))

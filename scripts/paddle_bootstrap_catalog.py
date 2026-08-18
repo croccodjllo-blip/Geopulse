@@ -8,7 +8,7 @@ Requires:
 Creates (if missing by name):
   - Product "Centropic Plus" + monthly price (€14.99)
   - Product "Centropic Credits" + one-time prices for €10/20/50
-    (€10→100 token, €20→200 token, €50→600 token; 1 token = €0.10)
+    (€10→100 token, €20→200 token, €50→550 token; 1 token = €0.10)
 
 Prints env lines to paste into .env. Does not write secrets.
 """
@@ -32,7 +32,7 @@ BASE = (
 TOPUPS = [
     (1000, "100 token — €10"),
     (2000, "200 token — €20"),
-    (5000, "600 token — €50"),
+    (5000, "550 token — €50"),
 ]
 
 

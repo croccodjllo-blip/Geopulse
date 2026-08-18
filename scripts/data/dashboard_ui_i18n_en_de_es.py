@@ -73,6 +73,24 @@ EN: dict[str, str] = {
     "Citation share (stimata · readiness)": "Citation share (estimated · readiness)",
     "Citation share brand": "Brand citation share",
     "AI Engine Breakdown": "AI engine breakdown",
+    # Top-up (Plus/Business add-on)
+    "token": "tokens",
+    "analisi": "analyses",
+    "tasse escluse": "excl. tax",
+    "Ricarica riservata a Plus e Business": "Top-ups are for Plus and Business only",
+    "Con Free validi il dominio. Con Plus o Business sblocchi SoV Misurato, re-scan e la possibilità di acquistare pacchetti token quando il volume cresce.": (
+        "Free validates your domain. Plus or Business unlock Measured SoV, rescan, "
+        "and token packs when volume grows."
+    ),
+    "La ricarica token è un add-on per i piani Plus e Business: prima attiva l’abbonamento, poi amplia la copertura quando ti serve più volume.": (
+        "Token top-ups are a Plus/Business add-on: subscribe first, then expand "
+        "coverage when you need more volume."
+    ),
+    "Aggiungi token operativi senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); i token si accreditano subito sul saldo.": (
+        "Add operating tokens without changing plan — ideal for re-analysis spikes "
+        "or extra clients. Amounts in euro (excl. tax); tokens credit to your balance immediately."
+    ),
+    "Passa a Plus": "Go Plus",
 }
 
 # German (DE) — formal Sie / infinitive CTAs
@@ -146,6 +164,23 @@ DE: dict[str, str] = {
     "Citation share (stimata · readiness)": "Citation Share (geschätzt · Readiness)",
     "Citation share brand": "Marken-Citation-Share",
     "AI Engine Breakdown": "Aufschlüsselung nach AI-Engine",
+    "token": "Tokens",
+    "analisi": "Analysen",
+    "tasse escluse": "zzgl. Steuern",
+    "Ricarica riservata a Plus e Business": "Aufladungen nur für Plus und Business",
+    "Con Free validi il dominio. Con Plus o Business sblocchi SoV Misurato, re-scan e la possibilità di acquistare pacchetti token quando il volume cresce.": (
+        "Mit Free validieren Sie die Domain. Plus oder Business freischalten Measured SoV, "
+        "Rescan und Token-Pakete, wenn das Volumen wächst."
+    ),
+    "La ricarica token è un add-on per i piani Plus e Business: prima attiva l’abbonamento, poi amplia la copertura quando ti serve più volume.": (
+        "Token-Aufladungen sind ein Add-on für Plus/Business: zuerst abonnieren, "
+        "dann die Abdeckung erweitern, wenn mehr Volumen nötig ist."
+    ),
+    "Aggiungi token operativi senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); i token si accreditano subito sul saldo.": (
+        "Fügen Sie Betriebscode hinzu, ohne den Plan zu wechseln — ideal für Re-Analyse-Spitzen "
+        "oder Extra-Kunden. Beträge in Euro (zzgl. Steuern); Tokens werden sofort gutgeschrieben."
+    ),
+    "Passa a Plus": "Zu Plus wechseln",
 }
 
 # Spanish (ES) — Spain B2B
@@ -219,4 +254,21 @@ ES: dict[str, str] = {
     "Citation share (stimata · readiness)": "Cuota de citas (estimada · readiness)",
     "Citation share brand": "Cuota de citas de la marca",
     "AI Engine Breakdown": "Desglose por motor de IA",
+    "token": "tokens",
+    "analisi": "análisis",
+    "tasse escluse": "impuestos excluidos",
+    "Ricarica riservata a Plus e Business": "Recargas solo para Plus y Business",
+    "Con Free validi il dominio. Con Plus o Business sblocchi SoV Misurato, re-scan e la possibilità di acquistare pacchetti token quando il volume cresce.": (
+        "Con Free valida el dominio. Con Plus o Business desbloquea SoV Medido, "
+        "re-scan y packs de tokens cuando crece el volumen."
+    ),
+    "La ricarica token è un add-on per i piani Plus e Business: prima attiva l’abbonamento, poi amplia la copertura quando ti serve più volume.": (
+        "Las recargas de tokens son un add-on de Plus/Business: active primero la suscripción "
+        "y luego amplíe la cobertura cuando necesite más volumen."
+    ),
+    "Aggiungi token operativi senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); i token si accreditano subito sul saldo.": (
+        "Añada tokens operativos sin cambiar de plan — ideal para picos de reanálisis "
+        "o clientes extra. Importes en euros (impuestos excluidos); los tokens se acreditan al instante."
+    ),
+    "Passa a Plus": "Pasar a Plus",
 }

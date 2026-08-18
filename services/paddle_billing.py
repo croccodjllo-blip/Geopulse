@@ -25,7 +25,8 @@ PADDLE_PRICE_BUSINESS = (os.getenv("PADDLE_PRICE_BUSINESS_MONTHLY") or "").strip
 PADDLE_PRICE_BUSINESS_YEARLY = (os.getenv("PADDLE_PRICE_BUSINESS_YEARLY") or "").strip()
 
 # Optional per-package catalog prices (EUR cents payment → pri_…)
-# Packs: €10→100 token, €20→200 token, €50→600 token (1 token = €0.10).
+# Packs: €10→100 token, €20→200 token, €50→550 token (1 token = €0.10).
+# Top-ups are Plus/Business add-ons (enforced in app checkout).
 _TOPUP_ENV = {
     1000: "PADDLE_PRICE_TOPUP_1000",
     2000: "PADDLE_PRICE_TOPUP_2000",

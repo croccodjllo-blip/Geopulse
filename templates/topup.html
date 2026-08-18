@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Amplia copertura') }}{% endblock %}
 {% block body_class %}body-dash{% endblock %}
-{% block meta_description %}{{ _('Amplia la copertura Centropic con pacchetti in euro: utile per picchi di ri-analisi o clienti extra senza cambiare piano.') }}{% endblock %}
+{% block meta_description %}{{ _('Amplia la copertura Centropic con pacchetti token: utile per picchi di ri-analisi o clienti extra senza cambiare piano. Solo Plus e Business.') }}{% endblock %}
 
 {% block content %}
 <div class="page page--topup">
@@ -9,7 +9,11 @@
     <p class="eyebrow">{{ _('Copertura extra') }}</p>
     <h1 class="page-intro__title">{{ _('Amplia la copertura del mese') }}</h1>
     <p class="page-intro__lede">
-      {{ _('Aggiungi credito operativo senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); il credito si applica subito al saldo.') }}
+      {% if can_topup %}
+      {{ _('Aggiungi token operativi senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); i token si accreditano subito sul saldo.') }}
+      {% else %}
+      {{ _('La ricarica token è un add-on per i piani Plus e Business: prima attiva l’abbonamento, poi amplia la copertura quando ti serve più volume.') }}
+      {% endif %}
     </p>
   </div>
 
@@ -20,6 +24,7 @@
         ∞ &nbsp;<span class="topup-balance__note">{{ _('Illimitata (account admin)') }}</span>
       {% else %}
         ≈ {{ '%.2f'|format((balance_cents or 0) / 100) }}&nbsp;€
+        · {{ ((balance_cents or 0) / 10)|int }} {{ _('token') }}
       {% endif %}
     </p>
     {% if ledger %}
@@ -55,6 +60,7 @@
 
   <div class="page-section">
     <h2 class="page-section__title">{{ _('Scegli un pacchetto') }}</h2>
+    {% if can_topup %}
     <div class="topup-grid">
       {% for pkg in packages %}
       <form method="POST" action="{{ url_for('topup_checkout') }}" {% if not (paddle_overlay and paddle_config.topupPrices and paddle_config.topupPrices[pkg.cents|string]) %}data-checkout-gate data-checkout-form{% endif %}>
@@ -68,8 +74,9 @@
           data-paddle-cents="{{ pkg.cents }}"
         >
           <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
-          <span class="topup-btn__desc">{{ pkg.label }}</span>
-          <span class="topup-btn__approx">{{ _('credito operativo') }}</span>
+          <span class="topup-btn__tokens">{{ pkg.tokens }} {{ _('token') }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }} · ≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
+          <span class="topup-btn__approx">{{ _('tasse escluse') }}</span>
         </button>
         {% else %}
         {% with waiver_id='accept_immediate_service_topup_' ~ pkg.cents %}
@@ -77,19 +84,33 @@
         {% endwith %}
         <button class="topup-btn" type="submit">
           <span class="topup-btn__amount">€&nbsp;{{ "%.0f"|format(pkg.price_eur) }}</span>
-          <span class="topup-btn__desc">{{ pkg.label }}</span>
-          <span class="topup-btn__approx">{{ _('credito operativo') }}</span>
+          <span class="topup-btn__tokens">{{ pkg.tokens }} {{ _('token') }}</span>
+          <span class="topup-btn__desc">{{ pkg.label }} · ≈ {{ pkg.analyses }} {{ _('analisi') }}</span>
+          <span class="topup-btn__approx">{{ _('tasse escluse') }}</span>
         </button>
         {% endif %}
       </form>
       {% endfor %}
-    </div>    <p class="topup-footnote">
+    </div>
+    <p class="topup-footnote">
       {{ _('Il credito extra resta sul saldo e si usa dopo la quota del rinnovo mensile. Non sostituisce il piano: per più domini, frequenza di re-scan o API/white-label vai su') }}
       <a href="{{ url_for('pricing') }}">{{ _('Prezzi') }}</a>.
       {{ _('Legale:') }}
       <a href="{{ url_for('refunds') }}">{{ _('Rimborsi') }}</a> ·
       <a href="{{ url_for('dpa') }}">{{ _('DPA') }}</a>.
     </p>
+    {% else %}
+    <div class="topup-gate" role="status">
+      <p class="topup-gate__title">{{ _('Ricarica riservata a Plus e Business') }}</p>
+      <p class="topup-gate__body">
+        {{ _('Con Free validi il dominio. Con Plus o Business sblocchi SoV Misurato, re-scan e la possibilità di acquistare pacchetti token quando il volume cresce.') }}
+      </p>
+      <div class="topup-gate__actions">
+        <a class="btn btn-core" href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
+        <a class="btn btn-ghost" href="{{ url_for('pricing') }}">{{ _('Vedi i piani') }}</a>
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <div class="page-cta">
@@ -118,7 +139,7 @@
 }
 .topup-btn:hover {
   border-color: var(--color-core);
-  background: rgba(0,255,157,0.06);
+  background: rgba(201, 211, 221, 0.06);
 }
 .topup-btn__amount {
   font-family: var(--font-mono);
@@ -126,7 +147,37 @@
   font-weight: 700;
   color: var(--color-core);
 }
+.topup-btn__tokens {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--brand-clarity, #f5f7fa);
+}
 .topup-btn__desc  { font-size: 0.82rem; color: var(--ink-soft); }
 .topup-btn__approx { font-size: 0.75rem; color: var(--ink-soft); }
+.topup-gate {
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--brand-border, var(--border-mid));
+  border-radius: var(--radius-md);
+  background: rgba(4, 6, 10, 0.35);
+}
+.topup-gate__title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--brand-clarity, #f5f7fa);
+}
+.topup-gate__body {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.topup-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
 </style>
 {% endblock %}

@@ -10,7 +10,8 @@ Subscriptions:
   Plus      → ``PLUS_MONTHLY_TOKENS`` (100) each billing cycle
   Business  → ``BUSINESS_MONTHLY_TOKENS`` (400) each billing cycle
 
-The €50 pack grants a bonus (600 token for €50 = €60 face value).
+The €50 pack grants a light bonus (550 token for €50 = €55 face value).
+Top-ups are sold only to Plus / Business (and Admin) accounts.
 """
 
 from __future__ import annotations

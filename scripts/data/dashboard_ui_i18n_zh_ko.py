@@ -72,6 +72,23 @@ ZH: dict[str, str] = {
     "Citation share (stimata · readiness)": "引用份额（估计 · 就绪度）",
     "Citation share brand": "品牌引用份额",
     "AI Engine Breakdown": "AI 引擎细分",
+    "token": "代币",
+    "analisi": "次分析",
+    "tasse escluse": "不含税",
+    "Ricarica riservata a Plus e Business": "仅 Plus / Business 可充值",
+    "Con Free validi il dominio. Con Plus o Business sblocchi SoV Misurato, re-scan e la possibilità di acquistare pacchetti token quando il volume cresce.": (
+        "Free 用于验证域名。Plus 或 Business 解锁实测 SoV、重新扫描，"
+        "以及在用量增长时购买代币包。"
+    ),
+    "La ricarica token è un add-on per i piani Plus e Business: prima attiva l’abbonamento, poi amplia la copertura quando ti serve più volume.": (
+        "代币充值是 Plus/Business 附加项：先开通订阅，"
+        "需要更多用量时再扩大覆盖。"
+    ),
+    "Aggiungi token operativi senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); i token si accreditano subito sul saldo.": (
+        "无需换套餐即可增加运营代币 — 适合再分析高峰或额外客户。"
+        "金额为欧元（不含税）；代币立即入账。"
+    ),
+    "Passa a Plus": "升级到 Plus",
 }
 
 KO: dict[str, str] = {
@@ -144,4 +161,21 @@ KO: dict[str, str] = {
     "Citation share (stimata · readiness)": "인용 점유율(추정 · 준비도)",
     "Citation share brand": "브랜드 인용 점유율",
     "AI Engine Breakdown": "AI 엔진별 분석",
+    "token": "토큰",
+    "analisi": "분석",
+    "tasse escluse": "세금 별도",
+    "Ricarica riservata a Plus e Business": "충전은 Plus/Business 전용",
+    "Con Free validi il dominio. Con Plus o Business sblocchi SoV Misurato, re-scan e la possibilità di acquistare pacchetti token quando il volume cresce.": (
+        "Free로 도메인을 검증합니다. Plus 또는 Business는 실측 SoV, 재스캔, "
+        "사용량이 늘 때 토큰 팩 구매를 엽니다."
+    ),
+    "La ricarica token è un add-on per i piani Plus e Business: prima attiva l’abbonamento, poi amplia la copertura quando ti serve più volume.": (
+        "토큰 충전은 Plus/Business 애드온입니다: 먼저 구독하고, "
+        "더 많은 용량이 필요할 때 커버리지를 확장하세요."
+    ),
+    "Aggiungi token operativi senza cambiare piano — ideale per picchi di ri-analisi o clienti straordinari. Importo in euro (tasse escluse); i token si accreditano subito sul saldo.": (
+        "플랜을 바꾸지 않고 운영 토큰을 추가하세요 — 재분석 피크나 추가 고객에 적합합니다. "
+        "금액은 유로(세금 별도)이며 토큰은 즉시 잔액에 반영됩니다."
+    ),
+    "Passa a Plus": "Plus로 전환",
 }
