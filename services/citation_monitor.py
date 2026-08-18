@@ -996,11 +996,15 @@ def _sov_engine_parallelism() -> int:
 
 
 def _sov_monitor_timeout_seconds() -> int:
-    """Hard wall-clock for the whole multi-engine probe (keeps analyze moving)."""
+    """Hard wall-clock for the whole multi-engine probe (keeps analyze moving).
+
+    Default 150s: Azure Copilot often needs >90s; a tighter wall marks Azure
+    ``unavailable`` even when the crawl+Stimato path already succeeded.
+    """
     try:
-        n = int(os.getenv("SOV_MONITOR_TIMEOUT_SECONDS", "90") or "90")
+        n = int(os.getenv("SOV_MONITOR_TIMEOUT_SECONDS", "150") or "150")
     except (TypeError, ValueError):
-        n = 90
+        n = 150
     return max(30, min(300, n))
 
 
@@ -1064,6 +1068,7 @@ def run_citation_monitor(
     all_details: list[dict[str, Any]] = []
     usage_lock = threading.Lock()
     credit_stop: dict[str, Any] = {"exc": None}
+    wall_expired = threading.Event()
 
     def _beat() -> None:
         if not callable(heartbeat_callback):
@@ -1079,10 +1084,16 @@ def run_citation_monitor(
     def _usage(**kwargs: Any) -> None:
         if not callable(usage_callback):
             return
+        # After wall timeout the pool is abandoned; late engines must not bill
+        # or trip fail-closed credit stops on a job about to flush/complete.
+        if wall_expired.is_set():
+            return
         from services.usage_billing import InsufficientCreditError, JobLeaseLostError
         from services.sov_budget import SovDailyBudgetExceeded
 
         with usage_lock:
+            if wall_expired.is_set():
+                return
             if credit_stop["exc"] is not None:
                 raise credit_stop["exc"]
             token = _SOV_USAGE_ACTIVE.set(True)
@@ -1145,6 +1156,7 @@ def run_citation_monitor(
         pending = set(futures)
         while pending:
             if time.monotonic() >= deadline:
+                wall_expired.set()
                 logger.warning(
                     "SoV monitor wall timeout after %ss — continuing with partial engines",
                     wall,

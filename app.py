@@ -2598,6 +2598,15 @@ def process_pending_analyze_jobs(
                         # foreign here and would blow up on session.refresh().
                         thread_user = db.session.get(User, user_id_pinned) or user
                         thread_job = db.session.get(AnalysisJob, job_id_pinned) or job
+                        # Straggler SoV threads can finish after wall-timeout + job
+                        # complete/flush. Never bill or fail-closed once the job is
+                        # no longer running (seen on job #935 Azure late callback).
+                        if str(getattr(thread_job, "status", "") or "") != "running":
+                            try:
+                                db.session.rollback()
+                            except Exception:
+                                pass
+                            return
                         charged = record_actual_usage(
                             db.session,
                             UsageEvent,
