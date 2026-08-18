@@ -1,6 +1,5 @@
 import React from "react";
 import { Sidebar } from "@/components/Sidebar";
-import { BrandModule } from "@/components/BrandModule";
 import {
   DashboardOverview,
   type DashboardOverviewProps,
@@ -105,9 +104,7 @@ export default function App() {
         />
       )}
       <div className={embed ? "min-h-screen" : "ml-64 min-h-screen"}>
-        <div className="p-6 md:p-8 pb-0">
-          <BrandModule variant="panel" ctaHref="/dashboard" />
-        </div>
+        {/* Charts embed: no brand panel — Flask shell owns chrome; content starts at top. */}
         <DashboardOverview {...overviewProps} />
         {live?.ready && bars.length > 0 ? (
           <div className="px-6 md:px-8 pb-10">
