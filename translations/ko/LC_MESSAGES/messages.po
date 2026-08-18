@@ -1638,7 +1638,7 @@ msgstr "유형화된 Q&A가 있는 FAQPage는 answer engine과 스니펫에 도�
 
 #: services/i18n_findings.py:283
 msgid "URL non consentito"
-msgstr "허용되지 않는 URL"
+msgstr "허용되지 않는 URL입니다"
 
 #: services/i18n_findings.py:284
 msgid "Usa la homepage pubblica del sito (non un PDF, JSON o asset statico)."
@@ -2886,7 +2886,7 @@ msgstr "로그인"
 
 #: templates/base.html:153 templates/landing.html:72
 msgid "Analizza gratis"
-msgstr "무료 분석"
+msgstr "무료로 분석"
 
 #: templates/base.html:161
 msgid "Seleziona lingua"
@@ -4630,7 +4630,7 @@ msgstr "사이트 URL"
 
 #: templates/landing.html:75
 msgid "Anteprima immediata · niente carta"
-msgstr "즉시 미리보기 · 카드 불필요"
+msgstr "즉시 미리보기 · 신용카드 불필요"
 
 #: templates/landing.html:77 templates/preview_analyze.html:70
 msgid "Vedi un report di esempio"
@@ -7829,7 +7829,7 @@ msgid "Misura la readiness"
 msgstr "준비도를 측정하세요"
 
 msgid "del tuo sito per le IA"
-msgstr "AI를 위한 사이트"
+msgstr "AI가 읽는 당신의 사이트"
 
 msgid "Business non è in vendita self-serve. Richiedi onboarding o entra in waitlist."
 msgstr "Business는 셀프서브로 판매되지 않습니다. 온보딩을 요청하거나 대기열에 등록하세요."
@@ -8045,6 +8045,53 @@ msgid ""
 msgstr ""
 "Plus €19.99/월(세금 별도); Free는 추정 CVI/AIO/GEO; Business €89.99(세금 별도) 대기열. 실측 인용"
 " 모니터는 Plus만."
+
+msgid ""
+"Inserisci il dominio per score AIO/GEO di predisposizione strutturale e "
+"criticità."
+msgstr "도메인을 입력하면 AIO/GEO 구조적 준비도 점수와 핵심 이슈를 확인할 수 있습니다."
+
+msgid "tuodominio.it"
+msgstr "yourdomain.com"
+
+msgid "Inserisci l’URL del tuo sito (es. tuodominio.it)."
+msgstr "사이트 URL을 입력하세요 (예: yourdomain.com)."
+
+msgid "URL non valido"
+msgstr "유효하지 않은 URL입니다"
+
+msgid "URL non valido."
+msgstr "유효하지 않은 URL입니다."
+
+msgid "Sei già collegato: avvia l’analisi dal dashboard."
+msgstr "이미 로그인되어 있습니다. 대시보드에서 분석을 시작하세요."
+
+msgid "Troppe anteprime da questo IP. Riprova tra poco o crea un account."
+msgstr "이 IP에서 미리보기가 너무 많습니다. 잠시 후 다시 시도하거나 계정을 만드세요."
+
+msgid "Limite giornaliero anteprime raggiunto. Crea un account Free per continuare."
+msgstr "일일 미리보기 한도에 도달했습니다. 계속하려면 Free 계정을 만드세요."
+
+msgid "Anteprima scaduta. Inserisci di nuovo l’URL in homepage."
+msgstr "미리보기가 만료되었습니다. 홈페이지에서 URL을 다시 입력하세요."
+
+msgid "Host mancante"
+msgstr "호스트가 없습니다"
+
+msgid "URL vuoto"
+msgstr "URL이 비어 있습니다"
+
+msgid "Solo http/https consentiti"
+msgstr "http/https URL만 허용됩니다"
+
+msgid "Credenziali nell’URL non consentite"
+msgstr "URL에 자격 증명을 넣을 수 없습니다"
+
+msgid "Host non risolvibile. Controlla il dominio e riprova."
+msgstr "호스트를 확인할 수 없습니다. 도메인을 확인한 뒤 다시 시도하세요."
+
+msgid "URL non consentito per l’anteprima."
+msgstr "미리보기에 허용되지 않는 URL입니다."
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

@@ -4566,27 +4566,35 @@ def preview_analyze_start():
     """Hero PLG: accept a public URL, start structural preview, no account yet."""
     raw = (request.form.get("url") or "").strip()
     if not raw:
-        flash("Inserisci l’URL del tuo sito (es. tuodominio.it).", "error")
+        flash(_("Inserisci l’URL del tuo sito (es. tuodominio.it)."), "error")
         return redirect(url_for("index") + "#hero-brand")
 
     user = current_user()
     if user is not None:
         session["prefill_analyze_url"] = raw
-        flash("Sei già collegato: avvia l’analisi dal dashboard.", "info")
+        flash(_("Sei già collegato: avvia l’analisi dal dashboard."), "info")
         return redirect(url_for("dashboard") + "#analyze")
 
     ip = client_ip()
     if not limiter.allow(f"preview:{ip}", limit=PREVIEW_IP_HOUR, window_seconds=3600):
-        flash("Troppe anteprime da questo IP. Riprova tra poco o crea un account.", "error")
+        flash(
+            _("Troppe anteprime da questo IP. Riprova tra poco o crea un account."),
+            "error",
+        )
         return redirect(url_for("index") + "#hero-brand")
     if not limiter.allow(f"preview-day:{ip}", limit=PREVIEW_IP_DAY, window_seconds=86400):
-        flash("Limite giornaliero anteprime raggiunto. Crea un account Free per continuare.", "error")
+        flash(
+            _(
+                "Limite giornaliero anteprime raggiunto. Crea un account Free per continuare."
+            ),
+            "error",
+        )
         return redirect(url_for("register"))
 
     try:
         url = normalize_url(raw)
     except ValueError as exc:
-        flash(str(exc) or "URL non valido.", "error")
+        flash(_preview_url_error_message(exc), "error")
         return redirect(url_for("index") + "#hero-brand")
 
     token = new_preview_token()
@@ -4609,6 +4617,29 @@ def preview_analyze_start():
     return redirect(url_for("preview_analyze_view", token=token))
 
 
+def _preview_url_error_message(exc: BaseException) -> str:
+    """Map normalize/SSRF errors to gettext msgids for hero flash warnings."""
+    detail = (str(exc) or "").strip()
+    static = {
+        "URL non valido",
+        "Host mancante",
+        "URL vuoto",
+        "Solo http/https consentiti",
+        "Credenziali nell’URL non consentite",
+        "URL non consentito",
+    }
+    if detail in static:
+        return _(detail)
+    if detail.startswith("Host non risolvibile"):
+        return _("Host non risolvibile. Controlla il dominio e riprova.")
+    if "non pubblic" in detail.lower() or "non consentito" in detail.lower():
+        return _("URL non consentito per l’anteprima.")
+    if detail:
+        # Best-effort: catalog hit or Italian fallback for rare messages.
+        return _(detail)
+    return _("URL non valido.")
+
+
 @app.route("/anteprima/<token>")
 def preview_analyze_view(token: str):
     """Partial report gate: AIO score + 2 findings; register to unlock pack."""
@@ -4618,7 +4649,10 @@ def preview_analyze_view(token: str):
         if expires.tzinfo is None:
             expires = expires.replace(tzinfo=timezone.utc)
         if expires < datetime.now(timezone.utc):
-            flash("Anteprima scaduta. Inserisci di nuovo l’URL in homepage.", "error")
+            flash(
+                _("Anteprima scaduta. Inserisci di nuovo l’URL in homepage."),
+                "error",
+            )
             return redirect(url_for("index") + "#hero-brand")
 
     user = current_user()
