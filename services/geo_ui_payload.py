@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from flask_babel import gettext as _
+
 from centropic.tenancy import sites_query_for_user
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
+from services.i18n import translate_stored
 from services.rating import compute_rating
 from services.sov_graph import list_sov_snapshots, sov_series_for_chart
 
@@ -32,16 +35,40 @@ def _insight_severity(raw: str) -> str:
     return "info"
 
 
+def _severity_label(sev: str) -> str:
+    """Native severity chip for Charts insights (Italian msgids)."""
+    if sev == "critical":
+        return _("Critico")
+    if sev == "warn":
+        return _("Attenzione")
+    return _("Info")
+
+
 def _issue_pressure(n_open: int) -> tuple[int, str]:
-    """Honest KPI: open critical+warn count (not model sentiment)."""
+    """Honest KPI: open critical+warn count (not model sentiment).
+
+    Returns Italian gettext msgids; translate at payload-build time.
+    """
     n = max(0, int(n_open))
     if n <= 0:
-        return n, "Clear"
+        return n, "In ordine"
     if n <= 2:
-        return n, "Watch"
+        return n, "Da monitorare"
     if n <= 5:
-        return n, "Elevated"
-    return n, "High"
+        return n, "Elevata"
+    return n, "Alta"
+
+
+def _geo_ui_chrome() -> dict[str, str]:
+    """Server-translated chrome for the React Charts embed."""
+    return {
+        "insightsTitle": _("Insight GEO actionable"),
+        "insightsEmpty": _(
+            "Nessun finding critico/warn nell'ultimo audit."
+        ),
+        "pagesScored": _("Pagine valutate"),
+        "findingsInLastAudit": _("findings nell'ultimo audit"),
+    }
 
 
 def build_geo_ui_payload(
@@ -58,6 +85,7 @@ def build_geo_ui_payload(
         .order_by(SiteAnalysis.updated_at.desc(), SiteAnalysis.created_at.desc())
         .first()
     )
+    ui = _geo_ui_chrome()
     empty: dict[str, Any] = {
         "ready": False,
         "domain": None,
@@ -78,6 +106,7 @@ def build_geo_ui_payload(
         "somTrend": [],
         "auditHref": audit_href,
         "reportHref": report_href,
+        "ui": ui,
     }
     if latest is None:
         return empty
@@ -143,16 +172,21 @@ def build_geo_ui_payload(
     for f in findings_critical[:5]:
         if not isinstance(f, dict):
             continue
+        sev = _insight_severity(str(f.get("severity") or ""))
+        title_raw = str(f.get("title") or "Finding")
+        detail_raw = str(f.get("detail") or "")
         insights.append(
             {
-                "severity": _insight_severity(str(f.get("severity") or "")),
-                "title": str(f.get("title") or "Finding")[:120],
-                "detail": str(f.get("detail") or "")[:220],
+                "severity": sev,
+                "severityLabel": _severity_label(sev),
+                "title": translate_stored(title_raw)[:120],
+                "detail": translate_stored(detail_raw)[:220],
             }
         )
 
     n_crit = len(findings_critical)
-    issue_n, issue_label = _issue_pressure(n_crit)
+    issue_n, issue_msgid = _issue_pressure(n_crit)
+    issue_label = _(issue_msgid)
 
     rating = compute_rating(latest.aio_score, latest.geo_score, findings_all)
     series_rows = list_sov_snapshots(
@@ -192,4 +226,5 @@ def build_geo_ui_payload(
         "somTrend": som_trend,
         "auditHref": audit_href,
         "reportHref": report_href,
+        "ui": ui,
     }
