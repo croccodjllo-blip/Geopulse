@@ -1,8 +1,15 @@
-"""Rate limiter condiviso tra worker Gunicorn (SQLite WAL).
+"""Shared HTTP/API rate limiter (Redis preferred; SQLite host-local fallback).
 
-In produzione il fallback in-memory è disabilitato (fail-closed al boot):
-con Gunicorn multi-worker i limiti per-processo sono aggirabili.
-Dev/test: ALLOW_MEMORY_RATE_LIMITER=1 oppure FLASK_DEBUG=1.
+Backends (``RATE_LIMIT_BACKEND``):
+  auto   — Redis when ``REDIS_URL`` is reachable, else SQLite (default)
+  redis  — require Redis (fail closed at boot in prod unless fallback allowed)
+  sqlite — single-host SQLite WAL (legacy / no Redis)
+  memory — process-local only (dev/test)
+
+Multi-host SaaS: use Redis so login/analyze/API budgets are shared across
+Gunicorn and app nodes. SQLite remains the same-host fallback when Redis
+blips (``RATE_LIMIT_REDIS_FALLBACK=sqlite``, default) so a Redis outage does
+not open unlimited traffic or lock out all logins.
 """
 
 from __future__ import annotations
@@ -12,10 +19,30 @@ import os
 import sqlite3
 import threading
 import time
+import uuid
 from collections import defaultdict, deque
 from pathlib import Path
+from typing import Any, Protocol
 
 logger = logging.getLogger(__name__)
+
+# Atomic sliding-window: purge → count → maybe ZADD.
+_REDIS_ALLOW_LUA = """
+redis.call('ZREMRANGEBYSCORE', KEYS[1], '-inf', ARGV[2])
+local n = redis.call('ZCARD', KEYS[1])
+if n >= tonumber(ARGV[3]) then
+  return 0
+end
+redis.call('ZADD', KEYS[1], ARGV[1], ARGV[4])
+redis.call('EXPIRE', KEYS[1], tonumber(ARGV[5]))
+return 1
+"""
+
+
+class RateLimiter(Protocol):
+    def allow(self, key: str, *, limit: int, window_seconds: int) -> bool: ...
+
+    def remaining(self, key: str, *, limit: int, window_seconds: int) -> int: ...
 
 
 class MemoryRateLimiter:
@@ -123,6 +150,77 @@ class SqliteRateLimiter:
                 return max(0, limit - count)
 
 
+class RedisRateLimiter:
+    """Sliding-window limiter shared across hosts via Redis sorted sets."""
+
+    def __init__(
+        self,
+        redis_client: Any,
+        *,
+        key_prefix: str | None = None,
+        fallback: RateLimiter | None = None,
+    ) -> None:
+        self._r = redis_client
+        self._prefix = (
+            key_prefix
+            if key_prefix is not None
+            else (os.getenv("RATE_LIMIT_REDIS_PREFIX") or "centropic:rl:").strip()
+            or "centropic:rl:"
+        )
+        self._fallback = fallback
+        self._script = _REDIS_ALLOW_LUA
+
+    def _redis_key(self, key: str) -> str:
+        return f"{self._prefix}{key}"
+
+    def _ttl_seconds(self, window_seconds: int) -> int:
+        return max(60, int(window_seconds) * 2)
+
+    def allow(self, key: str, *, limit: int, window_seconds: int) -> bool:
+        now = time.time()
+        cutoff = now - max(1, int(window_seconds))
+        member = f"{os.getpid()}:{now}:{time.time_ns()}:{uuid.uuid4().hex[:8]}"
+        rkey = self._redis_key(key)
+        try:
+            allowed = self._r.eval(
+                self._script,
+                1,
+                rkey,
+                str(now),
+                str(cutoff),
+                str(max(1, int(limit))),
+                member,
+                str(self._ttl_seconds(window_seconds)),
+            )
+            return int(allowed) == 1
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("redis rate limit error key=%s err=%s", key, exc)
+            if self._fallback is not None:
+                return self._fallback.allow(
+                    key, limit=limit, window_seconds=window_seconds
+                )
+            # Fail-closed on abuse path when no fallback: deny.
+            return False
+
+    def remaining(self, key: str, *, limit: int, window_seconds: int) -> int:
+        now = time.time()
+        cutoff = now - max(1, int(window_seconds))
+        rkey = self._redis_key(key)
+        try:
+            pipe = self._r.pipeline()
+            pipe.zremrangebyscore(rkey, "-inf", cutoff)
+            pipe.zcard(rkey)
+            _removed, n = pipe.execute()
+            return max(0, int(limit) - int(n or 0))
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("redis rate limit remaining error key=%s err=%s", key, exc)
+            if self._fallback is not None:
+                return self._fallback.remaining(
+                    key, limit=limit, window_seconds=window_seconds
+                )
+            return 0
+
+
 def _default_db_path() -> str:
     base = os.getenv("RATE_LIMIT_DB") or ""
     if base.strip():
@@ -136,16 +234,99 @@ def _allow_memory_fallback() -> bool:
         return True
     if (os.getenv("FLASK_DEBUG") or "0").strip() == "1":
         return True
-    # Pytest / unit tests import app with FLASK_DEBUG=1 via conftest; keep explicit.
     if (os.getenv("PYTEST_CURRENT_TEST") or "").strip():
         return True
     return False
 
 
-def build_limiter() -> MemoryRateLimiter | SqliteRateLimiter:
-    path = _default_db_path()
+def rate_limit_backend() -> str:
+    raw = (os.getenv("RATE_LIMIT_BACKEND") or "auto").strip().lower()
+    if raw in {"redis", "shared"}:
+        return "redis"
+    if raw in {"sqlite", "db"}:
+        return "sqlite"
+    if raw in {"memory", "mem"}:
+        return "memory"
+    return "auto"
+
+
+def _redis_fallback_mode() -> str:
+    raw = (os.getenv("RATE_LIMIT_REDIS_FALLBACK") or "sqlite").strip().lower()
+    if raw in {"deny", "none", "fail", "closed"}:
+        return "deny"
+    if raw in {"memory", "mem"}:
+        return "memory"
+    return "sqlite"
+
+
+def _build_sqlite() -> SqliteRateLimiter:
+    return SqliteRateLimiter(_default_db_path())
+
+
+def _build_fallback_for_redis() -> RateLimiter | None:
+    mode = _redis_fallback_mode()
+    if mode == "deny":
+        return None
+    if mode == "memory":
+        if _allow_memory_fallback():
+            return MemoryRateLimiter()
+        logger.warning(
+            "RATE_LIMIT_REDIS_FALLBACK=memory blocked in prod; using sqlite fallback"
+        )
     try:
-        return SqliteRateLimiter(path)
+        return _build_sqlite()
+    except Exception as exc:  # noqa: BLE001
+        if _allow_memory_fallback():
+            logger.warning("sqlite rate-limit fallback failed (%s); memory", exc)
+            return MemoryRateLimiter()
+        raise
+
+
+def build_limiter() -> RateLimiter:
+    backend = rate_limit_backend()
+
+    if backend == "memory":
+        if not _allow_memory_fallback():
+            raise RuntimeError(
+                "RATE_LIMIT_BACKEND=memory requires ALLOW_MEMORY_RATE_LIMITER=1 "
+                "or FLASK_DEBUG=1"
+            )
+        return MemoryRateLimiter()
+
+    if backend in {"redis", "auto"}:
+        from services.redis_client import get_redis, redis_url
+
+        if backend == "redis" or redis_url():
+            client = get_redis(ping=True)
+            if client is not None:
+                fallback = _build_fallback_for_redis()
+                logger.info(
+                    "Rate limiter backend=redis prefix=%s fallback=%s",
+                    (os.getenv("RATE_LIMIT_REDIS_PREFIX") or "centropic:rl:").strip()
+                    or "centropic:rl:",
+                    type(fallback).__name__ if fallback else "deny",
+                )
+                return RedisRateLimiter(client, fallback=fallback)
+            if backend == "redis":
+                # Explicit redis required — try sqlite only if fallback allows.
+                fallback = _build_fallback_for_redis()
+                if fallback is not None:
+                    logger.warning(
+                        "RATE_LIMIT_BACKEND=redis but Redis unavailable; "
+                        "using %s fallback",
+                        type(fallback).__name__,
+                    )
+                    return fallback
+                raise RuntimeError(
+                    "RATE_LIMIT_BACKEND=redis but Redis is unavailable and "
+                    "RATE_LIMIT_REDIS_FALLBACK=deny"
+                )
+            logger.info("Rate limiter auto: Redis unavailable; using sqlite")
+
+    try:
+        limiter_impl: RateLimiter = _build_sqlite()
+        logger.info("Rate limiter backend=sqlite path=%s", _default_db_path())
+        return limiter_impl
     except Exception as exc:
         if _allow_memory_fallback():
             logger.warning(
@@ -154,12 +335,20 @@ def build_limiter() -> MemoryRateLimiter | SqliteRateLimiter:
             )
             return MemoryRateLimiter()
         raise RuntimeError(
-            f"Rate limiter DB non scrivibile ({path}). "
-            "Monta RATE_LIMIT_DB o imposta ALLOW_MEMORY_RATE_LIMITER=1 solo in dev."
+            f"Rate limiter DB non scrivibile ({_default_db_path()}). "
+            "Monta RATE_LIMIT_DB, abilita REDIS_URL, oppure "
+            "ALLOW_MEMORY_RATE_LIMITER=1 solo in dev."
         ) from exc
 
 
-# Alias storico
-RateLimiter = MemoryRateLimiter
+def rebuild_limiter() -> RateLimiter:
+    """Rebuild module-level ``limiter`` (tests / after env change)."""
+    global limiter
+    limiter = build_limiter()
+    return limiter
+
+
+# Keep alias for older imports/tests.
+RateLimiterMemory = MemoryRateLimiter
 
 limiter = build_limiter()
