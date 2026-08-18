@@ -1187,6 +1187,8 @@
             url += sep + 'job=' + encodeURIComponent(data.id);
             sep = '&';
           }
+          url += sep + 'completed=1';
+          sep = '&';
           url += sep + '_r=' + encodeURIComponent(String(Date.now()));
           window.location.replace(url);
           return;
