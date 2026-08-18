@@ -2,9 +2,8 @@
    Design language: Void black surfaces · Chrome/silver accent sampled from the
    logo emblem · per-plan accent (Free=Silver, Plus=Platinum Teal, Business=Copper)
    Enterprise SaaS for AIO / GEO Signal Intelligence
+   Fonts loaded once via templates/base.html (avoid @import double-fetch).
 */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
   /* ——— Brand tokens (chrome gradient of static/img/logo.svg) ——— */
@@ -169,7 +168,7 @@ body.app-body:not(.body-dash) {
   top: 0;
   z-index: 40;
   height: var(--header-h);
-  background: rgba(10, 15, 36, 0.72);
+  background: color-mix(in srgb, var(--brand-bg) 72%, transparent);
   border-bottom: 1px solid var(--border);
   color: var(--color-clarity);
   backdrop-filter: blur(14px);
@@ -590,7 +589,7 @@ body.app-body:not(.body-dash) {
   width: 100%;
   border: 1px solid var(--border-mid);
   border-radius: var(--radius);
-  background: rgba(10, 15, 36, 0.45);
+  background: color-mix(in srgb, var(--brand-bg) 55%, transparent);
   padding: 0.65rem 0.9rem;
   color: var(--color-clarity);
   outline: none;
@@ -736,7 +735,7 @@ body.app-body:not(.body-dash) {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(10, 15, 36, 0.25) 0%, rgba(10, 15, 36, 0.88) 100%),
+      linear-gradient(180deg, color-mix(in srgb, var(--brand-bg) 25%, transparent) 0%, color-mix(in srgb, var(--brand-bg) 88%, transparent) 100%),
       linear-gradient(130deg, rgba(201, 211, 221, 0.28) 0%, rgba(201, 211, 221, 0.12) 45%, transparent 70%);
     z-index: 0;
   }
@@ -5440,7 +5439,7 @@ html.analyze-busy {
   border-color: color-mix(in srgb, var(--pc-glow) 35%, var(--brand-border));
 }
 .pulse-core__stat[data-tone="geo"] {
-  border-color: color-mix(in srgb, #3D8B9A 40%, var(--brand-border));
+  border-color: color-mix(in srgb, var(--brand-blue) 40%, var(--brand-border));
 }
 .pulse-core__stat[data-tone="grade"][data-grade="AAA"] .pulse-core__stat-v,
 .pulse-core__stat[data-tone="grade"][data-grade="AA"] .pulse-core__stat-v,
@@ -6079,7 +6078,7 @@ html.analyze-busy {
   scrollbar-width: thin;
   border: 1px solid var(--border-mid);
   border-radius: var(--radius-md);
-  background: rgba(10, 15, 25, 0.92);
+  background: color-mix(in srgb, var(--brand-bg) 92%, transparent);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
 }
@@ -6927,6 +6926,7 @@ html.analyze-busy {
   color: var(--brand-muted);
 }
 
+.ui-metric--chrome .ui-metric__value,
 .ui-metric--violet .ui-metric__value {
   color: var(--brand-clarity);
   text-shadow: none;
@@ -8600,6 +8600,10 @@ body.body-login-popup .site-footer {
 .login-popup__dialog .auth-title {
   margin-top: 0.35rem;
   font-size: clamp(1.55rem, 3.5vw, 1.9rem);
+}
+
+.auth-brand-lockup {
+  margin: 0 0 0.85rem;
 }
 
 .login-popup__dialog .auth-lede {
@@ -10493,7 +10497,7 @@ body.body-login-popup .site-footer {
   text-transform: lowercase;
   color: var(--brand-clarity);
 }
-.workspace-strip__brand span { color: var(--brand-cyan); font-weight: 500; }
+.workspace-strip__brand span { color: var(--plan-accent, var(--brand-cyan)); font-weight: 500; }
 
 .workspace-strip__title {
   margin: 0;
@@ -10812,9 +10816,9 @@ body.body-login-popup .site-footer {
   border-color: rgba(148, 163, 184, 0.35);
 }
 .plan-pill[data-plan="plus"] {
-  color: #C9D3DD;
-  background: rgba(201, 211, 221, 0.12);
-  border-color: rgba(201, 211, 221, 0.4);
+  color: #3FA8B5;
+  background: rgba(63, 168, 181, 0.12);
+  border-color: rgba(63, 168, 181, 0.4);
 }
 .plan-pill[data-plan="business"] {
   color: #D4A574;

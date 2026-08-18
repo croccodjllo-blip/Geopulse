@@ -45,7 +45,7 @@ export function BrandModule({
           className="pointer-events-none absolute inset-0 opacity-70"
           style={{
             background:
-              "radial-gradient(ellipse 60% 50% at 20% 20%, rgba(110,198,192,0.08), transparent 55%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(74,124,140,0.08), transparent 50%)",
+              "radial-gradient(ellipse 60% 50% at 20% 20%, rgba(201,211,221,0.08), transparent 55%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(91,107,122,0.08), transparent 50%)",
           }}
           aria-hidden
         />
@@ -74,8 +74,8 @@ export function BrandModule({
         className="absolute inset-0 -z-10"
         style={{
           background: `
-            radial-gradient(ellipse 70% 55% at 70% 40%, rgba(110,198,192,0.10), transparent 58%),
-            radial-gradient(ellipse 55% 45% at 20% 70%, rgba(74,124,140,0.08), transparent 55%),
+            radial-gradient(ellipse 70% 55% at 70% 40%, rgba(201,211,221,0.10), transparent 58%),
+            radial-gradient(ellipse 55% 45% at 20% 70%, rgba(91,107,122,0.08), transparent 55%),
             linear-gradient(165deg, #04060A 0%, #070A10 45%, #0A0E14 100%)
           `,
         }}
@@ -90,7 +90,7 @@ export function BrandModule({
         </p>
         <a
           href={ctaHref}
-          className="inline-flex items-center justify-center rounded-md bg-[#6EC6C0] px-6 py-3 text-sm font-semibold text-[#04060A] transition hover:brightness-110"
+          className="inline-flex items-center justify-center rounded-md bg-[#C9D3DD] px-6 py-3 text-sm font-semibold text-[#04060A] transition hover:brightness-110"
         >
           {ctaLabel}
         </a>

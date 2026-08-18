@@ -55,7 +55,7 @@ function CustomTooltip({
         <span>{brandLabel}:</span>
         <span className="font-bold">{payload[0]?.value}%</span>
       </p>
-      <p className="text-brand-violet flex justify-between gap-4">
+      <p className="text-brand-blue flex justify-between gap-4">
         <span>{competitorALabel}:</span>
         <span className="font-bold">{payload[1]?.value}%</span>
       </p>
@@ -104,7 +104,7 @@ export function ShareOfModelChart({
             <span className="text-white font-medium">{brandLabel}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-brand-violet" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-blue" />
             <span className="text-brand-muted">{competitorALabel}</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -122,12 +122,12 @@ export function ShareOfModelChart({
           >
             <defs>
               <linearGradient id="colorCentropic" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6EC6C0" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#6EC6C0" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#C9D3DD" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#C9D3DD" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="colorCompA" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4A7C8C" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#4A7C8C" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#5B6B7A" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#5B6B7A" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -161,7 +161,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="centropic"
-              stroke="#6EC6C0"
+              stroke="#C9D3DD"
               strokeWidth={2}
               fill="url(#colorCentropic)"
               fillOpacity={1}
@@ -169,7 +169,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="competitorA"
-              stroke="#4A7C8C"
+              stroke="#5B6B7A"
               strokeWidth={1.5}
               fill="url(#colorCompA)"
               fillOpacity={1}

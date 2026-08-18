@@ -4915,9 +4915,8 @@ def set_language(code: str):
 
 @app.route("/favicon.svg")
 def favicon_svg():
-    # Legacy direct-URL convenience; the real favicon is a PNG raster
-    # (SVG wrapping an <image> ref renders unreliably as a browser tab icon).
-    return redirect(url_for("static", filename="img/favicon-32.png"), code=302)
+    # True vector mark (static/favicon.svg) — same compact geometry as logo-mark.
+    return redirect(url_for("static", filename="favicon.svg"), code=302)
 
 
 @app.route("/favicon.ico")
@@ -4927,6 +4926,12 @@ def favicon_ico():
     if os.path.isfile(ico):
         return redirect(url_for("static", filename="favicon.ico"), code=302)
     return redirect(url_for("static", filename="img/logo.png"), code=302)
+
+
+@app.route("/product")
+def product_en_alias():
+    """English path alias → canonical Italian /prodotto (301)."""
+    return redirect(url_for("product"), code=301)
 
 
 @app.route("/prodotto")

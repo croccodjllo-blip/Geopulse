@@ -1,7 +1,7 @@
 {# Enterprise metric tile — Centropic dashboard UI kit #}
 {# usage: {% include "partials/ui_metric.html" with context %}
-   expects: label, value, hint (optional), variant (optional: cyan|violet), icon (optional: aio|geo|findings) #}
-<div class="ui-metric{% if variant == 'violet' %} ui-metric--violet{% endif %}">
+   expects: label, value, hint (optional), variant (optional: cyan|chrome; violet=legacy alias), icon (optional: aio|geo|findings) #}
+<div class="ui-metric{% if variant in ('chrome', 'violet') %} ui-metric--chrome{% endif %}">
   {% if icon %}
   <span class="ui-metric__badge" data-icon="{{ icon }}" aria-hidden="true">
     {% if icon == 'aio' %}

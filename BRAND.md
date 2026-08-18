@@ -37,7 +37,7 @@ The current mark avoids both: `logo.svg`/`logo-mark.svg`/`favicon.svg` are genui
 Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satellite node · bold chrome-gradient **C** monogram formed from an open ring stroke. Flat/gradient vector, not a photoreal 3D render — this is intentional; do not swap it back to a raster photo.
 
 ## Wordmark
-`CENTROPIC.AI` — **uppercase**, metallic chrome gradient text (`background-clip: text`), on the hero and page-intro brand rows. This replaced the previous lowercase `centropic.ai` treatment. Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight (`templates/partials/holo_brand.html`, `.brand-mark__word`).
+`CENTROPIC.AI` — **uppercase**, metallic chrome gradient text (`background-clip: text`), **only on the landing `#hero-brand` lockup**. Page-intro / auth brand rows keep the plain lowercase `centropic.ai` wordmark so they never compete with that page’s H1. Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight (`templates/partials/holo_brand.html`, `.brand-mark__word`).
 
 ## Palette
 | Token | Hex | Role |

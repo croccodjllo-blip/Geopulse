@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+/** Logo Chrome tokens — keep in sync with static/css/app.css + BRAND.md */
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -13,9 +14,9 @@ module.exports = {
           bg: "#04060A",
           card: "#0A0E14",
           border: "#1A222D",
-          cyan: "#6EC6C0",
-          blue: "#4A7C8C",
-          violet: "#3D8B9A",
+          cyan: "#C9D3DD", // Chrome silver (primary accent)
+          blue: "#5B6B7A", // Steel shadow (secondary)
+          violet: "#5B6B7A", // Legacy name → steel (never purple)
           muted: "#8B97A8",
         },
       },
@@ -25,8 +26,8 @@ module.exports = {
         "glow-holo": "0 16px 40px rgba(0, 0, 0, 0.45)",
       },
       fontFamily: {
-        display: ['"Space Grotesk"', '"IBM Plex Sans"', "system-ui", "sans-serif"],
-        sans: ['"IBM Plex Sans"', "system-ui", "sans-serif"],
+        display: ['"Inter"', "system-ui", "sans-serif"],
+        sans: ['"Inter"', "system-ui", "sans-serif"],
         mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
       },
     },

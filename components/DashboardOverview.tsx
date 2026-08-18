@@ -123,7 +123,7 @@ const statusText: Record<OverviewEngineRow["status"], string> = {
 const toneDot: Record<NonNullable<OverviewEngineRow["tone"]>, string> = {
   emerald: "bg-emerald-400",
   cyan: "bg-brand-cyan",
-  violet: "bg-brand-violet",
+  violet: "bg-brand-blue",
   amber: "bg-amber-400",
 };
 
@@ -407,7 +407,7 @@ export function DashboardOverview({
         </div>
 
         <div className="p-6 rounded-xl bg-brand-card border border-brand-border space-y-4">
-          <div className="flex items-center gap-2 text-brand-violet">
+          <div className="flex items-center gap-2 text-brand-cyan">
             <TrendingUp className="w-5 h-5" aria-hidden />
             <h3 className="text-lg font-bold text-white">
               Actionable GEO Insights

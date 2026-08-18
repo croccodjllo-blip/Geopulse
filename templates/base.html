@@ -35,6 +35,7 @@
     <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#041210{% elif current_user and dash_plan == 'business' %}#120E0A{% else %}#04060A{% endif %}" />
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32.png') }}" sizes="32x32" />
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-16.png') }}" sizes="16x16" />
     <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}" sizes="any" />

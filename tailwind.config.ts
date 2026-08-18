@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 
+/** Logo Chrome — mirrors tailwind.config.js (no Nova Violet / neon). */
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -11,35 +12,30 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          bg: "#080B10", // Liquid chrome carbon
-          card: "#121824", // Metallic carbon
-          border: "#1F2937",
-          cyan: "#00F0FF", // Neon Electric Cyan
-          blue: "#0066FF", // Quantum Blue
-          violet: "#8A2BE2", // Holographic Violet / UV
-          muted: "#94A3B8",
+          bg: "#04060A",
+          card: "#0A0E14",
+          border: "#1A222D",
+          cyan: "#C9D3DD",
+          blue: "#5B6B7A",
+          violet: "#5B6B7A", // legacy alias → steel
+          muted: "#8B97A8",
         },
       },
       boxShadow: {
-        glow: "0 0 15px rgba(0, 240, 255, 0.15)",
-        "glow-violet": "0 0 15px rgba(138, 43, 226, 0.25)",
-        "glow-holo":
-          "0 0 24px rgba(0, 240, 255, 0.35), 0 0 48px rgba(138, 43, 226, 0.18)",
+        glow: "0 12px 28px rgba(0, 0, 0, 0.35)",
+        "glow-violet": "0 12px 28px rgba(0, 0, 0, 0.3)",
+        "glow-holo": "0 16px 40px rgba(0, 0, 0, 0.45)",
       },
       backgroundImage: {
         "liquid-chrome":
-          "radial-gradient(ellipse 70% 55% at 70% 40%, rgba(0,240,255,0.14), transparent 58%), radial-gradient(ellipse 55% 45% at 20% 70%, rgba(138,43,226,0.16), transparent 55%), linear-gradient(165deg, #080B10 0%, #0C1220 45%, #121824 100%)",
-        "iridescent":
-          "linear-gradient(90deg, #0066FF 0%, #00F0FF 50%, #8A2BE2 100%)",
+          "linear-gradient(165deg, #04060A 0%, #070A10 48%, #0A0E14 100%)",
+        iridescent:
+          "linear-gradient(90deg, #5B6B7A 0%, #C9D3DD 55%, #D7DEE5 100%)",
       },
-      keyframes: {
-        "holo-spin": {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
-        },
-      },
-      animation: {
-        "holo-spin": "holo-spin 28s linear infinite",
+      fontFamily: {
+        display: ['"Inter"', "system-ui", "sans-serif"],
+        sans: ['"Inter"', "system-ui", "sans-serif"],
+        mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
       },
     },
   },

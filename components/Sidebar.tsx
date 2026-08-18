@@ -64,9 +64,9 @@ function LogoMark({ src }: { src?: string }) {
     >
       <defs>
         <linearGradient id="sidebarLogoGrad" x1="10" y1="54" x2="54" y2="10">
-          <stop stopColor="#4A7C8C" />
-          <stop offset="0.5" stopColor="#6EC6C0" />
-          <stop offset="1" stopColor="#3D8B9A" />
+          <stop stopColor="#5B6B7A" />
+          <stop offset="0.5" stopColor="#C9D3DD" />
+          <stop offset="1" stopColor="#8BA3BD" />
         </linearGradient>
       </defs>
       <circle cx="32" cy="32" r="26" stroke="url(#sidebarLogoGrad)" strokeOpacity="0.35" strokeWidth="1" />
@@ -109,7 +109,7 @@ export function Sidebar({
           href={dashboardHref}
           className="flex items-center gap-3 px-2 py-4 border-b border-brand-border/60 mb-4 min-w-0"
         >
-          <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-violet/20 border border-brand-cyan/40 shadow-glow shrink-0">
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-brand-cyan/20 to-brand-blue/20 border border-brand-cyan/40 shadow-glow shrink-0">
             <LogoMark src={logoSrc} />
           </div>
           <div className="min-w-0">
@@ -164,13 +164,13 @@ export function Sidebar({
         {creditsCap > 0 ? (
           <div className="w-full bg-brand-border h-2 rounded-full overflow-hidden">
             <div
-              className="bg-gradient-to-r from-brand-cyan to-brand-violet h-full transition-[width] duration-500"
+              className="bg-gradient-to-r from-brand-cyan to-brand-blue h-full transition-[width] duration-500"
               style={{ width: `${pct}%` }}
             />
           </div>
         ) : null}
         <div className="flex items-center justify-between pt-2 border-t border-brand-border/40 text-xs gap-2">
-          <span className="px-2 py-0.5 rounded bg-brand-violet/20 text-brand-violet border border-brand-violet/30 font-medium">
+          <span className="px-2 py-0.5 rounded bg-brand-blue/20 text-brand-cyan border border-brand-blue/30 font-medium">
             {planLabel}
           </span>
           <a
