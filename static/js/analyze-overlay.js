@@ -445,11 +445,13 @@
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
       if (!(form instanceof HTMLFormElement)) return;
-      var trigger =
-        form.classList.contains("js-analyze-form") ||
+      // Cost-estimate form (js-analyze-form) must NOT open the crawl overlay:
+      // the next page is confirm_analyze ("Stima analisi"). Opening progress
+      // there flashes then dies — feels like analysis aborted back to estimate.
+      var isConfirm =
         form.classList.contains("js-analyze-confirm") ||
         form.getAttribute("data-analyze-overlay-trigger") === "1";
-      if (!trigger) return;
+      if (!isConfirm) return;
       var urlInput = form.querySelector('[name="url"]');
       var url = urlInput && urlInput.value ? urlInput.value : "";
       rememberPending(url);
@@ -457,9 +459,7 @@
       api.show({
         url: url,
         phase: "pending",
-        hint: form.classList.contains("js-analyze-confirm")
-          ? t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %.")
-          : t(root, "hint-prepare", "Preparazione stima…"),
+        hint: t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %."),
         etaLabel: t(root, "eta-prepare", "Stima in preparazione…"),
       });
     });

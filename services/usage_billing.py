@@ -836,12 +836,21 @@ def assert_can_start_analysis(
         if hasattr(locked, "credit_held_cents"):
             user.credit_held_cents = locked.credit_held_cents
     if AnalysisJob is not None and max_concurrent_jobs > 0:
-        active = (
-            AnalysisJob.query.filter(
-                AnalysisJob.user_id == user.id,
-                AnalysisJob.status.in_(("pending", "running")),
-            ).count()
+        q = AnalysisJob.query.filter(
+            AnalysisJob.user_id == user.id,
+            AnalysisJob.status.in_(("pending", "running")),
         )
+        # Deferred SoV follow-ups must not consume the crawl concurrency budget.
+        if hasattr(AnalysisJob, "source"):
+            from sqlalchemy import or_
+
+            q = q.filter(
+                or_(
+                    AnalysisJob.source.is_(None),
+                    AnalysisJob.source != "measured",
+                )
+            )
+        active = q.count()
         if active >= max_concurrent_jobs:
             raise ConcurrentAnalysisError(
                 f"Hai già {active} analisi in coda/esecuzione. "
