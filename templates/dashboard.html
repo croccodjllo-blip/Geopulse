@@ -985,6 +985,7 @@
               <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">
                 {{ _('Scarica pack') }}
               </a>
+              {% if can_write_latest %}
               <button
                 type="button"
                 class="btn btn-ghost"
@@ -993,9 +994,11 @@
               >
                 {{ _('Invia email') }}
               </button>
+              {% endif %}
             </div>
           </section>
 
+          {% if can_write_latest %}
           <dialog
             class="pack-mail"
             id="pack-mail-dialog"
@@ -1044,6 +1047,7 @@
               </footer>
             </form>
           </dialog>
+          {% endif %}
         </section>
         {% else %}
         <div class="empty-state">

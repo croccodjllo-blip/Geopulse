@@ -6458,6 +6458,9 @@ def dashboard():
             if latest is not None
             else "centropic-fix.html"
         ),
+        can_write_latest=(
+            user_can_write_site(user, latest) if latest is not None else False
+        ),
         **capability_template_vars(user),
     )
 
