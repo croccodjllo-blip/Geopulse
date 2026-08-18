@@ -6,7 +6,7 @@ from typing import Any
 
 from flask_babel import gettext as _
 
-from centropic.tenancy import sites_query_for_user
+from centropic.tenancy import latest_site_for_user
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.i18n import translate_stored
 from services.rating import compute_rating
@@ -114,12 +114,11 @@ def build_geo_ui_payload(
     SovSnapshot: Any,
     audit_href: str = "/dashboard#analyze",
     report_href: str = "/dashboard",
+    prefer_site_id: int | None = None,
 ) -> dict[str, Any]:
     """Session-safe payload for ``window.__CENTROPIC_GEO_DATA__``."""
-    latest = (
-        sites_query_for_user(SiteAnalysis, user)
-        .order_by(SiteAnalysis.updated_at.desc(), SiteAnalysis.created_at.desc())
-        .first()
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
     )
     ui = _geo_ui_chrome()
     empty: dict[str, Any] = {

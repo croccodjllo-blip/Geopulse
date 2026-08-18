@@ -32,7 +32,7 @@
       </p>
     </div>
     <div class="geo-overview__actions">
-      <a class="btn btn-ghost geo-overview__audit" href="{{ url_for('dashboard_geo_ui') }}">{{ _('Apri grafici') }}</a>
+      <a class="btn btn-ghost geo-overview__audit" href="{{ url_for('dashboard_geo_ui', site=latest.id) if latest else url_for('dashboard_geo_ui') }}">{{ _('Apri grafici') }}</a>
     </div>
   </div>
 

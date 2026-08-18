@@ -3,6 +3,9 @@
 {% set plan = sidebar_plan|default(current_user.plan_label if current_user else 'Free') %}
 {% set used = sidebar_credits_used|default(0) %}
 {% set cap = sidebar_credits_cap|default(0) %}
+{% set _dash_site = dash_site_id|default(none) %}
+{% set dash_href = url_for('dashboard', site=_dash_site) if _dash_site else url_for('dashboard') %}
+{% set geo_href = url_for('dashboard_geo_ui', site=_dash_site) if _dash_site else url_for('dashboard_geo_ui') %}
 {% if cap and cap > 0 %}
 {% set pct_raw = (used / cap) * 100 %}
 {% set pct = 100 if pct_raw > 100 else (0 if pct_raw < 0 else pct_raw) %}
@@ -13,7 +16,7 @@
 <aside class="app-sidebar" id="app-sidebar" aria-label="{{ _('Navigazione workspace') }}">
   <div class="app-sidebar__top">
     <div class="app-sidebar__brand">
-      <a class="app-sidebar__brand-link" href="{{ url_for('dashboard') }}" aria-label="Centropic dashboard">
+      <a class="app-sidebar__brand-link" href="{{ dash_href }}" aria-label="Centropic dashboard">
         <span class="app-sidebar__mark" aria-hidden="true">
           <img src="{{ url_for('static', filename='img/logo-mark.svg') }}" width="24" height="24" alt="" decoding="async">
         </span>
@@ -33,21 +36,21 @@
     </div>
 
     <nav class="app-sidebar__nav">
-      <a href="{{ url_for('dashboard') }}" class="app-sidebar__link{% if nav == 'dashboard' %} is-active{% endif %}" {% if nav == 'dashboard' %}aria-current="page"{% endif %}>
+      <a href="{{ dash_href }}" class="app-sidebar__link{% if nav == 'dashboard' %} is-active{% endif %}" {% if nav == 'dashboard' %}aria-current="page"{% endif %}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
         <span class="app-sidebar__link-label">{{ _('Dashboard') }}</span>
       </a>
 
       <div class="app-sidebar__group" aria-label="{{ _('Sezioni report') }}">
         <p class="app-sidebar__group-label">{{ _('Nel report') }}</p>
-        <a href="{{ url_for('dashboard') }}#panel-sov" class="app-sidebar__sublink" data-dash-tab="sov">
+        <a href="{{ dash_href }}#panel-sov" class="app-sidebar__sublink" data-dash-tab="sov">
           {{ _('Citation share') }}
         </a>
-        <a href="{{ url_for('dashboard') }}#edge-signals" class="app-sidebar__sublink">
+        <a href="{{ dash_href }}#edge-signals" class="app-sidebar__sublink">
           {{ _('Edge Signals') }}
         </a>
         {% if can_agency %}
-        <a href="{{ url_for('dashboard') }}#pack" class="app-sidebar__sublink">
+        <a href="{{ dash_href }}#pack" class="app-sidebar__sublink">
           {{ _('White-label pack') }}
         </a>
         {% endif %}
@@ -59,7 +62,7 @@
         <span class="app-sidebar__link-label">{{ _('Storico') }}</span>
       </a>
       {% endif %}
-      <a href="{{ url_for('dashboard_geo_ui') }}" class="app-sidebar__link{% if nav == 'geo-ui' %} is-active{% endif %}" {% if nav == 'geo-ui' %}aria-current="page"{% endif %}>
+      <a href="{{ geo_href }}" class="app-sidebar__link{% if nav == 'geo-ui' %} is-active{% endif %}" {% if nav == 'geo-ui' %}aria-current="page"{% endif %}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
         <span class="app-sidebar__link-label">{{ _('Grafici') }}</span>
       </a>

@@ -1756,6 +1756,9 @@ def inject_globals() -> dict[str, Any]:
         "sidebar_credits_cap": sidebar_credits_cap,
         "sidebar_plan": sidebar_plan,
         "sidebar_active": sidebar_active,
+        "dash_site_id": (
+            session.get("dashboard_site_id") if user is not None else None
+        ),
         "format_token_amount": format_token_amount,
         "format_tokens_short": format_tokens_short,
         "cents_to_tokens": cents_to_tokens,
@@ -3495,6 +3498,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "can_full_edge": ents.can("full_edge_signals"),
         "can_extended_history": ents.can("extended_history"),
         "can_full_crawl": ents.can("full_crawl"),
+        "can_multi_site": ents.can("multi_site"),
         "dash_plan": dash_plan,
         "plan_key": plan_key,
         "plan_services": plan_services,
@@ -6194,17 +6198,34 @@ def dashboard_geo_ui():
     if not assets.get("js") or not assets.get("css"):
         abort(404)
     user = current_user()
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is None:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    site = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if site is not None:
+        session["dashboard_site_id"] = int(site.id)
+        site_q = {"site": int(site.id)}
+    else:
+        site_q = {}
     payload = build_geo_ui_payload(
         user=user,
         SiteAnalysis=SiteAnalysis,
         SovSnapshot=SovSnapshot,
-        audit_href=url_for("dashboard") + "#analyze",
-        report_href=url_for("dashboard"),
+        audit_href=url_for("dashboard", **site_q) + "#analyze",
+        report_href=url_for("dashboard", **site_q),
+        prefer_site_id=int(site.id) if site is not None else prefer_site_id,
     )
     return render_template(
         "geo_ui.html",
         geo_ui_assets=assets,
         geo_ui_data=payload,
+        latest=site,
     )
 
 
@@ -6411,9 +6432,24 @@ def dashboard():
         ):
             prefer_site_id = int(qjob.site_id)
 
+    # Sticky preference: Plus/Business multi-site users keep the last viewed
+    # domain across bare /dashboard navigations (sidebar, refresh). Explicit
+    # ?site= / completed ?job= always win and refresh the sticky id.
+    if prefer_site_id is None:
+        sticky_raw = session.get("dashboard_site_id")
+        try:
+            sticky_id = int(sticky_raw) if sticky_raw is not None else None
+        except (TypeError, ValueError):
+            sticky_id = None
+        if sticky_id is not None and get_accessible_site(
+            SiteAnalysis, user, sticky_id
+        ) is not None:
+            prefer_site_id = sticky_id
+
     # Safety net: overlay sometimes lands on bare /dashboard (no site=/job=).
     # Prefer the most recently finished job's site for a short window so the
     # report cannot stick on a sibling domain that still wins created_at races.
+    # Skip when a sticky multi-site preference is already active.
     if prefer_site_id is None:
         recent_done = (
             AnalysisJob.query.filter(
@@ -6436,6 +6472,20 @@ def dashboard():
     # Refresh latest after possible async completion / job preference.
     latest = latest_site_for_user(
         SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+    elif "dashboard_site_id" in session:
+        session.pop("dashboard_site_id", None)
+
+    user_sites = (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(
+            SiteAnalysis.updated_at.desc(),
+            SiteAnalysis.created_at.desc(),
+            SiteAnalysis.id.desc(),
+        )
+        .all()
     )
 
     schedule_form = RescanScheduleForm()
@@ -6560,6 +6610,7 @@ def dashboard():
         form=form,
         schedule_form=schedule_form,
         latest=latest,
+        user_sites=user_sites,
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,

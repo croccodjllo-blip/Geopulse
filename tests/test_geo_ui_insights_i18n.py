@@ -46,11 +46,9 @@ def _fake_site():
 
 
 def _patch_site_query(monkeypatch, site):
-    q = MagicMock()
-    q.order_by.return_value.first.return_value = site
     monkeypatch.setattr(
-        "services.geo_ui_payload.sites_query_for_user",
-        lambda *_a, **_k: q,
+        "services.geo_ui_payload.latest_site_for_user",
+        lambda *_a, **_k: site,
     )
     monkeypatch.setattr(
         "services.geo_ui_payload.list_sov_snapshots",

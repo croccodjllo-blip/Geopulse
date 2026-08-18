@@ -10530,6 +10530,81 @@ body.body-login-popup .site-footer {
   max-width: 48ch;
 }
 
+/* Multi-site switcher — plan-accent control in the workspace strip */
+.site-switcher {
+  margin: 0.75rem 0 0;
+  max-width: min(100%, 28rem);
+}
+.site-switcher__label {
+  display: block;
+  margin: 0 0 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+.site-switcher__control {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.site-switcher__select {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2.55rem;
+  border: 1px solid color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 35%, var(--brand-border));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--brand-card) 92%, transparent);
+  color: var(--brand-clarity);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 0.4rem 2.1rem 0.4rem 0.75rem;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--plan-accent, var(--brand-cyan)) 50%),
+    linear-gradient(135deg, var(--plan-accent, var(--brand-cyan)) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.05rem) 55%,
+    calc(100% - 0.7rem) 55%;
+  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.site-switcher__select:hover,
+.site-switcher__select:focus {
+  outline: none;
+  border-color: var(--plan-accent, var(--brand-cyan));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 22%, transparent);
+}
+.site-switcher__meta {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--plan-accent, var(--brand-cyan));
+  font-variant-numeric: tabular-nums;
+}
+.site-switcher__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--brand-muted);
+  max-width: 42ch;
+}
+
+@media (max-width: 640px) {
+  .site-switcher {
+    max-width: 100%;
+  }
+  .site-switcher__control {
+    flex-wrap: wrap;
+  }
+}
+
 .workspace-status--strip {
   margin: 0;
   padding: 0.65rem 0.85rem;
