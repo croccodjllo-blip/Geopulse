@@ -3115,7 +3115,14 @@ def health():
 @app.post("/ops/reclaim-jobs")
 @csrf.exempt
 def ops_reclaim_jobs():
-    """Admin/token-gated reclaim of stale jobs + stranded holds (not on GET /health)."""
+    """Reclaim stale jobs + stranded holds (not on GET /health).
+
+    Auth: ``HEALTH_DETAIL_TOKEN`` (header/query) **or** admin session.
+    The session path enforces CSRF like dashboard forms (``csrf.protect``);
+    the ops token path stays machine-callable without a browser cookie.
+    """
+    from flask_wtf.csrf import CSRFError
+
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     provided = (request.args.get("token") or request.headers.get("X-Ops-Token") or "").strip()
     allowed = False
@@ -3123,8 +3130,14 @@ def ops_reclaim_jobs():
         allowed = True
     else:
         user = current_user()
-        if user is not None and user.is_admin:
-            allowed = True
+        if user is None or not user.is_admin:
+            return jsonify({"ok": False, "error": "forbidden"}), 403
+        # Admin cookie path: require CSRF (same as other state-changing forms).
+        try:
+            csrf.protect()
+        except CSRFError:
+            return jsonify({"ok": False, "error": "csrf_failed"}), 400
+        allowed = True
     if not allowed:
         return jsonify({"ok": False, "error": "forbidden"}), 403
 
