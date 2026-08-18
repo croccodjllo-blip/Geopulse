@@ -12,6 +12,13 @@ import {
 } from "@/components/EngineVisibilityChart";
 import type { SomPoint } from "@/components/SomTrendChart";
 
+type GeoUiChrome = {
+  insightsTitle?: string;
+  insightsEmpty?: string;
+  pagesScored?: string;
+  findingsInLastAudit?: string;
+};
+
 type GeoUiData = {
   ready: boolean;
   domain?: string | null;
@@ -32,6 +39,7 @@ type GeoUiData = {
   somTrend?: SomPoint[];
   auditHref?: string;
   reportHref?: string;
+  ui?: GeoUiChrome;
 };
 
 function isEmbedMode(): boolean {
@@ -68,13 +76,16 @@ export default function App() {
         enginesTracked: live.enginesTracked ?? 0,
         recRank: live.recRank ?? null,
         citations: live.pagesAnalyzed ?? null,
-        citationsLabel: "Pages scored",
-        citationsHint: `${live.findingsCount ?? 0} findings in last audit`,
+        citationsLabel: live.ui?.pagesScored || "Pages scored",
+        citationsHint: `${live.findingsCount ?? 0} ${
+          live.ui?.findingsInLastAudit || "findings in last audit"
+        }`,
         citationsDeltaPct: null,
         issuePressure: live.issuePressure ?? null,
         issuePressureLabel: live.issuePressureLabel || undefined,
         engines: live.engines || [],
         insights: live.insights || [],
+        ui: live.ui,
         somTrend: live.somTrend || [],
         auditHref: live.auditHref || "/dashboard#analyze",
         reportHref: live.reportHref || "/dashboard",

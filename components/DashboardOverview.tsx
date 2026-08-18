@@ -22,8 +22,17 @@ export type OverviewEngineRow = {
 
 export type OverviewInsight = {
   severity: "critical" | "warn" | "info";
+  /** Server-translated severity chip (Critico / Attenzione / Info). */
+  severityLabel?: string;
   title: string;
   detail: string;
+};
+
+export type OverviewUiChrome = {
+  insightsTitle?: string;
+  insightsEmpty?: string;
+  pagesScored?: string;
+  findingsInLastAudit?: string;
 };
 
 export type DashboardOverviewProps = {
@@ -45,6 +54,8 @@ export type DashboardOverviewProps = {
   issuePressureLabel?: string;
   engines?: OverviewEngineRow[];
   insights?: OverviewInsight[];
+  /** Server-translated chrome for Charts (locale from Flask). */
+  ui?: OverviewUiChrome;
   evidenceLabel?: string;
   somSeries?: SomSeriesPoint[];
   /** Live brand SoM history from Flask (preferred over demo multi-brand series). */
@@ -144,6 +155,7 @@ export function DashboardOverview({
   issuePressureLabel = "Clear",
   engines,
   insights,
+  ui,
   evidenceLabel,
   somSeries,
   somTrend,
@@ -155,6 +167,10 @@ export function DashboardOverview({
   const useDemo = !live;
   const resolvedEngines = engines ?? (useDemo ? DEFAULT_ENGINES : []);
   const resolvedInsights = insights ?? (useDemo ? DEFAULT_INSIGHTS : []);
+  const insightsTitle = ui?.insightsTitle || "Actionable GEO Insights";
+  const insightsEmpty =
+    ui?.insightsEmpty ||
+    "Nessun finding critico/warn nell'ultimo audit.";
   const resolvedSom = somPercent ?? (useDemo ? 42.8 : null);
   const resolvedDelta = somDelta ?? (useDemo ? 5.4 : null);
   const resolvedTracked = enginesTracked ?? (useDemo ? 5 : resolvedEngines.length);
@@ -409,15 +425,11 @@ export function DashboardOverview({
         <div className="p-6 rounded-xl bg-brand-card border border-brand-border space-y-4">
           <div className="flex items-center gap-2 text-brand-cyan">
             <TrendingUp className="w-5 h-5" aria-hidden />
-            <h3 className="text-lg font-bold text-white">
-              Actionable GEO Insights
-            </h3>
+            <h3 className="text-lg font-bold text-white">{insightsTitle}</h3>
           </div>
           <div className="space-y-3">
             {resolvedInsights.length === 0 ? (
-              <p className="text-sm text-brand-muted">
-                Nessun finding critico/warn nell&apos;ultimo audit.
-              </p>
+              <p className="text-sm text-brand-muted">{insightsEmpty}</p>
             ) : (
               resolvedInsights.map((ins, i) => (
                 <div
@@ -434,11 +446,12 @@ export function DashboardOverview({
                     }`}
                   >
                     <AlertCircle className="w-3.5 h-3.5" aria-hidden />
-                    {ins.severity === "critical"
-                      ? "Critical"
-                      : ins.severity === "warn"
-                        ? "Warn"
-                        : "Info"}
+                    {ins.severityLabel ||
+                      (ins.severity === "critical"
+                        ? "Critical"
+                        : ins.severity === "warn"
+                          ? "Warn"
+                          : "Info")}
                   </div>
                   <p className="text-xs font-semibold text-white">{ins.title}</p>
                   <p className="text-xs text-brand-muted">{ins.detail}</p>

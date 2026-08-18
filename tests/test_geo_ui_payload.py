@@ -25,10 +25,10 @@ def test_insight_severity_preserves_critical_and_warn():
 
 
 def test_issue_pressure_is_open_finding_count():
-    assert _issue_pressure(0) == (0, "Clear")
-    assert _issue_pressure(2) == (2, "Watch")
-    assert _issue_pressure(4) == (4, "Elevated")
-    assert _issue_pressure(9) == (9, "High")
+    assert _issue_pressure(0) == (0, "In ordine")
+    assert _issue_pressure(2) == (2, "Da monitorare")
+    assert _issue_pressure(4) == (4, "Elevata")
+    assert _issue_pressure(9) == (9, "Alta")
 
 
 def test_measured_overlay_hides_pending_but_keeps_unavailable():
