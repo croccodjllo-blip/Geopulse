@@ -13,12 +13,14 @@
   --brand-border: #1A222D;
   --brand-cyan: #C9D3DD;     /* Chrome/silver highlight (primary accent) */
   --brand-blue: #5B6B7A;     /* Steel shadow (secondary accent) */
-  --brand-violet: #C9D3DD;   /* Legacy alias → primary accent */
+  --brand-chrome: #C9D3DD;   /* Preferred name for primary accent */
+  --brand-steel: #5B6B7A;    /* Preferred name for secondary accent */
+  --brand-violet: var(--brand-chrome); /* Legacy alias — do not paint purple */
   --brand-muted: #8B97A8;
   --brand-clarity: #E8EEF4;
   --brand-platinum: #C5D0DC;
   --nebula-blue: #2E4A78;    /* Landing hero atmosphere only */
-  --nebula-violet: #4A3468;  /* Landing hero atmosphere only */
+  --nebula-violet: #4A3468;  /* Landing hero atmosphere only (atmosphere, not UI) */
 
   /* Per-plan accent (overridden per body.dash-plan--free|plus|business);
      this is the fallback for pages with no plan context (marketing, admin). */
@@ -6966,7 +6968,7 @@ html.analyze-busy {
 }
 
 .ui-badge--ai {
-  color: #EDE9FE;
+  color: #E8EEF4;
   background: linear-gradient(90deg, rgba(201, 211, 221, 0.18), rgba(91, 107, 122, 0.28));
   border-color: rgba(91, 107, 122, 0.45);
 }
@@ -7424,9 +7426,10 @@ html.analyze-busy {
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
+.geo-panel__head--chrome,
 .geo-panel__head--violet {
   justify-content: flex-start;
-  color: var(--brand-violet);
+  color: var(--brand-chrome);
 }
 
 .geo-panel__title {
@@ -7478,7 +7481,8 @@ html.analyze-busy {
 }
 .tone-emerald { background: #34d399; }
 .tone-cyan { background: var(--brand-cyan); }
-.tone-violet { background: var(--brand-violet); }
+.tone-chrome,
+.tone-violet { background: var(--brand-chrome); }
 .tone-amber { background: #fbbf24; }
 
 .geo-status { font-size: 0.75rem; font-weight: 600; }
@@ -7972,8 +7976,17 @@ body.body-auth {
   z-index: 2;
   height: 75%;
   background:
-    radial-gradient(ellipse 50% 45% at 65% 30%, rgba(201, 211, 221, 0.14) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 35% at 25% 55%, rgba(91, 107, 122, 0.10) 0%, transparent 55%);
+    radial-gradient(
+      ellipse 50% 45% at 65% 30%,
+      color-mix(in srgb, var(--nebula-blue) 28%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 40% 35% at 25% 55%,
+      color-mix(in srgb, var(--nebula-violet) 22%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(ellipse 50% 45% at 65% 30%, rgba(201, 211, 221, 0.10) 0%, transparent 60%);
   pointer-events: none;
   animation: glow-drift 18s ease-in-out infinite alternate;
   filter: blur(2px);
@@ -10515,6 +10528,81 @@ body.body-login-popup .site-footer {
   font-size: 0.875rem;
   line-height: 1.5;
   max-width: 48ch;
+}
+
+/* Multi-site switcher — plan-accent control in the workspace strip */
+.site-switcher {
+  margin: 0.75rem 0 0;
+  max-width: min(100%, 28rem);
+}
+.site-switcher__label {
+  display: block;
+  margin: 0 0 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+.site-switcher__control {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.site-switcher__select {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2.55rem;
+  border: 1px solid color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 35%, var(--brand-border));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--brand-card) 92%, transparent);
+  color: var(--brand-clarity);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 0.4rem 2.1rem 0.4rem 0.75rem;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--plan-accent, var(--brand-cyan)) 50%),
+    linear-gradient(135deg, var(--plan-accent, var(--brand-cyan)) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.05rem) 55%,
+    calc(100% - 0.7rem) 55%;
+  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.site-switcher__select:hover,
+.site-switcher__select:focus {
+  outline: none;
+  border-color: var(--plan-accent, var(--brand-cyan));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 22%, transparent);
+}
+.site-switcher__meta {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--plan-accent, var(--brand-cyan));
+  font-variant-numeric: tabular-nums;
+}
+.site-switcher__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--brand-muted);
+  max-width: 42ch;
+}
+
+@media (max-width: 640px) {
+  .site-switcher {
+    max-width: 100%;
+  }
+  .site-switcher__control {
+    flex-wrap: wrap;
+  }
 }
 
 .workspace-status--strip {

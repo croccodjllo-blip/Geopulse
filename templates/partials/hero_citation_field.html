@@ -103,37 +103,27 @@
     <path d="M520 255 C 420 210, 320 175, 230 155"/>
   </g>
 
-  <!-- Engine pods — fighter-bay style capsules -->
-  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+  <!-- Signal nodes — geometric only (no engine name overlays in hero). -->
+  <g>
     <g transform="translate(240 345)">
-      <rect x="-56" y="-15" width="112" height="30" rx="4" fill="#0A0E14" stroke="url(#hcf-chrome)" stroke-width="1.15"/>
-      <rect x="-56" y="-15" width="6" height="30" fill="#C9D3DD" opacity="0.35"/>
-      <circle cx="-38" cy="0" r="3.5" fill="#C9D3DD" filter="url(#hcf-glow)"/>
-      <text x="8" y="4" text-anchor="middle" fill="#E8EEF4" font-size="11.5" font-weight="600" letter-spacing="0.06em">CHATGPT</text>
+      <circle r="5" fill="#C9D3DD" filter="url(#hcf-glow)" opacity="0.9"/>
+      <circle r="14" fill="none" stroke="#C9D3DD" stroke-width="0.8" opacity="0.28"/>
     </g>
     <g transform="translate(230 155)">
-      <rect x="-48" y="-13" width="96" height="26" rx="4" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
-      <rect x="-48" y="-13" width="5" height="26" fill="#8BA3BD" opacity="0.35"/>
-      <circle cx="-32" cy="0" r="3" fill="#8BA3BD"/>
-      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500" letter-spacing="0.06em">CLAUDE</text>
+      <circle r="4" fill="#8BA3BD" opacity="0.85"/>
+      <circle r="11" fill="none" stroke="#5B6B7A" stroke-width="0.7" opacity="0.35"/>
     </g>
     <g transform="translate(420 420)">
-      <rect x="-54" y="-13" width="108" height="26" rx="4" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
-      <rect x="-54" y="-13" width="5" height="26" fill="#8BA3BD" opacity="0.35"/>
-      <circle cx="-36" cy="0" r="3" fill="#8BA3BD"/>
-      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500" letter-spacing="0.05em">PERPLEXITY</text>
+      <circle r="4" fill="#8BA3BD" opacity="0.85"/>
+      <circle r="11" fill="none" stroke="#5B6B7A" stroke-width="0.7" opacity="0.35"/>
     </g>
     <g transform="translate(660 415)">
-      <rect x="-48" y="-13" width="96" height="26" rx="4" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
-      <rect x="-48" y="-13" width="5" height="26" fill="#8BA3BD" opacity="0.35"/>
-      <circle cx="-32" cy="0" r="3" fill="#8BA3BD"/>
-      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500" letter-spacing="0.06em">GEMINI</text>
+      <circle r="4" fill="#8BA3BD" opacity="0.85"/>
+      <circle r="11" fill="none" stroke="#5B6B7A" stroke-width="0.7" opacity="0.35"/>
     </g>
     <g transform="translate(780 305)">
-      <rect x="-50" y="-13" width="100" height="26" rx="4" fill="#0A0E14" stroke="#5B6B7A" stroke-width="1"/>
-      <rect x="-50" y="-13" width="5" height="26" fill="#8BA3BD" opacity="0.35"/>
-      <circle cx="-34" cy="0" r="3" fill="#8BA3BD"/>
-      <text x="6" y="4" text-anchor="middle" fill="#C8CDD5" font-size="11" font-weight="500" letter-spacing="0.06em">COPILOT</text>
+      <circle r="4" fill="#8BA3BD" opacity="0.85"/>
+      <circle r="11" fill="none" stroke="#5B6B7A" stroke-width="0.7" opacity="0.35"/>
     </g>
 
     <!-- Core reactor — geometric, no copy -->
@@ -146,15 +136,5 @@
       <circle r="7" fill="#C9D3DD" filter="url(#hcf-glow)"/>
       <circle r="2.5" fill="#F7FAFC"/>
     </g>
-  </g>
-
-  <!-- HUD chrome caption -->
-  <g font-family="IBM Plex Mono, ui-monospace, monospace" fill="#8B97A8" font-size="10" letter-spacing="0.28em">
-    <text x="72" y="48">SECTOR · AI ENGINES</text>
-    <text x="848" y="48" text-anchor="end">SCAN ACTIVE</text>
-  </g>
-  <g stroke="url(#hcf-chrome)" stroke-width="0.9" opacity="0.4">
-    <line x1="72" y1="58" x2="196" y2="58"/>
-    <line x1="724" y1="58" x2="848" y2="58"/>
   </g>
 </svg>

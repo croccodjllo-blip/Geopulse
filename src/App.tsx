@@ -12,6 +12,40 @@ import {
 } from "@/components/EngineVisibilityChart";
 import type { SomPoint } from "@/components/SomTrendChart";
 
+type GeoUiChrome = {
+  insightsTitle?: string;
+  insightsEmpty?: string;
+  pagesScored?: string;
+  findingsInLastAudit?: string;
+  chartsTitle?: string;
+  overviewTitle?: string;
+  emptyBody?: string;
+  runAudit?: string;
+  liveSubtitle?: string;
+  rangeLast30?: string;
+  rangeLast7?: string;
+  rangeQuarter?: string;
+  rangeComingSoon?: string;
+  somLabel?: string;
+  acrossEngines?: string;
+  recRankLabel?: string;
+  recRankHint?: string;
+  issuePressureTitle?: string;
+  issuePressureHint?: string;
+  somTrendTitle?: string;
+  breakdownTitle?: string;
+  viewReport?: string;
+  enginesEmpty?: string;
+  colEngine?: string;
+  colShare?: string;
+  colTopDomain?: string;
+  colStatus?: string;
+  statusDominant?: string;
+  statusOptimal?: string;
+  statusNeedsAction?: string;
+  statusUnknown?: string;
+};
+
 type GeoUiData = {
   ready: boolean;
   domain?: string | null;
@@ -32,6 +66,7 @@ type GeoUiData = {
   somTrend?: SomPoint[];
   auditHref?: string;
   reportHref?: string;
+  ui?: GeoUiChrome;
 };
 
 function isEmbedMode(): boolean {
@@ -68,13 +103,16 @@ export default function App() {
         enginesTracked: live.enginesTracked ?? 0,
         recRank: live.recRank ?? null,
         citations: live.pagesAnalyzed ?? null,
-        citationsLabel: "Pages scored",
-        citationsHint: `${live.findingsCount ?? 0} findings in last audit`,
+        citationsLabel: live.ui?.pagesScored || "Pages scored",
+        citationsHint: `${live.findingsCount ?? 0} ${
+          live.ui?.findingsInLastAudit || "findings in last audit"
+        }`,
         citationsDeltaPct: null,
         issuePressure: live.issuePressure ?? null,
         issuePressureLabel: live.issuePressureLabel || undefined,
         engines: live.engines || [],
         insights: live.insights || [],
+        ui: live.ui,
         somTrend: live.somTrend || [],
         auditHref: live.auditHref || "/dashboard#analyze",
         reportHref: live.reportHref || "/dashboard",

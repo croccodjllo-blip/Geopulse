@@ -1756,6 +1756,9 @@ def inject_globals() -> dict[str, Any]:
         "sidebar_credits_cap": sidebar_credits_cap,
         "sidebar_plan": sidebar_plan,
         "sidebar_active": sidebar_active,
+        "dash_site_id": (
+            session.get("dashboard_site_id") if user is not None else None
+        ),
         "format_token_amount": format_token_amount,
         "format_tokens_short": format_tokens_short,
         "cents_to_tokens": cents_to_tokens,
@@ -2262,6 +2265,10 @@ def _enqueue_measured_followup(
         or "gpt-4o-mini",
     )
     need = max(1, int(est.service_cost_eur_cents or 0))
+    # Hold must include grace — the worker ceiling compares projected spend to
+    # job.held_cents and fail-closes when projected exceeds the lease (job #924:
+    # held base 3¢, Azure Copilot pushed projected to 4¢ → Measured stuck).
+    required = required_credit_with_grace_cents(need)
     # Atomic lock: re-check credit + concurrent job cap under row lock, same
     # gate the normal analyze flow uses before hold/enqueue.
     try:
@@ -2269,7 +2276,7 @@ def _enqueue_measured_followup(
             db.session,
             user,
             AnalysisJob=AnalysisJob,
-            required_cents=required_credit_with_grace_cents(need),
+            required_cents=required,
             max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
@@ -2284,10 +2291,13 @@ def _enqueue_measured_followup(
         )
         return None
     held = 0
-    if not is_unlimited_user(user) and need > 0:
+    if not is_unlimited_user(user) and required > 0:
         try:
             held = int(
-                hold_credit(db.session, CreditLedger, user, amount_cents=need) or 0
+                hold_credit(
+                    db.session, CreditLedger, user, amount_cents=required
+                )
+                or 0
             )
             # Do not commit yet — enqueue_analysis commits hold+job together.
         except InsufficientCreditError:
@@ -2588,6 +2598,15 @@ def process_pending_analyze_jobs(
                         # foreign here and would blow up on session.refresh().
                         thread_user = db.session.get(User, user_id_pinned) or user
                         thread_job = db.session.get(AnalysisJob, job_id_pinned) or job
+                        # Straggler SoV threads can finish after wall-timeout + job
+                        # complete/flush. Never bill or fail-closed once the job is
+                        # no longer running (seen on job #935 Azure late callback).
+                        if str(getattr(thread_job, "status", "") or "") != "running":
+                            try:
+                                db.session.rollback()
+                            except Exception:
+                                pass
+                            return
                         charged = record_actual_usage(
                             db.session,
                             UsageEvent,
@@ -2604,15 +2623,19 @@ def process_pending_analyze_jobs(
                         projected = peek_usage_accum_cents(accum_key)
                         if projected > 0:
                             _assert_current_sov_debit(thread_user, max(debit_cents, projected))
-                        # Hold ceiling: stop LLM when projected spend exceeds lease.
-                        held_cap = int(getattr(thread_job, "held_cents", 0) or 0)
+                        # Hold ceiling: stop LLM when projected spend exceeds the
+                        # original lease (remaining held + already billed), not
+                        # only remaining held_cents (which shrinks as we debit).
+                        lease_cap = int(getattr(thread_job, "held_cents", 0) or 0) + int(
+                            getattr(thread_job, "billed_cents", 0) or 0
+                        )
                         if (
-                            held_cap > 0
-                            and projected > held_cap
+                            lease_cap > 0
+                            and projected > lease_cap
                             and not is_unlimited_user(thread_user)
                         ):
                             raise InsufficientCreditError(
-                                f"usage projected {projected}c exceeds hold {held_cap}c"
+                                f"usage projected {projected}c exceeds hold {lease_cap}c"
                             )
                         if debit_cents <= 0:
                             db.session.commit()
@@ -3484,6 +3507,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "can_full_edge": ents.can("full_edge_signals"),
         "can_extended_history": ents.can("extended_history"),
         "can_full_crawl": ents.can("full_crawl"),
+        "can_multi_site": ents.can("multi_site"),
         "dash_plan": dash_plan,
         "plan_key": plan_key,
         "plan_services": plan_services,
@@ -5817,6 +5841,21 @@ def register():
             if role_val and role_val.lower() in PRIVILEGE_ROLES:
                 role_val = None
             mail_ok = mail_configured()
+            # Dev/test hatch only: never auto-verify in production when SMTP/Resend
+            # is down (audit P1 — would grant full accounts without email proof).
+            allow_unverified_hatch = (
+                os.getenv("FLASK_DEBUG", "0") == "1"
+                or bool(app.config.get("TESTING"))
+            )
+            if not mail_ok and not allow_unverified_hatch:
+                flash(
+                    "Registrazione temporaneamente non disponibile: invio email non attivo. "
+                    "Riprova tra poco o contatta info@centropic.ai.",
+                    "error",
+                )
+                return render_template(
+                    "register.html", form=form, preview_token=preview_token
+                )
             user = User(
                 email=email,
                 name=form.name.data.strip(),
@@ -6183,17 +6222,34 @@ def dashboard_geo_ui():
     if not assets.get("js") or not assets.get("css"):
         abort(404)
     user = current_user()
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is None:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    site = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if site is not None:
+        session["dashboard_site_id"] = int(site.id)
+        site_q = {"site": int(site.id)}
+    else:
+        site_q = {}
     payload = build_geo_ui_payload(
         user=user,
         SiteAnalysis=SiteAnalysis,
         SovSnapshot=SovSnapshot,
-        audit_href=url_for("dashboard") + "#analyze",
-        report_href=url_for("dashboard"),
+        audit_href=url_for("dashboard", **site_q) + "#analyze",
+        report_href=url_for("dashboard", **site_q),
+        prefer_site_id=int(site.id) if site is not None else prefer_site_id,
     )
     return render_template(
         "geo_ui.html",
         geo_ui_assets=assets,
         geo_ui_data=payload,
+        latest=site,
     )
 
 
@@ -6203,11 +6259,10 @@ def dashboard():
     user = current_user()
     form = AnalyzeForm()
     if request.method == "GET" and not form.url.data:
+        # One-shot from landing/hero; otherwise wait until active site is known.
         prefill = session.pop("prefill_analyze_url", None)
         if prefill:
             form.url.data = prefill
-        elif user and user.website_url:
-            form.url.data = user.website_url
     # Claim a completed guest preview once the user lands in-app.
     pending_preview = (session.get("guest_preview_token") or "").strip()
     if pending_preview and user is not None:
@@ -6290,9 +6345,17 @@ def dashboard():
                 "\n".join(competitor_urls) if competitor_urls else raw_comp
             )
             if comp_source == "suggested" and competitor_urls:
+                hosts = []
+                for cu in competitor_urls:
+                    h = (urlparse(cu).hostname or "").lower()
+                    if h.startswith("www."):
+                        h = h[4:]
+                    hosts.append(h or cu)
                 flash(
-                    "Competitor snapshot compilato in automatico: "
-                    + ", ".join(competitor_urls),
+                    _(
+                        "Competitor snapshot compilato in automatico: %(hosts)s"
+                    )
+                    % {"hosts": ", ".join(hosts)},
                     "info",
                 )
 
@@ -6392,9 +6455,24 @@ def dashboard():
         ):
             prefer_site_id = int(qjob.site_id)
 
+    # Sticky preference: Plus/Business multi-site users keep the last viewed
+    # domain across bare /dashboard navigations (sidebar, refresh). Explicit
+    # ?site= / completed ?job= always win and refresh the sticky id.
+    if prefer_site_id is None:
+        sticky_raw = session.get("dashboard_site_id")
+        try:
+            sticky_id = int(sticky_raw) if sticky_raw is not None else None
+        except (TypeError, ValueError):
+            sticky_id = None
+        if sticky_id is not None and get_accessible_site(
+            SiteAnalysis, user, sticky_id
+        ) is not None:
+            prefer_site_id = sticky_id
+
     # Safety net: overlay sometimes lands on bare /dashboard (no site=/job=).
     # Prefer the most recently finished job's site for a short window so the
     # report cannot stick on a sibling domain that still wins created_at races.
+    # Skip when a sticky multi-site preference is already active.
     if prefer_site_id is None:
         recent_done = (
             AnalysisJob.query.filter(
@@ -6417,6 +6495,26 @@ def dashboard():
     # Refresh latest after possible async completion / job preference.
     latest = latest_site_for_user(
         SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+    elif "dashboard_site_id" in session:
+        session.pop("dashboard_site_id", None)
+
+    # Analyze composer: default URL = active site from switcher/sticky.
+    # No sites → leave empty (do not fall back to profile website_url).
+    if request.method == "GET" and not (form.url.data or "").strip():
+        if latest is not None and (latest.url or "").strip():
+            form.url.data = latest.url
+
+    user_sites = (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(
+            SiteAnalysis.updated_at.desc(),
+            SiteAnalysis.created_at.desc(),
+            SiteAnalysis.id.desc(),
+        )
+        .all()
     )
 
     schedule_form = RescanScheduleForm()
@@ -6541,6 +6639,7 @@ def dashboard():
         form=form,
         schedule_form=schedule_form,
         latest=latest,
+        user_sites=user_sites,
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,

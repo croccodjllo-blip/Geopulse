@@ -18,7 +18,7 @@
       {% endif %}
     </p>
     <p class="report-meta">
-      <a class="site-link" href="{{ url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
+      <a class="site-link" href="{{ url_for('dashboard', site=dash_site_id) if dash_site_id else url_for('dashboard') }}">← {{ _('Dashboard') }}</a>
       {% if can_extended_history %}
       <a class="site-link" href="{{ url_for('export_history_csv') }}">{{ _('Export CSV') }}</a>
       {% endif %}
@@ -47,6 +47,7 @@
         <a href="{{ url_for('site_history', analysis_id=item.site_id) }}">{{ _('Dettaglio') }}</a>
         {% endif %}
         {% else %}
+        <a href="{{ url_for('dashboard', site=item.id) }}">{{ _('Apri report') }}</a>
         <a href="{{ url_for('download_pack', analysis_id=item.id) }}">HTML</a>
         {% endif %}
       </div>

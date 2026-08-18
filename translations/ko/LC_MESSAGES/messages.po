@@ -2042,7 +2042,7 @@ msgstr "호스트에 하나의 어댑터: Edge로의 프록시"
 
 #: services/site_guide.py:358
 msgid "Share of Voice"
-msgstr "음성 점유율"
+msgstr "Share of Voice"
 
 #: services/site_guide.py:361
 msgid ""
@@ -2082,7 +2082,7 @@ msgstr "로케일: hreflang 및 시장 일관성"
 
 #: services/site_guide.py:386 templates/partials/competitor_snapshot.html:26
 msgid "Competitor snapshot"
-msgstr "경쟁사 스냅샷"
+msgstr "Competitor snapshot"
 
 #: services/site_guide.py:389
 msgid "Confronto rapido AIO/GEO/rating sui competitor (Plus)."
@@ -3698,7 +3698,7 @@ msgstr "엔진에 대한 성향"
 
 #: templates/dashboard.html:585
 msgid "Engine"
-msgstr "페이지"
+msgstr "엔진"
 
 #: templates/dashboard.html:587
 msgid "Propensity"
@@ -4438,7 +4438,7 @@ msgstr "계정 만들기"
 
 #: templates/geo_ui.html:2 templates/geo_ui.html:8
 msgid "GEO Charts"
-msgstr "GEO 차트"
+msgstr "GEO Charts"
 
 #: templates/guide.html:16 templates/settings.html:205
 msgid "Torna alla dashboard"
@@ -7489,7 +7489,7 @@ msgstr "높음"
 
 #: templates/partials/geo_overview.html:19
 msgid "Alta"
-msgstr "높음"
+msgstr "매우 높음"
 
 #: templates/partials/geo_overview.html:26
 msgid "Panoramica GEO"
@@ -8133,6 +8133,118 @@ msgid ""
 msgstr ""
 "현재 공개 시그널을 측정하고 AIO/GEO 점수, findings, 팩을 생성합니다. 점수 상승을 약속하지 않으며, 결과는 사이트에 따라 "
 "달라집니다."
+
+msgid "Insight GEO actionable"
+msgstr "실행 가능한 GEO 인사이트"
+
+msgid "Nessun finding critico/warn nell'ultimo audit."
+msgstr "최근 감사에 심각/주의 파인딩이 없습니다."
+
+msgid "Pagine valutate"
+msgstr "평가된 페이지"
+
+msgid "findings nell'ultimo audit"
+msgstr "최근 감사의 파인딩"
+
+msgid "In ordine"
+msgstr "양호"
+
+msgid "Da monitorare"
+msgstr "주시"
+
+msgid "Info"
+msgstr "정보"
+
+msgid ""
+"Nessuna analisi ancora. Esegui un audit per vedere Share of Model, engine "
+"breakdown e insight dal tuo sito — niente dati demo."
+msgstr "아직 분석이 없습니다. Share of Model, 엔진 분석, 사이트 인사이트를 보려면 감사를 실행하세요 — 데모 데이터 없음."
+
+msgid "Esegui audit GEO"
+msgstr "GEO 감사 실행"
+
+msgid "Share of Model e visibilità AI dall'ultimo audit."
+msgstr "최근 감사의 Share of Model 및 AI 가시성."
+
+msgid "Ultimi 30 giorni"
+msgstr "최근 30일"
+
+msgid "Ultimi 7 giorni"
+msgstr "최근 7일"
+
+msgid "Trimestre in corso"
+msgstr "이번 분기"
+
+msgid "Range storico: in arrivo"
+msgstr "기간 범위: 곧 제공"
+
+#, python-format
+msgid "su %(n)s engine LLM tracciati"
+msgstr "추적 중인 LLM 엔진 %(n)s개"
+
+msgid "Ranking AI"
+msgstr "AI 순위"
+
+msgid "Grado composito da AIO/GEO"
+msgstr "AIO/GEO 복합 등급"
+
+msgid "Pressione findings"
+msgstr "파인딩 압력"
+
+msgid "Critical + warn aperti (non sentiment del modello)"
+msgstr "열린 심각+주의 (모델 감성 아님)"
+
+msgid "Trend Share of Model"
+msgstr "Share of Model 추세"
+
+msgid "Breakdown visibilità LLM"
+msgstr "LLM 가시성 분석"
+
+msgid "Vedi report dettagliato"
+msgstr "상세 리포트 보기"
+
+msgid "Nessun engine breakdown ancora — riesegui l'audit."
+msgstr "아직 엔진 분석이 없습니다 — 감사를 다시 실행하세요."
+
+msgid "Dominio più citato"
+msgstr "최다 인용 도메인"
+
+msgid "Stato"
+msgstr "상태"
+
+msgid "Dominante"
+msgstr "지배적"
+
+msgid "Ottimale"
+msgstr "최적"
+
+msgid "Da migliorare"
+msgstr "개선 필요"
+
+#, python-format
+msgid "Competitor snapshot compilato in automatico: %(hosts)s"
+msgstr "Competitor snapshot 자동 작성: %(hosts)s"
+
+msgid "Cambia sito"
+msgstr "사이트 전환"
+
+msgid "Sito attivo"
+msgstr "활성 사이트"
+
+msgid "Report completo"
+msgstr "전체 리포트"
+
+msgid "siti nel workspace"
+msgstr "워크스페이스 사이트"
+
+msgid "Apri report"
+msgstr "리포트 열기"
+
+msgid "Report completo per dominio: score, SoV, findings, Edge e pack."
+msgstr "도메인별 전체 리포트: score, SoV, findings, Edge 및 pack."
+
+msgid "Upgrade a Plus per monitorare più domini nello stesso workspace."
+msgstr "같은 워크스페이스에서 더 많은 도메인을 모니터링하려면 Plus로 업그레이드하세요."
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

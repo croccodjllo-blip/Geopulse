@@ -1,0 +1,32 @@
+{# Plan-aware multi-site switcher — one composition, native select (no card grid). #}
+{% if user_sites is defined and user_sites|length > 1 %}
+<form class="site-switcher" method="get" action="{{ url_for('dashboard') }}" aria-label="{{ _('Cambia sito') }}">
+  <label class="site-switcher__label" for="dash-site-select">{{ _('Sito attivo') }}</label>
+  <div class="site-switcher__control">
+    <select class="site-switcher__select" id="dash-site-select" name="site">
+      {% for s in user_sites %}
+      <option value="{{ s.id }}"{% if latest and s.id == latest.id %} selected{% endif %}>
+        {{ s.domain }}
+        · AIO {{ s.aio_score if s.aio_score is not none else '—' }}
+        · GEO {{ s.geo_score if s.geo_score is not none else '—' }}
+      </option>
+      {% endfor %}
+    </select>
+    <span class="site-switcher__meta" aria-hidden="true">{{ user_sites|length }}/{{ max_sites }}</span>
+  </div>
+  <p class="site-switcher__hint">
+    {% if can_multi_site %}
+      {{ _('Report completo per dominio: score, SoV, findings, Edge e pack.') }}
+    {% else %}
+      {{ _('Upgrade a Plus per monitorare più domini nello stesso workspace.') }}
+    {% endif %}
+  </p>
+</form>
+<script nonce="{{ csp_nonce }}">
+(function () {
+  var sel = document.getElementById('dash-site-select');
+  if (!sel || !sel.form) return;
+  sel.addEventListener('change', function () { sel.form.submit(); });
+})();
+</script>
+{% endif %}

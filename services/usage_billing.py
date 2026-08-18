@@ -90,6 +90,8 @@ _PRICE_TABLE: dict[str, dict[str, float]] = {
     "grok-4-1-fast":               {"in": 0.20, "out": 0.50},
     "grok-3-mini":                 {"in": 0.30, "out": 0.50},
     "grok-3":                      {"in": 3.00, "out": 15.00},
+    # Azure AI Foundry Copilot deployments (observed on VPS probes).
+    "grok-4.3":                    {"in": 1.00, "out": 4.00},
     "grok-4.5":                    {"in": 2.00, "out": 6.00},
 }
 
@@ -144,8 +146,13 @@ def _estimate_llms_txt(model: str) -> TokenBudget:
 
 
 def _estimate_sov_call(model: str) -> TokenBudget:
-    """One citation-monitor prompt call (matches runtime per-prompt debit)."""
-    return TokenBudget(model=model, input_tokens=150, output_tokens=350)
+    """One citation-monitor prompt call (matches runtime per-prompt debit).
+
+    Output budget is intentionally high: Copilot/Azure (and some Claude) replies
+    often exceed 1k tokens. Lean 150/350 estimates under-held Measured jobs under
+    FinOps aggregate debit (projected spend > hold → fail-closed mid-probe).
+    """
+    return TokenBudget(model=model, input_tokens=250, output_tokens=1200)
 
 
 def _openai_sov_calls(n_prompts: int) -> int:

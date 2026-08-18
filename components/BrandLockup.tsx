@@ -43,8 +43,7 @@ export function BrandLockup({
       ) : null}
       <div className="flex flex-col gap-1 min-w-0">
         <p
-          className={`m-0 font-bold lowercase text-[#F5F7FA] ${s.text}`}
-          style={{ fontFamily: '"Inter", system-ui, sans-serif' }}
+          className={`m-0 font-sans font-bold lowercase text-[#F5F7FA] ${s.text}`}
         >
           centropic
           <span className="font-semibold text-[#C9D3DD]">.ai</span>
