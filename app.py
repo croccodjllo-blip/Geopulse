@@ -3242,34 +3242,49 @@ def resolve_analyze_existing(user: User, url: str) -> tuple[SiteAnalysis | None,
     return existing, None
 
 
+def _job_is_measured_source(job: AnalysisJob | None) -> bool:
+    return str(getattr(job, "source", None) or "").lower() == "measured"
+
+
 def active_analyze_job_for_url(
     user_id: int,
     url: str,
     *,
     site: SiteAnalysis | None = None,
+    include_measured: bool = False,
 ) -> AnalysisJob | None:
     """Pending/running job for the same URL within the tenant (dedupe enqueue).
 
     Matches: (1) same site_id, (2) same user+url, (3) org peers on the same URL.
+
+    By default ignores ``source=measured`` follow-ups: those run after Stimato/pack
+    and must not block a new crawl remisure or steal the progress overlay
+    (user would land back on the existing Stimato report with no crawl UI).
     """
     active = AnalysisJob.status.in_(("pending", "running"))
+
+    def _pick(q):
+        if include_measured or not hasattr(AnalysisJob, "source"):
+            return q.order_by(AnalysisJob.id.desc()).first()
+        # Prefer a crawl/primary job; skip deferred measured SoV.
+        for job in q.order_by(AnalysisJob.id.desc()).limit(12).all():
+            if not _job_is_measured_source(job):
+                return job
+        return None
+
     if site is not None and getattr(site, "id", None):
-        by_site = (
+        by_site = _pick(
             AnalysisJob.query.filter(active, AnalysisJob.site_id == int(site.id))
-            .order_by(AnalysisJob.id.desc())
-            .first()
         )
         if by_site is not None:
             return by_site
 
-    by_user = (
+    by_user = _pick(
         AnalysisJob.query.filter(
             active,
             AnalysisJob.user_id == user_id,
             AnalysisJob.url == url,
         )
-        .order_by(AnalysisJob.id.desc())
-        .first()
     )
     if by_user is not None:
         return by_user
@@ -3296,15 +3311,77 @@ def active_analyze_job_for_url(
     ]
     if not peer_ids:
         return None
-    return (
+    return _pick(
         AnalysisJob.query.filter(
             active,
             AnalysisJob.url == url,
             AnalysisJob.user_id.in_(peer_ids),
         )
-        .order_by(AnalysisJob.id.desc())
-        .first()
     )
+
+
+def cancel_active_measured_for_analyze(
+    user: User,
+    url: str,
+    *,
+    site: SiteAnalysis | None = None,
+) -> int:
+    """Supersede deferred measured jobs when a new crawl analysis starts.
+
+    Releases any remaining hold so remisure is not blocked by SoV-in-progress.
+    Returns how many measured jobs were cancelled.
+    """
+    if not hasattr(AnalysisJob, "source"):
+        return 0
+    active = AnalysisJob.status.in_(("pending", "running"))
+    candidates = (
+        AnalysisJob.query.filter(
+            active,
+            AnalysisJob.user_id == int(user.id),
+            AnalysisJob.source == "measured",
+        )
+        .order_by(AnalysisJob.id.desc())
+        .limit(20)
+        .all()
+    )
+    site_id = int(site.id) if site is not None and getattr(site, "id", None) else None
+    cancelled = 0
+    now = datetime.now(timezone.utc)
+    for job in candidates:
+        same_site = site_id is not None and int(getattr(job, "site_id", 0) or 0) == site_id
+        same_url = (getattr(job, "url", None) or "") == url
+        if not (same_site or same_url):
+            continue
+        held = int(getattr(job, "held_cents", 0) or 0)
+        updated = (
+            AnalysisJob.query.filter(
+                AnalysisJob.id == job.id,
+                AnalysisJob.status.in_(("pending", "running")),
+            )
+            .update(
+                {
+                    "status": "error",
+                    "error": "Sostituito da nuova analisi crawl",
+                    "finished_at": now,
+                    "lease_token": None,
+                    "held_cents": 0,
+                },
+                synchronize_session=False,
+            )
+        )
+        if not updated:
+            continue
+        cancelled += 1
+        if held > 0:
+            try:
+                release_hold(db.session, user, amount_cents=held)
+            except Exception:
+                app.logger.exception(
+                    "release_hold failed cancelling measured job=%s", job.id
+                )
+    if cancelled:
+        db.session.commit()
+    return cancelled
 
 
 def enforce_analyze_limits(
@@ -6801,6 +6878,9 @@ def dashboard_analyze_confirmed():
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return blocked
+    # Deferred SoV must not block remisure or steal the crawl overlay.
+    cancel_active_measured_for_analyze(user, url, site=existing)
+
     dup = active_analyze_job_for_url(user.id, url, site=existing)
     if dup is not None:
         flash("Analisi già in coda per questo URL.", "info")
