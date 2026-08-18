@@ -19,8 +19,12 @@ def test_legal_and_contact_pages_are_public():
         "/contatti",
         "/contact",
     ):
-        resp = client.get(path)
-        assert resp.status_code == 200, path
+        resp = client.get(path, follow_redirects=False)
+        assert resp.status_code in {200, 301, 302}, path
+        if resp.status_code in {301, 302}:
+            # Canonical aliases may redirect; follow must land on 200.
+            followed = client.get(path, follow_redirects=True)
+            assert followed.status_code == 200, path
 
 
 def test_homepage_exposes_contact_and_legal_links():
@@ -41,8 +45,10 @@ def test_pricing_hides_yearly_without_catalog_price(monkeypatch):
     monkeypatch.setenv("PADDLE_PRICE_PLUS_MONTHLY", "pri_test_monthly")
     client = app.test_client()
     html = client.get("/prezzi").get_data(as_text=True)
-    assert "14,99" in html or "14.99" in html
     assert "19,99" in html or "19.99" in html
+    assert "14,99" not in html and "14.99" not in html
+    assert "191.90" not in html
+    assert "191,90" not in html
     assert "143.90" not in html
     assert "143,90" not in html
 

@@ -112,9 +112,8 @@
       <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
     </article>
     <article class="profile-card profile-card--featured" role="listitem">
-      <p class="profile-card__badge">{{ _('Offerta') }}</p>
       <p class="profile-card__tier">Plus</p>
-      {% with price_class='profile-card__price', show_offer_note=true %}
+      {% with price_class='profile-card__price', show_offer_note=false %}
         {% include "partials/plus_price_offer.html" %}
       {% endwith %}
       <p class="profile-card__who">{{ _('Startup sul proprio brand') }}</p>
@@ -275,7 +274,7 @@
     <details class="faq-item">
       <summary>{{ _('Quale piano mi serve?') }}</summary>
       <p>
-        {{ _('Free: 1 dominio. Plus (14,99€ Tasse escluse): fino a') }} {{ max_sites_plus }} {{ _('domini, re-scan e SoV Misurato. Business (waitlist): API, white-label e fino a') }}
+        {{ _('Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a') }} {{ max_sites_plus }} {{ _('domini, re-scan e SoV Misurato. Business (waitlist): API, white-label e fino a') }}
         {{ max_sites_business }} {{ _('domini clienti.') }}
       </p>
     </details>

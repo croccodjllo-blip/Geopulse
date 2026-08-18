@@ -22,8 +22,21 @@ ZH: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "打开 Paddle 结账前必须勾选。未勾选将无法开始付款。"
     ),
-    "Paga Plus · 14,99€/mese": "支付 Plus · €14.99/月（不含税）",
-    "Paga Plus · 14,99€/mese Tasse escluse": "支付 Plus · €14.99/月（不含税）",
+    "Paga Plus · 19,99€/mese": "支付 Plus · €19.99/月（不含税）",
+    "Paga Plus · 19,99€/mese Tasse escluse": "支付 Plus · €19.99/月（不含税）",
+    "Paga Plus · 14,99€/mese": "支付 Plus · €19.99/月（不含税）",
+    "Paga Plus · 14,99€/mese Tasse escluse": "支付 Plus · €19.99/月（不含税）",
+    "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
+        "Free：1 个域名。Plus（€19.99 不含税）：最多"
+    ),
+    "Plus (19,99€ Tasse escluse) è per startup sul proprio brand: pochi domini, re-scan e SoV Misurato. Business (89,99€ Tasse escluse) è il profilo agenzia: scala clienti, API, white-label e brand vostro sui deliverable.": (
+        "Plus（€19.99 不含税）面向自有品牌的创业公司：少量域名、重新扫描与实测 SoV。"
+        "Business（€89.99 不含税）面向代理机构：多客户扩展、API、白标与自有品牌交付。"
+    ),
+    "Listino Plus 19,99€/mese Tasse escluse; Free con CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation monitor Misurato solo su Plus.": (
+        "Plus €19.99/月（不含税）；Free 含估算 CVI/AIO/GEO；Business €89.99（不含税）候补。"
+        "实测引用监控仅限 Plus。"
+    ),
     "Tasse escluse": "不含税",
     "Tutti i prezzi sono tasse escluse.": "所有价格均为不含税。",
     "I prezzi dei piani a pagamento sono tasse escluse.": "付费套餐价格均为不含税。",
@@ -124,8 +137,21 @@ KO: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Paddle 결제를 열려면 필수입니다. 체크하지 않으면 결제가 시작되지 않습니다."
     ),
-    "Paga Plus · 14,99€/mese": "Plus 결제 · €14.99/월(세금 별도)",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Plus 결제 · €14.99/월(세금 별도)",
+    "Paga Plus · 19,99€/mese": "Plus 결제 · €19.99/월(세금 별도)",
+    "Paga Plus · 19,99€/mese Tasse escluse": "Plus 결제 · €19.99/월(세금 별도)",
+    "Paga Plus · 14,99€/mese": "Plus 결제 · €19.99/월(세금 별도)",
+    "Paga Plus · 14,99€/mese Tasse escluse": "Plus 결제 · €19.99/월(세금 별도)",
+    "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
+        "Free: 도메인 1개. Plus(€19.99 세금 별도): 최대"
+    ),
+    "Plus (19,99€ Tasse escluse) è per startup sul proprio brand: pochi domini, re-scan e SoV Misurato. Business (89,99€ Tasse escluse) è il profilo agenzia: scala clienti, API, white-label e brand vostro sui deliverable.": (
+        "Plus(€19.99 세금 별도)는 자체 브랜드 스타트업용: 소수 도메인, 재스캔, 실측 SoV. "
+        "Business(€89.99 세금 별도)는 에이전시 프로필: 고객 확장, API, 화이트라벨, 자사 브랜드 산출물."
+    ),
+    "Listino Plus 19,99€/mese Tasse escluse; Free con CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation monitor Misurato solo su Plus.": (
+        "Plus €19.99/월(세금 별도); Free는 추정 CVI/AIO/GEO; Business €89.99(세금 별도) 대기열. "
+        "실측 인용 모니터는 Plus만."
+    ),
     "Tasse escluse": "세금 별도",
     "Tutti i prezzi sono tasse escluse.": "모든 가격은 세금 별도입니다.",
     "I prezzi dei piani a pagamento sono tasse escluse.": "유료 요금제 가격은 세금 별도입니다.",

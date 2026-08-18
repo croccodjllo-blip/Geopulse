@@ -1,10 +1,12 @@
-{# Plus list vs offer price. Expects plus_list_eur + plus_monthly_eur.
-   Offer amount uses <strong> so it keeps .plan__price display size
-   (the /mese rule targets spans only — same as Free / Business).
+{# Plus price display. Expects plus_list_eur + plus_monthly_eur.
+   When list == monthly: single price (no strikethrough offer).
+   When list > monthly: list + offer row (legacy promo).
    All displayed amounts are excl. VAT. #}
 {% set _list = '%.2f'|format(plus_list_eur)|replace('.', ',') %}
 {% set _offer = '%.2f'|format(plus_monthly_eur)|replace('.', ',') %}
 {% set _price_class = price_class|default('plan__price') %}
+{% set _has_offer = (plus_list_eur|float) > ((plus_monthly_eur|float) + 0.001) %}
+{% if _has_offer %}
 <p class="{{ _price_class }} {{ _price_class }}--offer">
   <span class="price-offer__list">
     <span class="visually-hidden">{{ _('Prezzo di listino') }} </span>
@@ -17,4 +19,9 @@
 </p>
 {% if show_offer_note|default(true) %}
 <p class="price-offer__note">{{ _('Offerta') }} · {{ _('listino') }} {{ _list }}&nbsp;€ · {{ _('Tasse escluse') }}</p>
+{% endif %}
+{% else %}
+<p class="{{ _price_class }}">
+  {{ _offer }}&nbsp;€{% include "partials/price_period_ex_vat.html" %}
+</p>
 {% endif %}

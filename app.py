@@ -311,8 +311,8 @@ PRO_DEEP_CRAWL_PAGES = max(
     min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
 PLUS_LIST_EUR = float(os.environ.get("PLUS_LIST_EUR", "19.99"))
-PLUS_MONTHLY_EUR = float(os.environ.get("PLUS_MONTHLY_EUR", "14.99"))  # offer / checkout
-PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "143.90"))  # ~−20% vs 12×14.99
+PLUS_MONTHLY_EUR = float(os.environ.get("PLUS_MONTHLY_EUR", "19.99"))  # checkout
+PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "191.90"))  # ~−20% vs 12×19.99
 BUSINESS_MONTHLY_EUR = float(os.environ.get("BUSINESS_MONTHLY_EUR", "89.99"))
 BUSINESS_YEARLY_EUR = float(
     os.environ.get("BUSINESS_YEARLY_EUR", f"{BUSINESS_MONTHLY_EUR * 12 * 0.8:.2f}")
@@ -6749,7 +6749,7 @@ def dashboard_analyze_confirmed():
 #   1 token == 10 EUR cents == €0.10  →  100 token = €10.00 (base rate)
 # Packs (Plus/Business only — Free cannot top up):
 #   €10 → 100 token, €20 → 200 token, €50 → 550 token (bonus lieve)
-# Plus subscription (€14.99/mo): includes 100 token each billing cycle.
+# Plus subscription (€19.99/mo excl. tax): includes 100 token each billing cycle.
 # Pre-analysis estimate mirrors realtime per-call ceil debit (citation probes
 # count as one call each). Typical holds with SoV Misurato:
 #   OpenAI-only ≈ 7¢ · OAI+Pplx ≈ 10¢ · multi-engine ≈ 20–23¢

@@ -6,7 +6,7 @@ Requires:
   PADDLE_ENV=sandbox|production
 
 Creates (if missing by name):
-  - Product "Centropic Plus" + monthly price (€14.99)
+  - Product "Centropic Plus" + monthly price (€19.99)
   - Product "Centropic Credits" + one-time prices for €10/20/50
     (€10→100 token, €20→200 token, €50→550 token; 1 token = €0.10)
 
@@ -100,11 +100,11 @@ def main() -> int:
         return 2
 
     plus_product = ensure_product("Centropic Plus")
-    # Default Plus at €14.99/month — includes 100 token/billing cycle in-app.
+    # Default Plus at €19.99/month — includes 100 token/billing cycle in-app.
     plus_price = ensure_price(
         product_id=plus_product["id"],
         name="Plus monthly",
-        unit_price_cents=1499,
+        unit_price_cents=1999,
         billing_cycle={"interval": "month", "frequency": 1},
     )
 

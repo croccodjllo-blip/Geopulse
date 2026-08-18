@@ -777,7 +777,7 @@ def expected_plus_unit_cents(interval: str = "month") -> int | None:
             return int(round(float(raw) * 100))
         except (TypeError, ValueError):
             return None
-    return _env_eur_cents("PLUS_MONTHLY_EUR", "14.99")
+    return _env_eur_cents("PLUS_MONTHLY_EUR", "19.99")
 
 
 def expected_business_unit_cents(interval: str = "month") -> int | None:

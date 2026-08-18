@@ -36,8 +36,8 @@ PRO_DEEP_CRAWL_PAGES = max(
     min(ABS_MAX_CRAWL_PAGES, max(1, _PRO_DEEP_RAW)),
 )
 PLUS_LIST_EUR = float(os.environ.get("PLUS_LIST_EUR", "19.99"))
-PLUS_MONTHLY_EUR = float(os.environ.get("PLUS_MONTHLY_EUR", "14.99"))  # offer / checkout
-PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "143.90"))
+PLUS_MONTHLY_EUR = float(os.environ.get("PLUS_MONTHLY_EUR", "19.99"))  # checkout
+PLUS_YEARLY_EUR = float(os.environ.get("PLUS_YEARLY_EUR", "191.90"))
 BUSINESS_MONTHLY_EUR = float(os.environ.get("BUSINESS_MONTHLY_EUR", "89.99"))
 BUSINESS_YEARLY_EUR = float(
     os.environ.get("BUSINESS_YEARLY_EUR", f"{BUSINESS_MONTHLY_EUR * 12 * 0.8:.2f}")

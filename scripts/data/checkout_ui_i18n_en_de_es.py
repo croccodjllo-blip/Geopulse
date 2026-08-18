@@ -28,8 +28,22 @@ EN: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Required to open Paddle checkout. Without this checkbox, payment will not start."
     ),
-    "Paga Plus · 14,99€/mese": "Pay Plus · €14.99/mo excl. taxes",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Pay Plus · €14.99/mo excl. taxes",
+    "Paga Plus · 19,99€/mese": "Pay Plus · €19.99/mo excl. taxes",
+    "Paga Plus · 19,99€/mese Tasse escluse": "Pay Plus · €19.99/mo excl. taxes",
+    "Paga Plus · 14,99€/mese": "Pay Plus · €19.99/mo excl. taxes",
+    "Paga Plus · 14,99€/mese Tasse escluse": "Pay Plus · €19.99/mo excl. taxes",
+    "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
+        "Free: 1 domain. Plus (€19.99 excl. tax): up to"
+    ),
+    "Plus (19,99€ Tasse escluse) è per startup sul proprio brand: pochi domini, re-scan e SoV Misurato. Business (89,99€ Tasse escluse) è il profilo agenzia: scala clienti, API, white-label e brand vostro sui deliverable.": (
+        "Plus (€19.99 excl. tax) is for startups on their own brand: a few domains, "
+        "rescan and Measured SoV. Business (€89.99 excl. tax) is the agency profile: "
+        "client scale, API, white-label and your brand on deliverables."
+    ),
+    "Listino Plus 19,99€/mese Tasse escluse; Free con CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation monitor Misurato solo su Plus.": (
+        "Plus €19.99/mo excl. tax; Free with Estimated CVI/AIO/GEO; Business €89.99 "
+        "excl. tax on waitlist. Measured citation monitor on Plus only."
+    ),
     "Tasse escluse": "excl. taxes",
     "Tutti i prezzi sono tasse escluse.": "All prices exclude taxes.",
     "I prezzi dei piani a pagamento sono tasse escluse.": "Paid plan prices exclude taxes.",
@@ -133,8 +147,22 @@ DE: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Erforderlich, um den Paddle-Checkout zu öffnen. Ohne Häkchen startet die Zahlung nicht."
     ),
-    "Paga Plus · 14,99€/mese": "Plus bezahlen · 14,99 €/Monat zzgl. Steuern",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Plus bezahlen · 14,99 €/Monat zzgl. Steuern",
+    "Paga Plus · 19,99€/mese": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
+    "Paga Plus · 19,99€/mese Tasse escluse": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
+    "Paga Plus · 14,99€/mese": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
+    "Paga Plus · 14,99€/mese Tasse escluse": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
+    "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
+        "Free: 1 Domain. Plus (19,99 € zzgl. Steuern): bis zu"
+    ),
+    "Plus (19,99€ Tasse escluse) è per startup sul proprio brand: pochi domini, re-scan e SoV Misurato. Business (89,99€ Tasse escluse) è il profilo agenzia: scala clienti, API, white-label e brand vostro sui deliverable.": (
+        "Plus (19,99 € zzgl. Steuern) ist für Startups mit eigener Marke: wenige Domains, "
+        "Rescan und Measured SoV. Business (89,99 € zzgl. Steuern) ist das Agenturprofil: "
+        "Kundenskalierung, API, White-Label und Ihre Marke auf Deliverables."
+    ),
+    "Listino Plus 19,99€/mese Tasse escluse; Free con CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation monitor Misurato solo su Plus.": (
+        "Plus 19,99 €/Monat zzgl. Steuern; Free mit geschätztem CVI/AIO/GEO; Business 89,99 € "
+        "zzgl. Steuern auf der Waitlist. Measured Citation-Monitor nur bei Plus."
+    ),
     "Tasse escluse": "zzgl. Steuern",
     "Tutti i prezzi sono tasse escluse.": "Alle Preise verstehen sich zzgl. Steuern",
     "I prezzi dei piani a pagamento sono tasse escluse.": "Preise der kostenpflichtigen Pläne verstehen sich zzgl. Steuern",
@@ -238,8 +266,22 @@ ES: dict[str, str] = {
     "Obbligatorio per aprire il checkout Paddle. Senza spunta, il pagamento non parte.": (
         "Obligatorio para abrir el checkout de Paddle. Sin la casilla, el pago no se inicia."
     ),
-    "Paga Plus · 14,99€/mese": "Pagar Plus · 14,99 €/mes sin impuestos",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Pagar Plus · 14,99 €/mes sin impuestos",
+    "Paga Plus · 19,99€/mese": "Pagar Plus · 19,99 €/mes sin impuestos",
+    "Paga Plus · 19,99€/mese Tasse escluse": "Pagar Plus · 19,99 €/mes sin impuestos",
+    "Paga Plus · 14,99€/mese": "Pagar Plus · 19,99 €/mes sin impuestos",
+    "Paga Plus · 14,99€/mese Tasse escluse": "Pagar Plus · 19,99 €/mes sin impuestos",
+    "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
+        "Free: 1 dominio. Plus (19,99 € sin impuestos): hasta"
+    ),
+    "Plus (19,99€ Tasse escluse) è per startup sul proprio brand: pochi domini, re-scan e SoV Misurato. Business (89,99€ Tasse escluse) è il profilo agenzia: scala clienti, API, white-label e brand vostro sui deliverable.": (
+        "Plus (19,99 € sin impuestos) es para startups con su propia marca: pocos dominios, "
+        "re-scan y SoV Medido. Business (89,99 € sin impuestos) es el perfil agencia: "
+        "escala de clientes, API, white-label y su marca en los entregables."
+    ),
+    "Listino Plus 19,99€/mese Tasse escluse; Free con CVI/AIO/GEO Stimati; Business 89,99€ Tasse escluse in waitlist. Citation monitor Misurato solo su Plus.": (
+        "Plus 19,99 €/mes sin impuestos; Free con CVI/AIO/GEO estimados; Business 89,99 € "
+        "sin impuestos en waitlist. Monitor de citas Medido solo en Plus."
+    ),
     "Tasse escluse": "impuestos no incluidos",
     "Tutti i prezzi sono tasse escluse.": "Todos los precios no incluyen impuestos.",
     "I prezzi dei piani a pagamento sono tasse escluse.": "Los precios de los planes de pago no incluyen impuestos.",

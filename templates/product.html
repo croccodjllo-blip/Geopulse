@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Prodotto') }} — Centropic AIO/GEO{% endblock %}
-{% block meta_description %}{{ _('Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 19,99€ in offerta a 14,99€ Tasse escluse, Business 89,99€ Tasse escluse con API e white-label.') }}{% endblock %}
+{% block meta_description %}{{ _('Centropic Visibility Index (CVI), score AIO/GEO, findings e pack. Tre profili SaaS — Free, Plus 19,99€ Tasse escluse, Business 89,99€ Tasse escluse con API e white-label.') }}{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
 {% endblock %}
@@ -53,7 +53,7 @@
         <p class="profile-card__desc">{{ _('Prova valore sul primo dominio: score, findings, pack.') }}</p>
       </article>
       <article class="profile-card" role="listitem">
-        <p class="profile-card__tier">Plus · <s>19,99&nbsp;€</s> {{ '%.2f'|format(plus_monthly_eur)|replace('.', ',') }}&nbsp;€ {{ _('Tasse escluse') }}</p>
+        <p class="profile-card__tier">Plus · {{ '%.2f'|format(plus_monthly_eur)|replace('.', ',') }}&nbsp;€ {{ _('Tasse escluse') }}</p>
         <p class="profile-card__price">{{ max_sites_plus }} {{ _('domini') }}</p>
         <p class="profile-card__desc">{{ _('Startup: re-scan, SoV Misurato, alert e crawl esteso sul proprio brand.') }}</p>
       </article>

@@ -18,7 +18,7 @@
   "offers": {
     "@type": "AggregateOffer",
     "lowPrice": "0",
-    "highPrice": "{{ '14.99' if sell_plus_only else '89.99' }}",
+    "highPrice": "{{ '%.2f'|format(plus_monthly_eur) if sell_plus_only else '%.2f'|format(business_monthly_eur) }}",
     "priceCurrency": "EUR",
     "offerCount": "3",
     "url": "{{ canonical_base }}/prezzi",
@@ -33,7 +33,7 @@
       {
         "@type": "Offer",
         "name": "Plus",
-        "price": "14.99",
+        "price": "{{ '%.2f'|format(plus_monthly_eur) }}",
         "priceCurrency": "EUR",
         "description": "Startup: fino a {{ max_sites_plus }} domini, re-scan, SoV measured"
       }{% if not sell_plus_only %},
