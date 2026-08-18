@@ -58,7 +58,9 @@ def test_sparse_measured_zeros_engine_propensity_not_proxy():
     }
     out = apply_measured_sov(proxy, measured)
     assert out["brand_sov"] == 12
-    assert out["evidence"] == "mixed"
+    # All six engines probed → Misurato (zeros count as measured, not Stimato).
+    assert out["evidence"] == "measured"
+    assert out.get("label") == "Misurato"
     openai = next(e for e in out["engines"] if e["id"] == "openai")
     google = next(e for e in out["engines"] if e["id"] == "google")
     assert openai["propensity"] == 12
@@ -66,6 +68,7 @@ def test_sparse_measured_zeros_engine_propensity_not_proxy():
     assert google["propensity"] == 0
     assert google.get("mention_rate") == 0
     assert google.get("measured_zero") is True
+    assert not any(e.get("evidence") == "proxy" for e in out["engines"])
 
 
 def test_strong_measured_overrides_brand_sov():
@@ -81,6 +84,26 @@ def test_strong_measured_overrides_brand_sov():
     }
     out = apply_measured_sov(proxy, measured)
     assert out["brand_sov"] == 41
+    # Only 3/6 engines measured → remaining stay proxy → Misurato + Stimato.
     assert out["evidence"] == "mixed"
+    assert out.get("label") == "Misto (proxy + measured)"
+    assert any(e.get("evidence") == "proxy" for e in out["engines"])
     openai = next(e for e in out["engines"] if e["id"] == "openai")
     assert openai["propensity"] == 48
+
+
+def test_partial_measured_keeps_mixed_when_proxy_remains():
+    proxy = _proxy()
+    measured = {
+        "available": True,
+        "brand_mention_rate": 20,
+        "engines": [
+            {"id": "openai", "mention_rate": 20, "evidence": "measured"},
+            {"id": "perplexity", "mention_rate": 0, "evidence": "measured"},
+        ],
+    }
+    out = apply_measured_sov(proxy, measured)
+    assert out["evidence"] == "mixed"
+    assert out.get("label") == "Misto (proxy + measured)"
+    assert any(e.get("evidence") == "proxy" for e in out["engines"])
+    assert any(e.get("evidence") == "measured" for e in out["engines"])

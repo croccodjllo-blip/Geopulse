@@ -373,6 +373,8 @@ def apply_measured_sov(
     - Positive measured rates replace proxy propensity for that engine.
     - Full zero-hit probe shows 0% measured share (never keeps proxy % as if measured).
     - Per-engine zero hits set propensity/mention_rate to 0 with ``measured_zero``.
+    - Aggregate evidence is ``measured`` when no engine remains ``proxy``;
+      ``mixed`` (UI: Misurato + Stimato) only if some engines are still proxy.
     """
     if not measured or not measured.get("available"):
         return breakdown
@@ -519,19 +521,39 @@ def apply_measured_sov(
             out["brand_sov"] = _clamp(brand_f)
             out["other_sov"] = round(100.0 - out["brand_sov"], 1)
             out["rivals_sov"] = 0.0
-            out["evidence"] = "mixed"
-            out["label"] = "Misto (proxy + measured)"
         else:
             # Positive engine hits but brand aggregate ~0: still show measured truth.
             out["brand_sov"] = 0
             out["other_sov"] = 100.0
             out["rivals_sov"] = 0.0
-            out["evidence"] = "mixed"
-            out["label"] = "Misto — brand measured ~0"
             out["note"] = measured.get("note") or (
                 "Probe measured con hit su engine ma brand mention rate ~0; "
                 "non riusiamo la share proxy per il brand."
             )
+
+        # Honesty: "Misurato + Stimato" only when some engines still use proxy.
+        # All probed engines measured (incl. 0 hits) → Misurato, not mixed.
+        has_proxy = any(e.get("evidence") == "proxy" for e in engines)
+        has_measured = any(e.get("evidence") == "measured" for e in engines)
+        if has_measured and has_proxy:
+            out["evidence"] = "mixed"
+            out["label"] = "Misto (proxy + measured)"
+            if not out.get("note"):
+                out["note"] = measured.get("note") or (
+                    "Engine con menzioni LLM: evidence measured. "
+                    "Altri engine restano stima strutturale (non citazioni live)."
+                )
+        elif has_measured:
+            out["evidence"] = "measured"
+            if brand_f is not None and brand_f > 0:
+                out["label"] = "Misurato"
+            else:
+                out["label"] = "Misurato — brand measured ~0"
+            if not out.get("note"):
+                out["note"] = measured.get("note") or (
+                    "Citation monitor: tutti gli engine disponibili sono Misurati "
+                    "(incluse 0 menzioni). Nessuna share proxy residua."
+                )
         if not out.get("note"):
             out["note"] = measured.get("note") or (
                 "Engine con menzioni LLM: evidence measured. "
