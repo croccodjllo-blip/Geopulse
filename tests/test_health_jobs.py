@@ -54,13 +54,20 @@ def test_health_detail_is_read_only_snapshot(monkeypatch):
     public_payload = client.get("/health").get_json()
     assert "jobs" not in public_payload
 
-    detail = client.get(f"/health?token=health-{suffix}").get_json()
+    detail = client.get(
+        "/health",
+        headers={"X-Ops-Token": f"health-{suffix}"},
+    ).get_json()
     # GET /health is read-only: stale running stays visible until ops reclaim.
     assert detail["jobs"]["pending"] >= 1
     assert detail["jobs"]["running"] >= 2
     assert detail["jobs"]["stale_running"] >= 1
     assert "jobs_reclaimed" not in detail
     assert detail["jobs"]["stale_after_minutes"] >= 5
+
+    # Query-string tokens must not unlock detail (Referer / log leak surface).
+    leaked = client.get(f"/health?token=health-{suffix}").get_json()
+    assert "jobs" not in leaked
 
 
 def test_ops_reclaim_jobs_releases_stale(monkeypatch):
@@ -98,7 +105,13 @@ def test_ops_reclaim_jobs_releases_stale(monkeypatch):
     denied = client.post("/ops/reclaim-jobs")
     assert denied.status_code == 403
 
-    ok = client.post(f"/ops/reclaim-jobs?token=ops-{suffix}").get_json()
+    query_denied = client.post(f"/ops/reclaim-jobs?token=ops-{suffix}")
+    assert query_denied.status_code == 403
+
+    ok = client.post(
+        "/ops/reclaim-jobs",
+        headers={"X-Ops-Token": f"ops-{suffix}"},
+    ).get_json()
     assert ok["ok"] is True
     assert ok["jobs_reclaimed"] >= 1
 

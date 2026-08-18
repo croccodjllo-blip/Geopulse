@@ -25,7 +25,7 @@ Alembic è la fonte di verità per lo schema di produzione: ogni modifica persis
 - HTTP layering: factory + domain views
 - Data plane: dialect-gated PRAGMA + Alembic
 - Multi-tenancy: Organization model + `user_can_access_site`
-- Ops: metrics snapshot on `/health?token=`
+- Ops: metrics snapshot on `/health` with `X-Ops-Token` (detail); reclaim via `POST /ops/reclaim-jobs` + same header
 - Security: CSP nonce (no blanket script unsafe-inline seed)
 - Domain: `User.entitlements` / `User.can()` → `services.entitlements`
 - Billing: `CreditLedger.payment_idempotency_key` alias + webhook metrics

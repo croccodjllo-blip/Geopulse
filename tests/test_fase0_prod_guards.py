@@ -163,7 +163,7 @@ def test_health_ok_after_schema(monkeypatch):
     client = app.test_client()
     public = client.get("/health").get_json()
     assert public["ok"] is True
-    detail = client.get(f"/health?token={token}").get_json()
+    detail = client.get("/health", headers={"X-Ops-Token": token}).get_json()
     assert detail["credit_ledger_pi_index_ok"] is True
     assert "prod_guards" in detail
 

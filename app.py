@@ -3687,10 +3687,11 @@ def health():
         if fail_on_stale and stale_n > 0:
             reasons.append("stale_jobs")
         payload["failures"] = reasons
-    # Dettaglio stack solo con token o per admin autenticato (evita leak pubblici).
+    # Dettaglio stack solo con header ops o admin autenticato (no token in query:
+    # evita leak via Referer/access log).
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
     want_detail = False
-    provided = (request.args.get("token") or "").strip()
+    provided = (request.headers.get("X-Ops-Token") or "").strip()
     if detail_token and provided and secrets.compare_digest(detail_token, provided):
         want_detail = True
     else:
@@ -3776,9 +3777,12 @@ def ops_reclaim_jobs():
     session — an authenticated admin browser session alone is not sufficient
     (this endpoint is CSRF-exempt, so a session-only check would let a
     cross-site POST from an admin's browser trigger reclaim/refund logic).
+
+    Auth via ``X-Ops-Token`` header only (query ``?token=`` rejected to avoid
+    Referer / access-log leakage).
     """
     detail_token = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
-    provided = (request.args.get("token") or request.headers.get("X-Ops-Token") or "").strip()
+    provided = (request.headers.get("X-Ops-Token") or "").strip()
     if not detail_token or not provided or not secrets.compare_digest(detail_token, provided):
         return jsonify({"ok": False, "error": "forbidden"}), 403
 

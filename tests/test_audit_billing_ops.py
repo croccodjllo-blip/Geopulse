@@ -155,7 +155,10 @@ def test_ops_reclaim_jobs_requires_token_even_for_admin(monkeypatch):
     assert denied.status_code == 403
     assert denied.get_json()["error"] == "forbidden"
 
-    allowed = client.post(f"/ops/reclaim-jobs?token=ops-token-{suffix}")
+    allowed = client.post(
+        "/ops/reclaim-jobs",
+        headers={"X-Ops-Token": f"ops-token-{suffix}"},
+    )
     assert allowed.status_code == 200
     assert allowed.get_json()["ok"] is True
 
@@ -166,7 +169,10 @@ def test_ops_reclaim_jobs_rejects_missing_health_token_env(monkeypatch):
 
     monkeypatch.delenv("HEALTH_DETAIL_TOKEN", raising=False)
     client = app.test_client()
-    denied = client.post("/ops/reclaim-jobs?token=anything")
+    denied = client.post(
+        "/ops/reclaim-jobs",
+        headers={"X-Ops-Token": "anything"},
+    )
     assert denied.status_code == 403
 
 
