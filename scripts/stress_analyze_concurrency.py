@@ -190,9 +190,22 @@ def _ensure_stress_users(app, *, n: int, plan: str) -> list[int]:
     """Create or reuse disposable stress users. Returns user ids."""
     from app import User, db
     from services.usage_billing import is_unlimited_user
+    from sqlalchemy import text
 
     ids: list[int] = []
     with app.app_context():
+        # Prod may have NOT NULL welcome_credit_granted without a DEFAULT;
+        # ORM inserts omit unmapped/defaulted columns and would violate NN.
+        try:
+            db.session.execute(
+                text(
+                    "ALTER TABLE users "
+                    "ALTER COLUMN welcome_credit_granted SET DEFAULT false"
+                )
+            )
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
         for i in range(n):
             email = f"stress-cap-{plan}-{i:04d}@stress.invalid"
             user = User.query.filter_by(email=email).first()
@@ -202,13 +215,26 @@ def _ensure_stress_users(app, *, n: int, plan: str) -> list[int]:
                     name=f"Stress {plan} {i}",
                     plan="admin" if plan == "admin" else plan,
                     role="admin" if plan == "admin" else "user",
-                    welcome_credit_granted=True,
-                    email_verified_at=datetime.now(timezone.utc),
                     credit_balance_cents=10_000_000,
                     credit_held_cents=0,
                 )
                 user.set_password(uuid.uuid4().hex + "Aa1!")
+                if hasattr(user, "welcome_credit_granted"):
+                    user.welcome_credit_granted = True
+                if hasattr(user, "email_verified_at"):
+                    user.email_verified_at = datetime.now(timezone.utc)
                 db.session.add(user)
+                db.session.flush()
+                try:
+                    db.session.execute(
+                        text(
+                            "UPDATE users SET welcome_credit_granted = true "
+                            "WHERE id = :id"
+                        ),
+                        {"id": int(user.id)},
+                    )
+                except Exception:
+                    pass
                 db.session.commit()
             else:
                 user.plan = "admin" if plan == "admin" else plan
