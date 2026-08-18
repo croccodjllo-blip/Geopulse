@@ -42,17 +42,36 @@ def evaluate_env_guards() -> dict[str, Any]:
     trust_proxy = _truthy(os.getenv("TRUST_PROXY"), "1")
     behind_nginx = _truthy(os.getenv("BEHIND_NGINX"), "0")
     database_url = (os.getenv("DATABASE_URL") or "").strip()
+    allow_sqlite = _truthy(os.getenv("ALLOW_SQLITE_PROD"), "0")
+    paddle_webhook = (os.getenv("PADDLE_WEBHOOK_SECRET") or "").strip()
+    paddle_api = (os.getenv("PADDLE_API_KEY") or "").strip()
+    paddle_client = (os.getenv("PADDLE_CLIENT_TOKEN") or "").strip()
+    paddle_price_plus = (os.getenv("PADDLE_PRICE_PLUS_MONTHLY") or "").strip()
+    health_detail = (os.getenv("HEALTH_DETAIL_TOKEN") or "").strip()
+    sentry_dsn = (os.getenv("SENTRY_DSN") or "").strip()
+    require_sentry = _truthy(os.getenv("REQUIRE_SENTRY"), "0")
     try:
         sov_budget = int(os.getenv("SOV_DAILY_BUDGET_CENTS", "5000") or "5000")
     except ValueError:
         sov_budget = -1
 
+    db_is_sqlite = database_url.lower().startswith("sqlite")
     checks = {
         "DATABASE_URL": {
             # Prod must not silently fall back to local SQLite under BASE_DIR.
             "ok": bool(database_url),
             "value": "set" if database_url else "missing",
             "required": "set",
+        },
+        "DATABASE_ENGINE": {
+            # Prefer Postgres in prod; ALLOW_SQLITE_PROD=1 for early Plus GTM.
+            "ok": (not db_is_sqlite) or allow_sqlite or (not database_url),
+            "value": (
+                "sqlite+ALLOW"
+                if db_is_sqlite and allow_sqlite
+                else ("sqlite" if db_is_sqlite else ("postgres/other" if database_url else "unset"))
+            ),
+            "required": "postgres (or ALLOW_SQLITE_PROD=1)",
         },
         "ASYNC_ANALYZE": {
             "ok": async_analyze,
@@ -83,6 +102,39 @@ def evaluate_env_guards() -> dict[str, Any]:
                 f"BEHIND_NGINX={'1' if behind_nginx else '0'}"
             ),
             "required": "TRUST_PROXY=0 or BEHIND_NGINX=1",
+        },
+        "PADDLE_WEBHOOK_SECRET": {
+            "ok": bool(paddle_webhook),
+            "value": "set" if paddle_webhook else "missing",
+            "required": "set",
+        },
+        "PADDLE_AUTH": {
+            "ok": bool(paddle_api or paddle_client),
+            "value": (
+                "api+client"
+                if paddle_api and paddle_client
+                else ("api" if paddle_api else ("client" if paddle_client else "missing"))
+            ),
+            "required": "PADDLE_API_KEY and/or PADDLE_CLIENT_TOKEN",
+        },
+        "PADDLE_PRICE_PLUS_MONTHLY": {
+            # Paddle auth without a Plus catalog price silently disables
+            # checkout/overlay (paddle_plus_enabled() == False) or, worse,
+            # leaves the amount-assert helpers with no expected price.
+            "ok": bool(paddle_price_plus) or not (paddle_api or paddle_client),
+            "value": "set" if paddle_price_plus else "missing",
+            "required": "set when PADDLE_API_KEY or PADDLE_CLIENT_TOKEN is set",
+        },
+        "HEALTH_DETAIL_TOKEN": {
+            "ok": bool(health_detail),
+            "value": "set" if health_detail else "missing",
+            "required": "set",
+        },
+        "SENTRY_DSN": {
+            # Soft by default: REQUIRE_SENTRY=1 to hard-fail without DSN.
+            "ok": bool(sentry_dsn) or (not require_sentry),
+            "value": "set" if sentry_dsn else ("optional" if not require_sentry else "missing"),
+            "required": "set when REQUIRE_SENTRY=1",
         },
     }
     failures = [name for name, row in checks.items() if not row["ok"]]

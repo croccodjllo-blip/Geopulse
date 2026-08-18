@@ -52,22 +52,10 @@ def snapshot() -> dict[str, Any]:
 
 def configure_metrics(app: Flask) -> None:
     """Wire request metrics; optionally init Sentry if SENTRY_DSN is set."""
-    from centropic.config import METRICS_ENABLED, SENTRY_DSN
+    from centropic.config import METRICS_ENABLED
+    from centropic.sentry_setup import init_sentry
 
-    if SENTRY_DSN:
-        try:
-            import sentry_sdk
-            from sentry_sdk.integrations.flask import FlaskIntegration
-
-            sentry_sdk.init(
-                dsn=SENTRY_DSN,
-                integrations=[FlaskIntegration()],
-                traces_sample_rate=float(os.getenv("SENTRY_TRACES", "0.05")),
-                send_default_pii=False,
-            )
-            app.logger.info("Sentry initialized")
-        except Exception:
-            app.logger.exception("Sentry init failed")
+    app.extensions["sentry_active"] = bool(init_sentry(app))
 
     if not METRICS_ENABLED:
         return

@@ -350,6 +350,16 @@ if not _flask_secret:
 app.config["SECRET_KEY"] = _flask_secret
 app.config["SQLALCHEMY_DATABASE_URI"] = resolve_database_uri(os.getenv("DATABASE_URL"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Postgres: size the pool for Gunicorn workers + long-running analyze workers.
+# SQLite ignores QueuePool knobs (StaticPool / NullPool under Flask-SQLAlchemy).
+_db_uri = app.config["SQLALCHEMY_DATABASE_URI"] or ""
+if _db_uri.startswith("postgresql"):
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_size": max(1, int(os.getenv("DB_POOL_SIZE", "56"))),
+        "max_overflow": max(0, int(os.getenv("DB_MAX_OVERFLOW", "80"))),
+        "pool_pre_ping": True,
+        "pool_recycle": max(300, int(os.getenv("DB_POOL_RECYCLE", "1800"))),
+    }
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # Secure cookies by default outside local debug.
@@ -438,6 +448,20 @@ EDGE_RATE_LIMIT = max(30, int(os.getenv("EDGE_RATE_LIMIT", "120")))
 EDGE_RATE_WINDOW = max(60, int(os.getenv("EDGE_RATE_WINDOW", "60")))
 MAX_CONCURRENT_ANALYZE_JOBS = max(1, int(os.getenv("MAX_CONCURRENT_ANALYZE_JOBS", "2")))
 ALLOW_DROP_ANALYSIS_JOBS = os.getenv("ALLOW_DROP_ANALYSIS_JOBS", "0") == "1"
+
+
+def concurrent_analyze_cap_for(user: Any) -> int:
+    """Per-plan in-flight analyze cap (pending+running for that user)."""
+    from services.usage_billing import concurrent_analyze_cap_for as _cap
+
+    return _cap(
+        user,
+        free=int(os.getenv("MAX_CONCURRENT_ANALYZE_FREE", "1")),
+        plus=int(os.getenv("MAX_CONCURRENT_ANALYZE_PLUS", "3")),
+        business=int(os.getenv("MAX_CONCURRENT_ANALYZE_BUSINESS", "5")),
+        admin=int(os.getenv("MAX_CONCURRENT_ANALYZE_ADMIN", "8")),
+        fallback=MAX_CONCURRENT_ANALYZE_JOBS,
+    )
 
 
 def _ads_send_to(label: str) -> str | None:
@@ -1971,8 +1995,15 @@ def process_pending_analyze_jobs(
     limit: int = 5,
     openai_api_key: str | None = None,
     openai_model: str | None = None,
+    preferred_job_id: int | None = None,
+    source_filter: str | None = None,
+    source_exclude: str | None = None,
 ) -> dict[str, int]:
-    """Claim e processa job pending. Usato da worker e thread kick."""
+    """Claim e processa job pending. Usato da worker e thread kick.
+
+    ``preferred_job_id`` (from Redis pop) is tried first on the initial claim.
+    ``source_filter`` / ``source_exclude`` constrain DB FIFO fallback.
+    """
     stats = {"ok": 0, "error": 0, "empty": 0}
     api_key = openai_api_key if openai_api_key is not None else OPENAI_API_KEY
     model = openai_model or OPENAI_MODEL
@@ -2005,12 +2036,16 @@ def process_pending_analyze_jobs(
                     "abandoned job refund failed job=%s", abandoned_job.id
                 )
 
-    for _ in range(max(1, limit)):
+    for i in range(max(1, limit)):
+        prefer = preferred_job_id if i == 0 else None
         job = claim_next_job(
             db.session,
             AnalysisJob,
             on_abandon=_on_abandon,
             SiteAnalysis=SiteAnalysis,
+            preferred_job_id=prefer,
+            source_filter=source_filter,
+            source_exclude=source_exclude,
         )
         if job is None:
             stats["empty"] += 1
@@ -2246,6 +2281,17 @@ def process_pending_analyze_jobs(
                     format_job_error(exc),
                     lease_token=lease_token,
                 ):
+                    try:
+                        from centropic.ops_alerts import report_analyze_job_failed
+
+                        report_analyze_job_failed(
+                            job_id=int(job.id),
+                            user_id=int(getattr(job, "user_id", 0) or 0) or None,
+                            error=format_job_error(exc),
+                            phase=getattr(job, "progress_phase", None),
+                        )
+                    except Exception:
+                        app.logger.exception("job failure sentry alert failed")
                     if user is not None:
                         release_job_hold(db.session, user, job)
                         try:
@@ -2267,7 +2313,20 @@ def process_pending_analyze_jobs(
 
 
 def kick_analyze_worker() -> None:
-    """Avvia un worker one-shot in background (daemon)."""
+    """Nudge the analyze pipeline after enqueue.
+
+    With Redis queue the long-running ``--loop`` worker is already BRPOP-blocked,
+    so a kick is optional. We still spawn a oneshot drain so pending jobs that
+    missed Redis (or when Redis is down) are not stranded.
+    """
+    try:
+        from services.analyze_queue import redis_queue_enabled
+
+        if redis_queue_enabled():
+            # Job id was already LPUSH'd in enqueue_analysis; loop worker picks it up.
+            pass
+    except Exception:
+        pass
 
     def _run() -> None:
         try:
@@ -2817,7 +2876,7 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(est.service_cost_eur_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except (ConcurrentAnalysisError, InsufficientCreditError) as exc:
         app.logger.info("Onboarding analyze skipped for user %s: %s", user.id, exc)
@@ -2883,6 +2942,8 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
                 run_measured=False,
                 held_cents=held,
                 source="onboarding",
+                plan=getattr(user, "plan", None),
+                is_admin=bool(getattr(user, "is_admin", False)),
                 active_check=lambda: active_analyze_job_for_url(
                     user.id, url, site=None
                 ),
@@ -3025,6 +3086,14 @@ def health():
     }
     if stale_n > 0:
         payload["degraded_reasons"] = ["stale_jobs"]
+        try:
+            from centropic.ops_alerts import report_stale_running_jobs
+
+            report_stale_running_jobs(
+                stale_n, stale_after_minutes=STALE_HEARTBEAT_MINUTES
+            )
+        except Exception:
+            app.logger.exception("stale job sentry alert failed")
     if not healthy:
         reasons: list[str] = []
         if not db_ok:
@@ -5342,7 +5411,7 @@ def dashboard_analyze_confirmed():
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(cost_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
         flash(str(exc), "warning")
@@ -5393,6 +5462,8 @@ def dashboard_analyze_confirmed():
                 competitor_urls=competitor_urls[:3],
                 run_measured=run_meas,
                 held_cents=held,
+                plan=getattr(user, "plan", None),
+                is_admin=bool(getattr(user, "is_admin", False)),
                 active_check=lambda: active_analyze_job_for_url(
                     user.id, url, site=existing
                 ),
@@ -6280,7 +6351,7 @@ def dashboard_verify_rescan(analysis_id: int):
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(cost.service_cost_eur_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
         flash(str(exc), "warning")
@@ -6313,6 +6384,8 @@ def dashboard_verify_rescan(analysis_id: int):
             run_measured=run_meas,
             held_cents=held,
             source="verify",
+            plan=getattr(user, "plan", None),
+            is_admin=bool(getattr(user, "is_admin", False)),
             active_check=lambda: active_analyze_job_for_url(
                 user.id, url, site=analysis
             ),
@@ -6498,7 +6571,7 @@ def api_v1_analyze():
             user,
             AnalysisJob=AnalysisJob,
             required_cents=required_credit_with_grace_cents(api_cost.service_cost_eur_cents),
-            max_concurrent_jobs=MAX_CONCURRENT_ANALYZE_JOBS,
+            max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
         return jsonify({"ok": False, "error": "too_many_jobs", "message": str(exc)}), 429
@@ -6561,6 +6634,8 @@ def api_v1_analyze():
             run_measured=want_measured,
             held_cents=int(api_held or 0),
             source="api",
+            plan=getattr(user, "plan", None),
+            is_admin=bool(getattr(user, "is_admin", False)),
             active_check=lambda: active_analyze_job_for_url(
                 user.id, url, site=existing
             ),

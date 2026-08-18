@@ -12,9 +12,37 @@ from typing import Any, Callable
 logger = logging.getLogger(__name__)
 
 # Reclaim only when heartbeat (or started_at) is older than this.
-# Heartbeat should be refreshed during long crawls so live jobs are not stolen.
-STALE_HEARTBEAT_MINUTES = max(5, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
+# Heartbeat is refreshed during crawl/SoV; 2–5 min silence ⇒ lost worker (deploy/OOM).
+# Keep the floor at 2 so a deploy mid-SoV does not strand the UI for 12+ minutes.
+STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
+# Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
+# Global in-flight cap across tenants (crawl + measured). Target ≈100+100.
+MAX_RUNNING_ANALYZE_JOBS = max(0, int(os.getenv("MAX_RUNNING_ANALYZE_JOBS", "200")))
+# Postgres advisory lock key for serialize(count running + claim).
+_CLAIM_ADVISORY_LOCK_KEY = 872_341
+
+
+def _acquire_claim_lock(db_session: Any) -> None:
+    """Serialize global running-cap check + claim (Postgres only).
+
+    ``pg_advisory_xact_lock`` is held until the current transaction commits —
+    ``_finish_claim`` commits, so the next waiter sees an up-to-date running count.
+    No-op on SQLite / non-Postgres.
+    """
+    try:
+        from sqlalchemy import text
+
+        bind = db_session.get_bind()
+        dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
+        if dialect != "postgresql":
+            return
+        db_session.execute(
+            text("SELECT pg_advisory_xact_lock(:k)"),
+            {"k": _CLAIM_ADVISORY_LOCK_KEY},
+        )
+    except Exception:
+        logger.exception("claim advisory lock failed; continuing without it")
 
 
 class DuplicateAnalyzeJobError(RuntimeError):
@@ -26,14 +54,19 @@ class DuplicateAnalyzeJobError(RuntimeError):
 
 
 def _begin_immediate(db_session: Any) -> None:
-    """Take a reserved write lock early (critical on SQLite under concurrency)."""
-    try:
-        from sqlalchemy import text
+    """Take a reserved write lock early (SQLite only; no-op on Postgres).
 
-        db_session.execute(text("BEGIN IMMEDIATE"))
-    except Exception:
-        # Postgres / already-in-transaction: best-effort only.
-        pass
+    Never emit ``BEGIN IMMEDIATE`` on Postgres: a syntax error aborts the
+    transaction even if caught, and the next query raises InFailedSqlTransaction
+    (analyze enqueue 500 on ``/dashboard/analyze/confirmed``).
+    """
+    from sqlalchemy import text
+
+    bind = db_session.get_bind()
+    dialect = getattr(getattr(bind, "dialect", None), "name", "") or ""
+    if dialect != "sqlite":
+        return
+    db_session.execute(text("BEGIN IMMEDIATE"))
 
 
 def enqueue_analysis(
@@ -48,12 +81,18 @@ def enqueue_analysis(
     held_cents: int = 0,
     source: str = "job",
     active_check: Callable[[], Any | None] | None = None,
+    plan: str | None = None,
+    is_admin: bool = False,
+    locale: str | None = None,
 ) -> Any:
     """Enqueue a pending analyze job.
 
     When ``active_check`` is provided it runs under a reserved write lock and
     must return an existing active job (or ``None``). A non-None result raises
     ``DuplicateAnalyzeJobError`` so callers can release holds and reuse the job.
+
+    ``plan`` / ``is_admin`` select the Redis priority lane (Business → Plus → Free).
+    ``locale`` is the UI locale for pack copy (captured from the request when omitted).
     """
     _begin_immediate(db_session)
     if active_check is not None:
@@ -75,9 +114,51 @@ def enqueue_analysis(
     if hasattr(AnalysisJob, "source"):
         src = (source or "job").strip().lower() or "job"
         kwargs["source"] = src[:20]
+    if hasattr(AnalysisJob, "locale"):
+        loc = (locale or "").strip()
+        if not loc:
+            try:
+                from services.pack_i18n import capture_ui_locale
+
+                loc = capture_ui_locale(None)
+            except Exception:
+                from services.i18n import DEFAULT_LOCALE
+
+                loc = DEFAULT_LOCALE
+        kwargs["locale"] = str(loc)[:8]
     job = AnalysisJob(**kwargs)
     db_session.add(job)
     db_session.commit()
+    try:
+        src = str(kwargs.get("source") or source or "job").strip().lower()
+        if src == "measured":
+            from services.measured_queue import dispatch_measured_job
+
+            if dispatch_measured_job(
+                int(job.id),
+                plan=plan,
+                is_admin=bool(is_admin),
+            ):
+                logger.info(
+                    "measured job %s dispatched to measured queue plan=%s",
+                    job.id,
+                    plan or "plus",
+                )
+        else:
+            from services.analyze_queue import dispatch_analyze_job
+
+            if dispatch_analyze_job(
+                int(job.id),
+                plan=plan,
+                is_admin=bool(is_admin),
+            ):
+                logger.info(
+                    "analyze job %s dispatched to redis queue plan=%s",
+                    job.id,
+                    plan or "free",
+                )
+    except Exception:
+        logger.exception("redis dispatch failed for job %s (DB pending still valid)", job.id)
     return job
 
 
@@ -188,7 +269,7 @@ def reclaim_stale_jobs(
     When ``SiteAnalysis`` is provided, reclaim reconciles the crash window
     after ``persist_analysis`` committed but before ``mark_job_site``.
     """
-    cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(5, older_than_minutes))
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(2, older_than_minutes))
     stale = (
         AnalysisJob.query.filter(AnalysisJob.status == "running")
         .limit(50)
@@ -234,7 +315,8 @@ def reclaim_stale_jobs(
             job.lease_token = None
             job.error = (
                 "Job interrotto dopo addebito parziale "
-                "(worker perso / timeout heartbeat) — non rieseguito per evitare doppia fatturazione."
+                "(worker perso / timeout heartbeat) — non rieseguito per evitare doppia fatturazione. "
+                "Il credito addebitato verrà rimborsato automaticamente."
             )[:500]
             _call_abandon()
             logger.error(
@@ -244,6 +326,42 @@ def reclaim_stale_jobs(
             )
             n += 1
             continue
+        # Aggregate debit mode: measured jobs may have spent LLM before flush
+        # (billed_cents still 0). Soft-reclaim would re-run probes — fail closed.
+        held_left = int(getattr(job, "held_cents", 0) or 0)
+        measuredish = bool(getattr(job, "run_measured", False)) or (
+            str(getattr(job, "source", "") or "").lower() == "measured"
+        )
+        if (
+            measuredish
+            and held_left > 0
+            and attempts >= 1
+            and billed <= 0
+            and not _job_already_persisted(job)
+        ):
+            try:
+                from services.usage_billing import usage_debit_aggregate
+
+                aggregate = usage_debit_aggregate()
+            except Exception:
+                aggregate = False
+            if aggregate:
+                job.status = "error"
+                job.finished_at = datetime.now(timezone.utc)
+                job.lease_token = None
+                job.error = (
+                    "Job measured interrotto prima del flush addebito "
+                    "(worker perso / timeout) — non rieseguito per evitare doppia spesa LLM. "
+                    "L’eventuale hold verrà rilasciato/rimborsato."
+                )[:500]
+                _call_abandon()
+                logger.error(
+                    "Permanently failed aggregate measured stale job %s (held=%s)",
+                    job.id,
+                    held_left,
+                )
+                n += 1
+                continue
         # If persist already wrote a run for this attempt, mark done instead of
         # soft-reclaiming (avoids duplicate AnalysisRun when billed_cents==0).
         if _job_already_persisted(job):
@@ -295,8 +413,18 @@ def claim_next_job(
     *,
     on_abandon: Callable[[Any], None] | None = None,
     SiteAnalysis: Any | None = None,
+    preferred_job_id: int | None = None,
+    source_filter: str | None = None,
+    source_exclude: str | None = None,
 ) -> Any | None:
-    """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending."""
+    """Claim atomico: solo un worker vince l'UPDATE condizionale su status=pending.
+
+    When ``preferred_job_id`` is set (Redis pop), try that row first; if it was
+    already claimed/cancelled, fall through to FIFO pending.
+
+    ``source_filter`` limits FIFO to that source (e.g. measured workers).
+    ``source_exclude`` skips a source on FIFO (e.g. crawl workers skip measured).
+    """
     try:
         reclaim_stale_jobs(
             db_session,
@@ -310,38 +438,87 @@ def claim_next_job(
         logger.exception("reclaim_stale_jobs failed")
         db_session.rollback()
 
+    # Hold xact lock through count + claim commit so two workers cannot both
+    # pass a near-cap check and overshoot MAX_RUNNING_ANALYZE_JOBS.
+    _acquire_claim_lock(db_session)
+
+    if MAX_RUNNING_ANALYZE_JOBS > 0:
+        running_n = AnalysisJob.query.filter_by(status="running").count()
+        if running_n >= MAX_RUNNING_ANALYZE_JOBS:
+            logger.info(
+                "claim skipped: global running cap reached (%s/%s)",
+                running_n,
+                MAX_RUNNING_ANALYZE_JOBS,
+            )
+            try:
+                db_session.rollback()  # release advisory lock without claiming
+            except Exception:
+                pass
+            return None
+
+    if preferred_job_id is not None:
+        claimed = _try_claim_pending_id(
+            db_session, AnalysisJob, int(preferred_job_id)
+        )
+        if claimed is not None:
+            return claimed
+
     now = datetime.now(timezone.utc)
     lease = secrets.token_hex(16)
     for _ in range(3):
-        job = (
-            AnalysisJob.query.filter_by(status="pending")
-            .order_by(AnalysisJob.created_at.asc())
-            .first()
-        )
+        q = AnalysisJob.query.filter_by(status="pending")
+        if source_filter and hasattr(AnalysisJob, "source"):
+            q = q.filter_by(source=str(source_filter))
+        if source_exclude and hasattr(AnalysisJob, "source"):
+            q = q.filter(AnalysisJob.source != str(source_exclude))
+        job = q.order_by(AnalysisJob.created_at.asc()).first()
         if job is None:
             return None
-        attempts = int(getattr(job, "attempt_count", 0) or 0) + 1
-        claim_fields = {
-            "status": "running",
-            "started_at": now,
-            "heartbeat_at": now,
-            "lease_token": lease,
-            "attempt_count": attempts,
-            "error": None,
-        }
-        if hasattr(job, "progress_done"):
-            claim_fields["progress_done"] = 0
-            claim_fields["progress_total"] = 0
-            claim_fields["progress_phase"] = "crawl"
-        updated = (
-            AnalysisJob.query.filter_by(id=job.id, status="pending")
-            .update(claim_fields, synchronize_session=False)
-        )
-        db_session.commit()
-        if updated == 1:
-            claimed = db_session.get(AnalysisJob, job.id)
+        claimed = _finish_claim(db_session, AnalysisJob, job.id, lease=lease, now=now)
+        if claimed is not None:
             return claimed
-        db_session.rollback()
+    return None
+
+
+def _try_claim_pending_id(db_session, AnalysisJob, job_id: int) -> Any | None:
+    now = datetime.now(timezone.utc)
+    lease = secrets.token_hex(16)
+    return _finish_claim(db_session, AnalysisJob, job_id, lease=lease, now=now)
+
+
+def _finish_claim(
+    db_session,
+    AnalysisJob,
+    job_id: int,
+    *,
+    lease: str,
+    now: datetime,
+) -> Any | None:
+    attempts_row = db_session.get(AnalysisJob, job_id)
+    if attempts_row is None or getattr(attempts_row, "status", None) != "pending":
+        return None
+    attempts = int(getattr(attempts_row, "attempt_count", 0) or 0) + 1
+    claim_fields = {
+        "status": "running",
+        "started_at": now,
+        "heartbeat_at": now,
+        "lease_token": lease,
+        "attempt_count": attempts,
+        "error": None,
+    }
+    if hasattr(attempts_row, "progress_done"):
+        claim_fields["progress_done"] = 0
+        claim_fields["progress_total"] = 0
+        claim_fields["progress_phase"] = "crawl"
+    updated = (
+        AnalysisJob.query.filter_by(id=job_id, status="pending").update(
+            claim_fields, synchronize_session=False
+        )
+    )
+    db_session.commit()
+    if updated == 1:
+        return db_session.get(AnalysisJob, job_id)
+    db_session.rollback()
     return None
 
 
@@ -433,24 +610,27 @@ def complete_job(
         logger.warning("complete_job refused: missing lease for job %s", getattr(job, "id", "?"))
         return False
     now = datetime.now(timezone.utc)
+    # Never write site_id=NULL on complete — that would wipe mark_job_site
+    # if the caller passes site_id=None after a successful persist.
+    fields: dict[str, Any] = {
+        "status": "done",
+        "finished_at": now,
+        "error": None,
+        "lease_token": None,
+        "heartbeat_at": now,
+    }
+    if site_id is not None:
+        fields["site_id"] = int(site_id)
     updated = (
         Job.query.filter_by(id=job.id, status="running", lease_token=token)
-        .update(
-            {
-                "status": "done",
-                "finished_at": now,
-                "site_id": site_id,
-                "error": None,
-                "lease_token": None,
-                "heartbeat_at": now,
-            },
-            synchronize_session=False,
-        )
+        .update(fields, synchronize_session=False)
     )
     db_session.commit()
     if updated == 1:
         job.status = "done"
         job.lease_token = None
+        if site_id is not None:
+            job.site_id = int(site_id)
         return True
     # Idempotent reconcile: persist already completed but lease was stolen.
     if site_id and _job_already_persisted(job):
@@ -462,7 +642,7 @@ def complete_job(
                 {
                     "status": "done",
                     "finished_at": now,
-                    "site_id": site_id,
+                    "site_id": int(site_id),
                     "error": None,
                     "lease_token": None,
                     "heartbeat_at": now,
@@ -474,7 +654,7 @@ def complete_job(
         if forced == 1:
             job.status = "done"
             job.lease_token = None
-            job.site_id = site_id
+            job.site_id = int(site_id)
             logger.warning(
                 "complete_job reconciled job %s after lease loss (site_id=%s)",
                 getattr(job, "id", "?"),

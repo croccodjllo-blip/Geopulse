@@ -781,6 +781,29 @@ def assert_can_start_analysis(
         )
 
 
+def concurrent_analyze_cap_for(
+    user: Any,
+    *,
+    free: int = 1,
+    plus: int = 3,
+    business: int = 5,
+    admin: int = 8,
+    fallback: int = 2,
+) -> int:
+    """Resolve per-plan concurrent analyze cap (pending + running for user)."""
+    plan = (getattr(user, "plan", None) or "free").strip().lower()
+    role = (getattr(user, "role", None) or "").strip().lower()
+    if plan == "admin" or role == "admin" or bool(getattr(user, "is_admin", False)):
+        return max(1, int(admin))
+    if plan == "business":
+        return max(1, int(business))
+    if plan in {"plus", "pro"}:
+        return max(1, int(plus))
+    if plan == "free":
+        return max(1, int(free))
+    return max(1, int(fallback))
+
+
 def hold_credit(
     db_session: Any,
     CreditLedger: Any,
