@@ -68,6 +68,42 @@ def _geo_ui_chrome() -> dict[str, str]:
         ),
         "pagesScored": _("Pagine valutate"),
         "findingsInLastAudit": _("findings nell'ultimo audit"),
+        "chartsTitle": _("GEO Charts"),
+        "overviewTitle": _("Panoramica GEO"),
+        "emptyBody": _(
+            "Nessuna analisi ancora. Esegui un audit per vedere Share of Model, "
+            "engine breakdown e insight dal tuo sito — niente dati demo."
+        ),
+        "runAudit": _("Esegui audit GEO"),
+        "liveSubtitle": _(
+            "Share of Model e visibilità AI dall'ultimo audit."
+        ),
+        "rangeLast30": _("Ultimi 30 giorni"),
+        "rangeLast7": _("Ultimi 7 giorni"),
+        "rangeQuarter": _("Trimestre in corso"),
+        "rangeComingSoon": _("Range storico: in arrivo"),
+        "somLabel": _("Share of Model"),
+        "acrossEngines": _("su %(n)s engine LLM tracciati"),
+        "recRankLabel": _("Ranking AI"),
+        "recRankHint": _("Grado composito da AIO/GEO"),
+        "issuePressureTitle": _("Pressione findings"),
+        "issuePressureHint": _(
+            "Critical + warn aperti (non sentiment del modello)"
+        ),
+        "somTrendTitle": _("Trend Share of Model"),
+        "breakdownTitle": _("Breakdown visibilità LLM"),
+        "viewReport": _("Vedi report dettagliato"),
+        "enginesEmpty": _(
+            "Nessun engine breakdown ancora — riesegui l'audit."
+        ),
+        "colEngine": _("Engine"),
+        "colShare": _("Share of Voice"),
+        "colTopDomain": _("Dominio più citato"),
+        "colStatus": _("Stato"),
+        "statusDominant": _("Dominante"),
+        "statusOptimal": _("Ottimale"),
+        "statusNeedsAction": _("Da migliorare"),
+        "statusUnknown": "—",
     }
 
 
