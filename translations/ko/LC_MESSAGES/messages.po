@@ -3620,7 +3620,7 @@ msgstr "DDD에서 AAA로의 스케일"
 
 #: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
-msgstr "AI 엔진 분석"
+msgstr "AI 엔진별 분석"
 
 #: templates/dashboard.html:450
 msgid "Citation share — probe Misurato eseguito"
@@ -3629,7 +3629,7 @@ msgstr "인용 점유율 — 실측 프로브 완료"
 #: templates/dashboard.html:452 templates/dashboard.html:488
 #: templates/partials/app_sidebar.html:44 templates/sample_report.html:29
 msgid "Citation share"
-msgstr "인용 모니터"
+msgstr "인용 점유율"
 
 #: templates/dashboard.html:454
 msgid "Citation share (stimata)"
@@ -3653,7 +3653,7 @@ msgstr "관찰된 구조(CVI / score + robots) 기반 추정입니다. Plus에�
 
 #: templates/dashboard.html:471
 msgid "Citation share brand"
-msgstr "브랜드 citation share"
+msgstr "브랜드 인용 점유율"
 
 #: templates/dashboard.html:492 templates/dashboard.html:563
 msgid "Campo competitivo"
@@ -7980,6 +7980,18 @@ msgid ""
 msgstr ""
 "추정 리포트는 이미 준비되었습니다. LLM 프로브가 백그라운드에서 인용을 측정합니다(1–3분): 작업이 끝나면 실측 값이 이 화면을 "
 "갱신합니다."
+
+msgid "Ripartizione per engine IA"
+msgstr "AI 엔진별 분석"
+
+msgid "Citation share — Misurato · 0 menzioni"
+msgstr "인용 점유율 — 실측 · 언급 0건"
+
+msgid "Citation share — Misurato 0 menzioni"
+msgstr "인용 점유율 — 실측 · 언급 0건"
+
+msgid "Citation share (stimata · readiness)"
+msgstr "인용 점유율(추정 · 준비도)"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

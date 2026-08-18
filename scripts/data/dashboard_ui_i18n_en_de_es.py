@@ -65,6 +65,14 @@ EN: dict[str, str] = {
         "The Estimated report is already ready. LLM probes are measuring citations "
         "in the background (1–3 min): Measured values refresh this view when the job finishes."
     ),
+    # SoV panel titles (native product English)
+    "Ripartizione per engine IA": "AI engine breakdown",
+    "Citation share": "Citation share",
+    "Citation share — Misurato · 0 menzioni": "Citation share — Measured · 0 mentions",
+    "Citation share — Misurato 0 menzioni": "Citation share — Measured · 0 mentions",
+    "Citation share (stimata · readiness)": "Citation share (estimated · readiness)",
+    "Citation share brand": "Brand citation share",
+    "AI Engine Breakdown": "AI engine breakdown",
 }
 
 # German (DE) — formal Sie / infinitive CTAs
@@ -130,6 +138,14 @@ DE: dict[str, str] = {
         "Der geschätzte Report ist bereits fertig. LLM-Probes messen Zitationen "
         "im Hintergrund (1–3 Min.): Gemessene Werte aktualisieren diese Ansicht nach Jobende."
     ),
+    # SoV-Panel-Titel (native DE)
+    "Ripartizione per engine IA": "Aufschlüsselung nach AI-Engine",
+    "Citation share": "Citation Share",
+    "Citation share — Misurato · 0 menzioni": "Citation Share — Gemessen · 0 Erwähnungen",
+    "Citation share — Misurato 0 menzioni": "Citation Share — Gemessen · 0 Erwähnungen",
+    "Citation share (stimata · readiness)": "Citation Share (geschätzt · Readiness)",
+    "Citation share brand": "Marken-Citation-Share",
+    "AI Engine Breakdown": "Aufschlüsselung nach AI-Engine",
 }
 
 # Spanish (ES) — Spain B2B
@@ -195,4 +211,12 @@ ES: dict[str, str] = {
         "El informe Estimado ya está listo. Las sondas LLM miden citas en segundo "
         "plano (1–3 min): los valores Medidos actualizan esta vista al completar el job."
     ),
+    # Títulos del panel SoV (ES nativo)
+    "Ripartizione per engine IA": "Desglose por motor de IA",
+    "Citation share": "Cuota de citas",
+    "Citation share — Misurato · 0 menzioni": "Cuota de citas — Medido · 0 menciones",
+    "Citation share — Misurato 0 menzioni": "Cuota de citas — Medido · 0 menciones",
+    "Citation share (stimata · readiness)": "Cuota de citas (estimada · readiness)",
+    "Citation share brand": "Cuota de citas de la marca",
+    "AI Engine Breakdown": "Desglose por motor de IA",
 }

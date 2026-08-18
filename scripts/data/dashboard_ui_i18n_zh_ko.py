@@ -64,6 +64,14 @@ ZH: dict[str, str] = {
         "估算报告已就绪。LLM 探测在后台测量引用（约 1–3 分钟）："
         "任务完成后实测数值会刷新此视图。"
     ),
+    # SoV 面板标题（地道中文）
+    "Ripartizione per engine IA": "AI 引擎细分",
+    "Citation share": "引用份额",
+    "Citation share — Misurato · 0 menzioni": "引用份额 — 实测 · 0 次提及",
+    "Citation share — Misurato 0 menzioni": "引用份额 — 实测 · 0 次提及",
+    "Citation share (stimata · readiness)": "引用份额（估计 · 就绪度）",
+    "Citation share brand": "品牌引用份额",
+    "AI Engine Breakdown": "AI 引擎细分",
 }
 
 KO: dict[str, str] = {
@@ -128,4 +136,12 @@ KO: dict[str, str] = {
         "추정 리포트는 이미 준비되었습니다. LLM 프로브가 백그라운드에서 인용을 측정합니다"
         "(1–3분): 작업이 끝나면 실측 값이 이 화면을 갱신합니다."
     ),
+    # SoV 패널 제목 (자연스러운 한국어)
+    "Ripartizione per engine IA": "AI 엔진별 분석",
+    "Citation share": "인용 점유율",
+    "Citation share — Misurato · 0 menzioni": "인용 점유율 — 실측 · 언급 0건",
+    "Citation share — Misurato 0 menzioni": "인용 점유율 — 실측 · 언급 0건",
+    "Citation share (stimata · readiness)": "인용 점유율(추정 · 준비도)",
+    "Citation share brand": "브랜드 인용 점유율",
+    "AI Engine Breakdown": "AI 엔진별 분석",
 }
