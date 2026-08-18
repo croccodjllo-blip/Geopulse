@@ -17,13 +17,15 @@ const config: Config = {
           border: "#1A222D",
           cyan: "#C9D3DD",
           blue: "#5B6B7A",
-          violet: "#5B6B7A", // legacy alias → steel
+          violet: "#5B6B7A", // legacy alias → steel (never purple)
+          steel: "#5B6B7A",
           muted: "#8B97A8",
         },
       },
       boxShadow: {
         glow: "0 12px 28px rgba(0, 0, 0, 0.35)",
-        "glow-violet": "0 12px 28px rgba(0, 0, 0, 0.3)",
+        "glow-steel": "0 12px 28px rgba(0, 0, 0, 0.3)",
+        "glow-violet": "0 12px 28px rgba(0, 0, 0, 0.3)", // legacy alias
         "glow-holo": "0 16px 40px rgba(0, 0, 0, 0.45)",
       },
       backgroundImage: {

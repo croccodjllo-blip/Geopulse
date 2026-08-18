@@ -17,3 +17,57 @@ body {
   font-family: "Inter", system-ui, sans-serif;
   background: #04060A;
 }
+
+/* Credits bar — avoid React style={{ width }} under style-src-attr 'none'. */
+.geo-credits-bar {
+  display: block;
+  appearance: none;
+  border: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #1a222d;
+  color: #c9d3dd;
+}
+.geo-credits-bar::-webkit-progress-bar {
+  background: #1a222d;
+  border-radius: 9999px;
+}
+.geo-credits-bar::-webkit-progress-value {
+  background: linear-gradient(90deg, #c9d3dd, #5b6b7a);
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+.geo-credits-bar::-moz-progress-bar {
+  background: linear-gradient(90deg, #c9d3dd, #5b6b7a);
+  border-radius: 9999px;
+}
+
+/* Brand module atmospheres — no inline style attrs. */
+.brand-module-panel-glow {
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(201, 211, 221, 0.08), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(91, 107, 122, 0.08), transparent 50%);
+}
+.brand-module-hero-glow {
+  background:
+    radial-gradient(ellipse 70% 55% at 70% 40%, rgba(201, 211, 221, 0.1), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 20% 70%, rgba(91, 107, 122, 0.08), transparent 55%),
+    linear-gradient(165deg, #04060a 0%, #070a10 45%, #0a0e14 100%);
+}
+
+/* Holo emblem spin origins (SVG) — avoid style={{ transformOrigin }}. */
+.holo-spin-ring {
+  transform-origin: 64px 64px;
+}
+.holo-spin-path {
+  transform-origin: 64px 72px;
+}
+
+/* Fixed emblem boxes — map common HoloEmblem sizes without inline width/height. */
+.holo-box-36 { width: 36px; height: 36px; }
+.holo-box-48 { width: 48px; height: 48px; }
+.holo-box-72 { width: 72px; height: 72px; }
+.holo-box-88 { width: 88px; height: 88px; }
+.holo-box-96 { width: 96px; height: 96px; }
+.holo-box-160 { width: 160px; height: 160px; }
+.holo-box-180 { width: 180px; height: 180px; }

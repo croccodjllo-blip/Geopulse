@@ -12,7 +12,7 @@ from services.i18n import translate_stored
 from services.rating import compute_rating
 from services.sov_graph import list_sov_snapshots, sov_series_for_chart
 
-_TONES = ("emerald", "cyan", "violet", "amber")
+_TONES = ("emerald", "cyan", "steel", "amber")
 
 
 def _engine_status(share: float | None) -> str:

@@ -3,7 +3,7 @@
 {% block meta_description %}{{ article_description }}{% endblock %}
 {% block canonical %}{{ canonical_base }}{{ article_path }}{% endblock %}
 {% block structured_data %}
-<script type="application/ld+json">
+<script type="application/ld+json" nonce="{{ csp_nonce }}">
 {
   "@context": "https://schema.org",
   "@type": "Article",

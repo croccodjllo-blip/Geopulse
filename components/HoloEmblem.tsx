@@ -15,7 +15,7 @@ type Particle = {
   r: number;
   s: number;
   size: number;
-  hue: "cyan" | "violet" | "blue";
+  hue: "cyan" | "steel" | "blue";
 };
 
 /**
@@ -51,13 +51,13 @@ export function HoloEmblem({
       r: 28 + (i % 5) * 7,
       s: 0.004 + (i % 7) * 0.0012,
       size: 0.8 + (i % 3) * 0.45,
-      hue: i % 3 === 0 ? "violet" : i % 3 === 1 ? "blue" : "cyan",
+      hue: i % 3 === 0 ? "steel" : i % 3 === 1 ? "blue" : "cyan",
     }));
 
     let raf = 0;
     let t = 0;
     const color = (h: Particle["hue"]) =>
-      h === "violet" ? "rgba(91,107,122,0.85)" : h === "blue" ? "rgba(91,107,122,0.8)" : "rgba(201,211,221,0.9)";
+      h === "steel" ? "rgba(91,107,122,0.85)" : h === "blue" ? "rgba(91,107,122,0.8)" : "rgba(201,211,221,0.9)";
 
     const tick = () => {
       t += 1;
@@ -91,13 +91,26 @@ export function HoloEmblem({
     };
   }, [particles, size]);
 
+  const boxClass =
+    (
+      {
+        36: "holo-box-36",
+        48: "holo-box-48",
+        72: "holo-box-72",
+        88: "holo-box-88",
+        96: "holo-box-96",
+        160: "holo-box-160",
+        180: "holo-box-180",
+      } as Record<number, string>
+    )[size] || "holo-box-160";
+
   return (
     <div
       className={
-        className ||
-        "relative inline-grid place-items-center rounded-full bg-[#080B10] shadow-[0_0_40px_rgba(201,211,221,0.22),0_0_80px_rgba(91,107,122,0.12)]"
+        className
+          ? `${className} ${boxClass}`
+          : `relative inline-grid place-items-center rounded-full bg-[#080B10] shadow-[0_0_40px_rgba(201,211,221,0.22),0_0_80px_rgba(91,107,122,0.12)] ${boxClass}`
       }
-      style={{ width: size, height: size }}
       role="img"
       aria-label={title}
     >
@@ -134,12 +147,12 @@ export function HoloEmblem({
         </defs>
 
         <circle cx="64" cy="64" r="58" fill="#080B10" stroke={`url(#${uid}-metal)`} strokeWidth="1.2" />
-        <g className="origin-center animate-[spin_28s_linear_infinite]" style={{ transformOrigin: "64px 64px" }}>
+        <g className="holo-spin-ring origin-center animate-[spin_28s_linear_infinite]">
           <ellipse cx="64" cy="64" rx="40" ry="16" stroke="#C9D3DD" strokeOpacity="0.28" strokeWidth="0.9" transform="rotate(-28 64 64)" fill="none" />
           <ellipse cx="64" cy="64" rx="36" ry="14" stroke="#5B6B7A" strokeOpacity="0.22" strokeWidth="0.8" transform="rotate(38 64 64)" fill="none" />
         </g>
 
-        <g filter={`url(#${uid}-glow)`} className="origin-center animate-[spin_18s_linear_infinite_reverse]" style={{ transformOrigin: "64px 72px" }}>
+        <g filter={`url(#${uid}-glow)`} className="holo-spin-path origin-center animate-[spin_18s_linear_infinite_reverse]">
           <path d="M64 92c18-2 28-14 26-28s-16-22-28-20c-10 2-16 12-14 22" stroke={`url(#${uid}-holo)`} strokeWidth="1.6" strokeLinecap="round" fill="none" />
           <path d="M64 86c14-1 22-11 20-22s-12-17-22-15c-8 1.5-12.5 9.5-11 17" stroke="#5B6B7A" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.85" />
           <path d="M64 80c10 0 16-8 14.5-15.5S70 54 64 55.5s-8.5 6.5-7.5 12" stroke="#5B6B7A" strokeWidth="1.1" strokeLinecap="round" fill="none" opacity="0.9" />
@@ -172,8 +185,9 @@ export function HoloEmblem({
       {particles ? (
         <canvas
           ref={canvasRef}
-          className="pointer-events-none absolute inset-0 z-[2]"
-          style={{ width: size, height: size }}
+          className={`pointer-events-none absolute inset-0 z-[2] ${boxClass}`}
+          width={size}
+          height={size}
           aria-hidden
         />
       ) : null}

@@ -42,11 +42,7 @@ export function BrandModule({
         }
       >
         <div
-          className="pointer-events-none absolute inset-0 opacity-70"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 20% 20%, rgba(201,211,221,0.08), transparent 55%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(91,107,122,0.08), transparent 50%)",
-          }}
+          className="brand-module-panel-glow pointer-events-none absolute inset-0 opacity-70"
           aria-hidden
         />
         <div className="relative flex items-center gap-5">
@@ -70,17 +66,7 @@ export function BrandModule({
       }
       aria-label="Centropic brand"
     >
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          background: `
-            radial-gradient(ellipse 70% 55% at 70% 40%, rgba(201,211,221,0.10), transparent 58%),
-            radial-gradient(ellipse 55% 45% at 20% 70%, rgba(91,107,122,0.08), transparent 55%),
-            linear-gradient(165deg, #04060A 0%, #070A10 45%, #0A0E14 100%)
-          `,
-        }}
-        aria-hidden
-      />
+      <div className="brand-module-hero-glow absolute inset-0 -z-10" aria-hidden />
 
       <div className="relative z-10 flex flex-col items-center justify-center gap-8 px-6 py-16 text-center md:py-24">
         <HoloEmblem size={180} particles={false} />

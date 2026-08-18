@@ -55,7 +55,7 @@ Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satelli
 | Warning | `#F59E0B` | Warn state |
 | Danger | `#EF4444` | Critical / negative delta |
 
-`--brand-violet` aliases to the primary chrome accent for legacy class names — it is a naming leftover, not an instruction to use violet. Nebula blue/violet are atmosphere-only tokens (landing hero background glow) — never used for interactive UI or for any of the per-plan dashboard accents above.
+`--brand-violet` / Tailwind `brand.violet` remain as **legacy aliases** of chrome/steel — never paint purple. Prefer `--brand-chrome` / `--brand-steel` and tone `"steel"` in new code. Nebula blue/violet tokens power the landing hero aurora only (`var(--nebula-*)` in `.hero-visual__aurora`) — never interactive UI or plan accents.
 
 ## Typography
 | Role | Family |

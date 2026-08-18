@@ -17,7 +17,7 @@ export type OverviewEngineRow = {
   share: number | null;
   status: "dominant" | "optimal" | "needs_action" | "unknown";
   topDomain?: string;
-  tone?: "emerald" | "cyan" | "violet" | "amber";
+  tone?: "emerald" | "cyan" | "steel" | "amber";
 };
 
 export type OverviewInsight = {
@@ -119,7 +119,7 @@ const DEFAULT_ENGINES: OverviewEngineRow[] = [
     share: 41.0,
     status: "optimal",
     topDomain: "centropic.ai/case-studies",
-    tone: "violet",
+    tone: "steel",
   },
   {
     id: "searchgpt",
@@ -154,7 +154,7 @@ const statusClass: Record<OverviewEngineRow["status"], string> = {
 const toneDot: Record<NonNullable<OverviewEngineRow["tone"]>, string> = {
   emerald: "bg-emerald-400",
   cyan: "bg-brand-cyan",
-  violet: "bg-brand-blue",
+  steel: "bg-brand-blue",
   amber: "bg-amber-400",
 };
 
