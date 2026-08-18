@@ -45,8 +45,7 @@ def _fake_site():
     )
 
 
-def test_geo_ui_evidence_label_translated(monkeypatch):
-    site = _fake_site()
+def _patch_site_query(monkeypatch, site):
     q = MagicMock()
     q.order_by.return_value.first.return_value = site
     monkeypatch.setattr(
@@ -57,6 +56,10 @@ def test_geo_ui_evidence_label_translated(monkeypatch):
         "services.geo_ui_payload.list_sov_snapshots",
         lambda *_a, **_k: [],
     )
+
+
+def test_geo_ui_evidence_label_translated(monkeypatch):
+    _patch_site_query(monkeypatch, _fake_site())
     monkeypatch.setattr(
         "services.geo_ui_payload.compute_engine_breakdown",
         lambda **_kw: {
@@ -79,17 +82,9 @@ def test_geo_ui_evidence_label_translated(monkeypatch):
     assert "Misurato" not in (payload["evidenceLabel"] or "")
     assert "menzioni" not in (payload["evidenceLabel"] or "")
 
-    site = _fake_site()
-    q = MagicMock()
-    q.order_by.return_value.first.return_value = site
-    monkeypatch.setattr(
-        "services.geo_ui_payload.sites_query_for_user",
-        lambda *_a, **_k: q,
-    )
-    monkeypatch.setattr(
-        "services.geo_ui_payload.list_sov_snapshots",
-        lambda *_a, **_k: [],
-    )
+
+def test_geo_ui_insights_translated_for_en(monkeypatch):
+    _patch_site_query(monkeypatch, _fake_site())
     user = SimpleNamespace(id=1, is_pro=True)
 
     with app.app_context():
@@ -114,17 +109,7 @@ def test_geo_ui_evidence_label_translated(monkeypatch):
 
 
 def test_geo_ui_insights_native_locales(monkeypatch):
-    site = _fake_site()
-    q = MagicMock()
-    q.order_by.return_value.first.return_value = site
-    monkeypatch.setattr(
-        "services.geo_ui_payload.sites_query_for_user",
-        lambda *_a, **_k: q,
-    )
-    monkeypatch.setattr(
-        "services.geo_ui_payload.list_sov_snapshots",
-        lambda *_a, **_k: [],
-    )
+    _patch_site_query(monkeypatch, _fake_site())
     user = SimpleNamespace(id=1, is_pro=True)
 
     expected_title = {
