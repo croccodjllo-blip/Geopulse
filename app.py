@@ -5183,6 +5183,9 @@ def dashboard():
             if latest is not None
             else "centropic-fix.html"
         ),
+        can_write_latest=(
+            user_can_write_site(user, latest) if latest is not None else False
+        ),
         **capability_template_vars(user),
     )
 
@@ -7146,6 +7149,9 @@ def email_pack(analysis_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, analysis_id)
     if analysis is None:
         flash("Analisi non trovata.", "error")
+        return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash("Non hai permessi di modifica su questo sito condiviso.", "error")
         return redirect(url_for("dashboard"))
 
     if not mail_configured():

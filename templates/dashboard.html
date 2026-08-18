@@ -111,12 +111,14 @@
             </div>
             <div class="report-top__actions">
               <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica pack') }}</a>
+              {% if can_write_latest %}
               <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-ghost"{% if not mail_ready %} title="{{ _('Email non configurata sul server') }}"{% endif %}>
                   {{ _('Invia email') }}
                 </button>
               </form>
+              {% endif %}
               {% if can_extended_history %}
               <a class="btn btn-ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
               {% endif %}
@@ -860,12 +862,14 @@
               </div>
               <div class="dash-block__meta">
                 <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">{{ _('Scarica') }} {{ pack_fix_filename }}</a>
+                {% if can_write_latest %}
                 <form method="post" action="{{ url_for('email_pack', analysis_id=latest.id) }}" class="inline-action">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <button type="submit" class="dash-block__mail">
                     {{ _('Invia a') }} {{ current_user.email }}
                   </button>
                 </form>
+                {% endif %}
               </div>
             </header>
             <div class="code-shell">
@@ -967,9 +971,9 @@
 </section>
 
 {% include "partials/analyze_overlay.html" %}
-<script src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/analyze-overlay.js') }}" defer></script>
 {% if can_competitors %}
-<script src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
 {% endif %}
 <script nonce="{{ csp_nonce }}">
 (() => {
