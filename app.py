@@ -3226,26 +3226,17 @@ def analyze_error_json(
 def resolve_analyze_overlay_job(job: AnalysisJob | None) -> AnalysisJob | None:
     """Which job should auto-open the crawl progress overlay.
 
-    Includes just-finished crawl jobs (≤120s): on remisure of a warm active site
-    the worker often beats the browser redirect, so ``?job=`` lands as ``done``
-    and without this the overlay never opens (user snaps back to Stimato).
+    Only in-flight crawl jobs. Do **not** auto-open for recently ``done`` jobs:
+    the AJAX confirm flow already polls to completion, then ``location.replace``
+    to ``/dashboard?job=<done>``. Re-opening for fresh-done caused an infinite
+    overlay loop (never closes).
     """
     if job is None:
         return None
     status = str(getattr(job, "status", "") or "")
     if status in {"pending", "running"}:
-        return job
-    if status != "done":
-        return None
-    if str(getattr(job, "source", None) or "").lower() == "measured":
-        return None
-    finished = getattr(job, "finished_at", None)
-    if finished is None:
-        return None
-    if finished.tzinfo is None:
-        finished = finished.replace(tzinfo=timezone.utc)
-    age = datetime.now(timezone.utc) - finished
-    if age <= timedelta(seconds=120):
+        if str(getattr(job, "source", None) or "").lower() == "measured":
+            return None
         return job
     return None
 
@@ -6635,6 +6626,12 @@ def dashboard():
     elif "dashboard_site_id" in session:
         session.pop("dashboard_site_id", None)
 
+    # Overlay only for in-flight crawl jobs. completed=1 means we just arrived
+    # from a finished poll — never re-open the dialog on the report.
+    analyze_overlay_job = resolve_analyze_overlay_job(pending_job)
+    if request.args.get("completed") == "1":
+        analyze_overlay_job = None
+
     # Analyze composer: default URL = active site from switcher/sticky.
     # No sites → leave empty (do not fall back to profile website_url).
     if request.method == "GET" and not (form.url.data or "").strip():
@@ -6806,7 +6803,7 @@ def dashboard():
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
-        analyze_overlay_job=resolve_analyze_overlay_job(pending_job),
+        analyze_overlay_job=analyze_overlay_job,
         measured_bg_job=measured_bg_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),

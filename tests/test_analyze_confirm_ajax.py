@@ -27,36 +27,29 @@ def test_overlay_js_confirm_uses_fetch_not_full_navigation():
     assert 'fd.set("ajax", "1")' in src
 
 
-def test_resolve_overlay_job_includes_fresh_done_crawl():
+def test_resolve_overlay_job_only_inflight_crawl():
     now = datetime.now(timezone.utc)
     running = SimpleNamespace(
         status="running", source="job", finished_at=None, id=1
     )
     assert resolve_analyze_overlay_job(running) is running
 
+    # Fresh-done must NOT reopen (AJAX poll already closed → would loop).
     fresh = SimpleNamespace(
         status="done",
         source="job",
         finished_at=now - timedelta(seconds=30),
         id=2,
     )
-    assert resolve_analyze_overlay_job(fresh) is fresh
+    assert resolve_analyze_overlay_job(fresh) is None
 
-    stale = SimpleNamespace(
-        status="done",
-        source="job",
-        finished_at=now - timedelta(minutes=10),
-        id=3,
-    )
-    assert resolve_analyze_overlay_job(stale) is None
-
-    measured = SimpleNamespace(
-        status="done",
+    measured_running = SimpleNamespace(
+        status="running",
         source="measured",
-        finished_at=now - timedelta(seconds=10),
+        finished_at=None,
         id=4,
     )
-    assert resolve_analyze_overlay_job(measured) is None
+    assert resolve_analyze_overlay_job(measured_running) is None
 
 
 def test_confirm_enqueue_returns_json_for_ajax(monkeypatch):
@@ -155,7 +148,7 @@ def test_confirm_enqueue_returns_json_for_ajax(monkeypatch):
         assert str(getattr(job, "source", "job")).lower() != "measured"
 
 
-def test_dashboard_auto_opens_for_fresh_done_job():
+def test_dashboard_does_not_auto_open_for_fresh_done_job():
     with app.app_context():
         ensure_schema()
         now = datetime.now(timezone.utc)
@@ -197,8 +190,14 @@ def test_dashboard_auto_opens_for_fresh_done_job():
         with client.session_transaction() as sess:
             sess["user_id"] = user.id
             sess["session_version"] = int(getattr(user, "session_version", 0) or 0)
-        resp = client.get(f"/dashboard?job={job.id}")
+        resp = client.get(f"/dashboard?job={job.id}&completed=1")
         assert resp.status_code == 200
         html = resp.get_data(as_text=True)
-        assert 'data-auto-open="1"' in html
-        assert f"/dashboard/jobs/{job.id}" in html
+        assert 'data-auto-open="1"' not in html
+
+
+def test_overlay_js_closes_on_done_with_completed_flag():
+    src = Path("static/js/analyze-overlay.js").read_text(encoding="utf-8")
+    assert "completed=1" in src
+    assert "self.hide()" in src
+    assert "location.replace" in src

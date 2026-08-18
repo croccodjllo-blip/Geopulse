@@ -353,7 +353,12 @@
               doneUrl += sep + "job=" + encodeURIComponent(String(data.id));
               sep = "&";
             }
+            // Mark completion so dashboard must not re-open the crawl overlay.
+            doneUrl += sep + "completed=1";
+            sep = "&";
             doneUrl += sep + "_r=" + encodeURIComponent(String(Date.now()));
+            // Close dialog before navigation so a slow replace does not look stuck.
+            self.hide();
             window.location.replace(doneUrl);
             return;
           }
