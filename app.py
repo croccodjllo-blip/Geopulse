@@ -6290,9 +6290,17 @@ def dashboard():
                 "\n".join(competitor_urls) if competitor_urls else raw_comp
             )
             if comp_source == "suggested" and competitor_urls:
+                hosts = []
+                for cu in competitor_urls:
+                    h = (urlparse(cu).hostname or "").lower()
+                    if h.startswith("www."):
+                        h = h[4:]
+                    hosts.append(h or cu)
                 flash(
-                    "Competitor snapshot compilato in automatico: "
-                    + ", ".join(competitor_urls),
+                    _(
+                        "Competitor snapshot compilato in automatico: %(hosts)s"
+                    )
+                    % {"hosts": ", ".join(hosts)},
                     "info",
                 )
 
