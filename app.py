@@ -3006,6 +3006,35 @@ def client_ip() -> str:
     return (request.remote_addr or "unknown").strip() or "unknown"
 
 
+# Pre-auth budget for /api/v1 (before API-key DB lookup). Caps junk Bearer floods.
+API_V1_IP_LIMIT = max(30, int(os.getenv("API_V1_IP_LIMIT", "120")))
+API_V1_IP_WINDOW = max(60, int(os.getenv("API_V1_IP_WINDOW", "3600")))
+
+
+def api_v1_preauth_rate_limited() -> Any | None:
+    """Return a 429 response when the client IP exceeds the pre-auth API budget.
+
+    Runs *before* ``find_user_by_api_key`` so forged keys cannot force DB hash
+    lookups without bound.
+    """
+    if not limiter.allow(
+        f"api_v1:ip:{client_ip()}",
+        limit=API_V1_IP_LIMIT,
+        window_seconds=API_V1_IP_WINDOW,
+    ):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    return None
+
+
+def api_v1_extract_raw_key() -> str:
+    """Bearer / X-Api-Key raw secret (may be empty)."""
+    auth = request.headers.get("Authorization") or ""
+    raw = ""
+    if auth.lower().startswith("bearer "):
+        raw = auth[7:].strip()
+    return raw or (request.headers.get("X-Api-Key") or "").strip()
+
+
 def analyses_today(user_id: int) -> int:
     start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     return (
@@ -7721,11 +7750,10 @@ def download_whitelabel_html(analysis_id: int):
 @csrf.exempt
 def api_v1_analyze():
     """Public API: Authorization Bearer ct_xxx (or legacy gp_xxx) / X-Api-Key."""
-    auth = request.headers.get("Authorization") or ""
-    raw = ""
-    if auth.lower().startswith("bearer "):
-        raw = auth[7:].strip()
-    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    raw = api_v1_extract_raw_key()
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
@@ -7957,11 +7985,10 @@ def api_v1_analyze():
 @csrf.exempt
 def api_v1_job_status(job_id: int):
     """Poll async analyze job created by POST /api/v1/analyze."""
-    auth = request.headers.get("Authorization") or ""
-    raw = ""
-    if auth.lower().startswith("bearer "):
-        raw = auth[7:].strip()
-    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    raw = api_v1_extract_raw_key()
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
@@ -8002,11 +8029,10 @@ def api_v1_job_status(job_id: int):
 @app.route("/api/v1/sites", methods=["GET"])
 @csrf.exempt
 def api_v1_sites():
-    auth = request.headers.get("Authorization") or ""
-    raw = ""
-    if auth.lower().startswith("bearer "):
-        raw = auth[7:].strip()
-    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    raw = api_v1_extract_raw_key()
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
@@ -8047,11 +8073,10 @@ def api_v1_sites():
 @csrf.exempt
 def api_v1_site_edge(site_id: int):
     """Edge Signals + CMS connector metadata for external plugins / CI."""
-    auth = request.headers.get("Authorization") or ""
-    raw = ""
-    if auth.lower().startswith("bearer "):
-        raw = auth[7:].strip()
-    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    raw = api_v1_extract_raw_key()
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
@@ -8117,11 +8142,10 @@ def api_v1_site_edge(site_id: int):
 @app.route("/api/v1/sites/<int:site_id>/edge/cms-bundle.zip", methods=["GET"])
 @csrf.exempt
 def api_v1_site_edge_cms_bundle(site_id: int):
-    auth = request.headers.get("Authorization") or ""
-    raw = ""
-    if auth.lower().startswith("bearer "):
-        raw = auth[7:].strip()
-    raw = raw or (request.headers.get("X-Api-Key") or "").strip()
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    raw = api_v1_extract_raw_key()
     user = find_user_by_api_key(User, raw)
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
