@@ -46,7 +46,7 @@
       <span class="hero-accent">{{ _('del tuo sito per le IA') }}</span>
     </h1>
     <p class="lede hero-lede">
-      {{ _('Inserisci il dominio: score AIO/GEO di predisposizione strutturale e criticità. Le citazioni live richiedono Plus (probe LLM). Account solo per il report completo e i file di fix.') }}
+      {{ _('Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.') }}
     </p>
     <form
       class="hero-url-form"
@@ -72,6 +72,8 @@
         <button type="submit" class="btn btn-core hero-url-form__submit">{{ _('Analizza gratis') }}</button>
       </div>
       <p class="hero-url-form__hint">
+        {{ _('Citazioni live con Plus · account solo per report e file di fix') }}
+        ·
         {{ _('Anteprima immediata · niente carta') }}
         ·
         <a href="{{ url_for('sample_report') }}">{{ _('Vedi un report di esempio') }}</a>
