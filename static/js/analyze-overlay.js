@@ -452,16 +452,75 @@
         form.classList.contains("js-analyze-confirm") ||
         form.getAttribute("data-analyze-overlay-trigger") === "1";
       if (!isConfirm) return;
+
+      // Stay on this page: full navigation after enqueue races a fast crawl
+      // (active-site remisure often finishes in <30s) and the dashboard lands
+      // with job=done → no auto-open → Stimato with no progress UI.
+      ev.preventDefault();
+
       var urlInput = form.querySelector('[name="url"]');
       var url = urlInput && urlInput.value ? urlInput.value : "";
       rememberPending(url);
-      if (root.open) return;
-      api.show({
-        url: url,
-        phase: "pending",
-        hint: t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %."),
-        etaLabel: t(root, "eta-prepare", "Stima in preparazione…"),
-      });
+      if (!root.open) {
+        api.show({
+          url: url,
+          phase: "pending",
+          hint: t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %."),
+          etaLabel: t(root, "eta-prepare", "Stima in preparazione…"),
+        });
+      }
+
+      var action = form.getAttribute("action") || window.location.href;
+      var fd = new FormData(form);
+      fd.set("ajax", "1");
+      var submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      fetch(action, {
+        method: (form.getAttribute("method") || "POST").toUpperCase(),
+        body: fd,
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { res: res, data: data || {} };
+          }).catch(function () {
+            return { res: res, data: {} };
+          });
+        })
+        .then(function (pack) {
+          var data = pack.data;
+          if (data && data.ok && data.status_url) {
+            api._doneUrl = data.done_url || api._doneUrl || "/dashboard";
+            if (data.url) api.setUrl(data.url);
+            api.setPhase(
+              data.status === "running" ? "crawl" : "pending",
+              t(root, "hint-live", "Aggiornamento avanzamento in tempo reale…")
+            );
+            api._startPoll(data.status_url);
+            return;
+          }
+          var msg =
+            (data && (data.message || data.error)) ||
+            t(root, "error-fallback", "Errore durante l’analisi");
+          if (data && data.redirect) {
+            api.fail(msg);
+            setTimeout(function () {
+              window.location.href = data.redirect;
+            }, 1200);
+            return;
+          }
+          api.fail(typeof msg === "string" ? msg : t(root, "error-fallback", "Errore durante l’analisi"));
+          if (submitBtn) submitBtn.disabled = false;
+        })
+        .catch(function () {
+          api.fail(t(root, "error-fallback", "Errore durante l’analisi"));
+          if (submitBtn) submitBtn.disabled = false;
+        });
     });
   }
 

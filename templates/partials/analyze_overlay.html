@@ -22,12 +22,12 @@
   data-eta-done="{{ _('Completato') }}"
   data-eta-prepare="{{ _('Stima in preparazione…') }}"
   data-eta-prefix="{{ _('Stima:') }}"
-  {% if pending_job and pending_job.status in ('pending', 'running') %}
+  {% if analyze_overlay_job %}
   data-auto-open="1"
-  data-status-url="{{ url_for('dashboard_job_status', job_id=pending_job.id) }}"
+  data-status-url="{{ url_for('dashboard_job_status', job_id=analyze_overlay_job.id) }}"
   data-done-url="{{ url_for('dashboard') }}"
-  data-url="{{ pending_job.url }}"
-  data-phase="{{ 'pending' if pending_job.status == 'pending' else 'running' }}"
+  data-url="{{ analyze_overlay_job.url }}"
+  data-phase="{{ 'pending' if analyze_overlay_job.status == 'pending' else ('pack' if analyze_overlay_job.status == 'done' else 'running') }}"
   {% endif %}
 >
   <div class="analyze-overlay__panel">
