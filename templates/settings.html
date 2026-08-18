@@ -29,7 +29,37 @@
       </li>
       {% endif %}
       <li>{{ _('JS crawl:') }} {% if js_crawl_ready %}{{ _('Playwright pronto') }}{% else %}{{ _('disabilitato (JS_CRAWL_ENABLED=1)') }}{% endif %}</li>
-      <li>{{ _('Google Search Console:') }} {{ gsc.reason if not gsc.available else gsc.note }}</li>
+      <li class="connector-gsc">
+        <div>
+          <strong>{{ _('Google Search Console') }}</strong>
+          — {{ gsc.reason }}
+          {% if gsc.note %}<span class="field-hint">{{ gsc.note }}</span>{% endif %}
+          {% if gsc.connected and gsc.sites %}
+          <ul class="plain-list u-mt-1">
+            {% for site_url in gsc.sites[:8] %}
+            <li><code>{{ site_url }}</code></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        {% if can_gsc and gsc.available %}
+        <div class="u-mt-1">
+          {% if not gsc.connected %}
+          <form method="post" action="{{ url_for('gsc_oauth_connect') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary">{{ _('Collega Google') }}</button>
+          </form>
+          {% else %}
+          <form method="post" action="{{ url_for('gsc_oauth_disconnect') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-ghost">{{ _('Disconnetti') }}</button>
+          </form>
+          {% endif %}
+        </div>
+        {% elif not can_gsc %}
+        <p class="field-hint">{{ _('Disponibile su Plus e Business.') }} <a href="{{ url_for('pricing') }}">{{ _('Vedi piani') }}</a></p>
+        {% endif %}
+      </li>
     </ul>
   </section>
 

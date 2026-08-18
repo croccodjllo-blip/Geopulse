@@ -253,7 +253,15 @@ from services.agency import (
     dump_agency_brand,
     parse_agency_brand,
 )
-from services.gsc import gsc_status
+from services.gsc import (
+    build_authorization_url,
+    disconnect_user as gsc_disconnect_user,
+    gsc_configured,
+    gsc_redirect_uri,
+    gsc_status,
+    new_oauth_state,
+    persist_connection_from_code,
+)
 from services.js_crawl import js_crawl_available
 from services.publish_verify import verify_published_pack
 from services.citation_monitor import citation_monitor_available, is_sov_usage_call
@@ -639,6 +647,13 @@ class User(db.Model):
     # Consumer digital-service waiver (immediate performance → loss of withdrawal).
     digital_service_waiver_at = db.Column(db.DateTime)
     digital_service_waiver_version = db.Column(db.String(40))
+    # Google Search Console OAuth (sealed tokens — enc:v1:…).
+    gsc_refresh_token = db.Column(db.Text)
+    gsc_access_token = db.Column(db.Text)
+    gsc_token_expires_at = db.Column(db.DateTime)
+    gsc_account_email = db.Column(db.String(255))
+    gsc_connected_at = db.Column(db.DateTime)
+    gsc_site_urls_json = db.Column(db.Text, nullable=False, default="")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1990,6 +2005,12 @@ def ensure_schema() -> None:
             "terms_version": "TEXT",
             "digital_service_waiver_at": "DATETIME",
             "digital_service_waiver_version": "TEXT",
+            "gsc_refresh_token": "TEXT",
+            "gsc_access_token": "TEXT",
+            "gsc_token_expires_at": "DATETIME",
+            "gsc_account_email": "TEXT",
+            "gsc_connected_at": "DATETIME",
+            "gsc_site_urls_json": "TEXT DEFAULT ''",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -3584,6 +3605,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "alerts_webhook": "Alert",
         "api_access": "API",
         "agency_whitelabel": "White-label",
+        "gsc": "Search Console",
     }
     # Stable order for gated capabilities in the plan strip.
     order = (
@@ -3597,6 +3619,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "full_edge_signals",
         "extended_history",
         "alerts_webhook",
+        "gsc",
         "api_access",
         "agency_whitelabel",
     )
@@ -3633,6 +3656,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "can_extended_history": ents.can("extended_history"),
         "can_full_crawl": ents.can("full_crawl"),
         "can_multi_site": ents.can("multi_site"),
+        "can_gsc": ents.can("gsc"),
         "dash_plan": dash_plan,
         "plan_key": plan_key,
         "plan_services": plan_services,
@@ -6779,7 +6803,7 @@ def dashboard():
         openai_ready=bool(OPENAI_API_KEY),
         citation_ready=citation_monitor_available(),
         js_crawl_ready=js_crawl_available(),
-        gsc=gsc_status(),
+        gsc=gsc_status(user),
         used_today=used_today,
         analyses_used=analyses_used,
         daily_limit=user.daily_limit,
@@ -7904,7 +7928,7 @@ def dashboard_settings():
                 verticals=list_verticals(),
                 vertical_checklist=vertical_checklist(vertical_form.vertical.data),
                 citation_ready=citation_monitor_available(),
-                gsc=gsc_status(),
+                gsc=gsc_status(user),
                 js_crawl_ready=js_crawl_available(),
                 default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
                 **capability_template_vars(user),
@@ -7925,11 +7949,106 @@ def dashboard_settings():
         verticals=list_verticals(),
         vertical_checklist=[],
         citation_ready=citation_monitor_available(),
-        gsc=gsc_status(),
+        gsc=gsc_status(user),
         js_crawl_ready=js_crawl_available(),
         default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
         **capability_template_vars(user),
     )
+
+
+@app.route("/dashboard/gsc/connect", methods=["POST"])
+@login_required
+def gsc_oauth_connect():
+    """Start Google OAuth for Search Console (Plus/Business)."""
+    user = current_user()
+    blocked = require_capability(plan_entitlements(user), "gsc")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing"))
+    if not gsc_configured():
+        flash(
+            "Google OAuth non configurato sul server "
+            "(GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET).",
+            "error",
+        )
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    state = new_oauth_state()
+    session["gsc_oauth_state"] = state
+    session["gsc_oauth_started_at"] = datetime.now(timezone.utc).isoformat()
+    try:
+        url = build_authorization_url(state=state)
+    except Exception as exc:
+        app.logger.exception("GSC authorize URL failed")
+        flash(str(exc) or "Impossibile avviare OAuth Google.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    return redirect(url)
+
+
+@app.route("/dashboard/gsc/callback", methods=["GET"])
+@login_required
+def gsc_oauth_callback():
+    """OAuth redirect URI — exchange code and seal tokens."""
+    user = current_user()
+    blocked = require_capability(plan_entitlements(user), "gsc")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing"))
+    err = (request.args.get("error") or "").strip()
+    if err:
+        desc = (request.args.get("error_description") or err).strip()
+        flash(f"Google OAuth annullato: {desc}", "warning")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    state = (request.args.get("state") or "").strip()
+    expected = (session.pop("gsc_oauth_state", None) or "").strip()
+    session.pop("gsc_oauth_started_at", None)
+    if not state or not expected or not secrets.compare_digest(state, expected):
+        flash("Sessione OAuth non valida. Riprova il collegamento.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    code = (request.args.get("code") or "").strip()
+    if not code:
+        flash("Codice OAuth mancante.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    try:
+        info = persist_connection_from_code(
+            user,
+            code,
+            redirect_uri=gsc_redirect_uri(),
+            db_session=db.session,
+        )
+    except Exception as exc:
+        app.logger.exception("GSC OAuth callback failed user=%s", user.id)
+        flash(str(exc) or "Collegamento Search Console non riuscito.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    email = info.get("email") or ""
+    n_sites = len(info.get("sites") or [])
+    if email:
+        flash(
+            f"Google Search Console collegato ({email}"
+            + (f", {n_sites} proprietà" if n_sites else "")
+            + ").",
+            "success",
+        )
+    else:
+        flash("Google Search Console collegato.", "success")
+    return redirect(url_for("dashboard_settings") + "#connectors")
+
+
+@app.route("/dashboard/gsc/disconnect", methods=["POST"])
+@login_required
+def gsc_oauth_disconnect():
+    user = current_user()
+    blocked = require_capability(plan_entitlements(user), "gsc")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing"))
+    try:
+        gsc_disconnect_user(user, db_session=db.session)
+    except Exception:
+        app.logger.exception("GSC disconnect failed user=%s", user.id)
+        flash("Disconnessione Search Console non riuscita.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    flash("Google Search Console disconnesso.", "success")
+    return redirect(url_for("dashboard_settings") + "#connectors")
 
 
 @app.route("/dashboard/verify/<int:analysis_id>")
