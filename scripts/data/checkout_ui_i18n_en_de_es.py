@@ -30,8 +30,6 @@ EN: dict[str, str] = {
     ),
     "Paga Plus · 19,99€/mese": "Pay Plus · €19.99/mo excl. taxes",
     "Paga Plus · 19,99€/mese Tasse escluse": "Pay Plus · €19.99/mo excl. taxes",
-    "Paga Plus · 14,99€/mese": "Pay Plus · €19.99/mo excl. taxes",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Pay Plus · €19.99/mo excl. taxes",
     "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
         "Free: 1 domain. Plus (€19.99 excl. tax): up to"
     ),
@@ -149,8 +147,6 @@ DE: dict[str, str] = {
     ),
     "Paga Plus · 19,99€/mese": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
     "Paga Plus · 19,99€/mese Tasse escluse": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
-    "Paga Plus · 14,99€/mese": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Plus bezahlen · 19,99 €/Monat zzgl. Steuern",
     "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
         "Free: 1 Domain. Plus (19,99 € zzgl. Steuern): bis zu"
     ),
@@ -268,8 +264,6 @@ ES: dict[str, str] = {
     ),
     "Paga Plus · 19,99€/mese": "Pagar Plus · 19,99 €/mes sin impuestos",
     "Paga Plus · 19,99€/mese Tasse escluse": "Pagar Plus · 19,99 €/mes sin impuestos",
-    "Paga Plus · 14,99€/mese": "Pagar Plus · 19,99 €/mes sin impuestos",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Pagar Plus · 19,99 €/mes sin impuestos",
     "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
         "Free: 1 dominio. Plus (19,99 € sin impuestos): hasta"
     ),

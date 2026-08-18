@@ -24,8 +24,6 @@ ZH: dict[str, str] = {
     ),
     "Paga Plus · 19,99€/mese": "支付 Plus · €19.99/月（不含税）",
     "Paga Plus · 19,99€/mese Tasse escluse": "支付 Plus · €19.99/月（不含税）",
-    "Paga Plus · 14,99€/mese": "支付 Plus · €19.99/月（不含税）",
-    "Paga Plus · 14,99€/mese Tasse escluse": "支付 Plus · €19.99/月（不含税）",
     "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
         "Free：1 个域名。Plus（€19.99 不含税）：最多"
     ),
@@ -139,8 +137,6 @@ KO: dict[str, str] = {
     ),
     "Paga Plus · 19,99€/mese": "Plus 결제 · €19.99/월(세금 별도)",
     "Paga Plus · 19,99€/mese Tasse escluse": "Plus 결제 · €19.99/월(세금 별도)",
-    "Paga Plus · 14,99€/mese": "Plus 결제 · €19.99/월(세금 별도)",
-    "Paga Plus · 14,99€/mese Tasse escluse": "Plus 결제 · €19.99/월(세금 별도)",
     "Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a": (
         "Free: 도메인 1개. Plus(€19.99 세금 별도): 최대"
     ),
