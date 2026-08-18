@@ -414,7 +414,7 @@ def plan_from_paddle_subscription_status(
     *,
     past_due_at: datetime | None = None,
     now: datetime | None = None,
-    past_due_grace_days: int = 3,
+    past_due_grace_days: int | None = None,
     paid_plan: str = "plus",
 ) -> str:
     """Map Paddle subscription status → Centropic plan.
@@ -435,17 +435,98 @@ def plan_from_paddle_subscription_status(
     if status == "past_due":
         if past_due_at is None:
             return "free"
+        days = (
+            configured_past_due_grace_days()
+            if past_due_grace_days is None
+            else max(0, int(past_due_grace_days))
+        )
         ref = now or datetime.now(timezone.utc)
         started = past_due_at
         if started.tzinfo is None:
             started = started.replace(tzinfo=timezone.utc)
         if ref.tzinfo is None:
             ref = ref.replace(tzinfo=timezone.utc)
-        grace = timedelta(days=max(0, int(past_due_grace_days)))
+        grace = timedelta(days=days)
         if ref <= started + grace:
             return target
         return "free"
     return "free"
+
+
+def configured_past_due_grace_days() -> int:
+    """Configured past_due grace window (days)."""
+    try:
+        return max(0, int(os.getenv("PADDLE_PAST_DUE_GRACE_DAYS", "3") or "3"))
+    except ValueError:
+        return 3
+
+
+def past_due_grace_elapsed(
+    past_due_since: datetime | None,
+    *,
+    now: datetime | None = None,
+    grace_days: int | None = None,
+) -> bool:
+    """True when ``past_due_since`` is set and the grace window has ended.
+
+    Used to stop sticky paid ``User.plan`` after webhook-only grace mapping
+    without waiting for a follow-up Paddle event.
+    """
+    if past_due_since is None:
+        return False
+    days = (
+        configured_past_due_grace_days()
+        if grace_days is None
+        else max(0, int(grace_days))
+    )
+    ref = now or datetime.now(timezone.utc)
+    started = past_due_since
+    if started.tzinfo is None:
+        started = started.replace(tzinfo=timezone.utc)
+    if ref.tzinfo is None:
+        ref = ref.replace(tzinfo=timezone.utc)
+    return ref > started + timedelta(days=days)
+
+
+def enforce_past_due_plan_expiry(
+    user: Any,
+    *,
+    now: datetime | None = None,
+    grace_days: int | None = None,
+) -> bool:
+    """Downgrade sticky Plus/Business → free after past_due grace.
+
+    Does not commit. Returns True when ``user.plan`` (or alerts) changed.
+    Admin accounts are never downgraded.
+    """
+    if user is None:
+        return False
+    if bool(getattr(user, "is_admin", False)):
+        return False
+    plan = (getattr(user, "plan", None) or "").strip().lower()
+    if plan not in {"plus", "pro", "business"}:
+        return False
+    since = getattr(user, "paddle_past_due_since", None)
+    if not past_due_grace_elapsed(since, now=now, grace_days=grace_days):
+        return False
+    user.plan = "free"
+    changed = True
+    try:
+        from services.job_billing_recovery import clear_paid_alert_settings
+
+        if clear_paid_alert_settings(user):
+            changed = True
+    except Exception:
+        logger.exception(
+            "clear_paid_alert_settings failed during past_due expiry user=%s",
+            getattr(user, "id", None),
+        )
+    logger.info(
+        "past_due grace expired → plan=free user=%s since=%s",
+        getattr(user, "id", None),
+        since,
+    )
+    return changed
 
 
 def extract_user_id(custom_data: Any) -> int | None:

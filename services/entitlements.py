@@ -85,6 +85,14 @@ def _plan_key(user: Any | None) -> str:
         return "anonymous"
     if getattr(user, "is_admin", False) or (getattr(user, "plan", "") or "").lower() == "admin":
         return "admin"
+    # Fail-closed: past_due grace elapsed → treat as free even if plan sticky.
+    try:
+        from services.paddle_billing import past_due_grace_elapsed
+
+        if past_due_grace_elapsed(getattr(user, "paddle_past_due_since", None)):
+            return "free"
+    except Exception:
+        pass
     raw = (getattr(user, "plan", "") or "").lower()
     if raw == "business" or getattr(user, "is_business", False):
         return "business"

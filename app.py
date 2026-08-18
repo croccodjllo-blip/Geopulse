@@ -708,13 +708,29 @@ class User(db.Model):
 
     @property
     def is_pro(self) -> bool:
-        """Piano Plus/Business/pro/admin."""
-        return self.is_admin or (self.plan or "").lower() in {"plus", "pro", "business"}
+        """Piano Plus/Business/pro/admin.
+
+        Fail-closed after past_due grace even if ``plan`` is still sticky
+        pending ``enforce_past_due_plan_expiry`` persistence.
+        """
+        if self.is_admin:
+            return True
+        from services.paddle_billing import past_due_grace_elapsed
+
+        if past_due_grace_elapsed(getattr(self, "paddle_past_due_since", None)):
+            return False
+        return (self.plan or "").lower() in {"plus", "pro", "business"}
 
     @property
     def is_business(self) -> bool:
         """Piano Business o Admin (agenzia / full toolkit)."""
-        return self.is_admin or (self.plan or "").lower() == "business"
+        if self.is_admin:
+            return True
+        from services.paddle_billing import past_due_grace_elapsed
+
+        if past_due_grace_elapsed(getattr(self, "paddle_past_due_since", None)):
+            return False
+        return (self.plan or "").lower() == "business"
 
     @property
     def plan_label(self) -> str:
@@ -1490,6 +1506,17 @@ def current_user() -> User | None:
     if not user.email_verified and not user.is_admin:
         session.clear()
         return None
+    # Sticky past_due plan: downgrade after grace without waiting for webhook.
+    try:
+        from services.paddle_billing import enforce_past_due_plan_expiry
+
+        if enforce_past_due_plan_expiry(user):
+            db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception(
+            "past_due plan expiry failed user=%s", getattr(user, "id", None)
+        )
     return user
 
 
@@ -3033,6 +3060,24 @@ def api_v1_extract_raw_key() -> str:
     if auth.lower().startswith("bearer "):
         raw = auth[7:].strip()
     return raw or (request.headers.get("X-Api-Key") or "").strip()
+
+
+def api_v1_authenticate_user() -> User | None:
+    """Resolve API key user and persist past_due grace expiry when needed."""
+    user = find_user_by_api_key(User, api_v1_extract_raw_key())
+    if user is None:
+        return None
+    try:
+        from services.paddle_billing import enforce_past_due_plan_expiry
+
+        if enforce_past_due_plan_expiry(user):
+            db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception(
+            "past_due plan expiry failed api_user=%s", getattr(user, "id", None)
+        )
+    return user
 
 
 def analyses_today(user_id: int) -> int:
@@ -7760,8 +7805,7 @@ def api_v1_analyze():
     blocked = api_v1_preauth_rate_limited()
     if blocked is not None:
         return blocked
-    raw = api_v1_extract_raw_key()
-    user = find_user_by_api_key(User, raw)
+    user = api_v1_authenticate_user()
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not plan_entitlements(user).can("api_access"):
@@ -7995,8 +8039,7 @@ def api_v1_job_status(job_id: int):
     blocked = api_v1_preauth_rate_limited()
     if blocked is not None:
         return blocked
-    raw = api_v1_extract_raw_key()
-    user = find_user_by_api_key(User, raw)
+    user = api_v1_authenticate_user()
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not plan_entitlements(user).can("api_access"):
@@ -8039,8 +8082,7 @@ def api_v1_sites():
     blocked = api_v1_preauth_rate_limited()
     if blocked is not None:
         return blocked
-    raw = api_v1_extract_raw_key()
-    user = find_user_by_api_key(User, raw)
+    user = api_v1_authenticate_user()
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not plan_entitlements(user).can("api_access"):
@@ -8083,8 +8125,7 @@ def api_v1_site_edge(site_id: int):
     blocked = api_v1_preauth_rate_limited()
     if blocked is not None:
         return blocked
-    raw = api_v1_extract_raw_key()
-    user = find_user_by_api_key(User, raw)
+    user = api_v1_authenticate_user()
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not plan_entitlements(user).can("api_access"):
@@ -8152,8 +8193,7 @@ def api_v1_site_edge_cms_bundle(site_id: int):
     blocked = api_v1_preauth_rate_limited()
     if blocked is not None:
         return blocked
-    raw = api_v1_extract_raw_key()
-    user = find_user_by_api_key(User, raw)
+    user = api_v1_authenticate_user()
     if user is None:
         return jsonify({"ok": False, "error": "invalid_api_key"}), 401
     if not plan_entitlements(user).can("api_access"):
