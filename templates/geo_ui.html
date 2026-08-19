@@ -6,6 +6,11 @@
 
 {% block content %}
 <section class="geo-ui-embed" aria-label="{{ _('GEO Charts') }}">
+  {% if latest %}
+  <p class="geo-ui-embed__crumb report-meta">
+    <a class="site-link" href="{{ url_for('dashboard', site=latest.id) }}">← {{ _('Dashboard') }} · {{ latest.domain }}</a>
+  </p>
+  {% endif %}
   {# Mount React in-page — avoids X-Frame-Options DENY / frame-ancestors none #}
   <div id="root" class="geo-ui-embed__root"></div>
 </section>

@@ -28,6 +28,7 @@ CAPABILITIES = (
     "extended_history",
     "pack_email",
     "alerts_webhook",
+    "gsc",
 )
 
 # Plus = continuous brand optimization. Business exclusives = agency toolkit.
@@ -203,6 +204,7 @@ def require_capability(ents: PlanEntitlements, capability: str) -> str | None:
         "full_edge_signals": "Edge Signals completo",
         "extended_history": "storico esteso",
         "alerts_webhook": "alert email e webhook",
+        "gsc": "Google Search Console",
     }
     feature = labels.get(capability, capability)
     if capability in BUSINESS_ONLY_CAPABILITIES:

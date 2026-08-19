@@ -162,12 +162,12 @@ export function Sidebar({
           </span>
         </div>
         {creditsCap > 0 ? (
-          <div className="w-full bg-brand-border h-2 rounded-full overflow-hidden">
-            <div
-              className="bg-gradient-to-r from-brand-cyan to-brand-blue h-full transition-[width] duration-500"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
+          <progress
+            className="geo-credits-bar w-full h-2"
+            value={pct}
+            max={100}
+            aria-label={creditsLabel}
+          />
         ) : null}
         <div className="flex items-center justify-between pt-2 border-t border-brand-border/40 text-xs gap-2">
           <span className="px-2 py-0.5 rounded bg-brand-blue/20 text-brand-cyan border border-brand-blue/30 font-medium">

@@ -17,11 +17,15 @@
             {{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}
           {% endif %}
         </h1>
+        {% include "partials/site_switcher.html" %}
         <p class="workspace-strip__lede">
           {% if latest %}
-            {{ _('Ultimo report') }}
+            {{ _('Report completo') }}
             {% set report_at = latest.updated_at or latest.created_at %}
             {% if report_at %} · {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}
+            {% if user_sites is defined and user_sites|length > 1 %}
+              · {{ user_sites|length }} {{ _('siti nel workspace') }}
+            {% endif %}
           {% else %}
             {% if current_user.company %}{{ current_user.company }} · {% endif %}
             {% if dash_plan == 'business' %}
@@ -1183,6 +1187,8 @@
             url += sep + 'job=' + encodeURIComponent(data.id);
             sep = '&';
           }
+          url += sep + 'completed=1';
+          sep = '&';
           url += sep + '_r=' + encodeURIComponent(String(Date.now()));
           window.location.replace(url);
           return;

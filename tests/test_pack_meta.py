@@ -17,7 +17,7 @@ def test_meta_pack_brand_title_and_aligned_urls():
             ),
             "canonical": "https://centropic.ai",
             "lang": "it",
-            "og_image": "https://centropic.ai/static/img/hero-earth.jpg",
+            "og_image": "https://centropic.ai/static/img/og-share.jpg",
         },
     )
     assert "<title>Centropic — Signal Intelligence per AIO e GEO</title>" in html
@@ -26,7 +26,7 @@ def test_meta_pack_brand_title_and_aligned_urls():
     assert 'canonical" href="https://centropic.ai"' in html
     assert 'og:url" content="https://centropic.ai"' in html
     assert "og:url\" content=\"https://centropic.ai/\"" not in html
-    assert "hero-earth.jpg" in html
+    assert "og-share.jpg" in html
     assert "twitter:card" in html
     assert "Assicurati che" not in html
     assert '<html lang="it">' in html

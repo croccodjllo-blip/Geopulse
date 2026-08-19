@@ -17,12 +17,14 @@ module.exports = {
           cyan: "#C9D3DD", // Chrome silver (primary accent)
           blue: "#5B6B7A", // Steel shadow (secondary)
           violet: "#5B6B7A", // Legacy name → steel (never purple)
+          steel: "#5B6B7A",
           muted: "#8B97A8",
         },
       },
       boxShadow: {
         glow: "0 12px 28px rgba(0, 0, 0, 0.35)",
-        "glow-violet": "0 12px 28px rgba(0, 0, 0, 0.3)",
+        "glow-steel": "0 12px 28px rgba(0, 0, 0, 0.3)",
+        "glow-violet": "0 12px 28px rgba(0, 0, 0, 0.3)", // legacy alias
         "glow-holo": "0 16px 40px rgba(0, 0, 0, 0.45)",
       },
       fontFamily: {

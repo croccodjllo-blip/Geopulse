@@ -17,6 +17,33 @@ type GeoUiChrome = {
   insightsEmpty?: string;
   pagesScored?: string;
   findingsInLastAudit?: string;
+  chartsTitle?: string;
+  overviewTitle?: string;
+  emptyBody?: string;
+  runAudit?: string;
+  liveSubtitle?: string;
+  rangeLast30?: string;
+  rangeLast7?: string;
+  rangeQuarter?: string;
+  rangeComingSoon?: string;
+  somLabel?: string;
+  acrossEngines?: string;
+  recRankLabel?: string;
+  recRankHint?: string;
+  issuePressureTitle?: string;
+  issuePressureHint?: string;
+  somTrendTitle?: string;
+  breakdownTitle?: string;
+  viewReport?: string;
+  enginesEmpty?: string;
+  colEngine?: string;
+  colShare?: string;
+  colTopDomain?: string;
+  colStatus?: string;
+  statusDominant?: string;
+  statusOptimal?: string;
+  statusNeedsAction?: string;
+  statusUnknown?: string;
 };
 
 type GeoUiData = {

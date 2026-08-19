@@ -253,7 +253,15 @@ from services.agency import (
     dump_agency_brand,
     parse_agency_brand,
 )
-from services.gsc import gsc_status
+from services.gsc import (
+    build_authorization_url,
+    disconnect_user as gsc_disconnect_user,
+    gsc_configured,
+    gsc_redirect_uri,
+    gsc_status,
+    new_oauth_state,
+    persist_connection_from_code,
+)
 from services.js_crawl import js_crawl_available
 from services.publish_verify import verify_published_pack
 from services.citation_monitor import citation_monitor_available, is_sov_usage_call
@@ -639,6 +647,13 @@ class User(db.Model):
     # Consumer digital-service waiver (immediate performance → loss of withdrawal).
     digital_service_waiver_at = db.Column(db.DateTime)
     digital_service_waiver_version = db.Column(db.String(40))
+    # Google Search Console OAuth (sealed tokens — enc:v1:…).
+    gsc_refresh_token = db.Column(db.Text)
+    gsc_access_token = db.Column(db.Text)
+    gsc_token_expires_at = db.Column(db.DateTime)
+    gsc_account_email = db.Column(db.String(255))
+    gsc_connected_at = db.Column(db.DateTime)
+    gsc_site_urls_json = db.Column(db.Text, nullable=False, default="")
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1756,6 +1771,9 @@ def inject_globals() -> dict[str, Any]:
         "sidebar_credits_cap": sidebar_credits_cap,
         "sidebar_plan": sidebar_plan,
         "sidebar_active": sidebar_active,
+        "dash_site_id": (
+            session.get("dashboard_site_id") if user is not None else None
+        ),
         "format_token_amount": format_token_amount,
         "format_tokens_short": format_tokens_short,
         "cents_to_tokens": cents_to_tokens,
@@ -1987,6 +2005,12 @@ def ensure_schema() -> None:
             "terms_version": "TEXT",
             "digital_service_waiver_at": "DATETIME",
             "digital_service_waiver_version": "TEXT",
+            "gsc_refresh_token": "TEXT",
+            "gsc_access_token": "TEXT",
+            "gsc_token_expires_at": "DATETIME",
+            "gsc_account_email": "TEXT",
+            "gsc_connected_at": "DATETIME",
+            "gsc_site_urls_json": "TEXT DEFAULT ''",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -2262,6 +2286,10 @@ def _enqueue_measured_followup(
         or "gpt-4o-mini",
     )
     need = max(1, int(est.service_cost_eur_cents or 0))
+    # Hold must include grace — the worker ceiling compares projected spend to
+    # job.held_cents and fail-closes when projected exceeds the lease (job #924:
+    # held base 3¢, Azure Copilot pushed projected to 4¢ → Measured stuck).
+    required = required_credit_with_grace_cents(need)
     # Atomic lock: re-check credit + concurrent job cap under row lock, same
     # gate the normal analyze flow uses before hold/enqueue.
     try:
@@ -2269,7 +2297,7 @@ def _enqueue_measured_followup(
             db.session,
             user,
             AnalysisJob=AnalysisJob,
-            required_cents=required_credit_with_grace_cents(need),
+            required_cents=required,
             max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
@@ -2284,10 +2312,13 @@ def _enqueue_measured_followup(
         )
         return None
     held = 0
-    if not is_unlimited_user(user) and need > 0:
+    if not is_unlimited_user(user) and required > 0:
         try:
             held = int(
-                hold_credit(db.session, CreditLedger, user, amount_cents=need) or 0
+                hold_credit(
+                    db.session, CreditLedger, user, amount_cents=required
+                )
+                or 0
             )
             # Do not commit yet — enqueue_analysis commits hold+job together.
         except InsufficientCreditError:
@@ -2588,6 +2619,15 @@ def process_pending_analyze_jobs(
                         # foreign here and would blow up on session.refresh().
                         thread_user = db.session.get(User, user_id_pinned) or user
                         thread_job = db.session.get(AnalysisJob, job_id_pinned) or job
+                        # Straggler SoV threads can finish after wall-timeout + job
+                        # complete/flush. Never bill or fail-closed once the job is
+                        # no longer running (seen on job #935 Azure late callback).
+                        if str(getattr(thread_job, "status", "") or "") != "running":
+                            try:
+                                db.session.rollback()
+                            except Exception:
+                                pass
+                            return
                         charged = record_actual_usage(
                             db.session,
                             UsageEvent,
@@ -2604,15 +2644,19 @@ def process_pending_analyze_jobs(
                         projected = peek_usage_accum_cents(accum_key)
                         if projected > 0:
                             _assert_current_sov_debit(thread_user, max(debit_cents, projected))
-                        # Hold ceiling: stop LLM when projected spend exceeds lease.
-                        held_cap = int(getattr(thread_job, "held_cents", 0) or 0)
+                        # Hold ceiling: stop LLM when projected spend exceeds the
+                        # original lease (remaining held + already billed), not
+                        # only remaining held_cents (which shrinks as we debit).
+                        lease_cap = int(getattr(thread_job, "held_cents", 0) or 0) + int(
+                            getattr(thread_job, "billed_cents", 0) or 0
+                        )
                         if (
-                            held_cap > 0
-                            and projected > held_cap
+                            lease_cap > 0
+                            and projected > lease_cap
                             and not is_unlimited_user(thread_user)
                         ):
                             raise InsufficientCreditError(
-                                f"usage projected {projected}c exceeds hold {held_cap}c"
+                                f"usage projected {projected}c exceeds hold {lease_cap}c"
                             )
                         if debit_cents <= 0:
                             db.session.commit()
@@ -3162,12 +3206,60 @@ def wants_json_response() -> bool:
         return True
     if request.is_json:
         return True
+    if (request.headers.get("X-Requested-With") or "").lower() == "xmlhttprequest":
+        return True
+    if (request.form.get("ajax") or request.args.get("ajax") or "") == "1":
+        return True
     accept = request.accept_mimetypes
     best = accept.best_match(["application/json", "text/html"])
     return bool(
         best == "application/json"
         and accept[best] >= accept["text/html"]
     )
+
+
+def analyze_job_json_payload(job: AnalysisJob) -> dict[str, Any]:
+    """JSON body after enqueue/confirm — keeps the overlay on the confirm page."""
+    return {
+        "ok": True,
+        "job_id": int(job.id),
+        "status": job.status,
+        "url": job.url,
+        "status_url": url_for("dashboard_job_status", job_id=int(job.id)),
+        "done_url": url_for("dashboard"),
+        "site_id": int(job.site_id) if getattr(job, "site_id", None) else None,
+    }
+
+
+def analyze_error_json(
+    message: str,
+    *,
+    status: int = 400,
+    redirect_url: str | None = None,
+    error: str = "analyze_error",
+) -> Any:
+    body: dict[str, Any] = {"ok": False, "error": error, "message": message}
+    if redirect_url:
+        body["redirect"] = redirect_url
+    return jsonify(body), status
+
+
+def resolve_analyze_overlay_job(job: AnalysisJob | None) -> AnalysisJob | None:
+    """Which job should auto-open the crawl progress overlay.
+
+    Only in-flight crawl jobs. Do **not** auto-open for recently ``done`` jobs:
+    the AJAX confirm flow already polls to completion, then ``location.replace``
+    to ``/dashboard?job=<done>``. Re-opening for fresh-done caused an infinite
+    overlay loop (never closes).
+    """
+    if job is None:
+        return None
+    status = str(getattr(job, "status", "") or "")
+    if status in {"pending", "running"}:
+        if str(getattr(job, "source", None) or "").lower() == "measured":
+            return None
+        return job
+    return None
 
 
 FREE_QUOTA_BANNER = (
@@ -3219,34 +3311,49 @@ def resolve_analyze_existing(user: User, url: str) -> tuple[SiteAnalysis | None,
     return existing, None
 
 
+def _job_is_measured_source(job: AnalysisJob | None) -> bool:
+    return str(getattr(job, "source", None) or "").lower() == "measured"
+
+
 def active_analyze_job_for_url(
     user_id: int,
     url: str,
     *,
     site: SiteAnalysis | None = None,
+    include_measured: bool = False,
 ) -> AnalysisJob | None:
     """Pending/running job for the same URL within the tenant (dedupe enqueue).
 
     Matches: (1) same site_id, (2) same user+url, (3) org peers on the same URL.
+
+    By default ignores ``source=measured`` follow-ups: those run after Stimato/pack
+    and must not block a new crawl remisure or steal the progress overlay
+    (user would land back on the existing Stimato report with no crawl UI).
     """
     active = AnalysisJob.status.in_(("pending", "running"))
+
+    def _pick(q):
+        if include_measured or not hasattr(AnalysisJob, "source"):
+            return q.order_by(AnalysisJob.id.desc()).first()
+        # Prefer a crawl/primary job; skip deferred measured SoV.
+        for job in q.order_by(AnalysisJob.id.desc()).limit(12).all():
+            if not _job_is_measured_source(job):
+                return job
+        return None
+
     if site is not None and getattr(site, "id", None):
-        by_site = (
+        by_site = _pick(
             AnalysisJob.query.filter(active, AnalysisJob.site_id == int(site.id))
-            .order_by(AnalysisJob.id.desc())
-            .first()
         )
         if by_site is not None:
             return by_site
 
-    by_user = (
+    by_user = _pick(
         AnalysisJob.query.filter(
             active,
             AnalysisJob.user_id == user_id,
             AnalysisJob.url == url,
         )
-        .order_by(AnalysisJob.id.desc())
-        .first()
     )
     if by_user is not None:
         return by_user
@@ -3273,15 +3380,77 @@ def active_analyze_job_for_url(
     ]
     if not peer_ids:
         return None
-    return (
+    return _pick(
         AnalysisJob.query.filter(
             active,
             AnalysisJob.url == url,
             AnalysisJob.user_id.in_(peer_ids),
         )
-        .order_by(AnalysisJob.id.desc())
-        .first()
     )
+
+
+def cancel_active_measured_for_analyze(
+    user: User,
+    url: str,
+    *,
+    site: SiteAnalysis | None = None,
+) -> int:
+    """Supersede deferred measured jobs when a new crawl analysis starts.
+
+    Releases any remaining hold so remisure is not blocked by SoV-in-progress.
+    Returns how many measured jobs were cancelled.
+    """
+    if not hasattr(AnalysisJob, "source"):
+        return 0
+    active = AnalysisJob.status.in_(("pending", "running"))
+    candidates = (
+        AnalysisJob.query.filter(
+            active,
+            AnalysisJob.user_id == int(user.id),
+            AnalysisJob.source == "measured",
+        )
+        .order_by(AnalysisJob.id.desc())
+        .limit(20)
+        .all()
+    )
+    site_id = int(site.id) if site is not None and getattr(site, "id", None) else None
+    cancelled = 0
+    now = datetime.now(timezone.utc)
+    for job in candidates:
+        same_site = site_id is not None and int(getattr(job, "site_id", 0) or 0) == site_id
+        same_url = (getattr(job, "url", None) or "") == url
+        if not (same_site or same_url):
+            continue
+        held = int(getattr(job, "held_cents", 0) or 0)
+        updated = (
+            AnalysisJob.query.filter(
+                AnalysisJob.id == job.id,
+                AnalysisJob.status.in_(("pending", "running")),
+            )
+            .update(
+                {
+                    "status": "error",
+                    "error": "Sostituito da nuova analisi crawl",
+                    "finished_at": now,
+                    "lease_token": None,
+                    "held_cents": 0,
+                },
+                synchronize_session=False,
+            )
+        )
+        if not updated:
+            continue
+        cancelled += 1
+        if held > 0:
+            try:
+                release_hold(db.session, user, amount_cents=held)
+            except Exception:
+                app.logger.exception(
+                    "release_hold failed cancelling measured job=%s", job.id
+                )
+    if cancelled:
+        db.session.commit()
+    return cancelled
 
 
 def enforce_analyze_limits(
@@ -3436,6 +3605,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "alerts_webhook": "Alert",
         "api_access": "API",
         "agency_whitelabel": "White-label",
+        "gsc": "Search Console",
     }
     # Stable order for gated capabilities in the plan strip.
     order = (
@@ -3449,6 +3619,7 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "full_edge_signals",
         "extended_history",
         "alerts_webhook",
+        "gsc",
         "api_access",
         "agency_whitelabel",
     )
@@ -3484,6 +3655,8 @@ def capability_template_vars(user: User | None) -> dict[str, Any]:
         "can_full_edge": ents.can("full_edge_signals"),
         "can_extended_history": ents.can("extended_history"),
         "can_full_crawl": ents.can("full_crawl"),
+        "can_multi_site": ents.can("multi_site"),
+        "can_gsc": ents.can("gsc"),
         "dash_plan": dash_plan,
         "plan_key": plan_key,
         "plan_services": plan_services,
@@ -5817,6 +5990,21 @@ def register():
             if role_val and role_val.lower() in PRIVILEGE_ROLES:
                 role_val = None
             mail_ok = mail_configured()
+            # Dev/test hatch only: never auto-verify in production when SMTP/Resend
+            # is down (audit P1 — would grant full accounts without email proof).
+            allow_unverified_hatch = (
+                os.getenv("FLASK_DEBUG", "0") == "1"
+                or bool(app.config.get("TESTING"))
+            )
+            if not mail_ok and not allow_unverified_hatch:
+                flash(
+                    "Registrazione temporaneamente non disponibile: invio email non attivo. "
+                    "Riprova tra poco o contatta info@centropic.ai.",
+                    "error",
+                )
+                return render_template(
+                    "register.html", form=form, preview_token=preview_token
+                )
             user = User(
                 email=email,
                 name=form.name.data.strip(),
@@ -6183,17 +6371,34 @@ def dashboard_geo_ui():
     if not assets.get("js") or not assets.get("css"):
         abort(404)
     user = current_user()
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is None:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    site = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if site is not None:
+        session["dashboard_site_id"] = int(site.id)
+        site_q = {"site": int(site.id)}
+    else:
+        site_q = {}
     payload = build_geo_ui_payload(
         user=user,
         SiteAnalysis=SiteAnalysis,
         SovSnapshot=SovSnapshot,
-        audit_href=url_for("dashboard") + "#analyze",
-        report_href=url_for("dashboard"),
+        audit_href=url_for("dashboard", **site_q) + "#analyze",
+        report_href=url_for("dashboard", **site_q),
+        prefer_site_id=int(site.id) if site is not None else prefer_site_id,
     )
     return render_template(
         "geo_ui.html",
         geo_ui_assets=assets,
         geo_ui_data=payload,
+        latest=site,
     )
 
 
@@ -6203,11 +6408,10 @@ def dashboard():
     user = current_user()
     form = AnalyzeForm()
     if request.method == "GET" and not form.url.data:
+        # One-shot from landing/hero; otherwise wait until active site is known.
         prefill = session.pop("prefill_analyze_url", None)
         if prefill:
             form.url.data = prefill
-        elif user and user.website_url:
-            form.url.data = user.website_url
     # Claim a completed guest preview once the user lands in-app.
     pending_preview = (session.get("guest_preview_token") or "").strip()
     if pending_preview and user is not None:
@@ -6290,9 +6494,17 @@ def dashboard():
                 "\n".join(competitor_urls) if competitor_urls else raw_comp
             )
             if comp_source == "suggested" and competitor_urls:
+                hosts = []
+                for cu in competitor_urls:
+                    h = (urlparse(cu).hostname or "").lower()
+                    if h.startswith("www."):
+                        h = h[4:]
+                    hosts.append(h or cu)
                 flash(
-                    "Competitor snapshot compilato in automatico: "
-                    + ", ".join(competitor_urls),
+                    _(
+                        "Competitor snapshot compilato in automatico: %(hosts)s"
+                    )
+                    % {"hosts": ", ".join(hosts)},
                     "info",
                 )
 
@@ -6392,9 +6604,24 @@ def dashboard():
         ):
             prefer_site_id = int(qjob.site_id)
 
+    # Sticky preference: Plus/Business multi-site users keep the last viewed
+    # domain across bare /dashboard navigations (sidebar, refresh). Explicit
+    # ?site= / completed ?job= always win and refresh the sticky id.
+    if prefer_site_id is None:
+        sticky_raw = session.get("dashboard_site_id")
+        try:
+            sticky_id = int(sticky_raw) if sticky_raw is not None else None
+        except (TypeError, ValueError):
+            sticky_id = None
+        if sticky_id is not None and get_accessible_site(
+            SiteAnalysis, user, sticky_id
+        ) is not None:
+            prefer_site_id = sticky_id
+
     # Safety net: overlay sometimes lands on bare /dashboard (no site=/job=).
     # Prefer the most recently finished job's site for a short window so the
     # report cannot stick on a sibling domain that still wins created_at races.
+    # Skip when a sticky multi-site preference is already active.
     if prefer_site_id is None:
         recent_done = (
             AnalysisJob.query.filter(
@@ -6417,6 +6644,32 @@ def dashboard():
     # Refresh latest after possible async completion / job preference.
     latest = latest_site_for_user(
         SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+    elif "dashboard_site_id" in session:
+        session.pop("dashboard_site_id", None)
+
+    # Overlay only for in-flight crawl jobs. completed=1 means we just arrived
+    # from a finished poll — never re-open the dialog on the report.
+    analyze_overlay_job = resolve_analyze_overlay_job(pending_job)
+    if request.args.get("completed") == "1":
+        analyze_overlay_job = None
+
+    # Analyze composer: default URL = active site from switcher/sticky.
+    # No sites → leave empty (do not fall back to profile website_url).
+    if request.method == "GET" and not (form.url.data or "").strip():
+        if latest is not None and (latest.url or "").strip():
+            form.url.data = latest.url
+
+    user_sites = (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(
+            SiteAnalysis.updated_at.desc(),
+            SiteAnalysis.created_at.desc(),
+            SiteAnalysis.id.desc(),
+        )
+        .all()
     )
 
     schedule_form = RescanScheduleForm()
@@ -6541,6 +6794,7 @@ def dashboard():
         form=form,
         schedule_form=schedule_form,
         latest=latest,
+        user_sites=user_sites,
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,
@@ -6549,7 +6803,7 @@ def dashboard():
         openai_ready=bool(OPENAI_API_KEY),
         citation_ready=citation_monitor_available(),
         js_crawl_ready=js_crawl_available(),
-        gsc=gsc_status(),
+        gsc=gsc_status(user),
         used_today=used_today,
         analyses_used=analyses_used,
         daily_limit=user.daily_limit,
@@ -6573,6 +6827,7 @@ def dashboard():
         referral_code=ensure_user_referral_code(user),
         referral_bonus_tokens=int(REFERRAL_BONUS_CENTS / 10),
         pending_job=pending_job,
+        analyze_overlay_job=analyze_overlay_job,
         measured_bg_job=measured_bg_job,
         payments_ready=payments_enabled(),
         payments_provider=payments_provider(),
@@ -6601,18 +6856,30 @@ def dashboard_analyze_confirmed():
     # Ignore client cost_cents — recomputed server-side below.
 
     if not url_raw:
+        if wants_json_response():
+            return analyze_error_json(
+                "URL mancante.",
+                redirect_url=url_for("dashboard"),
+            )
         flash("URL mancante.", "error")
         return redirect(url_for("dashboard"))
 
     try:
         url = normalize_url(url_raw)
     except ValueError as exc:
+        if wants_json_response():
+            return analyze_error_json(str(exc), redirect_url=url_for("dashboard"))
         flash(str(exc), "error")
         return redirect(url_for("dashboard"))
 
     # Rate limit (idempotent check)
     if not limiter.allow(f"analyze:user:{user.id}", limit=20, window_seconds=3600):
-        flash("Troppe analisi in poco tempo. Attendi qualche minuto e riprova.", "warning")
+        msg = "Troppe analisi in poco tempo. Attendi qualche minuto e riprova."
+        if wants_json_response():
+            return analyze_error_json(
+                msg, status=429, redirect_url=url_for("dashboard"), error="rate_limited"
+            )
+        flash(msg, "warning")
         return redirect(url_for("dashboard"))
 
     # Recompute cost server-side — never trust client-supplied cost_cents.
@@ -6654,12 +6921,19 @@ def dashboard_analyze_confirmed():
         unlimited=is_unlimited_user(user),
     )
     if preflight.is_giant:
-        flash(
+        msg = (
             "Richiesta bloccata prima dell'analisi AI. "
             + preflight.message
-            + " Passa a Plus o ricarica token, oppure riduci la pagina target.",
-            "warning",
+            + " Passa a Plus o ricarica token, oppure riduci la pagina target."
         )
+        if wants_json_response():
+            return analyze_error_json(
+                msg,
+                status=402,
+                redirect_url=url_for("pricing") + "#plus",
+                error="page_too_large",
+            )
+        flash(msg, "warning")
         return redirect(url_for("pricing") + "#plus")
     cost.service_cost_eur_cents = preflight.required_cost_cents
     cost_cents = cost.service_cost_eur_cents
@@ -6702,8 +6976,19 @@ def dashboard_analyze_confirmed():
     blocked = enforce_analyze_limits(user, url=url, existing=existing)
     if blocked is not None:
         return blocked
+    # Deferred SoV must not block remisure or steal the crawl overlay.
+    cancel_active_measured_for_analyze(user, url, site=existing)
+
     dup = active_analyze_job_for_url(user.id, url, site=existing)
     if dup is not None:
+        if wants_json_response():
+            return jsonify(
+                {
+                    **analyze_job_json_payload(dup),
+                    "message": "Analisi già in coda per questo URL.",
+                    "duplicate": True,
+                }
+            )
         flash("Analisi già in coda per questo URL.", "info")
         return redirect(url_for("dashboard", job=dup.id))
 
@@ -6717,6 +7002,13 @@ def dashboard_analyze_confirmed():
             max_concurrent_jobs=concurrent_analyze_cap_for(user),
         )
     except ConcurrentAnalysisError as exc:
+        if wants_json_response():
+            return analyze_error_json(
+                str(exc),
+                status=409,
+                redirect_url=url_for("dashboard"),
+                error="concurrent",
+            )
         flash(str(exc), "warning")
         return redirect(url_for("dashboard"))
     except InsufficientCreditError:
@@ -6773,9 +7065,19 @@ def dashboard_analyze_confirmed():
             if held:
                 release_hold(db.session, user, amount_cents=held)
                 db.session.commit()
+            if wants_json_response():
+                return jsonify(
+                    {
+                        **analyze_job_json_payload(dup.job),
+                        "message": "Analisi già in coda per questo URL.",
+                        "duplicate": True,
+                    }
+                )
             flash("Analisi già in coda per questo URL.", "info")
             return redirect(url_for("dashboard", job=dup.job.id))
         kick_analyze_worker()
+        if wants_json_response():
+            return jsonify(analyze_job_json_payload(job))
         flash("Analisi in coda. I crediti saranno scalati in tempo reale durante l'esecuzione.", "success")
         return redirect(url_for("dashboard", job=job.id))
 
@@ -7626,7 +7928,7 @@ def dashboard_settings():
                 verticals=list_verticals(),
                 vertical_checklist=vertical_checklist(vertical_form.vertical.data),
                 citation_ready=citation_monitor_available(),
-                gsc=gsc_status(),
+                gsc=gsc_status(user),
                 js_crawl_ready=js_crawl_available(),
                 default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
                 **capability_template_vars(user),
@@ -7647,11 +7949,106 @@ def dashboard_settings():
         verticals=list_verticals(),
         vertical_checklist=[],
         citation_ready=citation_monitor_available(),
-        gsc=gsc_status(),
+        gsc=gsc_status(user),
         js_crawl_ready=js_crawl_available(),
         default_prompts=resolve_prompts(user=None, locale="it", max_prompts=5),
         **capability_template_vars(user),
     )
+
+
+@app.route("/dashboard/gsc/connect", methods=["POST"])
+@login_required
+def gsc_oauth_connect():
+    """Start Google OAuth for Search Console (Plus/Business)."""
+    user = current_user()
+    blocked = require_capability(plan_entitlements(user), "gsc")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing"))
+    if not gsc_configured():
+        flash(
+            "Google OAuth non configurato sul server "
+            "(GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET).",
+            "error",
+        )
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    state = new_oauth_state()
+    session["gsc_oauth_state"] = state
+    session["gsc_oauth_started_at"] = datetime.now(timezone.utc).isoformat()
+    try:
+        url = build_authorization_url(state=state)
+    except Exception as exc:
+        app.logger.exception("GSC authorize URL failed")
+        flash(str(exc) or "Impossibile avviare OAuth Google.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    return redirect(url)
+
+
+@app.route("/dashboard/gsc/callback", methods=["GET"])
+@login_required
+def gsc_oauth_callback():
+    """OAuth redirect URI — exchange code and seal tokens."""
+    user = current_user()
+    blocked = require_capability(plan_entitlements(user), "gsc")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing"))
+    err = (request.args.get("error") or "").strip()
+    if err:
+        desc = (request.args.get("error_description") or err).strip()
+        flash(f"Google OAuth annullato: {desc}", "warning")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    state = (request.args.get("state") or "").strip()
+    expected = (session.pop("gsc_oauth_state", None) or "").strip()
+    session.pop("gsc_oauth_started_at", None)
+    if not state or not expected or not secrets.compare_digest(state, expected):
+        flash("Sessione OAuth non valida. Riprova il collegamento.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    code = (request.args.get("code") or "").strip()
+    if not code:
+        flash("Codice OAuth mancante.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    try:
+        info = persist_connection_from_code(
+            user,
+            code,
+            redirect_uri=gsc_redirect_uri(),
+            db_session=db.session,
+        )
+    except Exception as exc:
+        app.logger.exception("GSC OAuth callback failed user=%s", user.id)
+        flash(str(exc) or "Collegamento Search Console non riuscito.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    email = info.get("email") or ""
+    n_sites = len(info.get("sites") or [])
+    if email:
+        flash(
+            f"Google Search Console collegato ({email}"
+            + (f", {n_sites} proprietà" if n_sites else "")
+            + ").",
+            "success",
+        )
+    else:
+        flash("Google Search Console collegato.", "success")
+    return redirect(url_for("dashboard_settings") + "#connectors")
+
+
+@app.route("/dashboard/gsc/disconnect", methods=["POST"])
+@login_required
+def gsc_oauth_disconnect():
+    user = current_user()
+    blocked = require_capability(plan_entitlements(user), "gsc")
+    if blocked:
+        flash(blocked, "warning")
+        return redirect(url_for("pricing"))
+    try:
+        gsc_disconnect_user(user, db_session=db.session)
+    except Exception:
+        app.logger.exception("GSC disconnect failed user=%s", user.id)
+        flash("Disconnessione Search Console non riuscita.", "error")
+        return redirect(url_for("dashboard_settings") + "#connectors")
+    flash("Google Search Console disconnesso.", "success")
+    return redirect(url_for("dashboard_settings") + "#connectors")
 
 
 @app.route("/dashboard/verify/<int:analysis_id>")

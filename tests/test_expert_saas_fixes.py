@@ -28,16 +28,15 @@ from services.sov_budget import sov_budget_status
 from services.usage_billing import is_unlimited_user
 
 
-def test_gsc_never_available_without_oauth_flow(monkeypatch):
+def test_gsc_available_with_credentials_when_oauth_shipped(monkeypatch):
+    """Credentials alone used to hide the connector; OAuth connect is now live."""
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_ID", "cid")
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_SECRET", "sec")
-    # Re-import status uses module-level constants — patch those.
     import services.gsc as gsc
 
-    monkeypatch.setattr(gsc, "GSC_CLIENT_ID", "cid")
-    monkeypatch.setattr(gsc, "GSC_CLIENT_SECRET", "sec")
+    gsc.reload_gsc_env()
     status = gsc.gsc_status()
-    assert status["available"] is False
+    assert status["available"] is True
     assert status.get("connected") is False
 
 

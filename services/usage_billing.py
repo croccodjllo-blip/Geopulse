@@ -90,6 +90,8 @@ _PRICE_TABLE: dict[str, dict[str, float]] = {
     "grok-4-1-fast":               {"in": 0.20, "out": 0.50},
     "grok-3-mini":                 {"in": 0.30, "out": 0.50},
     "grok-3":                      {"in": 3.00, "out": 15.00},
+    # Azure AI Foundry Copilot deployments (observed on VPS probes).
+    "grok-4.3":                    {"in": 1.00, "out": 4.00},
     "grok-4.5":                    {"in": 2.00, "out": 6.00},
 }
 
@@ -144,8 +146,13 @@ def _estimate_llms_txt(model: str) -> TokenBudget:
 
 
 def _estimate_sov_call(model: str) -> TokenBudget:
-    """One citation-monitor prompt call (matches runtime per-prompt debit)."""
-    return TokenBudget(model=model, input_tokens=150, output_tokens=350)
+    """One citation-monitor prompt call (matches runtime per-prompt debit).
+
+    Output budget is intentionally high: Copilot/Azure (and some Claude) replies
+    often exceed 1k tokens. Lean 150/350 estimates under-held Measured jobs under
+    FinOps aggregate debit (projected spend > hold → fail-closed mid-probe).
+    """
+    return TokenBudget(model=model, input_tokens=250, output_tokens=1200)
 
 
 def _openai_sov_calls(n_prompts: int) -> int:
@@ -829,12 +836,21 @@ def assert_can_start_analysis(
         if hasattr(locked, "credit_held_cents"):
             user.credit_held_cents = locked.credit_held_cents
     if AnalysisJob is not None and max_concurrent_jobs > 0:
-        active = (
-            AnalysisJob.query.filter(
-                AnalysisJob.user_id == user.id,
-                AnalysisJob.status.in_(("pending", "running")),
-            ).count()
+        q = AnalysisJob.query.filter(
+            AnalysisJob.user_id == user.id,
+            AnalysisJob.status.in_(("pending", "running")),
         )
+        # Deferred SoV follow-ups must not consume the crawl concurrency budget.
+        if hasattr(AnalysisJob, "source"):
+            from sqlalchemy import or_
+
+            q = q.filter(
+                or_(
+                    AnalysisJob.source.is_(None),
+                    AnalysisJob.source != "measured",
+                )
+            )
+        active = q.count()
         if active >= max_concurrent_jobs:
             raise ConcurrentAnalysisError(
                 f"Hai già {active} analisi in coda/esecuzione. "

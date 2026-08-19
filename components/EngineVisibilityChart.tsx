@@ -16,19 +16,19 @@ export type EngineBarPoint = {
   id: string;
   label: string;
   share: number;
-  tone?: "emerald" | "cyan" | "violet" | "amber";
+  tone?: "emerald" | "cyan" | "steel" | "amber";
 };
 
 const TONE: Record<NonNullable<EngineBarPoint["tone"]>, string> = {
   emerald: "#10A37F",
   cyan: "#3FA8B5",
-  violet: "#8BA3BD",
+  steel: "#8BA3BD",
   amber: "#D4A574",
 };
 
 const DEFAULT: EngineBarPoint[] = [
   { id: "chatgpt", label: "ChatGPT", share: 48.2, tone: "emerald" },
-  { id: "claude", label: "Claude", share: 41.0, tone: "violet" },
+  { id: "claude", label: "Claude", share: 41.0, tone: "steel" },
   { id: "perplexity", label: "Perplexity", share: 39.5, tone: "cyan" },
   { id: "searchgpt", label: "SearchGPT", share: 28.4, tone: "amber" },
 ];

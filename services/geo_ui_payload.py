@@ -6,13 +6,13 @@ from typing import Any
 
 from flask_babel import gettext as _
 
-from centropic.tenancy import sites_query_for_user
+from centropic.tenancy import latest_site_for_user
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
 from services.i18n import translate_stored
 from services.rating import compute_rating
 from services.sov_graph import list_sov_snapshots, sov_series_for_chart
 
-_TONES = ("emerald", "cyan", "violet", "amber")
+_TONES = ("emerald", "cyan", "steel", "amber")
 
 
 def _engine_status(share: float | None) -> str:
@@ -68,6 +68,42 @@ def _geo_ui_chrome() -> dict[str, str]:
         ),
         "pagesScored": _("Pagine valutate"),
         "findingsInLastAudit": _("findings nell'ultimo audit"),
+        "chartsTitle": _("GEO Charts"),
+        "overviewTitle": _("Panoramica GEO"),
+        "emptyBody": _(
+            "Nessuna analisi ancora. Esegui un audit per vedere Share of Model, "
+            "engine breakdown e insight dal tuo sito — niente dati demo."
+        ),
+        "runAudit": _("Esegui audit GEO"),
+        "liveSubtitle": _(
+            "Share of Model e visibilità AI dall'ultimo audit."
+        ),
+        "rangeLast30": _("Ultimi 30 giorni"),
+        "rangeLast7": _("Ultimi 7 giorni"),
+        "rangeQuarter": _("Trimestre in corso"),
+        "rangeComingSoon": _("Range storico: in arrivo"),
+        "somLabel": _("Share of Model"),
+        "acrossEngines": _("su %(n)s engine LLM tracciati"),
+        "recRankLabel": _("Ranking AI"),
+        "recRankHint": _("Grado composito da AIO/GEO"),
+        "issuePressureTitle": _("Pressione findings"),
+        "issuePressureHint": _(
+            "Critical + warn aperti (non sentiment del modello)"
+        ),
+        "somTrendTitle": _("Trend Share of Model"),
+        "breakdownTitle": _("Breakdown visibilità LLM"),
+        "viewReport": _("Vedi report dettagliato"),
+        "enginesEmpty": _(
+            "Nessun engine breakdown ancora — riesegui l'audit."
+        ),
+        "colEngine": _("Engine"),
+        "colShare": _("Share of Voice"),
+        "colTopDomain": _("Dominio più citato"),
+        "colStatus": _("Stato"),
+        "statusDominant": _("Dominante"),
+        "statusOptimal": _("Ottimale"),
+        "statusNeedsAction": _("Da migliorare"),
+        "statusUnknown": "—",
     }
 
 
@@ -78,12 +114,11 @@ def build_geo_ui_payload(
     SovSnapshot: Any,
     audit_href: str = "/dashboard#analyze",
     report_href: str = "/dashboard",
+    prefer_site_id: int | None = None,
 ) -> dict[str, Any]:
     """Session-safe payload for ``window.__CENTROPIC_GEO_DATA__``."""
-    latest = (
-        sites_query_for_user(SiteAnalysis, user)
-        .order_by(SiteAnalysis.updated_at.desc(), SiteAnalysis.created_at.desc())
-        .first()
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
     )
     ui = _geo_ui_chrome()
     empty: dict[str, Any] = {
@@ -219,7 +254,11 @@ def build_geo_ui_payload(
         "findingsCount": len(findings_all),
         "issuePressure": issue_n,
         "issuePressureLabel": issue_label,
-        "evidenceLabel": (engine_breakdown or {}).get("label"),
+        "evidenceLabel": (
+            translate_stored(str(ev_label))
+            if (ev_label := (engine_breakdown or {}).get("label"))
+            else None
+        ),
         "engines": engines,
         "engineBars": engine_bars,
         "insights": insights,

@@ -45,18 +45,44 @@ def _fake_site():
     )
 
 
-def test_geo_ui_insights_translated_for_en(monkeypatch):
-    site = _fake_site()
-    q = MagicMock()
-    q.order_by.return_value.first.return_value = site
+def _patch_site_query(monkeypatch, site):
     monkeypatch.setattr(
-        "services.geo_ui_payload.sites_query_for_user",
-        lambda *_a, **_k: q,
+        "services.geo_ui_payload.latest_site_for_user",
+        lambda *_a, **_k: site,
     )
     monkeypatch.setattr(
         "services.geo_ui_payload.list_sov_snapshots",
         lambda *_a, **_k: [],
     )
+
+
+def test_geo_ui_evidence_label_translated(monkeypatch):
+    _patch_site_query(monkeypatch, _fake_site())
+    monkeypatch.setattr(
+        "services.geo_ui_payload.compute_engine_breakdown",
+        lambda **_kw: {
+            "engines": [],
+            "brand_sov": 0,
+            "label": "Misurato · 0 menzioni",
+        },
+    )
+    user = SimpleNamespace(id=1, is_pro=False)
+
+    with app.app_context():
+        with force_locale("en"):
+            payload = build_geo_ui_payload(
+                user=user,
+                SiteAnalysis=MagicMock(),
+                SovSnapshot=MagicMock(),
+            )
+
+    assert payload["evidenceLabel"] == "Measured · 0 mentions"
+    assert "Misurato" not in (payload["evidenceLabel"] or "")
+    assert "menzioni" not in (payload["evidenceLabel"] or "")
+
+
+def test_geo_ui_insights_translated_for_en(monkeypatch):
+    _patch_site_query(monkeypatch, _fake_site())
     user = SimpleNamespace(id=1, is_pro=True)
 
     with app.app_context():
@@ -81,17 +107,7 @@ def test_geo_ui_insights_translated_for_en(monkeypatch):
 
 
 def test_geo_ui_insights_native_locales(monkeypatch):
-    site = _fake_site()
-    q = MagicMock()
-    q.order_by.return_value.first.return_value = site
-    monkeypatch.setattr(
-        "services.geo_ui_payload.sites_query_for_user",
-        lambda *_a, **_k: q,
-    )
-    monkeypatch.setattr(
-        "services.geo_ui_payload.list_sov_snapshots",
-        lambda *_a, **_k: [],
-    )
+    _patch_site_query(monkeypatch, _fake_site())
     user = SimpleNamespace(id=1, is_pro=True)
 
     expected_title = {

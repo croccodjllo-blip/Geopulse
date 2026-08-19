@@ -60,7 +60,11 @@ def test_estimate_basic_no_measured():
     assert len(est.breakdown) == 1  # only llms.txt
 
 
-def test_estimate_with_measured_openai_only():
+def test_estimate_with_measured_openai_only(monkeypatch):
+    monkeypatch.setenv("USAGE_DEBIT_MODE", "per_call")
+    import services.usage_billing as ub
+
+    ub.USAGE_DEBIT_MODE = "per_call"
     est = estimate_analysis_cost(
         openai_model="gpt-4o-mini",
         anthropic_model="claude-haiku-4-5-20251001",
@@ -79,7 +83,11 @@ def test_estimate_with_measured_openai_only():
     assert est.service_cost_eur_cents == 6
 
 
-def test_estimate_all_providers_measured():
+def test_estimate_all_providers_measured(monkeypatch):
+    monkeypatch.setenv("USAGE_DEBIT_MODE", "per_call")
+    import services.usage_billing as ub
+
+    ub.USAGE_DEBIT_MODE = "per_call"
     est = estimate_analysis_cost(
         openai_model="gpt-4o-mini",
         anthropic_model="claude-haiku-4-5-20251001",
@@ -96,8 +104,12 @@ def test_estimate_all_providers_measured():
     assert est.service_cost_eur_cents == 12
 
 
-def test_estimate_mirrors_per_call_ceil_not_bulk_round():
+def test_estimate_mirrors_per_call_ceil_not_bulk_round(monkeypatch):
     """Aggregating tokens then rounding once would under-bill measured runs."""
+    monkeypatch.setenv("USAGE_DEBIT_MODE", "per_call")
+    import services.usage_billing as ub
+
+    ub.USAGE_DEBIT_MODE = "per_call"
     est = estimate_analysis_cost(
         openai_model="gpt-4o-mini",
         anthropic_model="claude-haiku-4-5-20251001",
@@ -116,8 +128,12 @@ def test_estimate_mirrors_per_call_ceil_not_bulk_round():
     assert hold == 20
 
 
-def test_estimate_runtime_prompt_cap_eight():
+def test_estimate_runtime_prompt_cap_eight(monkeypatch):
     """App uses ANALYSIS_SOV_PROMPTS=8 to match citation_monitor max."""
+    monkeypatch.setenv("USAGE_DEBIT_MODE", "per_call")
+    import services.usage_billing as ub
+
+    ub.USAGE_DEBIT_MODE = "per_call"
     est = estimate_analysis_cost(
         openai_model="gpt-4o-mini",
         anthropic_model="claude-haiku-4-5-20251001",
@@ -134,6 +150,35 @@ def test_estimate_runtime_prompt_cap_eight():
     # 1 llms + 8 oai + 3*5 other engines = 1+8+15 = 24
     assert est.estimated_calls == 24
     assert est.service_cost_eur_cents == 24
+
+
+def test_aggregate_measured_azure_hold_covers_verbose_copilot(monkeypatch):
+    """FinOps aggregate + Azure grok must reserve enough for verbose Copilot replies."""
+    monkeypatch.setenv("USAGE_DEBIT_MODE", "aggregate")
+    import services.usage_billing as ub
+
+    ub.USAGE_DEBIT_MODE = "aggregate"
+    est = estimate_analysis_cost(
+        openai_model="gpt-4o-mini",
+        anthropic_model="claude-haiku-4-5-20251001",
+        perplexity_model="sonar",
+        run_measured=True,
+        n_prompts=3,
+        has_openai=True,
+        has_perplexity=True,
+        has_anthropic=True,
+        has_gemini=True,
+        gemini_model="gemini-flash-latest",
+        has_xai=True,
+        xai_model="grok-4-1-fast-non-reasoning",
+        has_azure=True,
+        azure_model="grok-4.3",
+    )
+    hold = required_credit_with_grace_cents(est.service_cost_eur_cents)
+    # Job #924 failed at projected 4¢ with a 3¢ base hold; grace+budget must clear that.
+    assert est.service_cost_eur_cents >= 4
+    assert hold >= 5
+    assert hold == required_credit_with_grace_cents(est.service_cost_eur_cents)
 
 
 def test_estimate_as_dict():

@@ -353,7 +353,12 @@
               doneUrl += sep + "job=" + encodeURIComponent(String(data.id));
               sep = "&";
             }
+            // Mark completion so dashboard must not re-open the crawl overlay.
+            doneUrl += sep + "completed=1";
+            sep = "&";
             doneUrl += sep + "_r=" + encodeURIComponent(String(Date.now()));
+            // Close dialog before navigation so a slow replace does not look stuck.
+            self.hide();
             window.location.replace(doneUrl);
             return;
           }
@@ -445,23 +450,82 @@
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
       if (!(form instanceof HTMLFormElement)) return;
-      var trigger =
-        form.classList.contains("js-analyze-form") ||
+      // Cost-estimate form (js-analyze-form) must NOT open the crawl overlay:
+      // the next page is confirm_analyze ("Stima analisi"). Opening progress
+      // there flashes then dies — feels like analysis aborted back to estimate.
+      var isConfirm =
         form.classList.contains("js-analyze-confirm") ||
         form.getAttribute("data-analyze-overlay-trigger") === "1";
-      if (!trigger) return;
+      if (!isConfirm) return;
+
+      // Stay on this page: full navigation after enqueue races a fast crawl
+      // (active-site remisure often finishes in <30s) and the dashboard lands
+      // with job=done → no auto-open → Stimato with no progress UI.
+      ev.preventDefault();
+
       var urlInput = form.querySelector('[name="url"]');
       var url = urlInput && urlInput.value ? urlInput.value : "";
       rememberPending(url);
-      if (root.open) return;
-      api.show({
-        url: url,
-        phase: "pending",
-        hint: form.classList.contains("js-analyze-confirm")
-          ? t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %.")
-          : t(root, "hint-prepare", "Preparazione stima…"),
-        etaLabel: t(root, "eta-prepare", "Stima in preparazione…"),
-      });
+      if (!root.open) {
+        api.show({
+          url: url,
+          phase: "pending",
+          hint: t(root, "hint-confirm", "Avvio analisi… a breve vedrai l’avanzamento in %."),
+          etaLabel: t(root, "eta-prepare", "Stima in preparazione…"),
+        });
+      }
+
+      var action = form.getAttribute("action") || window.location.href;
+      var fd = new FormData(form);
+      fd.set("ajax", "1");
+      var submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      fetch(action, {
+        method: (form.getAttribute("method") || "POST").toUpperCase(),
+        body: fd,
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { res: res, data: data || {} };
+          }).catch(function () {
+            return { res: res, data: {} };
+          });
+        })
+        .then(function (pack) {
+          var data = pack.data;
+          if (data && data.ok && data.status_url) {
+            api._doneUrl = data.done_url || api._doneUrl || "/dashboard";
+            if (data.url) api.setUrl(data.url);
+            api.setPhase(
+              data.status === "running" ? "crawl" : "pending",
+              t(root, "hint-live", "Aggiornamento avanzamento in tempo reale…")
+            );
+            api._startPoll(data.status_url);
+            return;
+          }
+          var msg =
+            (data && (data.message || data.error)) ||
+            t(root, "error-fallback", "Errore durante l’analisi");
+          if (data && data.redirect) {
+            api.fail(msg);
+            setTimeout(function () {
+              window.location.href = data.redirect;
+            }, 1200);
+            return;
+          }
+          api.fail(typeof msg === "string" ? msg : t(root, "error-fallback", "Errore durante l’analisi"));
+          if (submitBtn) submitBtn.disabled = false;
+        })
+        .catch(function () {
+          api.fail(t(root, "error-fallback", "Errore durante l’analisi"));
+          if (submitBtn) submitBtn.disabled = false;
+        });
     });
   }
 

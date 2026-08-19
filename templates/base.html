@@ -358,13 +358,18 @@
       document.addEventListener('submit', (ev) => {
         const form = ev.target;
         if (!(form instanceof HTMLFormElement)) return;
-        if (!form.classList.contains('js-analyze-form') && !form.classList.contains('js-analyze-confirm')) return;
+        const isEstimate = form.classList.contains('js-analyze-form');
+        const isConfirm = form.classList.contains('js-analyze-confirm');
+        if (!isEstimate && !isConfirm) return;
         const btn = form.querySelector('[type="submit"]');
         if (btn) {
           btn.disabled = true;
-          btn.textContent = {{ _('Analisi in corso…')|tojson }};
+          // Estimate step → confirm page; only confirm starts the crawl job.
+          btn.textContent = isConfirm
+            ? {{ _('Analisi in corso…')|tojson }}
+            : {{ _('Preparazione stima…')|tojson }};
         }
-        // Overlay open is handled by analyze-overlay.js when present.
+        // Overlay open is handled by analyze-overlay.js (confirm only).
       });
     </script>
   </body>

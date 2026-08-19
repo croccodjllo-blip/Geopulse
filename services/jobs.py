@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 # Reclaim only when heartbeat (or started_at) is older than this.
 # Heartbeat is refreshed during crawl/SoV; 2–5 min silence ⇒ lost worker (deploy/OOM).
-# Keep the floor at 2 so a deploy mid-SoV does not strand the UI for 12+ minutes.
-STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "12")))
+# Default 3 min so a deploy mid-SoV does not strand the UI for 12+ minutes.
+STALE_HEARTBEAT_MINUTES = max(2, int(os.getenv("JOB_STALE_HEARTBEAT_MINUTES", "3")))
 MAX_JOB_ATTEMPTS = max(1, int(os.getenv("JOB_MAX_ATTEMPTS", "2")))
 # Global in-flight cap across all tenants (0 = unlimited). Claim returns None when full.
 # Global in-flight cap across tenants (crawl + measured). Target ≈100+100.
@@ -260,13 +260,41 @@ def reclaim_stale_jobs(
 
     When ``SiteAnalysis`` is provided, reclaim reconciles the crash window
     after ``persist_analysis`` committed but before ``mark_job_site``.
+
+    Each candidate is **seized atomically** (conditional UPDATE on status +
+    lease + stale heartbeat) so a live worker heartbeat cannot race a soft
+    re-queue into duplicate LLM spend.
     """
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=max(2, older_than_minutes))
-    stale = (
-        AnalysisJob.query.filter(AnalysisJob.status == "running")
-        .limit(50)
-        .all()
-    )
+    if hasattr(AnalysisJob, "__mapper__") or hasattr(AnalysisJob, "__table__"):
+        from sqlalchemy import func, or_
+
+        try:
+            beat_col = func.coalesce(AnalysisJob.heartbeat_at, AnalysisJob.started_at)
+            stale = (
+                AnalysisJob.query.filter(
+                    AnalysisJob.status == "running",
+                    or_(
+                        AnalysisJob.lease_token.is_(None),
+                        beat_col.is_(None),
+                        beat_col < cutoff,
+                    ),
+                )
+                .limit(50)
+                .all()
+            )
+        except Exception:
+            stale = (
+                AnalysisJob.query.filter(AnalysisJob.status == "running")
+                .limit(50)
+                .all()
+            )
+    else:
+        stale = (
+            AnalysisJob.query.filter(AnalysisJob.status == "running")
+            .limit(50)
+            .all()
+        )
     n = 0
     for job in stale:
         # Running without a lease is always reclaimable (zombie / legacy claim).
@@ -278,8 +306,16 @@ def reclaim_stale_jobs(
             logger.warning(
                 "Reclaiming running job %s with missing lease_token", job.id
             )
+        # Win the race against a late heartbeat before mutating status.
+        if not _try_begin_reclaim(
+            db_session, AnalysisJob, job, expected_lease=token, cutoff=cutoff
+        ):
+            continue
         attempts = int(getattr(job, "attempt_count", 0) or 0)
         billed = int(getattr(job, "billed_cents", 0) or 0)
+        # site_id set by the worker after persist — do NOT treat a recovered
+        # SiteAnalysis row (prior Stimato for same URL) as "this job persisted".
+        had_site_id = bool(getattr(job, "site_id", None))
 
         def _call_abandon() -> None:
             if on_abandon is not None:
@@ -293,7 +329,7 @@ def reclaim_stale_jobs(
                 job.held_cents = 0
 
         # Recover site_id when persist won the race against mark_job_site.
-        if not _job_already_persisted(job):
+        if not had_site_id:
             recovered = _resolve_persisted_site_id(job, SiteAnalysis=SiteAnalysis)
             if recovered is not None:
                 job.site_id = recovered
@@ -301,7 +337,7 @@ def reclaim_stale_jobs(
         # Soft reclaim after partial billing would re-run the pipeline and
         # double-charge. Fail permanently and release remaining hold instead —
         # unless persist already completed (deliverable exists).
-        if billed > 0 and attempts < MAX_JOB_ATTEMPTS and not _job_already_persisted(job):
+        if billed > 0 and attempts < MAX_JOB_ATTEMPTS and not had_site_id:
             job.status = "error"
             job.finished_at = datetime.now(timezone.utc)
             job.lease_token = None
@@ -320,6 +356,8 @@ def reclaim_stale_jobs(
             continue
         # Aggregate debit mode: measured jobs may have spent LLM before flush
         # (billed_cents still 0). Soft-reclaim would re-run probes — fail closed.
+        # Use had_site_id (pre-recovery): a prior Stimato SiteAnalysis for the
+        # same URL must not skip this path or falsely mark measured as done.
         held_left = int(getattr(job, "held_cents", 0) or 0)
         measuredish = bool(getattr(job, "run_measured", False)) or (
             str(getattr(job, "source", "") or "").lower() == "measured"
@@ -329,7 +367,7 @@ def reclaim_stale_jobs(
             and held_left > 0
             and attempts >= 1
             and billed <= 0
-            and not _job_already_persisted(job)
+            and not had_site_id
         ):
             try:
                 from services.usage_billing import usage_debit_aggregate
@@ -354,9 +392,9 @@ def reclaim_stale_jobs(
                 )
                 n += 1
                 continue
-        # If persist already wrote a run for this attempt, mark done instead of
-        # soft-reclaiming (avoids duplicate AnalysisRun when billed_cents==0).
-        if _job_already_persisted(job):
+        # If this job already marked site_id (worker persist path), mark done.
+        # Recovered site_id from a prior Stimato row does not count.
+        if had_site_id:
             job.status = "done"
             job.finished_at = datetime.now(timezone.utc)
             job.lease_token = None
@@ -397,6 +435,62 @@ def reclaim_stale_jobs(
     if n:
         db_session.commit()
     return n
+
+
+def _try_begin_reclaim(
+    db_session: Any,
+    AnalysisJob: Any,
+    job: Any,
+    *,
+    expected_lease: str | None,
+    cutoff: datetime,
+) -> bool:
+    """Atomically seize a stale running job for reclaim.
+
+    Returns False if a live worker heartbeated (or another reclaim won) between
+    the candidate read and this UPDATE — caller must skip the job.
+    """
+    # Real SQLAlchemy models expose ``__mapper__``; unit-test doubles do not.
+    if not hasattr(AnalysisJob, "__mapper__") and not hasattr(AnalysisJob, "__table__"):
+        return True
+
+    from sqlalchemy import func, or_
+
+    reclaim_tok = f"reclaim:{secrets.token_hex(8)}"
+    beat = func.coalesce(AnalysisJob.heartbeat_at, AnalysisJob.started_at)
+    filters = [
+        AnalysisJob.id == job.id,
+        AnalysisJob.status == "running",
+        or_(
+            AnalysisJob.lease_token.is_(None),
+            beat.is_(None),
+            beat < cutoff,
+        ),
+    ]
+    if expected_lease:
+        filters.append(AnalysisJob.lease_token == expected_lease)
+    else:
+        filters.append(AnalysisJob.lease_token.is_(None))
+    try:
+        updated = AnalysisJob.query.filter(*filters).update(
+            {"lease_token": reclaim_tok},
+            synchronize_session=False,
+        )
+    except Exception:
+        logger.debug(
+            "reclaim atomic seize unavailable for job %s; using in-memory path",
+            getattr(job, "id", None),
+            exc_info=True,
+        )
+        return True
+    if int(updated or 0) != 1:
+        try:
+            db_session.rollback()
+        except Exception:
+            pass
+        return False
+    job.lease_token = reclaim_tok
+    return True
 
 
 def claim_next_job(

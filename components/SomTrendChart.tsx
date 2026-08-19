@@ -36,7 +36,7 @@ function formatTick(value: string) {
 
 export function SomTrendChart({
   data,
-  height = 220,
+  height: _height = 220,
   className,
 }: SomTrendChartProps) {
   const series = (data || [])
@@ -60,9 +60,8 @@ export function SomTrendChart({
     <div
       className={
         className ||
-        "rounded-xl border border-brand-border bg-brand-card p-4 shadow-glow"
+        "h-[220px] rounded-xl border border-brand-border bg-brand-card p-4 shadow-glow"
       }
-      style={{ height }}
     >
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
