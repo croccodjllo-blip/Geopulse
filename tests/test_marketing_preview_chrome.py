@@ -17,6 +17,18 @@ def test_landing_preview_lockup():
     # Anteprima: clean void hero — no citation-field clutter
     assert "hero_citation_field.html" not in html
     assert "hero-visual__scan" not in html
+    # Old dense marketing walls removed from homepage
+    assert "consideration set" not in html
+    assert "buyer MarTech" not in html
+    assert "product-shots" not in html
+    assert "Scopri quanto il tuo sito è pronto" in html
+
+
+def test_logo_is_concentric_arcs_mark():
+    svg = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
+    assert "Three concentric chrome arcs" in svg or svg.count("<path") >= 3
+    assert 'href="' not in svg  # no external raster refs
+    assert "#3FA8B5" in svg  # teal core
 
 
 def test_base_loads_preview_css_sitewide():
@@ -33,9 +45,11 @@ def test_marketing_css_targets_body_marketing():
     assert "hero-brand-lockup--preview" in css
     assert "hero--preview" in css
     assert "SITE PREVIEW v3" in css
-    # Brand-first stack (logo above wordmark)
+    # Brand-first stack (logo above wordmark) + full browser viewport
     assert "flex-direction: column" in css
     assert "10.5rem" in css
+    assert "100dvh" in css
+    assert "margin-left: auto !important" in css
 
 
 def test_void_background_assets_exist():

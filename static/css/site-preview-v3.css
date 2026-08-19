@@ -599,11 +599,6 @@ body.body-marketing .site-header--transparent {
   border-bottom: 0 !important;
   backdrop-filter: blur(8px);
 }
-body.body-marketing .brand-mark__logo {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 999px;
-}
 body.body-marketing .nav-cta {
   border: 1px solid color-mix(in srgb, var(--mkt-teal) 50%, transparent) !important;
   background: transparent !important;
@@ -616,22 +611,54 @@ body.body-marketing .nav-cta:hover {
   background: color-mix(in srgb, var(--mkt-teal) 18%, transparent) !important;
   color: #E8F7F9 !important;
 }
-
-/* Hero — anteprima: brand-first stacked lockup, void + teal aurora */
-body.body-marketing .hero--preview.hero--signal {
-  min-height: min(100svh, 54rem);
-  display: grid;
-  align-items: center;
-  justify-items: center;
+/* Marketing nav lockup — anteprima: CENTROPIC uppercase */
+body.body-marketing .brand-mark__word,
+body.body-marketing .holo-brand__word--nav {
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem !important;
+  color: #E8EEF4 !important;
 }
+body.body-marketing .brand-mark__word span,
+body.body-marketing .holo-brand__word--nav span {
+  display: none !important; /* anteprima nav: CENTROPIC without .ai */
+}
+body.body-marketing .brand-mark__logo {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 999px;
+}
+
+/* Hero — anteprima: full-viewport brand-first composition */
+body.body-marketing .hero--preview.hero--signal {
+  width: 100%;
+  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: grid !important;
+  align-items: center !important;
+  justify-items: center !important;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0;
+}
+body.body-marketing .hero--preview .hero-visual--preview {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+body.body-marketing .hero--preview .hero-visual--preview picture,
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
-  filter: saturate(0.7) brightness(0.55) contrast(1.08);
-  object-fit: cover;
+  display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  filter: saturate(0.65) brightness(0.48) contrast(1.1);
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
-  opacity: 0.9 !important;
+  opacity: 0.95 !important;
   background:
     radial-gradient(ellipse 55% 42% at 72% 18%, rgba(63, 168, 181, 0.42), transparent 62%),
     radial-gradient(ellipse 36% 30% at 50% 42%, rgba(63, 168, 181, 0.14), transparent 70%),
@@ -641,15 +668,18 @@ body.body-marketing .hero--preview .hero-visual__aurora {
 body.body-marketing .hero--preview .hero-copy--preview {
   position: relative;
   z-index: 2;
-  width: min(100%, 40rem) !important;
+  width: min(calc(100% - 2rem), 40rem) !important;
   max-width: 40rem !important;
-  margin-inline: auto !important;
-  padding-top: clamp(5.25rem, 12vh, 7.5rem) !important;
-  padding-bottom: clamp(2.5rem, 6vh, 4rem) !important;
+  margin: 0 auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: clamp(4.5rem, 10vh, 6rem) 0 clamp(1.5rem, 4vh, 2.5rem) !important;
   text-align: center !important;
+  text-shadow: none !important;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 body.body-marketing .hero--preview .hero-copy--preview::before {
   display: none !important;
@@ -765,6 +795,42 @@ body.body-marketing .btn-core {
 }
 body.body-marketing .btn-core:hover {
   filter: brightness(1.08);
+}
+
+/* Below-fold — compact preview chrome (no old copy walls) */
+body.body-marketing .section-band--preview {
+  max-width: 52rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem !important;
+  text-align: center;
+}
+body.body-marketing .section-band--preview h2 {
+  max-width: 22ch;
+  margin-inline: auto;
+}
+body.body-marketing .section-band--preview .lede {
+  max-width: 40rem;
+  margin-inline: auto;
+  color: color-mix(in srgb, #E8EEF4 70%, transparent) !important;
+}
+body.body-marketing .section-band--preview .profile-grid {
+  text-align: left;
+}
+body.body-marketing .section-band--preview .step-flow--v2 {
+  text-align: left;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+body.body-marketing .section-band--preview .faq-list {
+  text-align: left;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+body.body-marketing .section-cta--preview {
+  text-align: center;
+}
+body.body-marketing {
+  background-color: #05070A !important;
 }
 
 /* Sections — one job, hairlines, less card soup */
@@ -1182,11 +1248,14 @@ body.body-dash .finding-list > li::after {
   }
 
   body.body-marketing .hero--preview.hero--signal {
-    min-height: min(100svh, 48rem);
+    min-height: 100dvh;
+    height: 100dvh;
+    max-height: none; /* allow short phones to scroll within hero if needed */
   }
   body.body-marketing .hero--preview .hero-copy--preview {
-    padding-top: clamp(4.75rem, 14vh, 6.25rem) !important;
+    padding-top: clamp(4.75rem, 12vh, 6rem) !important;
     padding-inline: 1.1rem !important;
+    width: min(calc(100% - 1.5rem), 40rem) !important;
   }
   body.body-marketing .hero-brand-lockup--preview {
     gap: 0.7rem;

@@ -14,8 +14,8 @@ from app import app, _preview_url_error_message
 
 HERO = {
     "en": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Enter your domain for AIO/GEO structural readiness scores and critical issues."
+        "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
+            "See how ready your site is to be understood, cited, and recommended by AI."
         ),
         "Misura la readiness": "Measure readiness",
         "del tuo sito per le IA": "of your site for AI",
@@ -27,32 +27,32 @@ HERO = {
         "URL non valido": "Invalid URL",
     },
     "de": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Geben Sie Ihre Domain ein — für AIO/GEO-Scores zur strukturellen Bereitschaft und kritische Befunde."
+        "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
+            "Sehen Sie, wie bereit Ihre Website ist, von KI verstanden, zitiert und empfohlen zu werden."
         ),
         "Misura la readiness": "Miss die Bereitschaft",
         "tuodominio.it": "deine-domain.de",
         "URL non valido": "Ungültige URL",
     },
     "es": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Introduce tu dominio para obtener puntuaciones AIO/GEO de preparación estructural y criticidades."
+        "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
+            "Descubre cuán listo está tu sitio para ser comprendido, citado y recomendado por la IA."
         ),
         "Misura la readiness": "Mide la preparación",
         "tuodominio.it": "tudominio.es",
         "URL non valido": "URL no válida",
     },
     "ko": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "도메인을 입력하면 AIO/GEO 구조적 준비도 점수와 핵심 이슈를 확인할 수 있습니다."
+        "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
+            "사이트가 AI에 이해·인용·추천될 준비가 얼마나 되었는지 확인하세요."
         ),
         "Misura la readiness": "준비도를 측정하세요",
         "tuodominio.it": "yourdomain.com",
         "URL non valido": "유효하지 않은 URL입니다",
     },
     "zh_Hans": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "输入域名，即可查看 AIO/GEO 结构就绪度评分与关键问题。"
+        "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
+            "了解你的网站被 AI 理解、引用和推荐的就绪程度。"
         ),
         "Misura la readiness": "衡量就绪度",
         "del tuo sito per le IA": "让你的网站面向 AI",
@@ -89,15 +89,15 @@ def test_preview_url_error_helper_translates():
 def test_landing_hero_html_localized():
     client = app.test_client()
     for lang, needle, placeholder in [
-        ("en", "Enter your domain for AIO/GEO", "yourdomain.com"),
-        ("de", "Geben Sie Ihre Domain ein", "deine-domain.de"),
-        ("es", "Introduce tu dominio", "tudominio.es"),
-        ("ko", "도메인을 입력하면", "yourdomain.com"),
-        ("zh", "输入域名", "yourdomain.com"),
+        ("en", "See how ready your site is", "yourdomain.com"),
+        ("de", "Sehen Sie, wie bereit Ihre Website ist", "deine-domain.de"),
+        ("es", "Descubre cuán listo está tu sitio", "tudominio.es"),
+        ("ko", "사이트가 AI에 이해", "yourdomain.com"),
+        ("zh", "了解你的网站被 AI", "yourdomain.com"),
     ]:
         r = client.get(f"/?lang={lang}")
         assert r.status_code == 200
         html = r.get_data(as_text=True)
         assert needle in html, (lang, needle)
         assert f'placeholder="{placeholder}"' in html, (lang, placeholder)
-        assert "Inserisci il dominio per score" not in html
+        assert "Scopri quanto il tuo sito è pronto" not in html

@@ -48,7 +48,7 @@
       <span class="hero-accent">{{ _('del tuo sito per le IA') }}</span>
     </h1>
     <p class="lede hero-lede">
-      {{ _('Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.') }}
+      {{ _('Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.') }}
     </p>
     <form
       class="hero-url-form hero-url-form--preview"
@@ -82,19 +82,19 @@
   </div>
 </section>
 
-<section class="section-band section-band--v2 section-band--page" id="segnale">
-  <p class="eyebrow">{{ _('Contesto') }}</p>
-  <h2>{{ _('Se l’IA non ti cita, il brand esce dal consideration set.') }}</h2>
+<section class="section-band section-band--v2 section-band--page section-band--preview" id="segnale">
+  <p class="eyebrow">{{ _('Perché Centropic') }}</p>
+  <h2>{{ _('Se l’IA non ti legge, non ti cita.') }}</h2>
   <p class="lede lede--page">
-    {{ _('ChatGPT, Claude e Perplexity filtrano la domanda prima del click. Un dominio senza segnali machine-readable resta fuori dalle risposte: meno menzioni, meno inbound qualificato, più dipendenza dal paid. Centropic misura la predisposizione a essere citato — score AIO/GEO, criticità prioritizzate e pack di fix pubblicabile — così marketing e leadership chiudono il gap con evidenza, non con opinioni.') }}
+    {{ _('Score AIO/GEO di readiness strutturale, criticità prioritizzate e pack di fix — evidenza operativa, non opinioni.') }}
   </p>
 </section>
 
-<section class="section-band section-band--v2 section-band--wide" id="profili">
-  <p class="eyebrow">{{ _('Architettura commerciale') }}</p>
+<section class="section-band section-band--v2 section-band--wide section-band--preview" id="profili">
+  <p class="eyebrow">{{ _('Piani') }}</p>
   <h2>{{ _('Tre profili. Una piattaforma.') }}</h2>
   <p class="lede">
-    {{ _('Scegli il profilo giusto: validare, operare sul brand, o scalare clienti in agenzia.') }}
+    {{ _('Validare, operare sul brand, o scalare clienti in agenzia.') }}
   </p>
   <div class="profile-grid profile-grid--stagger" role="list">
     <article class="profile-card" role="listitem">
@@ -145,11 +145,11 @@
   </div>
 </section>
 
-<section class="section-band section-band--v2 section-band--wide" id="metodo">
+<section class="section-band section-band--v2 section-band--wide section-band--preview" id="metodo">
   <p class="eyebrow">{{ _('Metodo') }}</p>
   <h2>{{ _('Tre fasi. Output operativo.') }}</h2>
   <p class="lede">
-    {{ _('Stesso motore per tutti i profili: acquisisci, valuta, consegna. Cambiano limiti, measured SoV e toolkit agenzia.') }}
+    {{ _('Acquisisci, valuta, consegna — stesso motore per tutti i profili.') }}
   </p>
   <ol class="step-flow step-flow--v2">
     <li>
@@ -167,95 +167,7 @@
   </ol>
 </section>
 
-<section class="section-band section-band--v2 section-band--wide" id="piattaforma">
-  <p class="eyebrow">{{ _('Piattaforma') }}</p>
-  <h2>{{ _('La dashboard che i buyer MarTech vogliono vedere.') }}</h2>
-  <p class="lede">
-    {{ _('Metriche chiare, findings prioritizzati e pack pubblicabile — stessa energia Logo Chrome del prodotto live.') }}
-  </p>
-  <div class="product-shots" role="list">
-    <figure class="product-shot" role="listitem">
-      <img
-        src="{{ url_for('static', filename='img/guide/dashboard.svg') }}"
-        alt="{{ _('Anteprima dashboard Centropic con score e workspace') }}"
-        width="960"
-        height="540"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>
-        <strong>{{ _('Score AIO / GEO') }}</strong>
-        <span>{{ _('Predisposizione strutturale leggibile a colpo d’occhio.') }}</span>
-      </figcaption>
-    </figure>
-    <figure class="product-shot" role="listitem">
-      <img
-        src="{{ url_for('static', filename='img/guide/sov-citation.svg') }}"
-        alt="{{ _('Anteprima Share of Voice e citazioni per engine') }}"
-        width="960"
-        height="540"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>
-        <strong>{{ _('SoV per engine') }}</strong>
-        <span>{{ _('ChatGPT, Claude, Perplexity e gli altri — Stimato o Misurato.') }}</span>
-      </figcaption>
-    </figure>
-    <figure class="product-shot" role="listitem">
-      <img
-        src="{{ url_for('static', filename='img/guide/findings.svg') }}"
-        alt="{{ _('Anteprima findings prioritizzati critical warn ok') }}"
-        width="960"
-        height="540"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>
-        <strong>{{ _('Findings prioritizzati') }}</strong>
-        <span>{{ _('Critical / warn / ok per marketing, contenuto e IT.') }}</span>
-      </figcaption>
-    </figure>
-    <figure class="product-shot" role="listitem">
-      <img
-        src="{{ url_for('static', filename='img/guide/pack-artifact.svg') }}"
-        alt="{{ _('Anteprima pack artifact llms schema robots') }}"
-        width="960"
-        height="540"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>
-        <strong>{{ _('Pack di pubblicazione') }}</strong>
-        <span>{{ _('llms.txt, schema, robots — download, Edge o white-label.') }}</span>
-      </figcaption>
-    </figure>
-  </div>
-</section>
-
-<section class="section-band section-band--v2" id="metodo-citabile">
-  <p class="eyebrow">{{ _('Trasparenza') }}</p>
-  <h2>{{ _('L’IA non cita ciò che non riesce a leggere.') }}</h2>
-  <p class="lede">
-    {{ _('Centropic ti porta a una predisposizione strutturale completa: brand visibile e interpretabile dai crawler generativi, gap di informazione chiusi, meno spazio alle allucinazioni. Stimato e Misurato restano distinti — così sai cosa abbiamo osservato sul sito e cosa abbiamo campionato negli engine.') }}
-    <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>
-    ·
-    <a href="{{ url_for('guide_score_vs_sov') }}">{{ _('CVI · score · citation share') }}</a>.
-  </p>
-</section>
-
-<section class="section-band section-band--v2" id="output">
-  <p class="eyebrow">{{ _('Deliverable') }}</p>
-  <h2>{{ _('Artifact pronti per la pubblicazione.') }}</h2>
-  <ul class="artifact-list artifact-list--v2" aria-label="{{ _('Artifact generati') }}">
-    <li><code>llms.txt</code> — {{ _('descrizione del brand per i modelli') }}</li>
-    <li><code>organization.jsonld</code> — {{ _('identità strutturata (Schema.org)') }}</li>
-    <li><code>meta-pack.html</code> — {{ _('title, description e anteprime allineate') }}</li>
-    <li><code>robots.txt</code> — {{ _('bozza di accesso per crawler IA') }}</li>
-  </ul>
-</section>
-
-<section class="section-band section-band--v2" id="faq-rapide">
+<section class="section-band section-band--v2 section-band--preview" id="faq-rapide">
   <p class="eyebrow">FAQ</p>
   <h2>{{ _('Domande frequenti') }}</h2>
   <div class="faq-list faq-list--v2">
@@ -287,7 +199,7 @@
   </div>
 </section>
 
-<section class="section-cta section-cta--v2" id="inizia">
+<section class="section-cta section-cta--v2 section-cta--preview" id="inizia">
   <div class="section-cta__inner">
     <p class="eyebrow">{{ _('Avvio') }}</p>
     <h2>{{ _('Parti dal profilo giusto.') }}</h2>

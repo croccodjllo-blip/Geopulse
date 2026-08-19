@@ -1,34 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="cChrome" x1="12%" y1="8%" x2="90%" y2="92%">
-      <stop offset="0%" stop-color="#E8EEF4"/>
-      <stop offset="42%" stop-color="#C9D3DD"/>
+    <linearGradient id="cChrome" x1="8%" y1="6%" x2="92%" y2="94%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="28%" stop-color="#E8EEF4"/>
+      <stop offset="55%" stop-color="#C9D3DD"/>
       <stop offset="100%" stop-color="#5B6B7A"/>
     </linearGradient>
-    <linearGradient id="cRing" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#5B6B7A"/>
-      <stop offset="50%" stop-color="#C9D3DD"/>
-      <stop offset="100%" stop-color="#8B98A8"/>
+    <linearGradient id="cChromeMid" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#F2F5F8"/>
+      <stop offset="40%" stop-color="#C9D3DD"/>
+      <stop offset="100%" stop-color="#6E7C8C"/>
     </linearGradient>
-    <radialGradient id="cVoid" cx="50%" cy="46%" r="54%">
-      <stop offset="0%" stop-color="#1A222D"/>
-      <stop offset="70%" stop-color="#0A0E14"/>
-      <stop offset="100%" stop-color="#05070A"/>
+    <linearGradient id="cChromeInner" x1="20%" y1="15%" x2="80%" y2="85%">
+      <stop offset="0%" stop-color="#E8EEF4"/>
+      <stop offset="50%" stop-color="#A8B4C0"/>
+      <stop offset="100%" stop-color="#5B6B7A"/>
+    </linearGradient>
+    <radialGradient id="cCore" cx="48%" cy="46%" r="54%">
+      <stop offset="0%" stop-color="#7FD4DE"/>
+      <stop offset="40%" stop-color="#3FA8B5"/>
+      <stop offset="100%" stop-color="#0A1C20"/>
     </radialGradient>
   </defs>
 
-  <!-- Void disc -->
-  <circle cx="64" cy="64" r="54" fill="url(#cVoid)" stroke="url(#cChrome)" stroke-width="3.2"/>
+  <!-- Soft void plate (does not read as hex chassis) -->
+  <circle cx="64" cy="64" r="60" fill="#05070A" opacity="0.55"/>
 
-  <!-- Orbital rings -->
-  <circle cx="64" cy="64" r="42" fill="none" stroke="url(#cRing)" stroke-width="1.4" opacity="0.55"/>
-  <ellipse cx="64" cy="64" rx="46" ry="20" transform="rotate(-28 64 64)"
-    fill="none" stroke="url(#cRing)" stroke-width="1.5" stroke-dasharray="3.2 4.8" opacity="0.95"/>
+  <!-- Three concentric chrome arcs → anteprima lockup -->
+  <path d="M102 34 A52 52 0 1 0 102 94" fill="none" stroke="url(#cChrome)" stroke-width="8.2" stroke-linecap="round"/>
+  <path d="M93 40 A41 41 0 1 0 93 88" fill="none" stroke="url(#cChromeMid)" stroke-width="6.2" stroke-linecap="round"/>
+  <path d="M84 47 A30 30 0 1 0 84 81" fill="none" stroke="url(#cChromeInner)" stroke-width="5" stroke-linecap="round"/>
 
-  <!-- Satellite node -->
-  <circle cx="102" cy="48" r="3.2" fill="#C9D3DD"/>
-  <circle cx="102" cy="48" r="6" fill="#C9D3DD" opacity="0.22"/>
-
-  <!-- Chrome C monogram -->
-  <path d="M82 44.5 A22 22 0 1 0 82 83.5" fill="none" stroke="url(#cChrome)" stroke-width="9" stroke-linecap="round"/>
+  <!-- Teal core -->
+  <circle cx="64" cy="64" r="11" fill="url(#cCore)"/>
+  <circle cx="64" cy="64" r="4.2" fill="#E8F7F9" opacity="0.85"/>
 </svg>
