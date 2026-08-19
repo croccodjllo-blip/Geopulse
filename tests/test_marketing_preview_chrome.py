@@ -35,6 +35,9 @@ def test_anteprima_scale_measures_in_css():
     assert "width: 58%" in css
     assert "object-fit: contain" in css
     assert "object-position: top right" in css
+    # Desktop H1 + lede stay one line (anteprima); no ch-clamp that forces wrap
+    assert "white-space: nowrap !important" in css
+    assert "max-width: 24ch" not in css
     # Footer must not be force-hidden on homepage
     assert "body.body-marketing--hero-only .site-footer" not in css
 

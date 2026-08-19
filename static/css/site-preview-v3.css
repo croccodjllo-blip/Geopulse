@@ -679,7 +679,8 @@ body.body-marketing .hero--preview.hero--signal {
   display: grid !important;
   place-items: center !important;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   margin: 0;
   padding: 0;
   background: #000 !important;
@@ -717,8 +718,8 @@ body.body-marketing .hero--preview .hero-visual__aurora {
 body.body-marketing .hero--preview .hero-copy--preview {
   position: relative;
   z-index: 2;
-  width: min(calc(100% - 2rem), 90vw) !important;
-  max-width: 90vw !important; /* room for 55vw wordmark */
+  width: min(calc(100% - 2rem), 94vw) !important;
+  max-width: 94vw !important;
   margin: 0 auto !important;
   padding: clamp(5rem, 12vh, 7rem) 1rem clamp(1.5rem, 4vh, 2.5rem) !important;
   text-align: center !important;
@@ -730,17 +731,18 @@ body.body-marketing .hero--preview .hero-copy--preview {
   box-sizing: border-box;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #E8EEF4;
-}
-body.body-marketing .hero--preview .hero-copy--preview::before {
-  display: none !important;
+  overflow: visible !important;
 }
 body.body-marketing .hero-brand-lockup--preview {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  margin: 0 0 1.25rem !important;
+  gap: 0.5rem;
+  margin: 0 0 2.1rem !important; /* clear gap so CENTROPIC.AI never sits under H1 */
   width: 100%;
+  position: relative;
+  z-index: 3;
+  overflow: visible !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   /* Anteprima: logo ≈ 17.8% of viewport width */
@@ -752,11 +754,13 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
   display: block;
-  /* Anteprima: CENTROPIC.AI ≈ 55% of viewport width */
+  /* Anteprima: CENTROPIC.AI ≈ 55% of viewport — fully visible, not clipped */
   width: clamp(16rem, 55vw, 52.8rem) !important;
   height: auto !important;
   max-width: 92vw !important;
-  margin: 0.05rem 0 0;
+  margin: 0;
+  position: relative;
+  z-index: 3;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
@@ -764,14 +768,19 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
   font-family: "Space Grotesk", "Inter", system-ui, sans-serif !important;
-  font-size: clamp(1.55rem, 3.4vw, 2.35rem) !important;
+  /* Anteprima: H1 ≈ 55% width, ONE line on desktop */
+  font-size: clamp(1.05rem, 2.15vw, 1.65rem) !important;
   font-weight: 600 !important;
   letter-spacing: -0.02em !important;
-  line-height: 1.22 !important;
-  max-width: 24ch !important;
+  line-height: 1.2 !important;
+  width: max-content !important;
+  max-width: none !important;
   margin: 0 0 0.85rem !important;
   color: #E8EEF4 !important;
   text-align: center !important;
+  white-space: nowrap !important;
+  position: relative;
+  z-index: 2;
 }
 body.body-marketing .hero--preview .hero-accent {
   color: #3FA8B5 !important;
@@ -779,12 +788,18 @@ body.body-marketing .hero--preview .hero-accent {
 }
 body.body-marketing .hero--preview .hero-lede {
   font-family: "Inter", system-ui, sans-serif !important;
-  max-width: 36rem !important;
+  /* Anteprima: lede ≈ 65% width, ONE line on desktop */
+  font-size: clamp(0.68rem, 1.05vw, 0.98rem) !important;
+  line-height: 1.45 !important;
+  width: max-content !important;
+  max-width: none !important;
   margin: 0 auto 1.65rem !important;
-  font-size: clamp(0.92rem, 1.5vw, 1.05rem) !important;
-  line-height: 1.55 !important;
   color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
   text-align: center !important;
+  white-space: nowrap !important;
+}
+body.body-marketing .hero--preview .hero-copy--preview::before {
+  display: none !important;
 }
 body.body-marketing .hero--preview .hero-url-form--preview {
   width: min(100%, 36rem);
@@ -1321,8 +1336,8 @@ body.body-dash .finding-list > li::after {
     max-width: 94vw !important;
   }
   body.body-marketing .hero-brand-lockup--preview {
-    gap: 0.35rem;
-    margin-bottom: 1.1rem !important;
+    gap: 0.4rem;
+    margin-bottom: 1.55rem !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
     /* Mobile anteprima: mark larger relative to width */
@@ -1341,11 +1356,16 @@ body.body-dash .finding-list > li::after {
     display: none !important;
   }
   body.body-marketing .hero--preview .hero-headline--v2 {
-    font-size: clamp(1.35rem, 5.8vw, 1.75rem) !important;
-    max-width: 20ch !important;
+    font-size: clamp(1.2rem, 5.2vw, 1.65rem) !important;
+    width: auto !important;
+    max-width: 18.5rem !important;
+    white-space: normal !important;
   }
   body.body-marketing .hero--preview .hero-lede {
-    font-size: 0.95rem !important;
+    font-size: clamp(0.82rem, 3.4vw, 0.95rem) !important;
+    width: auto !important;
+    max-width: 22rem !important;
+    white-space: normal !important;
     margin-bottom: 1.35rem !important;
   }
   body.body-marketing .hero--preview .hero-url-form__row {
