@@ -11229,3 +11229,327 @@ body.dash-plan--business .workspace {
 .legal-rail a:hover {
   color: var(--ink);
 }
+
+/* —— DASH REDESIGN 2026 — priority hierarchy, compact minimal —— */
+body.body-dash .workspace-strip__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.85rem;
+  justify-content: flex-end;
+  max-width: 18rem;
+}
+body.body-dash .workspace-strip__quiet {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--brand-clarity) 55%, transparent);
+  white-space: nowrap;
+}
+body.body-dash .workspace-strip__lede {
+  max-width: 36rem;
+  opacity: 0.78;
+}
+
+body.body-dash .workspace-grid--solo {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 72rem;
+}
+
+body.body-dash .report--priority {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  margin-top: 0.35rem;
+}
+
+/* P0 — Hero CVI + SoV */
+.dash-hero {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.15rem 1.25rem 1.35rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse 70% 80% at 0% 0%, color-mix(in srgb, var(--plan-accent) 14%, transparent), transparent 55%),
+    radial-gradient(ellipse 55% 70% at 100% 20%, color-mix(in srgb, var(--plan-accent-deep) 10%, transparent), transparent 50%),
+    var(--brand-card);
+}
+.dash-hero__identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.dash-hero__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-clarity) 58%, transparent);
+}
+.dash-hero__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  min-width: 0;
+}
+.dash-hero__link {
+  font-size: 0.8rem;
+  color: var(--plan-accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--plan-accent) 35%, transparent);
+}
+.dash-hero__link:hover {
+  color: var(--brand-clarity);
+  border-bottom-color: var(--plan-accent);
+}
+.dash-hero__quiet {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
+}
+.dash-hero__page-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--brand-clarity) 72%, transparent);
+  max-width: 28rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dash-hero__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+}
+@media (max-width: 640px) {
+  .dash-hero__metrics { grid-template-columns: 1fr; }
+}
+.dash-hero__cvi,
+.dash-hero__sov {
+  min-width: 0;
+  padding: 0.35rem 0;
+}
+.dash-hero__k {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-clarity) 62%, transparent);
+}
+.dash-hero__grade {
+  margin: 0;
+  font-size: clamp(2.75rem, 6vw, 3.75rem);
+  font-weight: 650;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--brand-clarity);
+  background: linear-gradient(135deg, var(--brand-clarity) 0%, var(--plan-accent) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dash-hero__cvi[data-grade] .dash-hero__grade {
+  /* keep grade readable on all plans */
+}
+.dash-hero__pct {
+  margin: 0;
+  font-size: clamp(2.75rem, 6vw, 3.75rem);
+  font-weight: 650;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--brand-clarity);
+}
+.dash-hero__pct span {
+  font-size: 0.45em;
+  font-weight: 550;
+  margin-left: 0.08em;
+  color: var(--plan-accent);
+  -webkit-text-fill-color: var(--plan-accent);
+}
+.dash-hero__sub {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--brand-clarity) 55%, transparent);
+}
+.dash-hero__split {
+  list-style: none;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.1rem;
+}
+.dash-hero__split li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+}
+.dash-hero__split li span {
+  color: color-mix(in srgb, var(--brand-clarity) 50%, transparent);
+}
+.dash-hero__split li strong {
+  font-weight: 600;
+  color: var(--brand-clarity);
+}
+.dash-hero__split [data-tone="brand"] strong { color: var(--plan-accent); }
+.dash-hero__split [data-tone="rivals"] strong { color: var(--warn); }
+.dash-hero__split [data-tone="other"] strong {
+  color: color-mix(in srgb, var(--brand-clarity) 65%, transparent);
+}
+
+/* P1 — micro metrics row */
+.dash-micro {
+  list-style: none;
+  margin: 0;
+  padding: 0.65rem 0.15rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+@media (max-width: 560px) {
+  .dash-micro { grid-template-columns: 1fr; gap: 0.65rem; }
+}
+.dash-micro li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.55rem;
+  align-items: baseline;
+  min-width: 0;
+}
+.dash-micro__k {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-clarity) 52%, transparent);
+}
+.dash-micro__v {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 1.35rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: var(--brand-clarity);
+  justify-self: start;
+}
+.dash-micro__h {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-size: 0.72rem;
+  color: color-mix(in srgb, var(--brand-clarity) 45%, transparent);
+}
+
+/* P2 — actions */
+.dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.35rem;
+}
+.dash-actions__primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--plan-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--plan-accent) 14%, transparent);
+  color: var(--brand-clarity);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-right: 0.35rem;
+}
+.dash-actions__primary:hover {
+  background: color-mix(in srgb, var(--plan-accent) 22%, transparent);
+  border-color: var(--plan-accent);
+}
+.dash-actions__link {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
+  text-decoration: none;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+}
+.dash-actions__link:hover {
+  color: var(--plan-accent);
+  background: color-mix(in srgb, var(--plan-accent) 8%, transparent);
+}
+
+/* P3 — compact SoV */
+.dash-sov {
+  padding: 1rem 1.15rem 1.2rem;
+  border: 1px solid var(--brand-border);
+  border-radius: 12px;
+  background: var(--brand-card);
+}
+.dash-sov .sov-ops {
+  margin: 0 0 0.85rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-elevated) 88%, transparent);
+}
+.dash-sov__head {
+  margin-bottom: 0.85rem;
+}
+.dash-sov__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--brand-clarity);
+}
+.dash-sov__lede {
+  margin: 0;
+  max-width: 48rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--brand-clarity) 58%, transparent);
+}
+.dash-sov__note {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--brand-clarity) 50%, transparent);
+}
+.dash-sov__table {
+  margin-top: 0.25rem;
+}
+
+/* Compact downstream panels */
+body.body-dash .report--priority .dash-block__eyebrow,
+body.body-dash .report--priority .geo-suite .dash-block__eyebrow,
+body.body-dash .report--priority .monitor-panel .eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+body.body-dash .report--priority .dash-block--panel {
+  border-radius: 12px;
+}
+body.body-dash .report--priority .geo-suite__grid {
+  gap: 0.55rem;
+}
+body.body-dash .report--priority .geo-suite__grid li {
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+}
+body.body-dash .report--priority .diff-strip {
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-hero,
+  .dash-sov,
+  .dash-actions__primary {
+    transition: none;
+  }
+}

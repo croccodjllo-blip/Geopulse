@@ -38,33 +38,19 @@
           {% endif %}
         </p>
       </div>
-      <dl class="workspace-status workspace-status--strip" aria-label="{{ _('Stato account') }}">
-        <div>
-          <dt>{{ _('Piano') }}</dt>
-          <dd>
-            <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
-          </dd>
-        </div>
-        <div>
-          <dt>{{ _('Siti') }}</dt>
-          <dd>{{ site_count }}/{{ max_sites }}</dd>
-        </div>
-        <div>
-          <dt>{{ _('Crawl') }}</dt>
-          <dd>{% if crawl_unlimited %}{{ _('Intero sito') }}{% else %}{{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}</dd>
-        </div>
-        <div>
-          <dt>{% if analysis_limit_lifetime %}{{ _('Analisi') }}{% else %}{{ _('Quote 24h') }}{% endif %}</dt>
-          <dd>{{ analyses_used }}/{{ daily_limit }}</dd>
-        </div>
-      </dl>
+      <div class="workspace-strip__meta" aria-label="{{ _('Stato account') }}">
+        <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
+        <span class="workspace-strip__quiet">{{ site_count }}/{{ max_sites }} {{ _('siti') }}</span>
+        <span class="workspace-strip__quiet">{% if crawl_unlimited %}{{ _('Crawl intero sito') }}{% else %}{{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}</span>
+        <span class="workspace-strip__quiet">{{ analyses_used }}/{{ daily_limit }} {% if analysis_limit_lifetime %}{{ _('analisi') }}{% else %}{{ _('quote 24h') }}{% endif %}</span>
+      </div>
     </div>
   </header>
 
   <div class="workspace-body">
     {% include "partials/dashboard_shell.html" %}
 
-    <div class="workspace-grid{% if latest %} workspace-grid--rail{% else %} workspace-grid--solo{% endif %}">
+    <div class="workspace-grid workspace-grid--solo">
       <div class="workspace-main">
         {% if latest %}
         {% set rating = latest.rating %}
@@ -75,586 +61,189 @@
         {% set warn_n = findings|selectattr('severity', 'equalto', 'warn')|list|length %}
         {% set findings_n = findings|length %}
 
-        <section class="report" aria-labelledby="result-domain">
-          <div class="report-top report-top--board">
-            <div class="report-top__copy">
-              <p class="eyebrow">{{ _('Ultimo report') }}</p>
-              <div class="report-top__title-row">
-                <h2 class="h-display report-domain" id="result-domain">{{ latest.domain }}</h2>
-                <span class="grade-badge" data-grade="{{ rating.code }}" title="{{ _('Centropic Visibility Index') }}">{{ _('CVI') }} {{ rating.code }}</span>
-              </div>
-              <p class="report-meta">
-                {% if latest.page_title %}<span>{{ latest.page_title }}</span>{% endif %}
-                <a class="site-link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
-                {% if latest.pages_analyzed %}<span>{{ latest.pages_analyzed }} {{ _('pagine') }}</span>{% endif %}
-                {% set report_at = latest.updated_at or latest.created_at %}
-                {% if report_at %}
-                  <span>{{ _('Analizzato') }} {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
-                {% endif %}
-              </p>
-            </div>
-            {% if can_extended_history %}
-            <div class="report-top__actions">
-              <a class="report-top__link" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
-            </div>
-            {% endif %}
-          </div>
-
-          {% set aio_n = aio if aio is number else 0 %}
-          {% set geo_n = geo if geo is number else 0 %}
-          {# Constellation ticks follow AIO (honest), not a fake 100-findings*8 "health". #}
-          {% set health = aio_n %}
-          {% if aio_n >= 90 %}
-            {% set band = 'peak' %}
-            {% set propensity = _('Segnali AIO molto forti') %}
-            {% set propensity_lede = _('Alta predisposizione strutturale: i crawler generativi trovano segnali chiari da leggere e citare.') %}
-          {% elif aio_n >= 75 %}
-            {% set band = 'high' %}
-            {% set propensity = _('Segnali AIO solidi') %}
-            {% set propensity_lede = _('Buona base machine-readable. Chiudi i gap rimanenti: ogni segnale in più riduce ambiguità per i crawler generativi.') %}
-          {% elif aio_n >= 55 %}
-            {% set band = 'mid' %}
-            {% set propensity = _('Segnali AIO moderati') %}
-            {% set propensity_lede = _('Alcuni asset presenti, diversi gap aperti. Prioritizza findings critical/warn.') %}
-          {% elif aio_n >= 35 %}
-            {% set band = 'low' %}
-            {% set propensity = _('Segnali AIO emergenti') %}
-            {% set propensity_lede = _('Segnali deboli sul crawl: serve lavoro strutturale su entity, schema e file AI.') %}
-          {% else %}
-            {% set band = 'crit' %}
-            {% set propensity = _('Segnali AIO critici') %}
-            {% set propensity_lede = _('Base insufficiente: intervento prioritario su title, schema, robots/llms e contenuti citabili.') %}
-          {% endif %}
-          {% set aio_c = 741.42 %}
-          {% set geo_c = 942.48 %}
-          {% set aio_offset = aio_c * (1 - aio_n / 100) %}
-          {% set geo_offset = geo_c * (1 - geo_n / 100) %}
-          {% set geo_angle = (geo_n / 100 * 360) - 90 %}
-
+        <section class="report report--priority" aria-labelledby="result-domain">
           {% include "partials/dash_dynamic_styles.html" %}
 
-          <div class="ui-grid ui-grid--3 u-my-metrics" aria-label="{{ _('Metriche chiave') }}">
-            {% with label='AIO', value=(aio if aio is number else '—'), hint=_('AI-Driven Visibility'), variant='cyan', icon='aio' %}
-              {% include "partials/ui_metric.html" %}
-            {% endwith %}
-            {% with label='GEO', value=(geo if geo is number else '—'), hint=_('Generative Engine Opt.'), variant='chrome', icon='geo' %}
-              {% include "partials/ui_metric.html" %}
-            {% endwith %}
-            {% with label=_('Findings'), value=findings_n, hint=_('critical + warn'), variant='cyan', icon='findings' %}
-              {% include "partials/ui_metric.html" %}
-            {% endwith %}
-          </div>
-
-          <nav class="report-nav" aria-label="{{ _('Sezioni del report') }}">
-            <a
-              href="#panel-sov"
-              id="tab-sov"
-              class="report-nav__view is-active"
-              data-dash-tab="sov"
-              data-tab="sov"
-              aria-controls="panel-sov"
-              aria-current="true"
-            >{{ _('SoV') }}</a>
-            <a
-              href="#panel-score"
-              id="tab-score"
-              class="report-nav__view"
-              data-dash-tab="score"
-              data-tab="score"
-              aria-controls="panel-score"
-            >{{ _('Score') }}</a>
-            <span class="report-nav__rule" aria-hidden="true"></span>
-            <a href="#findings">{{ _('Findings') }}</a>
-            {% if pages_analyzed_n %}<a href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
-            <a href="#edge-signals">{{ _('Edge') }}</a>
-            <a href="#pack">{{ _('Pack') }}</a>
-          </nav>
-
-          <div class="report-panel" id="panel-score" role="tabpanel" aria-labelledby="tab-score" data-panel="score" hidden>
-          <section
-            class="pulse-core"
-            aria-label="AI-Driven Visibility (AIO) recommendation propensity"
-            data-band="{{ band }}"
-            data-pulse-core
-          >
-            <header class="pulse-core__intro">
-              <p class="eyebrow signal-diag__eyebrow">
-                {{ _('Signal diagnostics') }}
-                <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
-              </p>
-              <h3 class="pulse-core__title">{{ _('Quanto sono solidi i segnali AIO/GEO') }}</h3>
-              <p class="pulse-core__lede">
-                {{ propensity_lede }}
-                <span class="hint">{{ _('AIO/GEO sono sempre Stimato: predisposizione strutturale dal crawl. Il tab SoV mostra Misurato quando il citation monitor ha campionato gli engine (anche con 0 menzioni).') }}</span>
-              </p>
-            </header>
-
-            <div class="pulse-core__mast">
-              <div class="pulse-core__stage">
-                <div class="pulse-core__aura" aria-hidden="true"></div>
-                <div class="pulse-core__viz" aria-hidden="true">
-                  <svg class="pulse-core__svg" viewBox="0 0 360 360" role="presentation">
-                    <defs>
-                      <linearGradient id="aioArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="var(--pc-grad-a)" />
-                        <stop offset="55%" stop-color="var(--pc-grad-b)" />
-                        <stop offset="100%" stop-color="var(--pc-grad-c)" />
-                      </linearGradient>
-                      <linearGradient id="geoArcGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.15" />
-                        <stop offset="100%" stop-color="#5B6B7A" stop-opacity="0.85" />
-                      </linearGradient>
-                      <radialGradient id="coreGlow" cx="50%" cy="45%" r="55%">
-                        <stop offset="0%" stop-color="var(--pc-glow)" stop-opacity="0.55" />
-                        <stop offset="55%" stop-color="var(--pc-glow)" stop-opacity="0.12" />
-                        <stop offset="100%" stop-color="var(--pc-glow)" stop-opacity="0" />
-                      </radialGradient>
-                      <filter id="softBloom" x="-40%" y="-40%" width="180%" height="180%">
-                        <feGaussianBlur stdDeviation="3.5" result="b" />
-                        <feMerge>
-                          <feMergeNode in="b" />
-                          <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                      </filter>
-                    </defs>
-
-                    <!-- Field grid -->
-                    <circle class="pc-field" cx="180" cy="180" r="168" />
-                    <circle class="pc-field pc-field--mid" cx="180" cy="180" r="148" />
-
-                    <!-- GEO orbit track + progress -->
-                    <circle class="pc-geo-track" cx="180" cy="180" r="150" />
-                    <circle
-                      class="pc-geo-arc"
-                      cx="180" cy="180" r="150"
-                      stroke-dasharray="{{ '%.2f'|format(geo_c) }}"
-                      stroke-dashoffset="{{ '%.2f'|format(geo_offset) }}"
-                      transform="rotate(-90 180 180)"
-                    />
-
-                    <!-- GEO satellite -->
-                    <g class="pc-satellite">
-                      <circle class="pc-satellite__glow" r="10" />
-                      <circle class="pc-satellite__dot" r="3.5" />
-                    </g>
-
-                    <!-- AIO track + arc -->
-                    <circle class="pc-aio-track" cx="180" cy="180" r="118" />
-                    <circle
-                      class="pc-aio-arc"
-                      cx="180" cy="180" r="118"
-                      stroke-dasharray="{{ '%.2f'|format(aio_c) }}"
-                      stroke-dashoffset="{{ '%.2f'|format(aio_offset) }}"
-                      transform="rotate(-90 180 180)"
-                      filter="url(#softBloom)"
-                    />
-
-                    <!-- Sweep needle at AIO tip -->
-                    <g class="pc-needle">
-                      <line x1="180" y1="180" x2="180" y2="62" />
-                      <circle cx="180" cy="62" r="4.5" />
-                    </g>
-
-                    <!-- Constellation ticks -->
-                    {% for i in range(24) %}
-                    {% set ang = i * 15 - 90 %}
-                    {% set lit = (i / 24 * 100) <= health %}
-                    <circle
-                      class="pc-tick{% if lit %} is-lit{% endif %}"
-                      cx="0" cy="0" r="2.2"
-                      transform="rotate({{ ang }} 180 180) translate(180 80)"
-                    />
-                    {% endfor %}
-
-                    <!-- Core glow disc -->
-                    <circle class="pc-core-glow" cx="180" cy="180" r="78" fill="url(#coreGlow)" />
-                    <circle class="pc-core-ring" cx="180" cy="180" r="72" />
-                  </svg>
-
-                  <div class="pulse-core__hub">
-                    <span class="pulse-core__kicker">AIO · AI-Driven Visibility <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></span>
-                    <strong class="pulse-core__value" data-count-to="{{ aio_n }}">0</strong>
-                    <span class="pulse-core__denom">/100</span>
-                    <span class="pulse-core__propensity">{{ propensity }}</span>
-                  </div>
-                </div>
+          {# ——— P0 hero: CVI + SoV ——— #}
+          <header class="dash-hero">
+            <div class="dash-hero__identity">
+              <p class="dash-hero__eyebrow">{{ _('Ultimo report') }}{% set report_at = latest.updated_at or latest.created_at %}{% if report_at %} · {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}</p>
+              <div class="dash-hero__title-row">
+                <h2 class="dash-hero__domain visually-hidden" id="result-domain">{{ latest.domain }}</h2>
+                {% if latest.page_title %}
+                <span class="dash-hero__page-title">{{ latest.page_title }}</span>
+                {% endif %}
+                <a class="dash-hero__link" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
+                {% if can_extended_history %}
+                <a class="dash-hero__link" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
+                {% endif %}
+                {% if latest.pages_analyzed %}
+                <span class="dash-hero__quiet">{{ latest.pages_analyzed }} {{ _('pagine') }}</span>
+                {% endif %}
               </div>
-
-              <ul class="pulse-core__stats" aria-label="{{ _('Sintesi score') }}">
-                <li class="pulse-core__stat" data-tone="aio">
-                  <span class="pulse-core__stat-k">AIO</span>
-                  <strong class="pulse-core__stat-v">{{ aio_n }}</strong>
-                  <span class="pulse-core__stat-m">{{ propensity }}</span>
-                </li>
-                <li class="pulse-core__stat" data-tone="geo">
-                  <span class="pulse-core__stat-k">GEO</span>
-                  <strong class="pulse-core__stat-v">{{ geo_n }}</strong>
-                  <span class="pulse-core__stat-m">/100</span>
-                </li>
-                <li class="pulse-core__stat" data-tone="grade" data-grade="{{ rating.code }}">
-                  <span class="pulse-core__stat-k">{{ _('CVI') }}</span>
-                  <strong class="pulse-core__stat-v pulse-core__stat-v--grade">{{ rating.code }}</strong>
-                  <span class="pulse-core__stat-m">{{ rating.score }}/100</span>
-                </li>
-                <li class="pulse-core__stat" data-tone="risk">
-                  <span class="pulse-core__stat-k">{{ _('Interferenze') }}</span>
-                  <strong class="pulse-core__stat-v">{{ findings_n }}</strong>
-                  <span class="pulse-core__stat-m">
-                    {% if crit_n or warn_n %}
-                      {{ crit_n }} crit · {{ warn_n }} warn
-                    {% else %}
-                      {{ _('clear') }}
-                    {% endif %}
-                  </span>
-                </li>
-              </ul>
             </div>
 
-            <div class="signal-diag" role="table" aria-label="{{ _('Signal diagnostics') }}">
-                <div class="signal-diag__head" role="row">
-                  <span class="signal-diag__h" role="columnheader">{{ _('Segnale') }}</span>
-                  <span class="signal-diag__h" role="columnheader">{{ _('Evidence') }}</span>
-                  <span class="signal-diag__h signal-diag__h--bar" role="columnheader">{{ _('Lettura') }}</span>
-                  <span class="signal-diag__h signal-diag__h--num" role="columnheader">{{ _('Valore') }}</span>
-                </div>
+            <div class="dash-hero__metrics" aria-label="{{ _('Metriche primarie') }}">
+              <article class="dash-hero__cvi" data-grade="{{ rating.code }}">
+                <p class="dash-hero__k">{{ _('CVI') }} <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></p>
+                <p class="dash-hero__grade">{{ rating.code }}</p>
+                <p class="dash-hero__sub">{{ rating.score }}/100 · {{ _('Centropic Visibility Index') }}</p>
+              </article>
 
-                <div class="signal-diag__body" role="rowgroup">
-                  <article class="signal-diag__row" role="row" data-tone="aio">
-                    <div class="signal-diag__signal" role="cell">
-                      <span class="signal-diag__swatch" aria-hidden="true"></span>
-                      <div class="signal-diag__copy">
-                        <strong>AIO</strong>
-                        <em>AI-Driven Visibility</em>
-                      </div>
-                    </div>
-                    <div class="signal-diag__status" role="cell">
-                      <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
-                    </div>
-                    <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__meter" data-meter="aio" aria-hidden="true">
-                        <i></i>
-                      </div>
-                      <span class="signal-diag__meta">0–100 · {{ propensity }}</span>
-                    </div>
-                    <div class="signal-diag__value" role="cell">
-                      <strong>{{ aio_n }}</strong>
-                      <span class="signal-diag__unit">{{ _('score') }}</span>
-                    </div>
-                  </article>
+              {% if engine_breakdown %}
+              <article class="dash-hero__sov" aria-label="{{ _('Citation share brand') }}">
+                <p class="dash-hero__k">
+                  {{ _('SoV') }}
+                  <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
+                </p>
+                <p class="dash-hero__pct">{{ engine_breakdown.brand_sov }}<span>%</span></p>
+                <p class="dash-hero__sub">{{ _('Citation share') }}{% if engine_breakdown.top_engine %} · top {{ engine_breakdown.top_engine }}{% endif %}</p>
+                {% if engine_breakdown.has_competitors %}
+                <ul class="dash-hero__split" aria-label="{{ _('Campo competitivo') }}">
+                  <li data-tone="brand"><span>{{ _('Brand') }}</span><strong>{{ engine_breakdown.brand_sov }}%</strong></li>
+                  <li data-tone="rivals"><span>{{ _('Rivali') }}</span><strong>{{ engine_breakdown.rivals_sov }}%</strong></li>
+                  <li data-tone="other"><span>{{ _('Altro') }}</span><strong>{{ engine_breakdown.other_sov }}%</strong></li>
+                </ul>
+                {% endif %}
+              </article>
+              {% else %}
+              <article class="dash-hero__sov dash-hero__sov--empty">
+                <p class="dash-hero__k">{{ _('SoV') }}</p>
+                <p class="dash-hero__pct">—</p>
+                <p class="dash-hero__sub">{{ _('Nessun breakdown disponibile.') }}</p>
+              </article>
+              {% endif %}
+            </div>
+          </header>
 
-                  <article class="signal-diag__row" role="row" data-tone="geo">
-                    <div class="signal-diag__signal" role="cell">
-                      <span class="signal-diag__swatch" aria-hidden="true"></span>
-                      <div class="signal-diag__copy">
-                        <strong>GEO</strong>
-                        <em>Generative Engine Optimization</em>
-                      </div>
-                    </div>
-                    <div class="signal-diag__status" role="cell">
-                      <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
-                    </div>
-                    <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__meter" data-meter="geo" aria-hidden="true">
-                        <i></i>
-                      </div>
-                      <span class="signal-diag__meta">0–100</span>
-                    </div>
-                    <div class="signal-diag__value" role="cell">
-                      <strong>{{ geo_n }}</strong>
-                      <span class="signal-diag__unit">{{ _('score') }}</span>
-                    </div>
-                  </article>
+          {# ——— P1 secondary metrics (typography only) ——— #}
+          <ul class="dash-micro" aria-label="{{ _('Metriche chiave') }}">
+            <li>
+              <span class="dash-micro__k">AIO</span>
+              <strong class="dash-micro__v">{{ aio if aio is number else '—' }}</strong>
+              <span class="dash-micro__h">{{ _('AI-Driven Visibility') }} · {{ _('Stimato') }}</span>
+            </li>
+            <li>
+              <span class="dash-micro__k">GEO</span>
+              <strong class="dash-micro__v">{{ geo if geo is number else '—' }}</strong>
+              <span class="dash-micro__h">{{ _('Generative Engine Opt.') }} · {{ _('Stimato') }}</span>
+            </li>
+            <li>
+              <span class="dash-micro__k">{{ _('Findings') }}</span>
+              <strong class="dash-micro__v">{{ findings_n }}</strong>
+              <span class="dash-micro__h">
+                {% if crit_n or warn_n %}{{ crit_n }} crit · {{ warn_n }} warn{% else %}{{ _('critical + warn') }}{% endif %}
+              </span>
+            </li>
+          </ul>
 
-                  <article class="signal-diag__row" role="row" data-tone="grade" data-grade="{{ rating.code }}">
-                    <div class="signal-diag__signal" role="cell">
-                      <span class="signal-diag__swatch" aria-hidden="true"></span>
-                      <div class="signal-diag__copy">
-                        <strong>{{ _('CVI') }}</strong>
-                        <em>{{ _('Centropic Visibility Index') }} · {{ _(rating.label).split('—')[0].strip() }}</em>
-                      </div>
-                    </div>
-                    <div class="signal-diag__status" role="cell">
-                      <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span>
-                    </div>
-                    <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__meter signal-diag__meter--grade" data-meter="grade" aria-hidden="true">
-                        <i></i>
-                      </div>
-                      <span class="signal-diag__meta">{{ rating.score }}/100</span>
-                    </div>
-                    <div class="signal-diag__value" role="cell">
-                      <span class="signal-diag__grade" data-chars="{{ rating.code|length }}">{{ rating.code }}</span>
-                      <span class="signal-diag__unit">{{ _('grade') }}</span>
-                    </div>
-                  </article>
+          {# ——— P2 actions ——— #}
+          <nav class="dash-actions" aria-label="{{ _('Azioni report') }}">
+            <a class="dash-actions__primary" href="#analyze-panel">{{ _('Nuova analisi') }}</a>
+            <a class="dash-actions__link" href="#pack">{{ _('Pack') }}</a>
+            <a class="dash-actions__link" href="#edge-signals">{{ _('Edge') }}</a>
+            <a class="dash-actions__link" href="#findings">{{ _('Findings') }}</a>
+            {% if pages_analyzed_n %}<a class="dash-actions__link" href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
+          </nav>
 
-                  <article class="signal-diag__row" role="row" data-tone="risk">
-                    <div class="signal-diag__signal" role="cell">
-                      <span class="signal-diag__swatch" aria-hidden="true"></span>
-                      <div class="signal-diag__copy">
-                        <strong>{{ _('Interferenze') }}</strong>
-                        <em>
-                          {% if crit_n or warn_n %}
-                            {{ crit_n }} critical · {{ warn_n }} warn
-                          {% else %}
-                            {{ _('Nessuna criticità aperta') }}
-                          {% endif %}
-                        </em>
-                      </div>
-                    </div>
-                    <div class="signal-diag__status" role="cell">
-                      <div class="signal-diag__sev">
-                        {% if crit_n %}
-                        <span class="signal-diag__chip" data-sev="critical">{{ crit_n }} crit</span>
-                        {% endif %}
-                        {% if warn_n %}
-                        <span class="signal-diag__chip" data-sev="warn">{{ warn_n }} warn</span>
-                        {% endif %}
-                        {% if not crit_n and not warn_n %}
-                        <span class="signal-diag__chip" data-sev="ok">{{ _('clear') }}</span>
-                        {% endif %}
-                      </div>
-                    </div>
-                    <div class="signal-diag__reading" role="cell">
-                      <div class="signal-diag__risk-rail" aria-hidden="true">
-                        {% for _ in range([crit_n, 6]|min) %}<i data-sev="critical"></i>{% endfor %}
-                        {% for _ in range([warn_n, 6]|min) %}<i data-sev="warn"></i>{% endfor %}
-                        {% if not crit_n and not warn_n %}<i data-sev="ok"></i>{% endif %}
-                      </div>
-                      <span class="signal-diag__meta">{{ _('open findings') }}</span>
-                    </div>
-                    <div class="signal-diag__value" role="cell">
-                      <strong class="signal-diag__findings">{{ findings_n }}</strong>
-                      <span class="signal-diag__unit">{{ _('findings') }}</span>
-                    </div>
-                  </article>
-                </div>
-
-                <footer class="signal-diag__foot">
-                  <span class="signal-diag__foot-label">{{ _('Scala CVI') }}</span>
-                  <ol class="pulse-scale" aria-label="{{ _('Scala da DDD a AAA') }}">
-                    {% for code in rating.scale %}
-                    <li class="{% if code == rating.code %}is-active{% endif %}" {% if code == rating.code %}aria-current="true"{% endif %}>{{ code }}</li>
-                    {% endfor %}
-                  </ol>
-                </footer>
-              </div>
-          </section>
-          </div>
-
-          <div class="report-panel is-active" id="panel-sov" role="tabpanel" aria-labelledby="tab-sov" data-panel="sov">
-            {% include "partials/sov_ops.html" %}
+          {# ——— P3 SoV engine table (single viz) ——— #}
+          <section class="dash-sov" id="panel-sov" aria-labelledby="sov-title">
+            {% if can_measured_sov %}
+              {% include "partials/sov_ops.html" %}
+            {% endif %}
             {% if engine_breakdown %}
-            <section class="sov-panel" aria-labelledby="sov-title">
-              <header class="sov-panel__head">
-                <div class="sov-panel__intro">
-                  <p class="eyebrow">{{ _('Ripartizione per engine IA') }}</p>
-                  <h3 class="sov-panel__title" id="sov-title">
-                    {% if engine_breakdown.measured_zero_all %}
-                    {{ _('Citation share — Misurato · 0 menzioni') }}
-                    {% elif engine_breakdown.evidence == 'mixed' or engine_breakdown.evidence == 'measured' %}
-                    {{ _('Citation share') }}
-                    {% else %}
-                    {{ _('Citation share (stimata · readiness)') }}
-                    {% endif %}
-                  </h3>
-                  <p class="sov-panel__lede">
-                    {% if engine_breakdown.measured_zero_all %}
-                    {{ _(engine_breakdown.note) if engine_breakdown.note else _('Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo la share stimata.') }}
-                    {% elif can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
-                    {{ _('Menzioni generative campionate (stocastiche) + predisposizione strutturale — non Share of Voice pubblicitaria.') }}
-                    {% elif not can_measured_sov %}
-                    {{ _('Stima di readiness strutturale (CVI / AIO+GEO + robots). Su Plus: citation monitor Misurato.') }}
-                    {% else %}
-                    {{ _('Stima dalla struttura osservata (CVI / score + robots); con Plus puoi aggiungere campioni Misurati.') }}
-                    {% endif %}
-                  </p>
-                  <span class="evidence-badge sov-panel__badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
-                </div>
+            <header class="dash-sov__head">
+              <div>
+                <h3 class="dash-sov__title" id="sov-title">{{ _('Share of Voice') }}</h3>
+                <p class="dash-sov__lede">
+                  {% if engine_breakdown.measured_zero_all %}
+                  {{ _(engine_breakdown.note) if engine_breakdown.note else _('Citation monitor eseguito: 0 menzioni. Mostriamo 0% measured — non riusiamo la share stimata.') }}
+                  {% elif can_measured_sov and engine_breakdown.evidence in ('mixed', 'measured') %}
+                  {{ _('Menzioni generative campionate (stocastiche) + predisposizione strutturale — non Share of Voice pubblicitaria.') }}
+                  {% elif not can_measured_sov %}
+                  {{ _('Stima di readiness strutturale (CVI / AIO+GEO + robots). Su Plus: citation monitor Misurato.') }}
+                  {% else %}
+                  {{ _('Stima dalla struttura osservata (CVI / score + robots); con Plus puoi aggiungere campioni Misurati.') }}
+                  {% endif %}
+                </p>
+              </div>
+            </header>
 
-                <div class="sov-hero" aria-label="{{ _('Citation share brand') }}">
-                  <div class="sov-hero__ring" data-sov-ring>
-                    <svg class="sov-hero__svg" viewBox="0 0 120 120" aria-hidden="true">
-                      <defs>
-                        <linearGradient id="sovRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stop-color="var(--plan-accent-deep)"/>
-                          <stop offset="55%" stop-color="var(--plan-accent)"/>
-                          <stop offset="100%" stop-color="var(--plan-accent-deep)"/>
-                        </linearGradient>
-                      </defs>
-                      <circle class="sov-hero__track" cx="60" cy="60" r="52" fill="none" stroke-width="8"/>
-                      <circle class="sov-hero__progress" cx="60" cy="60" r="52" fill="none" stroke-width="8" stroke="url(#sovRingGrad)"
-                        stroke-dasharray="{{ (engine_breakdown.brand_sov / 100 * 326.73)|round(2) }} 326.73"
-                        transform="rotate(-90 60 60)"/>
-                    </svg>
-                    <div class="sov-hero__value">
-                      <span class="sov-hero__n">{{ engine_breakdown.brand_sov }}%</span>
-                      <span class="sov-hero__l">{{ _('Citation share') }}</span>
+            {% if engine_breakdown.engines %}
+            <div
+              class="sov-table dash-sov__table"
+              role="table"
+              aria-label="{{ _('Propensity e citation share per engine') }}"
+            >
+              <div class="sov-table__head" role="row">
+                <span class="sov-table__h" role="columnheader">{{ _('Engine') }}</span>
+                <span class="sov-table__h" role="columnheader">{{ _('Evidence') }}</span>
+                <span class="sov-table__h sov-table__h--bar" role="columnheader">{{ _('Propensity') }}</span>
+                <span class="sov-table__h sov-table__h--num" role="columnheader">{{ _('Score') }}</span>
+                <span class="sov-table__h sov-table__h--num" role="columnheader">{{ _('Share') }}</span>
+              </div>
+              <ul class="engine-bars sov-table__body" role="rowgroup">
+                {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
+                <li
+                  class="engine-bar sov-table__row"
+                  role="row"
+                  data-engine="{{ e.id }}"
+                  data-band="{{ e.band }}"
+                >
+                  <div class="sov-table__engine" role="cell">
+                    <span class="sov-table__swatch" aria-hidden="true"></span>
+                    <div class="sov-table__identity">
+                      <strong>{{ e.label }}</strong>
+                      <span class="engine-bar__vendor">{{ e.vendor }}</span>
                     </div>
                   </div>
-                  {% if engine_breakdown.has_competitors %}
-                  <ul class="sov-hero__split" aria-label="{{ _('Campo competitivo') }}">
-                    <li data-tone="brand"><span>{{ _('Brand') }}</span><strong>{{ engine_breakdown.brand_sov }}%</strong></li>
-                    <li data-tone="rivals"><span>{{ _('Rivali') }}</span><strong>{{ engine_breakdown.rivals_sov }}%</strong></li>
-                    <li data-tone="other"><span>{{ _('Altro') }}</span><strong>{{ engine_breakdown.other_sov }}%</strong></li>
-                  </ul>
+                  <div class="sov-table__status" role="cell">
+                    {% if e.measured_zero %}
+                    <span class="evidence-badge" data-evidence="measured" title="{{ _('Probe LLM eseguito: 0 menzioni su questo engine') }}">{{ _('Misurato · 0') }}</span>
+                    {% elif e.evidence == 'measured' %}
+                    <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}</span>
+                    {% elif e.evidence == 'unavailable' %}
+                    <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('N/D') }}</span>
+                    {% else %}
+                    <span class="evidence-badge" data-evidence="estimated">{{ _('Stimato') }}</span>
+                    {% endif %}
+                    {% if e.access == 'blocked' %}
+                    <span class="engine-bar__access" data-access="blocked">{{ _('blocked') }}</span>
+                    {% elif e.access == 'allow' %}
+                    <span class="engine-bar__access" data-access="allow">{{ _('allow') }}</span>
+                    {% endif %}
+                    {% if e.evidence == 'measured' and (e.mention_rate is not none or e.samples is not none) %}
+                    <span class="sov-table__sample">
+                      {% if e.mention_rate is not none %}{{ e.mention_rate }}%{% endif %}
+                      {% if e.samples is not none %} · {{ e.samples }}{% endif %}
+                    </span>
+                    {% endif %}
+                  </div>
+                  <div class="engine-bar__track sov-table__track" role="cell" aria-hidden="true">
+                    <span class="engine-bar__fill"></span>
+                  </div>
+                  <div class="engine-bar__score sov-table__score" role="cell">
+                    <span class="engine-bar__n">{{ e.propensity }}</span><span class="engine-bar__unit">/100</span>
+                  </div>
+                  <div class="engine-bar__share sov-table__share" role="cell" title="{{ _('Share') }}">
+                    {{ e.share }}%
+                  </div>
+                  {% if e.evidence == 'unavailable' and e.reason %}
+                  <p class="engine-bar__hint sov-table__hint" role="cell">{{ _(e.reason) }}</p>
                   {% endif %}
-                </div>
-              </header>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
 
-              {% if engine_breakdown.engines %}
-              <div class="sov-columns" aria-label="{{ _('Propensity snapshot per engine') }}">
-                <div class="sov-columns__toolbar">
-                  <p class="sov-compose__label">{{ _('Propensity snapshot') }}</p>
-                  <p class="sov-columns__scale" aria-hidden="true">0–100</p>
-                </div>
-                <div class="sov-columns__frame">
-                  <div class="sov-columns__grid" aria-hidden="true">
-                    <span data-y="100"></span>
-                    <span data-y="75"></span>
-                    <span data-y="50"></span>
-                    <span data-y="25"></span>
-                    <span data-y="0"></span>
-                  </div>
-                  <ul class="sov-columns__plot" role="list">
-                    {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
-                    <li
-                      class="sov-columns__col"
-                      data-engine="{{ e.id }}"
-                      title="{{ e.label }} · {{ e.propensity }}/100"
-                    >
-                      <span class="sov-columns__value">{{ e.propensity }}</span>
-                      <div class="sov-columns__track">
-                        <span class="sov-columns__bar"></span>
-                      </div>
-                      <span class="sov-columns__name">{{ e.label }}</span>
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-              {% endif %}
-
-              <div class="sov-compose">
-                <p class="sov-compose__label">{{ _('Composizione per engine') }}</p>
-                <div
-                  class="sov-stack"
-                  role="img"
-                  aria-label="{{ _('Composizione SoV per engine') }}"
-                  data-sov-stack
-                >
-                  {% for e in engine_breakdown.engines %}
-                  <span
-                    class="sov-stack__seg"
-                    data-engine="{{ e.id }}"
-                    title="{{ e.label }} {{ e.share }}%"
-                  ></span>
-                  {% endfor %}
-                </div>
-                <ul class="sov-stack__legend">
-                  {% for e in engine_breakdown.engines %}
-                  <li data-engine="{{ e.id }}">
-                    <i aria-hidden="true"></i>
-                    <span>{{ e.label }}</span>
-                    <em>{{ e.share }}%</em>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </div>
-
-              {% if engine_breakdown.has_competitors %}
-              <div class="sov-field" aria-label="{{ _('Distribuzione competitiva') }}">
-                <p class="sov-compose__label">{{ _('Campo competitivo') }}</p>
-                <div class="sov-field__bar">
-                  <span data-tone="brand"></span>
-                  <span data-tone="rivals"></span>
-                  <span data-tone="other"></span>
-                </div>
-                <ul class="sov-field__legend">
-                  <li data-tone="brand"><i aria-hidden="true"></i>{{ _('Brand') }} <em>{{ engine_breakdown.brand_sov }}%</em></li>
-                  <li data-tone="rivals"><i aria-hidden="true"></i>{{ _('Rivali') }} <em>{{ engine_breakdown.rivals_sov }}%</em></li>
-                  <li data-tone="other"><i aria-hidden="true"></i>{{ _('Altro') }} <em>{{ engine_breakdown.other_sov }}%</em></li>
-                </ul>
-              </div>
-              {% endif %}
-
-              <div class="sov-engines">
-                <p class="sov-compose__label">{{ _('Ripartizione per engine IA') }}</p>
-                <div
-                  class="sov-table"
-                  role="table"
-                  aria-label="{{ _('Propensity e citation share per engine') }}"
-                >
-                  <div class="sov-table__head" role="row">
-                    <span class="sov-table__h" role="columnheader">{{ _('Engine') }}</span>
-                    <span class="sov-table__h" role="columnheader">{{ _('Evidence') }}</span>
-                    <span class="sov-table__h sov-table__h--bar" role="columnheader">{{ _('Propensity') }}</span>
-                    <span class="sov-table__h sov-table__h--num" role="columnheader">{{ _('Score') }}</span>
-                    <span class="sov-table__h sov-table__h--num" role="columnheader">{{ _('Share') }}</span>
-                  </div>
-                  <ul class="engine-bars sov-table__body" role="rowgroup">
-                    {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
-                    <li
-                      class="engine-bar sov-table__row"
-                      role="row"
-                      data-engine="{{ e.id }}"
-                      data-band="{{ e.band }}"
-                    >
-                      <div class="sov-table__engine" role="cell">
-                        <span class="sov-table__swatch" aria-hidden="true"></span>
-                        <div class="sov-table__identity">
-                          <strong>{{ e.label }}</strong>
-                          <span class="engine-bar__vendor">{{ e.vendor }}</span>
-                        </div>
-                      </div>
-                      <div class="sov-table__status" role="cell">
-                        {% if e.measured_zero %}
-                        <span class="evidence-badge" data-evidence="measured" title="{{ _('Probe LLM eseguito: 0 menzioni su questo engine') }}">{{ _('Misurato · 0') }}</span>
-                        {% elif e.evidence == 'measured' %}
-                        <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}</span>
-                        {% elif e.evidence == 'unavailable' %}
-                        <span class="evidence-badge" data-evidence="estimated" title="{{ e.reason or '' }}">{{ _('N/D') }}</span>
-                        {% else %}
-                        <span class="evidence-badge" data-evidence="estimated">{{ _('Stimato') }}</span>
-                        {% endif %}
-                        {% if e.access == 'blocked' %}
-                        <span class="engine-bar__access" data-access="blocked">{{ _('blocked') }}</span>
-                        {% elif e.access == 'allow' %}
-                        <span class="engine-bar__access" data-access="allow">{{ _('allow') }}</span>
-                        {% endif %}
-                        {% if e.evidence == 'measured' and (e.mention_rate is not none or e.samples is not none) %}
-                        <span class="sov-table__sample">
-                          {% if e.mention_rate is not none %}{{ e.mention_rate }}%{% endif %}
-                          {% if e.samples is not none %} · {{ e.samples }}{% endif %}
-                        </span>
-                        {% endif %}
-                      </div>
-                      <div class="engine-bar__track sov-table__track" role="cell" aria-hidden="true">
-                        <span class="engine-bar__fill"></span>
-                      </div>
-                      <div class="engine-bar__score sov-table__score" role="cell">
-                        <span class="engine-bar__n">{{ e.propensity }}</span><span class="engine-bar__unit">/100</span>
-                      </div>
-                      <div class="engine-bar__share sov-table__share" role="cell" title="{{ _('Share') }}">
-                        {{ e.share }}%
-                      </div>
-                      {% if e.evidence == 'unavailable' and e.reason %}
-                      <p class="engine-bar__hint sov-table__hint" role="cell">{{ _(e.reason) }}</p>
-                      {% endif %}
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-
-              {% if engine_breakdown.note %}
-              <p class="sov-panel__note">{{ _(engine_breakdown.note) }}</p>
-              {% endif %}
-            </section>
+            {% if engine_breakdown.note %}
+            <p class="dash-sov__note">{{ _(engine_breakdown.note) }}</p>
+            {% endif %}
             {% else %}
             <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
             {% endif %}
-          </div>
+          </section>
 
           {% if geo_suite %}
           <section class="dash-block dash-block--panel geo-suite" aria-label="{{ _('GEO suite') }}">
@@ -1073,65 +662,6 @@
         </div>
         {% endif %}
       </div>
-
-      {% if latest %}
-      <aside class="workspace-rail" aria-label="{{ _('Contesto report') }}">
-        <div class="rail-card">
-          <p class="rail-card__eyebrow">{{ _('CVI') }}</p>
-          <p class="rail-card__grade" data-grade="{{ latest.rating.code }}">{{ latest.rating.code }}</p>
-          <p class="rail-card__sub">{{ latest.rating.score }}/100</p>
-        </div>
-        <div class="rail-card">
-          <p class="rail-card__eyebrow">{{ _('Signal') }}</p>
-          <dl class="rail-metrics">
-            <div>
-              <dt>AIO</dt>
-              <dd>{{ latest.aio_score if latest.aio_score is not none else '—' }}</dd>
-            </div>
-            <div>
-              <dt>GEO</dt>
-              <dd>{{ latest.geo_score if latest.geo_score is not none else '—' }}</dd>
-            </div>
-            <div>
-              <dt>{{ _('Gap') }}</dt>
-              <dd>{{ findings_critical|length if findings_critical is defined else 0 }}</dd>
-            </div>
-          </dl>
-        </div>
-        {% if engine_breakdown %}
-        <div class="rail-card">
-          <p class="rail-card__eyebrow">{{ _('SoV') }}</p>
-          <p class="rail-card__sov">{{ engine_breakdown.brand_sov }}%</p>
-          <p class="rail-card__sub">
-            {{ _('Brand share') }}
-            {% if engine_breakdown.top_engine %}· top {{ engine_breakdown.top_engine }}{% endif %}
-          </p>
-          <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ engine_breakdown.evidence or 'proxy' }}</span>
-        </div>
-        {% endif %}
-        <div class="rail-card rail-card--actions">
-          <p class="rail-card__eyebrow">{{ _('Vai a') }}</p>
-          <a href="#analyze">{{ _('Nuova analisi') }}</a>
-          <a href="#pack">{{ _('Pack') }}</a>
-          {% if latest.signals_hosted %}
-          <a href="#edge-signals">{{ _('Edge Signals') }}</a>
-          {% else %}
-          <a href="#edge-signals">{{ _('Edge') }}</a>
-          {% endif %}
-          <a href="#findings-title">{{ _('Findings') }}</a>
-          {% if can_extended_history %}
-          <a href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
-          {% endif %}
-          {% if is_pro %}
-          <a href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a>
-          {% if can_agency %}
-          <a href="{{ url_for('download_whitelabel', analysis_id=latest.id) }}">{{ _('White-label') }}</a>
-          {% endif %}
-          <a href="{{ url_for('dashboard_settings') }}">{{ _('Impostazioni') }}</a>
-          {% endif %}
-        </div>
-      </aside>
-      {% endif %}
     </div>
   </div>
 </section>
@@ -1144,25 +674,6 @@
 {% endif %}
 <script nonce="{{ csp_nonce }}">
 (() => {
-  const el = document.querySelector('.pulse-core__value[data-count-to]');
-  if (el) {
-    const target = Number(el.getAttribute('data-count-to') || 0);
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || !Number.isFinite(target)) {
-      el.textContent = String(target);
-    } else {
-      const dur = 1100;
-      const t0 = performance.now();
-      const tick = (now) => {
-        const p = Math.min(1, (now - t0) / dur);
-        const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = String(Math.round(target * eased));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }
-  }
-
   // Fallback poll only if the processing overlay is not present.
   const jobEl = document.getElementById('job-status');
   const hasOverlay = document.querySelector('[data-analyze-overlay][data-auto-open]');
