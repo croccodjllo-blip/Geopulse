@@ -11,31 +11,33 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero hero--v2 hero--signal" aria-labelledby="hero-brand">
-  <div class="hero-visual hero-visual--cite" aria-hidden="true">
-    <img
-      class="hero-visual__photo"
-      src="{{ url_for('static', filename='img/bg-void-chrome.jpg') }}"
-      alt=""
-      width="1536"
-      height="1024"
-      decoding="async"
-      fetchpriority="high"
-    />
+<section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-brand">
+  <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true">
+    <picture>
+      <source
+        media="(max-width: 720px)"
+        srcset="{{ url_for('static', filename='img/bg-void-chrome-mobile.jpg') }}"
+      />
+      <img
+        class="hero-visual__photo"
+        src="{{ url_for('static', filename='img/bg-void-chrome.jpg') }}"
+        alt=""
+        width="1536"
+        height="1024"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </picture>
     <div class="hero-visual__aurora"></div>
-    <div class="hero-visual__scan"></div>
-    <div class="hero-visual__field">
-      {% include "partials/hero_citation_field.html" %}
-    </div>
   </div>
 
-  <div class="hero-copy hero-copy--v2">
+  <div class="hero-copy hero-copy--v2 hero-copy--preview">
     <div class="hero-brand-lockup hero-brand-lockup--preview" id="hero-brand">
       <img
         class="hero-brand-mark"
         src="{{ url_for('static', filename='img/logo.svg') }}"
-        width="72"
-        height="72"
+        width="160"
+        height="160"
         alt=""
         decoding="async"
       />
@@ -49,7 +51,7 @@
       {{ _('Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.') }}
     </p>
     <form
-      class="hero-url-form"
+      class="hero-url-form hero-url-form--preview"
       method="post"
       action="{{ url_for('preview_analyze_start') }}"
       aria-label="{{ _('Analizza il tuo dominio') }}"
@@ -69,7 +71,7 @@
           placeholder="{{ _('tuodominio.it') }}"
           spellcheck="false"
         />
-        <button type="submit" class="btn btn-core hero-url-form__submit">{{ _('Analizza gratis') }}</button>
+        <button type="submit" class="btn btn-ghost-light hero-url-form__submit">{{ _('Analizza gratis') }}</button>
       </div>
       <p class="hero-url-form__hint">
         {{ _('Anteprima immediata · niente carta') }}

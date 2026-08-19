@@ -120,9 +120,11 @@ body.body-marketing .profile-card {
 body.body-marketing .section-band--v2::before {
   display: none !important;
 }
-body.body-marketing .hero-visual__field,
-body.body-marketing .hero-cite-svg {
-  opacity: 0.12 !important;
+/* Homepage hero anteprima: no citation-field / scan clutter */
+body.body-marketing .hero--preview .hero-visual__field,
+body.body-marketing .hero--preview .hero-visual__scan,
+body.body-marketing .hero--preview .hero-cite-svg {
+  display: none !important;
 }
 
 /* Centropic dashboard — preview composition (loaded after app.css) */
@@ -603,56 +605,76 @@ body.body-marketing .brand-mark__logo {
   border-radius: 999px;
 }
 body.body-marketing .nav-cta {
-  border: 1px solid color-mix(in srgb, var(--brand-cyan) 40%, transparent) !important;
-  background: color-mix(in srgb, var(--mkt-teal) 16%, transparent) !important;
-  color: #E8EEF4 !important;
+  border: 1px solid color-mix(in srgb, var(--mkt-teal) 50%, transparent) !important;
+  background: transparent !important;
+  color: #B8E6EC !important;
   border-radius: 8px !important;
+  font-weight: 650 !important;
 }
 body.body-marketing .nav-cta:hover {
   border-color: var(--mkt-teal) !important;
-  background: color-mix(in srgb, var(--mkt-teal) 26%, transparent) !important;
+  background: color-mix(in srgb, var(--mkt-teal) 18%, transparent) !important;
+  color: #E8F7F9 !important;
 }
 
-/* Hero — brand-first, circular mark, chrome wordmark */
-body.body-marketing .hero--signal {
-  min-height: min(100vh, 52rem);
+/* Hero — anteprima: brand-first stacked lockup, void + teal aurora */
+body.body-marketing .hero--preview.hero--signal {
+  min-height: min(100svh, 54rem);
+  display: grid;
+  align-items: center;
+  justify-items: center;
 }
-body.body-marketing .hero-visual--cite .hero-visual__photo {
-  filter: saturate(0.85) brightness(0.72) contrast(1.05);
+body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
+  filter: saturate(0.7) brightness(0.55) contrast(1.08);
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
-body.body-marketing .hero-visual__aurora {
-  opacity: 0.35 !important;
+body.body-marketing .hero--preview .hero-visual__aurora {
+  opacity: 0.9 !important;
   background:
-    radial-gradient(ellipse 50% 40% at 70% 20%, rgba(63, 168, 181, 0.28), transparent 60%),
-    radial-gradient(ellipse 40% 35% at 20% 70%, rgba(201, 211, 221, 0.12), transparent 55%) !important;
+    radial-gradient(ellipse 55% 42% at 72% 18%, rgba(63, 168, 181, 0.42), transparent 62%),
+    radial-gradient(ellipse 36% 30% at 50% 42%, rgba(63, 168, 181, 0.14), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 18% 78%, rgba(201, 211, 221, 0.08), transparent 55%) !important;
+  pointer-events: none;
 }
-body.body-marketing .hero-visual__scan,
-body.body-marketing .hero-cite-svg {
-  opacity: 0.22 !important;
-}
-body.body-marketing .hero-copy--v2 {
+body.body-marketing .hero--preview .hero-copy--preview {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 40rem) !important;
   max-width: 40rem !important;
-  padding-top: clamp(5.5rem, 14vh, 8rem) !important;
+  margin-inline: auto !important;
+  padding-top: clamp(5.25rem, 12vh, 7.5rem) !important;
+  padding-bottom: clamp(2.5rem, 6vh, 4rem) !important;
+  text-align: center !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+body.body-marketing .hero--preview .hero-copy--preview::before {
+  display: none !important;
 }
 body.body-marketing .hero-brand-lockup--preview {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem 1rem;
-  margin-bottom: 1.35rem;
+  gap: 0.85rem;
+  margin: 0 0 1.5rem !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  width: 4.5rem !important;
-  height: 4.5rem !important;
+  width: clamp(7.5rem, 16vw, 10.5rem) !important;
+  height: clamp(7.5rem, 16vw, 10.5rem) !important;
   border-radius: 999px;
-  filter: drop-shadow(0 0 18px rgba(63, 168, 181, 0.35));
+  filter: drop-shadow(0 0 28px rgba(63, 168, 181, 0.38));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
-  font-size: clamp(1.65rem, 3.5vw, 2.35rem) !important;
-  font-weight: 750 !important;
-  letter-spacing: 0.04em !important;
+  font-size: clamp(1.85rem, 4.2vw, 2.75rem) !important;
+  font-weight: 780 !important;
+  letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
   margin: 0 !important;
-  background: linear-gradient(135deg, #E8EEF4 0%, #C9D3DD 45%, #5B6B7A 100%);
+  line-height: 1 !important;
+  background: linear-gradient(135deg, #F2F6FA 0%, #C9D3DD 42%, #7A8A9A 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -660,40 +682,79 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word span {
   -webkit-text-fill-color: transparent;
 }
-body.body-marketing .hero-headline--v2 {
-  font-size: clamp(1.85rem, 4.2vw, 3rem) !important;
+body.body-marketing .hero--preview .hero-headline--v2 {
+  font-size: clamp(1.65rem, 3.6vw, 2.55rem) !important;
   font-weight: 650 !important;
-  letter-spacing: -0.035em !important;
-  line-height: 1.12 !important;
-  max-width: 18ch;
+  letter-spacing: -0.03em !important;
+  line-height: 1.18 !important;
+  max-width: 22ch !important;
+  margin: 0 0 0.85rem !important;
+  color: #E8EEF4 !important;
+  text-align: center !important;
 }
-body.body-marketing .hero-accent {
+body.body-marketing .hero--preview .hero-accent {
   color: var(--mkt-teal) !important;
   display: inline;
 }
-body.body-marketing .hero-lede {
+body.body-marketing .hero--preview .hero-lede {
   max-width: 34rem !important;
-  font-size: 1.02rem !important;
-  color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
+  margin: 0 auto 1.5rem !important;
+  font-size: clamp(0.95rem, 1.6vw, 1.08rem) !important;
+  line-height: 1.55 !important;
+  color: color-mix(in srgb, #E8EEF4 68%, transparent) !important;
+  text-align: center !important;
 }
-body.body-marketing .hero-url-form__row {
+body.body-marketing .hero--preview .hero-url-form--preview {
+  width: min(100%, 34rem);
+  margin: 0 auto;
+  animation: none;
+}
+body.body-marketing .hero--preview .hero-url-form__row {
   display: flex;
-  gap: 0.55rem;
-  padding: 0.35rem;
+  align-items: stretch;
+  gap: 0.45rem;
+  padding: 0.4rem;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--brand-cyan) 22%, transparent);
-  background: rgba(4, 8, 10, 0.55);
-  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 24%, transparent);
+  background: rgba(4, 8, 10, 0.62);
+  backdrop-filter: blur(12px);
 }
-body.body-marketing .hero-url-form__input {
+body.body-marketing .hero--preview .hero-url-form__input {
   flex: 1;
+  min-width: 0;
   border: 0 !important;
   background: transparent !important;
   color: #E8EEF4 !important;
   font-size: 1rem !important;
-  padding: 0.75rem 0.85rem !important;
+  padding: 0.8rem 0.95rem !important;
+  text-align: left !important;
 }
-body.body-marketing .hero-url-form__submit,
+body.body-marketing .hero--preview .hero-url-form__input::placeholder {
+  color: color-mix(in srgb, #E8EEF4 42%, transparent) !important;
+}
+body.body-marketing .hero--preview .hero-url-form__submit {
+  flex: 0 0 auto;
+  border-radius: 8px !important;
+  border: 1px solid color-mix(in srgb, var(--mkt-teal) 55%, transparent) !important;
+  background: color-mix(in srgb, var(--mkt-teal) 14%, transparent) !important;
+  color: #B8E6EC !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+  padding: 0.75rem 1.15rem !important;
+}
+body.body-marketing .hero--preview .hero-url-form__submit:hover {
+  border-color: var(--mkt-teal) !important;
+  background: color-mix(in srgb, var(--mkt-teal) 26%, transparent) !important;
+  color: #E8F7F9 !important;
+  filter: none;
+}
+body.body-marketing .hero--preview .hero-url-form__hint {
+  margin-top: 0.75rem !important;
+  text-align: center !important;
+  color: color-mix(in srgb, #E8EEF4 48%, transparent) !important;
+}
+/* Below-fold CTAs keep solid teal */
 body.body-marketing .btn-core {
   border-radius: 8px !important;
   background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
@@ -702,7 +763,6 @@ body.body-marketing .btn-core {
   font-weight: 700 !important;
   box-shadow: 0 0 24px rgba(63, 168, 181, 0.28);
 }
-body.body-marketing .hero-url-form__submit:hover,
 body.body-marketing .btn-core:hover {
   filter: brightness(1.08);
 }
@@ -809,13 +869,12 @@ body.body-dash.dash-plan--business {
   background-position: center top, center, center !important;
   background-blend-mode: soft-light, normal, normal !important;
 }
-body.body-marketing .hero-visual__photo {
+body.body-marketing .hero--preview .hero-visual__photo {
   object-fit: cover !important;
-  filter: none !important;
-  opacity: 0.92;
+  opacity: 1;
 }
-body.body-marketing .hero-visual__aurora {
-  opacity: 0.45 !important;
+body.body-marketing .hero--preview .hero-visual__aurora {
+  opacity: 0.9 !important;
 }
 
 .dash-hero__domain-label {
@@ -1122,18 +1181,57 @@ body.body-dash .finding-list > li::after {
     justify-content: center;
   }
 
+  body.body-marketing .hero--preview.hero--signal {
+    min-height: min(100svh, 48rem);
+  }
+  body.body-marketing .hero--preview .hero-copy--preview {
+    padding-top: clamp(4.75rem, 14vh, 6.25rem) !important;
+    padding-inline: 1.1rem !important;
+  }
+  body.body-marketing .hero-brand-lockup--preview {
+    gap: 0.7rem;
+    margin-bottom: 1.25rem !important;
+  }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-    width: 3.5rem !important;
-    height: 3.5rem !important;
+    width: clamp(6.25rem, 34vw, 8rem) !important;
+    height: clamp(6.25rem, 34vw, 8rem) !important;
   }
-  body.body-marketing .hero-copy--v2 {
-    padding-top: clamp(4.5rem, 12vh, 6rem) !important;
+  body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
+    font-size: clamp(1.55rem, 7vw, 2rem) !important;
+    letter-spacing: 0.1em !important;
   }
-  body.body-marketing .hero-url-form__row {
+  body.body-marketing .hero--preview .hero-headline--v2 {
+    font-size: clamp(1.4rem, 6.2vw, 1.85rem) !important;
+    max-width: 18ch !important;
+  }
+  body.body-marketing .hero--preview .hero-lede {
+    font-size: 0.95rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+  body.body-marketing .hero--preview .hero-url-form__row {
     flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.55rem;
+    border-radius: 14px;
   }
-  body.body-marketing .hero-url-form__submit {
+  body.body-marketing .hero--preview .hero-url-form__submit {
     width: 100%;
+    border-radius: 10px !important;
+    border: 0 !important;
+    background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+    color: #041014 !important;
+    box-shadow: 0 0 22px rgba(63, 168, 181, 0.32) !important;
+    padding: 0.9rem 1.1rem !important;
+  }
+  body.body-marketing .hero--preview .hero-url-form__submit:hover {
+    filter: brightness(1.06);
+    background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+    color: #041014 !important;
+  }
+  body.body-marketing .hero--preview .hero-visual__aurora {
+    background:
+      radial-gradient(ellipse 70% 48% at 50% 28%, rgba(63, 168, 181, 0.48), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 55%, rgba(63, 168, 181, 0.16), transparent 70%) !important;
   }
   body.body-marketing .profile-grid {
     grid-template-columns: 1fr !important;
