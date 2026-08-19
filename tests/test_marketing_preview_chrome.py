@@ -14,7 +14,7 @@ def test_landing_is_hero_only_anteprima():
     assert "body-marketing--hero-only" in html
     assert "logo-hero.png" in html
     assert "wordmark-hero.png" in html
-    assert "bg-void-chrome.jpg" in html
+    assert "bg-hero-anteprima.jpg" in html
     assert "Space+Grotesk" in html or "Space Grotesk" in html
     assert "Scopri quanto il tuo sito è pronto" in html
     assert "https://iltuosito.it" in html
@@ -28,27 +28,33 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Logo ~17.8vw, wordmark ~52vw, form ~66vw, full-bleed anteprima bg at native frame size."""
+    """Shared hero band; full-bleed anteprima bg; no cite-scrim."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
     assert "52vw" in css
+    assert "--hero-band" in css
     assert "66vw" in css
-    assert "3vw" in css  # H1 scale @ anteprima
     assert "object-fit: cover !important" in css
-    assert "object-position: center top" in css
-    # Lockup is a vertical stack with real air between mark and wordmark
     assert "flex-direction: column !important" in css
-    assert "2.6vw" in css  # gap scale
+    assert "hero-visual--preview::before" in css
     assert "white-space: nowrap !important" in css
     assert "max-width: 24ch" not in css
     assert "body.body-marketing--hero-only .site-footer" not in css
 
 
+def test_landing_uses_anteprima_bg_asset():
+    html = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
+    assert "bg-hero-anteprima.jpg" in html
+    assert "bg-hero-anteprima-mobile.jpg" in html
+    assert (ROOT / "static" / "img" / "bg-hero-anteprima.jpg").exists()
+    assert (ROOT / "static" / "img" / "bg-hero-anteprima-mobile.jpg").exists()
+
+
 def test_logo_assets_exist():
     assert (ROOT / "static" / "img" / "logo-hero.png").exists()
     assert (ROOT / "static" / "img" / "wordmark-hero.png").exists()
-    assert (ROOT / "static" / "img" / "bg-void-chrome.jpg").exists()
-    assert (ROOT / "static" / "img" / "bg-void-chrome-mobile.jpg").exists()
+    assert (ROOT / "static" / "img" / "bg-hero-anteprima.jpg").exists()
+    assert (ROOT / "static" / "img" / "bg-hero-anteprima-mobile.jpg").exists()
     from PIL import Image
 
     im = Image.open(ROOT / "static" / "img" / "logo-hero.png")
@@ -80,13 +86,13 @@ def test_flush_main_wins_max_width():
 
 def test_landing_uses_void_background():
     html = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
-    assert "bg-void-chrome.jpg" in html
-    assert "bg-void-chrome-mobile.jpg" in html
+    assert "bg-hero-anteprima.jpg" in html
+    assert "bg-hero-anteprima-mobile.jpg" in html
     assert "hero-signal-field.jpg" not in html
 
 
 def test_mobile_preview_css():
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "MOBILE = preview 3" in css
-    assert "bg-void-chrome-mobile.jpg" in css
+    assert "bg-void-chrome-mobile.jpg" in css or "bg-hero-anteprima-mobile.jpg" in css
     assert "Centropic Plus" in css

@@ -695,6 +695,17 @@ body.body-marketing .hero--preview .hero-visual--preview {
   z-index: 0;
   overflow: hidden;
 }
+/* Remove old cite-scrim that darkened/warped the anteprima wave */
+body.body-marketing .hero--preview .hero-visual--preview::before,
+body.body-marketing .hero-visual--cite.hero-visual--preview::before {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+}
+body.body-marketing--hero-only {
+  background-image: none !important;
+  background-color: #000 !important;
+}
 body.body-marketing .hero--preview .hero-visual--preview picture {
   /* Anteprima frame 1536×1024 at natural full-bleed size — do not inset/scale the wave */
   display: block;
@@ -736,6 +747,8 @@ body.body-marketing .hero--preview .hero-copy--preview {
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #E8EEF4;
   overflow: visible !important;
+  /* Shared width: H1 + lede + URL box */
+  --hero-band: min(66vw, 64rem);
 }
 body.body-marketing .hero-brand-lockup--preview {
   display: flex !important;
@@ -789,19 +802,20 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
   font-family: "Space Grotesk", "Inter", system-ui, sans-serif !important;
-  /* Anteprima: H1 ≈ 65.5%W, ~46px @1536 (=3vw), ONE line */
-  font-size: clamp(1.25rem, 3vw, 2.9rem) !important;
+  /* Same width as lede + URL box; type scales to fill the band on one line */
+  width: var(--hero-band) !important;
+  max-width: var(--hero-band) !important;
+  font-size: clamp(1.35rem, calc(66vw / 22.5), 3.6rem) !important;
   font-weight: 600 !important;
   letter-spacing: -0.02em !important;
   line-height: 1.2 !important;
-  width: max-content !important;
-  max-width: none !important;
-  margin: 0 0 0.95rem !important;
+  margin: 0 auto 0.95rem !important;
   color: #E8EEF4 !important;
   text-align: center !important;
   white-space: nowrap !important;
   position: relative;
   z-index: 2;
+  box-sizing: border-box;
 }
 body.body-marketing .hero--preview .hero-accent {
   color: #3FA8B5 !important;
@@ -809,25 +823,25 @@ body.body-marketing .hero--preview .hero-accent {
 }
 body.body-marketing .hero--preview .hero-lede {
   font-family: "Inter", system-ui, sans-serif !important;
-  /* Anteprima: lede ≈ 66.5%W, ~20px @1536 (=1.3vw), ONE line */
-  font-size: clamp(0.78rem, 1.3vw, 1.25rem) !important;
+  width: var(--hero-band) !important;
+  max-width: var(--hero-band) !important;
+  font-size: clamp(0.78rem, calc(66vw / 52), 1.28rem) !important;
   line-height: 1.45 !important;
-  width: max-content !important;
-  max-width: none !important;
   margin: 0 auto clamp(1.5rem, 4.2vw, 2.75rem) !important;
   color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
   text-align: center !important;
   white-space: nowrap !important;
+  box-sizing: border-box;
 }
 body.body-marketing .hero--preview .hero-copy--preview::before {
   display: none !important;
 }
 body.body-marketing .hero--preview .hero-url-form--preview {
-  /* Anteprima: URL bar ≈ 66% of viewport (same band as H1/lede) */
-  width: clamp(18rem, 66vw, 64rem) !important;
-  max-width: 94vw !important;
+  width: var(--hero-band) !important;
+  max-width: var(--hero-band) !important;
   margin: 0 auto;
   animation: none;
+  box-sizing: border-box;
 }
 body.body-marketing .hero--preview .hero-url-form__row {
   display: flex;
@@ -1091,6 +1105,10 @@ body.body-dash .finding-list > li::after {
 
 /* —— MOBILE = preview 3 —— */
 @media (max-width: 720px) {
+  body.body-marketing--hero-only {
+    background-image: none !important;
+    background-color: #000 !important;
+  }
   body.body-dash.dash-plan--plus,
   body.body-dash.dash-plan--free,
   body.body-dash.dash-plan--business,
@@ -1422,10 +1440,7 @@ body.body-dash .finding-list > li::after {
     color: #041014 !important;
   }
   body.body-marketing .hero--preview .hero-visual__aurora {
-    opacity: 0.85 !important;
-    background:
-      radial-gradient(ellipse 70% 48% at 50% 36%, rgba(63, 168, 181, 0.42), transparent 65%),
-      radial-gradient(ellipse 50% 40% at 50% 48%, rgba(63, 168, 181, 0.18), transparent 70%) !important;
+    display: none !important;
   }
   body.body-marketing .profile-grid {
     grid-template-columns: 1fr !important;
