@@ -1,12 +1,10 @@
-{# Nonced CSS custom properties for SoV engine bars (no style= attrs). #}
+{# Nonced CSS custom properties for SoV share bars (no style= attrs). #}
 <style nonce="{{ csp_nonce }}">
 {% if engine_breakdown %}
-.dash-hero__sov { --sov: {{ engine_breakdown.brand_sov }}; }
-.dash-hero__split [data-tone="brand"] { --w: {{ engine_breakdown.brand_sov }}; }
-.dash-hero__split [data-tone="rivals"] { --w: {{ engine_breakdown.rivals_sov }}; }
-.dash-hero__split [data-tone="other"] { --w: {{ engine_breakdown.other_sov }}; }
+.dash-hero__sov,
+.dash-ring--sov { --sov: {{ engine_breakdown.brand_sov }}; }
 {% for e in engine_breakdown.engines %}
-[data-engine="{{ e.id }}"].engine-bar {
+[data-engine="{{ e.id }}"] {
   --accent: {{ e.accent }};
   --p: {{ e.propensity if e.propensity is not none else 0 }};
   --share: {{ e.share }};

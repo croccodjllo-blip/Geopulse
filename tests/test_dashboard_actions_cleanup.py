@@ -31,8 +31,9 @@ def test_single_pack_download_cta_in_deliverable():
 
 
 def test_nuova_analisi_lives_in_analyze_reveal():
-    assert 'class="analyze-reveal"' in SHELL
-    assert "analyze-reveal__title" in SHELL
-    assert "{{ _('Nuova analisi') }}" in SHELL
+    assert 'class="analyze-reveal"' in DASH
+    assert "analyze-reveal__title" in DASH
+    assert "{{ _('Nuova analisi') }}" in DASH
     assert 'btn btn-ghost" href="#analyze"' not in SHELL
     assert 'btn btn-signal" href="#analyze"' not in SHELL
+    assert "analyze_form.html" in SHELL or "analyze_form.html" in DASH
