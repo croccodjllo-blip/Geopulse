@@ -14,8 +14,8 @@ def test_landing_is_hero_only_anteprima():
     assert "body-marketing--hero-only" in html
     assert "logo-hero.png" in html
     assert "wordmark-hero.png" in html
-    assert "bg-hero-anteprima.png" not in html
-    assert "bg-hero-anteprima-mobile.png" not in html
+    assert "bg-hero-anteprima.png" in html
+    assert "bg-hero-anteprima-mobile.png" in html
     assert "Space+Grotesk" in html or "Space Grotesk" in html
     assert "Scopri quanto il tuo sito è pronto" in html
     assert "https://iltuosito.it" in html
@@ -29,29 +29,34 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Shared hero band; void-black hero (no bg photo); no cite-scrim."""
+    """Shared hero band; full-bleed particle bg; no cite-scrim."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
     assert "52vw" in css
     assert "--hero-band" in css
     assert "66vw" in css
+    assert "object-fit: cover !important" in css
     assert "hero-visual--preview::before" in css
     assert "filter: none !important" in css  # no shadow over logo / wordmark
     assert ("4.5vw" in css or "3.8vw" in css)  # lockup gap keeps logo clear
     assert "white-space: nowrap !important" in css
     assert "max-width: 24ch" not in css
     assert "body.body-marketing--hero-only .site-footer" not in css
-    # Hero bg photo removed — void black only
-    assert "hero-visual--preview .hero-visual__photo" in css
-    assert "display: none !important" in css
 
 
-def test_landing_has_no_hero_bg_photo():
+def test_landing_uses_full_bleed_hero_bg():
     html = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
-    assert "bg-hero-anteprima.png" not in html
-    assert "bg-hero-anteprima-mobile.png" not in html
-    assert "hero-visual__photo" not in html
-    assert "<picture>" not in html
+    assert "bg-hero-anteprima.png" in html
+    assert "bg-hero-anteprima-mobile.png" in html
+    assert "hero-visual__photo" in html
+    assert (ROOT / "static" / "img" / "bg-hero-anteprima.png").exists()
+    assert (ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png").exists()
+    from PIL import Image
+
+    desk = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima.png")
+    mob = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png")
+    assert desk.size[0] >= 1600 and desk.size[1] >= 900
+    assert mob.size[1] >= mob.size[0]  # portrait
 
 
 def test_logo_assets_exist():
@@ -89,7 +94,7 @@ def test_flush_main_wins_max_width():
 def test_landing_uses_void_background():
     html = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
-    assert "bg-hero-anteprima.png" not in html
+    assert "bg-hero-anteprima.png" in html
     assert "hero-signal-field.jpg" not in html
     assert "background: #000 !important" in css
     assert "body-marketing--hero-only" in html

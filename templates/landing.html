@@ -16,9 +16,25 @@
 {% endblock %}
 
 {% block content %}
-{# Homepage = anteprima lockup on void-black (no wave/bg photo) #}
+{# Homepage = anteprima lockup on full-bleed teal particle void #}
 <section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-brand">
-  <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true"></div>
+  <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true">
+    <picture>
+      <source
+        media="(max-width: 720px)"
+        srcset="{{ url_for('static', filename='img/bg-hero-anteprima-mobile.png') }}"
+      />
+      <img
+        class="hero-visual__photo"
+        src="{{ url_for('static', filename='img/bg-hero-anteprima.png') }}"
+        alt=""
+        width="1920"
+        height="1080"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </picture>
+  </div>
 
   <div class="hero-copy hero-copy--v2 hero-copy--preview">
     <div class="hero-brand-lockup hero-brand-lockup--preview" id="hero-brand">
