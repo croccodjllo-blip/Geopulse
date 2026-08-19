@@ -706,8 +706,7 @@ body.body-marketing--hero-only {
   background-image: none !important;
   background-color: #000 !important;
 }
-/* Matrix teal rain — always fills hero (zoom-safe). Asset is 1920×1080;
-   cover keeps it attached to the hero box at any browser zoom/viewport. */
+/* Matrix teal rain — locked to hero box so browser zoom scales it with copy */
 body.body-marketing .hero--preview .hero-visual--preview picture {
   display: block !important;
   position: absolute !important;
@@ -723,7 +722,8 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   height: 100% !important;
   max-width: none !important;
   max-height: none !important;
-  object-fit: cover !important;
+  /* Exact hero box — zooms 1:1 with the rest of the page */
+  object-fit: fill !important;
   object-position: center center !important;
   filter: none !important;
   opacity: 1 !important;
@@ -1406,7 +1406,7 @@ body.body-dash .finding-list > li::after {
   body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: fill !important;
     object-position: center center !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
