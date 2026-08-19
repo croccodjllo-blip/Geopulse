@@ -29,8 +29,20 @@ def test_marketing_css_targets_body_marketing():
     assert "SITE-WIDE marketing" in css
 
 
-def test_guide_dashboard_svg_shows_rings():
-    svg = (ROOT / "static" / "img" / "guide" / "dashboard.svg").read_text(encoding="utf-8")
-    assert "Share of Voice" in svg
-    assert "Centropic Visibility Index" in svg
-    assert "circle" in svg
+def test_void_background_assets_exist():
+    assert (ROOT / "static" / "img" / "bg-void-chrome.jpg").exists()
+    assert (ROOT / "static" / "img" / "bg-void-chrome-mobile.jpg").exists()
+
+
+def test_landing_uses_void_background():
+    html = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
+    assert "bg-void-chrome.jpg" in html
+    assert "hero-signal-field.jpg" not in html
+
+
+def test_mobile_preview_css():
+    css = (ROOT / "static" / "css" / "dash-preview.css").read_text(encoding="utf-8")
+    assert "MOBILE = preview 3" in css
+    assert "bg-void-chrome-mobile.jpg" in css
+    assert "Dominio analizzato" not in css  # copy stays in template
+    assert "Centropic Plus" in css

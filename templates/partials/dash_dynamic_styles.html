@@ -1,7 +1,9 @@
-{# Nonced CSS custom properties for SoV share bars (no style= attrs). #}
+{# Nonced CSS custom properties for SoV/CVI meters (no style= attrs). #}
 <style nonce="{{ csp_nonce }}">
+{% if rating is defined and rating %}
+.dash-ring--cvi { --cvi: {{ rating.score if rating.score is number else 0 }}; }
+{% endif %}
 {% if engine_breakdown %}
-.dash-hero__sov,
 .dash-ring--sov { --sov: {{ engine_breakdown.brand_sov }}; }
 {% for e in engine_breakdown.engines %}
 [data-engine="{{ e.id }}"] {

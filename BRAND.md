@@ -23,7 +23,8 @@ Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04
 - `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility).
 - `static/favicon.svg` — same compact-mark design.
 - `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` — raster renders of the SVGs above (`cairosvg`), used only where raster is required: `<link rel="apple-touch-icon">`, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback.
-- `static/img/hero-signal-field.jpg` — landing hero full-bleed atmosphere (ultrawide ~21:9, `object-fit: cover` via `.hero-visual__photo`). Abstract chrome signal-field; **no logo/monogram/wordmark** — mark stays in the HTML lockup.
+- `static/img/bg-void-chrome.jpg` / `bg-void-chrome-mobile.jpg` — site-wide void charcoal canvas with teal particle glow (preview 1–3 atmosphere). Used as marketing hero photo and dash body backdrop.
+- `static/img/hero-signal-field.jpg` — legacy hero art (superseded on landing by `bg-void-chrome.jpg`).
 - `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art.
 - Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current).
 

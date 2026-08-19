@@ -73,6 +73,7 @@
           {% set sov_off = sov_c * (1 - ((sov_pct if sov_pct is number else 0) / 100)) %}
           <header class="dash-hero">
             <h2 class="visually-hidden" id="result-domain">{{ latest.domain }}</h2>
+            <p class="dash-hero__domain-label">{{ _('Dominio analizzato') }}</p>
             {% if latest.page_title %}
             <p class="dash-hero__page-title">{{ latest.page_title }}</p>
             {% endif %}
@@ -92,6 +93,7 @@
                 <div class="dash-ring__copy">
                   <p class="dash-ring__label">{{ _('Centropic Visibility Index') }}</p>
                   <p class="dash-ring__meta">{{ cvi_score }}/100 · <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></p>
+                  <div class="dash-ring__hbar" aria-hidden="true"><i></i></div>
                 </div>
               </article>
 
@@ -134,14 +136,17 @@
                 <li>
                   <span class="dash-micro__k">AIO</span>
                   <strong class="dash-micro__v">{{ aio if aio is number else '—' }}</strong>
+                  <span class="dash-micro__unit">/100</span>
                 </li>
                 <li>
                   <span class="dash-micro__k">GEO</span>
                   <strong class="dash-micro__v">{{ geo if geo is number else '—' }}</strong>
+                  <span class="dash-micro__unit">/100</span>
                 </li>
                 <li>
                   <span class="dash-micro__k">{{ _('Findings') }}</span>
                   <strong class="dash-micro__v">{{ findings_n }}</strong>
+                  <span class="dash-micro__unit">{{ _('Attivi') }}</span>
                 </li>
               </ul>
               <nav class="dash-actions" aria-label="{{ _('Azioni report') }}">
