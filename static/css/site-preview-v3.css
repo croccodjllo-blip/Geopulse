@@ -706,30 +706,10 @@ body.body-marketing--hero-only {
   background-image: none !important;
   background-color: #000 !important;
 }
-body.body-marketing .hero--preview .hero-visual--preview picture {
-  /* Anteprima frame at original 1536×1024 composition, top-right anchored */
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: auto;
-  bottom: auto;
-  width: 1536px;
-  height: 1024px;
-  max-width: none;
-}
+/* No hero background photo — void black only */
+body.body-marketing .hero--preview .hero-visual--preview picture,
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
-  display: block;
-  width: 1536px !important;
-  height: 1024px !important;
-  max-width: none !important;
-  max-height: none !important;
-  /* Original pixel size — no cover/contain adapt */
-  object-fit: fill !important;
-  object-position: top right !important;
-  filter: none !important;
-  opacity: 1 !important;
-  image-rendering: auto;
+  display: none !important;
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
   display: none !important;
@@ -1060,15 +1040,6 @@ body.body-dash.dash-plan--business {
   background-position: center top, center, center !important;
   background-blend-mode: soft-light, normal, normal !important;
 }
-body.body-marketing .hero--preview .hero-visual__photo {
-  width: 1536px !important;
-  height: 1024px !important;
-  max-width: none !important;
-  object-fit: fill !important;
-  object-position: top right !important;
-  opacity: 1 !important;
-  filter: none !important;
-}
 body.body-marketing .hero--preview .hero-visual__aurora {
   display: none !important;
 }
@@ -1125,7 +1096,6 @@ body.body-dash .finding-list > li::after {
   body.body-dash.dash-plan--plus,
   body.body-dash.dash-plan--free,
   body.body-dash.dash-plan--business,
-  body.body-marketing,
   body.body-auth {
     background-image:
       url("/static/img/bg-void-chrome-mobile.jpg"),
@@ -1409,18 +1379,6 @@ body.body-dash .finding-list > li::after {
   body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
     width: clamp(14rem, 82vw, 28rem) !important;
     filter: none !important;
-  }
-  body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: 1024px;
-    height: 1536px;
-    top: 0;
-    right: 0;
-  }
-  body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
-    width: 1024px !important;
-    height: 1536px !important;
-    object-fit: fill !important;
-    object-position: top right !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     display: none !important;

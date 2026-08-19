@@ -16,25 +16,9 @@
 {% endblock %}
 
 {% block content %}
-{# Homepage = anteprima exact assets: logo PNG + chrome wordmark + void bg #}
+{# Homepage = anteprima lockup on void-black (no wave/bg photo) #}
 <section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-brand">
-  <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true">
-    <picture>
-      <source
-        media="(max-width: 720px)"
-        srcset="{{ url_for('static', filename='img/bg-hero-anteprima-mobile.png') }}"
-      />
-      <img
-        class="hero-visual__photo"
-        src="{{ url_for('static', filename='img/bg-hero-anteprima.png') }}"
-        alt=""
-        width="1536"
-        height="1024"
-        decoding="async"
-        fetchpriority="high"
-      />
-    </picture>
-  </div>
+  <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true"></div>
 
   <div class="hero-copy hero-copy--v2 hero-copy--preview">
     <div class="hero-brand-lockup hero-brand-lockup--preview" id="hero-brand">
