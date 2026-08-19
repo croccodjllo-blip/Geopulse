@@ -707,22 +707,26 @@ body.body-marketing--hero-only {
   background-color: #000 !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview picture {
-  /* Anteprima frame 1536×1024 at natural full-bleed size — do not inset/scale the wave */
+  /* Original asset size — no cover/contain scaling */
   display: block;
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  right: 0;
+  left: auto;
+  bottom: auto;
+  width: auto;
+  height: auto;
   max-width: none;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block;
-  width: 100% !important;
-  height: 100% !important;
+  width: auto !important;
+  height: auto !important;
   max-width: none !important;
-  /* Same size relationship as anteprima: full viewport frame, no corner shrink */
-  object-fit: cover !important;
-  object-position: center top !important;
+  max-height: none !important;
+  /* Keep intrinsic 1536×1024 — do not adapt/stretch */
+  object-fit: none !important;
+  object-position: top right !important;
   filter: none !important;
   opacity: 1 !important;
 }
@@ -794,8 +798,9 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
   position: relative !important;
   top: auto !important;
   left: auto !important;
-  z-index: 3;
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
+  z-index: 1;
+  /* No drop-shadow: blur was painting up through the logo PNG transparency */
+  filter: none !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   display: none !important;
@@ -1051,13 +1056,16 @@ body.body-dash.dash-plan--business {
   background-blend-mode: soft-light, normal, normal !important;
 }
 body.body-marketing .hero--preview .hero-visual__photo {
-  object-fit: cover !important;
-  object-position: center top !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  object-fit: none !important;
+  object-position: top right !important;
   opacity: 1 !important;
   filter: none !important;
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
-  opacity: 0.12 !important;
+  display: none !important;
 }
 
 .dash-hero__domain-label {
@@ -1397,8 +1405,15 @@ body.body-dash .finding-list > li::after {
     width: clamp(14rem, 82vw, 28rem) !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
+    top: 0;
+    right: 0;
+  }
+  body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
+    width: auto !important;
+    height: auto !important;
+    object-fit: none !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     display: none !important;

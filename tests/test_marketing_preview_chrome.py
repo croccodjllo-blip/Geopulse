@@ -34,9 +34,9 @@ def test_anteprima_scale_measures_in_css():
     assert "52vw" in css
     assert "--hero-band" in css
     assert "66vw" in css
-    assert "object-fit: cover !important" in css
-    assert "flex-direction: column !important" in css
+    assert "object-fit: none !important" in css
     assert "hero-visual--preview::before" in css
+    assert "filter: none !important" in css  # wordmark: no upward shadow over logo
     assert "white-space: nowrap !important" in css
     assert "max-width: 24ch" not in css
     assert "body.body-marketing--hero-only .site-footer" not in css
