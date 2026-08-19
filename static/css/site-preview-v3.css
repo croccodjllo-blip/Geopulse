@@ -1403,13 +1403,14 @@ body.body-dash .finding-list > li::after {
     row-gap: clamp(1.25rem, 4vw, 1.75rem) !important;
     margin-bottom: clamp(1.6rem, 5vw, 2.2rem) !important;
   }
+  /* Mobile anteprima atmosphere — native portrait feel, site width */
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: min(100% - 2rem, 72rem) !important;
-    max-width: 72rem !important;
+    width: min(100% - 1.5rem, 28rem) !important;
+    max-width: 28rem !important;
     height: auto !important;
-    aspect-ratio: 3 / 4;
-    max-height: min(55vh, 36rem) !important;
-    top: 50% !important;
+    aspect-ratio: 2 / 3;
+    max-height: min(62vh, 40rem) !important;
+    top: 42% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
   }
@@ -1417,7 +1418,7 @@ body.body-dash .finding-list > li::after {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    object-position: center center !important;
+    object-position: center 30% !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
     /* Mobile anteprima: mark larger relative to width — no glow shadow over mark */
