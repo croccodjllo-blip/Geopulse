@@ -204,7 +204,9 @@ body.body-dash .workspace-strip--preview .workspace-strip__quiet + .workspace-st
 }
 
 body.body-dash .workspace-grid--solo {
-  max-width: 68rem;
+  max-width: min(72rem, 100%);
+  width: 100%;
+  margin-inline: 0;
 }
 
 /* Hero — borderless, large rings, vertical split */
@@ -510,17 +512,25 @@ body.body-dash .report--priority .analyze-reveal {
   .dash-sov-list__ev { justify-self: start; }
 }
 
-/* —— Global app shell — icon rail (preview) —— */
+/* —— Global app shell — icon rail (preview) ——
+   app.css still offsets main by 16rem (wide sidebar). Rail is 4.5rem —
+   override margin/width or content sits far right with a huge empty gutter. */
 body.app-shell--sidebar {
   --sidebar-w: 4.5rem;
 }
 body.app-shell--sidebar .site-main,
-body.app-shell--sidebar .site-header {
-  padding-left: var(--sidebar-w) !important;
+body.app-shell--sidebar .site-header,
+body.app-shell--sidebar .site-footer {
+  margin-left: var(--sidebar-w) !important;
+  width: calc(100% - var(--sidebar-w)) !important;
+  padding-left: 0 !important;
 }
-@media (max-width: 860px) {
+@media (max-width: 960px) {
   body.app-shell--sidebar .site-main,
-  body.app-shell--sidebar .site-header {
+  body.app-shell--sidebar .site-header,
+  body.app-shell--sidebar .site-footer {
+    margin-left: 0 !important;
+    width: 100% !important;
     padding-left: 0 !important;
   }
 }

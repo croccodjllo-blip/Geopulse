@@ -65,6 +65,16 @@ def test_redesign_css_present():
     assert "dash-ring__meta--cvi" in CSS
 
 
+def test_rail_overrides_wide_sidebar_margin():
+    """Narrow icon rail must replace app.css 16rem main offset (else content hugs right)."""
+    assert "--sidebar-w: 4.5rem" in CSS
+    assert "margin-left: var(--sidebar-w) !important" in CSS
+    assert "width: calc(100% - var(--sidebar-w)) !important" in CSS
+    # Must not stack padding-left on top of the wide-sidebar margin.
+    shell = CSS.split("Global app shell", 1)[1].split("body.app-shell .app-sidebar--rail", 1)[0]
+    assert "padding-left: var(--sidebar-w)" not in shell
+
+
 def test_dynamic_styles_share_bars():
     assert "--share" in DYN
     assert "pulse-core" not in DYN
