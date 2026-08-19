@@ -29,13 +29,13 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Shared hero band; native Matrix full-hero bg; no cite-scrim."""
+    """Shared hero band; zoom-safe Matrix full-hero bg; no cite-scrim."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
     assert "52vw" in css
     assert "--hero-band" in css
     assert "66vw" in css
-    assert "object-fit: none !important" in css
+    assert "object-fit: cover !important" in css
     assert "hero-visual--preview::before" in css
     assert "filter: none !important" in css  # no shadow over logo / wordmark
     assert ("4.5vw" in css or "3.8vw" in css)  # lockup gap keeps logo clear
