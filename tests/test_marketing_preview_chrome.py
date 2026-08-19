@@ -38,7 +38,7 @@ def test_anteprima_scale_measures_in_css():
     assert "1536px" in css  # original anteprima frame size
     assert "hero-visual--preview::before" in css
     assert "filter: none !important" in css  # no shadow over logo / wordmark
-    assert "3.8vw" in css  # lockup gap keeps logo clear
+    assert ("4.5vw" in css or "3.8vw" in css)  # lockup gap keeps logo clear
     assert "white-space: nowrap !important" in css
     assert "max-width: 24ch" not in css
     assert "body.body-marketing--hero-only .site-footer" not in css

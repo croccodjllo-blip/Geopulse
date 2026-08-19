@@ -761,8 +761,8 @@ body.body-marketing .hero-brand-lockup--preview {
   flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: clamp(2.4rem, 3.8vw, 3.75rem) !important;
-  row-gap: clamp(2.4rem, 3.8vw, 3.75rem) !important;
+  gap: clamp(3rem, 4.5vw, 4.75rem) !important;
+  row-gap: clamp(3rem, 4.5vw, 4.75rem) !important;
   column-gap: 0 !important;
   margin: 0 0 clamp(2.5rem, 4.2vw, 4.2rem) !important;
   width: 100%;
@@ -783,6 +783,9 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   top: auto !important;
   left: auto !important;
   z-index: 5;
+  object-fit: contain !important;
+  object-position: center !important;
+  overflow: visible !important;
   /* No shadow — was covering the chrome mark */
   filter: none !important;
   box-shadow: none !important;
