@@ -707,25 +707,22 @@ body.body-marketing--hero-only {
   background-color: #000 !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview picture {
-  /* Original asset size — no cover/contain scaling */
+  /* Full anteprima frame (1536×1024) — visible full-bleed, no inset shrink */
   display: block;
   position: absolute;
-  top: 0;
-  right: 0;
-  left: auto;
-  bottom: auto;
-  width: auto;
-  height: auto;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block;
-  width: auto !important;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
   max-width: none !important;
   max-height: none !important;
-  /* Keep intrinsic 1536×1024 — do not adapt/stretch */
-  object-fit: none !important;
+  /* Cover viewport with the anteprima frame (wave keeps original composition) */
+  object-fit: cover !important;
   object-position: top right !important;
   filter: none !important;
   opacity: 1 !important;
@@ -760,9 +757,9 @@ body.body-marketing .hero-brand-lockup--preview {
   flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  /* Anteprima: ~37px clear air between logo bottom and CENTROPIC.AI */
-  gap: clamp(1.6rem, 2.6vw, 2.6rem) !important;
-  row-gap: clamp(1.6rem, 2.6vw, 2.6rem) !important;
+  /* Extra air so wordmark never eats the logo */
+  gap: clamp(2rem, 3.2vw, 3.25rem) !important;
+  row-gap: clamp(2rem, 3.2vw, 3.25rem) !important;
   column-gap: 0 !important;
   margin: 0 0 clamp(2.5rem, 4.2vw, 4.2rem) !important;
   width: 100%;
@@ -770,10 +767,8 @@ body.body-marketing .hero-brand-lockup--preview {
   position: relative;
   z-index: 3;
   overflow: visible !important;
-  isolation: isolate;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  /* Anteprima: chrome mark ≈ 17.8vw — always ABOVE the wordmark */
   display: block !important;
   flex: 0 0 auto !important;
   width: clamp(7.5rem, 17.8vw, 17.5rem) !important;
@@ -784,23 +779,26 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   position: relative !important;
   top: auto !important;
   left: auto !important;
-  z-index: 4;
-  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.7));
+  z-index: 5;
+  /* Soft shadow only — heavy blur was muddying the chrome mark */
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
   display: block !important;
   flex: 0 0 auto !important;
-  /* Full CENTROPIC.AI under the mark — never absolute over the logo */
   width: clamp(15rem, 52vw, 48rem) !important;
   height: auto !important;
   max-width: min(92vw, 100%) !important;
-  margin: 0 auto !important;
+  margin: 0.35rem auto 0 !important;
+  padding: 0 !important;
   position: relative !important;
   top: auto !important;
   left: auto !important;
   z-index: 1;
-  /* No drop-shadow: blur was painting up through the logo PNG transparency */
   filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  mix-blend-mode: normal !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   display: none !important;
@@ -1056,10 +1054,10 @@ body.body-dash.dash-plan--business {
   background-blend-mode: soft-light, normal, normal !important;
 }
 body.body-marketing .hero--preview .hero-visual__photo {
-  width: auto !important;
-  height: auto !important;
+  width: 100% !important;
+  height: 100% !important;
   max-width: none !important;
-  object-fit: none !important;
+  object-fit: cover !important;
   object-position: top right !important;
   opacity: 1 !important;
   filter: none !important;
@@ -1405,15 +1403,15 @@ body.body-dash .finding-list > li::after {
     width: clamp(14rem, 82vw, 28rem) !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: auto;
-    height: auto;
-    top: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
+    inset: 0;
   }
   body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
-    width: auto !important;
-    height: auto !important;
-    object-fit: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: top right !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     display: none !important;
