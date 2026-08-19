@@ -698,9 +698,10 @@ body.body-marketing .hero--preview .hero-visual--preview picture {
   position: absolute;
   top: 0;
   right: 0;
-  width: 58%; /* anteprima wave ~54% of frame — smaller than full-bleed cover */
-  height: 52%;
-  max-width: 58rem;
+  /* Anteprima @1536: teal wave ≈ 50–58%W × ~47%H, top-right */
+  width: 58%;
+  height: 48%;
+  max-width: none;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block;
@@ -721,7 +722,7 @@ body.body-marketing .hero--preview .hero-copy--preview {
   width: min(calc(100% - 2rem), 94vw) !important;
   max-width: 94vw !important;
   margin: 0 auto !important;
-  padding: clamp(5rem, 12vh, 7rem) 1rem clamp(1.5rem, 4vh, 2.5rem) !important;
+  padding: clamp(4.5rem, 10vh, 6.5rem) 1rem clamp(1.25rem, 3.5vh, 2.25rem) !important;
   text-align: center !important;
   text-shadow: none !important;
   display: flex;
@@ -737,15 +738,16 @@ body.body-marketing .hero-brand-lockup--preview {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 2.1rem !important; /* clear gap so CENTROPIC.AI never sits under H1 */
+  gap: 0.55rem;
+  /* Anteprima: ~70px clear air between wordmark and H1 */
+  margin: 0 0 clamp(2.75rem, 4.6vw, 4.6rem) !important;
   width: 100%;
   position: relative;
   z-index: 3;
   overflow: visible !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  /* Anteprima: logo ≈ 17.8% of viewport width */
+  /* Anteprima: chrome mark ≈ 17.8% of viewport width */
   width: clamp(7.5rem, 17.8vw, 17.5rem) !important;
   height: clamp(7.5rem, 17.8vw, 17.5rem) !important;
   max-width: none !important;
@@ -754,8 +756,8 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
   display: block;
-  /* Anteprima: CENTROPIC.AI ≈ 55% of viewport — fully visible, not clipped */
-  width: clamp(16rem, 55vw, 52.8rem) !important;
+  /* Anteprima: CENTROPIC.AI letter-span ≈ 53.2%W, glyph h ≈ 69px */
+  width: clamp(16rem, 53.2vw, 51rem) !important;
   height: auto !important;
   max-width: 92vw !important;
   margin: 0;
@@ -768,14 +770,14 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
   font-family: "Space Grotesk", "Inter", system-ui, sans-serif !important;
-  /* Anteprima: H1 ≈ 55% width, ONE line on desktop */
-  font-size: clamp(1.05rem, 2.15vw, 1.65rem) !important;
+  /* Anteprima: H1 ≈ 65.5%W, ~46px @1536 (=3vw), ONE line */
+  font-size: clamp(1.25rem, 3vw, 2.9rem) !important;
   font-weight: 600 !important;
   letter-spacing: -0.02em !important;
   line-height: 1.2 !important;
   width: max-content !important;
   max-width: none !important;
-  margin: 0 0 0.85rem !important;
+  margin: 0 0 0.95rem !important;
   color: #E8EEF4 !important;
   text-align: center !important;
   white-space: nowrap !important;
@@ -788,12 +790,12 @@ body.body-marketing .hero--preview .hero-accent {
 }
 body.body-marketing .hero--preview .hero-lede {
   font-family: "Inter", system-ui, sans-serif !important;
-  /* Anteprima: lede ≈ 65% width, ONE line on desktop */
-  font-size: clamp(0.68rem, 1.05vw, 0.98rem) !important;
+  /* Anteprima: lede ≈ 66.5%W, ~20px @1536 (=1.3vw), ONE line */
+  font-size: clamp(0.78rem, 1.3vw, 1.25rem) !important;
   line-height: 1.45 !important;
   width: max-content !important;
   max-width: none !important;
-  margin: 0 auto 1.65rem !important;
+  margin: 0 auto clamp(1.5rem, 4.2vw, 2.75rem) !important;
   color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
   text-align: center !important;
   white-space: nowrap !important;
@@ -802,18 +804,22 @@ body.body-marketing .hero--preview .hero-copy--preview::before {
   display: none !important;
 }
 body.body-marketing .hero--preview .hero-url-form--preview {
-  width: min(100%, 36rem);
+  /* Anteprima: URL bar ≈ 66% of viewport (same band as H1/lede) */
+  width: clamp(18rem, 66vw, 64rem) !important;
+  max-width: 94vw !important;
   margin: 0 auto;
   animation: none;
 }
 body.body-marketing .hero--preview .hero-url-form__row {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.4rem 0.4rem 0.75rem;
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--brand-cyan) 28%, transparent);
-  background: rgba(4, 8, 10, 0.72);
+  gap: 0.45rem;
+  /* Anteprima row ≈ 48px tall */
+  min-height: 3rem;
+  padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #C9D3DD 32%, transparent);
+  background: rgba(4, 8, 10, 0.78);
   backdrop-filter: blur(12px);
   width: 100%;
   box-sizing: border-box;
@@ -830,8 +836,8 @@ body.body-marketing .hero--preview .hero-url-form__input {
   background: transparent !important;
   color: #E8EEF4 !important;
   font-family: "Inter", system-ui, sans-serif !important;
-  font-size: 1rem !important;
-  padding: 0.8rem 0.55rem !important;
+  font-size: clamp(0.92rem, 1.05vw, 1.05rem) !important;
+  padding: 0.65rem 0.55rem !important;
   text-align: left !important;
 }
 body.body-marketing .hero--preview .hero-url-form__input::placeholder {
@@ -839,18 +845,21 @@ body.body-marketing .hero--preview .hero-url-form__input::placeholder {
 }
 body.body-marketing .hero--preview .hero-url-form__submit {
   flex: 0 0 auto;
-  border-radius: 8px !important;
-  border: 1px solid color-mix(in srgb, var(--mkt-teal) 55%, transparent) !important;
+  /* Anteprima: button ≈ 1/3 of bar, teal outline + teal label */
+  min-width: clamp(8.5rem, 18vw, 12.5rem);
+  border-radius: 9px !important;
+  border: 1px solid color-mix(in srgb, #3FA8B5 70%, transparent) !important;
   background: transparent !important;
-  color: #B8E6EC !important;
-  font-weight: 700 !important;
+  color: #7FD4DD !important;
+  font-weight: 650 !important;
+  font-size: clamp(0.88rem, 1vw, 1rem) !important;
   box-shadow: none !important;
   white-space: nowrap;
-  padding: 0.75rem 1.15rem !important;
+  padding: 0.7rem 1.25rem !important;
 }
 body.body-marketing .hero--preview .hero-url-form__submit:hover {
-  border-color: var(--mkt-teal) !important;
-  background: color-mix(in srgb, var(--mkt-teal) 18%, transparent) !important;
+  border-color: #3FA8B5 !important;
+  background: color-mix(in srgb, #3FA8B5 16%, transparent) !important;
   color: #E8F7F9 !important;
   filter: none;
 }
@@ -1337,7 +1346,7 @@ body.body-dash .finding-list > li::after {
   }
   body.body-marketing .hero-brand-lockup--preview {
     gap: 0.4rem;
-    margin-bottom: 1.55rem !important;
+    margin-bottom: clamp(1.6rem, 5vw, 2.2rem) !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
     /* Mobile anteprima: mark larger relative to width */
@@ -1356,17 +1365,20 @@ body.body-dash .finding-list > li::after {
     display: none !important;
   }
   body.body-marketing .hero--preview .hero-headline--v2 {
-    font-size: clamp(1.2rem, 5.2vw, 1.65rem) !important;
+    font-size: clamp(1.25rem, 5.4vw, 1.7rem) !important;
     width: auto !important;
-    max-width: 18.5rem !important;
+    max-width: 20rem !important;
     white-space: normal !important;
   }
   body.body-marketing .hero--preview .hero-lede {
-    font-size: clamp(0.82rem, 3.4vw, 0.95rem) !important;
+    font-size: clamp(0.84rem, 3.5vw, 0.98rem) !important;
     width: auto !important;
     max-width: 22rem !important;
     white-space: normal !important;
     margin-bottom: 1.35rem !important;
+  }
+  body.body-marketing .hero--preview .hero-url-form--preview {
+    width: min(92vw, 24rem) !important;
   }
   body.body-marketing .hero--preview .hero-url-form__row {
     flex-direction: column;

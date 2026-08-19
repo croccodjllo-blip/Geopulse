@@ -28,10 +28,12 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Logo ~17.8vw, wordmark ~55vw, bg wave ~58% top-right (from anteprima px)."""
+    """Logo ~17.8vw, wordmark ~53.2vw, form ~66vw, bg wave ~58% (from anteprima px)."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
-    assert "55vw" in css
+    assert "53.2vw" in css
+    assert "66vw" in css
+    assert "3vw" in css  # H1 scale @ anteprima
     assert "width: 58%" in css
     assert "object-fit: contain" in css
     assert "object-position: top right" in css
