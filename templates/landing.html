@@ -10,9 +10,14 @@
   {% include "partials/jsonld_faq_home.html" %}
 {% endblock %}
 {% block footer %}{% endblock %}
+{% block head_extra %}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+{% endblock %}
 
 {% block content %}
-{# Homepage = anteprima hero only. Exact logo/bg from approved preview. #}
+{# Homepage = anteprima exact assets: logo PNG + chrome wordmark + void bg #}
 <section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-brand">
   <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true">
     <picture>
@@ -30,20 +35,26 @@
         fetchpriority="high"
       />
     </picture>
-    <div class="hero-visual__aurora"></div>
   </div>
 
   <div class="hero-copy hero-copy--v2 hero-copy--preview">
     <div class="hero-brand-lockup hero-brand-lockup--preview" id="hero-brand">
       <img
         class="hero-brand-mark"
-        src="{{ url_for('static', filename='img/logo.svg') }}"
-        width="200"
-        height="200"
+        src="{{ url_for('static', filename='img/logo-hero.png') }}"
+        width="220"
+        height="220"
         alt=""
         decoding="async"
       />
-      <p class="hero-brand-word">CENTROPIC<span>.AI</span></p>
+      <img
+        class="hero-brand-wordmark"
+        src="{{ url_for('static', filename='img/wordmark-hero.png') }}"
+        width="520"
+        height="78"
+        alt="CENTROPIC.AI"
+        decoding="async"
+      />
     </div>
     <h1 class="hero-headline hero-headline--v2 hero-headline--rise">
       {{ _('Misura la') }}

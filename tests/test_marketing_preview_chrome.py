@@ -13,8 +13,10 @@ def test_landing_is_hero_only_anteprima():
     assert "hero--preview" in html
     assert "body-marketing--hero-only" in html
     assert "CENTROPIC" in html
-    assert "logo.svg" in html
+    assert "logo-hero.png" in html
+    assert "wordmark-hero.png" in html
     assert "bg-void-chrome.jpg" in html
+    assert "Space+Grotesk" in html or "Space Grotesk" in html
     assert "Scopri quanto il tuo sito è pronto" in html
     assert "https://iltuosito.it" in html
     assert "{% block footer %}" in html
@@ -26,13 +28,21 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_logo_assets_exist():
-    assert (ROOT / "static" / "img" / "logo.svg").exists()
     assert (ROOT / "static" / "img" / "logo-hero.png").exists()
+    assert (ROOT / "static" / "img" / "wordmark-hero.png").exists()
     assert (ROOT / "static" / "img" / "bg-void-chrome.jpg").exists()
     assert (ROOT / "static" / "img" / "bg-void-chrome-mobile.jpg").exists()
-    svg = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
-    assert svg.count("<path") >= 3
-    assert 'href="' not in svg
+    # Anteprima-extracted chrome mark must be opaque RGB with bright pixels
+    from PIL import Image
+    im = Image.open(ROOT / "static" / "img" / "logo-hero.png")
+    assert im.size[0] >= 250
+    bright = sum(
+        1
+        for y in range(0, im.size[1], 4)
+        for x in range(0, im.size[0], 4)
+        if sum(im.getpixel((x, y))[:3]) > 100
+    )
+    assert bright > 200
 
 
 def test_base_footer_is_overridable():

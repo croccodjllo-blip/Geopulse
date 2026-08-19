@@ -740,44 +740,32 @@ body.body-marketing .hero-brand-lockup--preview {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  margin: 0 0 1.5rem !important;
+  gap: 0.45rem;
+  margin: 0 0 1.35rem !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  width: clamp(9rem, 20vw, 12.5rem) !important;
-  height: clamp(9rem, 20vw, 12.5rem) !important;
+  width: clamp(9.5rem, 22vw, 13.5rem) !important;
+  height: clamp(9.5rem, 22vw, 13.5rem) !important;
   max-width: none !important;
   border-radius: 0;
-  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.65));
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.7));
+}
+body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
+  display: block;
+  width: min(22rem, 78vw) !important;
+  height: auto !important;
+  max-width: 100% !important;
+  margin: 0.1rem 0 0;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
-  font-family: "Inter", system-ui, sans-serif !important;
-  font-size: clamp(1.9rem, 4.5vw, 2.85rem) !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  margin: 0 !important;
-  line-height: 1 !important;
-  color: #C9D3DD !important; /* Firefox fallback if clip unsupported */
-  background: linear-gradient(110deg, #8B98A8 0%, #F4F7FA 38%, #C9D3DD 62%, #5B6B7A 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-@supports not (background-clip: text) {
-  body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
-    color: #E8EEF4 !important;
-    -webkit-text-fill-color: #E8EEF4;
-    background: none;
-  }
-}
-body.body-marketing .hero-brand-lockup--preview .hero-brand-word span {
-  -webkit-text-fill-color: transparent;
+  display: none !important;
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif !important;
   font-size: clamp(1.55rem, 3.4vw, 2.35rem) !important;
-  font-weight: 650 !important;
-  letter-spacing: -0.03em !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
   line-height: 1.22 !important;
   max-width: 24ch !important;
   margin: 0 0 0.85rem !important;
@@ -785,10 +773,11 @@ body.body-marketing .hero--preview .hero-headline--v2 {
   text-align: center !important;
 }
 body.body-marketing .hero--preview .hero-accent {
-  color: var(--mkt-teal) !important;
+  color: #3FA8B5 !important;
   display: inline;
 }
 body.body-marketing .hero--preview .hero-lede {
+  font-family: "Inter", system-ui, sans-serif !important;
   max-width: 36rem !important;
   margin: 0 auto 1.65rem !important;
   font-size: clamp(0.92rem, 1.5vw, 1.05rem) !important;
