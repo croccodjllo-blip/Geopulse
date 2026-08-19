@@ -692,15 +692,16 @@ body.body-marketing .hero--preview .hero-visual--preview {
   height: 100% !important;
   background: #000 !important;
   pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 body.body-marketing .hero--preview .hero-visual--preview picture {
+  /* Anteprima: wave is authored in a FULL 1536×1024 frame — full-bleed, not 58% crop */
   display: block;
   position: absolute;
-  top: 0;
-  right: 0;
-  /* Anteprima @1536: teal wave ≈ 50–58%W × ~47%H, top-right */
-  width: 58%;
-  height: 48%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
@@ -708,8 +709,8 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   width: 100% !important;
   height: 100% !important;
   max-width: none !important;
-  object-fit: contain !important;
-  object-position: top right !important;
+  object-fit: cover !important;
+  object-position: top center !important;
   filter: none !important;
   opacity: 1 !important;
 }
@@ -735,32 +736,38 @@ body.body-marketing .hero--preview .hero-copy--preview {
   overflow: visible !important;
 }
 body.body-marketing .hero-brand-lockup--preview {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  /* Anteprima: ~70px clear air between wordmark and H1 */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start;
+  gap: clamp(0.65rem, 1.4vw, 1.1rem);
+  /* Clear air under wordmark so it never sits on the H1; logo stacks above wordmark */
   margin: 0 0 clamp(2.75rem, 4.6vw, 4.6rem) !important;
   width: 100%;
+  max-width: 100%;
   position: relative;
   z-index: 3;
   overflow: visible !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  /* Anteprima: chrome mark ≈ 17.8% of viewport width */
+  /* Anteprima: chrome mark ≈ 17.8% of viewport width — above wordmark, never overlapped */
+  display: block;
   width: clamp(7.5rem, 17.8vw, 17.5rem) !important;
   height: clamp(7.5rem, 17.8vw, 17.5rem) !important;
   max-width: none !important;
+  margin: 0 auto;
   border-radius: 0;
+  position: relative;
+  z-index: 4;
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.7));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
   display: block;
-  /* Anteprima: CENTROPIC.AI letter-span ≈ 53.2%W, glyph h ≈ 69px */
-  width: clamp(16rem, 53.2vw, 51rem) !important;
+  /* Full CENTROPIC.AI (~55%W letter-span); keep inside viewport so nothing clips */
+  width: clamp(15rem, 52vw, 48rem) !important;
   height: auto !important;
-  max-width: 92vw !important;
-  margin: 0;
+  max-width: min(92vw, 100%) !important;
+  margin: 0 auto;
   position: relative;
   z-index: 3;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
@@ -1018,7 +1025,8 @@ body.body-dash.dash-plan--business {
   background-blend-mode: soft-light, normal, normal !important;
 }
 body.body-marketing .hero--preview .hero-visual__photo {
-  object-fit: contain !important;
+  object-fit: cover !important;
+  object-position: top center !important;
   opacity: 1 !important;
   filter: none !important;
 }
@@ -1358,8 +1366,8 @@ body.body-dash .finding-list > li::after {
     width: clamp(14rem, 82vw, 28rem) !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: 78%;
-    height: 42%;
+    width: 100%;
+    height: 100%;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     display: none !important;
