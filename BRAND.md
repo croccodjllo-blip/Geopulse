@@ -34,7 +34,7 @@ Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04
 The current mark avoids both: `logo.svg`/`logo-mark.svg`/`favicon.svg` are genuine vector shapes (polygon/ellipse/path + linear/radial gradients, all inline, zero external refs) — safe to use directly via `<img src="...svg">` in every browser, and infinitely scalable (verified 16px favicon up to 220px auth-page render).
 
 ## Mark concept
-Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satellite node · bold chrome-gradient **C** monogram formed from an open ring stroke. Flat/gradient vector, not a photoreal 3D render — this is intentional; do not swap it back to a raster photo.
+Chrome void disc · dashed orbital ellipse with satellite node · bold chrome-gradient **C** monogram (open ring stroke). Flat/gradient vector, not a photoreal 3D render — intentional; do not swap to a raster photo. (Hex chassis retired 2026-08-19 in favor of the circular preview lockup.)
 
 ## Wordmark
 `CENTROPIC.AI` — **uppercase**, metallic chrome gradient text (`background-clip: text`), **only on the landing `#hero-brand` lockup**. Page-intro / auth brand rows keep the plain lowercase `centropic.ai` wordmark so they never compete with that page’s H1. Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight (`templates/partials/holo_brand.html`, `.brand-mark__word`).

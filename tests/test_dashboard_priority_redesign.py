@@ -12,8 +12,9 @@ DYN = (ROOT / "templates" / "partials" / "dash_dynamic_styles.html").read_text(e
 
 
 def test_preview_css_linked():
-    assert "dash-preview.css" in DASH
-    assert "head_extra" in DASH
+    base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
+    assert "dash-preview.css" in base
+    assert "current_user" in base
 
 
 def test_priority_hero_rings_and_micro_metrics():

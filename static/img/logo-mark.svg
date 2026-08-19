@@ -1,19 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="mChassisGrad" x1="20%" y1="0%" x2="85%" y2="100%">
-      <stop offset="0%" stop-color="#8B98A8"/>
+    <linearGradient id="mChrome" x1="12%" y1="8%" x2="90%" y2="92%">
+      <stop offset="0%" stop-color="#E8EEF4"/>
       <stop offset="45%" stop-color="#C9D3DD"/>
       <stop offset="100%" stop-color="#5B6B7A"/>
     </linearGradient>
   </defs>
-
-  <polygon points="32,4 54.6,17.5 54.6,44.5 32,58 9.4,44.5 9.4,17.5"
-    fill="#0A0E14" stroke="url(#mChassisGrad)" stroke-width="2.6" stroke-linejoin="round"/>
-
-  <ellipse cx="32" cy="31" rx="19.5" ry="9" transform="rotate(-24 32 31)"
-    fill="none" stroke="#C9D3DD" stroke-width="1.3" stroke-dasharray="2 3.4" opacity="0.9"/>
-
-  <circle cx="49" cy="21.5" r="1.8" fill="#C9D3DD"/>
-
-  <path d="M38.5 22.5 A9 9 0 1 0 38.5 39.5" fill="none" stroke="url(#mChassisGrad)" stroke-width="4.6" stroke-linecap="round"/>
+  <circle cx="32" cy="32" r="27" fill="#0A0E14" stroke="url(#mChrome)" stroke-width="2.2"/>
+  <ellipse cx="32" cy="32" rx="22" ry="9.5" transform="rotate(-28 32 32)"
+    fill="none" stroke="#C9D3DD" stroke-width="1.2" stroke-dasharray="2 3.2" opacity="0.9"/>
+  <circle cx="50" cy="23" r="1.7" fill="#C9D3DD"/>
+  <path d="M40.5 22 A11 11 0 1 0 40.5 42" fill="none" stroke="url(#mChrome)" stroke-width="5" stroke-linecap="round"/>
 </svg>

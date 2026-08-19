@@ -324,3 +324,137 @@ body.body-dash .report--priority .analyze-reveal {
   }
   .dash-sov-list__ev { justify-self: start; }
 }
+
+/* —— Global app shell — icon rail (preview) —— */
+body.app-shell--sidebar {
+  --sidebar-w: 4.5rem;
+}
+body.app-shell--sidebar .site-main,
+body.app-shell--sidebar .site-header {
+  padding-left: var(--sidebar-w) !important;
+}
+@media (max-width: 860px) {
+  body.app-shell--sidebar .site-main,
+  body.app-shell--sidebar .site-header {
+    padding-left: 0 !important;
+  }
+}
+
+body.app-shell .app-sidebar--rail {
+  width: var(--sidebar-w) !important;
+  min-width: var(--sidebar-w) !important;
+  padding: 0.85rem 0.45rem 0.75rem !important;
+  align-items: center;
+  border-right: 1px solid color-mix(in srgb, var(--brand-clarity) 10%, transparent) !important;
+  background: color-mix(in srgb, var(--brand-bg) 92%, #000) !important;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__brand-text,
+body.app-shell .app-sidebar--rail .app-sidebar__link-label,
+body.app-shell .app-sidebar--rail .app-sidebar__credits-row span,
+body.app-shell .app-sidebar--rail .app-sidebar__credits-foot,
+body.app-shell .app-sidebar--rail .app-sidebar__logout-btn span,
+body.app-shell .app-sidebar--rail .app-sidebar__tag,
+body.app-shell .app-sidebar--rail .app-sidebar__group {
+  display: none !important;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__brand-link {
+  justify-content: center;
+  padding: 0.25rem;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__mark img {
+  width: 28px;
+  height: 28px;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1.1rem;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__link {
+  width: 2.65rem;
+  height: 2.65rem;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  padding: 0 !important;
+  color: color-mix(in srgb, var(--brand-clarity) 62%, transparent);
+}
+body.app-shell .app-sidebar--rail .app-sidebar__link.is-active,
+body.app-shell .app-sidebar--rail .app-sidebar__link:hover {
+  color: var(--plan-accent, var(--brand-cyan));
+  background: color-mix(in srgb, var(--plan-accent, var(--brand-cyan)) 14%, transparent);
+}
+body.app-shell .app-sidebar--rail .app-sidebar__foot {
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__credits {
+  width: 100%;
+  padding: 0.35rem;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__credits-row strong {
+  font-size: 0.62rem;
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__logout-btn {
+  width: 2.65rem;
+  height: 2.65rem;
+  display: grid;
+  place-items: center;
+  padding: 0 !important;
+  border-radius: 10px;
+  margin: 0 auto;
+}
+body.app-shell .app-sidebar--rail .app-sidebar__close {
+  display: none;
+}
+
+/* Mobile drawer keeps labels */
+@media (max-width: 860px) {
+  body.app-shell .app-sidebar--rail {
+    width: min(18rem, 86vw) !important;
+    min-width: 0 !important;
+    align-items: stretch;
+    padding: 1rem !important;
+  }
+  body.app-shell .app-sidebar--rail .app-sidebar__brand-text,
+  body.app-shell .app-sidebar--rail .app-sidebar__link-label,
+  body.app-shell .app-sidebar--rail .app-sidebar__credits-row span,
+  body.app-shell .app-sidebar--rail .app-sidebar__credits-foot,
+  body.app-shell .app-sidebar--rail .app-sidebar__logout-btn span {
+    display: initial !important;
+  }
+  body.app-shell .app-sidebar--rail .app-sidebar__link {
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    padding: 0.55rem 0.7rem !important;
+  }
+  body.app-shell .app-sidebar--rail .app-sidebar__close {
+    display: inline-flex;
+  }
+}
+
+/* Unmistakable redesign marker (visible in page source + subtle UI) */
+body.app-shell::after {
+  content: none;
+}
+body.body-dash .workspace-strip--preview .workspace-strip__title::after {
+  content: "";
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: 0.55rem;
+  margin-bottom: 0.2rem;
+  border-radius: 999px;
+  background: var(--plan-accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--plan-accent) 70%, transparent);
+  vertical-align: middle;
+}
