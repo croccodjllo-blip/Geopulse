@@ -1,4 +1,4 @@
-"""Dashboard priority redesign: hero CVI+SoV, no Score/SoV tabs, no rail."""
+"""Dashboard priority redesign: hero rings CVI+SoV, no Score/SoV tabs, no rail."""
 
 from __future__ import annotations
 
@@ -11,14 +11,14 @@ CSS = (ROOT / "static" / "css" / "app.css").read_text(encoding="utf-8")
 DYN = (ROOT / "templates" / "partials" / "dash_dynamic_styles.html").read_text(encoding="utf-8")
 
 
-def test_priority_hero_and_micro_metrics():
+def test_priority_hero_rings_and_micro_metrics():
     assert 'class="dash-hero"' in DASH
-    assert 'class="dash-hero__cvi"' in DASH
-    assert 'class="dash-hero__sov"' in DASH
+    assert "dash-ring--cvi" in DASH
+    assert "dash-ring--sov" in DASH
+    assert "dash-ring__svg" in DASH
     assert 'class="dash-micro"' in DASH
     assert 'class="dash-actions"' in DASH
     assert 'class="dash-sov"' in DASH
-    assert 'class="dash-sov__table"' in DASH or "dash-sov__table" in DASH
 
 
 def test_score_sov_tabs_and_pulse_removed():
@@ -49,13 +49,15 @@ def test_actions_nav_has_priority_links():
     assert "{{ _('Edge') }}" in DASH
     assert "{{ _('Pack') }}" in DASH
     assert 'href="#analyze-panel"' in DASH
+    assert "dash-actions__btn" in DASH
 
 
 def test_redesign_css_present():
     assert "DASH REDESIGN 2026" in CSS
     assert ".dash-hero" in CSS
+    assert ".dash-ring" in CSS
     assert ".dash-micro" in CSS
-    assert ".dash-actions" in CSS
+    assert ".dash-actions__btn" in CSS
 
 
 def test_dynamic_styles_engine_only():
