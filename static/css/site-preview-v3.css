@@ -706,14 +706,18 @@ body.body-marketing--hero-only {
   background-image: none !important;
   background-color: #000 !important;
 }
-/* Full-bleed anteprima-style particle wave — covers entire hero */
+/* Smaller vivid particle wave — native size, top-right (not full-bleed cover) */
 body.body-marketing .hero--preview .hero-visual--preview picture {
   display: block !important;
   position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: min(58vw, 42rem) !important;
+  height: auto !important;
   max-width: none !important;
+  aspect-ratio: 16 / 9;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block !important;
@@ -721,11 +725,17 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   height: 100% !important;
   max-width: none !important;
   max-height: none !important;
-  object-fit: cover !important;
-  object-position: center center !important;
+  object-fit: contain !important;
+  object-position: top right !important;
   filter: none !important;
   opacity: 1 !important;
   image-rendering: auto;
+}
+/* Transparent lockup assets — no black plate behind mark/wordmark */
+body.body-marketing .hero-brand-lockup--preview .hero-brand-mark,
+body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
+  background: transparent !important;
+  mix-blend-mode: normal !important;
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
   display: none !important;
