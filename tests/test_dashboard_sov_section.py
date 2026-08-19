@@ -36,10 +36,15 @@ def test_main_dash_fold_without_sov_table():
 
 def test_sov_page_matches_detail_anteprima():
     assert "sov-page-hero" in SOV
+    assert "bg-sov-anteprima.png" in SOV
     assert "dash_sov_detail.html" in SOV
     assert "dash-sov-list" in DETAIL
+    assert "dash-sov-list__mark" in DETAIL
     assert "dash-findings" in DETAIL
     assert "dash-cta__primary" in DETAIL
+    assert "dash-cta--anteprima" in DETAIL
     assert "Ultimi 28 giorni" in DETAIL
     assert "_('Avviso')" in DETAIL
     assert ".sov-page-hero__accent" in CSS
+    assert ".dash-detail--anteprima" in CSS
+    assert (ROOT / "static" / "img" / "bg-sov-anteprima.png").is_file()
