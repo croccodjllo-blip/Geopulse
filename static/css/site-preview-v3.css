@@ -629,73 +629,64 @@ body.body-marketing .brand-mark__logo {
   width: 28px !important;
   height: 28px !important;
   border-radius: 999px;
-  content: unset;
+  object-fit: contain;
 }
 body.body-marketing--hero-only .brand-mark__logo {
-  /* served as logo-mark.png via template swap below if needed */
   object-fit: contain;
 }
 
-/* Hero — anteprima EXACT: full browser width + viewport height */
-html:has(body.body-marketing--hero-only),
+/* Hero — anteprima: full-bleed viewport (fixes .site-main max-width trap) */
+html:has(body.body-marketing--hero-only) {
+  background: #000;
+}
 body.body-marketing--hero-only {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: #000 !important;
+  margin: 0;
 }
 body.body-marketing--hero-only .site-footer,
 body.body-marketing--hero-only footer.site-footer {
   display: none !important;
-  height: 0 !important;
-  overflow: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
 }
-body.body-marketing--hero-only .site-main {
-  min-height: 100dvh;
-  min-height: 100vh; /* Firefox fallback */
-  padding: 0 !important;
-  margin: 0 !important;
+body.body-marketing--hero-only .site-main,
+body.body-marketing--hero-only .site-main.site-main--flush {
   width: 100% !important;
   max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
-body.body-marketing--hero-only .site-header,
-body.body-marketing--hero-only .site-header__inner {
+body.body-marketing--hero-only .site-header {
   width: 100%;
-  max-width: none;
   box-sizing: border-box;
 }
 body.body-marketing--hero-only .site-header__inner {
   width: min(100% - 2rem, 72rem);
+  max-width: 72rem;
   margin-inline: auto;
-  padding-inline: 0;
+  box-sizing: border-box;
 }
-/* Anteprima nav links: hide Esempio */
-body.body-marketing--hero-only .nav-links a[href*="esempio"],
-body.body-marketing--hero-only .nav-links a[href*="sample"] {
+body.body-marketing--hero-only .nav-links a[href*="sample"],
+body.body-marketing--hero-only .nav-links a[href*="esempio"] {
   display: none !important;
 }
 body.body-marketing .hero--preview.hero--signal {
   position: relative;
-  width: 100vw;
   width: 100%;
   max-width: 100%;
-  min-height: 100dvh;
   min-height: 100vh;
-  height: 100dvh;
+  min-height: 100dvh;
   height: 100vh;
-  max-height: none;
+  height: 100dvh;
   display: grid !important;
-  align-items: center !important;
-  justify-items: center !important;
+  place-items: center !important;
   box-sizing: border-box;
   overflow: hidden;
-  padding: 0;
   margin: 0;
-  left: 0;
-  right: 0;
+  padding: 0;
   background: #000 !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview {
@@ -716,14 +707,14 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block;
   width: 100%;
   height: 100%;
+  max-width: none !important; /* kill global img{max-width:100%} shrink */
   object-fit: cover;
   object-position: center top;
   filter: none !important;
   opacity: 1 !important;
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
-  opacity: 0 !important; /* wave is in the photo */
-  pointer-events: none;
+  display: none !important;
 }
 body.body-marketing .hero--preview .hero-copy--preview {
   position: relative;
@@ -731,8 +722,6 @@ body.body-marketing .hero--preview .hero-copy--preview {
   width: min(calc(100% - 2rem), 44rem) !important;
   max-width: 44rem !important;
   margin: 0 auto !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
   padding: clamp(5rem, 12vh, 7rem) 1rem clamp(1.5rem, 4vh, 2.5rem) !important;
   text-align: center !important;
   text-shadow: none !important;
@@ -742,6 +731,7 @@ body.body-marketing .hero--preview .hero-copy--preview {
   justify-content: center;
   box-sizing: border-box;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  color: #E8EEF4;
 }
 body.body-marketing .hero--preview .hero-copy--preview::before {
   display: none !important;
@@ -756,8 +746,9 @@ body.body-marketing .hero-brand-lockup--preview {
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   width: clamp(9rem, 20vw, 12.5rem) !important;
   height: clamp(9rem, 20vw, 12.5rem) !important;
+  max-width: none !important;
   border-radius: 0;
-  filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.65));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   font-family: "Inter", system-ui, sans-serif !important;
@@ -767,10 +758,18 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   text-transform: uppercase !important;
   margin: 0 !important;
   line-height: 1 !important;
+  color: #C9D3DD !important; /* Firefox fallback if clip unsupported */
   background: linear-gradient(110deg, #8B98A8 0%, #F4F7FA 38%, #C9D3DD 62%, #5B6B7A 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+@supports not (background-clip: text) {
+  body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
+    color: #E8EEF4 !important;
+    -webkit-text-fill-color: #E8EEF4;
+    background: none;
+  }
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word span {
   -webkit-text-fill-color: transparent;

@@ -328,18 +328,19 @@ body.app-body:not(.body-dash) {
 .site-main {
   padding: 2.5rem 0 4rem;
 }
-.site-main--flush {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-}
-
 .site-header__inner,
 .site-main,
 .site-footer__inner {
   width: min(var(--max-w), calc(100% - 2rem));
   margin: 0 auto;
+}
+
+/* Flush must win over the shared max-width rule above */
+.site-main.site-main--flush {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* ═══════════════════════════════════════════

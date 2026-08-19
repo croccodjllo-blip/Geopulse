@@ -13,7 +13,7 @@ def test_landing_is_hero_only_anteprima():
     assert "hero--preview" in html
     assert "body-marketing--hero-only" in html
     assert "CENTROPIC" in html
-    assert "logo-hero.png" in html
+    assert "logo.svg" in html
     assert "bg-void-chrome.jpg" in html
     assert "Scopri quanto il tuo sito è pronto" in html
     assert "https://iltuosito.it" in html
@@ -25,10 +25,14 @@ def test_landing_is_hero_only_anteprima():
     assert "hero_citation_field.html" not in html
 
 
-def test_logo_hero_asset_exists():
+def test_logo_assets_exist():
+    assert (ROOT / "static" / "img" / "logo.svg").exists()
     assert (ROOT / "static" / "img" / "logo-hero.png").exists()
     assert (ROOT / "static" / "img" / "bg-void-chrome.jpg").exists()
     assert (ROOT / "static" / "img" / "bg-void-chrome-mobile.jpg").exists()
+    svg = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
+    assert svg.count("<path") >= 3
+    assert 'href="' not in svg
 
 
 def test_base_footer_is_overridable():
@@ -37,13 +41,15 @@ def test_base_footer_is_overridable():
     assert "css/site-preview-v3.css" in base
 
 
-def test_marketing_css_full_browser_hero():
-    css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
-    assert "body-marketing--hero-only" in css
-    assert "100dvh" in css
-    assert "100vh" in css  # Firefox fallback
-    assert "overflow-x: hidden" in css
-    assert "display: none !important" in css
+def test_flush_main_wins_max_width():
+    """Regression: .site-main max-width rule must not override --flush."""
+    css = (ROOT / "static" / "css" / "app.css").read_text(encoding="utf-8")
+    flush_pos = css.find(".site-main.site-main--flush")
+    shared_pos = css.find(".site-header__inner,\n.site-main,\n.site-footer__inner")
+    assert flush_pos > shared_pos > -1
+    preview = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
+    assert "site-main.site-main--flush" in preview
+    assert "100vw" not in preview.split("Hero — anteprima")[1][:800]
 
 
 def test_landing_uses_void_background():
