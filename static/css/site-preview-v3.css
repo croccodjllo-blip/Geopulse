@@ -706,28 +706,28 @@ body.body-marketing--hero-only {
   background-image: none !important;
   background-color: #000 !important;
 }
-/* Matrix teal rain — native 960×1080 (half of 1920×1080 hero), no scaling */
+/* Matrix teal rain — full hero native 1920×1080, no scaling/adapt */
 body.body-marketing .hero--preview .hero-visual--preview picture {
   display: block !important;
   position: absolute !important;
   top: 0 !important;
-  right: 0 !important;
-  left: auto !important;
+  left: 0 !important;
+  right: auto !important;
   bottom: auto !important;
-  width: 960px !important;
+  width: 1920px !important;
   height: 1080px !important;
   max-width: none !important;
   max-height: none !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block !important;
-  width: 960px !important;
+  width: 1920px !important;
   height: 1080px !important;
   max-width: none !important;
   max-height: none !important;
   /* Original pixels — do not adapt/stretch */
   object-fit: none !important;
-  object-position: top right !important;
+  object-position: top left !important;
   filter: none !important;
   opacity: 1 !important;
   image-rendering: auto;
@@ -1402,16 +1402,17 @@ body.body-dash .finding-list > li::after {
     margin-bottom: clamp(1.6rem, 5vw, 2.2rem) !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: 540px !important;
-    height: 960px !important;
+    width: 1080px !important;
+    height: 1920px !important;
     top: 0 !important;
-    right: 0 !important;
+    left: 0 !important;
+    right: auto !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
-    width: 540px !important;
-    height: 960px !important;
+    width: 1080px !important;
+    height: 1920px !important;
     object-fit: none !important;
-    object-position: top right !important;
+    object-position: top left !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
     /* Mobile anteprima: mark larger relative to width — no glow shadow over mark */

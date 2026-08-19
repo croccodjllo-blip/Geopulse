@@ -29,7 +29,7 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Shared hero band; native Matrix half-hero bg; no cite-scrim."""
+    """Shared hero band; native Matrix full-hero bg; no cite-scrim."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
     assert "52vw" in css
@@ -55,7 +55,7 @@ def test_landing_uses_hero_bg():
 
     desk = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima.png")
     mob = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png")
-    assert desk.size == (960, 1080)
+    assert desk.size == (1920, 1080)
     assert mob.size[1] >= mob.size[0]  # portrait
 
 
