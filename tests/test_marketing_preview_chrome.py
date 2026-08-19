@@ -28,19 +28,19 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Logo ~17.8vw, wordmark ~52vw, form ~66vw, full-bleed anteprima bg."""
+    """Logo ~17.8vw, wordmark ~52vw, form ~66vw, full-bleed anteprima bg at native frame size."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
     assert "52vw" in css
     assert "66vw" in css
     assert "3vw" in css  # H1 scale @ anteprima
-    # Background is full-bleed cover (wave authored in full frame), not a 58% inset
     assert "object-fit: cover !important" in css
-    assert "object-position: top center" in css
-    # Desktop H1 + lede stay one line (anteprima); no ch-clamp that forces wrap
+    assert "object-position: center top" in css
+    # Lockup is a vertical stack with real air between mark and wordmark
+    assert "flex-direction: column !important" in css
+    assert "2.6vw" in css  # gap scale
     assert "white-space: nowrap !important" in css
     assert "max-width: 24ch" not in css
-    # Footer must not be force-hidden on homepage
     assert "body.body-marketing--hero-only .site-footer" not in css
 
 

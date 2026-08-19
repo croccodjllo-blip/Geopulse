@@ -696,7 +696,7 @@ body.body-marketing .hero--preview .hero-visual--preview {
   overflow: hidden;
 }
 body.body-marketing .hero--preview .hero-visual--preview picture {
-  /* Anteprima: wave is authored in a FULL 1536×1024 frame — full-bleed, not 58% crop */
+  /* Anteprima frame 1536×1024 at natural full-bleed size — do not inset/scale the wave */
   display: block;
   position: absolute;
   inset: 0;
@@ -709,8 +709,9 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   width: 100% !important;
   height: 100% !important;
   max-width: none !important;
+  /* Same size relationship as anteprima: full viewport frame, no corner shrink */
   object-fit: cover !important;
-  object-position: top center !important;
+  object-position: center top !important;
   filter: none !important;
   opacity: 1 !important;
 }
@@ -723,6 +724,7 @@ body.body-marketing .hero--preview .hero-copy--preview {
   width: min(calc(100% - 2rem), 94vw) !important;
   max-width: 94vw !important;
   margin: 0 auto !important;
+  margin-left: auto !important; /* kill app.css asymmetric margin-left on .hero-copy--v2 */
   padding: clamp(4.5rem, 10vh, 6.5rem) 1rem clamp(1.25rem, 3.5vh, 2.25rem) !important;
   text-align: center !important;
   text-shadow: none !important;
@@ -738,37 +740,47 @@ body.body-marketing .hero--preview .hero-copy--preview {
 body.body-marketing .hero-brand-lockup--preview {
   display: flex !important;
   flex-direction: column !important;
+  flex-wrap: nowrap !important;
   align-items: center !important;
-  justify-content: flex-start;
-  gap: clamp(0.65rem, 1.4vw, 1.1rem);
-  /* Clear air under wordmark so it never sits on the H1; logo stacks above wordmark */
-  margin: 0 0 clamp(2.75rem, 4.6vw, 4.6rem) !important;
+  justify-content: flex-start !important;
+  /* Anteprima: ~37px clear air between logo bottom and CENTROPIC.AI */
+  gap: clamp(1.6rem, 2.6vw, 2.6rem) !important;
+  row-gap: clamp(1.6rem, 2.6vw, 2.6rem) !important;
+  column-gap: 0 !important;
+  margin: 0 0 clamp(2.5rem, 4.2vw, 4.2rem) !important;
   width: 100%;
   max-width: 100%;
   position: relative;
   z-index: 3;
   overflow: visible !important;
+  isolation: isolate;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  /* Anteprima: chrome mark ≈ 17.8% of viewport width — above wordmark, never overlapped */
-  display: block;
+  /* Anteprima: chrome mark ≈ 17.8vw — always ABOVE the wordmark */
+  display: block !important;
+  flex: 0 0 auto !important;
   width: clamp(7.5rem, 17.8vw, 17.5rem) !important;
   height: clamp(7.5rem, 17.8vw, 17.5rem) !important;
   max-width: none !important;
-  margin: 0 auto;
-  border-radius: 0;
-  position: relative;
+  margin: 0 auto !important;
+  border-radius: 0 !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
   z-index: 4;
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.7));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
-  display: block;
-  /* Full CENTROPIC.AI (~55%W letter-span); keep inside viewport so nothing clips */
+  display: block !important;
+  flex: 0 0 auto !important;
+  /* Full CENTROPIC.AI under the mark — never absolute over the logo */
   width: clamp(15rem, 52vw, 48rem) !important;
   height: auto !important;
   max-width: min(92vw, 100%) !important;
-  margin: 0 auto;
-  position: relative;
+  margin: 0 auto !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
   z-index: 3;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
 }
@@ -1026,7 +1038,7 @@ body.body-dash.dash-plan--business {
 }
 body.body-marketing .hero--preview .hero-visual__photo {
   object-fit: cover !important;
-  object-position: top center !important;
+  object-position: center top !important;
   opacity: 1 !important;
   filter: none !important;
 }
@@ -1353,7 +1365,8 @@ body.body-dash .finding-list > li::after {
     max-width: 94vw !important;
   }
   body.body-marketing .hero-brand-lockup--preview {
-    gap: 0.4rem;
+    gap: clamp(1.25rem, 4vw, 1.75rem) !important;
+    row-gap: clamp(1.25rem, 4vw, 1.75rem) !important;
     margin-bottom: clamp(1.6rem, 5vw, 2.2rem) !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
