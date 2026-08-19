@@ -17,10 +17,10 @@ HERO = {
         "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
             "See how ready your site is to be understood, cited, and recommended by AI."
         ),
-        "Misura la readiness": "Measure readiness",
-        "del tuo sito per le IA": "of your site for AI",
+        "Misura la": "Measure",
+        "del tuo sito": "of your site",
+        "per le IA": "for AI",
         "Anteprima immediata · niente carta": "Instant preview · no credit card",
-        "tuodominio.it": "yourdomain.com",
         "Inserisci l’URL del tuo sito (es. tuodominio.it).": (
             "Enter your site URL (e.g. yourdomain.com)."
         ),
@@ -30,33 +30,28 @@ HERO = {
         "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
             "Sehen Sie, wie bereit Ihre Website ist, von KI verstanden, zitiert und empfohlen zu werden."
         ),
-        "Misura la readiness": "Miss die Bereitschaft",
-        "tuodominio.it": "deine-domain.de",
+        "Misura la": "Miss",
         "URL non valido": "Ungültige URL",
     },
     "es": {
         "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
             "Descubre cuán listo está tu sitio para ser comprendido, citado y recomendado por la IA."
         ),
-        "Misura la readiness": "Mide la preparación",
-        "tuodominio.it": "tudominio.es",
+        "Misura la": "Mide",
         "URL non valido": "URL no válida",
     },
     "ko": {
         "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
             "사이트가 AI에 이해·인용·추천될 준비가 얼마나 되었는지 확인하세요."
         ),
-        "Misura la readiness": "준비도를 측정하세요",
-        "tuodominio.it": "yourdomain.com",
+        "Misura la": "측정하세요",
         "URL non valido": "유효하지 않은 URL입니다",
     },
     "zh_Hans": {
         "Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.": (
             "了解你的网站被 AI 理解、引用和推荐的就绪程度。"
         ),
-        "Misura la readiness": "衡量就绪度",
-        "del tuo sito per le IA": "让你的网站面向 AI",
-        "tuodominio.it": "yourdomain.com",
+        "Misura la": "衡量",
         "URL non valido": "无效的 URL",
     },
 }
@@ -88,16 +83,16 @@ def test_preview_url_error_helper_translates():
 
 def test_landing_hero_html_localized():
     client = app.test_client()
-    for lang, needle, placeholder in [
-        ("en", "See how ready your site is", "yourdomain.com"),
-        ("de", "Sehen Sie, wie bereit Ihre Website ist", "deine-domain.de"),
-        ("es", "Descubre cuán listo está tu sitio", "tudominio.es"),
-        ("ko", "사이트가 AI에 이해", "yourdomain.com"),
-        ("zh", "了解你的网站被 AI", "yourdomain.com"),
+    for lang, needle in [
+        ("en", "See how ready your site is"),
+        ("de", "Sehen Sie, wie bereit Ihre Website ist"),
+        ("es", "Descubre cuán listo está tu sitio"),
+        ("ko", "사이트가 AI에 이해"),
+        ("zh", "了解你的网站被 AI"),
     ]:
         r = client.get(f"/?lang={lang}")
         assert r.status_code == 200
         html = r.get_data(as_text=True)
         assert needle in html, (lang, needle)
-        assert f'placeholder="{placeholder}"' in html, (lang, placeholder)
+        assert 'placeholder="https://iltuosito.it"' in html
         assert "Scopri quanto il tuo sito è pronto" not in html

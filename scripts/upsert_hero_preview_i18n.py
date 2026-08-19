@@ -19,6 +19,9 @@ TABLES: dict[str, dict[str, str]] = {
         "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
             "Enter your domain for AIO/GEO structural readiness scores and critical issues."
         ),
+        "Misura la": "Measure",
+        "del tuo sito": "of your site",
+        "per le IA": "for AI",
         "Misura la readiness": "Measure readiness",
         "del tuo sito per le IA": "of your site for AI",
         "Anteprima immediata · niente carta": "Instant preview · no credit card",
@@ -58,6 +61,9 @@ TABLES: dict[str, dict[str, str]] = {
         "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
             "Geben Sie Ihre Domain ein — für AIO/GEO-Scores zur strukturellen Bereitschaft und kritische Befunde."
         ),
+        "Misura la": "Miss",
+        "del tuo sito": "Ihrer Website",
+        "per le IA": "für KI",
         "Misura la readiness": "Miss die Bereitschaft",
         "del tuo sito per le IA": "Ihrer Website für KI",
         "Anteprima immediata · niente carta": "Sofortvorschau · ohne Kreditkarte",
@@ -97,6 +103,9 @@ TABLES: dict[str, dict[str, str]] = {
         "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
             "Introduce tu dominio para obtener puntuaciones AIO/GEO de preparación estructural y criticidades."
         ),
+        "Misura la": "Mide",
+        "del tuo sito": "de tu sitio",
+        "per le IA": "para la IA",
         "Misura la readiness": "Mide la preparación",
         "del tuo sito per le IA": "de tu sitio para la IA",
         "Anteprima immediata · niente carta": "Vista previa al instante · sin tarjeta",
@@ -136,6 +145,9 @@ TABLES: dict[str, dict[str, str]] = {
         "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
             "도메인을 입력하면 AIO/GEO 구조적 준비도 점수와 핵심 이슈를 확인할 수 있습니다."
         ),
+        "Misura la": "측정하세요",
+        "del tuo sito": "사이트",
+        "per le IA": "AI용",
         "Misura la readiness": "준비도를 측정하세요",
         "del tuo sito per le IA": "AI가 읽는 당신의 사이트",
         "Anteprima immediata · niente carta": "즉시 미리보기 · 신용카드 불필요",
@@ -175,6 +187,9 @@ TABLES: dict[str, dict[str, str]] = {
         "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
             "输入域名，即可查看 AIO/GEO 结构就绪度评分与关键问题。"
         ),
+        "Misura la": "衡量",
+        "del tuo sito": "你的网站",
+        "per le IA": "面向 AI",
         "Misura la readiness": "衡量就绪度",
         "del tuo sito per le IA": "让你的网站面向 AI",
         "Anteprima immediata · niente carta": "即时预览 · 无需银行卡",

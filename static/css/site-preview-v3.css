@@ -630,7 +630,14 @@ body.body-marketing .brand-mark__logo {
   border-radius: 999px;
 }
 
-/* Hero — anteprima: full-viewport brand-first composition */
+/* Hero — anteprima EXACT: full-viewport void + wave, brand lockup, form only */
+body.body-marketing--hero-only .site-footer {
+  display: none !important;
+}
+body.body-marketing--hero-only .site-main {
+  min-height: 100dvh;
+  padding: 0 !important;
+}
 body.body-marketing .hero--preview.hero--signal {
   width: 100%;
   min-height: 100dvh;
@@ -642,12 +649,14 @@ body.body-marketing .hero--preview.hero--signal {
   box-sizing: border-box;
   overflow: hidden;
   padding: 0;
+  background: #000 !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  background: #000 !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview picture,
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
@@ -655,25 +664,26 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.65) brightness(0.48) contrast(1.1);
+  /* Anteprima: show void+teal wave as-is — do not crush with filters */
+  filter: none !important;
+  opacity: 1 !important;
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
-  opacity: 0.95 !important;
+  /* Desktop anteprima wave is in the photo; keep aurora nearly off */
+  opacity: 0.12 !important;
   background:
-    radial-gradient(ellipse 55% 42% at 72% 18%, rgba(63, 168, 181, 0.42), transparent 62%),
-    radial-gradient(ellipse 36% 30% at 50% 42%, rgba(63, 168, 181, 0.14), transparent 70%),
-    radial-gradient(ellipse 40% 35% at 18% 78%, rgba(201, 211, 221, 0.08), transparent 55%) !important;
+    radial-gradient(ellipse 50% 40% at 72% 18%, rgba(63, 168, 181, 0.22), transparent 65%) !important;
   pointer-events: none;
 }
 body.body-marketing .hero--preview .hero-copy--preview {
   position: relative;
   z-index: 2;
-  width: min(calc(100% - 2rem), 40rem) !important;
-  max-width: 40rem !important;
+  width: min(calc(100% - 2rem), 42rem) !important;
+  max-width: 42rem !important;
   margin: 0 auto !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  padding: clamp(4.5rem, 10vh, 6rem) 0 clamp(1.5rem, 4vh, 2.5rem) !important;
+  padding: clamp(4.5rem, 10vh, 6rem) 0 clamp(1.25rem, 3vh, 2rem) !important;
   text-align: center !important;
   text-shadow: none !important;
   display: flex;
@@ -692,10 +702,10 @@ body.body-marketing .hero-brand-lockup--preview {
   margin: 0 0 1.5rem !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-  width: clamp(7.5rem, 16vw, 10.5rem) !important;
-  height: clamp(7.5rem, 16vw, 10.5rem) !important;
+  width: clamp(8.5rem, 18vw, 11.5rem) !important;
+  height: clamp(8.5rem, 18vw, 11.5rem) !important;
   border-radius: 999px;
-  filter: drop-shadow(0 0 28px rgba(63, 168, 181, 0.38));
+  filter: drop-shadow(0 0 32px rgba(201, 211, 221, 0.22));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   font-size: clamp(1.85rem, 4.2vw, 2.75rem) !important;
@@ -713,11 +723,11 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word span {
   -webkit-text-fill-color: transparent;
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
-  font-size: clamp(1.65rem, 3.6vw, 2.55rem) !important;
+  font-size: clamp(1.55rem, 3.4vw, 2.35rem) !important;
   font-weight: 650 !important;
   letter-spacing: -0.03em !important;
-  line-height: 1.18 !important;
-  max-width: 22ch !important;
+  line-height: 1.22 !important;
+  max-width: 24ch !important;
   margin: 0 0 0.85rem !important;
   color: #E8EEF4 !important;
   text-align: center !important;
@@ -727,15 +737,15 @@ body.body-marketing .hero--preview .hero-accent {
   display: inline;
 }
 body.body-marketing .hero--preview .hero-lede {
-  max-width: 34rem !important;
-  margin: 0 auto 1.5rem !important;
-  font-size: clamp(0.95rem, 1.6vw, 1.08rem) !important;
+  max-width: 36rem !important;
+  margin: 0 auto 1.65rem !important;
+  font-size: clamp(0.92rem, 1.5vw, 1.05rem) !important;
   line-height: 1.55 !important;
-  color: color-mix(in srgb, #E8EEF4 68%, transparent) !important;
+  color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
   text-align: center !important;
 }
 body.body-marketing .hero--preview .hero-url-form--preview {
-  width: min(100%, 34rem);
+  width: min(100%, 36rem);
   margin: 0 auto;
   animation: none;
 }
@@ -745,8 +755,8 @@ body.body-marketing .hero--preview .hero-url-form__row {
   gap: 0.45rem;
   padding: 0.4rem;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--brand-cyan) 24%, transparent);
-  background: rgba(4, 8, 10, 0.62);
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 28%, transparent);
+  background: rgba(4, 8, 10, 0.72);
   backdrop-filter: blur(12px);
 }
 body.body-marketing .hero--preview .hero-url-form__input {
@@ -766,7 +776,7 @@ body.body-marketing .hero--preview .hero-url-form__submit {
   flex: 0 0 auto;
   border-radius: 8px !important;
   border: 1px solid color-mix(in srgb, var(--mkt-teal) 55%, transparent) !important;
-  background: color-mix(in srgb, var(--mkt-teal) 14%, transparent) !important;
+  background: transparent !important;
   color: #B8E6EC !important;
   font-weight: 700 !important;
   box-shadow: none !important;
@@ -775,14 +785,12 @@ body.body-marketing .hero--preview .hero-url-form__submit {
 }
 body.body-marketing .hero--preview .hero-url-form__submit:hover {
   border-color: var(--mkt-teal) !important;
-  background: color-mix(in srgb, var(--mkt-teal) 26%, transparent) !important;
+  background: color-mix(in srgb, var(--mkt-teal) 18%, transparent) !important;
   color: #E8F7F9 !important;
   filter: none;
 }
 body.body-marketing .hero--preview .hero-url-form__hint {
-  margin-top: 0.75rem !important;
-  text-align: center !important;
-  color: color-mix(in srgb, #E8EEF4 48%, transparent) !important;
+  display: none !important; /* not in anteprima */
 }
 /* Below-fold CTAs keep solid teal */
 body.body-marketing .btn-core {
@@ -937,10 +945,11 @@ body.body-dash.dash-plan--business {
 }
 body.body-marketing .hero--preview .hero-visual__photo {
   object-fit: cover !important;
-  opacity: 1;
+  opacity: 1 !important;
+  filter: none !important;
 }
 body.body-marketing .hero--preview .hero-visual__aurora {
-  opacity: 0.9 !important;
+  opacity: 0.12 !important;
 }
 
 .dash-hero__domain-label {
@@ -1250,7 +1259,7 @@ body.body-dash .finding-list > li::after {
   body.body-marketing .hero--preview.hero--signal {
     min-height: 100dvh;
     height: 100dvh;
-    max-height: none; /* allow short phones to scroll within hero if needed */
+    max-height: none;
   }
   body.body-marketing .hero--preview .hero-copy--preview {
     padding-top: clamp(4.75rem, 12vh, 6rem) !important;
@@ -1262,20 +1271,24 @@ body.body-dash .finding-list > li::after {
     margin-bottom: 1.25rem !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-    width: clamp(6.25rem, 34vw, 8rem) !important;
-    height: clamp(6.25rem, 34vw, 8rem) !important;
+    width: clamp(7rem, 38vw, 9.5rem) !important;
+    height: clamp(7rem, 38vw, 9.5rem) !important;
+    filter: drop-shadow(0 0 36px rgba(63, 168, 181, 0.45));
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     font-size: clamp(1.55rem, 7vw, 2rem) !important;
     letter-spacing: 0.1em !important;
+    background: linear-gradient(135deg, #7FD4DE 0%, #3FA8B5 55%, #C9D3DD 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
   }
   body.body-marketing .hero--preview .hero-headline--v2 {
-    font-size: clamp(1.4rem, 6.2vw, 1.85rem) !important;
-    max-width: 18ch !important;
+    font-size: clamp(1.35rem, 5.8vw, 1.75rem) !important;
+    max-width: 20ch !important;
   }
   body.body-marketing .hero--preview .hero-lede {
     font-size: 0.95rem !important;
-    margin-bottom: 1.25rem !important;
+    margin-bottom: 1.35rem !important;
   }
   body.body-marketing .hero--preview .hero-url-form__row {
     flex-direction: column;
@@ -1298,9 +1311,10 @@ body.body-dash .finding-list > li::after {
     color: #041014 !important;
   }
   body.body-marketing .hero--preview .hero-visual__aurora {
+    opacity: 0.85 !important;
     background:
-      radial-gradient(ellipse 70% 48% at 50% 28%, rgba(63, 168, 181, 0.48), transparent 65%),
-      radial-gradient(ellipse 50% 40% at 50% 55%, rgba(63, 168, 181, 0.16), transparent 70%) !important;
+      radial-gradient(ellipse 70% 48% at 50% 36%, rgba(63, 168, 181, 0.42), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 48%, rgba(63, 168, 181, 0.18), transparent 70%) !important;
   }
   body.body-marketing .profile-grid {
     grid-template-columns: 1fr !important;

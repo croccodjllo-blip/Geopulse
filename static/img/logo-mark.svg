@@ -1,20 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="mChrome" x1="8%" y1="6%" x2="92%" y2="94%">
+    <linearGradient id="mChrome" x1="12%" y1="4%" x2="88%" y2="96%">
       <stop offset="0%" stop-color="#FFFFFF"/>
       <stop offset="40%" stop-color="#C9D3DD"/>
       <stop offset="100%" stop-color="#5B6B7A"/>
     </linearGradient>
-    <radialGradient id="mCore" cx="48%" cy="46%" r="54%">
-      <stop offset="0%" stop-color="#7FD4DE"/>
-      <stop offset="55%" stop-color="#3FA8B5"/>
-      <stop offset="100%" stop-color="#0A1C20"/>
-    </radialGradient>
   </defs>
-  <circle cx="32" cy="32" r="30" fill="#05070A" opacity="0.5"/>
-  <path d="M50 18 A24 24 0 1 0 50 46" fill="none" stroke="url(#mChrome)" stroke-width="4.4" stroke-linecap="round"/>
-  <path d="M45 21 A18 18 0 1 0 45 43" fill="none" stroke="url(#mChrome)" stroke-width="3.2" stroke-linecap="round" opacity="0.9"/>
-  <path d="M40 25 A12.5 12.5 0 1 0 40 39" fill="none" stroke="url(#mChrome)" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
-  <circle cx="32" cy="32" r="5.2" fill="url(#mCore)"/>
-  <circle cx="32" cy="32" r="2" fill="#E8F7F9" opacity="0.85"/>
+  <path d="M49 16 A24 24 0 1 0 49 48" fill="none" stroke="url(#mChrome)" stroke-width="4.6" stroke-linecap="round"/>
+  <path d="M44 20 A18 18 0 1 0 44 44" fill="none" stroke="url(#mChrome)" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M39 25 A12 12 0 1 0 39 39" fill="none" stroke="url(#mChrome)" stroke-width="2.8" stroke-linecap="round"/>
 </svg>

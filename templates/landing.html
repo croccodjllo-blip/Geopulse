@@ -4,13 +4,14 @@
 {% block header_class %}site-header--invert site-header--transparent{% endblock %}
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
-{% block body_class %}body-marketing{% endblock %}
+{% block body_class %}body-marketing body-marketing--hero-only{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
   {% include "partials/jsonld_faq_home.html" %}
 {% endblock %}
 
 {% block content %}
+{# Homepage = anteprima hero only (void + logo + H1 + form). No below-fold sections. #}
 <section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-brand">
   <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true">
     <picture>
@@ -36,16 +37,18 @@
       <img
         class="hero-brand-mark"
         src="{{ url_for('static', filename='img/logo.svg') }}"
-        width="160"
-        height="160"
+        width="180"
+        height="180"
         alt=""
         decoding="async"
       />
       <p class="hero-brand-word">CENTROPIC<span>.AI</span></p>
     </div>
     <h1 class="hero-headline hero-headline--v2 hero-headline--rise">
-      {{ _('Misura la readiness') }}
-      <span class="hero-accent">{{ _('del tuo sito per le IA') }}</span>
+      {{ _('Misura la') }}
+      <span class="hero-accent">readiness</span>
+      {{ _('del tuo sito') }}
+      <span class="hero-accent">{{ _('per le IA') }}</span>
     </h1>
     <p class="lede hero-lede">
       {{ _('Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato dalle intelligenze artificiali.') }}
@@ -68,148 +71,12 @@
           autocomplete="url"
           required
           maxlength="500"
-          placeholder="{{ _('tuodominio.it') }}"
+          placeholder="https://iltuosito.it"
           spellcheck="false"
         />
         <button type="submit" class="btn btn-ghost-light hero-url-form__submit">{{ _('Analizza gratis') }}</button>
       </div>
-      <p class="hero-url-form__hint">
-        {{ _('Anteprima immediata · niente carta') }}
-        ·
-        <a href="{{ url_for('sample_report') }}">{{ _('Vedi un report di esempio') }}</a>
-      </p>
     </form>
-  </div>
-</section>
-
-<section class="section-band section-band--v2 section-band--page section-band--preview" id="segnale">
-  <p class="eyebrow">{{ _('Perché Centropic') }}</p>
-  <h2>{{ _('Se l’IA non ti legge, non ti cita.') }}</h2>
-  <p class="lede lede--page">
-    {{ _('Score AIO/GEO di readiness strutturale, criticità prioritizzate e pack di fix — evidenza operativa, non opinioni.') }}
-  </p>
-</section>
-
-<section class="section-band section-band--v2 section-band--wide section-band--preview" id="profili">
-  <p class="eyebrow">{{ _('Piani') }}</p>
-  <h2>{{ _('Tre profili. Una piattaforma.') }}</h2>
-  <p class="lede">
-    {{ _('Validare, operare sul brand, o scalare clienti in agenzia.') }}
-  </p>
-  <div class="profile-grid profile-grid--stagger" role="list">
-    <article class="profile-card" role="listitem">
-      <p class="profile-card__tier">Free</p>
-      <p class="profile-card__price">0&nbsp;€</p>
-      <p class="profile-card__who">{{ _('Validare il dominio') }}</p>
-      <p class="profile-card__desc">
-        {{ _('Prima diagnosi AIO/GEO, findings e pack ZIP — senza carta.') }}
-      </p>
-      <ul class="profile-card__list">
-        <li><strong>{{ _('1 dominio monitorato') }}</strong></li>
-        <li>{{ free_total_analyses }} {{ _('analisi iniziali · pack pubblicabile') }}</li>
-        <li>{{ _('Re-scan: manuale') }}</li>
-      </ul>
-      <a class="btn btn-ghost-light btn-block" href="{{ url_for('register') }}">{{ _('Crea account') }}</a>
-    </article>
-    <article class="profile-card profile-card--featured" role="listitem">
-      <p class="profile-card__tier">Plus</p>
-      {% with price_class='profile-card__price', show_offer_note=false %}
-        {% include "partials/plus_price_offer.html" %}
-      {% endwith %}
-      <p class="profile-card__who">{{ _('Startup sul proprio brand') }}</p>
-      <p class="profile-card__desc">
-        {{ _('Operatività continua: citation monitor (probe LLM), re-scan, alert e crawl esteso.') }}
-      </p>
-      <ul class="profile-card__list">
-        <li><strong>{{ _('Fino a') }} {{ max_sites_plus }} {{ _('domini') }}</strong></li>
-        <li>{{ _('Re-scan · citation monitor Misurato (0 hit → Misurato 0%)') }}</li>
-        <li>{{ _('Alert · Edge completo · no API/WL') }}</li>
-      </ul>
-      <a class="btn btn-core btn-block" href="{{ url_for('pricing') }}#plus">{{ _('Scegli Plus') }}</a>
-    </article>
-    <article class="profile-card" role="listitem">
-      <p class="profile-card__badge">{{ _('Waitlist') }}</p>
-      <p class="profile-card__tier">Business</p>
-      <p class="profile-card__price">{{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}&nbsp;€{% include "partials/price_period_ex_vat.html" %}</p>
-      <p class="profile-card__who">{{ _('Agenzie multi-cliente') }}</p>
-      <p class="profile-card__desc">
-        {{ _('API, white-label e scala siti per il delivery in agenzia — in arrivo. Oggi partiamo da Plus.') }}
-      </p>
-      <ul class="profile-card__list">
-        <li><strong>{{ _('Fino a') }} {{ max_sites_business }} {{ _('domini / clienti') }}</strong></li>
-        <li>{{ _('API') }} <code>/api/v1</code> {{ _('· white-label MD/HTML') }}</li>
-        <li>{{ _('Re-scan + SoV Misurato · tutto di Plus') }}</li>
-      </ul>
-      <a class="btn btn-ghost-light btn-block" href="{{ url_for('pro_interest') }}">{{ _('Waitlist Business') }}</a>
-    </article>
-  </div>
-</section>
-
-<section class="section-band section-band--v2 section-band--wide section-band--preview" id="metodo">
-  <p class="eyebrow">{{ _('Metodo') }}</p>
-  <h2>{{ _('Tre fasi. Output operativo.') }}</h2>
-  <p class="lede">
-    {{ _('Acquisisci, valuta, consegna — stesso motore per tutti i profili.') }}
-  </p>
-  <ol class="step-flow step-flow--v2">
-    <li>
-      <strong>{{ _('01 · Acquisizione') }}</strong>
-      <span>{{ _('Crawl del dominio e probe sui segnali pubblici rilevanti per modelli e crawler IA.') }}</span>
-    </li>
-    <li>
-      <strong>{{ _('02 · Valutazione') }}</strong>
-      <span>{{ _('Score AIO/GEO e findings per severità, con etichette Stimato vs Misurato.') }}</span>
-    </li>
-    <li>
-      <strong>{{ _('03 · Consegna') }}</strong>
-      <span>{{ _('Edge Signals oppure pack (llms.txt, schema, robots) pronto da pubblicare.') }}</span>
-    </li>
-  </ol>
-</section>
-
-<section class="section-band section-band--v2 section-band--preview" id="faq-rapide">
-  <p class="eyebrow">FAQ</p>
-  <h2>{{ _('Domande frequenti') }}</h2>
-  <div class="faq-list faq-list--v2">
-    <details class="faq-item" open>
-      <summary>{{ _('Cos’è il CVI (Centropic Visibility Index)?') }}</summary>
-      <p>
-        {{ _('Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard da confrontare tra brand — non Domain Authority di terzi, non Share of Voice pubblicitaria.') }}
-      </p>
-    </details>
-    <details class="faq-item">
-      <summary>{{ _('Cosa significano AIO e GEO in Centropic?') }}</summary>
-      <p>
-        {{ _('Componenti del CVI. AIO (AI-Driven Visibility) = leggibilità per modelli e crawler IA. GEO (Generative Engine Optimization) = citabilità strutturale. Non GIS, non All-in-One.') }}
-      </p>
-    </details>
-    <details class="faq-item">
-      <summary>{{ _('Quale piano mi serve?') }}</summary>
-      <p>
-        {{ _('Free: 1 dominio. Plus (19,99€ Tasse escluse): fino a') }} {{ max_sites_plus }} {{ _('domini, re-scan e SoV Misurato. Business (waitlist): API, white-label e fino a') }}
-        {{ max_sites_business }} {{ _('domini clienti.') }}
-      </p>
-    </details>
-    <details class="faq-item">
-      <summary>{{ _('Gli score rappresentano menzioni live?') }}</summary>
-      <p>
-        {{ _('Misurano la predisposizione strutturale del sito. Su Plus puoi aggiungere menzioni Misurate dal citation monitor.') }}
-      </p>
-    </details>
-  </div>
-</section>
-
-<section class="section-cta section-cta--v2 section-cta--preview" id="inizia">
-  <div class="section-cta__inner">
-    <p class="eyebrow">{{ _('Avvio') }}</p>
-    <h2>{{ _('Parti dal profilo giusto.') }}</h2>
-    <p class="lede">
-      {{ _('Free senza carta. Plus in vendita per il brand. Business in waitlist per le agenzie.') }}
-    </p>
-    <div class="cta-row">
-      <a class="btn btn-core" href="{{ url_for('register') }}">{{ _('Crea account Free') }}</a>
-      <a class="btn btn-ghost-light" href="{{ url_for('pricing') }}">{{ _('Vedi Plus') }}</a>
-    </div>
   </div>
 </section>
 {% endblock %}
