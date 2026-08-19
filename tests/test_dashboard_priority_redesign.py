@@ -7,15 +7,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DASH = (ROOT / "templates" / "dashboard.html").read_text(encoding="utf-8")
 SHELL = (ROOT / "templates" / "partials" / "dashboard_shell.html").read_text(encoding="utf-8")
-CSS = (ROOT / "static" / "css" / "dash-preview.css").read_text(encoding="utf-8")
+CSS = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
 DYN = (ROOT / "templates" / "partials" / "dash_dynamic_styles.html").read_text(encoding="utf-8")
 
 
 def test_preview_css_linked():
     base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
-    assert "dash-preview.css" in base
+    assert "site-preview-v3.css" in base
     # Site-wide (marketing + auth + dash), not gated on current_user.
-    assert "{% if current_user %}" not in base.split("dash-preview.css")[0][-80:]
+    assert "{% if current_user %}" not in base.split("site-preview-v3.css")[0][-80:]
 
 
 def test_priority_hero_rings_and_micro_metrics():
@@ -27,6 +27,8 @@ def test_priority_hero_rings_and_micro_metrics():
     assert "dash-actions__btn" in DASH
     assert "dash-sov-list" in DASH
     assert "dash-cta" in DASH
+    assert "dash-findings" in DASH
+    assert "dash-more--ops" in DASH
 
 
 def test_score_sov_tabs_and_pulse_removed():

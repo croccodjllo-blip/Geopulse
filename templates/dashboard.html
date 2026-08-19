@@ -215,6 +215,33 @@
             {% endif %}
           </section>
 
+            <section class="dash-findings" id="findings" aria-labelledby="findings-title">
+              <header class="dash-findings__head">
+                <h3 class="dash-findings__title" id="findings-title">{{ _('Findings') }}</h3>
+              </header>
+              <ul class="finding-list">
+                {% for f in findings %}
+                <li data-severity="{{ f.severity }}">
+                  <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Attenzione') }}{% else %}{{ f.severity }}{% endif %}</em>
+                  <div class="finding-list__body">
+                    <strong>
+                      {{ _(f.title) }}
+                      {% set ev = f.evidence or 'estimated' %}
+                      <span class="evidence-badge" data-evidence="{{ ev }}">
+                        {% if ev == 'measured' %}{{ _('Misurato') }}{% else %}{{ _('Stimato') }}{% endif %}
+                      </span>
+                    </strong>
+                    {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
+                  </div>
+                </li>
+                {% else %}
+                <li class="finding-list__empty">
+                  <span>{{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok nascosti.') }}{% endif %}</span>
+                </li>
+                {% endfor %}
+              </ul>
+            </section>
+
           <div class="dash-cta" role="region" aria-label="{{ _('Azioni infrastruttura') }}">
             <p class="dash-cta__copy">{{ _('Trasforma i segnali in presenza. Intervieni dove le AI ti ascoltano.') }}</p>
             <div class="dash-cta__actions">
@@ -223,9 +250,10 @@
             </div>
           </div>
 
+          <details class="dash-more dash-more--ops">
+            <summary class="dash-more__summary">{{ _('Monitoraggio, Edge e pack') }}</summary>
+
           {% if geo_suite %}
-          <details class="dash-more">
-            <summary class="dash-more__summary">{{ _('GEO / AIO avanzato') }}</summary>
           <section class="dash-block dash-block--panel geo-suite" aria-label="{{ _('GEO suite') }}">
             <header class="dash-block__head">
               <div>
@@ -278,7 +306,6 @@
               {% endif %}
             </ul>
           </section>
-          </details>
           {% endif %}
 
           {% if run_diff and run_diff.has_previous %}
@@ -358,49 +385,6 @@
             </section>
             {% endif %}
 
-            <section class="dash-block dash-block--panel" id="findings" aria-labelledby="findings-title">
-              <header class="dash-block__head">
-                <div>
-                  <p class="dash-block__eyebrow">{{ _('Priorità') }}</p>
-                  <h3 class="dash-block__title" id="findings-title">{{ _('Findings critici') }}</h3>
-                </div>
-                <div class="dash-block__meta">
-                  <span class="dash-block__count">{{ findings|length }}</span>
-                  {% if crit_n and warn_n %}
-                  <span class="dash-block__chip" data-severity="critical">{{ crit_n }} {{ _('Critico') }}</span>
-                  <span class="dash-block__chip" data-severity="warn">{{ warn_n }} {{ _('Attenzione') }}</span>
-                  {% elif crit_n %}
-                  <span class="dash-block__chip" data-severity="critical">{{ _('Critico') }}</span>
-                  {% elif warn_n %}
-                  <span class="dash-block__chip" data-severity="warn">{{ _('Attenzione') }}</span>
-                  {% endif %}
-                </div>
-              </header>
-              <ul class="finding-list">
-                {% for f in findings %}
-                <li data-severity="{{ f.severity }}">
-                  <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Attenzione') }}{% else %}{{ f.severity }}{% endif %}</em>
-                  <div class="finding-list__body">
-                    <strong>
-                      {{ _(f.title) }}
-                      {% set ev = f.evidence or 'estimated' %}
-                      <span class="evidence-badge" data-evidence="{{ ev }}">
-                        {% if ev == 'measured' %}{{ _('Misurato') }}{% else %}{{ _('Stimato') }}{% endif %}
-                      </span>
-                    </strong>
-                    {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
-                  </div>
-                </li>
-                {% else %}
-                <li class="finding-list__empty">
-                  <span>{{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok nascosti.') }}{% endif %}</span>
-                </li>
-                {% endfor %}
-              </ul>
-              {% if findings_all_n and findings|length %}
-              <p class="dash-block__more">{{ _('Solo critical/warn ·') }} {{ findings_all_n }} {{ _('totali') }}</p>
-              {% endif %}
-            </section>
           </div>
 
           {% if can_scheduled_rescan %}
@@ -622,6 +606,8 @@
             </form>
           </dialog>
           {% endif %}
+
+          </details>
 
           <details class="analyze-reveal" id="analyze-panel">
             <summary class="analyze-reveal__summary">

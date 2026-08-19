@@ -16,14 +16,14 @@ def test_landing_preview_lockup():
 
 def test_base_loads_preview_css_sitewide():
     base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
-    assert "css/dash-preview.css" in base
+    assert "css/site-preview-v3.css" in base
     # Must not be wrapped only for logged-in users.
-    chunk = base.split("dash-preview.css", 1)[0][-200:]
+    chunk = base.split("site-preview-v3.css", 1)[0][-200:]
     assert "current_user" not in chunk
 
 
 def test_marketing_css_targets_body_marketing():
-    css = (ROOT / "static" / "css" / "dash-preview.css").read_text(encoding="utf-8")
+    css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "body.body-marketing" in css
     assert "hero-brand-lockup--preview" in css
     assert "SITE-WIDE marketing" in css
@@ -41,7 +41,7 @@ def test_landing_uses_void_background():
 
 
 def test_mobile_preview_css():
-    css = (ROOT / "static" / "css" / "dash-preview.css").read_text(encoding="utf-8")
+    css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "MOBILE = preview 3" in css
     assert "bg-void-chrome-mobile.jpg" in css
     assert "Dominio analizzato" not in css  # copy stays in template
