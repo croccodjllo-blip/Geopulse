@@ -14,7 +14,8 @@ DYN = (ROOT / "templates" / "partials" / "dash_dynamic_styles.html").read_text(e
 def test_preview_css_linked():
     base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
     assert "dash-preview.css" in base
-    assert "current_user" in base
+    # Site-wide (marketing + auth + dash), not gated on current_user.
+    assert "{% if current_user %}" not in base.split("dash-preview.css")[0][-80:]
 
 
 def test_priority_hero_rings_and_micro_metrics():

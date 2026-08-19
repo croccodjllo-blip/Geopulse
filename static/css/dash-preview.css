@@ -458,3 +458,201 @@ body.body-dash .workspace-strip--preview .workspace-strip__title::after {
   box-shadow: 0 0 10px color-mix(in srgb, var(--plan-accent) 70%, transparent);
   vertical-align: middle;
 }
+
+/* —— SITE-WIDE marketing / auth preview chrome —— */
+body.body-marketing {
+  --brand-cyan: #C9D3DD;
+  --mkt-teal: #3FA8B5;
+}
+
+body.body-marketing .site-header--transparent {
+  background: linear-gradient(180deg, rgba(4, 6, 10, 0.88) 0%, rgba(4, 6, 10, 0.35) 70%, transparent 100%) !important;
+  border-bottom: 0 !important;
+  backdrop-filter: blur(8px);
+}
+body.body-marketing .brand-mark__logo {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 999px;
+}
+body.body-marketing .nav-cta {
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 40%, transparent) !important;
+  background: color-mix(in srgb, var(--mkt-teal) 16%, transparent) !important;
+  color: #E8EEF4 !important;
+  border-radius: 8px !important;
+}
+body.body-marketing .nav-cta:hover {
+  border-color: var(--mkt-teal) !important;
+  background: color-mix(in srgb, var(--mkt-teal) 26%, transparent) !important;
+}
+
+/* Hero — brand-first, circular mark, chrome wordmark */
+body.body-marketing .hero--signal {
+  min-height: min(100vh, 52rem);
+}
+body.body-marketing .hero-visual--cite .hero-visual__photo {
+  filter: saturate(0.85) brightness(0.72) contrast(1.05);
+}
+body.body-marketing .hero-visual__aurora {
+  opacity: 0.35 !important;
+  background:
+    radial-gradient(ellipse 50% 40% at 70% 20%, rgba(63, 168, 181, 0.28), transparent 60%),
+    radial-gradient(ellipse 40% 35% at 20% 70%, rgba(201, 211, 221, 0.12), transparent 55%) !important;
+}
+body.body-marketing .hero-visual__scan,
+body.body-marketing .hero-cite-svg {
+  opacity: 0.22 !important;
+}
+body.body-marketing .hero-copy--v2 {
+  max-width: 40rem !important;
+  padding-top: clamp(5.5rem, 14vh, 8rem) !important;
+}
+body.body-marketing .hero-brand-lockup--preview {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem 1rem;
+  margin-bottom: 1.35rem;
+}
+body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
+  width: 4.5rem !important;
+  height: 4.5rem !important;
+  border-radius: 999px;
+  filter: drop-shadow(0 0 18px rgba(63, 168, 181, 0.35));
+}
+body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
+  font-size: clamp(1.65rem, 3.5vw, 2.35rem) !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  margin: 0 !important;
+  background: linear-gradient(135deg, #E8EEF4 0%, #C9D3DD 45%, #5B6B7A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.body-marketing .hero-brand-lockup--preview .hero-brand-word span {
+  -webkit-text-fill-color: transparent;
+}
+body.body-marketing .hero-headline--v2 {
+  font-size: clamp(1.85rem, 4.2vw, 3rem) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.12 !important;
+  max-width: 18ch;
+}
+body.body-marketing .hero-accent {
+  color: var(--mkt-teal) !important;
+  display: inline;
+}
+body.body-marketing .hero-lede {
+  max-width: 34rem !important;
+  font-size: 1.02rem !important;
+  color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
+}
+body.body-marketing .hero-url-form__row {
+  display: flex;
+  gap: 0.55rem;
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 22%, transparent);
+  background: rgba(4, 8, 10, 0.55);
+  backdrop-filter: blur(10px);
+}
+body.body-marketing .hero-url-form__input {
+  flex: 1;
+  border: 0 !important;
+  background: transparent !important;
+  color: #E8EEF4 !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 0.85rem !important;
+}
+body.body-marketing .hero-url-form__submit,
+body.body-marketing .btn-core {
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+  border: 0 !important;
+  color: #041014 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 24px rgba(63, 168, 181, 0.28);
+}
+body.body-marketing .hero-url-form__submit:hover,
+body.body-marketing .btn-core:hover {
+  filter: brightness(1.08);
+}
+
+/* Sections — one job, hairlines, less card soup */
+body.body-marketing .section-band--v2 {
+  padding-top: clamp(2.75rem, 6vw, 4.25rem) !important;
+  padding-bottom: clamp(2.75rem, 6vw, 4.25rem) !important;
+}
+body.body-marketing .section-band--v2 .eyebrow {
+  color: var(--mkt-teal) !important;
+  letter-spacing: 0.14em !important;
+  font-size: 0.7rem !important;
+}
+body.body-marketing .section-band--v2 h2 {
+  letter-spacing: -0.03em !important;
+  max-width: 18ch;
+}
+body.body-marketing .profile-card {
+  background: rgba(10, 16, 18, 0.55) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 14%, transparent) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+body.body-marketing .profile-card--featured {
+  border-color: color-mix(in srgb, var(--mkt-teal) 45%, transparent) !important;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(63, 168, 181, 0.14), transparent 55%),
+    rgba(8, 18, 18, 0.72) !important;
+}
+body.body-marketing .profile-card__tier {
+  color: var(--mkt-teal) !important;
+  letter-spacing: 0.12em !important;
+}
+body.body-marketing .profile-card__price {
+  letter-spacing: -0.03em !important;
+}
+body.body-marketing .step-flow--v2 li {
+  border-color: color-mix(in srgb, var(--brand-cyan) 14%, transparent) !important;
+  background: transparent !important;
+}
+body.body-marketing .product-shot {
+  border-radius: 14px !important;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 14%, transparent) !important;
+  overflow: hidden;
+  background: #061210 !important;
+}
+body.body-marketing .product-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+body.body-marketing .faq-item {
+  border-color: color-mix(in srgb, var(--brand-cyan) 12%, transparent) !important;
+}
+body.body-marketing .section-cta--v2 {
+  border-top: 1px solid color-mix(in srgb, var(--brand-cyan) 12%, transparent);
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 0%, rgba(63, 168, 181, 0.12), transparent 55%),
+    transparent !important;
+}
+
+/* Auth pages */
+body.body-auth .page-intro__brand-mark,
+body.body-auth .brand-mark__logo {
+  border-radius: 999px;
+}
+body.body-auth .btn-primary,
+body.body-auth .btn-signal {
+  background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+  border: 0 !important;
+  color: #041014 !important;
+  font-weight: 700 !important;
+}
+
+/* Pricing / product page intros */
+body.body-marketing .page-intro__brand-mark {
+  border-radius: 999px;
+  filter: drop-shadow(0 0 12px rgba(63, 168, 181, 0.3));
+}
