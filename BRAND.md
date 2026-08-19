@@ -23,7 +23,8 @@ Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04
 - `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility).
 - `static/favicon.svg` — same compact-mark design.
 - `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` — raster renders of the SVGs above (`cairosvg`), used only where raster is required: `<link rel="apple-touch-icon">`, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback.
-- `static/img/hero-signal-field.jpg` — landing hero full-bleed atmosphere (ultrawide ~21:9, `object-fit: cover` via `.hero-visual__photo`). Abstract chrome signal-field; **no logo/monogram/wordmark** — mark stays in the HTML lockup.
+- `static/img/bg-void-chrome.jpg` / `bg-void-chrome-mobile.jpg` — site-wide void charcoal canvas with teal particle glow (preview 1–3 atmosphere). Used as marketing hero photo and dash body backdrop.
+- `static/img/hero-signal-field.jpg` — legacy hero art (superseded on landing by `bg-void-chrome.jpg`).
 - `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art.
 - Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current).
 
@@ -34,7 +35,7 @@ Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04
 The current mark avoids both: `logo.svg`/`logo-mark.svg`/`favicon.svg` are genuine vector shapes (polygon/ellipse/path + linear/radial gradients, all inline, zero external refs) — safe to use directly via `<img src="...svg">` in every browser, and infinitely scalable (verified 16px favicon up to 220px auth-page render).
 
 ## Mark concept
-Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satellite node · bold chrome-gradient **C** monogram formed from an open ring stroke. Flat/gradient vector, not a photoreal 3D render — this is intentional; do not swap it back to a raster photo.
+Chrome void disc · dashed orbital ellipse with satellite node · bold chrome-gradient **C** monogram (open ring stroke). Flat/gradient vector, not a photoreal 3D render — intentional; do not swap to a raster photo. (Hex chassis retired 2026-08-19 in favor of the circular preview lockup.)
 
 ## Wordmark
 `CENTROPIC.AI` — **uppercase**, metallic chrome gradient text (`background-clip: text`), **only on the landing `#hero-brand` lockup**. Page-intro / auth brand rows keep the plain lowercase `centropic.ai` wordmark so they never compete with that page’s H1. Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight (`templates/partials/holo_brand.html`, `.brand-mark__word`).
