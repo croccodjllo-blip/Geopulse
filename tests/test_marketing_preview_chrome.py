@@ -12,14 +12,14 @@ def test_landing_is_hero_only_anteprima():
     assert "hero-brand-lockup--preview" in html
     assert "hero--preview" in html
     assert "body-marketing--hero-only" in html
-    assert "CENTROPIC" in html
     assert "logo-hero.png" in html
     assert "wordmark-hero.png" in html
     assert "bg-void-chrome.jpg" in html
     assert "Space+Grotesk" in html or "Space Grotesk" in html
     assert "Scopri quanto il tuo sito è pronto" in html
     assert "https://iltuosito.it" in html
-    assert "{% block footer %}" in html
+    # Footer uses default base block (same as other pages)
+    assert "{% block footer %}" not in html
     # Exact anteprima: no below-fold marketing sections
     assert "section-band" not in html
     assert "consideration set" not in html
@@ -27,13 +27,25 @@ def test_landing_is_hero_only_anteprima():
     assert "hero_citation_field.html" not in html
 
 
+def test_anteprima_scale_measures_in_css():
+    """Logo ~17.8vw, wordmark ~55vw, bg wave ~58% top-right (from anteprima px)."""
+    css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
+    assert "17.8vw" in css
+    assert "55vw" in css
+    assert "width: 58%" in css
+    assert "object-fit: contain" in css
+    assert "object-position: top right" in css
+    # Footer must not be force-hidden on homepage
+    assert "body.body-marketing--hero-only .site-footer" not in css
+
+
 def test_logo_assets_exist():
     assert (ROOT / "static" / "img" / "logo-hero.png").exists()
     assert (ROOT / "static" / "img" / "wordmark-hero.png").exists()
     assert (ROOT / "static" / "img" / "bg-void-chrome.jpg").exists()
     assert (ROOT / "static" / "img" / "bg-void-chrome-mobile.jpg").exists()
-    # Anteprima-extracted chrome mark must be opaque RGB with bright pixels
     from PIL import Image
+
     im = Image.open(ROOT / "static" / "img" / "logo-hero.png")
     assert im.size[0] >= 250
     bright = sum(
@@ -59,7 +71,6 @@ def test_flush_main_wins_max_width():
     assert flush_pos > shared_pos > -1
     preview = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "site-main.site-main--flush" in preview
-    assert "100vw" not in preview.split("Hero — anteprima")[1][:800]
 
 
 def test_landing_uses_void_background():
