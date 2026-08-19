@@ -116,7 +116,7 @@
         <a class="brand-mark brand-mark--holo" href="{{ url_for('index') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
-            src="{{ url_for('static', filename='img/logo.svg') }}"
+            src="{{ url_for('static', filename='img/logo-mark.png') }}"
             alt="Centropic"
             width="32"
             height="32"
@@ -197,6 +197,7 @@
       {% block content %}{% endblock %}
     </main>
 
+    {% block footer %}
     <footer class="site-footer">
       <div class="site-footer__inner site-footer__grid">
         <div class="site-footer__brand">
@@ -287,6 +288,7 @@
       </div>
     </footer>
     {% endblock %}
+    {% endblock %}{# shell #}
 
     <aside id="cookie-consent" class="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc" hidden>
       <p class="cookie-consent__title" id="cookie-consent-title">{{ _('Cookie e misurazione') }}</p>
