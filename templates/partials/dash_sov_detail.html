@@ -1,0 +1,86 @@
+{# Share of Voice detail card — anteprima: SoV table + Findings + Edge/Pack CTA #}
+{% set findings = findings_critical or [] %}
+{% set dash_pack_href = pack_href|default('#pack') %}
+{% set dash_edge_href = edge_href|default('#edge-signals') %}
+<div class="dash-detail" id="panel-detail">
+  <section class="dash-sov" id="panel-sov" aria-labelledby="sov-title">
+    {% if can_measured_sov %}
+      {% include "partials/sov_ops.html" %}
+    {% endif %}
+    {% if engine_breakdown %}
+    <header class="dash-sov__head">
+      <h3 class="dash-sov__title" id="sov-title">{{ _('Share of Voice') }}</h3>
+      <p class="dash-sov__lede">{{ _('Ultimi 28 giorni') }}</p>
+    </header>
+
+    {% if engine_breakdown.engines %}
+    <div class="dash-sov-list" role="table" aria-label="{{ _('Share of Voice per engine') }}">
+      <div class="dash-sov-list__head" role="row">
+        <span role="columnheader">{{ _('Motore') }}</span>
+        <span role="columnheader">{{ _('Share of Voice') }}</span>
+        <span role="columnheader">{{ _('Evidenza') }}</span>
+      </div>
+      <ul class="dash-sov-list__body" role="rowgroup">
+        {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
+        <li class="dash-sov-list__row" role="row" data-engine="{{ e.id }}">
+          <div class="dash-sov-list__engine" role="cell">
+            <strong>{{ e.label }}</strong>
+          </div>
+          <div class="dash-sov-list__share" role="cell">
+            <span class="dash-sov-list__pct">{{ e.share }}%</span>
+            <span class="dash-sov-list__bar" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="dash-sov-list__ev" role="cell">
+            {% if e.measured_zero %}
+            <span class="evidence-badge" data-evidence="measured">{{ _('Misurato · 0') }}</span>
+            {% elif e.evidence == 'measured' %}
+            <span class="evidence-badge" data-evidence="measured">{{ _('Misurato') }}</span>
+            {% elif e.evidence == 'unavailable' %}
+            <span class="evidence-badge" data-evidence="estimated">{{ _('N/D') }}</span>
+            {% else %}
+            <span class="evidence-badge" data-evidence="estimated">{{ _('Stimato') }}</span>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if engine_breakdown.note %}
+    <p class="dash-sov__note">{{ _(engine_breakdown.note) }}</p>
+    {% endif %}
+    {% else %}
+    <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
+    {% endif %}
+  </section>
+
+  <section class="dash-findings" id="findings" aria-labelledby="findings-title">
+    <header class="dash-findings__head">
+      <h3 class="dash-findings__title" id="findings-title">{{ _('Findings') }}</h3>
+    </header>
+    <ul class="finding-list">
+      {% for f in findings %}
+      <li data-severity="{{ f.severity }}">
+        <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Avviso') }}{% else %}{{ f.severity }}{% endif %}</em>
+        <div class="finding-list__body">
+          <strong>{{ _(f.title) }}</strong>
+          {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
+        </div>
+      </li>
+      {% else %}
+      <li class="finding-list__empty">
+        <span>{{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok nascosti.') }}{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <div class="dash-cta" role="region" aria-label="{{ _('Azioni infrastruttura') }}">
+    <p class="dash-cta__copy"><strong>{{ _('Trasforma i segnali in presenza.') }}</strong> {{ _('Intervieni dove le AI ti ascoltano.') }}</p>
+    <div class="dash-cta__actions">
+      <a class="dash-cta__primary" href="{{ dash_edge_href }}">{{ _('Edge Signals') }}</a>
+      <a class="dash-cta__secondary" href="{{ dash_pack_href }}">{{ _('Scarica Pack') }}</a>
+    </div>
+  </div>
+</div>

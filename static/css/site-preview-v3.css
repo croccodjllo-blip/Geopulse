@@ -209,6 +209,60 @@ body.body-dash .workspace-grid--solo {
   margin-inline: 0;
 }
 
+/* —— SoV page (sidebar section = detail anteprima) —— */
+body.body-dash--sov .workspace--sov {
+  max-width: min(72rem, 100%);
+}
+body.body-dash--sov .sov-page-hero {
+  margin: 0.35rem 0 1.35rem;
+  padding: 0.25rem 0 0.15rem;
+  background:
+    radial-gradient(ellipse 48% 90% at 88% 0%, color-mix(in srgb, var(--plan-accent) 16%, transparent), transparent 62%);
+}
+body.body-dash--sov .sov-page-hero__title {
+  margin: 0 0 0.65rem;
+  max-width: 22ch;
+  font-size: clamp(1.65rem, 3.4vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  color: var(--brand-clarity);
+}
+body.body-dash--sov .sov-page-hero__accent {
+  color: var(--plan-accent);
+}
+body.body-dash--sov .sov-page-hero__lede {
+  margin: 0 0 0.85rem;
+  max-width: 38rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--brand-clarity) 62%, transparent);
+}
+body.body-dash--sov .sov-page-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ok, #22C55E) 45%, transparent);
+  background: color-mix(in srgb, var(--ok, #22C55E) 8%, transparent);
+  font-size: 0.72rem;
+  font-weight: 550;
+  color: color-mix(in srgb, var(--brand-clarity) 78%, transparent);
+}
+body.body-dash--sov .sov-page-hero__badge span {
+  color: var(--ok, #22C55E);
+  font-weight: 700;
+}
+body.body-dash--sov .dash-detail {
+  margin-top: 0.15rem;
+}
+body.body-dash--sov .sov-page-back {
+  margin: 1rem 0 0.25rem;
+  font-size: 0.85rem;
+}
+
 /* Hero — borderless, large rings, vertical split */
 body.body-dash .dash-hero {
   gap: 1.5rem !important;

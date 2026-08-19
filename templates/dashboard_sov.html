@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Share of Voice') }}{% endblock %}
+{% block body_class %}body-dash body-dash--sov{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
+{% block main_class %}site-main--dash{% endblock %}
+
+{% block content %}
+<section class="workspace workspace--sov">
+  <header class="workspace-strip workspace-strip--preview" aria-label="{{ _('Share of Voice') }}">
+    <div class="workspace-strip__inner">
+      <div class="workspace-strip__copy">
+        <div class="workspace-strip__lead">
+          <h1 class="workspace-strip__title">
+            {% if latest %}{{ latest.domain }}{% else %}{{ _('Share of Voice') }}{% endif %}
+          </h1>
+          <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
+        </div>
+        {% include "partials/site_switcher.html" %}
+      </div>
+      <div class="workspace-strip__meta" aria-label="{{ _('Stato account') }}">
+        {% if latest %}
+          {% set report_at = latest.updated_at or latest.created_at %}
+          {% if report_at %}
+          <span class="workspace-strip__quiet">{{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <div class="workspace-body">
+    <div class="workspace-grid workspace-grid--solo">
+      <div class="workspace-main">
+        {% if latest %}
+        {% include "partials/dash_dynamic_styles.html" %}
+
+        <header class="sov-page-hero" aria-labelledby="sov-page-title">
+          <h2 class="sov-page-hero__title" id="sov-page-title">
+            {{ _('Scopri cosa dicono davvero le AI') }}
+            <span class="sov-page-hero__accent">{{ _('sul tuo brand.') }}</span>
+          </h2>
+          <p class="sov-page-hero__lede">
+            {{ _('Centropic analizza le risposte delle AI generative per mostrare la tua Share of Voice e le evidenze che contano.') }}
+          </p>
+          {% set report_at = latest.updated_at or latest.created_at %}
+          {% if report_at %}
+          <p class="sov-page-hero__badge">
+            <span aria-hidden="true">✓</span>
+            {{ _('Analisi completata') }}
+            {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC
+          </p>
+          {% endif %}
+        </header>
+
+        {% set pack_href = url_for('dashboard', site=latest.id) + '#pack' %}
+        {% set edge_href = url_for('dashboard', site=latest.id) + '#edge-signals' %}
+        {% include "partials/dash_sov_detail.html" %}
+
+        <p class="sov-page-back">
+          <a class="site-link" href="{{ url_for('dashboard', site=latest.id) }}">← {{ _('Torna alla Dashboard') }}</a>
+        </p>
+        {% else %}
+        <div class="dash-block dash-block--panel">
+          <p class="dash-block__empty">{{ _('Nessuna analisi ancora. Avvia la prima dalla Dashboard.') }}</p>
+          <p><a class="btn btn-signal" href="{{ url_for('dashboard') }}">{{ _('Vai alla Dashboard') }}</a></p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

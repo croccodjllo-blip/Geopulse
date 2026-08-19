@@ -25,7 +25,7 @@ def test_single_pack_download_cta_in_deliverable():
     assert DASH.count("url_for('download_pack'") == 1
     assert "pack-deliverable__actions" in DASH
     assert "data-pack-mail-open" in DASH
-    hero = DASH.split("dash-hero", 1)[1].split("dash-sov", 1)[0]
+    hero = DASH.split("dash-hero", 1)[1].split("dash-more--ops", 1)[0]
     assert "download_pack" not in hero
     assert "data-pack-mail-open" not in hero
 

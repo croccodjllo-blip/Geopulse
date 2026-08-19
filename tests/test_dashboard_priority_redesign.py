@@ -25,14 +25,11 @@ def test_priority_hero_rings_and_micro_metrics():
     assert "dash-ring__svg" in DASH
     assert 'class="dash-micro"' in DASH
     assert "dash-actions__btn" in DASH
-    assert "dash-sov-list" in DASH
-    assert "dash-cta" in DASH
-    assert "dash-findings" in DASH
-    assert 'class="dash-detail"' in DASH
     assert "dash-more--ops" in DASH
-    assert "Ultimi 28 giorni" in DASH
-    assert "_('Avviso')" in DASH
     assert "dash-ring__meta--cvi" in DASH
+    # SoV table + Findings live on /dashboard/sov (sidebar section).
+    assert "dash-sov-list" not in DASH
+    assert "dashboard_sov" in DASH
 
 
 def test_score_sov_tabs_and_pulse_removed():
