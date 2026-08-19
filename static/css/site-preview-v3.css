@@ -27,15 +27,15 @@ body.body-dash .workspace-strip--preview {
   }
 }
 
-/* Flatten leftover card chrome in the main fold */
-body.body-dash .report--priority > .dash-sov,
-body.body-dash .dash-findings,
-body.body-dash .dash-cta {
+/* Flatten leftover card chrome — detail panel owns the chrome */
+body.body-dash .dash-detail > .dash-sov,
+body.body-dash .dash-detail > .dash-findings,
+body.body-dash .dash-detail > .dash-cta {
   box-shadow: none !important;
 }
 body.body-dash .dash-findings {
-  margin: 0.35rem 0 0.85rem;
-  padding: 0.35rem 0 0.5rem;
+  margin: 0;
+  padding: 0.85rem 0 0.35rem;
   border: 0;
   background: transparent;
 }
@@ -70,6 +70,7 @@ body.body-dash .dash-findings .finding-list > li::after {
   color: color-mix(in srgb, var(--brand-clarity) 40%, transparent);
 }
 body.body-dash .dash-findings .finding-list em {
+  position: relative;
   font-style: normal;
   font-size: 0.72rem;
   font-weight: 650;
@@ -77,9 +78,29 @@ body.body-dash .dash-findings .finding-list em {
   text-transform: uppercase;
   color: var(--danger, #EF4444);
   min-width: 4.5rem;
+  padding-left: 0.85rem;
+}
+body.body-dash .dash-findings .finding-list em::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
 }
 body.body-dash .dash-findings .finding-list li[data-severity="warn"] em {
   color: var(--warn, #F59E0B);
+}
+body.body-dash .dash-findings .finding-list li[data-severity="ok"] em {
+  color: var(--ok, #22C55E);
+}
+body.body-dash .dash-findings .finding-list__empty {
+  border-bottom: 0;
+}
+body.body-dash .dash-findings .finding-list__empty::after {
+  content: none;
 }
 body.body-dash .report-split {
   display: block !important;
@@ -264,6 +285,16 @@ body.body-dash .dash-ring__label {
 body.body-dash .dash-ring__meta {
   font-size: 0.8rem !important;
 }
+/* Fold anteprima: CVI is label-only (no Stimato / score line) */
+body.body-dash .dash-ring--cvi .dash-ring__meta--cvi {
+  display: none !important;
+}
+body.body-dash .dash-ring--sov .dash-ring__meta {
+  color: color-mix(in srgb, var(--brand-clarity) 55%, transparent);
+}
+body.body-dash .dash-ring--sov .evidence-badge {
+  margin-top: 0.35rem;
+}
 
 body.body-dash .dash-hero__bar {
   display: flex !important;
@@ -275,15 +306,19 @@ body.body-dash .dash-hero__bar {
   border-top: 1px solid color-mix(in srgb, var(--brand-clarity) 12%, transparent) !important;
 }
 
+/* Micro: AIO teal, GEO/Findings muted (fold anteprima) */
 body.body-dash .dash-micro__k {
-  color: color-mix(in srgb, var(--plan-accent) 85%, var(--brand-clarity)) !important;
+  color: color-mix(in srgb, var(--brand-clarity) 48%, transparent) !important;
+}
+body.body-dash .dash-micro li:first-child .dash-micro__k {
+  color: color-mix(in srgb, var(--plan-accent) 90%, var(--brand-clarity)) !important;
 }
 body.body-dash .dash-micro__v {
   font-size: 1.75rem !important;
 }
 
 body.body-dash .dash-actions__btn {
-  border-color: color-mix(in srgb, var(--plan-accent) 45%, transparent) !important;
+  border-color: color-mix(in srgb, var(--brand-clarity) 28%, transparent) !important;
   color: var(--brand-clarity) !important;
   padding: 0.48rem 0.95rem !important;
   border-radius: 7px !important;
@@ -296,19 +331,34 @@ body.body-dash .dash-actions__ghost {
   display: none; /* preview shows 3 primary actions only */
 }
 
-/* Compact SoV list — Motore | Share bar | Evidenza */
-body.body-dash .dash-sov {
-  border: 1px solid var(--brand-border) !important;
-  border-radius: 14px !important;
-  padding: 1.15rem 1.25rem 1.25rem !important;
-  background: var(--brand-card) !important;
+/* Unified detail card — SoV + Findings + CTA (detail anteprima) */
+body.body-dash .dash-detail {
+  margin: 0.35rem 0 1rem;
+  padding: 1.15rem 1.25rem 0;
+  border: 1px solid color-mix(in srgb, var(--brand-clarity) 12%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--brand-card) 92%, transparent);
+}
+body.body-dash .dash-detail > .dash-sov {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 0 0.85rem !important;
+  background: transparent !important;
 }
 body.body-dash .dash-sov .sov-ops {
   display: none; /* fold clarity; budget lives in settings/sidebar */
 }
+body.body-dash .dash-sov__head {
+  margin-bottom: 0.75rem;
+}
 body.body-dash .dash-sov__title {
   font-size: 1.15rem !important;
-  margin-bottom: 0.85rem !important;
+  margin: 0 0 0.2rem !important;
+}
+body.body-dash .dash-sov__lede {
+  margin: 0 !important;
+  font-size: 0.78rem !important;
+  color: color-mix(in srgb, var(--brand-clarity) 52%, transparent) !important;
 }
 
 .dash-sov-list__head,
@@ -371,23 +421,29 @@ body.body-dash .dash-sov__title {
   justify-self: end;
 }
 
-/* Footer CTA strip */
-.dash-cta {
+/* CTA strip inside detail card */
+body.body-dash .dash-detail > .dash-cta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.85rem 1.25rem;
-  padding: 0.95rem 1.15rem;
-  border: 1px solid var(--brand-border);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--brand-elevated) 88%, transparent);
+  margin: 0.35rem -1.25rem 0;
+  padding: 1rem 1.25rem 1.15rem;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--brand-clarity) 10%, transparent);
+  border-radius: 0 0 14px 14px;
+  background: color-mix(in srgb, var(--brand-elevated) 55%, transparent);
 }
 .dash-cta__copy {
   margin: 0;
   max-width: 28rem;
   font-size: 0.84rem;
   color: color-mix(in srgb, var(--brand-clarity) 68%, transparent);
+}
+.dash-cta__copy strong {
+  color: var(--brand-clarity);
+  font-weight: 650;
 }
 .dash-cta__actions {
   display: flex;
@@ -1343,14 +1399,19 @@ body.body-dash .finding-list > li::after {
     display: none !important;
   }
 
-  body.body-dash .dash-sov {
+  body.body-dash .dash-detail {
+    margin: 0.25rem 0 0.85rem;
+    padding: 0.85rem 0.9rem 0;
+    border-radius: 12px;
+  }
+  body.body-dash .dash-detail > .dash-sov {
     border: 0 !important;
     background: transparent !important;
-    padding: 0.35rem 0 1rem !important;
+    padding: 0 0 0.65rem !important;
   }
   body.body-dash .dash-sov__title {
     font-size: 0.95rem !important;
-    margin-bottom: 0.55rem !important;
+    margin-bottom: 0.15rem !important;
   }
   .dash-sov-list__head { display: none; }
   .dash-sov-list__row {
@@ -1371,9 +1432,12 @@ body.body-dash .finding-list > li::after {
     font-size: 1.15rem;
   }
 
-  .dash-cta {
+  body.body-dash .dash-detail > .dash-cta {
     flex-direction: column;
     align-items: stretch;
+    margin: 0.25rem -0.9rem 0;
+    padding: 0.85rem 0.9rem 1rem;
+    border-radius: 0 0 12px 12px;
   }
   .dash-cta__actions {
     display: grid;

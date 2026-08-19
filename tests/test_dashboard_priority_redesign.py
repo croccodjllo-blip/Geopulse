@@ -28,7 +28,11 @@ def test_priority_hero_rings_and_micro_metrics():
     assert "dash-sov-list" in DASH
     assert "dash-cta" in DASH
     assert "dash-findings" in DASH
+    assert 'class="dash-detail"' in DASH
     assert "dash-more--ops" in DASH
+    assert "Ultimi 28 giorni" in DASH
+    assert "_('Avviso')" in DASH
+    assert "dash-ring__meta--cvi" in DASH
 
 
 def test_score_sov_tabs_and_pulse_removed():
@@ -57,6 +61,8 @@ def test_redesign_css_present():
     assert ".dash-ring__viz" in CSS
     assert ".dash-sov-list" in CSS
     assert ".dash-cta__primary" in CSS
+    assert ".dash-detail" in CSS
+    assert "dash-ring__meta--cvi" in CSS
 
 
 def test_dynamic_styles_share_bars():

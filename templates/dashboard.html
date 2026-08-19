@@ -40,9 +40,9 @@
           <span class="workspace-strip__quiet">{{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
           {% endif %}
         {% endif %}
+        <span class="workspace-strip__quiet workspace-strip__quiet--quota">{{ _('Quota') }}: {{ analyses_used }}/{{ daily_limit }} {% if analysis_limit_lifetime %}{{ _('analisi') }}{% else %}{{ _('quote') }}{% endif %}</span>
         <span class="workspace-strip__quiet">{{ site_count }}/{{ max_sites }} {{ _('siti') }}</span>
         <span class="workspace-strip__quiet">{% if crawl_unlimited %}{{ _('Crawl intero') }}{% else %}{{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}</span>
-        <span class="workspace-strip__quiet">{{ analyses_used }}/{{ daily_limit }} {% if analysis_limit_lifetime %}{{ _('analisi') }}{% else %}{{ _('quote') }}{% endif %}</span>
       </div>
     </div>
   </header>
@@ -90,9 +90,10 @@
                   </svg>
                   <strong class="dash-ring__value dash-ring__value--grade">{{ rating.code }}</strong>
                 </div>
-                <div class="dash-ring__copy">
+                <div class="dash-ring__copy" data-grade="{{ rating.code }}">
                   <p class="dash-ring__label">{{ _('Centropic Visibility Index') }}</p>
-                  <p class="dash-ring__meta">{{ cvi_score }}/100 · <span class="evidence-badge" data-evidence="proxy">{{ _('Stimato') }}</span></p>
+                  {# Fold anteprima: CVI label only (no Stimato). Meta kept for a11y/mobile. #}
+                  <p class="dash-ring__meta dash-ring__meta--cvi"><span class="visually-hidden">{{ cvi_score }}/100 · {{ _('Stimato') }}</span></p>
                   <div class="dash-ring__hbar" aria-hidden="true"><i></i></div>
                 </div>
               </article>
@@ -163,7 +164,8 @@
             </div>
           </header>
 
-          {# ——— P3 SoV engine table (single viz) ——— #}
+          {# ——— Detail card: SoV table + Findings + Edge/Pack (anteprima) ——— #}
+          <div class="dash-detail" id="panel-detail">
           <section class="dash-sov" id="panel-sov" aria-labelledby="sov-title">
             {% if can_measured_sov %}
               {% include "partials/sov_ops.html" %}
@@ -171,6 +173,7 @@
             {% if engine_breakdown %}
             <header class="dash-sov__head">
               <h3 class="dash-sov__title" id="sov-title">{{ _('Share of Voice') }}</h3>
+              <p class="dash-sov__lede">{{ _('Ultimi 28 giorni') }}</p>
             </header>
 
             {% if engine_breakdown.engines %}
@@ -222,15 +225,9 @@
               <ul class="finding-list">
                 {% for f in findings %}
                 <li data-severity="{{ f.severity }}">
-                  <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Attenzione') }}{% else %}{{ f.severity }}{% endif %}</em>
+                  <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Avviso') }}{% else %}{{ f.severity }}{% endif %}</em>
                   <div class="finding-list__body">
-                    <strong>
-                      {{ _(f.title) }}
-                      {% set ev = f.evidence or 'estimated' %}
-                      <span class="evidence-badge" data-evidence="{{ ev }}">
-                        {% if ev == 'measured' %}{{ _('Misurato') }}{% else %}{{ _('Stimato') }}{% endif %}
-                      </span>
-                    </strong>
+                    <strong>{{ _(f.title) }}</strong>
                     {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
                   </div>
                 </li>
@@ -243,11 +240,12 @@
             </section>
 
           <div class="dash-cta" role="region" aria-label="{{ _('Azioni infrastruttura') }}">
-            <p class="dash-cta__copy">{{ _('Trasforma i segnali in presenza. Intervieni dove le AI ti ascoltano.') }}</p>
+            <p class="dash-cta__copy"><strong>{{ _('Trasforma i segnali in presenza.') }}</strong> {{ _('Intervieni dove le AI ti ascoltano.') }}</p>
             <div class="dash-cta__actions">
               <a class="dash-cta__primary" href="#edge-signals">{{ _('Edge Signals') }}</a>
               <a class="dash-cta__secondary" href="#pack">{{ _('Scarica Pack') }}</a>
             </div>
+          </div>
           </div>
 
           <details class="dash-more dash-more--ops">
