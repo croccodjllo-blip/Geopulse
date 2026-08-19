@@ -29,13 +29,13 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Shared hero band; smaller vivid particle bg; no cite-scrim."""
+    """Shared hero band; native Matrix half-hero bg; no cite-scrim."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "17.8vw" in css
     assert "52vw" in css
     assert "--hero-band" in css
     assert "66vw" in css
-    assert "object-fit: contain !important" in css
+    assert "object-fit: none !important" in css
     assert "hero-visual--preview::before" in css
     assert "filter: none !important" in css  # no shadow over logo / wordmark
     assert ("4.5vw" in css or "3.8vw" in css)  # lockup gap keeps logo clear
@@ -55,7 +55,7 @@ def test_landing_uses_hero_bg():
 
     desk = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima.png")
     mob = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png")
-    assert desk.size[0] >= 800 and desk.size[1] >= 450
+    assert desk.size == (960, 1080)
     assert mob.size[1] >= mob.size[0]  # portrait
 
 
@@ -104,3 +104,9 @@ def test_mobile_preview_css():
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "MOBILE = preview 3" in css
     assert "Centropic Plus" in css
+
+
+def test_homepage_hides_nav_analizza_gratis():
+    css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
+    assert "body.body-marketing--hero-only .nav-cta" in css
+    assert "display: none !important" in css
