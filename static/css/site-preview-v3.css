@@ -706,8 +706,7 @@ body.body-marketing--hero-only {
   background-image: none !important;
   background-color: #000 !important;
 }
-/* Matrix rain — sized in rem (like type) so browser zoom scales glyphs
-   with logo/copy. max(100%, …) still covers wide viewports. */
+/* Matrix rain — same content width as site header (72rem), centered */
 body.body-marketing .hero--preview .hero-visual--preview picture {
   display: block !important;
   position: absolute !important;
@@ -715,10 +714,11 @@ body.body-marketing .hero--preview .hero-visual--preview picture {
   left: 50% !important;
   right: auto !important;
   bottom: auto !important;
-  width: max(100%, 120rem) !important;   /* 1920px @ 16px root */
-  height: max(100%, 67.5rem) !important; /* 1080px @ 16px root */
-  max-width: none !important;
-  max-height: none !important;
+  width: min(100% - 2rem, 72rem) !important;
+  max-width: 72rem !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  max-height: min(70vh, 40.5rem) !important;
   transform: translate(-50%, -50%) !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
@@ -727,11 +727,12 @@ body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   height: 100% !important;
   max-width: none !important;
   max-height: none !important;
-  object-fit: fill !important;
+  object-fit: cover !important;
   object-position: center center !important;
   filter: none !important;
   opacity: 1 !important;
   image-rendering: auto;
+  border-radius: 0;
 }
 /* Homepage header: no Analizza gratis CTA */
 body.body-marketing--hero-only .nav-cta {
@@ -1403,14 +1404,19 @@ body.body-dash .finding-list > li::after {
     margin-bottom: clamp(1.6rem, 5vw, 2.2rem) !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: min(100% - 2rem, 72rem) !important;
+    max-width: 72rem !important;
+    height: auto !important;
+    aspect-ratio: 3 / 4;
+    max-height: min(55vh, 36rem) !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
     width: 100% !important;
     height: 100% !important;
-    object-fit: fill !important;
+    object-fit: cover !important;
     object-position: center center !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
