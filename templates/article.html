@@ -2,6 +2,7 @@
 {% block title %}{{ article_title }}{% endblock %}
 {% block meta_description %}{{ article_description }}{% endblock %}
 {% block canonical %}{{ canonical_base }}{{ article_path }}{% endblock %}
+{% block body_class %}body-marketing{% endblock %}
 {% block structured_data %}
 <script type="application/ld+json" nonce="{{ csp_nonce }}">
 {

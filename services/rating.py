@@ -1,27 +1,19 @@
-"""Centropic Visibility Index (CVI): composite grade DDD (worst) → AAA (best).
+"""Centropic Visibility Index (CVI): composite grade DD (worst) → AA (best).
 
 CVI is the proprietary umbrella metric: composite of AIO + GEO scores with
-finding penalties. Letter codes stay DDD→AAA; user-facing name is CVI.
+finding penalties. Letter codes are two characters only (DD, CC, BB, AA).
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-# Scala ordinata dal peggiore al migliore
+# Scala ordinata dal peggiore al migliore — solo due lettere.
 RATING_SCALE: list[tuple[str, int, str]] = [
-    ("DDD", 0, "Critico — segnali AIO/GEO assenti o bloccati (diagnostica probe)"),
-    ("DD", 15, "Molto debole — interventi urgenti sui segnali crawlabili"),
-    ("D", 25, "Debole — base tecnica insufficiente"),
-    ("CCC", 35, "Insufficiente — mancano asset chiave (llms/schema/robots)"),
-    ("CC", 45, "Scarso — ottimizzazione ancora iniziale"),
-    ("C", 55, "Mediocre — alcuni segnali, molti gap"),
-    ("B", 63, "Discreto — struttura utile ma incompleta"),
-    ("BB", 71, "Buono — buona base, margini chiari"),
-    ("BBB", 78, "Solido — pronto per rafforzamenti mirati"),
-    ("A", 85, "Ottimo — segnali AIO/GEO ben impostati (euristico)"),
-    ("AA", 92, "Eccellente — superficie machine-readable quasi completa"),
-    ("AAA", 97, "Top — diagnostica probe completa; non equivale a citazioni live garantite"),
+    ("DD", 0, "Critico — segnali AIO/GEO assenti o bloccati"),
+    ("CC", 40, "Insufficiente — struttura utile ma con gap ampi"),
+    ("BB", 65, "Solido — buona base, margini di rafforzamento"),
+    ("AA", 85, "Eccellente — superficie machine-readable quasi completa"),
 ]
 
 RATING_ORDER = [code for code, _, _ in RATING_SCALE]
@@ -32,7 +24,7 @@ def composite_score(
     geo_score: int | None,
     findings: list[dict[str, Any]] | None = None,
 ) -> int:
-    """Media AIO (AI-Driven Visibility) / GEO (Generative Engine Optimization) con penalità sui findings critical/warn."""
+    """Media AIO / GEO con penalità sui findings critical/warn."""
     aio = 0 if aio_score is None else max(0, min(100, int(aio_score)))
     geo = 0 if geo_score is None else max(0, min(100, int(geo_score)))
     base = round((aio + geo) / 2)
@@ -49,7 +41,7 @@ def composite_score(
 
 
 def grade_from_score(score: int) -> dict[str, Any]:
-    """Return CVI letter grade + metadata for the composite score."""
+    """Return CVI two-letter grade + metadata for the composite score."""
     score = max(0, min(100, int(score)))
     selected = RATING_SCALE[0]
     for code, minimum, label in RATING_SCALE:
@@ -58,7 +50,6 @@ def grade_from_score(score: int) -> dict[str, Any]:
 
     code, minimum, label = selected
     idx = RATING_ORDER.index(code)
-    # 0 = DDD, 1 = AAA (progresso sulla scala)
     progress = round((idx / (len(RATING_ORDER) - 1)) * 100)
 
     return {
@@ -68,9 +59,8 @@ def grade_from_score(score: int) -> dict[str, Any]:
         "index": idx,
         "progress": progress,
         "scale": RATING_ORDER,
-        "is_top": code == "AAA",
-        "is_low": code in {"DDD", "DD", "D"},
-        # Proprietary product name for the composite (category metric).
+        "is_top": code == "AA",
+        "is_low": code == "DD",
         "metric": "CVI",
         "metric_name": "Centropic Visibility Index",
     }

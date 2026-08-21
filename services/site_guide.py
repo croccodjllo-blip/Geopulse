@@ -13,7 +13,7 @@ def _glossary_entries() -> list[dict[str, str]]:
             "cvi",
             _("CVI (Centropic Visibility Index)"),
             _(
-                "Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che sintetizza AIO+GEO "
+                "Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza AIO+GEO "
                 "(con penalità findings). È lo standard da confrontare tra brand — non Domain Authority di terzi."
             ),
         ),
@@ -55,9 +55,9 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "indice",
-            _("CVI · scala DDD→AAA"),
+            _("CVI · scala DD→AA"),
             _(
-                "Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). Alias storico: “Indice”."
+                "Lettera del Centropic Visibility Index, da critica (DD) a eccellente (AA). Alias storico: “Indice”."
             ),
         ),
         (
@@ -278,7 +278,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
                 "bullets": [
                     _("Avvia o ripeti l’analisi sull’URL del sito"),
-                    _("Vedi CVI (DDD→AAA), score AIO/GEO e citation share"),
+                    _("Vedi CVI (DD→AA), score AIO/GEO e citation share"),
                     _("Accedi a pack, Edge Signals, storico e crediti"),
                 ],
             },
@@ -294,7 +294,7 @@ def site_guide_payload() -> dict[str, Any]:
                     _(
                         "GEO = Generative Engine Optimization (citabilità nelle risposte generate)"
                     ),
-                    _("CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"),
+                    _("CVI (Centropic Visibility Index): lettera DD→AA sul compositario AIO+GEO"),
                 ],
             },
             {
@@ -505,7 +505,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "title": _("CVI (Centropic Visibility Index)"),
                 "body": _(
-                    "Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un grado CVI tra un re-scan e l’altro."
+                    "Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un grado CVI tra un re-scan e l’altro."
                 ),
             },
             {
