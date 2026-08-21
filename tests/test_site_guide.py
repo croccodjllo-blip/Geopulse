@@ -60,8 +60,8 @@ def test_guide_hero_shows_current_workspace():
     assert "icon rail" not in svg
     assert ">B</text>" not in svg
     html = (ROOT / "templates" / "guide.html").read_text(encoding="utf-8")
-    assert "guide_asset_v" in html
     assert "workspace--wide" in html
+    assert "img/guide/dashboard.svg" in html or "guide.services[0].image" in html
 
 
 def test_public_guide_is_fresh_and_current():
@@ -73,7 +73,7 @@ def test_public_guide_is_fresh_and_current():
     assert "no-store" in (resp.headers.get("Cache-Control") or "")
     html = resp.get_data(as_text=True)
     assert "Le cinque pagine" in html or "The five pages" in html
-    assert "v=20260821g" in html
+    assert "img/guide/dashboard.svg" in html
     assert "icon rail" not in html
 
 
