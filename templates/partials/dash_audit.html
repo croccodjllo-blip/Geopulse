@@ -1,0 +1,157 @@
+{# Command mast: selected domain + URL search + site chips + rival tokens. #}
+{% set rival_seed = (form.competitors.data or '') %}
+{% if not rival_seed and latest is defined and latest and latest.competitors %}
+  {% set rival_seed = latest.competitors|map(attribute='domain')|reject('none')|join('\n') %}
+{% endif %}
+{% set cvi = latest.rating if latest is defined and latest else none %}
+{% set cvi_score = cvi.score if cvi and cvi.score is number else 0 %}
+{% set cvi_code = cvi.code if cvi and cvi.code else '—' %}
+{% set cvi_band = cvi.band if cvi and cvi.band else (cvi_code[0]|lower if cvi_code and cvi_code[0]|upper in 'ABCD' else 'none') %}
+<section class="dash-audit dash-compose" id="analyze-panel" aria-labelledby="audit-title">
+  {% if latest is defined and latest %}
+  <style nonce="{{ csp_nonce }}">
+    .dash-cvi { --cvi: {{ cvi_score }}; }
+  </style>
+  {% endif %}
+  <div class="dash-masthead">
+  <div class="dash-mast">
+    <p class="dash-mast__kicker dash-compose__title" id="audit-title">{{ _('Dominio attivo') if latest else _('Audit') }}</p>
+    {% if latest %}
+    <h2 class="dash-mast__domain" id="result-domain">{{ latest.domain }}</h2>
+    {% if latest.page_title %}
+    <p class="dash-mast__lede">{{ latest.page_title }}</p>
+    {% endif %}
+    {% else %}
+    <h2 class="dash-mast__domain">{{ _('Nuovo dominio') }}</h2>
+    <p class="dash-mast__lede">
+      {% if dash_plan == 'business' %}
+        {{ _('Workspace agenzia: multi-cliente, API e white-label.') }}
+      {% elif dash_plan == 'plus' %}
+        {{ _('Workspace Plus: SoV measured, re-scan e Edge completo.') }}
+      {% else %}
+        {{ _('Incolla l’URL pubblico del brand per il primo Audit.') }}
+      {% endif %}
+    </p>
+    {% endif %}
+    <p class="dash-mast__meta dash-audit__meta">
+      {% if latest %}
+        {% set report_at = latest.updated_at or latest.created_at %}
+        {% if report_at %}{{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC · {% endif %}
+      {% endif %}
+      {{ analyses_used }}/{{ daily_limit }} {% if analysis_limit_lifetime %}{{ _('audit') }}{% else %}{{ _('quote') }}{% endif %}
+      · {{ site_count }}/{{ max_sites }} {{ _('domini') }}
+      {% if crawl_unlimited %} · {{ _('Crawl intero') }}{% else %} · {{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}
+    </p>
+  </div>
+  {% if latest is defined and latest %}
+  <aside class="dash-cvi" data-band="{{ cvi_band }}" aria-labelledby="dash-cvi-title">
+    <p class="visually-hidden" id="dash-cvi-title">{{ _('Centropic Visibility Index') }}</p>
+    <div class="dash-cvi__lockup">
+      <div class="dash-cvi__dial">
+        <svg class="dash-cvi__mark" viewBox="0 0 128 128" aria-hidden="true">
+          <defs>
+            <linearGradient id="cvi-arc-a" x1="8%" y1="0%" x2="92%" y2="100%">
+              <stop class="dash-cvi__stop-hi" offset="0%"/>
+              <stop class="dash-cvi__stop-mid" offset="38%"/>
+              <stop class="dash-cvi__stop-lo" offset="72%"/>
+              <stop class="dash-cvi__stop-deep" offset="100%"/>
+            </linearGradient>
+            <linearGradient id="cvi-arc-b" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop class="dash-cvi__stop-lo" offset="0%"/>
+              <stop class="dash-cvi__stop-mid" offset="50%"/>
+              <stop class="dash-cvi__stop-hi" offset="100%"/>
+            </linearGradient>
+          </defs>
+          <ellipse class="dash-cvi__orbit" cx="64" cy="64" rx="54" ry="22" transform="rotate(-18 64 64)"/>
+          <path class="dash-cvi__arc dash-cvi__arc--outer" d="M102 30 A50 50 0 1 0 102 98"/>
+          <path class="dash-cvi__arc dash-cvi__arc--mid" d="M92 38 A38 38 0 1 0 92 90"/>
+          <path class="dash-cvi__arc dash-cvi__arc--inner" d="M82 47 A26 26 0 1 0 82 81"/>
+          <circle class="dash-cvi__node" cx="108" cy="36" r="3.2"/>
+        </svg>
+        <div class="dash-cvi__readout">
+          <strong class="dash-cvi__grade">{{ cvi_code }}</strong>
+        </div>
+      </div>
+      <div class="dash-cvi__copy">
+        <p class="dash-cvi__kicker">{{ _('CVI') }}</p>
+        <p class="dash-cvi__score">{{ cvi_score }}<span>/100</span></p>
+      </div>
+    </div>
+  </aside>
+  {% endif %}
+  </div>
+
+  <form method="post" id="analyze" class="js-analyze-form dash-command analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %} data-audit-command>
+    {{ form.hidden_tag() }}
+
+    <div class="dash-command__search">
+      <label class="dash-audit__label" for="url">{{ _('Cerca o incolla URL') }}</label>
+      <div class="dash-audit__row">
+        {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input dash-audit__input dash-command__input", disabled=free_exhausted, **{'data-audit-query': '1'}) }}
+        <button type="submit" name="submit" value="Avvia" class="btn btn-signal analyze-submit dash-audit__go"{% if free_exhausted %} disabled{% endif %}>{{ _('Audit') }}</button>
+      </div>
+      {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+
+    {% if user_sites is defined and user_sites|length > 1 %}
+    <nav class="dash-sites" id="dash-site-select" data-site-switch aria-label="{{ _('Seleziona dominio') }}">
+      {% for s in user_sites %}
+      <a
+        class="dash-sites__chip{% if latest and s.id == latest.id %} is-active{% endif %}"
+        href="{{ url_for('dashboard', site=s.id) }}"
+        data-url="{{ s.url }}"
+        data-site-id="{{ s.id }}"
+        data-domain="{{ s.domain }}"
+        {% if latest and s.id == latest.id %}aria-current="page"{% endif %}
+      >
+        <strong>{{ s.domain }}</strong>
+        <span>AIO {{ s.aio_score if s.aio_score is number else '—' }} · GEO {{ s.geo_score if s.geo_score is number else '—' }}</span>
+      </a>
+      {% endfor %}
+    </nav>
+    {% endif %}
+
+    {% if can_competitors or can_full_crawl %}
+    <div class="dash-command__opts">
+      {% if can_competitors %}
+      <div class="dash-rivals"
+           data-competitor-suggest
+           data-suggest-url="{{ url_for('dashboard_competitors_suggest') }}"
+           data-rival-seed="{{ rival_seed|replace('\n', ', ') }}">
+        <div class="dash-rivals__head">
+          <p class="dash-audit__label">{{ _('Competitor (max 3)') }}</p>
+          <button type="button" class="linkish analyze-competitors__suggest" data-competitor-suggest-btn>
+            {{ _('Suggerisci') }}
+          </button>
+        </div>
+        {{ form.competitors(id="competitors", hidden="hidden", class_="visually-hidden", **{'data-competitor-suggest-input': '1', 'data-rival-store': '1'}) }}
+        <div class="dash-rivals__row">
+          <ul class="dash-rivals__chips" data-rival-chips></ul>
+          <label class="visually-hidden" for="rival-add">{{ _('Aggiungi competitor') }}</label>
+          <input
+            type="url"
+            id="rival-add"
+            class="dash-rivals__add"
+            placeholder="https://rivale.com"
+            autocomplete="off"
+            data-rival-add
+            maxlength="200"
+          >
+        </div>
+        <p class="analyze-competitors__hint" data-competitor-suggest-status hidden></p>
+      </div>
+      {% endif %}
+      {% if can_full_crawl %}
+      <label class="analyze-option__hit dash-audit__deep" for="deep_crawl">
+        {{ form.deep_crawl(id="deep_crawl", class_="analyze-option__check") }}
+        <span class="analyze-option__title">{{ _('Deep crawl') }}</span>
+      </label>
+      {% endif %}
+    </div>
+    {% endif %}
+  </form>
+</section>
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/audit-command.js') }}" defer></script>
+{% if can_competitors %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
+{% endif %}
