@@ -3816,6 +3816,105 @@ body.app-shell--topbar .site-main--dash {
   width: 100% !important;
   max-width: none !important;
 }
+
+/* Viewport lock: shell always matches the browser box. */
+html:has(body.app-shell--topbar) {
+  height: 100%;
+  overflow: hidden;
+}
+body.app-shell--topbar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: 100dvh; max-height: 100dvh; min-height: 100dvh;
+  overflow: hidden;
+}
+body.app-shell--topbar .app-topbar {
+  flex: 0 0 auto;
+  width: 100%;
+}
+body.app-shell--topbar .site-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100% !important;
+  max-width: none !important;
+  overflow: auto;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+body.app-shell--topbar .workspace,
+body.app-shell--topbar .workspace--wide,
+body.app-shell--topbar .workspace--fill,
+body.app-shell--topbar .page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none !important;
+  min-height: 100%;
+}
+body.app-shell--topbar .workspace--fill {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: 100%;
+  padding-block: 0.55rem 0.7rem;
+}
+body.app-shell--topbar .workspace--fill .workspace-strip--preview {
+  flex: 0 0 auto;
+}
+body.app-shell--topbar .workspace--fill .workspace-body,
+body.app-shell--topbar .workspace--fill .workspace-grid--solo,
+body.app-shell--topbar .workspace--fill .workspace-main,
+body.app-shell--topbar .workspace--fill .report--priority {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+body.app-shell--topbar .workspace--fill .dash-signal--wide {
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0.55rem;
+}
+body.app-shell--topbar .workspace--fill .dash-wide {
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+}
+body.app-shell--topbar .workspace--fill .dash-orbit__svg {
+  max-height: none;
+  height: 100%;
+  min-height: 7.5rem;
+}
+body.app-shell--topbar .workspace--fill .dash-live-charts {
+  flex: 1 1 auto;
+  min-height: 8.5rem;
+  margin: 0;
+}
+body.app-shell--topbar .workspace--fill .dash-live-charts__root,
+body.app-shell--topbar .workspace--fill .dash-live-charts .geo-compact {
+  height: 100%;
+  min-height: 8.5rem;
+}
+body.app-shell--topbar .workspace--fill .dash-live-charts .geo-compact > * {
+  min-height: 0;
+  height: 100%;
+}
+body.app-shell--topbar .workspace--fill .dash-compose--quiet {
+  flex: 0 0 auto;
+  margin: 0.45rem 0 0;
+  padding-top: 0.55rem;
+}
+@supports not (height: 100dvh) {
+  body.app-shell--topbar {
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+  }
+}
 body.body-dash .app-topbar__quiet {
   font-size: 0.78rem;
   color: color-mix(in srgb, var(--brand-clarity) 55%, transparent);

@@ -72,10 +72,14 @@ def test_trend_has_history_and_charts():
 
 
 def test_full_width_workspace():
-    assert "max-width: none !important" in CSS.split("body.app-shell--topbar .workspace")[-1][:400]
+    assert "max-width: none !important" in CSS
+    assert "height: 100dvh" in CSS
+    assert "max-height: 100dvh" in CSS
+    assert "workspace--fill" in CSS
     assert ".dash-kpis" in CSS
     assert ".dash-wide" in CSS
     assert ".dash-prompt" in CSS
+    assert 'class="workspace workspace--fill"' in DASH
 
 
 def test_five_pages_render_for_plus_user():
