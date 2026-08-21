@@ -66,6 +66,14 @@ def test_topbar_css_clears_left_offset():
     assert ".app-topbar__tokens" in CSS
     assert ".dash-cvi" in CSS
     assert ".dash-cvi__dial" in CSS
+    assert '[data-band="d"]' in CSS
+    assert '[data-band="c"]' in CSS
+    assert '[data-band="b"]' in CSS
+    assert '[data-band="a"]' in CSS
+    assert "#EF4444" in CSS.split('data-band="d"')[1][:80]
+    assert "#F97316" in CSS.split('data-band="c"')[1][:80]
+    assert "#F59E0B" in CSS.split('data-band="b"')[1][:80]
+    assert "#22C55E" in CSS.split('data-band="a"')[1][:80]
     assert "body.app-shell--topbar .site-main" in CSS
     assert "margin-left: 0 !important" in CSS
 

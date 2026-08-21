@@ -191,6 +191,7 @@ def test_five_pages_render_for_plus_user():
     assert "dash-cvi" in overview
     assert "dash-cvi__grade" in overview
     assert "dash-cvi__score" in overview
+    assert 'data-band="' in overview
     assert "dash-ring--cvi" not in overview
     assert ">Audit<" in overview
     assert "Compositore" not in overview

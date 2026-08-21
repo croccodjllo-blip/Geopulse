@@ -6,6 +6,7 @@
 {% set cvi = latest.rating if latest is defined and latest else none %}
 {% set cvi_score = cvi.score if cvi and cvi.score is number else 0 %}
 {% set cvi_code = cvi.code if cvi and cvi.code else '—' %}
+{% set cvi_band = cvi_code[0]|lower if cvi_code and cvi_code[0]|upper in 'ABCD' else 'none' %}
 <section class="dash-audit dash-compose" id="analyze-panel" aria-labelledby="audit-title">
   {% if latest is defined and latest %}
   <style nonce="{{ csp_nonce }}">
@@ -43,7 +44,7 @@
     </p>
   </div>
   {% if latest is defined and latest %}
-  <aside class="dash-cvi" aria-labelledby="dash-cvi-title">
+  <aside class="dash-cvi" data-band="{{ cvi_band }}" aria-labelledby="dash-cvi-title">
     <p class="visually-hidden" id="dash-cvi-title">{{ _('Centropic Visibility Index') }}</p>
     <div class="dash-cvi__dial" aria-hidden="true">
       <strong class="dash-cvi__grade">{{ cvi_code }}</strong>

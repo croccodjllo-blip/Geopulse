@@ -2765,12 +2765,17 @@ body.body-dash .dash-mast {
   margin: 0;
 }
 body.body-dash .dash-cvi {
+  --cvi-tone: var(--plan-accent);
   display: flex;
   align-items: center;
   gap: 0.85rem 1.05rem;
   min-width: 0;
   justify-self: end;
 }
+body.body-dash .dash-cvi[data-band="d"] { --cvi-tone: #EF4444; }
+body.body-dash .dash-cvi[data-band="c"] { --cvi-tone: #F97316; }
+body.body-dash .dash-cvi[data-band="b"] { --cvi-tone: #F59E0B; }
+body.body-dash .dash-cvi[data-band="a"] { --cvi-tone: #22C55E; }
 body.body-dash .dash-cvi__dial {
   position: relative;
   display: grid;
@@ -2780,7 +2785,7 @@ body.body-dash .dash-cvi__dial {
   border-radius: 50%;
   background: conic-gradient(
     from -90deg,
-    var(--plan-accent) calc(var(--cvi, 0) * 1%),
+    var(--cvi-tone) calc(var(--cvi, 0) * 1%),
     color-mix(in srgb, var(--brand-clarity) 14%, transparent) 0
   );
 }
@@ -2798,7 +2803,7 @@ body.body-dash .dash-cvi__grade {
   font-weight: 720;
   letter-spacing: -0.05em;
   line-height: 1;
-  color: var(--plan-accent);
+  color: var(--cvi-tone);
 }
 body.body-dash .dash-cvi__copy {
   display: grid;
