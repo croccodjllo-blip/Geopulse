@@ -60,6 +60,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-split__track" in CSS
     assert "height: 10px" in CSS.split("dash-split__track")[1]
     assert "flex: 1 1 auto" in CSS.split("dash-area")[1]
+    assert 'preserveAspectRatio="xMinYMid meet"' in SIGNAL
     assert "#8B5CF6" not in CSS.split("Signal deck")[-1]
 
 
