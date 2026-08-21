@@ -4480,22 +4480,22 @@ body.body-dash .dash-area__svg {
   display: block;
   flex: 0 0 auto;
   width: 100%;
-  height: 7.25rem;
-  min-height: 7.25rem;
-  max-height: 7.25rem;
+  height: 5.75rem;
+  min-height: 5.75rem;
+  max-height: 5.75rem;
   margin: 0;
   overflow: visible;
 }
 body.body-dash .dash-area__grid {
-  stroke: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
-  stroke-width: 0.5;
+  stroke: color-mix(in srgb, var(--brand-clarity) 7%, transparent);
+  stroke-width: 0.45;
 }
 body.body-dash .dash-area__fill {
-  fill: color-mix(in srgb, var(--plan-accent) 22%, transparent);
+  fill: color-mix(in srgb, var(--plan-accent) 16%, transparent);
 }
 body.body-dash .dash-area__line {
   stroke: var(--plan-accent);
-  stroke-width: 1.05;
+  stroke-width: 0.95;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -4505,29 +4505,29 @@ body.body-dash .dash-area__dot {
 body.body-dash .dash-area__dot.is-latest { fill: var(--plan-accent); }
 body.body-dash .dash-area__dates {
   display: flex;
+  justify-content: space-between;
   width: 100%;
-  margin: 0.15rem 0 0;
-  padding: 0 calc(8 / 320 * 100%);
+  margin: 0.2rem 0 0;
+  padding: 0 0.15rem;
   list-style: none;
-  gap: 0;
+  gap: 0.75rem;
 }
 body.body-dash .dash-area__x {
-  flex: 1 1 0;
+  flex: 0 1 auto;
   min-width: 0;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  text-align: center;
-  font-size: 0.62rem;
+  font-size: 0.52rem;
   font-weight: 500;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
   line-height: 1.2;
-  color: color-mix(in srgb, var(--brand-clarity) 46%, transparent);
+  color: color-mix(in srgb, var(--brand-clarity) 40%, transparent);
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
-body.body-dash .dash-area__x:first-child { text-align: left; }
-body.body-dash .dash-area__x:last-child { text-align: right; }
+body.body-dash .dash-area .dash-card__lede {
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+}
 body.body-dash .dash-meters,
 body.body-dash .dash-mix,
 body.body-dash .dash-hist,

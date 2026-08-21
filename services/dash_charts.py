@@ -288,10 +288,10 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         + " ".join(f"L{m['x']:.1f},{m['y']:.1f}" for m in marks)
         + f" L{last_x_a:.1f},{baseline:.1f} Z"
     )
-    show_every = 1 if len(marks) <= 6 else 2
     ticks_x: list[dict[str, Any]] = []
+    last_i = len(marks) - 1
     for i, (mark, label) in enumerate(zip(marks, labels)):
-        show = i == 0 or i == len(marks) - 1 or i % show_every == 0
+        show = i == 0 or i == last_i
         ticks_x.append({"x": mark["x"], "label": label if show else ""})
     return {
         "points": " ".join(coords),

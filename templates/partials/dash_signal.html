@@ -131,9 +131,9 @@
       </div>
       {% if spark %}
       <div class="dash-area" aria-label="{{ _('SoV nel tempo') }}">
-        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 148 }}" preserveAspectRatio="none" role="img">
+        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 120 }}" preserveAspectRatio="xMidYMid meet" role="img">
           {% for g in spark.grid_y or [] %}
-          <line class="dash-area__grid" x1="{{ spark.left or 28 }}" y1="{{ g.y }}" x2="{{ spark.right_x or 308 }}" y2="{{ g.y }}"/>
+          <line class="dash-area__grid" x1="{{ spark.left or 8 }}" y1="{{ g.y }}" x2="{{ spark.right_x or 312 }}" y2="{{ g.y }}"/>
           {% endfor %}
           {% if spark.area %}
           <path class="dash-area__fill" d="{{ spark.area }}"/>
@@ -142,12 +142,16 @@
           <path class="dash-area__line" d="{{ spark.line }}" fill="none"/>
           {% endif %}
           {% for m in spark.marks or [] %}
-          <circle class="dash-area__dot{% if loop.last %} is-latest{% endif %}" cx="{{ m.x }}" cy="{{ m.y }}" r="{{ 2.1 if loop.last else 1.2 }}"/>
+          {% if loop.last %}
+          <circle class="dash-area__dot is-latest" cx="{{ m.x }}" cy="{{ m.y }}" r="1.8"/>
+          {% endif %}
           {% endfor %}
         </svg>
         <ol class="dash-area__dates">
           {% for t in spark.ticks_x or [] %}
+          {% if t.label %}
           <li class="dash-area__x">{{ t.label }}</li>
+          {% endif %}
           {% endfor %}
         </ol>
         <p class="dash-card__lede">
