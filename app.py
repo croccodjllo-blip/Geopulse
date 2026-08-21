@@ -223,7 +223,7 @@ from services.mailer import (
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
-from services.dash_charts import build_dash_charts
+from services.dash_charts import build_dash_charts, build_history_trend
 from services.geo_ui_payload import build_geo_ui_payload
 from services.token_units import (
     BUSINESS_MONTHLY_CREDIT_CENTS,
@@ -9101,6 +9101,7 @@ def dashboard_history():
         latest=latest,
         user_sites=_workspace_user_sites(user),
         dash_charts=_workspace_charts(user, latest, findings_all, engine_breakdown, run_diff),
+        run_trend=build_history_trend(history),
         run_diff=run_diff,
         schedule_form=schedule_form,
         **capability_template_vars(user),

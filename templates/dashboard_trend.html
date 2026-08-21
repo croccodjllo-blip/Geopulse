@@ -26,8 +26,65 @@
     </div>
   </header>
 
-  {% if dash_charts and dash_charts.spark %}
-  <article class="dash-card" aria-label="{{ _('SoV nel tempo') }}">
+  {% if run_trend %}
+  <article class="dash-card dash-trend" aria-label="{{ _('Andamento AIO e GEO') }}">
+    <header class="dash-card__head">
+      <p class="dash-card__kicker">{{ _('Storico') }}</p>
+      <h2 class="dash-card__title">{{ _('AIO / GEO nel tempo') }}</h2>
+      <p class="dash-card__aside">{{ run_trend.n }} {{ _('run') }}</p>
+    </header>
+    <dl class="dash-trend__legend">
+      <div data-series="aio">
+        <dt>AIO</dt>
+        <dd>
+          {{ run_trend.first_aio if run_trend.first_aio is number else '—' }}
+          → {{ run_trend.last_aio if run_trend.last_aio is number else '—' }}
+          {% if run_trend.delta_aio is number %}
+          <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_aio > 0 else ('down' if run_trend.delta_aio < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_aio) }}</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div data-series="geo">
+        <dt>GEO</dt>
+        <dd>
+          {{ run_trend.first_geo if run_trend.first_geo is number else '—' }}
+          → {{ run_trend.last_geo if run_trend.last_geo is number else '—' }}
+          {% if run_trend.delta_geo is number %}
+          <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_geo > 0 else ('down' if run_trend.delta_geo < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_geo) }}</span>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" role="img">
+      <line class="dash-trend__grid" x1="36" y1="18" x2="36" y2="198"/>
+      <line class="dash-trend__grid" x1="36" y1="198" x2="622" y2="198"/>
+      <line class="dash-trend__grid" x1="36" y1="108" x2="622" y2="108"/>
+      <line class="dash-trend__grid" x1="36" y1="63" x2="622" y2="63"/>
+      <line class="dash-trend__grid" x1="36" y1="153" x2="622" y2="153"/>
+      <text class="dash-trend__axis" x="32" y="22" text-anchor="end">100</text>
+      <text class="dash-trend__axis" x="32" y="112" text-anchor="end">50</text>
+      <text class="dash-trend__axis" x="32" y="198" text-anchor="end">0</text>
+      {% if run_trend.aio_line %}
+      <path class="dash-trend__line" data-series="aio" d="{{ run_trend.aio_line }}" fill="none"/>
+      {% endif %}
+      {% if run_trend.geo_line %}
+      <path class="dash-trend__line" data-series="geo" d="{{ run_trend.geo_line }}" fill="none"/>
+      {% endif %}
+      {% for m in run_trend.aio_marks or [] %}
+      <circle class="dash-trend__dot" data-series="aio" cx="{{ m.x }}" cy="{{ m.y }}" r="3.4"/>
+      <text class="dash-trend__val" data-series="aio" x="{{ m.x }}" y="{{ m.y - 8 }}" text-anchor="middle">{{ m.v }}</text>
+      {% endfor %}
+      {% for m in run_trend.geo_marks or [] %}
+      <circle class="dash-trend__dot" data-series="geo" cx="{{ m.x }}" cy="{{ m.y }}" r="3.4"/>
+      <text class="dash-trend__val" data-series="geo" x="{{ m.x }}" y="{{ m.y + 14 }}" text-anchor="middle">{{ m.v }}</text>
+      {% endfor %}
+      {% for t in run_trend.ticks_x or [] %}
+      <text class="dash-trend__x" x="{{ t.x }}" y="218" text-anchor="middle">{{ t.label }}</text>
+      {% endfor %}
+    </svg>
+  </article>
+  {% elif dash_charts and dash_charts.spark %}
+  <article class="dash-card dash-trend" aria-label="{{ _('SoV nel tempo') }}">
     <p class="dash-card__kicker">{{ _('Misurato') }}</p>
     <h2 class="dash-card__title">{{ _('Share of Voice') }}</h2>
     <svg class="dash-spark dash-spark--wide" viewBox="0 0 200 52" role="img">

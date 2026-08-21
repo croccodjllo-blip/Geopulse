@@ -2747,10 +2747,136 @@ body.body-dash .dash-compose--quiet {
 }
 body.body-dash .dash-audit {
   flex: 0 0 auto;
-  margin: 0 0 0.65rem;
-  padding: 0.65rem 0 0.55rem;
+  margin: 0 0 0.85rem;
+  padding: 0.55rem 0 0.85rem;
   border-bottom: 1px solid color-mix(in srgb, var(--plan-accent) 16%, transparent);
   border-top: 0;
+}
+body.body-dash .dash-mast {
+  min-width: 0;
+  margin: 0 0 0.85rem;
+}
+body.body-dash .dash-mast__kicker {
+  margin: 0;
+  font-size: 0.64rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--plan-accent) 80%, var(--brand-clarity));
+}
+body.body-dash .dash-mast__domain {
+  margin: 0.2rem 0 0;
+  font-size: clamp(1.7rem, 3.4vw, 2.35rem);
+  font-weight: 680;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  color: var(--brand-clarity);
+}
+body.body-dash .dash-mast__lede {
+  margin: 0.35rem 0 0;
+  max-width: 46rem;
+  font-size: 1.02rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--brand-clarity) 68%, transparent);
+}
+body.body-dash .dash-mast__meta {
+  margin: 0.4rem 0 0;
+}
+body.body-dash .dash-command {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 0;
+}
+body.body-dash .dash-command__search {
+  min-width: 0;
+}
+body.body-dash .dash-command__input {
+  font-size: 1rem;
+}
+body.body-dash .dash-sites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  min-width: 0;
+}
+body.body-dash .dash-sites__chip {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+  padding: 0.45rem 0.7rem 0.5rem;
+  border-radius: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--brand-clarity) 14%, transparent);
+  background: color-mix(in srgb, #1A1612 82%, transparent);
+  color: var(--brand-clarity);
+  text-decoration: none;
+}
+body.body-dash .dash-sites__chip strong {
+  font-size: 0.86rem;
+  letter-spacing: -0.02em;
+}
+body.body-dash .dash-sites__chip span {
+  font-size: 0.68rem;
+  color: color-mix(in srgb, var(--brand-clarity) 50%, transparent);
+}
+body.body-dash .dash-sites__chip.is-active {
+  border-color: color-mix(in srgb, var(--plan-accent) 46%, transparent);
+  background: color-mix(in srgb, var(--plan-accent) 12%, #1A1612);
+}
+body.body-dash .dash-rivals {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+body.body-dash .dash-rivals__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.8rem;
+}
+body.body-dash .dash-rivals__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+body.body-dash .dash-rivals__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+body.body-dash .dash-rivals__chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.45rem 0.28rem 0.55rem;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--plan-accent) 24%, transparent);
+  background: color-mix(in srgb, var(--plan-accent) 10%, #1A1612);
+  font-size: 0.78rem;
+}
+body.body-dash .dash-rivals__x {
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--brand-clarity) 62%, transparent);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+body.body-dash .dash-rivals__add {
+  min-width: 11rem;
+  min-height: 2.1rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.6rem;
+  border: 1px dashed color-mix(in srgb, var(--brand-clarity) 22%, transparent);
+  background: transparent;
+  color: var(--brand-clarity);
+}
+body.body-dash .dash-command__opts {
+  display: grid;
+  gap: 0.55rem;
 }
 body.body-dash .dash-audit__bar {
   display: grid;
@@ -4001,9 +4127,9 @@ body.body-dash .dash-tile__k {
 }
 body.body-dash .dash-tile__n {
   margin: 0.35rem 0 0;
-  font-size: clamp(1.35rem, 2vw, 1.85rem);
+  font-size: clamp(1.85rem, 3.1vw, 2.65rem);
   font-weight: 720;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.055em;
   color: var(--brand-clarity);
   line-height: 1;
 }
@@ -4098,7 +4224,7 @@ body.body-dash .dash-split__nums dt {
 }
 body.body-dash .dash-split__nums dd {
   margin: 0.2rem 0 0;
-  font-size: 1.45rem;
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
   font-weight: 720;
   letter-spacing: -0.04em;
   color: var(--brand-clarity);
@@ -4204,7 +4330,7 @@ body.body-dash .dash-meter__track i {
 body.body-dash .dash-meter__n,
 body.body-dash .dash-mix__n {
   text-align: right;
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 650;
   color: var(--brand-clarity);
 }
@@ -4245,7 +4371,7 @@ body.body-dash .dash-stats dt {
 }
 body.body-dash .dash-stats dd {
   margin: 0.15rem 0 0;
-  font-size: 1.15rem;
+  font-size: 1.45rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--brand-clarity);
@@ -4255,7 +4381,7 @@ body.body-dash .dash-hist {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.45rem;
   align-items: end;
-  min-height: 8.5rem;
+  min-height: 11rem;
 }
 body.body-dash .dash-hist li {
   display: flex;
@@ -4264,7 +4390,7 @@ body.body-dash .dash-hist li {
   align-items: center;
   gap: 0.28rem;
   min-width: 0;
-  min-height: 8.5rem;
+  min-height: 11rem;
 }
 body.body-dash .dash-hist strong {
   font-size: 0.85rem;
@@ -4273,8 +4399,8 @@ body.body-dash .dash-hist strong {
 }
 body.body-dash .dash-hist__bar {
   width: 100%;
-  max-width: 2.4rem;
-  height: calc(var(--w, 0) * 0.07rem);
+  max-width: 2.8rem;
+  height: calc(var(--w, 0) * 0.1rem);
   min-height: 3px;
   border-radius: 4px 4px 0 0;
   background: var(--plan-accent);
@@ -4286,8 +4412,8 @@ body.body-dash .dash-hist__lab {
 body.body-dash .dash-sheet--dense { width: 100%; }
 body.body-dash .dash-sheet--dense th,
 body.body-dash .dash-sheet--dense td {
-  padding: 0.4rem 0.35rem;
-  font-size: 0.78rem;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.92rem;
 }
 body.body-dash .dash-sheet--dense th {
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
@@ -4311,6 +4437,66 @@ body.body-dash .dash-fault__counts b { font-size: 0.9rem; }
 body.body-dash .dash-fault__counts b[data-sev="critical"] { color: #EF4444; }
 body.body-dash .dash-fault__counts b[data-sev="warn"] { color: #F59E0B; }
 body.body-dash .dash-fault__counts b[data-sev="ok"] { color: #22C55E; }
+body.body-dash .dash-trend {
+  min-width: 0;
+}
+body.body-dash .dash-trend__legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 0.85rem;
+}
+body.body-dash .dash-trend__legend dt {
+  margin: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
+}
+body.body-dash .dash-trend__legend dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: var(--brand-clarity);
+}
+body.body-dash .dash-trend__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 16rem;
+}
+body.body-dash .dash-trend__grid {
+  stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);
+  stroke-width: 1;
+}
+body.body-dash .dash-trend__axis,
+body.body-dash .dash-trend__x {
+  fill: color-mix(in srgb, var(--brand-clarity) 42%, transparent);
+  font-size: 9px;
+}
+body.body-dash .dash-trend__line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+body.body-dash .dash-trend__line[data-series="aio"],
+body.body-dash .dash-trend__dot[data-series="aio"] { stroke: var(--plan-accent); fill: var(--plan-accent); }
+body.body-dash .dash-trend__line[data-series="aio"] { stroke-width: 2.5; fill: none; }
+body.body-dash .dash-trend__line[data-series="geo"],
+body.body-dash .dash-trend__dot[data-series="geo"] {
+  stroke: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
+  fill: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
+}
+body.body-dash .dash-trend__line[data-series="geo"] { stroke-width: 2.3; fill: none; }
+body.body-dash .dash-trend__val {
+  font-size: 9px;
+  font-weight: 650;
+}
+body.body-dash .dash-trend__val[data-series="aio"] { fill: var(--plan-accent); }
+body.body-dash .dash-trend__val[data-series="geo"] {
+  fill: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
+}
 
 @media (max-width: 1100px) {
   body.body-dash .dash-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }

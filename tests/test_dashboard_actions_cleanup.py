@@ -36,6 +36,11 @@ def test_single_pack_download_cta_in_deliverable():
 def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-compose" in AUDIT
     assert "dash-compose__title" in AUDIT
+    assert "dash-mast" in AUDIT
+    assert "dash-command" in AUDIT
+    assert "dash-sites" in AUDIT
+    assert "<select" not in AUDIT
+    assert "dash-rivals" in AUDIT
     assert "analyze-reveal" not in DASH
     assert "{{ _('Audit') }}" in AUDIT
     assert "{{ _('Nuova analisi') }}" not in DASH

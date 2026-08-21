@@ -523,3 +523,75 @@ def build_dash_charts(
         "spark": spark,
         "delta": delta,
     }
+
+
+def build_history_trend(items: list[Any] | None) -> dict[str, Any] | None:
+    """Dual AIO/GEO series from real history. No chart unless ≥2 scored runs."""
+    series: list[dict[str, Any]] = []
+    chronological = list(reversed(list(items or [])))
+    for item in chronological:
+        aio = _as_float(getattr(item, "aio_score", None))
+        geo = _as_float(getattr(item, "geo_score", None))
+        if aio is None and geo is None:
+            continue
+        created = getattr(item, "created_at", None)
+        label = created.strftime("%d/%m") if created is not None else ""
+        series.append(
+            {
+                "aio": int(round(_clamp(aio))) if aio is not None else None,
+                "geo": int(round(_clamp(geo))) if geo is not None else None,
+                "label": label,
+                "domain": str(getattr(item, "domain", "") or ""),
+            }
+        )
+    if len(series) < 2:
+        return None
+
+    width, height = 640.0, 228.0
+    left, right, top, bottom = 36.0, 18.0, 18.0, 30.0
+    inner_w = width - left - right
+    inner_h = height - top - bottom
+    span = max(1, len(series) - 1)
+
+    def _xy(index: int, value: float) -> tuple[float, float]:
+        x = left + inner_w * index / span
+        y = top + inner_h * (1.0 - _clamp(value) / 100.0)
+        return round(x, 1), round(y, 1)
+
+    def _path(key: str) -> tuple[str, list[dict[str, Any]]]:
+        bits: list[str] = []
+        marks: list[dict[str, Any]] = []
+        for i, row in enumerate(series):
+            val = row.get(key)
+            if val is None:
+                continue
+            x, y = _xy(i, float(val))
+            bits.append(f"{'M' if not bits else 'L'}{x:.1f},{y:.1f}")
+            marks.append({"x": x, "y": y, "v": int(val), "label": row["label"]})
+        return " ".join(bits), marks
+
+    aio_line, aio_marks = _path("aio")
+    geo_line, geo_marks = _path("geo")
+    ticks_x = []
+    for i, row in enumerate(series):
+        x, _y = _xy(i, 0)
+        ticks_x.append({"x": x, "label": row["label"]})
+
+    aios = [int(r["aio"]) for r in series if r.get("aio") is not None]
+    geos = [int(r["geo"]) for r in series if r.get("geo") is not None]
+    return {
+        "n": len(series),
+        "width": 640,
+        "height": 228,
+        "aio_line": aio_line,
+        "geo_line": geo_line,
+        "aio_marks": aio_marks,
+        "geo_marks": geo_marks,
+        "ticks_x": ticks_x,
+        "first_aio": aios[0] if aios else None,
+        "last_aio": aios[-1] if aios else None,
+        "first_geo": geos[0] if geos else None,
+        "last_geo": geos[-1] if geos else None,
+        "delta_aio": (aios[-1] - aios[0]) if len(aios) >= 2 else None,
+        "delta_geo": (geos[-1] - geos[0]) if len(geos) >= 2 else None,
+    }

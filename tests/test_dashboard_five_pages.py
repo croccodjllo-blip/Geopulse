@@ -81,6 +81,7 @@ def test_benchmark_uses_competitor_snapshot():
 
 def test_trend_has_history_and_charts():
     assert "history-list" in TREND
+    assert "dash-trend" in TREND
     assert "dash-spark" in TREND
     assert "diff-strip" in TREND
 

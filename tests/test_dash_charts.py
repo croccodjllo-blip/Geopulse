@@ -125,6 +125,33 @@ def test_build_charts_counts_real_findings_and_pages():
     assert charts["meridian"]["n"] == 2
 
 
+def test_history_trend_needs_two_scored_runs():
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+
+    from services.dash_charts import build_history_trend
+
+    now = datetime(2026, 8, 21, 12, 0, tzinfo=timezone.utc)
+    one = [SimpleNamespace(aio_score=40, geo_score=30, created_at=now, domain="a.example")]
+    assert build_history_trend(one) is None
+    assert build_history_trend([]) is None
+
+    two = [
+        SimpleNamespace(aio_score=62, geo_score=48, created_at=now, domain="a.example"),
+        SimpleNamespace(aio_score=50, geo_score=40, created_at=now, domain="a.example"),
+    ]
+    # Newest first, as dashboard_history queries.
+    chart = build_history_trend(two)
+    assert chart is not None
+    assert chart["n"] == 2
+    assert chart["first_aio"] == 50
+    assert chart["last_aio"] == 62
+    assert chart["delta_aio"] == 12
+    assert chart["aio_line"]
+    assert chart["geo_line"]
+    assert len(chart["ticks_x"]) == 2
+
+
 def test_spark_and_delta_only_when_real_history():
     empty = build_dash_charts(
         aio_score=10,
