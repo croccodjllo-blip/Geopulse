@@ -461,7 +461,7 @@ body.body-dash .workspace-strip--preview .workspace-strip__title::after {
 
 /* —— SITE-WIDE marketing / auth preview chrome —— */
 body.body-marketing {
-  --brand-cyan: #C9D3DD;
+  --brand-cyan: #E8A04A;
   --mkt-teal: #E8A04A;
 }
 
@@ -496,7 +496,7 @@ body.body-marketing .hero-visual--cite .hero-visual__photo {
 body.body-marketing .hero-visual__aurora {
   opacity: 0.35 !important;
   background:
-    radial-gradient(ellipse 50% 40% at 70% 20%, rgba(63, 168, 181, 0.28), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 70% 20%, rgba(232, 160, 74, 0.28), transparent 60%),
     radial-gradient(ellipse 40% 35% at 20% 70%, rgba(201, 211, 221, 0.12), transparent 55%) !important;
 }
 body.body-marketing .hero-visual__scan,
@@ -517,7 +517,7 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   width: 4.5rem !important;
   height: 4.5rem !important;
   border-radius: 999px;
-  filter: drop-shadow(0 0 18px rgba(63, 168, 181, 0.35));
+  filter: drop-shadow(0 0 18px rgba(232, 160, 74, 0.35));
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   font-size: clamp(1.65rem, 3.5vw, 2.35rem) !important;
@@ -573,7 +573,7 @@ body.body-marketing .btn-core {
   border: 0 !important;
   color: #041014 !important;
   font-weight: 700 !important;
-  box-shadow: 0 0 24px rgba(63, 168, 181, 0.28);
+  box-shadow: 0 0 24px rgba(232, 160, 74, 0.28);
 }
 body.body-marketing .hero-url-form__submit:hover,
 body.body-marketing .btn-core:hover {
@@ -603,7 +603,7 @@ body.body-marketing .profile-card {
 body.body-marketing .profile-card--featured {
   border-color: color-mix(in srgb, var(--mkt-teal) 45%, transparent) !important;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(63, 168, 181, 0.14), transparent 55%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232, 160, 74, 0.14), transparent 55%),
     rgba(8, 18, 18, 0.72) !important;
 }
 body.body-marketing .profile-card__tier {
@@ -634,7 +634,7 @@ body.body-marketing .faq-item {
 body.body-marketing .section-cta--v2 {
   border-top: 1px solid color-mix(in srgb, var(--brand-cyan) 12%, transparent);
   background:
-    radial-gradient(ellipse 60% 80% at 50% 0%, rgba(63, 168, 181, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 80% at 50% 0%, rgba(232, 160, 74, 0.12), transparent 55%),
     transparent !important;
 }
 
@@ -654,7 +654,7 @@ body.body-auth .btn-signal {
 /* Pricing / product page intros */
 body.body-marketing .page-intro__brand-mark {
   border-radius: 999px;
-  filter: drop-shadow(0 0 12px rgba(63, 168, 181, 0.3));
+  filter: drop-shadow(0 0 12px rgba(232, 160, 74, 0.3));
 }
 
 /* —— PREVIEW 1·2·3 unified void canvas + mobile layout —— */
@@ -667,7 +667,7 @@ body.body-dash,
 body.body-auth {
   background-color: #121212 !important;
   background-image:
-    radial-gradient(ellipse 70% 45% at 85% -5%, rgba(63, 168, 181, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 85% -5%, rgba(232, 160, 74, 0.14), transparent 55%),
     linear-gradient(180deg, #121212 0%, #121212 100%) !important;
   background-attachment: fixed !important;
 }

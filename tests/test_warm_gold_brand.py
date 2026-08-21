@@ -15,6 +15,11 @@ def test_root_tokens_are_warm_gold():
     assert "--plan-accent: #E8A04A" in CSS
     assert "#3FA8B5" not in CSS
     assert "#3FA8B5" not in PREVIEW
+    assert "rgba(63, 168, 181" not in CSS
+    assert "rgba(63, 168, 181" not in PREVIEW
+    assert "--brand-cyan: #C9D3DD" not in PREVIEW
+    assert "#7FD4DD" not in PREVIEW
+    assert "#B8E6EC" not in PREVIEW
 
 
 def test_logo_svg_is_gold_c_arcs():

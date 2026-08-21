@@ -1342,7 +1342,7 @@ body.app-body:not(.body-dash) {
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--signal, #C9D3DD);
+  color: var(--signal, #E8A04A);
   font-weight: 600;
 }
 
@@ -1493,12 +1493,12 @@ body.app-body:not(.body-dash) {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--brand-cyan, #C9D3DD);
+  color: var(--brand-cyan, #E8A04A);
 }
 
 .plan--featured .price-offer__note,
 .profile-card--featured .price-offer__note {
-  color: var(--plan-accent, var(--brand-cyan, #C9D3DD));
+  color: var(--plan-accent, var(--brand-cyan, #E8A04A));
 }
 
 .plan__desc {
@@ -2171,7 +2171,7 @@ body.app-body:not(.body-dash) {
   color: #f5f7fa;
 }
 .analyze-overlay__brand span {
-  color: var(--plan-accent, #C9D3DD);
+  color: var(--plan-accent, #E8A04A);
   font-weight: 600;
 }
 .analyze-overlay__live {
@@ -2226,7 +2226,7 @@ body.app-body:not(.body-dash) {
 .analyze-overlay__ring-progress {
   stroke-linecap: round;
   transition: stroke-dashoffset 0.35s ease;
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--plan-accent, #C9D3DD) 35%, transparent));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--plan-accent, #E8A04A) 35%, transparent));
 }
 .analyze-overlay__gauge {
   position: absolute;
@@ -2250,7 +2250,7 @@ body.app-body:not(.body-dash) {
   margin-left: 0.02em;
   font-size: 0.55em;
   font-weight: 600;
-  color: var(--plan-accent, #C9D3DD);
+  color: var(--plan-accent, #E8A04A);
 }
 .analyze-overlay__scan {
   position: absolute;
@@ -2260,7 +2260,7 @@ body.app-body:not(.body-dash) {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    color-mix(in srgb, var(--plan-accent, #C9D3DD) 18%, transparent) 48%,
+    color-mix(in srgb, var(--plan-accent, #E8A04A) 18%, transparent) 48%,
     transparent 55%
   );
   animation: analyze-scan 2.6s ease-in-out infinite;
@@ -2292,7 +2292,7 @@ body.app-body:not(.body-dash) {
   background: rgba(0, 0, 0, 0.35);
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.74rem;
-  color: var(--plan-accent, #C9D3DD);
+  color: var(--plan-accent, #E8A04A);
   word-break: break-all;
 }
 .analyze-overlay__eta {
@@ -2339,9 +2339,9 @@ body.app-body:not(.body-dash) {
 }
 .analyze-overlay__steps li.is-active {
   color: #0b0d10;
-  background: var(--plan-accent, #C9D3DD);
+  background: var(--plan-accent, #E8A04A);
   font-weight: 700;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--plan-accent, #C9D3DD) 40%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--plan-accent, #E8A04A) 40%, transparent);
 }
 .analyze-overlay__bar {
   margin: 0.85rem 1.15rem 0;
@@ -2358,7 +2358,7 @@ body.app-body:not(.body-dash) {
   background: linear-gradient(
     90deg,
     #5B6B7A 0%,
-    var(--plan-accent, #C9D3DD) 100%
+    var(--plan-accent, #E8A04A) 100%
   );
   transition: width 0.35s ease;
 }
@@ -7506,9 +7506,9 @@ html.analyze-busy {
 }
 .geo-insight__sev.is-critical { color: #fb7185; }
 .geo-insight__sev.is-warn { color: #fbbf24; }
-.geo-insight__sev.is-info { color: var(--color-core, #C9D3DD); }
+.geo-insight__sev.is-info { color: var(--color-core, #E8A04A); }
 .geo-kpi__delta.is-clear { color: #34d399; }
-.geo-kpi__delta.is-watch { color: var(--color-core, #C9D3DD); }
+.geo-kpi__delta.is-watch { color: var(--color-core, #E8A04A); }
 .geo-kpi__delta.is-elevated { color: #fbbf24; }
 .geo-kpi__delta.is-high-pressure { color: #fb7185; }
 .geo-insight__title {
@@ -10344,7 +10344,7 @@ body.body-login-popup .site-footer {
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--signal, #C9D3DD);
+  color: var(--signal, #E8A04A);
   font-weight: 600;
 }
 
@@ -10354,7 +10354,7 @@ body.body-login-popup .site-footer {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.78rem;
-  color: var(--brand-cyan, #C9D3DD);
+  color: var(--brand-cyan, #E8A04A);
 }
 
 .profile-card__price {
@@ -10905,8 +10905,8 @@ body.body-login-popup .site-footer {
 }
 .plan-pill[data-plan="plus"] {
   color: #E8A04A;
-  background: rgba(63, 168, 181, 0.12);
-  border-color: rgba(63, 168, 181, 0.4);
+  background: rgba(232, 160, 74, 0.12);
+  border-color: rgba(232, 160, 74, 0.4);
 }
 .plan-pill[data-plan="business"] {
   color: #D4A574;

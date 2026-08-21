@@ -16,7 +16,7 @@ When a user is logged in, `body.dash-plan--free|plus|business` remaps the **enti
 | Plus | Amber gold `#E8A04A` | `#121212` |
 | Business | Copper `#D4A574` | `#14110C` |
 
-Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04060A`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/copper hex.
+Marketing/admin with no plan class keep the global charcoal void (`--brand-bg: #121212`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/chrome hex.
 
 ## Assets
 - `static/img/logo.svg` — **primary mark, true self-contained vector** (paths/gradients only, no external `<image>` refs). Every header/hero/page-intro/auth `<img>` points here directly (viewBox 128×128).
@@ -43,15 +43,15 @@ Chrome void disc · dashed orbital ellipse with satellite node · bold chrome-gr
 ## Palette
 | Token | Hex | Role |
 |---|---|---|
-| Void | `#04060A` | Page background |
-| Card | `#0A0E14` | Elevated surface |
-| Border | `#1A222D` | Hairlines |
-| Chrome silver | `#C9D3DD` | Primary accent (default; overridden per plan on dashboard pages) |
-| Steel shadow | `#5B6B7A` | Secondary accent / gradient stop |
-| Nebula blue | `#2E4A78` | Landing hero atmosphere only |
-| Nebula violet | `#4A3468` | Landing hero atmosphere only — atmosphere-only, not a UI color |
-| Platinum | `#E8EEF4` | Primary text |
-| Muted | `#8B97A8` | Secondary text |
+| Void | `#121212` | Page background |
+| Card | `#1A1612` | Elevated surface |
+| Border | `#3A2E22` | Hairlines |
+| Warm gold | `#E8A04A` | Primary accent (default; overridden per plan on dashboard pages) |
+| Deep amber | `#C47A2C` | Secondary accent / gradient stop |
+| Nebula amber | `#8A4E16` | Landing hero atmosphere only |
+| Nebula ember | `#5C3010` | Landing hero atmosphere only — atmosphere-only, not a UI color |
+| Warm ivory | `#F3EDE3` | Primary text |
+| Muted | `#B8A894` | Secondary text |
 | Success | `#22C55E` | Positive delta / ok state (not the brand accent) |
 | Warning | `#F59E0B` | Warn state |
 | Danger | `#EF4444` | Critical / negative delta |
