@@ -86,6 +86,8 @@ def test_trend_has_history_and_charts():
     assert "history-list" in TREND
     assert "dash-trend" in TREND
     assert "dash-trend__frame" in TREND
+    assert "dash-trend__pair" in TREND
+    assert "data-series=\"cvi\"" in TREND
     assert 'preserveAspectRatio="xMidYMid meet"' in TREND
     assert "dash-trend__dates" in TREND
     assert "dash-spark" in TREND

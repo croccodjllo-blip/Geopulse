@@ -12,6 +12,8 @@ from datetime import datetime
 from typing import Any
 from urllib.parse import urlparse
 
+from services.rating import composite_score
+
 
 _CAT_ORDER = ("aio", "geo", "technical", "other")
 _CAT_LABELS = {
@@ -607,6 +609,7 @@ def build_history_trend(
             {
                 "aio": int(round(_clamp(aio))) if aio is not None else None,
                 "geo": int(round(_clamp(geo))) if geo is not None else None,
+                "cvi": composite_score(aio, geo),
                 "label": label,
                 "when": created.strftime("%d/%m/%Y %H:%M") if created is not None else "—",
                 "domain": str(getattr(item, "domain", "") or ""),
@@ -647,6 +650,7 @@ def build_history_trend(
 
     aio_line, aio_marks = _path("aio")
     geo_line, geo_marks = _path("geo")
+    cvi_line, cvi_marks = _path("cvi")
     ticks_x = []
     last_i = len(series) - 1
     for i, row in enumerate(series):
@@ -661,6 +665,7 @@ def build_history_trend(
 
     aios = [int(r["aio"]) for r in series if r.get("aio") is not None]
     geos = [int(r["geo"]) for r in series if r.get("geo") is not None]
+    cvis = [int(r["cvi"]) for r in series if r.get("cvi") is not None]
     return {
         "n": len(series),
         "width": 720,
@@ -669,8 +674,10 @@ def build_history_trend(
         "baseline": baseline,
         "aio_line": aio_line,
         "geo_line": geo_line,
+        "cvi_line": cvi_line,
         "aio_marks": aio_marks,
         "geo_marks": geo_marks,
+        "cvi_marks": cvi_marks,
         "ticks_x": ticks_x,
         "grid_y": grid_y,
         "rows": series,
@@ -680,5 +687,8 @@ def build_history_trend(
         "last_geo": geos[-1] if geos else None,
         "delta_aio": (aios[-1] - aios[0]) if len(aios) >= 2 else None,
         "delta_geo": (geos[-1] - geos[0]) if len(geos) >= 2 else None,
+        "first_cvi": cvis[0] if cvis else None,
+        "last_cvi": cvis[-1] if cvis else None,
+        "delta_cvi": (cvis[-1] - cvis[0]) if len(cvis) >= 2 else None,
         "latest_when": series[-1]["when"],
     }

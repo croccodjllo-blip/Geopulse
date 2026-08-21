@@ -4719,9 +4719,25 @@ body.body-dash .dash-trend {
   width: 100%;
   min-width: 0;
 }
+body.body-dash .dash-trend__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.1rem 1.4rem;
+  align-items: start;
+  width: 100%;
+}
 body.body-dash .dash-trend__frame {
   width: 100%;
   min-width: 0;
+  justify-self: start;
+}
+body.body-dash .dash-trend__frame .dash-card__kicker { margin-bottom: 0.35rem; }
+body.body-dash .dash-trend__cvi-read {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: var(--brand-clarity);
 }
 body.body-dash .dash-trend__legend {
   display: grid;
@@ -4786,6 +4802,12 @@ body.body-dash .dash-trend__dot[data-series="geo"] {
   fill: color-mix(in srgb, var(--brand-clarity) 58%, transparent);
 }
 body.body-dash .dash-trend__line[data-series="geo"] { stroke-width: 1.2; fill: none; }
+body.body-dash .dash-trend__line[data-series="cvi"],
+body.body-dash .dash-trend__dot[data-series="cvi"] {
+  stroke: color-mix(in srgb, var(--plan-accent) 52%, #F3EDE3);
+  fill: color-mix(in srgb, var(--plan-accent) 52%, #F3EDE3);
+}
+body.body-dash .dash-trend__line[data-series="cvi"] { stroke-width: 1.35; fill: none; }
 body.body-dash .dash-trend__val {
   font-size: 9px;
   font-weight: 650;
@@ -4940,6 +4962,7 @@ body.body-dash .comp-arena {
   body.body-dash .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body.body-dash .dash-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body.body-dash .dash-pair { grid-template-columns: 1fr; }
+  body.body-dash .dash-trend__pair { grid-template-columns: 1fr; }
   body.body-dash .dash-wide { grid-template-columns: 1fr; }
   body.body-dash .dash-prompt { grid-template-columns: 1fr; }
   body.body-dash .dash-audit__bar { grid-template-columns: 1fr; }

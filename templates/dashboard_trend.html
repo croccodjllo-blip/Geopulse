@@ -60,7 +60,9 @@
         </dd>
       </div>
     </dl>
+    <div class="dash-trend__pair">
     <div class="dash-trend__frame">
+    <p class="dash-card__kicker">AIO / GEO</p>
     <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMidYMid meet" role="img">
       {% for g in run_trend.grid_y or [] %}
       <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
@@ -91,12 +93,44 @@
       {% endfor %}
     </ol>
     </div>
+    <div class="dash-trend__frame dash-trend__frame--cvi">
+    <p class="dash-card__kicker">{{ _('Indice CVI') }}</p>
+    <p class="dash-trend__cvi-read">
+      {{ run_trend.first_cvi if run_trend.first_cvi is number else '—' }}
+      → {{ run_trend.last_cvi if run_trend.last_cvi is number else '—' }}
+      {% if run_trend.delta_cvi is number %}
+      <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_cvi > 0 else ('down' if run_trend.delta_cvi < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_cvi) }}</span>
+      {% endif %}
+    </p>
+    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMidYMid meet" role="img">
+      {% for g in run_trend.grid_y or [] %}
+      <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
+      {% endfor %}
+      {% if run_trend.cvi_line %}
+      <path class="dash-trend__line" data-series="cvi" d="{{ run_trend.cvi_line }}" fill="none"/>
+      {% endif %}
+      {% for m in run_trend.cvi_marks or [] %}
+      {% if m.latest %}
+      <circle class="dash-trend__dot is-latest" data-series="cvi" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
+      {% endif %}
+      {% endfor %}
+    </svg>
+    <ol class="dash-trend__dates">
+      {% for t in run_trend.ticks_x or [] %}
+      {% if t.label %}
+      <li class="dash-trend__x">{{ t.label }}</li>
+      {% endif %}
+      {% endfor %}
+    </ol>
+    </div>
+    </div>
     <table class="dash-sheet">
       <thead>
         <tr>
           <th>{{ _('Data audit') }}</th>
           <th>AIO</th>
           <th>GEO</th>
+          <th>CVI</th>
         </tr>
       </thead>
       <tbody>
@@ -105,6 +139,7 @@
           <td>{{ row.when }}</td>
           <td>{{ row.aio if row.aio is number else '—' }}</td>
           <td>{{ row.geo if row.geo is number else '—' }}</td>
+          <td>{{ row.cvi if row.cvi is number else '—' }}</td>
         </tr>
         {% endfor %}
       </tbody>
