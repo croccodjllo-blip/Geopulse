@@ -17,13 +17,10 @@
 {% endif %}
 </style>
 
-<section class="dash-atelier" aria-label="{{ _('Strumenti di visibilità') }}">
+<section class="dash-atelier dash-atelier--flush" aria-label="{{ _('Strumenti di visibilità') }}">
   <header class="dash-atelier__head">
-    <p class="dash-atelier__eyebrow">{{ _('Atelier') }}</p>
-    <h3 class="dash-atelier__title">{{ _('Lettura grafica dell\'ultimo audit') }}</h3>
-    <p class="dash-atelier__lede">
-      {{ _('Costellazione engine, pressione findings, suite GEO e campo pagine — tutti dallo stesso run, senza delta inventati.') }}
-    </p>
+    <p class="dash-atelier__eyebrow">{{ _('Lettura') }}</p>
+    <h3 class="dash-atelier__title">{{ _('Engine, pressione, pagine') }}</h3>
   </header>
 
   <div class="dash-atelier__grid">
@@ -94,47 +91,6 @@
         <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
         {% endfor %}
       </ol>
-      {% endif %}
-    </article>
-
-    {# ——— Dual stave AIO / GEO ——— #}
-    <article class="dash-inst dash-inst--stave" aria-labelledby="atelier-stave">
-      <header class="dash-inst__head">
-        <p class="dash-inst__kicker">{{ _('Readiness') }}</p>
-        <h4 class="dash-inst__title" id="atelier-stave">AIO · GEO</h4>
-        {% if ch.delta %}
-        <span class="dash-inst__delta" data-has-delta="1">
-          {% if ch.delta.aio is not none %}<em data-delta="{{ ch.delta.aio }}">AIO {{ '%+d'|format(ch.delta.aio) }}</em>{% endif %}
-          {% if ch.delta.geo is not none %}<em data-delta="{{ ch.delta.geo }}">GEO {{ '%+d'|format(ch.delta.geo) }}</em>{% endif %}
-        </span>
-        {% endif %}
-      </header>
-      <div class="dash-staves">
-        <div class="dash-stave" data-metric="aio">
-          <strong>{{ ch.aio }}</strong>
-          <span>AIO</span>
-          <ol aria-hidden="true">
-            {% for tick in ch.stave_aio|reverse %}
-            <li data-on="{{ tick.on }}"></li>
-            {% endfor %}
-          </ol>
-        </div>
-        <div class="dash-stave" data-metric="geo">
-          <strong>{{ ch.geo }}</strong>
-          <span>GEO</span>
-          <ol aria-hidden="true">
-            {% for tick in ch.stave_geo|reverse %}
-            <li data-on="{{ tick.on }}"></li>
-            {% endfor %}
-          </ol>
-        </div>
-      </div>
-      {% if ch.has_competitors and ch.brand_sov is not none %}
-      <div class="dash-split" aria-label="{{ _('Campo SoV') }}">
-        <span data-split="brand"><i></i>{{ _('Brand') }} {{ ch.brand_sov }}%</span>
-        <span data-split="rivals"><i></i>{{ _('Rivali') }} {{ ch.rivals_sov }}%</span>
-        <span data-split="other"><i></i>{{ _('Altro') }} {{ ch.other_sov }}%</span>
-      </div>
       {% endif %}
     </article>
 

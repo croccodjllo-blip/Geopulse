@@ -32,6 +32,8 @@ def _breakdown():
 def test_atelier_is_wired_on_main_dashboard():
     assert 'include "partials/dash_atelier.html"' in DASH
     assert "dash-atelier" in ATELIER
+    assert "dash-atelier--flush" in ATELIER
+    assert "dash-inst--stave" not in ATELIER
     assert "dash-constellation" in ATELIER
     assert "dash-mosaic" in ATELIER
     assert "dash-petals" in ATELIER

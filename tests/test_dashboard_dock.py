@@ -48,3 +48,10 @@ def test_dock_css_has_open_and_rail_widths():
     assert "--sidebar-w: 14.75rem" in CSS
     assert 'html[data-dock="rail"]' in CSS
     assert ".app-sidebar__pin" in CSS
+
+
+def test_dash_canvas_is_flush_and_warm():
+    assert "dash-atelier--flush" in CSS
+    assert "Compact flush canvas" in CSS
+    assert "#3FA8B5" not in CSS.split("Compact flush canvas")[-1]
+    assert "#C9D3DD" not in CSS.split("Compact flush canvas")[-1]
