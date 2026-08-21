@@ -38,6 +38,8 @@
       <h2 class="dash-card__title">{{ _('AIO / GEO per data') }}</h2>
       <p class="dash-card__aside">{{ run_trend.n }} · {{ run_trend.latest_when }}</p>
     </header>
+    <div class="dash-trend__pair">
+    <div class="dash-trend__frame">
     <dl class="dash-trend__legend">
       <div data-series="aio">
         <dt>AIO</dt>
@@ -60,14 +62,16 @@
         </dd>
       </div>
     </dl>
-    <div class="dash-trend__pair">
-    <div class="dash-trend__frame">
-    <p class="dash-card__kicker">AIO / GEO</p>
     <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMidYMid meet" role="img">
       {% for g in run_trend.grid_y or [] %}
       <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
-      <text class="dash-trend__axis" x="{{ run_trend.left - 8 }}" y="{{ g.y + 4 }}" text-anchor="end">{{ g.v }}</text>
       {% endfor %}
+      {% if run_trend.aio_area %}
+      <path class="dash-trend__fill" data-series="aio" d="{{ run_trend.aio_area }}"/>
+      {% endif %}
+      {% if run_trend.geo_area %}
+      <path class="dash-trend__fill" data-series="geo" d="{{ run_trend.geo_area }}"/>
+      {% endif %}
       {% if run_trend.aio_line %}
       <path class="dash-trend__line" data-series="aio" d="{{ run_trend.aio_line }}" fill="none"/>
       {% endif %}
@@ -76,12 +80,12 @@
       {% endif %}
       {% for m in run_trend.aio_marks or [] %}
       {% if m.latest %}
-      <circle class="dash-trend__dot is-latest" data-series="aio" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
+      <circle class="dash-trend__dot is-latest" data-series="aio" cx="{{ m.x }}" cy="{{ m.y }}" r="2.1"/>
       {% endif %}
       {% endfor %}
       {% for m in run_trend.geo_marks or [] %}
       {% if m.latest %}
-      <circle class="dash-trend__dot is-latest" data-series="geo" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
+      <circle class="dash-trend__dot is-latest" data-series="geo" cx="{{ m.x }}" cy="{{ m.y }}" r="2.1"/>
       {% endif %}
       {% endfor %}
     </svg>
@@ -94,24 +98,31 @@
     </ol>
     </div>
     <div class="dash-trend__frame dash-trend__frame--cvi">
-    <p class="dash-card__kicker">{{ _('Indice CVI') }}</p>
-    <p class="dash-trend__cvi-read">
-      {{ run_trend.first_cvi if run_trend.first_cvi is number else '—' }}
-      → {{ run_trend.last_cvi if run_trend.last_cvi is number else '—' }}
-      {% if run_trend.delta_cvi is number %}
-      <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_cvi > 0 else ('down' if run_trend.delta_cvi < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_cvi) }}</span>
-      {% endif %}
-    </p>
+    <dl class="dash-trend__legend">
+      <div data-series="cvi">
+        <dt>{{ _('CVI') }}</dt>
+        <dd>
+          {{ run_trend.first_cvi if run_trend.first_cvi is number else '—' }}
+          → {{ run_trend.last_cvi if run_trend.last_cvi is number else '—' }}
+          {% if run_trend.delta_cvi is number %}
+          <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_cvi > 0 else ('down' if run_trend.delta_cvi < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_cvi) }}</span>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
     <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMidYMid meet" role="img">
       {% for g in run_trend.grid_y or [] %}
       <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
       {% endfor %}
+      {% if run_trend.cvi_area %}
+      <path class="dash-trend__fill" data-series="cvi" d="{{ run_trend.cvi_area }}"/>
+      {% endif %}
       {% if run_trend.cvi_line %}
       <path class="dash-trend__line" data-series="cvi" d="{{ run_trend.cvi_line }}" fill="none"/>
       {% endif %}
       {% for m in run_trend.cvi_marks or [] %}
       {% if m.latest %}
-      <circle class="dash-trend__dot is-latest" data-series="cvi" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
+      <circle class="dash-trend__dot is-latest" data-series="cvi" cx="{{ m.x }}" cy="{{ m.y }}" r="2.1"/>
       {% endif %}
       {% endfor %}
     </svg>

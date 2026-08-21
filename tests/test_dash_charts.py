@@ -171,6 +171,8 @@ def test_history_trend_needs_two_scored_runs():
     assert chart["aio_line"]
     assert chart["geo_line"]
     assert chart["cvi_line"]
+    assert chart["aio_area"]
+    assert chart["cvi_area"]
     assert chart["first_cvi"] == 45
     assert chart["last_cvi"] == 55
     assert [t["label"] for t in chart["ticks_x"]] == ["17/08", "21/08"]

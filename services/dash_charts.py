@@ -616,8 +616,8 @@ def build_history_trend(
             }
         )
 
-    width, height = 720.0, 268.0
-    left, right, top, bottom = 40.0, 22.0, 20.0, 52.0
+    width, height = 720.0, 200.0
+    left, right, top, bottom = 8.0, 10.0, 10.0, 10.0
     inner_w = width - left - right
     inner_h = height - top - bottom
     span = max(1, len(series) - 1)
@@ -651,6 +651,15 @@ def build_history_trend(
     aio_line, aio_marks = _path("aio")
     geo_line, geo_marks = _path("geo")
     cvi_line, cvi_marks = _path("cvi")
+
+    def _area(marks: list[dict[str, Any]]) -> str:
+        if not marks:
+            return ""
+        return (
+            f"M{marks[0]['x']:.1f},{baseline:.1f} "
+            + " ".join(f"L{m['x']:.1f},{m['y']:.1f}" for m in marks)
+            + f" L{marks[-1]['x']:.1f},{baseline:.1f} Z"
+        )
     ticks_x = []
     last_i = len(series) - 1
     for i, row in enumerate(series):
@@ -669,7 +678,10 @@ def build_history_trend(
     return {
         "n": len(series),
         "width": 720,
-        "height": 268,
+        "height": 200,
+        "aio_area": _area(aio_marks),
+        "geo_area": _area(geo_marks),
+        "cvi_area": _area(cvi_marks),
         "left": left,
         "baseline": baseline,
         "aio_line": aio_line,
