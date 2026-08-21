@@ -20,7 +20,7 @@ def test_landing_is_hero_only_anteprima():
     assert "hero-brand-lockup--preview" in html
     assert "hero--preview" in html
     assert "body-marketing--hero-only" in html
-    assert "img/logo.svg" in html
+    assert 'include "partials/hero_logo.html"' in html
     assert "hero-brand-word" in html
     assert "bg-hero-anteprima.png" in html
     assert "bg-hero-anteprima-mobile.png" in html

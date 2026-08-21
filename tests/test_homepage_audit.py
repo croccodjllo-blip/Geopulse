@@ -55,6 +55,15 @@ def test_hero_form_keeps_csrf_and_text_url():
     assert "preview_analyze_start" in LANDING
 
 
+def test_hero_satellite_orbits_the_dashed_ellipse():
+    logo = (ROOT / "templates" / "partials" / "hero_logo.html").read_text(encoding="utf-8")
+    assert "animateMotion" in logo
+    assert "A 54 22" in logo
+    assert "hero-brand-orbit__sat--live" in logo
+    assert "prefers-reduced-motion: reduce" in PREVIEW
+    assert "hero-brand-orbit__sat--live" in PREVIEW
+
+
 def test_hero_logo_has_no_charcoal_plate():
     logo = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
     mark = (ROOT / "static" / "img" / "logo-mark.svg").read_text(encoding="utf-8")

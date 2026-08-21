@@ -1278,6 +1278,23 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   box-shadow: none !important;
   background: transparent !important;
 }
+body.body-marketing .hero-brand-orbit__sat {
+  filter: drop-shadow(0 0 2.5px rgba(232, 160, 74, 0.55));
+}
+body.body-marketing .hero-brand-orbit__sat--static {
+  display: none;
+}
+body.body-marketing .hero-brand-orbit__sat--live {
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.body-marketing .hero-brand-orbit__sat--static {
+    display: block;
+  }
+  body.body-marketing .hero-brand-orbit__sat--live {
+    display: none;
+  }
+}
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark,
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   display: block !important;

@@ -58,14 +58,7 @@
 
   <div class="hero-copy hero-copy--v2 hero-copy--preview">
     <div class="hero-brand-lockup hero-brand-lockup--preview" id="hero-brand">
-      <img
-        class="hero-brand-mark"
-        src="{{ url_for('static', filename='img/logo.svg') }}"
-        width="128"
-        height="128"
-        alt=""
-        decoding="async"
-      />
+      {% include "partials/hero_logo.html" %}
       <span class="hero-brand-word" aria-label="CENTROPIC.AI">CENTROPIC.AI</span>
     </div>
     <h1 class="hero-headline hero-headline--v2 hero-headline--rise" id="hero-headline">
