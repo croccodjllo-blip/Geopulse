@@ -79,6 +79,9 @@ def test_topbar_css_clears_left_offset():
     assert "#22C55E" in CSS.split('data-band="a"')[1][:80]
     assert "body.app-shell--topbar .site-main" in CSS
     assert "margin-left: 0 !important" in CSS
+    assert "repeat(7, minmax(0, 1fr))" in CSS
+    assert "dash-signal.dash-board" in CSS
+    assert "border-bottom: 0" in CSS.split("dash-signal.dash-board")[1][:280]
 
 
 def test_dash_canvas_is_flush_and_warm():
