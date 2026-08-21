@@ -11,11 +11,12 @@
 
   function setOpen(open) {
     var shell = document.body;
-    var sidebar = qs("#app-sidebar");
+    var sidebar = qs("#app-topbar") || qs("#app-sidebar");
     var backdrop = qs("[data-sidebar-backdrop]");
     var toggle = qs("[data-sidebar-toggle]");
     if (!sidebar) return;
     shell.classList.toggle("sidebar-open", open);
+    shell.classList.toggle("topbar-open", open);
     if (backdrop) {
       if (open) backdrop.removeAttribute("hidden");
       else backdrop.setAttribute("hidden", "");
@@ -122,7 +123,7 @@
     });
 
     // Close drawer after navigating on small screens
-    qsa(".app-sidebar__link, .app-sidebar__sublink").forEach(function (link) {
+    qsa(".app-topbar__link, .app-sidebar__link, .app-sidebar__sublink").forEach(function (link) {
       link.addEventListener("click", function () {
         if (window.matchMedia("(max-width: 960px)").matches) setOpen(false);
       });

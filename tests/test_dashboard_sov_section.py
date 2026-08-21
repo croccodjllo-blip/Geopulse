@@ -10,7 +10,7 @@ SOV = (ROOT / "templates" / "dashboard_sov.html").read_text(encoding="utf-8")
 DETAIL = (ROOT / "templates" / "partials" / "dash_sov_detail.html").read_text(
     encoding="utf-8"
 )
-SIDEBAR = (ROOT / "templates" / "partials" / "app_sidebar.html").read_text(
+SIDEBAR = (ROOT / "templates" / "partials" / "app_topbar.html").read_text(
     encoding="utf-8"
 )
 APP = (ROOT / "app.py").read_text(encoding="utf-8")

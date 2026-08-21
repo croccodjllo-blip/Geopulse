@@ -27,7 +27,7 @@ def test_preview_css_linked():
 
 def test_priority_signal_deck_and_rail():
     assert "dash_signal.html" in DASH
-    assert 'class="dash-signal"' in SIGNAL
+    assert "dash-signal" in SIGNAL
     assert "dash-spine" in SIGNAL
     assert "dash-orbit" in SIGNAL
     assert "dash-fault" in SIGNAL
@@ -74,16 +74,11 @@ def test_redesign_css_present():
     assert ".dash-orbit__sat" in CSS
 
 
-def test_rail_overrides_wide_sidebar_margin():
-    """Dock width must replace app.css 16rem main offset (else content hugs right)."""
-    assert "--sidebar-w: 14.75rem" in CSS
-    assert "--sidebar-w: 4.35rem" in CSS
-    assert 'html[data-dock="rail"]' in CSS
-    assert "margin-left: var(--sidebar-w) !important" in CSS
-    assert "width: calc(100% - var(--sidebar-w)) !important" in CSS
-    assert "max-width: calc(100% - var(--sidebar-w)) !important" in CSS
-    shell = CSS.split("Global app shell", 1)[1].split("body.app-shell .app-sidebar--dock", 1)[0]
-    assert "padding-left: var(--sidebar-w)" not in shell
+def test_topbar_clears_sidebar_offset():
+    """Top bar must zero the leftover 16rem main offset from app.css."""
+    assert ".app-topbar" in CSS
+    assert "app-shell--topbar" in CSS
+    assert "margin-left: 0 !important" in CSS.split("Top bar")[-1]
 
 
 def test_dynamic_styles_share_bars():

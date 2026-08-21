@@ -10,13 +10,11 @@
     <div class="workspace-strip__inner">
       <div class="workspace-strip__copy">
         <div class="workspace-strip__lead">
+          {% if not latest %}
           <h1 class="workspace-strip__title">
-            {% if latest %}
-              {{ latest.domain }}
-            {% else %}
-              {{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}
-            {% endif %}
+            {{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}
           </h1>
+          {% endif %}
           <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
         </div>
         {% include "partials/site_switcher.html" %}

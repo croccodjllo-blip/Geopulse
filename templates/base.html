@@ -100,29 +100,17 @@
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
   </head>
-  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
+  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--topbar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
     {% block shell %}
-    {# Sidebar on every authenticated page except auth flows (login/register/reset). #}
+    {# Top bar on every authenticated page except auth flows (login/register/reset). #}
     {% set _bc = self.body_class()|default('', true)|trim %}
     {% set _dash_shell = current_user and ('body-auth' not in _bc) %}
     {% if _dash_shell %}
-      {% include "partials/app_sidebar.html" %}
+      {% include "partials/app_topbar.html" %}
     {% endif %}
-    <header class="site-header {% block header_class %}{% endblock %}{% if _dash_shell %} site-header--invert{% endif %}">
+    {% if not _dash_shell %}
+    <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        {% if _dash_shell %}
-        <button
-          type="button"
-          class="app-sidebar__toggle"
-          data-sidebar-toggle
-          aria-controls="app-sidebar"
-          aria-expanded="false"
-          aria-label="{{ _('Apri menu') }}"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-        <p class="site-header__dash-title">{{ self.title() }}</p>
-        {% else %}
         <a class="brand-mark brand-mark--holo" href="{{ url_for('index') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
@@ -134,10 +122,8 @@
           />
           <span class="brand-mark__word holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></span>
         </a>
-        {% endif %}
         <nav class="nav-links" aria-label="{{ _('Principale') }}">
           {% if current_user %}
-            {% if not _dash_shell %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">{{ _('Dashboard') }}</a>
             {% if can_extended_history %}
             <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">{{ _('Storico') }}</a>
@@ -153,9 +139,6 @@
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit">{{ _('Esci') }}</button>
             </form>
-            {% else %}
-            <span class="nav-user" title="{{ current_user.email }}">{{ current_user.name.split(' ')[0] }}</span>
-            {% endif %}
           {% else %}
             <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
             <a href="{{ url_for('site_guide') }}" class="{% if request.endpoint == 'site_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
@@ -193,6 +176,7 @@
         </nav>
       </div>
     </header>
+    {% endif %}
 
     <main class="site-main {% block main_class %}{% endblock %}">
       {% with messages = get_flashed_messages(with_categories=true) %}
