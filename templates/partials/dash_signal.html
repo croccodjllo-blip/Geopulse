@@ -1,4 +1,4 @@
-{# Panoramica — full-width, professional, minimal. Honest series only. #}
+{# Panoramica instruments — KPI, live charts, tables. Honest series only. #}
 {% set ch = dash_charts or {} %}
 {% set rating = rating if rating is defined and rating else (latest.rating if latest is defined and latest else none) %}
 {% set cvi_score = rating.score if rating and rating.score is number else 0 %}
@@ -11,7 +11,8 @@
 {% set meridian = ch.meridian or {} %}
 {% set mosaic = ch.mosaic or {} %}
 {% set totals = mosaic.totals or {} %}
-{% set dash_home = url_for('dashboard', site=latest.id) if latest is defined and latest else url_for('dashboard') %}
+{% set findings_rows = findings_critical or [] %}
+{% set page_rows = crawl_pages_view or [] %}
 
 <style nonce="{{ csp_nonce }}">
 .dash-signal {
@@ -32,21 +33,7 @@
 .dash-meridian [data-tick="brand"] { --x: {{ meridian.brand_x if meridian.brand_x is number else ch.aio|default(0) }}; }
 </style>
 
-<section class="dash-signal dash-signal--wide" aria-labelledby="result-domain">
-  <header class="dash-boardhead">
-    <div class="dash-boardhead__copy">
-      <p class="dash-signal__kicker">{{ _('Panoramica') }}</p>
-      {% set _title_tag = 'h1' if request.endpoint == 'dashboard' else 'h2' %}
-      <{{ _title_tag }} class="dash-boardhead__title" id="result-domain">{{ latest.domain }}</{{ _title_tag }}>
-      {% if latest.page_title %}
-      <p class="dash-signal__domain">{{ latest.page_title }}</p>
-      {% endif %}
-    </div>
-    <nav class="dash-boardhead__acts dash-actions" aria-label="{{ _('Azioni') }}">
-      <a class="dash-iconbtn dash-actions__btn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
-    </nav>
-  </header>
-
+<section class="dash-signal dash-signal--wide" aria-label="{{ _('Metriche') }}">
   <ul class="dash-kpis" aria-label="{{ _('Metriche primarie') }}">
     <li class="dash-kpi dash-spine" data-grade="{{ cvi_code }}" data-len="{{ cvi_code|length }}">
       <p class="dash-kpi__k dash-spine__kicker">{{ _('CVI') }}</p>
@@ -86,6 +73,8 @@
     <li data-metric="aio"><span class="dash-mercury__k">AIO</span><strong class="dash-mercury__v">{{ ch.aio if ch.aio is number else '—' }}</strong></li>
     <li data-metric="geo"><span class="dash-mercury__k">GEO</span><strong class="dash-mercury__v">{{ ch.geo if ch.geo is number else '—' }}</strong></li>
   </ol>
+
+  {% include "partials/dash_geo_charts.html" %}
 
   <div class="dash-wide">
     <article class="dash-card dash-orbit" aria-labelledby="signal-orbit">
@@ -143,48 +132,86 @@
     </article>
   </div>
 
-  <article class="dash-fault" aria-labelledby="signal-fault">
-    <header class="dash-fault__head">
-      <p class="dash-fault__kicker">{{ _('Findings') }}</p>
-      <h3 class="dash-fault__title" id="signal-fault">{{ _('Pressione') }}</h3>
-      <p class="dash-fault__counts">
-        <b data-sev="critical">{{ totals.critical or 0 }}</b>
-        <b data-sev="warn">{{ totals.warn or 0 }}</b>
-        <b data-sev="ok">{{ totals.ok or 0 }}</b>
-      </p>
-    </header>
-    {% if mosaic.cells %}
-    <ol class="dash-fault__stave" aria-hidden="true">
-      {% for cell in mosaic.cells %}
-      <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
-      {% endfor %}
-    </ol>
-    {% endif %}
-  </article>
-
-  <article class="dash-meridian" id="critical-pages" aria-labelledby="signal-meridian">
-    <header class="dash-meridian__head">
-      <p class="dash-meridian__kicker">{{ _('Crawl') }}</p>
-      <h3 class="dash-meridian__title" id="signal-meridian">{{ _('Pagine') }}</h3>
-      <span class="dash-meridian__n">{{ meridian.n or 0 }}</span>
-    </header>
-    <div class="dash-meridian__axis" aria-label="{{ _('Pagine su asse AIO') }}">
-      <i class="dash-meridian__rail" aria-hidden="true"></i>
-      <span class="dash-meridian__end" data-end="0">0</span>
-      <span class="dash-meridian__end" data-end="100">100</span>
-      <span class="dash-meridian__tick dash-meridian__tick--brand" data-tick="brand" title="{{ _('Brand') }} · AIO {{ meridian.brand_x if meridian.brand_x is number else ch.aio }}">
-        <em>{{ _('tu') }}</em>
-      </span>
-      {% for tick in meridian.ticks or [] %}
-      {% if tick.url %}
-      <a class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" href="{{ tick.url }}" target="_blank" rel="noopener noreferrer" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}">
-        <span class="visually-hidden">{{ tick.path }}</span>
-      </a>
-      {% else %}
-      <span class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}"></span>
+  <div class="dash-data">
+    <article class="dash-card dash-fault" aria-labelledby="signal-fault">
+      <header class="dash-fault__head">
+        <p class="dash-fault__kicker">{{ _('Findings') }}</p>
+        <h3 class="dash-fault__title" id="signal-fault">{{ _('Aperti') }}</h3>
+        <p class="dash-fault__counts">
+          <b data-sev="critical">{{ totals.critical or 0 }}</b>
+          <b data-sev="warn">{{ totals.warn or 0 }}</b>
+          <b data-sev="ok">{{ totals.ok or 0 }}</b>
+        </p>
+      </header>
+      {% if mosaic.cells %}
+      <ol class="dash-fault__stave" aria-hidden="true">
+        {% for cell in mosaic.cells %}
+        <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
+        {% endfor %}
+      </ol>
       {% endif %}
-      {% endfor %}
-    </div>
-  </article>
+      {% if findings_rows %}
+      <table class="dash-sheet">
+        <thead>
+          <tr><th>{{ _('Severity') }}</th><th>{{ _('Finding') }}</th></tr>
+        </thead>
+        <tbody>
+          {% for f in findings_rows[:8] %}
+          <tr data-sev="{{ f.severity }}">
+            <td>{{ _(f.severity) }}</td>
+            <td>{{ _(f.title) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </article>
 
+    <article class="dash-card dash-meridian" id="critical-pages" aria-labelledby="signal-meridian">
+      <header class="dash-meridian__head">
+        <p class="dash-meridian__kicker">{{ _('Crawl') }}</p>
+        <h3 class="dash-meridian__title" id="signal-meridian">{{ _('Pagine') }}</h3>
+        <span class="dash-meridian__n">{{ meridian.n or page_rows|length }}</span>
+      </header>
+      {% if page_rows %}
+      <table class="dash-sheet">
+        <thead>
+          <tr><th>{{ _('Path') }}</th><th>AIO</th><th>GEO</th><th>{{ _('Stato') }}</th></tr>
+        </thead>
+        <tbody>
+          {% for p in page_rows[:8] %}
+          {% set path = (p.url or '')|replace('https://','')|replace('http://','') %}
+          <tr data-sev="{{ p.severity }}">
+            <td>
+              {% if p.url %}
+              <a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ path.split('/', 1)[1] if '/' in path else '/' }}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ p.aio_score if p.aio_score is number else '—' }}</td>
+            <td>{{ p.geo_score if p.geo_score is number else '—' }}</td>
+            <td>{{ p.severity or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+      <div class="dash-meridian__axis" aria-label="{{ _('Pagine su asse AIO') }}">
+        <i class="dash-meridian__rail" aria-hidden="true"></i>
+        <span class="dash-meridian__end" data-end="0">0</span>
+        <span class="dash-meridian__end" data-end="100">100</span>
+        <span class="dash-meridian__tick dash-meridian__tick--brand" data-tick="brand" title="{{ _('Brand') }} · AIO {{ meridian.brand_x if meridian.brand_x is number else ch.aio }}">
+          <em>{{ _('tu') }}</em>
+        </span>
+        {% for tick in meridian.ticks or [] %}
+        {% if tick.url %}
+        <a class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" href="{{ tick.url }}" target="_blank" rel="noopener noreferrer" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}">
+          <span class="visually-hidden">{{ tick.path }}</span>
+        </a>
+        {% else %}
+        <span class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}"></span>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </article>
+  </div>
 </section>

@@ -6,44 +6,8 @@
 
 {% block content %}
 <section class="workspace workspace--fill">
-  <header class="workspace-strip workspace-strip--preview" aria-label="{{ _('Workspace') }}">
-    <div class="workspace-strip__inner">
-      <div class="workspace-strip__copy">
-        <div class="workspace-strip__lead">
-          {% if not latest %}
-          <h1 class="workspace-strip__title">
-            {{ _('Ciao') }} {{ current_user.name.split(' ')[0] }}
-          </h1>
-          {% endif %}
-          <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ user_plan }}</span>
-        </div>
-        {% include "partials/site_switcher.html" %}
-        {% if not latest %}
-        <p class="workspace-strip__lede">
-          {% if current_user.company %}{{ current_user.company }} · {% endif %}
-          {% if dash_plan == 'business' %}
-            {{ _('Workspace agenzia: multi-cliente, API e white-label.') }}
-          {% elif dash_plan == 'plus' %}
-            {{ _('Workspace Plus: SoV measured, re-scan e Edge completo.') }}
-          {% else %}
-            {{ _('Workspace Free: diagnosi AIO/GEO, findings e pack HTML.') }}
-          {% endif %}
-        </p>
-        {% endif %}
-      </div>
-      <div class="workspace-strip__meta" aria-label="{{ _('Stato account') }}">
-        {% if latest %}
-          {% set report_at = latest.updated_at or latest.created_at %}
-          {% if report_at %}
-          <span class="workspace-strip__quiet">{{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC</span>
-          {% endif %}
-        {% endif %}
-        <span class="workspace-strip__quiet workspace-strip__quiet--quota">{{ _('Quota') }}: {{ analyses_used }}/{{ daily_limit }} {% if analysis_limit_lifetime %}{{ _('analisi') }}{% else %}{{ _('quote') }}{% endif %}</span>
-        <span class="workspace-strip__quiet">{{ site_count }}/{{ max_sites }} {{ _('siti') }}</span>
-        <span class="workspace-strip__quiet">{% if crawl_unlimited %}{{ _('Crawl intero') }}{% else %}{{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}</span>
-      </div>
-    </div>
-  </header>
+  <h1 class="visually-hidden" id="overview-title">{{ _('Panoramica') }}</h1>
+  {% include "partials/dash_audit.html" %}
 
   <div class="workspace-body">
     {% include "partials/dashboard_shell.html" %}
@@ -59,39 +23,11 @@
         {% set warn_n = findings|selectattr('severity', 'equalto', 'warn')|list|length %}
         {% set findings_n = findings|length %}
 
-        <section class="report report--priority" aria-labelledby="result-domain">
+        <section class="report report--priority" aria-labelledby="overview-title">
           {% include "partials/dash_dynamic_styles.html" %}
-
           {% include "partials/dash_signal.html" %}
-
-          {% include "partials/dash_geo_charts.html" %}
-
           <div class="dash-deck" id="dash-ops" hidden></div>
-
-          <section class="dash-compose dash-compose--quiet" id="analyze-panel">
-            <h3 class="dash-compose__title visually-hidden">{{ _('Nuova analisi') }}</h3>
-            {% include "partials/analyze_form.html" %}
-          </section>
-
         </section>
-        {% else %}
-        <div class="empty-state">
-          <p class="empty-state__eyebrow">{{ _('Attivazione') }}</p>
-          <strong>{{ _('Prima diagnosi in un passo') }}</strong>
-          {% if pending_job and pending_job.status in ('pending', 'running') %}
-          <p class="empty-state__hint">
-            {{ _('Stiamo già elaborando') }} <code>{{ pending_job.url }}</code>.
-            {{ _('Al termine compariranno qui score, findings e pack.') }}
-          </p>
-          <a class="btn btn-ghost" href="#job-status">{{ _('Segui lo stato') }}</a>
-          {% else %}
-          <p class="empty-state__hint">
-            {{ _('Incolla l’URL pubblico del brand per ottenere crawl, score AIO/GEO, findings e pack.') }}
-            {{ _('Piano Free:') }} {{ max_sites }} {{ _('sito') }} · {{ daily_limit }} {{ _('analisi iniziali.') }}
-          </p>
-          <a class="btn btn-signal" href="#analyze">{{ _('Avvia la prima analisi') }}</a>
-          {% endif %}
-        </div>
         {% endif %}
       </div>
     </div>

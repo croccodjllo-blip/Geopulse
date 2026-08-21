@@ -32,7 +32,7 @@ def test_priority_signal_deck_and_rail():
     assert "dash-orbit" in SIGNAL
     assert "dash-fault" in SIGNAL
     assert "dash-meridian" in SIGNAL
-    assert "dash-actions__btn" in SIGNAL
+    assert "dash-kpis" in SIGNAL
     assert "dash-deck" in DASH
     assert "dash-more--ops" not in DASH
     assert "<details" not in DASH
@@ -40,7 +40,7 @@ def test_priority_signal_deck_and_rail():
     assert "dash-ring--sov" not in SIGNAL
     # SoV table + Findings live on /dashboard/sov (sidebar section).
     assert "dash-sov-list" not in DASH
-    assert "dash_geo_charts.html" in DASH
+    assert "dash_geo_charts.html" in SIGNAL
 
 
 def test_score_sov_tabs_and_pulse_removed():
@@ -55,14 +55,16 @@ def test_score_sov_tabs_and_pulse_removed():
 def test_no_rail_and_solo_grid():
     assert "workspace-rail" not in DASH
     assert "workspace-grid--rail" not in DASH
-    assert "workspace-strip--preview" in DASH
+    assert "workspace--fill" in DASH
 
 
 def test_analyze_below_fold_when_latest():
-    assert "analyze_form.html" in DASH
-    assert 'id="analyze-panel"' in DASH
+    assert "dash_audit.html" in DASH
+    assert 'id="analyze-panel"' in (
+        ROOT / "templates" / "partials" / "dash_audit.html"
+    ).read_text(encoding="utf-8")
     assert "analyze-reveal" not in SHELL
-    assert "analyze_form.html" in SHELL  # empty-state path
+    assert "analyze_form.html" not in SHELL
 
 
 def test_redesign_css_present():

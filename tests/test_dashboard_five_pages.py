@@ -42,9 +42,17 @@ def test_panoramica_is_charts_only():
     assert "dash-kpis" in (ROOT / "templates" / "partials" / "dash_signal.html").read_text(
         encoding="utf-8"
     )
-    assert "dash-compose" in DASH
-    assert "dash_geo_charts.html" in DASH
+    assert "dash_audit.html" in DASH
+    assert "dash-compose" in (ROOT / "templates" / "partials" / "dash_audit.html").read_text(
+        encoding="utf-8"
+    )
+    assert "dash_geo_charts.html" in (
+        ROOT / "templates" / "partials" / "dash_signal.html"
+    ).read_text(encoding="utf-8")
     assert "Compositore" not in DASH
+    assert "{{ _('Audit') }}" in (ROOT / "templates" / "partials" / "dash_audit.html").read_text(
+        encoding="utf-8"
+    )
     assert "pack-deliverable" not in DASH
     assert "comp-arena" not in DASH
     assert "id=\"findings\"" not in DASH
@@ -144,8 +152,11 @@ def test_five_pages_render_for_plus_user():
     assert "app-topbar__pills" in overview
     assert "dash-kpis" in overview
     assert "dash-live-charts" in overview or "__CENTROPIC_GEO_COMPACT__" in overview
+    assert "dash-audit" in overview
+    assert ">Audit<" in overview
     assert "Compositore" not in overview
     assert "Apri grafici interattivi" not in overview
+    assert "Nuova analisi" not in overview
     assert 'id="pack"' not in overview
     assert "comp-arena" not in overview
 

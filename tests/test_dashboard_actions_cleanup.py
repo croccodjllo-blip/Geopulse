@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 DASH = Path("templates/dashboard.html").read_text(encoding="utf-8")
+AUDIT = Path("templates/partials/dash_audit.html").read_text(encoding="utf-8")
 SIGNAL = Path("templates/partials/dash_signal.html").read_text(encoding="utf-8")
 PROMPT_OPS = Path("templates/partials/dash_prompt_ops.html").read_text(encoding="utf-8")
 SHELL = Path("templates/partials/dashboard_shell.html").read_text(encoding="utf-8")
@@ -33,10 +34,12 @@ def test_single_pack_download_cta_in_deliverable():
 
 
 def test_nuova_analisi_lives_in_analyze_reveal():
-    assert "dash-compose" in DASH
-    assert "dash-compose__title" in DASH
+    assert "dash-compose" in AUDIT
+    assert "dash-compose__title" in AUDIT
     assert "analyze-reveal" not in DASH
-    assert "{{ _('Nuova analisi') }}" in DASH
+    assert "{{ _('Audit') }}" in AUDIT
+    assert "{{ _('Nuova analisi') }}" not in DASH
+    assert "{{ _('Nuova analisi') }}" not in AUDIT
     assert 'btn btn-ghost" href="#analyze"' not in SHELL
     assert 'btn btn-signal" href="#analyze"' not in SHELL
-    assert "analyze_form.html" in SHELL or "analyze_form.html" in DASH
+    assert "dash_audit.html" in DASH

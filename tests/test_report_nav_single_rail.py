@@ -24,10 +24,11 @@ def test_report_nav_tabs_replaced_by_dash_actions():
     assert 'data-tab="sov"' not in DASH
     assert 'data-tab="score"' not in DASH
     assert 'class="report-nav"' not in DASH
-    assert "dash-actions" in SIGNAL
     assert "{{ _('Findings') }}" in SIGNAL
-    assert "{{ _('Nuova analisi') }}" in SIGNAL
     assert "dash-rail" not in SIGNAL
+    assert "{{ _('Nuova analisi') }}" not in SIGNAL
+    dash = (ROOT / "templates" / "dashboard.html").read_text(encoding="utf-8")
+    assert "dash_audit.html" in dash
 
 
 def test_shell_keeps_activate_report_view_harmless():

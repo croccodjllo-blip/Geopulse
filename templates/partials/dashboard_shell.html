@@ -36,11 +36,6 @@
 </aside>
 {% endif %}
 
-{# When a report exists, keep Nuova analisi below the fold (CTA → #analyze-panel). #}
-{% if not latest %}
-{% include "partials/analyze_form.html" %}
-{% endif %}
-
 {% if pending_job and pending_job.status in ('pending', 'running') %}
 <div
   class="job-status job-status--fallback"

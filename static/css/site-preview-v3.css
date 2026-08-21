@@ -2745,6 +2745,67 @@ body.body-dash .dash-compose--quiet {
   margin-top: 1.25rem;
   padding-top: 0.85rem;
 }
+body.body-dash .dash-audit {
+  flex: 0 0 auto;
+  margin: 0 0 0.65rem;
+  padding: 0.65rem 0 0.55rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--plan-accent) 16%, transparent);
+  border-top: 0;
+}
+body.body-dash .dash-audit__bar {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.62fr) minmax(0, 1.4fr);
+  gap: 0.65rem 0.85rem;
+  align-items: end;
+}
+body.body-dash .dash-audit__label {
+  display: block;
+  margin: 0 0 0.28rem;
+  font-size: 0.66rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--plan-accent) 80%, var(--brand-clarity));
+}
+body.body-dash .dash-audit__select,
+body.body-dash .dash-audit__input {
+  width: 100%;
+  min-height: 2.45rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--brand-clarity) 16%, transparent);
+  background: color-mix(in srgb, #1A1612 88%, transparent);
+  color: var(--brand-clarity);
+}
+body.body-dash .dash-audit__row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: stretch;
+}
+body.body-dash .dash-audit__go {
+  flex: 0 0 auto;
+  min-width: 5.6rem;
+}
+body.body-dash .dash-audit__meta {
+  margin: 0.45rem 0 0;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
+}
+body.body-dash .dash-audit__opts {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+body.body-dash .dash-data {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.65rem;
+}
+body.body-dash .dash-data .dash-fault,
+body.body-dash .dash-data .dash-meridian {
+  padding: 0;
+  margin: 0;
+}
 body.body-dash .dash-compose--quiet .analyze-composer__head,
 body.body-dash .dash-compose--quiet .analyze-composer__label,
 body.body-dash .dash-compose--quiet .analyze-composer__sub {
@@ -3903,10 +3964,9 @@ body.app-shell--topbar .workspace--fill .dash-live-charts .geo-compact > * {
   min-height: 0;
   height: 100%;
 }
-body.app-shell--topbar .workspace--fill .dash-compose--quiet {
+body.app-shell--topbar .workspace--fill .dash-audit {
   flex: 0 0 auto;
-  margin: 0.45rem 0 0;
-  padding-top: 0.55rem;
+  margin-bottom: 0.45rem;
 }
 @supports not (height: 100dvh) {
   body.app-shell--topbar {
@@ -3944,6 +4004,8 @@ body.body-dash .dash-signal--wide {
   body.body-dash .dash-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body.body-dash .dash-wide { grid-template-columns: 1fr; }
   body.body-dash .dash-prompt { grid-template-columns: 1fr; }
+  body.body-dash .dash-audit__bar { grid-template-columns: 1fr; }
+  body.body-dash .dash-data { grid-template-columns: 1fr; }
   body.body-dash .dash-synth {
     grid-template-columns: 1fr;
   }

@@ -44,7 +44,9 @@ def test_no_hidden_folds_on_main_dashboard():
     assert "<details" not in DASH
     assert "dash-more--ops" not in DASH
     assert "dash-deck" in DASH
-    assert "dash-compose" in DASH
+    assert "dash-compose" in (
+        ROOT / "templates" / "partials" / "dash_audit.html"
+    ).read_text(encoding="utf-8")
     assert "dash-meridian" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
