@@ -21,7 +21,7 @@ export type EngineBarPoint = {
 
 const TONE: Record<NonNullable<EngineBarPoint["tone"]>, string> = {
   emerald: "#10A37F",
-  cyan: "#3FA8B5",
+  cyan: "#E8A04A",
   steel: "#8BA3BD",
   amber: "#D4A574",
 };

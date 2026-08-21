@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 DASH = Path("templates/dashboard.html").read_text(encoding="utf-8")
+SIGNAL = Path("templates/partials/dash_signal.html").read_text(encoding="utf-8")
+PROMPT_OPS = Path("templates/partials/dash_prompt_ops.html").read_text(encoding="utf-8")
 SHELL = Path("templates/partials/dashboard_shell.html").read_text(encoding="utf-8")
 
 
@@ -22,17 +24,19 @@ def test_report_lead_button_soup_removed():
 
 
 def test_single_pack_download_cta_in_deliverable():
-    assert DASH.count("url_for('download_pack'") == 1
-    assert "pack-deliverable__actions" in DASH
-    assert "data-pack-mail-open" in DASH
-    top = DASH.split("report-top", 1)[1].split("report-nav", 1)[0]
-    assert "download_pack" not in top
-    assert "data-pack-mail-open" not in top
+    assert PROMPT_OPS.count("url_for('download_pack'") == 1
+    assert "pack-deliverable__actions" in PROMPT_OPS
+    assert "data-pack-mail-open" in PROMPT_OPS
+    assert "download_pack" not in DASH
+    assert "download_pack" not in SIGNAL
+    assert "data-pack-mail-open" not in SIGNAL
 
 
 def test_nuova_analisi_lives_in_analyze_reveal():
-    assert 'class="analyze-reveal"' in SHELL
-    assert "analyze-reveal__title" in SHELL
-    assert "{{ _('Nuova analisi') }}" in SHELL
+    assert 'class="dash-compose"' in DASH
+    assert "dash-compose__title" in DASH
+    assert "analyze-reveal" not in DASH
+    assert "{{ _('Nuova analisi') }}" in DASH
     assert 'btn btn-ghost" href="#analyze"' not in SHELL
     assert 'btn btn-signal" href="#analyze"' not in SHELL
+    assert "analyze_form.html" in SHELL or "analyze_form.html" in DASH
