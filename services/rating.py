@@ -2,6 +2,7 @@
 
 CVI is the proprietary umbrella metric: composite of AIO + GEO scores with
 finding penalties. Letter codes are two characters only (DD, CC, BB, AA).
+Each code maps to one semantic tone used by the dashboard lockup and tables.
 """
 
 from __future__ import annotations
@@ -17,6 +18,33 @@ RATING_SCALE: list[tuple[str, int, str]] = [
 ]
 
 RATING_ORDER = [code for code, _, _ in RATING_SCALE]
+
+# Tone hex = semantic state colors (danger / orange / warn / ok).
+RATING_TONES: dict[str, dict[str, str]] = {
+    "DD": {"band": "d", "tone": "#EF4444"},
+    "CC": {"band": "c", "tone": "#F97316"},
+    "BB": {"band": "b", "tone": "#F59E0B"},
+    "AA": {"band": "a", "tone": "#22C55E"},
+}
+
+_LEGACY_CODES = {
+    "DDD": "DD",
+    "CCC": "CC",
+    "BBB": "BB",
+    "AAA": "AA",
+    "D": "DD",
+    "C": "CC",
+    "B": "BB",
+    "A": "AA",
+}
+
+
+def normalize_grade(code: str | None) -> str:
+    """Collapse leftover 1- or 3-letter codes onto the two-letter scale."""
+    raw = str(code or "").strip().upper()
+    if raw in RATING_TONES:
+        return raw
+    return _LEGACY_CODES.get(raw, raw)
 
 
 def composite_score(
@@ -51,6 +79,7 @@ def grade_from_score(score: int) -> dict[str, Any]:
     code, minimum, label = selected
     idx = RATING_ORDER.index(code)
     progress = round((idx / (len(RATING_ORDER) - 1)) * 100)
+    tone = RATING_TONES[code]
 
     return {
         "code": code,
@@ -63,6 +92,8 @@ def grade_from_score(score: int) -> dict[str, Any]:
         "is_low": code == "DD",
         "metric": "CVI",
         "metric_name": "Centropic Visibility Index",
+        "band": tone["band"],
+        "tone": tone["tone"],
     }
 
 

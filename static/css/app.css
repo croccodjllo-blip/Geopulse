@@ -2981,11 +2981,19 @@ html.analyze-busy {
 
 .history-grade[data-grade="AAA"],
 .history-grade[data-grade="AA"],
-.history-grade[data-grade="A"] { color: var(--ok); }
+.history-grade[data-grade="A"] { color: #22C55E; }
+
+.history-grade[data-grade="BBB"],
+.history-grade[data-grade="BB"],
+.history-grade[data-grade="B"] { color: #F59E0B; }
+
+.history-grade[data-grade="CCC"],
+.history-grade[data-grade="CC"],
+.history-grade[data-grade="C"] { color: #F97316; }
 
 .history-grade[data-grade="D"],
 .history-grade[data-grade="DD"],
-.history-grade[data-grade="DDD"] { color: var(--danger); }
+.history-grade[data-grade="DDD"] { color: #EF4444; }
 
 /* Meter cards */
 .meter-list {
@@ -3794,6 +3802,18 @@ html.analyze-busy {
   letter-spacing: 0.04em;
   color: #fff;
 }
+.comp-card__cvi[data-grade="AA"],
+.comp-card__cvi[data-grade="AAA"],
+.comp-card__cvi[data-grade="A"] { color: #22C55E; border-color: color-mix(in srgb, #22C55E 40%, transparent); }
+.comp-card__cvi[data-grade="BB"],
+.comp-card__cvi[data-grade="BBB"],
+.comp-card__cvi[data-grade="B"] { color: #F59E0B; border-color: color-mix(in srgb, #F59E0B 40%, transparent); }
+.comp-card__cvi[data-grade="CC"],
+.comp-card__cvi[data-grade="CCC"],
+.comp-card__cvi[data-grade="C"] { color: #F97316; border-color: color-mix(in srgb, #F97316 40%, transparent); }
+.comp-card__cvi[data-grade="DD"],
+.comp-card__cvi[data-grade="DDD"],
+.comp-card__cvi[data-grade="D"] { color: #EF4444; border-color: color-mix(in srgb, #EF4444 40%, transparent); }
 
 .comp-card__chip {
   display: inline-flex;
@@ -5449,12 +5469,22 @@ html.analyze-busy {
 .pulse-core__stat[data-tone="grade"][data-grade="AAA"] .pulse-core__stat-v,
 .pulse-core__stat[data-tone="grade"][data-grade="AA"] .pulse-core__stat-v,
 .pulse-core__stat[data-tone="grade"][data-grade="A"] .pulse-core__stat-v {
-  color: #34D399;
+  color: #22C55E;
 }
 .pulse-core__stat[data-tone="grade"][data-grade="BBB"] .pulse-core__stat-v,
 .pulse-core__stat[data-tone="grade"][data-grade="BB"] .pulse-core__stat-v,
 .pulse-core__stat[data-tone="grade"][data-grade="B"] .pulse-core__stat-v {
-  color: #FCD34D;
+  color: #F59E0B;
+}
+.pulse-core__stat[data-tone="grade"][data-grade="CCC"] .pulse-core__stat-v,
+.pulse-core__stat[data-tone="grade"][data-grade="CC"] .pulse-core__stat-v,
+.pulse-core__stat[data-tone="grade"][data-grade="C"] .pulse-core__stat-v {
+  color: #F97316;
+}
+.pulse-core__stat[data-tone="grade"][data-grade="DDD"] .pulse-core__stat-v,
+.pulse-core__stat[data-tone="grade"][data-grade="DD"] .pulse-core__stat-v,
+.pulse-core__stat[data-tone="grade"][data-grade="D"] .pulse-core__stat-v {
+  color: #EF4444;
 }
 .pulse-core__stat[data-tone="risk"] .pulse-core__stat-v {
   color: #fff;
@@ -5754,9 +5784,9 @@ html.analyze-busy {
 .signal-diag__row[data-grade="BBB"] .signal-diag__grade,
 .signal-diag__row[data-grade="BB"] .signal-diag__grade,
 .signal-diag__row[data-grade="B"] .signal-diag__grade {
-  color: var(--plan-accent);
-  border-color: color-mix(in srgb, var(--plan-accent) 40%, transparent);
-  background: color-mix(in srgb, var(--plan-accent) 12%, transparent);
+  color: #F59E0B;
+  border-color: color-mix(in srgb, #F59E0B 40%, transparent);
+  background: color-mix(in srgb, #F59E0B 12%, transparent);
 }
 .signal-diag__row[data-grade="CCC"] .signal-diag__grade,
 .signal-diag__row[data-grade="CC"] .signal-diag__grade,
@@ -6584,25 +6614,25 @@ html.analyze-busy {
 .body-dash .rail-card__grade[data-grade="AAA"],
 .body-dash .rail-card__grade[data-grade="AA"],
 .body-dash .rail-card__grade[data-grade="A"] {
-  color: #34D399;
+  color: #22C55E;
 }
 
 .body-dash .rail-card__grade[data-grade="BBB"],
 .body-dash .rail-card__grade[data-grade="BB"],
 .body-dash .rail-card__grade[data-grade="B"] {
-  color: #C9D3DD;
+  color: #F59E0B;
 }
 
 .body-dash .rail-card__grade[data-grade="CCC"],
 .body-dash .rail-card__grade[data-grade="CC"],
 .body-dash .rail-card__grade[data-grade="C"] {
-  color: #FBBF24;
+  color: #F97316;
 }
 
 .body-dash .rail-card__grade[data-grade="D"],
 .body-dash .rail-card__grade[data-grade="DD"],
 .body-dash .rail-card__grade[data-grade="DDD"] {
-  color: #F87171;
+  color: #EF4444;
 }
 
 /* ═══════════════════════════════════════════

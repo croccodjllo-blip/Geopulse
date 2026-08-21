@@ -131,7 +131,7 @@ msgid ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria di "
-"Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
+"Centropic: un indice 0–100 con lettera <strong>DD→AA</strong> che "
 "sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi "
 "generativi.</p>\n"
 "    <p class=\"lede\">Formula operativa: media di <strong>AIO</strong> "
@@ -214,7 +214,7 @@ msgstr ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\"><strong>CVI</strong>는 Centropic의 고유 지표입니다. "
-"<strong>DDD→AAA</strong> 문자 등급이 포함된 0–100 지수로, 브랜드가 생성형 시스템에 읽히고 인용될 준비가 얼마나 "
+"<strong>DD→AA</strong> 문자 등급이 포함된 0–100 지수로, 브랜드가 생성형 시스템에 읽히고 인용될 준비가 얼마나 "
 "되어 있는지를 요약합니다.</p>\n"
 "    <p class=\"lede\">운영 공식: <strong>AIO</strong>(가독성)와 "
 "<strong>GEO</strong>(인용 가능성)의 평균에 critical/warn findings 페널티를 반영합니다. 광고 순위도 "
@@ -515,7 +515,7 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Centropic Visibility Index (CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria di "
-"Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale "
+"Centropic: 0–100 + lettera DD→AA. Riassume predisposizione strutturale "
 "(AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e "
 "nel tempo.</p>\n"
 "  </section>\n"
@@ -1680,11 +1680,11 @@ msgstr "CVI (Centropic Visibility Index)"
 
 #: services/site_guide.py:16
 msgid ""
-"Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che "
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare tra "
 "brand — non Domain Authority di terzi."
 msgstr ""
-"Centropic 고유 지표: findings 페널티를 반영해 AIO+GEO를 요약하는 DDD→AAA 문자 등급 포함 0–100 "
+"Centropic 고유 지표: findings 페널티를 반영해 AIO+GEO를 요약하는 DD→AA 문자 등급 포함 0–100 "
 "지수입니다. 브랜드 간 비교 기준이며, 타사 Domain Authority가 아닙니다."
 
 #: services/site_guide.py:24
@@ -1731,14 +1731,14 @@ msgstr ""
 "UI dell’LLM."
 
 #: services/site_guide.py:58
-msgid "CVI · scala DDD→AAA"
-msgstr "DDD에서 AAA로의 스케일"
+msgid "CVI · scala DD→AA"
+msgstr "DD에서 AA로의 스케일"
 
 #: services/site_guide.py:60
 msgid ""
-"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). "
+"Lettera del Centropic Visibility Index, da critica (DD) a eccellente (AA). "
 "Alias storico: “Indice”."
-msgstr "Centropic Visibility Index의 문자 등급으로, 위험(DDD)부터 우수(AAA)까지 표시합니다. 기존 별칭: “지수”."
+msgstr "Centropic Visibility Index의 문자 등급으로, 위험(DD)부터 우수(AA)까지 표시합니다. 기존 별칭: “지수”."
 
 #: services/site_guide.py:67
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
@@ -1941,8 +1941,8 @@ msgid "Avvia o ripeti l’analisi sull’URL del sito"
 msgstr "사이트 URL에 대한 분석을 시작하거나 반복합니다."
 
 #: services/site_guide.py:281
-msgid "Vedi CVI (DDD→AAA), score AIO/GEO e citation share"
-msgstr "DDD→AAA 지수, AIO/GEO 점수 및 음성 점유율 보기"
+msgid "Vedi CVI (DD→AA), score AIO/GEO e citation share"
+msgstr "DD→AA 지수, AIO/GEO 점수 및 음성 점유율 보기"
 
 #: services/site_guide.py:282
 msgid "Accedi a pack, Edge Signals, storico e crediti"
@@ -1965,8 +1965,8 @@ msgid "GEO = Generative Engine Optimization (citabilità nelle risposte generate
 msgstr "GEO = 생성 엔진 최적화(생성된 응답에서의 인용 가능성)"
 
 #: services/site_guide.py:297
-msgid "CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"
-msgstr "CVI (Centropic Visibility Index): AIO+GEO composite에 대한 DDD→AAA 문자 등급"
+msgid "CVI (Centropic Visibility Index): lettera DD→AA sul compositario AIO+GEO"
+msgstr "CVI (Centropic Visibility Index): AIO+GEO composite에 대한 DD→AA 문자 등급"
 
 #: services/site_guide.py:302
 msgid "Findings e pagine critiche"
@@ -2231,9 +2231,9 @@ msgstr ""
 
 #: services/site_guide.py:508
 msgid ""
-"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un "
+"Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un "
 "grado CVI tra un re-scan e l’altro."
-msgstr "편지를 읽으세요: DDD는 중요하고, AAA는 최고입니다. 재스캔 사이에 최소한 한 단계 상승하는 것을 목표로 하세요."
+msgstr "편지를 읽으세요: DD는 중요하고, AA는 최고입니다. 재스캔 사이에 최소한 한 단계 상승하는 것을 목표로 하세요."
 
 #: services/site_guide.py:512 templates/landing.html:184
 msgid "Score AIO / GEO"
@@ -3615,8 +3615,8 @@ msgid "Scala CVI"
 msgstr "CVI 스케일"
 
 #: templates/dashboard.html:431
-msgid "Scala da DDD a AAA"
-msgstr "DDD에서 AAA로의 스케일"
+msgid "Scala da DD a AA"
+msgstr "DD에서 AA로의 스케일"
 
 #: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
@@ -4253,12 +4253,12 @@ msgstr "이"
 
 #: templates/faq.html:22
 msgid ""
-"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che "
+"è la metrica proprietaria di Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È "
 "lo standard da confrontare tra brand — non Domain Authority di terzi, non "
 "Share of Voice pubblicitaria."
 msgstr ""
-"는 Centropic의 고유 지표입니다. findings 페널티를 반영한 구조적 준비 상태(AIO + GEO)를 요약하는 DDD→AAA "
+"는 Centropic의 고유 지표입니다. findings 페널티를 반영한 구조적 준비 상태(AIO + GEO)를 요약하는 DD→AA "
 "문자 등급 포함 0–100 지수입니다. 브랜드 간 비교 표준이며, 타사 Domain Authority도 광고형 Share of Voice도"
 " 아닙니다."
 
@@ -4910,11 +4910,11 @@ msgstr "AI 크롤러를 위한 접근 초안"
 #: templates/landing.html:262
 msgid ""
 "Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera "
-"DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
+"DD→AA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
 " da confrontare tra brand — non Domain Authority di terzi, non Share of Voice"
 " pubblicitaria."
 msgstr ""
-"CVI는 Centropic의 고유 지표입니다. 구조적 준비 상태(AIO + GEO)를 요약하는 DDD→AAA 문자 등급 포함 0–100 "
+"CVI는 Centropic의 고유 지표입니다. 구조적 준비 상태(AIO + GEO)를 요약하는 DD→AA 문자 등급 포함 0–100 "
 "지수입니다. 브랜드 간 비교 표준이며, 타사 Domain Authority도 광고형 Share of Voice도 아닙니다."
 
 #: templates/landing.html:266
@@ -5755,8 +5755,8 @@ msgid "aggiunge probe Misurati (se 0 menzioni, la share resta Stimata)."
 msgstr "측정 probe를 추가합니다(언급이 0이면 share는 추정으로 유지)."
 
 #: templates/product.html:36
-msgid "CVI (0–100 + lettera DDD→AAA) — metrica proprietaria Centropic"
-msgstr "CVI (0–100 + DDD→AAA 문자 등급) — Centropic 고유 지표"
+msgid "CVI (0–100 + lettera DD→AA) — metrica proprietaria Centropic"
+msgstr "CVI (0–100 + DD→AA 문자 등급) — Centropic 고유 지표"
 
 #: templates/product.html:37
 msgid "Score AIO/GEO come componenti di leggibilità e citabilità"

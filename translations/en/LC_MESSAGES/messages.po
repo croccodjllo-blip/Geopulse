@@ -134,7 +134,7 @@ msgid ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria di "
-"Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
+"Centropic: un indice 0–100 con lettera <strong>DD→AA</strong> che "
 "sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi "
 "generativi.</p>\n"
 "    <p class=\"lede\">Formula operativa: media di <strong>AIO</strong> "
@@ -217,7 +217,7 @@ msgstr ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">The <strong>CVI</strong> is Centropic's proprietary "
-"metric: a 0-100 index with a <strong>DDD→AAA</strong> letter grade that "
+"metric: a 0-100 index with a <strong>DD→AA</strong> letter grade that "
 "summarizes how ready a brand is to be read and cited by generative "
 "systems.</p>\n"
 "    <p class=\"lede\">Operational formula: the average of "
@@ -538,7 +538,7 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Centropic Visibility Index (CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria di "
-"Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale "
+"Centropic: 0–100 + lettera DD→AA. Riassume predisposizione strutturale "
 "(AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e "
 "nel tempo.</p>\n"
 "  </section>\n"
@@ -1730,11 +1730,11 @@ msgstr "CVI (Centropic Visibility Index)"
 
 #: services/site_guide.py:16
 msgid ""
-"Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che "
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare tra "
 "brand — non Domain Authority di terzi."
 msgstr ""
-"Centropic's proprietary metric: a 0-100 index with a DDD→AAA letter grade "
+"Centropic's proprietary metric: a 0-100 index with a DD→AA letter grade "
 "that summarizes AIO+GEO (with finding penalties). It is the standard for "
 "comparing brands — not third-party Domain Authority."
 
@@ -1783,16 +1783,16 @@ msgid ""
 msgstr "Heuristic value derived from site signals, not a live citation in the LLM UI."
 
 #: services/site_guide.py:58
-msgid "CVI · scala DDD→AAA"
-msgstr "Scale from DDD to AAA"
+msgid "CVI · scala DD→AA"
+msgstr "Scale from DD to AA"
 
 #: services/site_guide.py:60
 msgid ""
-"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). "
+"Lettera del Centropic Visibility Index, da critica (DD) a eccellente (AA). "
 "Alias storico: “Indice”."
 msgstr ""
-"Centropic Visibility Index letter grade, from critical (DDD) to excellent "
-"(AAA). Historical alias: “Index.”"
+"Centropic Visibility Index letter grade, from critical (DD) to excellent "
+"(AA). Historical alias: “Index.”"
 
 #: services/site_guide.py:67
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
@@ -2006,8 +2006,8 @@ msgid "Avvia o ripeti l’analisi sull’URL del sito"
 msgstr "Start or repeat the analysis on the site URL"
 
 #: services/site_guide.py:281
-msgid "Vedi CVI (DDD→AAA), score AIO/GEO e citation share"
-msgstr "See Index DDD→AAA, AIO/GEO score, and Share of Voice"
+msgid "Vedi CVI (DD→AA), score AIO/GEO e citation share"
+msgstr "See Index DD→AA, AIO/GEO score, and Share of Voice"
 
 #: services/site_guide.py:282
 msgid "Accedi a pack, Edge Signals, storico e crediti"
@@ -2030,9 +2030,9 @@ msgid "GEO = Generative Engine Optimization (citabilità nelle risposte generate
 msgstr "GEO = Generative Engine Optimization (citability in generated responses)"
 
 #: services/site_guide.py:297
-msgid "CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"
+msgid "CVI (Centropic Visibility Index): lettera DD→AA sul compositario AIO+GEO"
 msgstr ""
-"CVI (Centropic Visibility Index): DDD→AAA letter grade on the AIO+GEO "
+"CVI (Centropic Visibility Index): DD→AA letter grade on the AIO+GEO "
 "composite"
 
 #: services/site_guide.py:302
@@ -2314,10 +2314,10 @@ msgstr ""
 
 #: services/site_guide.py:508
 msgid ""
-"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un "
+"Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un "
 "grado CVI tra un re-scan e l’altro."
 msgstr ""
-"Read the letter: DDD is critical, AAA is top. Aim to rise at least one grade "
+"Read the letter: DD is critical, AA is top. Aim to rise at least one grade "
 "between scans."
 
 #: services/site_guide.py:512 templates/landing.html:184
@@ -3763,8 +3763,8 @@ msgid "Scala CVI"
 msgstr "CVI scale"
 
 #: templates/dashboard.html:431
-msgid "Scala da DDD a AAA"
-msgstr "Scale from DDD to AAA"
+msgid "Scala da DD a AA"
+msgstr "Scale from DD to AA"
 
 #: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
@@ -4432,12 +4432,12 @@ msgstr "The"
 
 #: templates/faq.html:22
 msgid ""
-"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che "
+"è la metrica proprietaria di Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È "
 "lo standard da confrontare tra brand — non Domain Authority di terzi, non "
 "Share of Voice pubblicitaria."
 msgstr ""
-"is Centropic's proprietary metric: a 0-100 index with a DDD→AAA letter grade "
+"is Centropic's proprietary metric: a 0-100 index with a DD→AA letter grade "
 "that summarizes structural readiness (AIO + GEO, with finding penalties). It "
 "is the standard for comparing brands — not third-party Domain Authority, not "
 "advertising Share of Voice."
@@ -5111,11 +5111,11 @@ msgstr "access draft for AI crawlers"
 #: templates/landing.html:262
 msgid ""
 "Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera "
-"DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
+"DD→AA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
 " da confrontare tra brand — non Domain Authority di terzi, non Share of Voice"
 " pubblicitaria."
 msgstr ""
-"The CVI is Centropic's proprietary metric: a 0-100 index with a DDD→AAA "
+"The CVI is Centropic's proprietary metric: a 0-100 index with a DD→AA "
 "letter grade that summarizes structural readiness (AIO + GEO). It is the "
 "standard for comparing brands — not third-party Domain Authority, not "
 "advertising Share of Voice."
@@ -6019,8 +6019,8 @@ msgid "aggiunge probe Misurati (se 0 menzioni, la share resta Stimata)."
 msgstr "adds Measured probes (if there are 0 mentions, the share remains Estimated)."
 
 #: templates/product.html:36
-msgid "CVI (0–100 + lettera DDD→AAA) — metrica proprietaria Centropic"
-msgstr "CVI (0-100 + DDD→AAA letter grade) — Centropic proprietary metric"
+msgid "CVI (0–100 + lettera DD→AA) — metrica proprietaria Centropic"
+msgstr "CVI (0-100 + DD→AA letter grade) — Centropic proprietary metric"
 
 #: templates/product.html:37
 msgid "Score AIO/GEO come componenti di leggibilità e citabilità"

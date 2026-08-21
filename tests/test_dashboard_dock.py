@@ -77,6 +77,7 @@ def test_topbar_css_clears_left_offset():
     assert "#F97316" in CSS.split('data-band="c"')[1][:80]
     assert "#F59E0B" in CSS.split('data-band="b"')[1][:80]
     assert "#22C55E" in CSS.split('data-band="a"')[1][:80]
+    assert "color: var(--cvi-tone)" in CSS.split("dash-cvi__grade")[1][:220]
     assert "body.app-shell--topbar .site-main" in CSS
     assert "margin-left: 0 !important" in CSS
     assert "repeat(7, minmax(0, 1fr))" in CSS

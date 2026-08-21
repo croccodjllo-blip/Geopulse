@@ -67,7 +67,7 @@ Chrome void disc · dashed orbital ellipse with satellite node · bold chrome-gr
 Do not use Roboto, Sora, or Plus Jakarta Sans.
 
 ## Proprietary metric (category)
-- **CVI — Centropic Visibility Index**: flagship product metric (composite 0–100 + letter **DDD→AAA** from AIO+GEO with finding penalties). User-facing name for the former “Indice”. Do not conflate with Moz DA / Ahrefs DR.
+- **CVI — Centropic Visibility Index**: flagship product metric (composite 0–100 + two-letter **DD→AA** from AIO+GEO with finding penalties). Bands: DD `#EF4444`, CC `#F97316`, BB `#F59E0B`, AA `#22C55E`. User-facing name for the former “Indice”. Do not conflate with Moz DA / Ahrefs DR.
 - **AIO / GEO**: keep as named *components* of CVI (not replacements for CVI).
 - **Citation share**: user-facing framing for generative mention samples (stochastic). Legacy UI may still say SoV; methodology copy should prefer “citation share” over advertising “Share of Voice”.
 

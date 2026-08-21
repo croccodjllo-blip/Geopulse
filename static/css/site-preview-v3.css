@@ -2846,7 +2846,7 @@ body.body-dash .dash-cvi__grade {
   font-weight: 720;
   letter-spacing: -0.06em;
   line-height: 1;
-  color: var(--brand-clarity);
+  color: var(--cvi-tone);
 }
 body.body-dash .dash-cvi__copy {
   display: grid;
@@ -4921,6 +4921,18 @@ body.body-dash .dash-trend__val[data-series="aio"] { fill: var(--plan-accent); }
 body.body-dash .dash-trend__val[data-series="geo"] {
   fill: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
 }
+body.body-dash .history-grade[data-grade="AA"],
+body.body-dash .history-grade[data-grade="AAA"],
+body.body-dash .history-grade[data-grade="A"] { color: #22C55E; }
+body.body-dash .history-grade[data-grade="BB"],
+body.body-dash .history-grade[data-grade="BBB"],
+body.body-dash .history-grade[data-grade="B"] { color: #F59E0B; }
+body.body-dash .history-grade[data-grade="CC"],
+body.body-dash .history-grade[data-grade="CCC"],
+body.body-dash .history-grade[data-grade="C"] { color: #F97316; }
+body.body-dash .history-grade[data-grade="DD"],
+body.body-dash .history-grade[data-grade="DDD"],
+body.body-dash .history-grade[data-grade="D"] { color: #EF4444; }
 
 /* Flush workspace: no card frames, one table size, compact URL. */
 body.body-dash .dash-card,
