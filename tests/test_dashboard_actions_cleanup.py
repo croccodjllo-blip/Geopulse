@@ -25,14 +25,16 @@ def test_single_pack_download_cta_in_deliverable():
     assert DASH.count("url_for('download_pack'") == 1
     assert "pack-deliverable__actions" in DASH
     assert "data-pack-mail-open" in DASH
-    top = DASH.split("report-top", 1)[1].split("report-nav", 1)[0]
-    assert "download_pack" not in top
-    assert "data-pack-mail-open" not in top
+    hero = DASH.split("dash-hero", 1)[1].split("dash-deck", 1)[0]
+    assert "download_pack" not in hero
+    assert "data-pack-mail-open" not in hero
 
 
 def test_nuova_analisi_lives_in_analyze_reveal():
-    assert 'class="analyze-reveal"' in SHELL
-    assert "analyze-reveal__title" in SHELL
-    assert "{{ _('Nuova analisi') }}" in SHELL
+    assert 'class="dash-compose"' in DASH
+    assert "dash-compose__title" in DASH
+    assert "analyze-reveal" not in DASH
+    assert "{{ _('Nuova analisi') }}" in DASH
     assert 'btn btn-ghost" href="#analyze"' not in SHELL
     assert 'btn btn-signal" href="#analyze"' not in SHELL
+    assert "analyze_form.html" in SHELL or "analyze_form.html" in DASH
