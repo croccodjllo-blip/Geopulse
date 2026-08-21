@@ -46,11 +46,12 @@ def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-cvi__readout" in AUDIT
     assert "dash-cvi__copy" in AUDIT
     assert "dash-cvi__lockup" in AUDIT
-    assert "dash-cvi__echo" in AUDIT
-    assert 'viewBox="0 0 208 128"' in AUDIT
+    assert "dash-cvi__echo" not in AUDIT
+    assert 'viewBox="0 0 128 128"' in AUDIT
     assert 'id="cvi-arc-a"' in AUDIT
-    assert "dash-cvi__readout--a" in AUDIT
-    assert "dash-cvi__readout--b" in AUDIT
+    assert "dash-cvi__readout--a" not in AUDIT
+    assert "dash-cvi__readout--b" not in AUDIT
+    assert "{{ cvi_code }}" in AUDIT
     assert "dash-cvi__kicker" not in AUDIT
     assert "dash-cvi__arc--inner" not in AUDIT
     assert "{{ _('CVI') }}" not in AUDIT

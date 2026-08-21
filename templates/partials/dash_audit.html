@@ -7,8 +7,6 @@
 {% set cvi_score = cvi.score if cvi and cvi.score is number else 0 %}
 {% set cvi_code = cvi.code if cvi and cvi.code else '—' %}
 {% set cvi_band = cvi.band if cvi and cvi.band else (cvi_code[0]|lower if cvi_code and cvi_code[0]|upper in 'ABCD' else 'none') %}
-{% set cvi_a = cvi_code[0] if cvi_code and cvi_code|length >= 1 else '—' %}
-{% set cvi_b = cvi_code[1] if cvi_code and cvi_code|length >= 2 else '' %}
 <section class="dash-audit dash-compose" id="analyze-panel" aria-labelledby="audit-title">
   {% if latest is defined and latest %}
   <style nonce="{{ csp_nonce }}">
@@ -50,7 +48,7 @@
     <p class="visually-hidden" id="dash-cvi-title">{{ _('Centropic Visibility Index') }}</p>
     <div class="dash-cvi__lockup">
       <div class="dash-cvi__dial">
-        <svg class="dash-cvi__mark" viewBox="0 0 208 128" aria-hidden="true">
+        <svg class="dash-cvi__mark" viewBox="0 0 128 128" aria-hidden="true">
           <defs>
             <linearGradient id="cvi-arc-a" x1="8%" y1="0%" x2="92%" y2="100%">
               <stop class="dash-cvi__stop-hi" offset="0%"/>
@@ -60,16 +58,10 @@
             </linearGradient>
           </defs>
           <path class="dash-cvi__arc dash-cvi__arc--outer" d="M102 30 A50 50 0 1 0 102 98"/>
-          <g class="dash-cvi__echo" transform="translate(88 0)">
-            <path class="dash-cvi__arc dash-cvi__arc--outer" d="M102 30 A50 50 0 1 0 102 98"/>
-          </g>
-          <circle class="dash-cvi__node" cx="196" cy="36" r="3.2"/>
+          <circle class="dash-cvi__node" cx="108" cy="36" r="3.2"/>
         </svg>
-        <div class="dash-cvi__readout dash-cvi__readout--a">
-          <strong class="dash-cvi__grade">{{ cvi_a }}</strong>
-        </div>
-        <div class="dash-cvi__readout dash-cvi__readout--b">
-          <strong class="dash-cvi__grade">{{ cvi_b }}</strong>
+        <div class="dash-cvi__readout">
+          <strong class="dash-cvi__grade">{{ cvi_code }}</strong>
         </div>
       </div>
       <div class="dash-cvi__copy">
