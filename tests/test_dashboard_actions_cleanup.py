@@ -45,6 +45,7 @@ def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-cvi__arc" in AUDIT
     assert "dash-cvi__readout" in AUDIT
     assert "dash-cvi__copy" in AUDIT
+    assert "dash-cvi__lockup" in AUDIT
     assert 'id="cvi-arc-a"' in AUDIT
     assert 'data-band="{{ cvi_band }}"' in AUDIT
     assert "dash-ring--cvi" not in AUDIT

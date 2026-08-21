@@ -2771,9 +2771,13 @@ body.body-dash .dash-cvi {
   --cvi-tone-deep: color-mix(in srgb, var(--cvi-tone) 42%, #121212);
   display: flex;
   align-items: center;
-  gap: 0.85rem 1.05rem;
   min-width: 0;
   justify-self: end;
+}
+body.body-dash .dash-cvi__lockup {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 body.body-dash .dash-cvi[data-band="d"] { --cvi-tone: #EF4444; }
 body.body-dash .dash-cvi[data-band="c"] { --cvi-tone: #F97316; }
@@ -2824,36 +2828,42 @@ body.body-dash .dash-cvi__arc--inner {
 }
 body.body-dash .dash-cvi__node { fill: var(--cvi-tone); }
 body.body-dash .dash-cvi__readout {
-  grid-area: 1 / 1;
-  position: relative;
+  position: absolute;
+  left: 16%;
+  right: 36%;
+  top: 30%;
+  bottom: 30%;
   z-index: 1;
   display: grid;
   place-items: center;
   pointer-events: none;
 }
 body.body-dash .dash-cvi__grade {
-  font-size: clamp(1.55rem, 2.6vw, 2rem);
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
   font-weight: 720;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
   line-height: 1;
-  color: var(--cvi-tone);
+  color: var(--brand-clarity);
 }
 body.body-dash .dash-cvi__copy {
   display: grid;
-  gap: 0.2rem;
+  align-content: center;
+  gap: 0.12rem;
   min-width: 0;
+  margin-left: -0.7rem;
+  padding-top: 0.15rem;
 }
 body.body-dash .dash-cvi__kicker {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   font-weight: 650;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--cvi-tone) 80%, var(--brand-clarity));
+  color: color-mix(in srgb, var(--cvi-tone) 78%, var(--brand-clarity));
 }
 body.body-dash .dash-cvi__score {
   margin: 0;
-  font-size: clamp(2.8rem, 5vw, 4.1rem);
+  font-size: clamp(1.7rem, 2.8vw, 2.2rem);
   font-weight: 720;
   letter-spacing: -0.055em;
   line-height: 0.92;
@@ -4934,7 +4944,8 @@ body.body-dash .comp-arena {
   body.body-dash .dash-prompt { grid-template-columns: 1fr; }
   body.body-dash .dash-audit__bar { grid-template-columns: 1fr; }
   body.body-dash .dash-cvi__dial { width: 7.6rem; height: 7.6rem; flex-basis: 7.6rem; }
-  body.body-dash .dash-cvi__score { font-size: clamp(2.2rem, 9vw, 3.2rem); }
+  body.body-dash .dash-cvi__copy { margin-left: -0.45rem; }
+  body.body-dash .dash-cvi__score { font-size: clamp(1.45rem, 6vw, 1.85rem); }
   body.body-dash .dash-data { grid-template-columns: 1fr; }
   body.body-dash .dash-synth {
     grid-template-columns: 1fr;
