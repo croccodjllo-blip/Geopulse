@@ -4051,8 +4051,9 @@ body.body-dash .dash-sheet td {
 }
 body.body-dash .dash-sheet__bar {
   display: block;
-  width: 5.5rem;
-  height: 4px;
+  width: 100%;
+  max-width: none;
+  height: 6px;
   margin-top: 0.25rem;
   border-radius: 99px;
   background: color-mix(in srgb, var(--brand-clarity) 10%, transparent);
@@ -4367,33 +4368,76 @@ body.body-dash .dash-card.dash-split {
   background: transparent;
   flex-wrap: nowrap;
 }
-body.body-dash .dash-split__nums {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem 0.75rem;
+body.body-dash .dash-split__table {
   width: 100%;
   margin: 0;
+  table-layout: fixed;
   flex: 0 0 auto;
 }
-body.body-dash .dash-split__nums dt {
-  margin: 0;
-  font-size: 0.66rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
+body.body-dash .dash-split__table th,
+body.body-dash .dash-split__table td {
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+  vertical-align: middle;
 }
-body.body-dash .dash-split__nums dd {
-  margin: 0.25rem 0 0;
-  font-size: clamp(1.85rem, 2.8vw, 2.55rem);
+body.body-dash .dash-split__table tr:last-child th,
+body.body-dash .dash-split__table tr:last-child td { border-bottom: 0; }
+body.body-dash .dash-split__table th {
+  width: 26%;
+  padding: 0.55rem 0.55rem 0.55rem 1.15rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-clarity) 62%, transparent);
+  position: relative;
+}
+body.body-dash .dash-split__table th::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: -0.275rem;
+  border-radius: 99px;
+  background: var(--accent, var(--plan-accent));
+}
+body.body-dash .dash-split__table td:nth-child(2) {
+  width: 18%;
+  text-align: right;
+  white-space: nowrap;
+}
+body.body-dash .dash-split__table td:nth-child(3) {
+  width: 56%;
+  padding-left: 0.75rem;
+}
+body.body-dash .dash-split__table strong {
+  font-size: clamp(1.45rem, 2.4vw, 1.95rem);
   font-weight: 720;
   letter-spacing: -0.04em;
   color: var(--brand-clarity);
-  line-height: 1;
 }
-body.body-dash .dash-split__nums dd span {
+body.body-dash .dash-split__table strong span {
   font-size: 0.48em;
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
 }
+body.body-dash .dash-split__table [data-part="brand"] { --accent: var(--plan-accent); --share: var(--brand, 0); }
+body.body-dash .dash-split__table [data-part="rivals"] {
+  --accent: color-mix(in srgb, var(--plan-accent) 42%, #5B6B7A);
+  --share: var(--rivals, 0);
+}
+body.body-dash .dash-split__table [data-part="other"] {
+  --accent: color-mix(in srgb, var(--brand-clarity) 28%, #5B6B7A);
+  --share: var(--other, 0);
+}
+body.body-dash .dash-split__table .dash-sheet__bar {
+  width: 100%;
+  max-width: none;
+  height: 8px;
+  margin-top: 0;
+}
+body.body-dash .dash-split__table .dash-sheet__bar i { background: var(--accent); }
 body.body-dash .dash-split__track {
   display: flex;
   flex: 0 0 auto;
@@ -4760,6 +4804,20 @@ body.body-dash .dash-sheet--dense td {
   font-size: 1rem;
   padding: 0.62rem 0.45rem;
 }
+body.body-dash .dash-split__table th {
+  width: 26%;
+  padding: 0.55rem 0.55rem 0.55rem 1.15rem;
+  font-size: 0.78rem;
+}
+body.body-dash .dash-split__table td {
+  padding: 0.55rem 0.45rem;
+}
+body.body-dash .dash-split__table td:nth-child(3) { padding-left: 0.75rem; }
+body.body-dash .dash-split__table .dash-sheet__bar {
+  width: 100%;
+  height: 8px;
+  margin-top: 0;
+}
 body.body-dash .dash-boardhead {
   align-items: flex-start;
   gap: 0.75rem 1rem;
@@ -4843,5 +4901,5 @@ body.body-dash .comp-arena {
   body.body-dash .dash-card--side { grid-column: 1; grid-row: auto; }
   body.body-dash .dash-minis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body.body-dash .dash-split__track { height: 10px; min-height: 10px; }
-  body.body-dash .dash-split__nums dd { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+  body.body-dash .dash-split__table strong { font-size: clamp(1.45rem, 6vw, 1.85rem); }
 }

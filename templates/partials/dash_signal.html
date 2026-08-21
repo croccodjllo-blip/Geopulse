@@ -99,20 +99,25 @@
         <p class="dash-card__kicker">{{ _('Share of Voice') }}</p>
         <h3 class="dash-card__title" id="ledger-split">{{ _('Composizione') }}</h3>
       </header>
-      <dl class="dash-split__nums">
-        <div>
-          <dt>{{ _('Brand') }}</dt>
-          <dd>{{ split.brand or 0 }}<span>%</span></dd>
-        </div>
-        <div>
-          <dt>{{ _('Rivali') }}</dt>
-          <dd>{{ split.rivals or 0 }}<span>%</span></dd>
-        </div>
-        <div>
-          <dt>{{ _('Altro') }}</dt>
-          <dd>{{ split.other or 0 }}<span>%</span></dd>
-        </div>
-      </dl>
+      <table class="dash-sheet dash-sheet--dense dash-split__table">
+        <tbody>
+          <tr data-part="brand">
+            <th scope="row">{{ _('Brand') }}</th>
+            <td><strong>{{ split.brand or 0 }}<span>%</span></strong></td>
+            <td><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+          </tr>
+          <tr data-part="rivals">
+            <th scope="row">{{ _('Rivali') }}</th>
+            <td><strong>{{ split.rivals or 0 }}<span>%</span></strong></td>
+            <td><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+          </tr>
+          <tr data-part="other">
+            <th scope="row">{{ _('Altro') }}</th>
+            <td><strong>{{ split.other or 0 }}<span>%</span></strong></td>
+            <td><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+          </tr>
+        </tbody>
+      </table>
       <div class="dash-split__track" aria-hidden="true">
         <i data-part="brand"></i>
         <i data-part="rivals"></i>

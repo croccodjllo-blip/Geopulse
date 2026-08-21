@@ -38,6 +38,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-pair--match" in SIGNAL
     assert "dash-split--wide" not in SIGNAL
     assert "dash-split__track" in SIGNAL
+    assert "dash-split__table" in SIGNAL
+    assert "dash-split__nums" not in SIGNAL
     assert "dash-area__x" in SIGNAL
     assert "dash-rank" in SIGNAL
     assert "dash-hist" in SIGNAL
@@ -60,6 +62,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-pair--match" in CSS
     assert "dash-split--wide" not in CSS
     assert "dash-split__track" in CSS
+    assert "dash-split__table" in CSS
     assert "dash-area__x" in CSS
     assert "stroke-width: 1.15" in CSS.split("dash-area__line")[1][:120]
     assert "height: 10px" in CSS.split("dash-split__track")[1]
