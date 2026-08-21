@@ -31,6 +31,7 @@ HERO = {
             "Sehen Sie, wie bereit Ihre Website ist, von KI verstanden, zitiert und empfohlen zu werden."
         ),
         "Misura la": "Miss",
+        "readiness": "Bereitschaft",
         "URL non valido": "Ungültige URL",
     },
     "es": {
@@ -38,6 +39,7 @@ HERO = {
             "Descubre cuán listo está tu sitio para ser comprendido, citado y recomendado por la IA."
         ),
         "Misura la": "Mide",
+        "readiness": "preparación",
         "URL non valido": "URL no válida",
     },
     "ko": {
@@ -45,6 +47,7 @@ HERO = {
             "사이트가 AI에 이해·인용·추천될 준비가 얼마나 되었는지 확인하세요."
         ),
         "Misura la": "측정하세요",
+        "readiness": "준비도",
         "URL non valido": "유효하지 않은 URL입니다",
     },
     "zh_Hans": {
@@ -52,6 +55,7 @@ HERO = {
             "了解你的网站被 AI 理解、引用和推荐的就绪程度。"
         ),
         "Misura la": "衡量",
+        "readiness": "就绪度",
         "URL non valido": "无效的 URL",
     },
 }

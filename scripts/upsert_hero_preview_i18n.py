@@ -20,6 +20,7 @@ TABLES: dict[str, dict[str, str]] = {
             "Enter your domain for AIO/GEO structural readiness scores and critical issues."
         ),
         "Misura la": "Measure",
+        "readiness": "readiness",
         "del tuo sito": "of your site",
         "per le IA": "for AI",
         "Misura la readiness": "Measure readiness",
@@ -62,6 +63,7 @@ TABLES: dict[str, dict[str, str]] = {
             "Geben Sie Ihre Domain ein — für AIO/GEO-Scores zur strukturellen Bereitschaft und kritische Befunde."
         ),
         "Misura la": "Miss",
+        "readiness": "Bereitschaft",
         "del tuo sito": "Ihrer Website",
         "per le IA": "für KI",
         "Misura la readiness": "Miss die Bereitschaft",
@@ -104,6 +106,7 @@ TABLES: dict[str, dict[str, str]] = {
             "Introduce tu dominio para obtener puntuaciones AIO/GEO de preparación estructural y criticidades."
         ),
         "Misura la": "Mide",
+        "readiness": "preparación",
         "del tuo sito": "de tu sitio",
         "per le IA": "para la IA",
         "Misura la readiness": "Mide la preparación",
@@ -146,6 +149,7 @@ TABLES: dict[str, dict[str, str]] = {
             "도메인을 입력하면 AIO/GEO 구조적 준비도 점수와 핵심 이슈를 확인할 수 있습니다."
         ),
         "Misura la": "측정하세요",
+        "readiness": "준비도",
         "del tuo sito": "사이트",
         "per le IA": "AI용",
         "Misura la readiness": "준비도를 측정하세요",
@@ -188,6 +192,7 @@ TABLES: dict[str, dict[str, str]] = {
             "输入域名，即可查看 AIO/GEO 结构就绪度评分与关键问题。"
         ),
         "Misura la": "衡量",
+        "readiness": "就绪度",
         "del tuo sito": "你的网站",
         "per le IA": "面向 AI",
         "Misura la readiness": "衡量就绪度",

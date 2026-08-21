@@ -325,7 +325,7 @@
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/auth.js') }}" defer="defer"></script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/i18n.js') }}" defer="defer"></script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/shell.js') }}" defer="defer"></script>
-    {% if paddle_overlay and paddle_config and paddle_config.clientToken %}
+    {% if paddle_overlay and paddle_config and paddle_config.clientToken and request.endpoint != 'index' %}
     <script nonce="{{ csp_nonce }}" src="https://cdn.paddle.com/paddle/v2/paddle.js" defer="defer"></script>
     <script nonce="{{ csp_nonce }}" defer="defer">
       window.__CENTROPIC_PADDLE__ = Object.assign(

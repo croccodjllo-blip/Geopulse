@@ -5,15 +5,41 @@
 {% block main_class %}site-main--flush{% endblock %}
 {% block flash_class %}flash-stack--inset{% endblock %}
 {% block body_class %}body-marketing body-marketing--hero-only{% endblock %}
+{% block head_extra %}
+  <link
+    rel="preload"
+    as="image"
+    type="image/webp"
+    href="{{ url_for('static', filename='img/bg-hero-anteprima.webp') }}"
+    media="(min-width: 721px)"
+    fetchpriority="high"
+  />
+  <link
+    rel="preload"
+    as="image"
+    type="image/webp"
+    href="{{ url_for('static', filename='img/bg-hero-anteprima-mobile.webp') }}"
+    media="(max-width: 720px)"
+    fetchpriority="high"
+  />
+{% endblock %}
 {% block structured_data %}
   {% include "partials/jsonld_software.html" %}
-  {% include "partials/jsonld_faq_home.html" %}
 {% endblock %}
 {% block content %}
 {# Homepage = gold C-arc lockup on warm nebula field #}
-<section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-brand">
+<section class="hero hero--v2 hero--signal hero--preview" aria-labelledby="hero-headline">
   <div class="hero-visual hero-visual--cite hero-visual--preview" aria-hidden="true">
     <picture>
+      <source
+        media="(max-width: 720px)"
+        type="image/webp"
+        srcset="{{ url_for('static', filename='img/bg-hero-anteprima-mobile.webp') }}"
+      />
+      <source
+        type="image/webp"
+        srcset="{{ url_for('static', filename='img/bg-hero-anteprima.webp') }}"
+      />
       <source
         media="(max-width: 720px)"
         srcset="{{ url_for('static', filename='img/bg-hero-anteprima-mobile.png') }}"
@@ -42,9 +68,9 @@
       />
       <span class="hero-brand-word" aria-label="CENTROPIC.AI">CENTROPIC.AI</span>
     </div>
-    <h1 class="hero-headline hero-headline--v2 hero-headline--rise">
+    <h1 class="hero-headline hero-headline--v2 hero-headline--rise" id="hero-headline">
       {{ _('Misura la') }}
-      <span class="hero-accent">readiness</span>
+      <span class="hero-accent">{{ _('readiness') }}</span>
       {{ _('del tuo sito') }}
       <span class="hero-accent">{{ _('per le IA') }}</span>
     </h1>

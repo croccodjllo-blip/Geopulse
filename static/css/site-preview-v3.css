@@ -1175,7 +1175,7 @@ body.body-marketing--hero-only {
   background-image: none !important;
   background-color: #000 !important;
 }
-/* Stylized teal line-field — site content width (72rem), centered */
+/* Warm nebula field — site content width (72rem), centered */
 body.body-marketing .hero--preview .hero-visual--preview picture {
   display: block !important;
   position: absolute !important;
@@ -1318,7 +1318,8 @@ body.body-marketing .hero--preview .hero-headline--v2 {
   margin: 0 auto 0.95rem !important;
   color: #F3EDE3 !important;
   text-align: center !important;
-  white-space: nowrap !important;
+  white-space: normal !important;
+  text-wrap: balance;
   position: relative;
   z-index: 2;
   box-sizing: border-box;
@@ -1336,7 +1337,8 @@ body.body-marketing .hero--preview .hero-lede {
   margin: 0 auto clamp(1.5rem, 4.2vw, 2.75rem) !important;
   color: color-mix(in srgb, #F3EDE3 72%, transparent) !important;
   text-align: center !important;
-  white-space: nowrap !important;
+  white-space: normal !important;
+  text-wrap: pretty;
   box-sizing: border-box;
 }
 body.body-marketing .hero--preview .hero-copy--preview::before {
