@@ -13,4 +13,10 @@
 }
 {% endfor %}
 {% endif %}
+{% if crawl_pages_view is defined %}
+{% for page in crawl_pages_view[:16] %}
+.dash-horizon [data-page="{{ loop.index0 }}"] [data-metric="aio"] { --w: {{ page.aio_score if page.aio_score is number else 0 }}; }
+.dash-horizon [data-page="{{ loop.index0 }}"] [data-metric="geo"] { --w: {{ page.geo_score if page.geo_score is number else 0 }}; }
+{% endfor %}
+{% endif %}
 </style>

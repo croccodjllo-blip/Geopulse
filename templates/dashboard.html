@@ -167,63 +167,7 @@
 
           {% include "partials/dash_atelier.html" %}
 
-          <details class="dash-more dash-more--ops">
-            <summary class="dash-more__summary">{{ _('Monitoraggio, Edge e pack') }}</summary>
-
-          {% if geo_suite %}
-          <section class="dash-block dash-block--panel geo-suite" aria-label="{{ _('GEO suite') }}">
-            <header class="dash-block__head">
-              <div>
-                <p class="dash-block__eyebrow">{{ _('Suite') }}</p>
-                <h3 class="dash-block__title visually-hidden">{{ _('GEO / AIO avanzato') }}</h3>
-              </div>
-              <div class="dash-block__meta">
-                <a class="dash-block__chip" href="{{ url_for('dashboard_settings') }}">{{ _('Impostazioni') }}</a>
-                {% if latest %}
-                <a class="dash-block__chip" href="{{ url_for('dashboard_verify', analysis_id=latest.id) }}">{{ _('Publish verify') }}</a>
-                {% endif %}
-              </div>
-            </header>
-            <ul class="geo-suite__grid">
-              <li>
-                <strong>{{ _('Entity graph') }}</strong>
-                <span>{{ (geo_suite.entity_graph.score or 0) }}/100 · {{ (geo_suite.entity_graph.nodes or [])|length }} {{ _('nodi') }}</span>
-              </li>
-              <li>
-                <strong>{{ _('Citability') }}</strong>
-                <span>{{ (geo_suite.citability.score or 0) }}/100 · date {{ geo_suite.citability.dates or 0 }}</span>
-              </li>
-              <li>
-                <strong>{{ _('Schema quality') }}</strong>
-                <span>{{ (geo_suite.schema_quality.score or 0) }}/100</span>
-              </li>
-              <li>
-                <strong>{{ _('Publish verify') }}</strong>
-                <span>{{ (geo_suite.publish_verify.score or 0) }}/100 · {{ geo_suite.publish_verify.published or 0 }}/{{ geo_suite.publish_verify.total or 0 }}</span>
-              </li>
-              <li>
-                <strong>{{ _('llms lint') }}</strong>
-                <span>{{ (geo_suite.llms_lint.score or 0) }}/100</span>
-              </li>
-              <li>
-                <strong>{{ _('Locales') }}</strong>
-                <span>{{ geo_suite.locales.lang or 'n/d' }} · hreflang {{ (geo_suite.locales.hreflang or [])|length }}</span>
-              </li>
-              {% if geo_suite.sov_measured and can_measured_sov %}
-              <li>
-                <strong>{{ _('SoV measured') }}</strong>
-                <span>
-                  {% if geo_suite.sov_measured.brand_mention_rate is not none %}
-                    {{ geo_suite.sov_measured.brand_mention_rate }}% · {{ _(geo_suite.sov_measured.label) if geo_suite.sov_measured.label else '' }}
-                  {% else %}
-                    {{ _(geo_suite.sov_measured.label) if geo_suite.sov_measured.label else 'n/d' }}
-                  {% endif %}
-                </span>
-              </li>
-              {% endif %}
-            </ul>
-          </section>
-          {% endif %}
+          <div class="dash-deck" id="dash-ops">
 
           {% if run_diff and run_diff.has_previous %}
           <section class="diff-strip" aria-label="{{ _('Confronto con run precedente') }}">
@@ -271,27 +215,18 @@
                 </div>
               </header>
               {% if crawl_pages_view %}
-              <ul class="crawl-list crawl-list--critical">
-                {% for page in crawl_pages_view[:24] %}
+              <ol class="dash-horizon" aria-label="{{ _('Pagine per pressione') }}">
+                {% for page in crawl_pages_view[:16] %}
                 {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
-                <li data-severity="{{ page.severity }}">
-                  <a class="crawl-list__path" href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
-                    <span class="crawl-list__title">
-                      {% if page.severity == 'critical' %}<i class="crawl-list__flag" aria-hidden="true">!</i>{% endif %}
-                      {% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}
-                    </span>
-                    <span class="crawl-list__url">/{% if path %}{{ path }}{% endif %}</span>
+                <li data-severity="{{ page.severity }}" data-page="{{ loop.index0 }}">
+                  <a href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
+                    {% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}
                   </a>
-                  {% if page.problems %}
-                  <ul class="crawl-list__problems">
-                    {% for problem in page.problems %}
-                    <li>{{ _(problem) }}</li>
-                    {% endfor %}
-                  </ul>
-                  {% endif %}
+                  <span class="dash-horizon__track" aria-hidden="true"><i data-metric="aio"></i><i data-metric="geo"></i></span>
+                  <em>{{ page.aio_score if page.aio_score is number else '—' }}/{{ page.geo_score if page.geo_score is number else '—' }}</em>
                 </li>
                 {% endfor %}
-              </ul>
+              </ol>
               {% if crawl_pages_view|length > 24 %}
               <p class="dash-block__more">{{ _('Prime 24 criticità · elenco completo nel pack') }}</p>
               {% endif %}
@@ -356,11 +291,8 @@
             </p>
             {% else %}
             {% include "partials/edge_wizard.html" %}
-            <details class="edge-advanced">
-              <summary>
-                {{ _('Snippet avanzati') }}
-                {% if can_full_edge %}<span>{{ user_plan }}</span>{% endif %}
-              </summary>
+            <div class="edge-advanced edge-advanced--open">
+              <p class="dash-inst__kicker">{{ _('Endpoint') }}{% if can_full_edge %} · {{ user_plan }}{% endif %}</p>
               <div class="edge-advanced__body">
             <ul class="edge-urls">
               <li>
@@ -443,7 +375,7 @@
             </div>
             {% endif %}
               </div>
-            </details>
+            </div>
             {% endif %}
           </section>
 
@@ -524,15 +456,16 @@
           </dialog>
           {% endif %}
 
-          </details>
+          </div>
 
-          <details class="analyze-reveal" id="analyze-panel">
-            <summary class="analyze-reveal__summary">
-              <span class="analyze-reveal__title">{{ _('Nuova analisi') }}</span>
-              <span class="analyze-reveal__hint">{{ _('URL · crawl · score') }}</span>
-            </summary>
+          <section class="dash-compose" id="analyze-panel">
+            <header class="dash-compose__head">
+              <p class="dash-compose__kicker">{{ _('Compositore') }}</p>
+              <h3 class="dash-compose__title">{{ _('Nuova analisi') }}</h3>
+              <span class="dash-compose__hint">{{ _('URL · crawl · score') }}</span>
+            </header>
             {% include "partials/analyze_form.html" %}
-          </details>
+          </section>
 
         </section>
         {% else %}

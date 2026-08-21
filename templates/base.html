@@ -1,8 +1,18 @@
 <!DOCTYPE html>
-<html lang="{{ ui_lang }}">
+<html lang="{{ ui_lang }}" data-dock="open">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script nonce="{{ csp_nonce }}">
+      (function () {
+        try {
+          var d = localStorage.getItem("centropic.dock");
+          if (d === "rail" || d === "open") {
+            document.documentElement.setAttribute("data-dock", d);
+          }
+        } catch (e) {}
+      })();
+    </script>
     {% set _page_title %}{% block title %}Centropic{% endblock %}{% endset %}
     <title>{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}</title>
     <meta

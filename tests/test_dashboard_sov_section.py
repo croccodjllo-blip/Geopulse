@@ -41,13 +41,12 @@ def test_sov_page_matches_detail_anteprima():
     assert "sov_topnav.html" in SOV
     assert "body-dash--sov" in SOV
     assert "body-dash body-dash--sov" not in SOV  # avoid duplicate body-dash
-    assert "dash-sov-list" in DETAIL
-    assert "dash-sov-list__mark" in DETAIL
+    assert "dash-sov-list" not in DETAIL
+    assert "dash_atelier.html" in DETAIL
+    assert "dash-finding-board" in DETAIL
     assert "dash-findings" in DETAIL
     assert "dash-cta__primary" in DETAIL
     assert "dash-cta--anteprima" in DETAIL
-    assert "Ultimi 28 giorni" in DETAIL
-    assert "_('Avviso')" in DETAIL
     assert ".sov-page-hero__accent" in CSS
     assert ".dash-detail--anteprima" in CSS
     assert ".sov-chrome__tab" in CSS

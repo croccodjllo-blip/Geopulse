@@ -1,4 +1,4 @@
-{# Share of Voice detail card — anteprima: SoV table + Findings + Edge/Pack CTA #}
+{# Share of Voice instruments — charts, not a table. #}
 {% set findings = findings_critical or [] %}
 {% set dash_pack_href = pack_href|default('#pack') %}
 {% set dash_edge_href = edge_href|default('#edge-signals') %}
@@ -10,70 +10,32 @@
     {% if engine_breakdown %}
     <header class="dash-sov__head">
       <h2 class="dash-sov__title" id="sov-title">{{ _('Share of Voice') }}</h2>
-      <p class="dash-sov__lede">{{ _('Ultimi 28 giorni') }}</p>
+      <p class="dash-sov__lede">{{ _('Composizione per engine — stesso run, senza tabella.') }}</p>
     </header>
-
-    {% if engine_breakdown.engines %}
-    <div class="dash-sov-list" role="table" aria-label="{{ _('Share of Voice per engine') }}">
-      <div class="dash-sov-list__head" role="row">
-        <span role="columnheader">{{ _('Motore') }}</span>
-        <span role="columnheader">{{ _('Share of Voice') }}</span>
-        <span role="columnheader">{{ _('Evidenza') }}</span>
-      </div>
-      <ul class="dash-sov-list__body" role="rowgroup">
-        {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
-        <li class="dash-sov-list__row" role="row" data-engine="{{ e.id }}">
-          <div class="dash-sov-list__engine" role="cell">
-            <span class="dash-sov-list__mark" data-engine="{{ e.id }}" aria-hidden="true"></span>
-            <strong>{{ e.label }}</strong>
-          </div>
-          <div class="dash-sov-list__share" role="cell">
-            <span class="dash-sov-list__pct">{{ e.share }}%</span>
-            <span class="dash-sov-list__bar" aria-hidden="true"><i></i></span>
-          </div>
-          <div class="dash-sov-list__ev" role="cell">
-            {% if e.measured_zero %}
-            <span class="evidence-badge evidence-badge--dot" data-evidence="measured">{{ _('Misurato · 0') }}</span>
-            {% elif e.evidence == 'measured' %}
-            <span class="evidence-badge evidence-badge--dot" data-evidence="measured">{{ _('Misurato') }}</span>
-            {% elif e.evidence == 'unavailable' %}
-            <span class="evidence-badge evidence-badge--dot" data-evidence="estimated">{{ _('N/D') }}</span>
-            {% else %}
-            <span class="evidence-badge evidence-badge--dot" data-evidence="estimated">{{ _('Stimato') }}</span>
-            {% endif %}
-          </div>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-
-    {% if engine_breakdown.note %}
-    <p class="dash-sov__note">{{ _(engine_breakdown.note) }}</p>
-    {% endif %}
-    {% else %}
-    <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
     {% endif %}
   </section>
+
+  {% include "partials/dash_atelier.html" %}
 
   <section class="dash-findings" id="findings" aria-labelledby="findings-title">
     <header class="dash-findings__head">
       <h2 class="dash-findings__title" id="findings-title">{{ _('Findings') }}</h2>
     </header>
-    <ul class="finding-list">
+    {% if findings %}
+    <ol class="dash-finding-board">
       {% for f in findings %}
       <li data-severity="{{ f.severity }}">
-        <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Avviso') }}{% else %}{{ f.severity }}{% endif %}</em>
-        <div class="finding-list__body">
-          <strong>{{ _(f.title) }}{% if f.detail %} {{ _(f.detail) }}{% endif %}</strong>
-        </div>
-      </li>
-      {% else %}
-      <li class="finding-list__empty">
-        <span>{{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok nascosti.') }}{% endif %}</span>
+        <i aria-hidden="true"></i>
+        <strong>{{ _(f.title) }}</strong>
+        {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
       </li>
       {% endfor %}
-    </ul>
+    </ol>
+    {% else %}
+    <p class="finding-list__empty">
+      {{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok.') }}{% endif %}
+    </p>
+    {% endif %}
   </section>
 
   <div class="dash-cta dash-cta--anteprima" role="region" aria-label="{{ _('Azioni infrastruttura') }}">

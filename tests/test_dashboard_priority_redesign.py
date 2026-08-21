@@ -26,7 +26,9 @@ def test_priority_hero_rings_and_micro_metrics():
     assert 'class="dash-micro"' in DASH
     assert "dash-actions__btn" in DASH
     assert "dash_atelier.html" in DASH
-    assert "dash-more--ops" in DASH
+    assert "dash-deck" in DASH
+    assert "dash-more--ops" not in DASH
+    assert "<details" not in DASH
     assert "dash-ring__meta--cvi" in DASH
     # SoV table + Findings live on /dashboard/sov (sidebar section).
     assert "dash-sov-list" not in DASH
@@ -64,13 +66,14 @@ def test_redesign_css_present():
 
 
 def test_rail_overrides_wide_sidebar_margin():
-    """Narrow icon rail must replace app.css 16rem main offset (else content hugs right)."""
-    assert "--sidebar-w: 4.5rem" in CSS
+    """Dock width must replace app.css 16rem main offset (else content hugs right)."""
+    assert "--sidebar-w: 14.75rem" in CSS
+    assert "--sidebar-w: 4.35rem" in CSS
+    assert 'html[data-dock="rail"]' in CSS
     assert "margin-left: var(--sidebar-w) !important" in CSS
     assert "width: calc(100% - var(--sidebar-w)) !important" in CSS
     assert "max-width: calc(100% - var(--sidebar-w)) !important" in CSS
-    # Must not stack padding-left on top of the wide-sidebar margin.
-    shell = CSS.split("Global app shell", 1)[1].split("body.app-shell .app-sidebar--rail", 1)[0]
+    shell = CSS.split("Global app shell", 1)[1].split("body.app-shell .app-sidebar--dock", 1)[0]
     assert "padding-left: var(--sidebar-w)" not in shell
 
 

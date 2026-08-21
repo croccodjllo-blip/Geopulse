@@ -6460,6 +6460,35 @@ def dashboard_sov():
         if user.is_pro and isinstance(measured, dict):
             engine_breakdown = apply_measured_sov(engine_breakdown, measured)
 
+    dash_charts = None
+    if latest is not None:
+        sov_trend: list[Any] = []
+        if user.is_pro:
+            sov_trend = sov_series_for_chart(
+                list_sov_snapshots(
+                    SovSnapshot,
+                    site_id=latest.id,
+                    user_id=user.id,
+                    limit=12,
+                )
+            )
+        dash_charts = build_dash_charts(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            crawl_pages=list(latest.crawl_pages or []),
+            geo_suite={
+                "entity_graph": (latest.signals or {}).get("entity_graph") or {},
+                "citability": (latest.signals or {}).get("citability") or {},
+                "schema_quality": (latest.signals or {}).get("schema_quality") or {},
+                "locales": (latest.signals or {}).get("locales") or {},
+                "publish_verify": (latest.signals or {}).get("publish_verify") or {},
+                "llms_lint": (latest.signals or {}).get("llms_lint") or {},
+            },
+            engine_breakdown=engine_breakdown,
+            sov_trend=sov_trend,
+        )
+
     sov_budget = _current_sov_budget(user)
     measured_bg_job = None
     if latest is not None:
@@ -6486,6 +6515,7 @@ def dashboard_sov():
         latest=latest,
         user_sites=user_sites,
         engine_breakdown=engine_breakdown,
+        dash_charts=dash_charts,
         findings_critical=findings_critical,
         findings_ok_n=findings_ok_n,
         sov_budget=sov_budget,
