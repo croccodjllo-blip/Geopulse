@@ -67,6 +67,7 @@ def test_topbar_css_clears_left_offset():
     assert ".dash-cvi" in CSS
     assert ".dash-cvi__dial" in CSS
     assert ".dash-cvi__mark" in CSS
+    assert ".dash-audit__deep" in CSS
     assert "13.25rem" in CSS.split("dash-cvi__dial")[1][:160]
     assert '[data-band="d"]' in CSS
     assert '[data-band="c"]' in CSS
