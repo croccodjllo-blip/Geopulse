@@ -1697,6 +1697,8 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "guide"
         elif ep in {"dashboard_geo_ui"}:
             sidebar_active = "geo-ui"
+        elif ep in {"dashboard_sov"}:
+            sidebar_active = "sov"
         elif ep in {"dashboard_verify", "dashboard_verify_rescan"}:
             sidebar_active = "geo"
         elif ep in {"admin_home", "admin_set_plan", "admin_topup_user"} or (
@@ -6399,6 +6401,101 @@ def dashboard_geo_ui():
         geo_ui_assets=assets,
         geo_ui_data=payload,
         latest=site,
+    )
+
+
+@app.route("/dashboard/sov")
+@app.route("/dashboard/sov/")
+@login_required
+def dashboard_sov():
+    """Share of Voice detail — table + Findings + Edge/Pack (preview composition)."""
+    user = current_user()
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is not None:
+        if get_accessible_site(SiteAnalysis, user, prefer_site_id) is None:
+            flash(_("Sito non accessibile."), "warning")
+            return redirect(url_for("dashboard_sov"))
+    else:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+
+    user_sites = (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(SiteAnalysis.updated_at.desc())
+        .limit(40)
+        .all()
+    )
+
+    findings_all = list(latest.findings or []) if latest is not None else []
+    findings_critical = [
+        f
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() in {"critical", "warn"}
+    ]
+    findings_ok_n = sum(
+        1
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() == "ok"
+    )
+
+    engine_breakdown = None
+    if latest is not None:
+        engine_breakdown = compute_engine_breakdown(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            robots_text=latest.robots_probed_text or "",
+            competitors=latest.competitors,
+        )
+        measured = (latest.signals or {}).get("sov_measured")
+        if user.is_pro and isinstance(measured, dict):
+            engine_breakdown = apply_measured_sov(engine_breakdown, measured)
+
+    sov_budget = _current_sov_budget(user)
+    measured_bg_job = None
+    if latest is not None:
+        active_jobs = (
+            AnalysisJob.query.filter(
+                AnalysisJob.user_id == user.id,
+                AnalysisJob.site_id == latest.id,
+                AnalysisJob.status.in_(("pending", "running")),
+            )
+            .order_by(AnalysisJob.created_at.desc())
+            .all()
+        )
+        measured_bg_job = next(
+            (
+                j
+                for j in active_jobs
+                if str(getattr(j, "source", None) or "").lower() == "measured"
+            ),
+            None,
+        )
+
+    return render_template(
+        "dashboard_sov.html",
+        latest=latest,
+        user_sites=user_sites,
+        engine_breakdown=engine_breakdown,
+        findings_critical=findings_critical,
+        findings_ok_n=findings_ok_n,
+        sov_budget=sov_budget,
+        openai_ready=bool(OPENAI_API_KEY),
+        citation_ready=citation_monitor_available(),
+        user_plan=user.plan_label,
+        site_count=sites_query_for_user(SiteAnalysis, user).count(),
+        max_sites=user.max_sites,
+        token_balance_short=format_tokens_short(get_balance_cents(user)),
+        measured_bg_job=measured_bg_job,
+        **capability_template_vars(user),
     )
 
 
