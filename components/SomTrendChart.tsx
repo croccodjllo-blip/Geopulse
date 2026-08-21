@@ -22,7 +22,7 @@ export type SomTrendChartProps = {
   className?: string;
 };
 
-const CHROME = "#C9D3DD";
+const CHROME = "#E8A04A";
 const CHROME_DEEP = "#8BA3BD";
 const MUTED = "#94A3B8";
 const BORDER = "#1F2937";
