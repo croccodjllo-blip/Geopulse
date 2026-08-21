@@ -1,47 +1,129 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">Dashboard</title>
-  <desc id="d">Workspace Centropic</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Workspace Centropic — Panoramica">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#04060A"/>
-      <stop offset="55%" stop-color="#0A0E14"/>
-      <stop offset="100%" stop-color="#070A10"/>
+    <linearGradient id="gDashC1" x1="8%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#F4D7A8"/>
+      <stop offset="38%" stop-color="#E8A04A"/>
+      <stop offset="72%" stop-color="#C47A2C"/>
+      <stop offset="100%" stop-color="#8A4E16"/>
     </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#C9D3DD" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
+    <linearGradient id="gDashC2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A85E1C"/>
+      <stop offset="50%" stop-color="#E8A04A"/>
+      <stop offset="100%" stop-color="#F6E0B8"/>
     </linearGradient>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
   </defs>
-  <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#C9D3DD" opacity=".06"/>
-  <circle cx="120" cy="460" r="140" fill="#5B6B7A" opacity=".05"/>
-  <rect x="36" y="36" width="888" height="468" rx="22" fill="#0A0E14" stroke="#1A222D" stroke-width="1.5"/>
-  <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#C9D3DD" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">DASHBOARD</text>
-  <text x="64" y="122" fill="#E8EEF4" font-family="'Inter', system-ui, sans-serif" font-size="28" font-weight="700">Workspace Centropic</text>
-  
-  <g font-family="'Inter', system-ui, sans-serif">
-    <rect x="64" y="160" width="180" height="280" rx="14" fill="#0A0E14" stroke="#1A222D"/>
-    <text x="84" y="200" fill="#C9D3DD" font-size="12" font-weight="700">MENU</text>
-    <text x="84" y="230" fill="#E8EEF4" font-size="13">Dashboard</text><text x="84" y="258" fill="#8B97A8" font-size="13">Storico</text><text x="84" y="286" fill="#8B97A8" font-size="13">Grafici</text><text x="84" y="314" fill="#8B97A8" font-size="13">Guida</text><text x="84" y="342" fill="#8B97A8" font-size="13">Impostazioni</text><text x="84" y="370" fill="#8B97A8" font-size="13">Token</text>
-    <rect x="270" y="160" width="420" height="130" rx="14" fill="#0A0E14" stroke="#C9D3DD" stroke-opacity=".35"/>
-    <text x="294" y="205" fill="#8B97A8" font-size="12">ULTIMA ANALISI</text>
-    <text x="294" y="245" fill="#E8EEF4" font-size="22" font-weight="700">example.com · BBB</text>
-    <text x="294" y="275" fill="#8B97A8" font-size="13">AIO 78 · GEO 71 · 12 findings</text>
-    <rect x="710" y="160" width="186" height="130" rx="14" fill="#0A0E14" stroke="#1A222D"/>
-    <text x="734" y="210" fill="#8B97A8" font-size="12">TOKEN</text>
-    <text x="734" y="255" fill="#C9D3DD" font-size="28" font-weight="700">240</text>
-    <rect x="270" y="310" width="626" height="130" rx="14" fill="#0A0E14" stroke="#1A222D"/>
-    <text x="294" y="355" fill="#8B97A8" font-size="12">ENGINE BREAKDOWN</text>
-    <text x="294" y="395" fill="#E8EEF4" font-size="14">ChatGPT · Gemini* · Claude · Perplexity · Grok · Azure*</text>
-    <text x="294" y="420" fill="#8B97A8" font-size="12">* proxy onesti dove non esiste API nativa Overview/Copilot</text>
+  <rect width="960" height="540" fill="#121212"/>
+  <!-- topbar -->
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="#E8A04A"/>
+    <text x="294" y="33" text-anchor="middle" fill="#121212">Panoramica</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="480" y="33" text-anchor="middle" fill="#F3EDE3">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guida</text>
+  </g>
+  <rect x="860" y="18" width="72" height="20" rx="10" fill="none" stroke="#E8A04A"/>
+  <text x="896" y="33" text-anchor="middle" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11">Plus</text>
+
+  <!-- mast: domain + CVI lockup (outer+mid C, AA in bowl, score outside) -->
+  <text x="28" y="92" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">DOMINIO ATTIVO</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="700">example.com</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Audit · 21/08/2026</text>
+
+  <g transform="translate(668,64) scale(0.92)">
+    <path d="M102 30 A50 50 0 1 0 102 98" fill="none" stroke="url(#gDashC1)" stroke-width="9.5" stroke-linecap="round"/>
+    <path d="M92 38 A38 38 0 1 0 92 90" fill="none" stroke="url(#gDashC2)" stroke-width="7.5" stroke-linecap="round"/>
+    <circle cx="108" cy="36" r="3.2" fill="#E8A04A"/>
+    <text x="54" y="76" text-anchor="middle" fill="#22C55E" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="720" letter-spacing="-2">AA</text>
+  </g>
+  <text x="820" y="132" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="42" font-weight="720" letter-spacing="-1.5">78<tspan font-size="15" fill="rgba(243,237,227,0.45)">/100</tspan></text>
+
+  <!-- 7 KPI tiles -->
+  <g font-family="Inter, system-ui, sans-serif">
+    <g transform="translate(28,184)">
+      <rect width="124" height="72" rx="0" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">AIO</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">81</text>
+    </g>
+    <g transform="translate(160,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">GEO</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">74</text>
+    </g>
+    <g transform="translate(292,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Share of Voice</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">34%</text>
+    </g>
+    <g transform="translate(424,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Pagine</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">48</text>
+    </g>
+    <g transform="translate(556,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Findings</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">9</text>
+    </g>
+    <g transform="translate(688,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Critici</text>
+      <text x="12" y="54" fill="#EF4444" font-size="24" font-weight="700">2</text>
+    </g>
+    <g transform="translate(820,184)">
+      <rect width="112" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Warn</text>
+      <text x="12" y="54" fill="#F59E0B" font-size="24" font-weight="700">3</text>
+    </g>
   </g>
 
-  <text x="64" y="480" fill="#8B97A8" font-family="'Inter', system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <!-- instruments: composizione | motori + crawl stack -->
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="272" width="292" height="240" fill="#1A1A1A"/>
+    <text x="44" y="298" fill="rgba(243,237,227,0.45)" font-size="11">Share of Voice</text>
+    <text x="44" y="322" fill="#F3EDE3" font-size="16" font-weight="650">Composizione</text>
+    <rect x="44" y="348" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="44" y="348" width="88" height="8" fill="#E8A04A"/>
+    <text x="44" y="378" fill="#F3EDE3" font-size="12">Brand 40%</text>
+    <rect x="44" y="396" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="44" y="396" width="66" height="8" fill="#C47A2C"/>
+    <text x="44" y="426" fill="#F3EDE3" font-size="12">Rivali 30%</text>
+    <rect x="44" y="444" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="44" y="444" width="66" height="8" fill="rgba(243,237,227,0.35)"/>
+    <text x="44" y="474" fill="#F3EDE3" font-size="12">Altro 30%</text>
+
+    <rect x="334" y="272" width="292" height="240" fill="#1A1A1A"/>
+    <text x="350" y="298" fill="rgba(243,237,227,0.45)" font-size="11">Engine</text>
+    <text x="350" y="322" fill="#F3EDE3" font-size="16" font-weight="650">Motori</text>
+    <text x="350" y="360" fill="#F3EDE3" font-size="13">ChatGPT</text>
+    <rect x="430" y="350" width="160" height="6" fill="rgba(243,237,227,0.08)"/>
+    <rect x="430" y="350" width="96" height="6" fill="#E8A04A"/>
+    <text x="350" y="396" fill="#F3EDE3" font-size="13">Claude</text>
+    <rect x="430" y="386" width="160" height="6" fill="rgba(243,237,227,0.08)"/>
+    <rect x="430" y="386" width="72" height="6" fill="#E8A04A"/>
+    <text x="350" y="432" fill="#F3EDE3" font-size="13">Perplexity</text>
+    <rect x="430" y="422" width="160" height="6" fill="rgba(243,237,227,0.08)"/>
+    <rect x="430" y="422" width="54" height="6" fill="#E8A04A"/>
+
+    <rect x="640" y="272" width="292" height="118" fill="#1A1A1A"/>
+    <text x="656" y="298" fill="rgba(243,237,227,0.45)" font-size="11">Crawl</text>
+    <text x="656" y="322" fill="#F3EDE3" font-size="16" font-weight="650">Distribuzione AIO</text>
+    <rect x="656" y="344" width="18" height="28" fill="#22C55E"/>
+    <rect x="678" y="352" width="18" height="20" fill="#E8A04A"/>
+    <rect x="700" y="348" width="18" height="24" fill="#F59E0B"/>
+    <rect x="722" y="360" width="18" height="12" fill="#F97316"/>
+    <rect x="744" y="366" width="18" height="6" fill="#EF4444"/>
+
+    <rect x="640" y="394" width="292" height="118" fill="#1A1A1A"/>
+    <text x="656" y="420" fill="rgba(243,237,227,0.45)" font-size="11">Findings</text>
+    <text x="656" y="444" fill="#F3EDE3" font-size="16" font-weight="650">Indice di criticità</text>
+    <text x="656" y="480" fill="#F97316" font-size="28" font-weight="700">47</text>
+    <text x="720" y="480" fill="rgba(243,237,227,0.45)" font-size="12">/100 · mid</text>
+  </g>
 </svg>

@@ -5,6 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 DASH = Path("templates/dashboard.html").read_text(encoding="utf-8")
+AUDIT = Path("templates/partials/dash_audit.html").read_text(encoding="utf-8")
+SIGNAL = Path("templates/partials/dash_signal.html").read_text(encoding="utf-8")
+PROMPT_OPS = Path("templates/partials/dash_prompt_ops.html").read_text(encoding="utf-8")
 SHELL = Path("templates/partials/dashboard_shell.html").read_text(encoding="utf-8")
 
 
@@ -22,17 +25,49 @@ def test_report_lead_button_soup_removed():
 
 
 def test_single_pack_download_cta_in_deliverable():
-    assert DASH.count("url_for('download_pack'") == 1
-    assert "pack-deliverable__actions" in DASH
-    assert "data-pack-mail-open" in DASH
-    top = DASH.split("report-top", 1)[1].split("report-nav", 1)[0]
-    assert "download_pack" not in top
-    assert "data-pack-mail-open" not in top
+    assert PROMPT_OPS.count("url_for('download_pack'") == 1
+    assert "pack-deliverable__actions" in PROMPT_OPS
+    assert "data-pack-mail-open" in PROMPT_OPS
+    assert "download_pack" not in DASH
+    assert "download_pack" not in SIGNAL
+    assert "data-pack-mail-open" not in SIGNAL
 
 
 def test_nuova_analisi_lives_in_analyze_reveal():
-    assert 'class="analyze-reveal"' in SHELL
-    assert "analyze-reveal__title" in SHELL
-    assert "{{ _('Nuova analisi') }}" in SHELL
+    assert "dash-compose" in AUDIT
+    assert "dash-compose__title" in AUDIT
+    assert "dash-mast" in AUDIT
+    assert "dash-masthead" in AUDIT
+    assert "dash-cvi" in AUDIT
+    assert "dash-cvi__grade" in AUDIT
+    assert "dash-cvi__score" in AUDIT
+    assert "dash-cvi__mark" in AUDIT
+    assert "dash-cvi__arc" in AUDIT
+    assert "dash-cvi__readout" in AUDIT
+    assert "dash-cvi__copy" in AUDIT
+    assert "dash-cvi__lockup" in AUDIT
+    assert "dash-cvi__echo" not in AUDIT
+    assert 'viewBox="0 0 128 128"' in AUDIT
+    assert 'id="cvi-arc-a"' in AUDIT
+    assert "dash-cvi__readout--a" not in AUDIT
+    assert "dash-cvi__readout--b" not in AUDIT
+    assert "{{ cvi_code }}" in AUDIT
+    assert "dash-cvi__kicker" not in AUDIT
+    assert "dash-cvi__orbit" not in AUDIT
+    assert "dash-cvi__arc--mid" in AUDIT
+    assert "dash-cvi__arc--inner" not in AUDIT
+    assert "{{ _('CVI') }}" not in AUDIT
+    assert 'data-band="{{ cvi_band }}"' in AUDIT
+    assert "dash-ring--cvi" not in AUDIT
+    assert "dash-command" in AUDIT
+    assert "dash-sites" in AUDIT
+    assert "<select" not in AUDIT
+    assert "dash-rivals" in AUDIT
+    assert "dash-audit__deep" in AUDIT
+    assert "analyze-reveal" not in DASH
+    assert "{{ _('Audit') }}" in AUDIT
+    assert "{{ _('Nuova analisi') }}" not in DASH
+    assert "{{ _('Nuova analisi') }}" not in AUDIT
     assert 'btn btn-ghost" href="#analyze"' not in SHELL
     assert 'btn btn-signal" href="#analyze"' not in SHELL
+    assert "dash_audit.html" in DASH

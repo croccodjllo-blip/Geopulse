@@ -129,8 +129,8 @@ msgid ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria di "
-"Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
-"sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi "
+"Centropic: un indice 0–100 con lettera <strong>DD→AA</strong> che sintetizza "
+"quanto il brand è predisposto a essere letto e citato dai sistemi "
 "generativi.</p>\n"
 "    <p class=\"lede\">Formula operativa: media di <strong>AIO</strong> "
 "(leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui findings "
@@ -212,7 +212,7 @@ msgstr ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\"><strong>CVI</strong> 是 Centropic 的专有指标：一个带有 "
-"<strong>DDD→AAA</strong> 字母等级的 0–100 指数，用于概括品牌被生成式系统读取和引用的准备程度。</p>\n"
+"<strong>DD→AA</strong> 字母等级的 0–100 指数，用于概括品牌被生成式系统读取和引用的准备程度。</p>\n"
 "    <p class=\"lede\">操作公式：<strong>AIO</strong>（可读性）与 "
 "<strong>GEO</strong>（可引用性）的平均值，并对 critical/warn findings "
 "施加惩罚。它不是广告排名，也不是被提及的保证；它是 Centropic 用于跨域名和随时间比较的标准。</p>\n"
@@ -497,7 +497,7 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Centropic Visibility Index (CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria di "
-"Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale "
+"Centropic: 0–100 + lettera DD→AA. Riassume predisposizione strutturale "
 "(AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e "
 "nel tempo.</p>\n"
 "  </section>\n"
@@ -1661,11 +1661,11 @@ msgstr "CVI (Centropic Visibility Index)"
 
 #: services/site_guide.py:16
 msgid ""
-"Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che "
-"sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare tra "
-"brand — non Domain Authority di terzi."
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza"
+" AIO+GEO (con penalità findings). È lo standard da confrontare tra brand — "
+"non Domain Authority di terzi."
 msgstr ""
-"Centropic 专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括 AIO+GEO（含 findings "
+"Centropic 专有指标：带 DD→AA 字母等级的 0–100 指数，用于概括 AIO+GEO（含 findings "
 "惩罚）。这是品牌间比较的标准，而不是第三方 Domain Authority。"
 
 #: services/site_guide.py:24
@@ -1706,14 +1706,14 @@ msgid ""
 msgstr "基于网站信号的启发式值，而不是 LLM UI 中的实时引用。"
 
 #: services/site_guide.py:58
-msgid "CVI · scala DDD→AAA"
-msgstr "从 DDD 到 AAA 的等级"
+msgid "CVI · scala DD→AA"
+msgstr "从 DD 到 AA 的等级"
 
 #: services/site_guide.py:60
 msgid ""
-"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). "
+"Lettera del Centropic Visibility Index, da critica (DD) a eccellente (AA). "
 "Alias storico: “Indice”."
-msgstr "Centropic Visibility Index 的字母等级，从关键风险（DDD）到优秀（AAA）。历史别名：“指数”。"
+msgstr "Centropic Visibility Index 的字母等级，从关键风险（DD）到优秀（AA）。历史别名：“指数”。"
 
 #: services/site_guide.py:67
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
@@ -1904,8 +1904,8 @@ msgid "Avvia o ripeti l’analisi sull’URL del sito"
 msgstr "启动或重复对网站URL的分析"
 
 #: services/site_guide.py:281
-msgid "Vedi CVI (DDD→AAA), score AIO/GEO e citation share"
-msgstr "查看DDD→AAA索引，AIO/GEO评分和声音份额"
+msgid "Vedi CVI (DD→AA), score AIO/GEO e citation share"
+msgstr "查看DD→AA索引，AIO/GEO评分和声音份额"
 
 #: services/site_guide.py:282
 msgid "Accedi a pack, Edge Signals, storico e crediti"
@@ -1928,8 +1928,8 @@ msgid "GEO = Generative Engine Optimization (citabilità nelle risposte generate
 msgstr "GEO = 生成引擎优化（生成回答中的引用性）"
 
 #: services/site_guide.py:297
-msgid "CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"
-msgstr "CVI (Centropic Visibility Index)：AIO+GEO composite 上的 DDD→AAA 字母等级"
+msgid "CVI (Centropic Visibility Index): lettera DD→AA sul compositario AIO+GEO"
+msgstr "CVI (Centropic Visibility Index)：AIO+GEO composite 上的 DD→AA 字母等级"
 
 #: services/site_guide.py:302
 msgid "Findings e pagine critiche"
@@ -2190,9 +2190,9 @@ msgstr "仅限Plus：带有提示库的引用监控。计算回答中的品牌/�
 
 #: services/site_guide.py:508
 msgid ""
-"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un "
+"Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un "
 "grado CVI tra un re-scan e l’altro."
-msgstr "阅读信件：DDD是关键，AAA是顶级。目标是在一次重新扫描与另一扫描之间至少提升一个等级。"
+msgstr "阅读信件：DD是关键，AA是顶级。目标是在一次重新扫描与另一扫描之间至少提升一个等级。"
 
 #: services/site_guide.py:512 templates/landing.html:184
 msgid "Score AIO / GEO"
@@ -3467,7 +3467,7 @@ msgstr "Edge"
 #: templates/dashboard.html:166 templates/dashboard.html:1107
 #: templates/partials/analyze_overlay.html:105
 msgid "Pack"
-msgstr "Pack"
+msgstr "数据包"
 
 #: templates/dashboard.html:178 templates/dashboard.html:309
 msgid "Signal diagnostics"
@@ -3547,8 +3547,8 @@ msgid "Scala CVI"
 msgstr "CVI 等级"
 
 #: templates/dashboard.html:431
-msgid "Scala da DDD a AAA"
-msgstr "从 DDD 到 AAA 的等级"
+msgid "Scala da DD a AA"
+msgstr "从 DD 到 AA 的等级"
 
 #: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
@@ -3662,7 +3662,7 @@ msgstr "允许机器人"
 
 #: templates/dashboard.html:651
 msgid "Nessun breakdown disponibile."
-msgstr "没有可用的细分。"
+msgstr "暂无拆分。"
 
 #: templates/dashboard.html:656
 msgid "GEO suite"
@@ -4176,12 +4176,12 @@ msgstr "该"
 
 #: templates/faq.html:22
 msgid ""
-"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che "
+"è la metrica proprietaria di Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È "
 "lo standard da confrontare tra brand — non Domain Authority di terzi, non "
 "Share of Voice pubblicitaria."
 msgstr ""
-"是 Centropic 的专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + GEO，含 findings "
+"是 Centropic 的专有指标：带 DD→AA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + GEO，含 findings "
 "惩罚）。这是品牌间比较的标准——不是第三方 Domain Authority，也不是广告意义上的 Share of Voice。"
 
 #: templates/faq.html:28
@@ -4823,11 +4823,11 @@ msgstr "供 AI 爬虫使用的访问草稿"
 #: templates/landing.html:262
 msgid ""
 "Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera "
-"DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
-" da confrontare tra brand — non Domain Authority di terzi, non Share of Voice"
-" pubblicitaria."
+"DD→AA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard "
+"da confrontare tra brand — non Domain Authority di terzi, non Share of Voice "
+"pubblicitaria."
 msgstr ""
-"CVI 是 Centropic 的专有指标：带 DDD→AAA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + "
+"CVI 是 Centropic 的专有指标：带 DD→AA 字母等级的 0–100 指数，用于概括结构性准备度（AIO + "
 "GEO）。这是品牌间比较的标准——不是第三方 Domain Authority，也不是广告意义上的 Share of Voice。"
 
 #: templates/landing.html:266
@@ -5652,8 +5652,8 @@ msgid "aggiunge probe Misurati (se 0 menzioni, la share resta Stimata)."
 msgstr "增加实测 probe（如果 0 次提及，share 保持估计）。"
 
 #: templates/product.html:36
-msgid "CVI (0–100 + lettera DDD→AAA) — metrica proprietaria Centropic"
-msgstr "CVI（0–100 + DDD→AAA 字母等级）——Centropic 专有指标"
+msgid "CVI (0–100 + lettera DD→AA) — metrica proprietaria Centropic"
+msgstr "CVI（0–100 + DD→AA 字母等级）——Centropic 专有指标"
 
 #: templates/product.html:37
 msgid "Score AIO/GEO come componenti di leggibilità e citabilità"
@@ -7185,7 +7185,7 @@ msgstr "自动建议"
 
 #: templates/partials/dashboard_shell.html:95
 msgid "Deep crawl"
-msgstr "深度爬虫"
+msgstr "深度抓取"
 
 #: templates/partials/dashboard_shell.html:97
 msgid "pagine — più lento"
@@ -8075,6 +8075,370 @@ msgstr "每个域名的完整报告：评分、SoV、findings、Edge 与 pack。
 
 msgid "Upgrade a Plus per monitorare più domini nello stesso workspace."
 msgstr "升级到 Plus，即可在同一工作区监控更多域名。"
+
+msgid ""
+"Opzionale. Salvato cifrato a riposo; non viene mai rimostrato in chiaro dopo "
+"il salvataggio."
+msgstr "可选。静态加密存储；保存后不会再以明文显示。"
+
+msgid ""
+"Secret già impostato (cifrato a riposo). Lascia vuoto per mantenerlo; scrivi "
+"“clear” per rimuoverlo."
+msgstr "密钥已设置（静态加密）。留空以保留；输入 “clear” 以删除。"
+
+msgid "Pronto per il collegamento OAuth"
+msgstr "可进行 OAuth 连接"
+
+msgid "Collega Google Search Console (sola lettura) per questo account."
+msgstr "为此账户连接 Google Search Console（只读）。"
+
+msgid "Collega Google"
+msgstr "连接 Google"
+
+msgid "Disconnetti"
+msgstr "断开连接"
+
+msgid "Disponibile su Plus e Business."
+msgstr "适用于 Plus 和 Business。"
+
+msgid "Google Search Console"
+msgstr "Google Search Console"
+
+msgid "Connesso"
+msgstr "已连接"
+
+#, python-format
+msgid "Collegato come %(email)s."
+msgstr "已以 %(email)s 连接。"
+
+msgid "Account Google collegato a Search Console (sola lettura)."
+msgstr "Google 账户已连接到 Search Console（只读）。"
+
+#, python-format
+msgid "Proprietà visibili: %(n)s."
+msgstr "可见媒体资源：%(n)s。"
+
+msgid "Imposta GOOGLE_OAUTH_CLIENT_ID e GOOGLE_OAUTH_CLIENT_SECRET."
+msgstr "请设置 GOOGLE_OAUTH_CLIENT_ID 和 GOOGLE_OAUTH_CLIENT_SECRET。"
+
+msgid "Integrazione GSC non ancora collegabile."
+msgstr "GSC 集成尚不可连接。"
+
+msgid ""
+"Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato"
+" dalle intelligenze artificiali."
+msgstr "了解你的网站被 AI 理解、引用和推荐的就绪程度。"
+
+msgid "Misura la"
+msgstr "衡量"
+
+msgid "del tuo sito"
+msgstr "你的网站"
+
+msgid "per le IA"
+msgstr "面向 AI"
+
+msgid "readiness"
+msgstr "就绪度"
+
+msgid "Panoramica"
+msgstr "概览"
+
+msgid "Benchmark"
+msgstr "对标"
+
+msgid "Prompt"
+msgstr "提示词"
+
+msgid "Trend"
+msgstr "趋势"
+
+msgid "Dominio attivo"
+msgstr "当前域名"
+
+msgid "Nuovo dominio"
+msgstr "新域名"
+
+msgid "Distribuzione AIO"
+msgstr "AIO 分布"
+
+msgid "Indice di criticità"
+msgstr "严重度指数"
+
+msgid "Composizione"
+msgstr "构成"
+
+msgid "Motori"
+msgstr "引擎"
+
+msgid "Ledger"
+msgstr "账本"
+
+msgid "Aperti"
+msgstr "未关闭"
+
+msgid "Pagine"
+msgstr "页面"
+
+msgid "Findings e pack"
+msgstr "Findings 与数据包"
+
+msgid "Cerca o incolla URL"
+msgstr "搜索或粘贴 URL"
+
+msgid "Seleziona dominio"
+msgstr "选择域名"
+
+msgid "Audit"
+msgstr "审计"
+
+msgid "Mix"
+msgstr "构成比"
+
+msgid "Campo"
+msgstr "场域"
+
+msgid "Andamento AIO e GEO"
+msgstr "AIO 与 GEO 走势"
+
+msgid "AIO / GEO per data"
+msgstr "按日期的 AIO / GEO"
+
+msgid "Vai alla Panoramica"
+msgstr "前往概览"
+
+msgid "Findings aperti e deliverable da applicare."
+msgstr "待处理 Findings 与需应用的交付物。"
+
+msgid "aperti sul run analizzato"
+msgstr "本轮分析中未关闭"
+
+msgid "Pagine per fascia AIO"
+msgstr "按 AIO 区间的页面"
+
+msgid "Nessuna pagina con score AIO."
+msgstr "没有带 AIO 分数的页面。"
+
+msgid "Nessuna criticità aperta."
+msgstr "没有未关闭的问题。"
+
+msgid "Nessuna pagina in crawl."
+msgstr "抓取中没有页面。"
+
+msgid "Competitor (max 3)"
+msgstr "竞品（最多 3 个）"
+
+msgid "Aggiungi competitor"
+msgstr "添加竞品"
+
+msgid "Saldo token"
+msgstr "代币余额"
+
+msgid "Metriche"
+msgstr "指标"
+
+msgid "Metriche primarie"
+msgstr "主要指标"
+
+msgid "Critici"
+msgstr "严重"
+
+msgid "Warn"
+msgstr "警告"
+
+msgid "Italia"
+msgstr "意大利"
+
+msgid "https://tuosito.com"
+msgstr "https://yoursite.com"
+
+msgid "https://iltuosito.it"
+msgstr "https://yoursite.com"
+
+msgid "https://rivale.com"
+msgstr "https://rival.com"
+
+msgid "https://rivale1.com"
+msgstr "https://rival1.com"
+
+msgid "https://rivale2.com"
+msgstr "https://rival2.com"
+
+msgid "https://tuodominio/llms.txt"
+msgstr "https://yourdomain.com/llms.txt"
+
+msgid "21 agosto 2026"
+msgstr "2026年8月21日"
+
+msgid ""
+"Come leggere il workspace: le cinque pagine, il CVI sul marchio, i grafici "
+"AIO/GEO, l’indice di criticità, i pack e l’Edge."
+msgstr "如何阅读工作区：五个页面、标志上的 CVI、AIO/GEO 图表、严重度指数、数据包与 Edge。"
+
+msgid "Le cinque pagine"
+msgstr "五个页面"
+
+msgid ""
+"Il workspace ha una sola barra in alto. Cinque destinazioni, stesso dominio "
+"attivo. Account e impostazioni restano nel menu avatar."
+msgstr "工作区顶部只有一条栏。五个入口，同一当前域名。账户与设置留在头像菜单。"
+
+msgid ""
+"Dominio e CVI in testa. Sotto: sette KPI, Composizione e Motori alla stessa "
+"altezza, poi Suite e Mix, poi Crawl AIO con Distribuzione AIO e Indice di "
+"criticità nella stessa colonna, ledger pagine a destra. In coda: storico run "
+"e findings."
+msgstr ""
+"顶部是域名与 CVI。下方：七个 KPI、同高的构成与引擎，然后是套件与构成比，再是同一列中的 AIO "
+"抓取分布与严重度指数，右侧为页面账本。底部是运行历史与 Findings。"
+
+msgid ""
+"Confronta il sito attivo con i rivali su AIO, GEO, SoV e motori. Usa uno "
+"snapshot già misurato, non un grafico inventato."
+msgstr "按 AIO、GEO、SoV 和引擎对比当前站点与竞品。使用已测量的快照，不是虚构图表。"
+
+msgid ""
+"Le query usate per misurare il SoV e i finding aperti. Qui si vede cosa è "
+"stato chiesto ai motori e il pack da applicare."
+msgstr "用于测量 SoV 的查询以及未关闭的 Findings。可查看向引擎提出的问题与需应用的数据包。"
+
+msgid ""
+"Storico delle run sul dominio attivo. Due grafici affiancati: AIO/GEO nel "
+"tempo e CVI per run, con le date sotto ogni punto. Serve almeno due analisi."
+msgstr "当前域名的运行历史。并排两张图：随时间的 AIO/GEO 与每次运行的 CVI，每个点下方有日期。至少需要两次分析。"
+
+msgid ""
+"Questo manuale, dentro il workspace. Stesso contenuto della pagina pubblica "
+"/guida."
+msgstr "工作区内的本手册。与公开页 /guida 内容相同。"
+
+msgid "Cinque pagine, un dominio attivo, grafici dallo stesso run."
+msgstr "五个页面、一个当前域名、来自同一轮分析的图表。"
+
+msgid ""
+"Panoramica: CVI sul marchio (voto DD–AA nel C, punteggio a destra), KPI e "
+"grafici"
+msgstr "概览：标志上的 CVI（C 内为 DD–AA 等级，右侧为分数）、KPI 与图表"
+
+msgid "Benchmark, Prompt e Trend sul dominio selezionato dai chip"
+msgstr "通过芯片所选域名的对标、提示词与趋势"
+
+msgid "Account e impostazioni nel menu avatar — non in una sesta pill"
+msgstr "账户与设置在头像菜单中 — 不是第六个标签"
+
+msgid ""
+"Indice di criticità: (critici × 100 + warning × 40) / totale, sotto "
+"Distribuzione AIO nello stack Crawl"
+msgstr "严重度指数：(严重 × 100 + 警告 × 40) / 总数，位于抓取栈中 AIO 分布下方"
+
+msgid "Pack HTML con logo originale, score, finding e snippet da pubblicare."
+msgstr "带原版标志、分数、Findings 与待发布片段的 HTML 数据包。"
+
+msgid "Scarica centropic-fix.html: si apre offline, logo in testa"
+msgstr "下载 centropic-fix.html：可离线打开，顶部为原版标志"
+
+msgid "Moduli: grafo entità, citabilità, schema, publish verify, llms lint, mercati."
+msgstr "模块：实体图、可引用性、schema、发布校验、llms lint、市场。"
+
+msgid "Mercati e lingue: hreflang e coerenza"
+msgstr "市场与语言：hreflang 与一致性"
+
+msgid "Trend e re-scan"
+msgstr "趋势与重新扫描"
+
+msgid ""
+"Serie temporale sul dominio attivo: AIO/GEO e CVI, con le date sotto ogni "
+"punto."
+msgstr "当前域名的时间序列：AIO/GEO 与 CVI，每个点下方有日期。"
+
+msgid "Due grafici affiancati: AIO/GEO e CVI per run"
+msgstr "并排两张图：每次运行的 AIO/GEO 与 CVI"
+
+msgid "Ripartizione motori"
+msgstr "引擎拆分"
+
+msgid "Grafo entità"
+msgstr "实体图"
+
+msgid "Citabilità"
+msgstr "可引用性"
+
+msgid "Qualità schema"
+msgstr "Schema 质量"
+
+msgid "Mercati e lingue"
+msgstr "市场与语言"
+
+msgid ""
+"Leggi lettera e score: DD è critico, AA è top. Il voto sta nel marchio, il "
+"numero a destra. Mira a salire di almeno un grado CVI tra un re-scan e "
+"l’altro."
+msgstr "阅读等级与分数：DD 为危急，AA 为优秀。等级在标志内，数字在右侧。两次重新扫描之间至少提升一个 CVI 等级。"
+
+msgid ""
+"Chiudi critical e warn; usa l’indice di criticità e il pack. Poi ripubblica e"
+" verifica."
+msgstr "先关闭严重与警告项；使用严重度指数和数据包。然后重新发布并校验。"
+
+#, python-format
+msgid "Root del sito: %(path)s — oppure Edge + CMS connector."
+msgstr "网站根目录：%(path)s — 或使用 Edge + CMS 连接器。"
+
+msgid ""
+"unico deliverable: logo originale in testa; apri e copia head / llms.txt / "
+"robots sul sito"
+msgstr "唯一交付物：顶部为原版标志；打开并复制 head / llms.txt / robots 到网站"
+
+msgid "Plus · €19,99 Tasse escluse"
+msgstr "Plus · €19.99 不含税"
+
+msgid "Business · €89,99 Tasse escluse"
+msgstr "Business · €89.99 不含税"
+
+msgid ""
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza"
+" AIO+GEO (con penalità findings). In Panoramica il voto sta nel marchio; il "
+"punteggio numerico sta a destra. È lo standard da confrontare tra brand — non"
+" Domain Authority di terzi."
+msgstr ""
+"Centropic 专有指标：0–100 指数配 DD→AA 字母，综合 AIO+GEO（含 Findings "
+"罚分）。在概览中，等级位于标志内，数字分数在右侧。这是品牌对比标准 — 不是第三方 Domain Authority。"
+
+msgid ""
+"Score 0–100 dalla mix dei finding del run: (critici × 100 + warning × 40) / "
+"totale. In Panoramica sta sotto Distribuzione AIO, stessa colonna Crawl."
+msgstr "由本轮 Findings 混合得出的 0–100 分数：(严重 × 100 + 警告 × 40) / 总数。在概览中位于 AIO 分布下方，同一抓取列。"
+
+msgid ""
+"Le cinque pagine del prodotto: Panoramica, Benchmark, Prompt, Trend, Guida. "
+"Account e impostazioni restano nel menu avatar."
+msgstr "产品的五个页面：概览、对标、提示词、趋势、指南。账户与设置留在头像菜单。"
+
+msgid ""
+"Insieme di artifact generati dall’analisi. Il file centropic-fix.html include"
+" il logo originale in testa, score, finding e snippet (llms, schema, meta, "
+"robots, checklist)."
+msgstr ""
+"分析生成的产物集。centropic-fix.html 顶部含原版标志，以及分数、Findings "
+"与片段（llms、schema、meta、robots、清单）。"
+
+msgid "Il workspace ha cinque pagine: Panoramica, Benchmark, Prompt, Trend, Guida."
+msgstr "工作区有五个页面：概览、对标、提示词、趋势、指南。"
+
+msgid "Workspace: CVI sul marchio, grafici AIO/GEO e pack in cinque pagine."
+msgstr "工作区：标志上的 CVI、AIO/GEO 图表，以及五个页面中的数据包。"
+
+msgid "JSON-LD + FAQ + meta"
+msgstr "JSON-LD + FAQ + meta"
+
+msgid "API: GET /api/v1/sites/<id>/edge"
+msgstr "API: GET /api/v1/sites/<id>/edge"
+
+msgid "Finding"
+msgstr "Finding"
+
+msgid "Quota operativa"
+msgstr "运营配额"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"
