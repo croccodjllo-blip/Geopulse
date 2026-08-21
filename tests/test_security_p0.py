@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from flask import request
 
 from app import ADMIN_TOPUP_AMOUNTS_CENTS, User, app, db, ensure_schema
@@ -51,6 +53,7 @@ def test_session_invalidated_after_password_change():
         ensure_schema()
         u = User(email="sess-reset@example.com", name="S", plan="free")
         u.set_password("OldPass123!")
+        u.email_verified_at = datetime.now(timezone.utc)
         db.session.add(u)
         db.session.commit()
         uid = u.id

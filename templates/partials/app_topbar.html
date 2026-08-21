@@ -1,0 +1,97 @@
+{# Horizontal workspace nav — Synthex-style top pills, no left dock. #}
+{% set nav = sidebar_active|default('dashboard') %}
+{% set plan = sidebar_plan|default(current_user.plan_label if current_user else 'Free') %}
+{% set used = sidebar_credits_used|default(0) %}
+{% set cap = sidebar_credits_cap|default(0) %}
+{% set _dash_site = dash_site_id|default(none) %}
+{% set dash_href = url_for('dashboard', site=_dash_site) if _dash_site else url_for('dashboard') %}
+{% set geo_href = url_for('dashboard_geo_ui', site=_dash_site) if _dash_site else url_for('dashboard_geo_ui') %}
+{% set sov_href = url_for('dashboard_sov', site=_dash_site) if _dash_site else url_for('dashboard_sov') %}
+{% set _uname = (current_user.name if current_user and current_user.name else (current_user.email if current_user else 'U')) %}
+{% set _initial = _uname[0]|upper %}
+{% if cap and cap > 0 %}
+{% set pct_raw = (used / cap) * 100 %}
+{% set pct = 100 if pct_raw > 100 else (0 if pct_raw < 0 else pct_raw) %}
+{% else %}
+{% set pct = 0 %}
+{% endif %}
+
+<header class="app-topbar" id="app-topbar" data-topbar aria-label="{{ _('Navigazione workspace') }}">
+  <a class="app-topbar__brand" href="{{ dash_href }}" aria-label="Centropic dashboard">
+    <img src="{{ url_for('static', filename='img/logo-mark.svg') }}" width="28" height="28" alt="" decoding="async">
+    <span class="app-topbar__word">centropic<span>.ai</span></span>
+  </a>
+
+  <button
+    type="button"
+    class="app-topbar__toggle"
+    data-sidebar-toggle
+    aria-controls="app-topbar-nav"
+    aria-expanded="false"
+    aria-label="{{ _('Apri menu') }}"
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+
+  <nav class="app-topbar__pills" id="app-topbar-nav" aria-label="{{ _('Strumenti') }}">
+    <a href="{{ dash_href }}" class="app-topbar__link{% if nav == 'dashboard' %} is-active{% endif %}" {% if nav == 'dashboard' %}aria-current="page"{% endif %}>{{ _('Dashboard') }}</a>
+    <a href="{{ sov_href }}" class="app-topbar__link{% if nav == 'sov' %} is-active{% endif %}" {% if nav == 'sov' %}aria-current="page"{% endif %}>{{ _('Share of Voice') }}</a>
+    <a href="{{ geo_href }}" class="app-topbar__link{% if nav == 'geo-ui' %} is-active{% endif %}" {% if nav == 'geo-ui' %}aria-current="page"{% endif %}>{{ _('Grafici') }}</a>
+    {% if can_extended_history %}
+    <a href="{{ url_for('dashboard_history') }}" class="app-topbar__link{% if nav == 'history' %} is-active{% endif %}" {% if nav == 'history' %}aria-current="page"{% endif %}>{{ _('Storico') }}</a>
+    {% endif %}
+    <a href="{{ url_for('dashboard_guide') }}" class="app-topbar__link{% if nav == 'guide' %} is-active{% endif %}" {% if nav == 'guide' %}aria-current="page"{% endif %}>{{ _('Guida') }}</a>
+    <a href="{{ url_for('dashboard_settings') }}" class="app-topbar__link{% if nav == 'settings' %} is-active{% endif %}" {% if nav == 'settings' %}aria-current="page"{% endif %}>{{ _('Impostazioni') }}</a>
+    {% if current_user and current_user.is_admin %}
+    <a href="{{ url_for('admin_home') }}" class="app-topbar__link{% if nav == 'admin' %} is-active{% endif %}" {% if nav == 'admin' %}aria-current="page"{% endif %}>Admin</a>
+    {% endif %}
+  </nav>
+
+  <div class="app-topbar__tools">
+    {% if cap %}
+    <style nonce="{{ csp_nonce }}">
+      .app-topbar__credits-bar[data-credits-bar] { --credits-bar-pct: {{ '%.1f'|format(pct) }}%; }
+    </style>
+    <div class="app-topbar__credits" title="{{ _('Credits') }}">
+      <span>{{ used }}/{{ cap }}</span>
+      <i class="app-topbar__credits-bar" data-credits-bar aria-hidden="true"></i>
+    </div>
+    {% endif %}
+    <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ plan }}</span>
+    <div class="lang-switch" data-lang-switch>
+      <button
+        type="button"
+        class="lang-switch__btn"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-label="{{ _('Seleziona lingua') }}"
+        data-lang-toggle
+      >
+        <span>{{ ui_lang|upper }}</span>
+      </button>
+      <ul class="lang-switch__menu" role="listbox" hidden data-lang-menu>
+        {% for item in ui_languages %}
+        <li role="option" aria-selected="{{ 'true' if item.active else 'false' }}">
+          <a
+            href="{{ url_for('set_language', code=item.code, next=request.full_path) }}"
+            class="lang-switch__option {% if item.active %}is-active{% endif %}"
+            hreflang="{{ item.code }}"
+            lang="{{ item.code }}"
+            rel="nofollow"
+          >{{ item.label }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% if current_user %}
+    <span class="app-topbar__avatar" title="{{ current_user.email }}">{{ _initial }}</span>
+    <form method="post" action="{{ url_for('logout') }}" class="app-topbar__logout">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button type="submit" aria-label="{{ _('Esci') }}" title="{{ _('Esci') }}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+      </button>
+    </form>
+    {% endif %}
+  </div>
+</header>
+<div class="app-topbar__backdrop" data-sidebar-backdrop hidden></div>
