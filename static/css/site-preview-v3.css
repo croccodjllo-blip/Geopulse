@@ -4412,25 +4412,30 @@ body.body-dash .dash-area__svg {
   align-self: stretch;
 }
 body.body-dash .dash-area__grid {
-  stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);
-  stroke-width: 1;
+  stroke: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+  stroke-width: 0.6;
 }
 body.body-dash .dash-area__axis {
-  fill: color-mix(in srgb, var(--brand-clarity) 42%, transparent);
-  font-size: 8px;
+  fill: color-mix(in srgb, var(--brand-clarity) 38%, transparent);
+  font-size: 7.5px;
 }
 body.body-dash .dash-area__fill {
-  fill: color-mix(in srgb, var(--plan-accent) 22%, transparent);
+  fill: color-mix(in srgb, var(--plan-accent) 34%, transparent);
 }
 body.body-dash .dash-area__line {
   stroke: var(--plan-accent);
-  stroke-width: 2;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-body.body-dash .dash-area__dot { fill: var(--plan-accent); }
-body.body-dash .dash-area__val {
-  fill: var(--brand-clarity);
-  font-size: 8px;
-  font-weight: 650;
+body.body-dash .dash-area__dot {
+  fill: color-mix(in srgb, var(--plan-accent) 70%, var(--brand-clarity));
+}
+body.body-dash .dash-area__dot.is-latest { fill: var(--plan-accent); }
+body.body-dash .dash-area__x {
+  fill: color-mix(in srgb, var(--brand-clarity) 52%, transparent);
+  font-size: 7.5px;
+  letter-spacing: 0.02em;
 }
 body.body-dash .dash-meters,
 body.body-dash .dash-mix,

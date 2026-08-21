@@ -38,6 +38,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-pair--match" in SIGNAL
     assert "dash-split--wide" not in SIGNAL
     assert "dash-split__track" in SIGNAL
+    assert "dash-area__x" in SIGNAL
     assert "dash-rank" in SIGNAL
     assert "dash-hist" in SIGNAL
     assert "dash-fault" in SIGNAL
@@ -58,6 +59,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-pair--match" in CSS
     assert "dash-split--wide" not in CSS
     assert "dash-split__track" in CSS
+    assert "dash-area__x" in CSS
+    assert "stroke-width: 1.15" in CSS.split("dash-area__line")[1][:120]
     assert "height: 10px" in CSS.split("dash-split__track")[1]
     assert "flex: 1 1 auto" in CSS.split("dash-area")[1]
     assert 'preserveAspectRatio="xMinYMid meet"' in SIGNAL
@@ -215,6 +218,24 @@ def test_spark_and_delta_only_when_real_history():
     assert live["spark"]["area"]
     assert live["spark"]["line"]
     assert len(live["spark"]["marks"]) == 3
+    dated = build_dash_charts(
+        aio_score=40,
+        geo_score=50,
+        findings=[],
+        crawl_pages=[],
+        geo_suite={},
+        engine_breakdown=None,
+        run_diff={"has_previous": True, "delta_aio": 3, "delta_geo": -2},
+        sov_trend=[
+            {"rate": 12, "t": "2026-08-01T10:00:00+00:00"},
+            {"rate": 18, "t": "2026-08-10T10:00:00+00:00"},
+            {"rate": 21, "t": "2026-08-21T10:00:00+00:00"},
+        ],
+    )
+    assert dated["spark"] is not None
+    assert [t["label"] for t in dated["spark"]["ticks_x"]] == ["01/08", "10/08", "21/08"]
+    assert dated["spark"]["area"]
+    assert dated["spark"]["baseline"]
 
 
 def test_dashboard_renders_signal_instruments():

@@ -120,13 +120,11 @@
       </div>
       {% if spark %}
       <div class="dash-area" aria-label="{{ _('SoV nel tempo') }}">
-        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 128 }}" preserveAspectRatio="xMinYMid meet" role="img">
-          <line class="dash-area__grid" x1="28" y1="12" x2="28" y2="108"/>
-          <line class="dash-area__grid" x1="28" y1="108" x2="310" y2="108"/>
-          <line class="dash-area__grid" x1="28" y1="60" x2="310" y2="60"/>
-          <text class="dash-area__axis" x="24" y="16" text-anchor="end">100</text>
-          <text class="dash-area__axis" x="24" y="64" text-anchor="end">50</text>
-          <text class="dash-area__axis" x="24" y="108" text-anchor="end">0</text>
+        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 148 }}" preserveAspectRatio="xMinYMid meet" role="img">
+          {% for g in spark.grid_y or [] %}
+          <line class="dash-area__grid" x1="{{ spark.left or 28 }}" y1="{{ g.y }}" x2="{{ spark.right_x or 308 }}" y2="{{ g.y }}"/>
+          <text class="dash-area__axis" x="24" y="{{ g.y + 3 }}" text-anchor="end">{{ g.v }}</text>
+          {% endfor %}
           {% if spark.area %}
           <path class="dash-area__fill" d="{{ spark.area }}"/>
           {% endif %}
@@ -134,8 +132,12 @@
           <path class="dash-area__line" d="{{ spark.line }}" fill="none"/>
           {% endif %}
           {% for m in spark.marks or [] %}
-          <circle class="dash-area__dot" cx="{{ m.x }}" cy="{{ m.y }}" r="2.6"/>
-          <text class="dash-area__val" x="{{ m.x }}" y="{{ m.y - 7 }}" text-anchor="middle">{{ m.v }}</text>
+          <circle class="dash-area__dot{% if loop.last %} is-latest{% endif %}" cx="{{ m.x }}" cy="{{ m.y }}" r="{{ 2.4 if loop.last else 1.4 }}"/>
+          {% endfor %}
+          {% for t in spark.ticks_x or [] %}
+          {% if t.label %}
+          <text class="dash-area__x" x="{{ t.x }}" y="{{ (spark.baseline or 118) + 16 }}" text-anchor="middle">{{ t.label }}</text>
+          {% endif %}
           {% endfor %}
         </svg>
         <p class="dash-card__lede">

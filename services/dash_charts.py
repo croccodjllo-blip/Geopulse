@@ -8,6 +8,7 @@ rows exist; a run delta only when compare_with_previous produced one.
 from __future__ import annotations
 
 import math
+from datetime import datetime
 from typing import Any
 from urllib.parse import urlparse
 
@@ -227,14 +228,32 @@ def _page_field(pages: list[dict[str, Any]] | None, *, aio: float, geo: float) -
     return {"dots": dots, "brand": brand, "n": len(dots)}
 
 
+def _parse_spark_when(raw: Any) -> datetime | None:
+    if raw is None:
+        return None
+    if isinstance(raw, datetime):
+        return raw
+    text = str(raw).strip()
+    if not text:
+        return None
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
 def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
     pts: list[tuple[float, float]] = []
     values: list[int] = []
+    dates: list[datetime | None] = []
     for row in series or []:
         rate = _as_float((row or {}).get("rate"))
         if rate is None:
             continue
         values.append(int(round(_clamp(rate))))
+        dates.append(
+            _parse_spark_when((row or {}).get("t") or (row or {}).get("created_at"))
+        )
     if len(values) < 2:
         return None
     width, height, pad = 200.0, 52.0, 4.0
@@ -248,8 +267,9 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         coords.append(f"{x:.1f},{y:.1f}")
         pts.append((x, y))
     first, last = values[0], values[-1]
-    # Taller ledger area (distinct from the old 200×52 spark).
-    aw, ah, al, ar, at, ab = 320.0, 128.0, 28.0, 10.0, 12.0, 20.0
+    labels = _audit_axis_labels(dates) if any(d is not None for d in dates) else [""] * len(values)
+    # Room under the plot for dated ticks; area fill sits on the baseline.
+    aw, ah, al, ar, at, ab = 320.0, 148.0, 28.0, 12.0, 12.0, 30.0
     a_w = aw - al - ar
     a_h = ah - at - ab
     marks: list[dict[str, Any]] = []
@@ -268,6 +288,11 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         + " ".join(f"L{m['x']:.1f},{m['y']:.1f}" for m in marks)
         + f" L{last_x_a:.1f},{baseline:.1f} Z"
     )
+    show_every = 1 if len(marks) <= 6 else 2
+    ticks_x: list[dict[str, Any]] = []
+    for i, (mark, label) in enumerate(zip(marks, labels)):
+        show = i == 0 or i == len(marks) - 1 or i % show_every == 0
+        ticks_x.append({"x": mark["x"], "label": label if show else ""})
     return {
         "points": " ".join(coords),
         "last_x": round(pts[-1][0], 1),
@@ -279,8 +304,17 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         "area": area,
         "line": " ".join(line_bits),
         "marks": marks,
+        "ticks_x": ticks_x,
+        "baseline": baseline,
+        "left": al,
+        "right_x": aw - ar,
+        "grid_y": [
+            {"y": round(at, 1), "v": 100},
+            {"y": round(at + a_h * 0.5, 1), "v": 50},
+            {"y": round(baseline, 1), "v": 0},
+        ],
         "width": 320,
-        "height": 128,
+        "height": 148,
     }
 
 
