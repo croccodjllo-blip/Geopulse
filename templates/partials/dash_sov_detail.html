@@ -1,0 +1,56 @@
+{# Share of Voice instruments — charts, not a table. #}
+{% set findings = findings_critical or [] %}
+{% set dash_pack_href = pack_href|default('#pack') %}
+{% set dash_edge_href = edge_href|default('#edge-signals') %}
+<div class="dash-detail dash-detail--anteprima" id="panel-detail">
+  <section class="dash-sov" id="panel-sov" aria-labelledby="sov-title">
+    {% if can_measured_sov %}
+      {% include "partials/sov_ops.html" %}
+    {% endif %}
+    {% if engine_breakdown %}
+    <header class="dash-sov__head">
+      <h2 class="dash-sov__title" id="sov-title">{{ _('Share of Voice') }}</h2>
+      <p class="dash-sov__lede">{{ _('Composizione per engine — stesso run, senza tabella.') }}</p>
+    </header>
+    {% endif %}
+  </section>
+
+  {% include "partials/dash_signal.html" %}
+
+  <section class="dash-findings" id="findings" aria-labelledby="findings-title">
+    <header class="dash-findings__head">
+      <h2 class="dash-findings__title" id="findings-title">{{ _('Findings') }}</h2>
+    </header>
+    {% if findings %}
+    <ol class="dash-finding-board">
+      {% for f in findings %}
+      <li data-severity="{{ f.severity }}">
+        <i aria-hidden="true"></i>
+        <strong>{{ _(f.title) }}</strong>
+        {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="finding-list__empty">
+      {{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok.') }}{% endif %}
+    </p>
+    {% endif %}
+  </section>
+
+  <div class="dash-cta dash-cta--anteprima" role="region" aria-label="{{ _('Azioni infrastruttura') }}">
+    <div class="dash-cta__lead">
+      <span class="dash-cta__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 12h3l2-7 3 14 3-9 2 4h5"/><circle cx="20" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <p class="dash-cta__copy">
+        <strong>{{ _('Trasforma i segnali in presenza.') }}</strong>
+        <span>{{ _('Intervieni dove le AI ti ascoltano.') }}</span>
+      </p>
+    </div>
+    <div class="dash-cta__actions">
+      <a class="dash-cta__primary" href="{{ dash_edge_href }}">{{ _('Edge Signals') }} <span aria-hidden="true">›</span></a>
+      <a class="dash-cta__secondary" href="{{ dash_pack_href }}">{{ _('Scarica Pack') }}</a>
+    </div>
+  </div>
+</div>
