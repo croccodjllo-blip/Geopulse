@@ -3,7 +3,7 @@
 Production visual system for `centropic.ai`.
 
 ## Direction
-Void-black surfaces, chrome/silver accent (`#C9D3DD` / `#5B6B7A`) sampled directly from the logo emblem — **no purple/violet accent anywhere** (retired 2026-08-05, on explicit user request, superseding the short-lived Nova Violet direction). Inter type. Card-heavy dashboard energy — icon-badged metrics, a per-engine radar chart — carried over from Nova Violet; only the color changed. Nebula bloom (blue + violet) stays behind the landing hero backdrop only and is purely atmospheric, never an interactive-UI color.
+Charcoal surfaces (`#121212`), warm gold/amber accent (`#E8A04A` / `#C47A2C`) sampled from the C-arc emblem — **no purple/violet and no teal** as UI accents. Inter type. Card-heavy dashboard energy. Warm nebula/orbital bloom stays atmospheric (hero/dash haze), never a second interactive color.
 
 Semantic state colors are deliberately **not** the brand accent: success stays green (`--ok: #22C55E`), warning amber, danger red.
 
@@ -12,18 +12,19 @@ When a user is logged in, `body.dash-plan--free|plus|business` remaps the **enti
 
 | Plan | Accent | Canvas base (`--brand-bg`) |
 |---|---|---|
-| Free | Steel `#8BA3BD` | `#0A1018` |
-| Plus | Platinum teal `#3FA8B5` | `#061210` |
-| Business | Copper `#D4A574` | `#100C08` |
+| Free | Champagne `#C4A574` | `#121212` |
+| Plus | Amber gold `#E8A04A` | `#121212` |
+| Business | Copper `#D4A574` | `#14110C` |
 
-Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04060A`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/copper hex.
+Marketing/admin with no plan class keep the global charcoal void (`--brand-bg: #121212`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/chrome hex.
 
 ## Assets
 - `static/img/logo.svg` — **primary mark, true self-contained vector** (paths/gradients only, no external `<image>` refs). Every header/hero/page-intro/auth `<img>` points here directly (viewBox 128×128).
 - `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility).
 - `static/favicon.svg` — same compact-mark design.
 - `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` — raster renders of the SVGs above (`cairosvg`), used only where raster is required: `<link rel="apple-touch-icon">`, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback.
-- `static/img/hero-signal-field.jpg` — landing hero full-bleed atmosphere (ultrawide ~21:9, `object-fit: cover` via `.hero-visual__photo`). Abstract chrome signal-field; **no logo/monogram/wordmark** — mark stays in the HTML lockup.
+- `static/img/bg-void-chrome.jpg` / `bg-void-chrome-mobile.jpg` — site-wide void charcoal canvas with teal particle glow (preview 1–3 atmosphere). Used as marketing hero photo and dash body backdrop.
+- `static/img/hero-signal-field.jpg` — legacy hero art (superseded on landing by `bg-void-chrome.jpg`).
 - `static/img/og-share.jpg` — Open Graph / social share (1200×630), cropped from the hero art.
 - Jinja lockup: `templates/partials/holo_brand.html` (legacy name, still current).
 
@@ -34,7 +35,7 @@ Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04
 The current mark avoids both: `logo.svg`/`logo-mark.svg`/`favicon.svg` are genuine vector shapes (polygon/ellipse/path + linear/radial gradients, all inline, zero external refs) — safe to use directly via `<img src="...svg">` in every browser, and infinitely scalable (verified 16px favicon up to 220px auth-page render).
 
 ## Mark concept
-Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satellite node · bold chrome-gradient **C** monogram formed from an open ring stroke. Flat/gradient vector, not a photoreal 3D render — this is intentional; do not swap it back to a raster photo.
+Chrome void disc · dashed orbital ellipse with satellite node · bold chrome-gradient **C** monogram (open ring stroke). Flat/gradient vector, not a photoreal 3D render — intentional; do not swap to a raster photo. (Hex chassis retired 2026-08-19 in favor of the circular preview lockup.)
 
 ## Wordmark
 `CENTROPIC.AI` — **uppercase**, metallic chrome gradient text (`background-clip: text`), **only on the landing `#hero-brand` lockup**. Page-intro / auth brand rows keep the plain lowercase `centropic.ai` wordmark so they never compete with that page’s H1. Nav/sidebar chrome may keep the smaller lowercase word next to the compact mark where space is tight (`templates/partials/holo_brand.html`, `.brand-mark__word`).
@@ -42,15 +43,15 @@ Faceted chrome hex chassis · dashed orbital ellipse ring with a glowing satelli
 ## Palette
 | Token | Hex | Role |
 |---|---|---|
-| Void | `#04060A` | Page background |
-| Card | `#0A0E14` | Elevated surface |
-| Border | `#1A222D` | Hairlines |
-| Chrome silver | `#C9D3DD` | Primary accent (default; overridden per plan on dashboard pages) |
-| Steel shadow | `#5B6B7A` | Secondary accent / gradient stop |
-| Nebula blue | `#2E4A78` | Landing hero atmosphere only |
-| Nebula violet | `#4A3468` | Landing hero atmosphere only — atmosphere-only, not a UI color |
-| Platinum | `#E8EEF4` | Primary text |
-| Muted | `#8B97A8` | Secondary text |
+| Void | `#121212` | Page background |
+| Card | `#1A1612` | Elevated surface |
+| Border | `#3A2E22` | Hairlines |
+| Warm gold | `#E8A04A` | Primary accent (default; overridden per plan on dashboard pages) |
+| Deep amber | `#C47A2C` | Secondary accent / gradient stop |
+| Nebula amber | `#8A4E16` | Landing hero atmosphere only |
+| Nebula ember | `#5C3010` | Landing hero atmosphere only — atmosphere-only, not a UI color |
+| Warm ivory | `#F3EDE3` | Primary text |
+| Muted | `#B8A894` | Secondary text |
 | Success | `#22C55E` | Positive delta / ok state (not the brand accent) |
 | Warning | `#F59E0B` | Warn state |
 | Danger | `#EF4444` | Critical / negative delta |
