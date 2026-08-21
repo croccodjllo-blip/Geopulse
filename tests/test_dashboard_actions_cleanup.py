@@ -53,8 +53,9 @@ def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-cvi__readout--b" not in AUDIT
     assert "{{ cvi_code }}" in AUDIT
     assert "dash-cvi__kicker" not in AUDIT
+    assert "dash-cvi__orbit" in AUDIT
     assert "dash-cvi__arc--mid" in AUDIT
-    assert "dash-cvi__arc--inner" not in AUDIT
+    assert "dash-cvi__arc--inner" in AUDIT
     assert "{{ _('CVI') }}" not in AUDIT
     assert 'data-band="{{ cvi_band }}"' in AUDIT
     assert "dash-ring--cvi" not in AUDIT

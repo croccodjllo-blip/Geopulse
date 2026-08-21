@@ -2804,6 +2804,13 @@ body.body-dash .dash-cvi__mark {
   height: 100%;
   overflow: visible;
 }
+body.body-dash .dash-cvi__orbit {
+  fill: none;
+  stroke: url(#cvi-arc-b);
+  stroke-width: 1.15;
+  stroke-dasharray: 3 5;
+  opacity: 0.7;
+}
 body.body-dash .dash-cvi__arc {
   fill: none;
   stroke-linecap: round;
@@ -2816,18 +2823,21 @@ body.body-dash .dash-cvi__arc--mid {
   stroke: url(#cvi-arc-b);
   stroke-width: 7.5;
 }
+body.body-dash .dash-cvi__arc--inner {
+  stroke: url(#cvi-arc-a);
+  stroke-width: 6.5;
+}
 body.body-dash .dash-cvi__node { fill: var(--cvi-tone); }
 body.body-dash .dash-cvi__readout {
   position: absolute;
-  left: 42%;
-  top: 50%;
+  left: 20%;
+  right: 38%;
+  top: 29%;
+  bottom: 29%;
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 3.6rem;
-  height: 2.1rem;
   pointer-events: none;
-  transform: translate(-50%, -50%);
 }
 body.body-dash .dash-cvi__grade {
   font-size: clamp(1.55rem, 2.2vw, 1.85rem);
