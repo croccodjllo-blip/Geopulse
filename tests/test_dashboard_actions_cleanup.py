@@ -41,6 +41,8 @@ def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-cvi" in AUDIT
     assert "dash-cvi__grade" in AUDIT
     assert "dash-cvi__score" in AUDIT
+    assert "dash-cvi__mark" in AUDIT
+    assert "dash-cvi__arc" in AUDIT
     assert 'data-band="{{ cvi_band }}"' in AUDIT
     assert "dash-ring--cvi" not in AUDIT
     assert "dash-command" in AUDIT
