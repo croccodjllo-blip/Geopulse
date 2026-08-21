@@ -25,6 +25,7 @@ def test_priority_hero_rings_and_micro_metrics():
     assert "dash-ring__svg" in DASH
     assert 'class="dash-micro"' in DASH
     assert "dash-actions__btn" in DASH
+    assert "dash_atelier.html" in DASH
     assert "dash-more--ops" in DASH
     assert "dash-ring__meta--cvi" in DASH
     # SoV table + Findings live on /dashboard/sov (sidebar section).

@@ -1,0 +1,219 @@
+{# Instrument canvas — real series only. No style= attrs (CSP). #}
+{% if dash_charts %}
+{% set ch = dash_charts %}
+{% set radar = ch.radar or {} %}
+<style nonce="{{ csp_nonce }}">
+{% for e in ch.engines %}
+.dash-atelier [data-engine="{{ e.id }}"] { --share: {{ e.share }}; --p: {{ e.propensity }}; --accent: {{ e.accent }}; }
+{% endfor %}
+{% for row in ch.mosaic.rows %}
+.dash-atelier [data-mosaic="{{ row.id }}"] { --crit: {{ row.crit_w }}; --warn: {{ row.warn_w }}; --okw: {{ row.ok_w }}; }
+{% endfor %}
+.dash-atelier { --aio: {{ ch.aio }}; --geo: {{ ch.geo }}; }
+{% if ch.brand_sov is not none %}
+.dash-atelier [data-split="brand"] { --share: {{ ch.brand_sov }}; }
+.dash-atelier [data-split="rivals"] { --share: {{ ch.rivals_sov or 0 }}; }
+.dash-atelier [data-split="other"] { --share: {{ ch.other_sov or 0 }}; }
+{% endif %}
+</style>
+
+<section class="dash-atelier" aria-label="{{ _('Strumenti di visibilità') }}">
+  <header class="dash-atelier__head">
+    <p class="dash-atelier__eyebrow">{{ _('Atelier') }}</p>
+    <h3 class="dash-atelier__title">{{ _('Lettura grafica dell\'ultimo audit') }}</h3>
+    <p class="dash-atelier__lede">
+      {{ _('Costellazione engine, pressione findings, suite GEO e campo pagine — tutti dallo stesso run, senza delta inventati.') }}
+    </p>
+  </header>
+
+  <div class="dash-atelier__grid">
+    {# ——— Engine constellation + lollipops ——— #}
+    <article class="dash-inst dash-inst--constellation" aria-labelledby="atelier-engines">
+      <header class="dash-inst__head">
+        <p class="dash-inst__kicker">{{ _('Engine') }}</p>
+        <h4 class="dash-inst__title" id="atelier-engines">{{ _('Costellazione') }}</h4>
+        <span class="evidence-badge" data-evidence="{{ ch.evidence }}">{{ _(engine_breakdown.label) if engine_breakdown and engine_breakdown.label else _('Stimato') }}</span>
+      </header>
+      <div class="dash-constellation">
+        {% if radar.points %}
+        <svg class="dash-constellation__svg" viewBox="0 0 200 200" role="img" aria-label="{{ _('Propensity per engine') }}">
+          <circle class="dash-constellation__void" cx="100" cy="100" r="78"/>
+          {% for ring in radar.ring_polygons or [] %}
+          <polygon class="dash-constellation__ring" points="{{ ring }}"/>
+          {% endfor %}
+          {% for axis in radar.axes or [] %}
+          <polyline class="dash-constellation__axis" points="{{ axis }}"/>
+          {% endfor %}
+          <polygon class="dash-constellation__data" points="{{ radar.points }}"/>
+          {% for pt in radar.points.split(' ') if pt %}
+          <circle class="dash-constellation__node" cx="{{ pt.split(',')[0] }}" cy="{{ pt.split(',')[1] }}" r="3.2"/>
+          {% endfor %}
+          {% for lbl in radar.labels or [] %}
+          <text class="dash-constellation__label" x="{{ lbl.x }}" y="{{ lbl.y }}" text-anchor="{{ lbl.anchor }}" dy="{{ lbl.dy }}">{{ lbl.label }}</text>
+          {% endfor %}
+        </svg>
+        {% endif %}
+        <ol class="dash-lollipop" aria-label="{{ _('Share per engine') }}">
+          {% for e in ch.engines %}
+          <li data-engine="{{ e.id }}">
+            <span class="dash-lollipop__name">{{ e.label }}</span>
+            <span class="dash-lollipop__track" aria-hidden="true"><i></i></span>
+            <strong class="dash-lollipop__n">{{ e.share }}%</strong>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </article>
+
+    {# ——— Findings pressure ——— #}
+    <article class="dash-inst dash-inst--pressure" aria-labelledby="atelier-pressure">
+      <header class="dash-inst__head">
+        <p class="dash-inst__kicker">{{ _('Findings') }}</p>
+        <h4 class="dash-inst__title" id="atelier-pressure">{{ _('Pressione') }}</h4>
+        <span class="dash-inst__count">{{ ch.mosaic.totals.all }}</span>
+      </header>
+      <div class="dash-pressure__totals" aria-label="{{ _('Severità') }}">
+        <b data-sev="critical"><em>{{ ch.mosaic.totals.critical }}</em>{{ _('Critiche') }}</b>
+        <b data-sev="warn"><em>{{ ch.mosaic.totals.warn }}</em>{{ _('Warn') }}</b>
+        <b data-sev="ok"><em>{{ ch.mosaic.totals.ok }}</em>{{ _('Ok') }}</b>
+      </div>
+      {% if ch.mosaic.rows %}
+      <ul class="dash-mosaic" aria-label="{{ _('Findings per categoria') }}">
+        {% for row in ch.mosaic.rows %}
+        <li data-mosaic="{{ row.id }}">
+          <span class="dash-mosaic__k">{{ row.label }}</span>
+          <span class="dash-mosaic__bar" aria-hidden="true"><i data-tone="crit"></i><i data-tone="warn"></i><i data-tone="ok"></i></span>
+          <span class="dash-mosaic__n">{{ row.open }}/{{ row.total }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% if ch.mosaic.cells %}
+      <ol class="dash-tape" aria-hidden="true">
+        {% for cell in ch.mosaic.cells %}
+        <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
+        {% endfor %}
+      </ol>
+      {% endif %}
+    </article>
+
+    {# ——— Dual stave AIO / GEO ——— #}
+    <article class="dash-inst dash-inst--stave" aria-labelledby="atelier-stave">
+      <header class="dash-inst__head">
+        <p class="dash-inst__kicker">{{ _('Readiness') }}</p>
+        <h4 class="dash-inst__title" id="atelier-stave">AIO · GEO</h4>
+        {% if ch.delta %}
+        <span class="dash-inst__delta" data-has-delta="1">
+          {% if ch.delta.aio is not none %}<em data-delta="{{ ch.delta.aio }}">AIO {{ '%+d'|format(ch.delta.aio) }}</em>{% endif %}
+          {% if ch.delta.geo is not none %}<em data-delta="{{ ch.delta.geo }}">GEO {{ '%+d'|format(ch.delta.geo) }}</em>{% endif %}
+        </span>
+        {% endif %}
+      </header>
+      <div class="dash-staves">
+        <div class="dash-stave" data-metric="aio">
+          <strong>{{ ch.aio }}</strong>
+          <span>AIO</span>
+          <ol aria-hidden="true">
+            {% for tick in ch.stave_aio|reverse %}
+            <li data-on="{{ tick.on }}"></li>
+            {% endfor %}
+          </ol>
+        </div>
+        <div class="dash-stave" data-metric="geo">
+          <strong>{{ ch.geo }}</strong>
+          <span>GEO</span>
+          <ol aria-hidden="true">
+            {% for tick in ch.stave_geo|reverse %}
+            <li data-on="{{ tick.on }}"></li>
+            {% endfor %}
+          </ol>
+        </div>
+      </div>
+      {% if ch.has_competitors and ch.brand_sov is not none %}
+      <div class="dash-split" aria-label="{{ _('Campo SoV') }}">
+        <span data-split="brand"><i></i>{{ _('Brand') }} {{ ch.brand_sov }}%</span>
+        <span data-split="rivals"><i></i>{{ _('Rivali') }} {{ ch.rivals_sov }}%</span>
+        <span data-split="other"><i></i>{{ _('Altro') }} {{ ch.other_sov }}%</span>
+      </div>
+      {% endif %}
+    </article>
+
+    {# ——— GEO suite petals ——— #}
+    {% if ch.petals %}
+    <article class="dash-inst dash-inst--petals" aria-labelledby="atelier-suite">
+      <header class="dash-inst__head">
+        <p class="dash-inst__kicker">{{ _('Suite') }}</p>
+        <h4 class="dash-inst__title" id="atelier-suite">{{ _('Moduli GEO') }}</h4>
+      </header>
+      <div class="dash-petals">
+        <svg class="dash-petals__svg" viewBox="0 0 180 180" role="img" aria-label="{{ _('Score moduli GEO') }}">
+          <circle class="dash-petals__hub" cx="90" cy="90" r="18"/>
+          <circle class="dash-petals__orbit" cx="90" cy="90" r="62"/>
+          {% for p in ch.petals %}
+          <line class="dash-petals__ray" x1="90" y1="90" x2="{{ p.x2 }}" y2="{{ p.y2 }}"/>
+          <circle class="dash-petals__tip" cx="{{ p.x2 }}" cy="{{ p.y2 }}" r="3.4"/>
+          <text class="dash-petals__lab" x="{{ p.lx }}" y="{{ p.ly }}" text-anchor="middle" dy="0.3em">{{ p.label }}</text>
+          {% endfor %}
+          <text class="dash-petals__core" x="90" y="86" text-anchor="middle">GEO</text>
+          <text class="dash-petals__core-n" x="90" y="100" text-anchor="middle">{{ ch.geo }}</text>
+        </svg>
+        <ul class="dash-petals__list">
+          {% for p in ch.petals %}
+          <li>
+            <span>{{ p.label }}</span>
+            <strong>{{ p.score }}</strong>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </article>
+    {% endif %}
+
+    {# ——— Page field scatter ——— #}
+    {% if ch.field.dots %}
+    <article class="dash-inst dash-inst--field" aria-labelledby="atelier-field">
+      <header class="dash-inst__head">
+        <p class="dash-inst__kicker">{{ _('Crawl') }}</p>
+        <h4 class="dash-inst__title" id="atelier-field">{{ _('Campo pagine') }}</h4>
+        <span class="dash-inst__count">{{ ch.field.n }}</span>
+      </header>
+      <svg class="dash-field" viewBox="0 0 200 200" role="img" aria-label="{{ _('Pagine su piano AIO × GEO') }}">
+        <line class="dash-field__axis" x1="22" y1="178" x2="178" y2="178"/>
+        <line class="dash-field__axis" x1="22" y1="178" x2="22" y2="22"/>
+        <text class="dash-field__axlab" x="178" y="192" text-anchor="end">AIO</text>
+        <text class="dash-field__axlab" x="10" y="26" text-anchor="middle">GEO</text>
+        <line class="dash-field__cross" x1="{{ ch.field.brand.x }}" y1="22" x2="{{ ch.field.brand.x }}" y2="178"/>
+        <line class="dash-field__cross" x1="22" y1="{{ ch.field.brand.y }}" x2="178" y2="{{ ch.field.brand.y }}"/>
+        {% for d in ch.field.dots %}
+        <circle class="dash-field__dot" data-sev="{{ d.sev }}" cx="{{ d.x }}" cy="{{ d.y }}" r="3.1">
+          <title>{{ d.path }} · AIO {{ d.aio }} · GEO {{ d.geo }}</title>
+        </circle>
+        {% endfor %}
+        <circle class="dash-field__brand" cx="{{ ch.field.brand.x }}" cy="{{ ch.field.brand.y }}" r="5"/>
+      </svg>
+    </article>
+    {% endif %}
+
+    {# ——— Measured SoV spark (only with ≥2 snapshots) ——— #}
+    {% if ch.spark %}
+    <article class="dash-inst dash-inst--spark" aria-labelledby="atelier-spark">
+      <header class="dash-inst__head">
+        <p class="dash-inst__kicker">{{ _('Misurato') }}</p>
+        <h4 class="dash-inst__title" id="atelier-spark">{{ _('SoV nel tempo') }}</h4>
+        <span class="dash-inst__delta" data-delta="{{ ch.spark.delta }}">{{ '%+d'|format(ch.spark.delta) }} pt</span>
+      </header>
+      <svg class="dash-spark" viewBox="0 0 200 52" role="img" aria-label="{{ _('Serie SoV misurato') }}">
+        <polyline class="dash-spark__line" points="{{ ch.spark.points }}" fill="none"/>
+        <circle class="dash-spark__tip" cx="{{ ch.spark.last_x }}" cy="{{ ch.spark.last_y }}" r="3.2"/>
+      </svg>
+      <p class="dash-spark__meta">{{ ch.spark.n }} {{ _('campioni') }} · {{ ch.spark.first }}% → {{ ch.spark.last }}%</p>
+    </article>
+    {% endif %}
+  </div>
+
+  <p class="dash-atelier__foot">
+    <a class="dash-atelier__more" href="{{ url_for('dashboard_geo_ui', site=latest.id) }}">{{ _('Apri grafici interattivi') }}</a>
+    <a class="dash-atelier__more" href="{{ url_for('dashboard_sov', site=latest.id) }}">{{ _('Dettaglio Share of Voice') }}</a>
+  </p>
+</section>
+{% endif %}

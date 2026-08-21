@@ -223,6 +223,7 @@ from services.mailer import (
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
+from services.dash_charts import build_dash_charts
 from services.geo_ui_payload import build_geo_ui_payload
 from services.token_units import (
     BUSINESS_MONTHLY_CREDIT_CENTS,
@@ -6865,6 +6866,29 @@ def dashboard():
             ),
         }
 
+    dash_charts = None
+    if latest is not None:
+        sov_trend: list[Any] = []
+        if user.is_pro:
+            sov_trend = sov_series_for_chart(
+                list_sov_snapshots(
+                    SovSnapshot,
+                    site_id=latest.id,
+                    user_id=user.id,
+                    limit=12,
+                )
+            )
+        dash_charts = build_dash_charts(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            crawl_pages=list(latest.crawl_pages or []),
+            geo_suite=geo_suite,
+            engine_breakdown=engine_breakdown,
+            run_diff=run_diff,
+            sov_trend=sov_trend,
+        )
+
     edge_ctx: dict[str, Any] | None = None
     if latest is not None and getattr(latest, "signals_hosted", False) and latest.public_token:
         base = edge_base_url(public_base_url(), latest.public_token)
@@ -6895,6 +6919,7 @@ def dashboard():
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,
+        dash_charts=dash_charts,
         edge=edge_ctx,
         sov_budget=sov_budget,
         openai_ready=bool(OPENAI_API_KEY),
