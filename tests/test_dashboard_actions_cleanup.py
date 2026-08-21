@@ -49,6 +49,7 @@ def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-sites" in AUDIT
     assert "<select" not in AUDIT
     assert "dash-rivals" in AUDIT
+    assert "dash-audit__deep" in AUDIT
     assert "analyze-reveal" not in DASH
     assert "{{ _('Audit') }}" in AUDIT
     assert "{{ _('Nuova analisi') }}" not in DASH

@@ -4697,6 +4697,22 @@ body.body-dash .dash-sites__chip.is-active {
 body.body-dash .dash-rivals__chips li {
   border: 0;
 }
+body.body-dash .dash-audit__deep,
+body.body-dash .dash-command .analyze-option__hit {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  padding: 0.15rem 0;
+}
+body.body-dash .dash-audit__deep:hover,
+body.body-dash .dash-command .analyze-option__hit:hover,
+body.body-dash .dash-audit__deep:has(.analyze-option__check:checked),
+body.body-dash .dash-command .analyze-option__hit:has(.analyze-option__check:checked) {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
 body.body-dash .dash-sheet,
 body.body-dash .dash-sheet--dense,
 body.body-dash .dash-board table.dash-sheet {
