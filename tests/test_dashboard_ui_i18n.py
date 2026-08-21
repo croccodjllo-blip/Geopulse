@@ -115,7 +115,9 @@ def test_translate_analysis_notes_parameterized():
 def test_shell_uses_form_submit_not_hardcoded_analizza():
     from pathlib import Path
 
+    form = Path("templates/partials/analyze_form.html").read_text(encoding="utf-8")
     shell = Path("templates/partials/dashboard_shell.html").read_text(encoding="utf-8")
-    assert "form.submit(" in shell
+    assert "form.submit(" in form
     assert "Analizza dominio" not in shell
+    assert "Analizza dominio" not in form
     assert 'SubmitField(_l("Avvia"))' in Path("app.py").read_text(encoding="utf-8")
