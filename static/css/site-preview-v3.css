@@ -4274,13 +4274,14 @@ body.body-dash .dash-split__nums dd span {
 }
 body.body-dash .dash-split__track {
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   align-self: stretch;
   width: 100%;
-  min-height: 3.4rem;
+  height: 10px;
+  min-height: 10px;
   margin: 0;
   padding: 0;
-  border-radius: 0.7rem;
+  border-radius: 99px;
   overflow: hidden;
   background: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
 }
@@ -4306,14 +4307,19 @@ body.body-dash .dash-split__track i[data-part="other"] {
   background: color-mix(in srgb, var(--brand-clarity) 28%, #5B6B7A);
 }
 body.body-dash .dash-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   margin-top: 0.15rem;
-  flex: 0 1 auto;
 }
 body.body-dash .dash-area__svg {
   display: block;
+  flex: 1 1 auto;
   width: 100%;
-  height: auto;
-  max-height: 8.5rem;
+  height: 100%;
+  min-height: 7.5rem;
+  max-height: none;
 }
 body.body-dash .dash-area__grid {
   stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);
@@ -4671,6 +4677,6 @@ body.body-dash .comp-arena {
   body.body-dash .dash-card--table,
   body.body-dash .dash-card--side { grid-column: 1; grid-row: auto; }
   body.body-dash .dash-minis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  body.body-dash .dash-split__track { min-height: 2.8rem; }
+  body.body-dash .dash-split__track { height: 10px; min-height: 10px; }
   body.body-dash .dash-split__nums dd { font-size: clamp(1.7rem, 7vw, 2.2rem); }
 }
