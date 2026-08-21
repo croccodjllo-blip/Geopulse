@@ -71,10 +71,35 @@
     }
   }
 
+  function applyDock(mode) {
+    var next = mode === "rail" ? "rail" : "open";
+    document.documentElement.setAttribute("data-dock", next);
+    try {
+      localStorage.setItem("centropic.dock", next);
+    } catch (e) {}
+    var pin = qs("[data-dock-pin]");
+    if (pin) {
+      var rail = next === "rail";
+      pin.setAttribute("aria-pressed", rail ? "true" : "false");
+      var openLbl = qs("[data-dock-pin-open]", pin);
+      var railLbl = qs("[data-dock-pin-rail]", pin);
+      if (openLbl) openLbl.hidden = rail;
+      if (railLbl) railLbl.hidden = !rail;
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     var toggle = qs("[data-sidebar-toggle]");
     var closeBtn = qs("[data-sidebar-close]");
     var backdrop = qs("[data-sidebar-backdrop]");
+    var pin = qs("[data-dock-pin]");
+    applyDock(document.documentElement.getAttribute("data-dock") || "open");
+    if (pin) {
+      pin.addEventListener("click", function () {
+        var cur = document.documentElement.getAttribute("data-dock") || "open";
+        applyDock(cur === "rail" ? "open" : "rail");
+      });
+    }
 
     if (toggle) {
       toggle.addEventListener("click", function () {
@@ -123,7 +148,7 @@
       if (edge) edge.scrollIntoView({ behavior: "smooth", block: "start" });
     } else if (hash === "analyze") {
       var panel = qs("#analyze-panel");
-      if (panel) panel.open = true;
+      if (panel && "open" in panel) panel.open = true;
       var form = qs("#analyze");
       if (form && typeof form.scrollIntoView === "function") {
         form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -138,7 +163,10 @@
       else if (h === "panel-sov" || h === "sov") activateDashTab("sov");
       else if (h === "analyze") {
         var p = qs("#analyze-panel");
-        if (p) p.open = true;
+        if (p && "open" in p) p.open = true;
+        if (p && typeof p.scrollIntoView === "function") {
+          p.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       }
     });
   });

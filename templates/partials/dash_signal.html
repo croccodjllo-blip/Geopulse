@@ -1,0 +1,198 @@
+{# Signal deck — typographic spine + engine orbit + fault + meridian.
+   Bloomberg letter / NASA scope / FT baseline. No style= attrs (CSP). #}
+{% set ch = dash_charts or {} %}
+{% set rating = rating if rating is defined and rating else (latest.rating if latest is defined and latest else none) %}
+{% set cvi_score = rating.score if rating and rating.score is number else 0 %}
+{% set cvi_code = rating.code if rating and rating.code else '—' %}
+{% set sov_pct = engine_breakdown.brand_sov if engine_breakdown and engine_breakdown.brand_sov is number else none %}
+{% set sov_n = sov_pct if sov_pct is number else 0 %}
+{% set arc_c = 339.29 %}
+{% set arc_off = arc_c * (1 - (sov_n / 100)) %}
+{% set orbit = ch.orbit or {} %}
+{% set meridian = ch.meridian or {} %}
+{% set mosaic = ch.mosaic or {} %}
+{% set totals = mosaic.totals or {} %}
+{% set dash_home = url_for('dashboard', site=latest.id) if latest is defined and latest else url_for('dashboard') %}
+
+<style nonce="{{ csp_nonce }}">
+.dash-signal {
+  --aio: {{ ch.aio if ch.aio is number else 0 }};
+  --geo: {{ ch.geo if ch.geo is number else 0 }};
+  --cvi: {{ cvi_score }};
+  --sov: {{ sov_n }};
+}
+{% if orbit.nodes %}
+{% for e in orbit.nodes %}
+.dash-orbit [data-engine="{{ e.id }}"] { --accent: {{ e.accent or 'var(--plan-accent)' }}; }
+{% endfor %}
+{% endif %}
+{% for tick in meridian.ticks or [] %}
+.dash-meridian [data-tick="{{ tick.id }}"] { --x: {{ tick.x }}; --geo: {{ tick.geo }}; }
+{% endfor %}
+.dash-meridian [data-tick="brand"] { --x: {{ meridian.brand_x if meridian.brand_x is number else ch.aio|default(0) }}; }
+</style>
+
+<section class="dash-signal" aria-labelledby="result-domain">
+  <header class="dash-signal__mast">
+    <p class="dash-signal__kicker">{{ _('Quadro segnali') }}</p>
+    <h2 class="dash-signal__domain" id="result-domain">{{ latest.domain }}</h2>
+    {% if latest.page_title %}
+    <p class="dash-signal__page">{{ latest.page_title }}</p>
+    {% endif %}
+  </header>
+
+  <div class="dash-signal__stage">
+    {# ——— Spine: huge CVI letter + one SoV arc + mercury AIO/GEO ——— #}
+    <article class="dash-spine" data-grade="{{ cvi_code }}" data-len="{{ cvi_code|length }}">
+      <p class="dash-spine__kicker">{{ _('Centropic Visibility Index') }}</p>
+      <div class="dash-spine__mark" aria-hidden="true">
+        <svg class="dash-spine__arc" viewBox="0 0 160 160" role="presentation">
+          <circle class="dash-spine__track" cx="80" cy="80" r="54" fill="none" stroke-width="2"/>
+          {% if sov_pct is number %}
+          <circle class="dash-spine__progress" cx="80" cy="80" r="54" fill="none" stroke-width="3.25"
+            stroke-dasharray="{{ '%.2f'|format(arc_c) }}"
+            stroke-dashoffset="{{ '%.2f'|format(arc_off) }}"
+            transform="rotate(-90 80 80)"/>
+          {% endif %}
+        </svg>
+        <strong class="dash-spine__grade">{{ cvi_code }}</strong>
+      </div>
+      <div class="dash-spine__readout">
+        <p class="dash-spine__score"><b>{{ cvi_score }}</b><span>/100</span></p>
+        <p class="dash-spine__sov">
+          {% if sov_pct is number %}
+            {{ _('SoV') }} <strong>{{ sov_pct }}%</strong>
+            {% if engine_breakdown and engine_breakdown.top_engine %}
+            · {{ engine_breakdown.top_engine }}
+            {% endif %}
+          {% else %}
+            {{ _('SoV') }} —
+          {% endif %}
+        </p>
+        {% if engine_breakdown %}
+        <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
+        {% endif %}
+      </div>
+      <ol class="dash-mercury" aria-label="{{ _('AIO e GEO') }}">
+        <li data-metric="aio">
+          <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
+          <span class="dash-mercury__k">AIO</span>
+          <strong class="dash-mercury__v">{{ ch.aio if ch.aio is number else '—' }}</strong>
+        </li>
+        <li data-metric="geo">
+          <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
+          <span class="dash-mercury__k">GEO</span>
+          <strong class="dash-mercury__v">{{ ch.geo if ch.geo is number else '—' }}</strong>
+        </li>
+      </ol>
+    </article>
+
+    {# ——— Orbit: brand nucleus, engines as satellites ——— #}
+    <article class="dash-orbit" aria-labelledby="signal-orbit">
+      <header class="dash-orbit__head">
+        <p class="dash-orbit__kicker">{{ _('Engine') }}</p>
+        <h3 class="dash-orbit__title" id="signal-orbit">{{ _('Orbita') }}</h3>
+        {% if engine_breakdown %}
+        <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or ch.evidence or 'proxy' }}">{{ _(engine_breakdown.label) if engine_breakdown.label else _('Stimato') }}</span>
+        {% endif %}
+      </header>
+      <svg class="dash-orbit__svg" viewBox="0 0 320 200" role="img" aria-label="{{ _('Share per engine') }}">
+        <ellipse class="dash-orbit__ring" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="{{ orbit.rx or 124 }}" ry="{{ orbit.ry or 72 }}"/>
+        <ellipse class="dash-orbit__ring dash-orbit__ring--inner" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="72" ry="42"/>
+        {% for e in orbit.nodes or [] %}
+        <line class="dash-orbit__filament" data-engine="{{ e.id }}" x1="{{ orbit.cx }}" y1="{{ orbit.cy }}" x2="{{ e.ox }}" y2="{{ e.oy }}"/>
+        {% endfor %}
+        <circle class="dash-orbit__nucleus" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" r="11"/>
+        <text class="dash-orbit__core" x="{{ orbit.cx or 160 }}" y="{{ (orbit.cy or 100) + 3.5 }}" text-anchor="middle">{{ _('tu') }}</text>
+        {% for e in orbit.nodes or [] %}
+        <circle class="dash-orbit__sat" data-engine="{{ e.id }}" cx="{{ e.ox }}" cy="{{ e.oy }}" r="{{ e.or }}">
+          <title>{{ e.label }} · {{ e.share }}%</title>
+        </circle>
+        <text class="dash-orbit__lab" x="{{ e.lx }}" y="{{ e.ly }}" text-anchor="{{ e.anchor }}" dy="{{ e.dy }}">{{ e.label }} {{ e.share }}%</text>
+        {% endfor %}
+      </svg>
+      {% if ch.spark %}
+      <div class="dash-orbit__spark" aria-label="{{ _('SoV nel tempo') }}">
+        <svg class="dash-spark" viewBox="0 0 200 52" role="img">
+          <polyline class="dash-spark__line" points="{{ ch.spark.points }}" fill="none"/>
+          <circle class="dash-spark__tip" cx="{{ ch.spark.last_x }}" cy="{{ ch.spark.last_y }}" r="3.2"/>
+        </svg>
+        <p class="dash-spark__meta">{{ ch.spark.n }} {{ _('campioni') }} · {{ ch.spark.first }}% → {{ ch.spark.last }}%</p>
+      </div>
+      {% endif %}
+    </article>
+  </div>
+
+  {# ——— Fault: findings as a seismograph ——— #}
+  <article class="dash-fault" aria-labelledby="signal-fault">
+    <header class="dash-fault__head">
+      <p class="dash-fault__kicker">{{ _('Findings') }}</p>
+      <h3 class="dash-fault__title" id="signal-fault">{{ _('Faglia') }}</h3>
+      <p class="dash-fault__counts">
+        <b data-sev="critical">{{ totals.critical or 0 }} {{ _('critiche') }}</b>
+        <b data-sev="warn">{{ totals.warn or 0 }} {{ _('warn') }}</b>
+        <b data-sev="ok">{{ totals.ok or 0 }} {{ _('ok') }}</b>
+      </p>
+    </header>
+    {% if mosaic.cells %}
+    <ol class="dash-fault__stave" aria-hidden="true">
+      {% for cell in mosaic.cells %}
+      <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="dash-fault__empty">{{ _('Nessun finding su questo run.') }}</p>
+    {% endif %}
+    {% if mosaic.rows %}
+    <ul class="dash-fault__rows" aria-label="{{ _('Findings per categoria') }}">
+      {% for row in mosaic.rows %}
+      <li data-mosaic="{{ row.id }}">
+        <span>{{ row.label }}</span>
+        <strong>{{ row.open }}/{{ row.total }}</strong>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </article>
+
+  {# ——— Meridian: pages as ticks on an AIO axis ——— #}
+  <article class="dash-meridian" id="critical-pages" aria-labelledby="signal-meridian">
+    <header class="dash-meridian__head">
+      <p class="dash-meridian__kicker">{{ _('Crawl') }}</p>
+      <h3 class="dash-meridian__title" id="signal-meridian">{{ _('Meridiano pagine') }}</h3>
+      <span class="dash-meridian__n">{{ meridian.n or 0 }}</span>
+    </header>
+    <div class="dash-meridian__axis" aria-label="{{ _('Pagine su asse AIO') }}">
+      <i class="dash-meridian__rail" aria-hidden="true"></i>
+      <span class="dash-meridian__end" data-end="0">0</span>
+      <span class="dash-meridian__end" data-end="100">100</span>
+      <span class="dash-meridian__tick dash-meridian__tick--brand" data-tick="brand" title="{{ _('Brand') }} · AIO {{ meridian.brand_x if meridian.brand_x is number else ch.aio }}">
+        <em>{{ _('tu') }}</em>
+      </span>
+      {% for tick in meridian.ticks or [] %}
+      {% if tick.url %}
+      <a class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" href="{{ tick.url }}" target="_blank" rel="noopener noreferrer" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}">
+        <span class="visually-hidden">{{ tick.path }}</span>
+      </a>
+      {% else %}
+      <span class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}"></span>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <p class="dash-meridian__hint">{{ _('Asse AIO · altezza accenna GEO · colore = severità') }}</p>
+  </article>
+
+  <nav class="dash-rail dash-actions" aria-label="{{ _('Azioni report') }}">
+    <a class="dash-actions__btn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
+    <a class="dash-actions__btn" href="{{ dash_home }}#pack">{{ _('Pack') }}</a>
+    <a class="dash-actions__btn" href="{{ dash_home }}#edge-signals">{{ _('Edge') }}</a>
+    <a class="dash-actions__btn dash-actions__btn--sov" href="{{ url_for('dashboard_sov', site=latest.id) }}">{{ _('Share of Voice') }}</a>
+    <a class="dash-actions__ghost" href="{{ url_for('dashboard_sov', site=latest.id) }}#findings">{{ _('Findings') }}</a>
+    {% if meridian.n %}<a class="dash-actions__ghost" href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
+    {% if latest.url %}<a class="dash-actions__ghost" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>{% endif %}
+    {% if can_extended_history|default(false) %}
+    <a class="dash-actions__ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
+    {% endif %}
+    <a class="dash-actions__ghost" href="{{ url_for('dashboard_geo_ui', site=latest.id) }}">{{ _('Apri grafici interattivi') }}</a>
+  </nav>
+</section>
