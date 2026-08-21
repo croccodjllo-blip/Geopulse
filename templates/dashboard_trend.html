@@ -12,10 +12,14 @@
         {% if history_is_runs %}{{ _('Storico run') }}{% else %}{{ _('Ultime analisi') }}{% endif %}
       </h1>
       <p class="dash-signal__domain">
+        {% if latest %}
+          {{ latest.domain }}
+          ·
+        {% endif %}
         {% if history_is_runs %}
-          {{ _('Run manuali e schedulate (max') }} {{ history_limit }}).
+          {{ _('Run manuali e schedulate del dominio selezionato (max') }} {{ history_limit }}).
         {% else %}
-          {{ _('Ultimi siti analizzati (max') }} {{ history_limit }}).
+          {{ _('Analisi del dominio selezionato (max') }} {{ history_limit }}).
         {% endif %}
       </p>
     </div>
@@ -56,7 +60,8 @@
         </dd>
       </div>
     </dl>
-    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" role="img">
+    <div class="dash-trend__frame">
+    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMinYMid meet" role="img">
       {% for g in run_trend.grid_y or [] %}
       <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
       <text class="dash-trend__axis" x="{{ run_trend.left - 8 }}" y="{{ g.y + 4 }}" text-anchor="end">{{ g.v }}</text>
@@ -85,6 +90,7 @@
       {% endif %}
       {% endfor %}
     </svg>
+    </div>
     <table class="dash-sheet">
       <thead>
         <tr>

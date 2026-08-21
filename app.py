@@ -9041,15 +9041,12 @@ def api_v1_site_edge_cms_bundle(site_id: int):
 def dashboard_history():
     user = current_user()
     hist_limit = history_limit_for(user)
-    if user.is_pro:
-        site_ids = [
-            row[0]
-            for row in sites_query_for_user(SiteAnalysis, user)
-            .with_entities(SiteAnalysis.id)
-            .all()
-        ]
+    latest = _workspace_site(user)
+    if latest is None:
+        history = []
+    elif user.is_pro:
         history = (
-            AnalysisRun.query.filter(AnalysisRun.site_id.in_(site_ids))
+            AnalysisRun.query.filter_by(site_id=latest.id)
             .order_by(AnalysisRun.created_at.desc())
             .limit(hist_limit)
             .all()
@@ -9057,11 +9054,11 @@ def dashboard_history():
     else:
         history = (
             sites_query_for_user(SiteAnalysis, user)
+            .filter(SiteAnalysis.id == latest.id)
             .order_by(SiteAnalysis.created_at.desc())
             .limit(hist_limit)
             .all()
         )
-    latest = _workspace_site(user)
     findings_all, _crit, _ok = _workspace_findings(latest)
     engine_breakdown = None
     run_diff = None

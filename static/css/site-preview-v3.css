@@ -4576,6 +4576,11 @@ body.body-dash .dash-fault__counts b[data-sev="critical"] { color: #EF4444; }
 body.body-dash .dash-fault__counts b[data-sev="warn"] { color: #F59E0B; }
 body.body-dash .dash-fault__counts b[data-sev="ok"] { color: #22C55E; }
 body.body-dash .dash-trend {
+  width: 100%;
+  min-width: 0;
+}
+body.body-dash .dash-trend__frame {
+  width: 100%;
   min-width: 0;
 }
 body.body-dash .dash-trend__legend {
@@ -4601,8 +4606,9 @@ body.body-dash .dash-trend__legend dd {
 body.body-dash .dash-trend__svg {
   display: block;
   width: 100%;
+  max-width: none;
   height: auto;
-  max-height: 20rem;
+  max-height: none;
 }
 body.body-dash .dash-trend__grid {
   stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);

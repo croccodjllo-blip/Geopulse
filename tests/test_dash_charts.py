@@ -287,3 +287,75 @@ def test_dashboard_renders_signal_instruments():
     assert "dash-live-charts" not in html
     assert "dash-constellation" not in html
     assert "dash-ring--cvi" not in html
+
+
+def test_trend_history_is_scoped_to_selected_site():
+    from datetime import datetime, timezone
+    from uuid import uuid4
+
+    from app import AnalysisRun, SiteAnalysis, User, app, db, ensure_schema
+
+    with app.app_context():
+        ensure_schema()
+        user = User(
+            email=f"trend-{uuid4().hex}@example.com",
+            name="Trend",
+            plan="plus",
+            email_verified_at=datetime.now(timezone.utc),
+        )
+        user.set_password("TrendScope!23456")
+        db.session.add(user)
+        db.session.flush()
+        keep = SiteAnalysis(
+            user_id=user.id,
+            url="https://keep.example/",
+            domain="keep.example",
+            aio_score=60,
+            geo_score=50,
+        )
+        other = SiteAnalysis(
+            user_id=user.id,
+            url="https://other.example/",
+            domain="other.example",
+            aio_score=30,
+            geo_score=20,
+        )
+        db.session.add_all([keep, other])
+        db.session.flush()
+        now = datetime.now(timezone.utc)
+        db.session.add_all(
+            [
+                AnalysisRun(
+                    site_id=keep.id,
+                    user_id=user.id,
+                    url=keep.url,
+                    domain=keep.domain,
+                    aio_score=60,
+                    geo_score=50,
+                    created_at=now,
+                ),
+                AnalysisRun(
+                    site_id=other.id,
+                    user_id=user.id,
+                    url=other.url,
+                    domain=other.domain,
+                    aio_score=30,
+                    geo_score=20,
+                    created_at=now,
+                ),
+            ]
+        )
+        db.session.commit()
+        uid, ver, keep_id = user.id, int(user.session_version or 0), keep.id
+
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["user_id"] = uid
+        sess["session_version"] = ver
+    html = client.get(f"/dashboard/trend?site={keep_id}").get_data(as_text=True)
+    assert "dash-trend__frame" in html
+    list_at = html.find("history-list")
+    assert list_at != -1
+    listed = html[list_at:]
+    assert "keep.example" in listed
+    assert "other.example" not in listed
