@@ -4336,6 +4336,14 @@ body.body-dash .dash-pair--match > .dash-card {
   flex-direction: column;
   min-height: 100%;
 }
+body.body-dash .dash-pair--crawl {
+  align-items: stretch;
+}
+body.body-dash .dash-pair--crawl > .dash-crit {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: none;
+}
 body.body-dash .dash-board .dash-card {
   min-width: 0;
   margin: 0;
@@ -4705,9 +4713,10 @@ body.body-dash .dash-crit {
 }
 body.body-dash .dash-crit__row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem 1.6rem;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 1rem 2rem;
   align-items: center;
+  width: 100%;
 }
 body.body-dash .dash-crit__score {
   margin: 0;
