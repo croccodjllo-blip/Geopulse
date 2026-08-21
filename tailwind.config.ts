@@ -12,14 +12,14 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          bg: "#04060A",
-          card: "#0A0E14",
-          border: "#1A222D",
-          cyan: "#C9D3DD",
-          blue: "#5B6B7A",
-          violet: "#5B6B7A", // legacy alias → steel (never purple)
-          steel: "#5B6B7A",
-          muted: "#8B97A8",
+          bg: "#121212",
+          card: "#1A1612",
+          border: "#3A2E22",
+          cyan: "#E8A04A",
+          blue: "#C47A2C",
+          violet: "#C47A2C", // legacy alias — never purple
+          steel: "#C47A2C",
+          muted: "#B8A894",
         },
       },
       boxShadow: {
@@ -30,9 +30,9 @@ const config: Config = {
       },
       backgroundImage: {
         "liquid-chrome":
-          "linear-gradient(165deg, #04060A 0%, #070A10 48%, #0A0E14 100%)",
+          "linear-gradient(165deg, #121212 0%, #161310 48%, #1A1612 100%)",
         iridescent:
-          "linear-gradient(90deg, #5B6B7A 0%, #C9D3DD 55%, #D7DEE5 100%)",
+          "linear-gradient(90deg, #8A4E16 0%, #E8A04A 55%, #F4D7A8 100%)",
       },
       fontFamily: {
         display: ['"Inter"', "system-ui", "sans-serif"],
