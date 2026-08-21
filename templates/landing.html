@@ -40,20 +40,13 @@
     <div class="hero-brand-lockup hero-brand-lockup--preview" id="hero-brand">
       <img
         class="hero-brand-mark"
-        src="{{ url_for('static', filename='img/logo-hero.png') }}"
+        src="{{ url_for('static', filename='img/logo.svg') }}"
         width="334"
         height="334"
         alt=""
         decoding="async"
       />
-      <img
-        class="hero-brand-wordmark"
-        src="{{ url_for('static', filename='img/wordmark-hero.png') }}"
-        width="870"
-        height="105"
-        alt="CENTROPIC.AI"
-        decoding="async"
-      />
+      <span class="hero-brand-word" aria-label="CENTROPIC.AI">CENTROPIC.AI</span>
     </div>
     <h1 class="hero-headline hero-headline--v2 hero-headline--rise">
       {{ _('Misura la') }}

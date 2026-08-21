@@ -1,8 +1,8 @@
 /* SITE PREVIEW v3 — single visual system (kills Shell A / card soup mix) */
 
 body.app-body {
-  --preview-void: #0A0D0F;
-  --preview-teal: #3FA8B5;
+  --preview-void: #121212;
+  --preview-gold: #E8A04A;
 }
 
 /* Kill Shell A strip canvas fighting the preview */
@@ -283,7 +283,7 @@ body.body-dash--sov .sov-chrome__tab:hover {
   background: color-mix(in srgb, var(--brand-clarity) 6%, transparent);
 }
 body.body-dash--sov .sov-chrome__tab.is-active {
-  color: var(--plan-accent, #3FA8B5);
+  color: var(--plan-accent, #E8A04A);
   font-weight: 650;
 }
 body.body-dash--sov .sov-chrome__tab.is-active::after {
@@ -294,7 +294,7 @@ body.body-dash--sov .sov-chrome__tab.is-active::after {
   bottom: 0.15rem;
   height: 2px;
   border-radius: 999px;
-  background: var(--plan-accent, #3FA8B5);
+  background: var(--plan-accent, #E8A04A);
 }
 body.body-dash--sov .sov-chrome__tab.is-active::before {
   content: "";
@@ -305,7 +305,7 @@ body.body-dash--sov .sov-chrome__tab.is-active::before {
   height: 0.28rem;
   margin-left: -0.14rem;
   border-radius: 50%;
-  background: var(--plan-accent, #3FA8B5);
+  background: var(--plan-accent, #E8A04A);
 }
 body.body-dash--sov .sov-chrome__meta {
   display: flex;
@@ -379,7 +379,7 @@ body.body-dash--sov .sov-page-hero__title {
   color: var(--brand-clarity);
 }
 body.body-dash--sov .sov-page-hero__accent {
-  color: var(--plan-accent, #3FA8B5);
+  color: var(--plan-accent, #E8A04A);
 }
 body.body-dash--sov .sov-page-hero__lede {
   margin: 0 0 1rem;
@@ -396,7 +396,7 @@ body.body-dash--sov .sov-page-hero__badge {
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--ok, #22C55E) 42%, transparent);
-  background: color-mix(in srgb, #0A0D0F 70%, transparent);
+  background: color-mix(in srgb, #121212 70%, transparent);
   font-size: 0.74rem;
   font-weight: 550;
   color: color-mix(in srgb, var(--brand-clarity) 78%, transparent);
@@ -859,7 +859,7 @@ body.body-dash .dash-detail > .dash-cta {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   background: var(--plan-accent);
-  color: #061210;
+  color: #121212;
   font-size: 0.82rem;
   font-weight: 650;
   text-decoration: none;
@@ -1060,7 +1060,7 @@ body.body-dash .workspace-strip--preview .workspace-strip__title::after {
 /* —— SITE-WIDE marketing / auth preview chrome —— */
 body.body-marketing {
   --brand-cyan: #C9D3DD;
-  --mkt-teal: #3FA8B5;
+  --mkt-teal: #E8A04A;
 }
 
 body.body-marketing .site-header--transparent {
@@ -1209,7 +1209,8 @@ body.body-marketing--hero-only .nav-cta {
 }
 /* Transparent lockup assets — no black plate behind mark/wordmark */
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark,
-body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
+body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark,
+body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   background: transparent !important;
   mix-blend-mode: normal !important;
 }
@@ -1272,7 +1273,8 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   filter: none !important;
   box-shadow: none !important;
 }
-body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
+body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark,
+body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   display: block !important;
   flex: 0 0 auto !important;
   width: clamp(15rem, 52vw, 48rem) !important;
@@ -1290,7 +1292,19 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
   mix-blend-mode: normal !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
-  display: none !important;
+  display: block !important;
+  width: auto !important;
+  max-width: min(92vw, 100%) !important;
+  margin: 0.35rem auto 0 !important;
+  text-align: center;
+  font-size: clamp(1.65rem, 6.2vw, 3.6rem) !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  background: linear-gradient(96deg, #8A4E16 0%, #F6E0B8 42%, #E8A04A 68%, #C47A2C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
   font-family: "Space Grotesk", "Inter", system-ui, sans-serif !important;
@@ -1310,7 +1324,7 @@ body.body-marketing .hero--preview .hero-headline--v2 {
   box-sizing: border-box;
 }
 body.body-marketing .hero--preview .hero-accent {
-  color: #3FA8B5 !important;
+  color: #E8A04A !important;
   display: inline;
 }
 body.body-marketing .hero--preview .hero-lede {
@@ -1373,7 +1387,7 @@ body.body-marketing .hero--preview .hero-url-form__submit {
   /* Anteprima: button ≈ 1/3 of bar, teal outline + teal label */
   min-width: clamp(8.5rem, 18vw, 12.5rem);
   border-radius: 9px !important;
-  border: 1px solid color-mix(in srgb, #3FA8B5 70%, transparent) !important;
+  border: 1px solid color-mix(in srgb, #E8A04A 70%, transparent) !important;
   background: transparent !important;
   color: #7FD4DD !important;
   font-weight: 650 !important;
@@ -1383,8 +1397,8 @@ body.body-marketing .hero--preview .hero-url-form__submit {
   padding: 0.7rem 1.25rem !important;
 }
 body.body-marketing .hero--preview .hero-url-form__submit:hover {
-  border-color: #3FA8B5 !important;
-  background: color-mix(in srgb, #3FA8B5 16%, transparent) !important;
+  border-color: #E8A04A !important;
+  background: color-mix(in srgb, #E8A04A 16%, transparent) !important;
   color: #E8F7F9 !important;
   filter: none;
 }
@@ -1394,7 +1408,7 @@ body.body-marketing .hero--preview .hero-url-form__hint {
 /* Below-fold CTAs keep solid teal */
 body.body-marketing .btn-core {
   border-radius: 8px !important;
-  background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+  background: linear-gradient(135deg, #C47A2C, #E8A04A) !important;
   border: 0 !important;
   color: #041014 !important;
   font-weight: 700 !important;
@@ -1481,7 +1495,7 @@ body.body-marketing .product-shot {
   border-radius: 14px !important;
   border: 1px solid color-mix(in srgb, var(--brand-cyan) 14%, transparent) !important;
   overflow: hidden;
-  background: #061210 !important;
+  background: #121212 !important;
 }
 body.body-marketing .product-shot img {
   display: block;
@@ -1505,7 +1519,7 @@ body.body-auth .brand-mark__logo {
 }
 body.body-auth .btn-primary,
 body.body-auth .btn-signal {
-  background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+  background: linear-gradient(135deg, #C47A2C, #E8A04A) !important;
   border: 0 !important;
   color: #041014 !important;
   font-weight: 700 !important;
@@ -1519,16 +1533,16 @@ body.body-marketing .page-intro__brand-mark {
 
 /* —— PREVIEW 1·2·3 unified void canvas + mobile layout —— */
 html {
-  background-color: #0A0D0F;
+  background-color: #121212;
 }
 body.app-body,
 body.body-marketing,
 body.body-dash,
 body.body-auth {
-  background-color: #0A0D0F !important;
+  background-color: #121212 !important;
   background-image:
     radial-gradient(ellipse 70% 45% at 85% -5%, rgba(63, 168, 181, 0.14), transparent 55%),
-    linear-gradient(180deg, #0A0D0F 0%, #0A0D0F 100%) !important;
+    linear-gradient(180deg, #121212 0%, #121212 100%) !important;
   background-attachment: fixed !important;
 }
 body.body-dash.dash-plan--plus,
@@ -1601,8 +1615,8 @@ body.body-dash .finding-list > li::after {
   body.body-auth {
     background-image:
       url("/static/img/bg-void-chrome-mobile.jpg"),
-      radial-gradient(ellipse 80% 40% at 50% -8%, color-mix(in srgb, var(--plan-accent, #3FA8B5) 18%, transparent), transparent 55%),
-      linear-gradient(180deg, #0A0D0F 0%, #0A0D0F 100%) !important;
+      radial-gradient(ellipse 80% 40% at 50% -8%, color-mix(in srgb, var(--plan-accent, #E8A04A) 18%, transparent), transparent 55%),
+      linear-gradient(180deg, #121212 0%, #121212 100%) !important;
     background-size: cover, auto, auto !important;
     background-position: center top, center, center !important;
     background-blend-mode: soft-light, normal, normal !important;
@@ -1906,12 +1920,14 @@ body.body-dash .finding-list > li::after {
     height: clamp(8rem, 42vw, 12rem) !important;
     filter: none !important;
   }
-  body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark {
+  body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark,
+body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     width: clamp(14rem, 82vw, 28rem) !important;
     filter: none !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
-    display: none !important;
+    display: block !important;
+    font-size: clamp(1.35rem, 8vw, 2.1rem) !important;
   }
   body.body-marketing .hero--preview .hero-headline--v2 {
     font-size: clamp(1.25rem, 5.4vw, 1.7rem) !important;
@@ -1939,14 +1955,14 @@ body.body-dash .finding-list > li::after {
     width: 100%;
     border-radius: 10px !important;
     border: 0 !important;
-    background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+    background: linear-gradient(135deg, #C47A2C, #E8A04A) !important;
     color: #041014 !important;
     box-shadow: 0 0 22px rgba(63, 168, 181, 0.32) !important;
     padding: 0.9rem 1.1rem !important;
   }
   body.body-marketing .hero--preview .hero-url-form__submit:hover {
     filter: brightness(1.06);
-    background: linear-gradient(135deg, #2A7F8A, #3FA8B5) !important;
+    background: linear-gradient(135deg, #C47A2C, #E8A04A) !important;
     color: #041014 !important;
   }
   body.body-marketing .hero--preview .hero-visual__aurora {

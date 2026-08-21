@@ -1,13 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="mChrome" x1="8%" y1="0%" x2="92%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="45%" stop-color="#C9D3DD"/>
-      <stop offset="100%" stop-color="#5B6B7A"/>
+    <linearGradient id="mGold" x1="8%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#F4D7A8"/>
+      <stop offset="50%" stop-color="#E8A04A"/>
+      <stop offset="100%" stop-color="#C47A2C"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" fill="#000000"/>
-  <path d="M50 16 A24 24 0 1 0 50 48" fill="none" stroke="url(#mChrome)" stroke-width="5" stroke-linecap="round"/>
-  <path d="M45 20 A18 18 0 1 0 45 44" fill="none" stroke="url(#mChrome)" stroke-width="3.8" stroke-linecap="round"/>
-  <path d="M40 25 A12 12 0 1 0 40 39" fill="none" stroke="url(#mChrome)" stroke-width="3.2" stroke-linecap="round"/>
+  <rect width="64" height="64" fill="#121212"/>
+  <path d="M50 16 A24 24 0 1 0 50 48" fill="none" stroke="url(#mGold)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M45 20 A18 18 0 1 0 45 44" fill="none" stroke="url(#mGold)" stroke-width="3.8" stroke-linecap="round"/>
+  <path d="M40 25 A12 12 0 1 0 40 39" fill="none" stroke="url(#mGold)" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="53" cy="18" r="1.7" fill="#E8A04A"/>
 </svg>

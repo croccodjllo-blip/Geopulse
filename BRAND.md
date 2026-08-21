@@ -3,7 +3,7 @@
 Production visual system for `centropic.ai`.
 
 ## Direction
-Void-black surfaces, chrome/silver accent (`#C9D3DD` / `#5B6B7A`) sampled directly from the logo emblem — **no purple/violet accent anywhere** (retired 2026-08-05, on explicit user request, superseding the short-lived Nova Violet direction). Inter type. Card-heavy dashboard energy — icon-badged metrics, a per-engine radar chart — carried over from Nova Violet; only the color changed. Nebula bloom (blue + violet) stays behind the landing hero backdrop only and is purely atmospheric, never an interactive-UI color.
+Charcoal surfaces (`#121212`), warm gold/amber accent (`#E8A04A` / `#C47A2C`) sampled from the C-arc emblem — **no purple/violet and no teal** as UI accents. Inter type. Card-heavy dashboard energy. Warm nebula/orbital bloom stays atmospheric (hero/dash haze), never a second interactive color.
 
 Semantic state colors are deliberately **not** the brand accent: success stays green (`--ok: #22C55E`), warning amber, danger red.
 
@@ -12,9 +12,9 @@ When a user is logged in, `body.dash-plan--free|plus|business` remaps the **enti
 
 | Plan | Accent | Canvas base (`--brand-bg`) |
 |---|---|---|
-| Free | Steel `#8BA3BD` | `#0A1018` |
-| Plus | Platinum teal `#3FA8B5` | `#061210` |
-| Business | Copper `#D4A574` | `#100C08` |
+| Free | Champagne `#C4A574` | `#121212` |
+| Plus | Amber gold `#E8A04A` | `#121212` |
+| Business | Copper `#D4A574` | `#14110C` |
 
 Marketing/admin with no plan class keep the global chrome void (`--brand-bg: #04060A`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/copper hex.
 

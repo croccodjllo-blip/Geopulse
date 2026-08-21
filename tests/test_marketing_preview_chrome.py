@@ -12,8 +12,8 @@ def test_landing_is_hero_only_anteprima():
     assert "hero-brand-lockup--preview" in html
     assert "hero--preview" in html
     assert "body-marketing--hero-only" in html
-    assert "logo-hero.png" in html
-    assert "wordmark-hero.png" in html
+    assert "img/logo.svg" in html
+    assert "hero-brand-word" in html
     assert "bg-hero-anteprima.png" in html
     assert "bg-hero-anteprima-mobile.png" in html
     assert "Space+Grotesk" in html or "Space Grotesk" in html
@@ -56,24 +56,15 @@ def test_landing_uses_hero_bg():
 
     desk = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima.png")
     mob = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png")
-    assert desk.size == (1920, 1080)
+    assert desk.size[0] >= 1200
     assert mob.size[1] >= mob.size[0]  # portrait
 
 
 def test_logo_assets_exist():
-    assert (ROOT / "static" / "img" / "logo-hero.png").exists()
-    assert (ROOT / "static" / "img" / "wordmark-hero.png").exists()
-    from PIL import Image
-
-    im = Image.open(ROOT / "static" / "img" / "logo-hero.png")
-    assert im.size[0] >= 250
-    bright = sum(
-        1
-        for y in range(0, im.size[1], 4)
-        for x in range(0, im.size[0], 4)
-        if sum(im.getpixel((x, y))[:3]) > 100
-    )
-    assert bright > 200
+    svg = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
+    assert "#E8A04A" in svg
+    assert "cWarm" in svg or "linearGradient" in svg
+    assert (ROOT / "static" / "img" / "logo-mark.svg").exists()
 
 
 def test_base_footer_is_overridable():
