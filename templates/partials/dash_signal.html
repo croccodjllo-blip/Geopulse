@@ -103,18 +103,24 @@
         <tbody>
           <tr data-part="brand">
             <th scope="row">{{ _('Brand') }}</th>
-            <td><strong>{{ split.brand or 0 }}<span>%</span></strong></td>
-            <td><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+            <td>
+              <strong>{{ split.brand or 0 }}<span>%</span></strong>
+              <span class="dash-sheet__bar" aria-hidden="true"><i></i></span>
+            </td>
           </tr>
           <tr data-part="rivals">
             <th scope="row">{{ _('Rivali') }}</th>
-            <td><strong>{{ split.rivals or 0 }}<span>%</span></strong></td>
-            <td><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+            <td>
+              <strong>{{ split.rivals or 0 }}<span>%</span></strong>
+              <span class="dash-sheet__bar" aria-hidden="true"><i></i></span>
+            </td>
           </tr>
           <tr data-part="other">
             <th scope="row">{{ _('Altro') }}</th>
-            <td><strong>{{ split.other or 0 }}<span>%</span></strong></td>
-            <td><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+            <td>
+              <strong>{{ split.other or 0 }}<span>%</span></strong>
+              <span class="dash-sheet__bar" aria-hidden="true"><i></i></span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -125,10 +131,9 @@
       </div>
       {% if spark %}
       <div class="dash-area" aria-label="{{ _('SoV nel tempo') }}">
-        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 148 }}" preserveAspectRatio="xMinYMid meet" role="img">
+        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 148 }}" preserveAspectRatio="none" role="img">
           {% for g in spark.grid_y or [] %}
           <line class="dash-area__grid" x1="{{ spark.left or 28 }}" y1="{{ g.y }}" x2="{{ spark.right_x or 308 }}" y2="{{ g.y }}"/>
-          <text class="dash-area__axis" x="24" y="{{ g.y + 3 }}" text-anchor="end">{{ g.v }}</text>
           {% endfor %}
           {% if spark.area %}
           <path class="dash-area__fill" d="{{ spark.area }}"/>
@@ -137,14 +142,14 @@
           <path class="dash-area__line" d="{{ spark.line }}" fill="none"/>
           {% endif %}
           {% for m in spark.marks or [] %}
-          <circle class="dash-area__dot{% if loop.last %} is-latest{% endif %}" cx="{{ m.x }}" cy="{{ m.y }}" r="{{ 2.4 if loop.last else 1.4 }}"/>
-          {% endfor %}
-          {% for t in spark.ticks_x or [] %}
-          {% if t.label %}
-          <text class="dash-area__x" x="{{ t.x }}" y="{{ (spark.baseline or 118) + 16 }}" text-anchor="middle">{{ t.label }}</text>
-          {% endif %}
+          <circle class="dash-area__dot{% if loop.last %} is-latest{% endif %}" cx="{{ m.x }}" cy="{{ m.y }}" r="{{ 2.1 if loop.last else 1.2 }}"/>
           {% endfor %}
         </svg>
+        <ol class="dash-area__dates">
+          {% for t in spark.ticks_x or [] %}
+          <li class="dash-area__x">{{ t.label }}</li>
+          {% endfor %}
+        </ol>
         <p class="dash-card__lede">
           {{ spark.n }} {{ _('campioni') }}
           · {{ spark.first }}% → {{ spark.last }}%

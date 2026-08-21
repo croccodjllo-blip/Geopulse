@@ -268,8 +268,8 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         pts.append((x, y))
     first, last = values[0], values[-1]
     labels = _audit_axis_labels(dates) if any(d is not None for d in dates) else [""] * len(values)
-    # Room under the plot for dated ticks; area fill sits on the baseline.
-    aw, ah, al, ar, at, ab = 320.0, 148.0, 28.0, 12.0, 12.0, 30.0
+    # Dates live in HTML under the SVG; keep a tight plot so labels stay small.
+    aw, ah, al, ar, at, ab = 320.0, 120.0, 8.0, 8.0, 8.0, 8.0
     a_w = aw - al - ar
     a_h = ah - at - ab
     marks: list[dict[str, Any]] = []
@@ -314,7 +314,7 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
             {"y": round(baseline, 1), "v": 0},
         ],
         "width": 320,
-        "height": 148,
+        "height": 120,
     }
 
 
