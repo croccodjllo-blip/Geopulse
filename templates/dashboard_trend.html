@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Trend') }}{% endblock %}
+{% block body_class %}body-dash{% endblock %}
+{% block main_class %}site-main--dash{% endblock %}
+
+{% block content %}
+<section class="workspace workspace--wide">
+  <header class="dash-boardhead">
+    <div class="dash-boardhead__copy">
+      <p class="dash-signal__kicker">{{ _('Trend') }}</p>
+      <h1 class="dash-boardhead__title">
+        {% if history_is_runs %}{{ _('Storico run') }}{% else %}{{ _('Ultime analisi') }}{% endif %}
+      </h1>
+      <p class="dash-signal__domain">
+        {% if latest %}
+          {{ latest.domain }}
+          ·
+        {% endif %}
+        {% if history_is_runs %}
+          {{ _('Run manuali e schedulate del dominio selezionato (max') }} {{ history_limit }}).
+        {% else %}
+          {{ _('Analisi del dominio selezionato (max') }} {{ history_limit }}).
+        {% endif %}
+      </p>
+    </div>
+    <div class="dash-boardhead__acts">
+      {% if can_extended_history %}
+      <a class="dash-iconbtn" href="{{ url_for('export_history_csv') }}">CSV</a>
+      {% endif %}
+    </div>
+    {% include "partials/site_switcher.html" %}
+  </header>
+
+  {% if run_trend %}
+  <article class="dash-card dash-trend" aria-label="{{ _('Andamento AIO e GEO') }}">
+    <header class="dash-card__head">
+      <p class="dash-card__kicker">{{ _('Ultimi audit') }}</p>
+      <h2 class="dash-card__title">{{ _('AIO / GEO per data') }}</h2>
+      <p class="dash-card__aside">{{ run_trend.n }} · {{ run_trend.latest_when }}</p>
+    </header>
+    <dl class="dash-trend__legend">
+      <div data-series="aio">
+        <dt>AIO</dt>
+        <dd>
+          {{ run_trend.first_aio if run_trend.first_aio is number else '—' }}
+          → {{ run_trend.last_aio if run_trend.last_aio is number else '—' }}
+          {% if run_trend.delta_aio is number %}
+          <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_aio > 0 else ('down' if run_trend.delta_aio < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_aio) }}</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div data-series="geo">
+        <dt>GEO</dt>
+        <dd>
+          {{ run_trend.first_geo if run_trend.first_geo is number else '—' }}
+          → {{ run_trend.last_geo if run_trend.last_geo is number else '—' }}
+          {% if run_trend.delta_geo is number %}
+          <span class="dash-delta" data-dir="{{ 'up' if run_trend.delta_geo > 0 else ('down' if run_trend.delta_geo < 0 else 'flat') }}">{{ '%+d'|format(run_trend.delta_geo) }}</span>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+    <div class="dash-trend__frame">
+    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMidYMid meet" role="img">
+      {% for g in run_trend.grid_y or [] %}
+      <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
+      <text class="dash-trend__axis" x="{{ run_trend.left - 8 }}" y="{{ g.y + 4 }}" text-anchor="end">{{ g.v }}</text>
+      {% endfor %}
+      {% if run_trend.aio_line %}
+      <path class="dash-trend__line" data-series="aio" d="{{ run_trend.aio_line }}" fill="none"/>
+      {% endif %}
+      {% if run_trend.geo_line %}
+      <path class="dash-trend__line" data-series="geo" d="{{ run_trend.geo_line }}" fill="none"/>
+      {% endif %}
+      {% for m in run_trend.aio_marks or [] %}
+      {% if m.latest %}
+      <circle class="dash-trend__dot is-latest" data-series="aio" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
+      {% endif %}
+      {% endfor %}
+      {% for m in run_trend.geo_marks or [] %}
+      {% if m.latest %}
+      <circle class="dash-trend__dot is-latest" data-series="geo" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
+      {% endif %}
+      {% endfor %}
+    </svg>
+    <ol class="dash-trend__dates">
+      {% for t in run_trend.ticks_x or [] %}
+      {% if t.label %}
+      <li class="dash-trend__x">{{ t.label }}</li>
+      {% endif %}
+      {% endfor %}
+    </ol>
+    </div>
+    <table class="dash-sheet">
+      <thead>
+        <tr>
+          <th>{{ _('Data audit') }}</th>
+          <th>AIO</th>
+          <th>GEO</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in run_trend.rows|reverse %}
+        <tr{% if loop.first %} data-latest="1"{% endif %}>
+          <td>{{ row.when }}</td>
+          <td>{{ row.aio if row.aio is number else '—' }}</td>
+          <td>{{ row.geo if row.geo is number else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+  {% elif dash_charts and dash_charts.spark %}
+  <article class="dash-card dash-trend" aria-label="{{ _('SoV nel tempo') }}">
+    <p class="dash-card__kicker">{{ _('Misurato') }}</p>
+    <h2 class="dash-card__title">{{ _('Share of Voice') }}</h2>
+    <svg class="dash-spark dash-spark--wide" viewBox="0 0 200 52" role="img">
+      <polyline class="dash-spark__line" points="{{ dash_charts.spark.points }}" fill="none"/>
+      <circle class="dash-spark__tip" cx="{{ dash_charts.spark.last_x }}" cy="{{ dash_charts.spark.last_y }}" r="3.2"/>
+    </svg>
+    <p class="dash-spark__meta">{{ dash_charts.spark.n }} {{ _('campioni') }} · {{ dash_charts.spark.first }}% → {{ dash_charts.spark.last }}%</p>
+  </article>
+  {% endif %}
+
+  {% if run_diff and run_diff.has_previous %}
+  <section class="diff-strip dash-card" aria-label="{{ _('Confronto con run precedente') }}">
+    <div class="diff-strip__head">
+      <span class="diff-strip__label">{{ _('Vs run precedente') }}</span>
+      {% if run_diff.delta_aio is not none or run_diff.delta_geo is not none %}
+      <span class="diff-strip__deltas">
+        <em data-delta="{{ run_diff.delta_aio }}">AIO {{ '%+d'|format(run_diff.delta_aio or 0) }}</em>
+        <em data-delta="{{ run_diff.delta_geo }}">GEO {{ '%+d'|format(run_diff.delta_geo or 0) }}</em>
+      </span>
+      {% endif %}
+    </div>
+    {% if run_diff.findings %}
+    <ul class="diff-strip__list">
+      {% for f in run_diff.findings[:5] %}
+      <li data-severity="{{ f.severity }}"><strong>{{ _(f.title) }}</strong>{% if f.detail %} — {{ _(f.detail) }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if can_scheduled_rescan and latest %}
+  <section class="monitor-panel dash-card" aria-labelledby="monitor-title">
+    <div class="monitor-panel__head">
+      <h2 class="monitor-panel__title" id="monitor-title">{{ _('Monitoraggio') }}</h2>
+    </div>
+    {% with site=latest %}
+      {% include "partials/schedule_form.html" %}
+    {% endwith %}
+  </section>
+  {% endif %}
+
+  {% if history %}
+  <ul class="history-list history-list--page">
+    {% for item in history %}
+    <li>
+      <div class="history-main">
+        <strong>{{ item.domain }} <em class="history-grade" data-grade="{{ item.rating.code }}">{{ item.rating.code }}</em></strong>
+        <div class="history-scores">
+          <span>AIO {{ item.aio_score if item.aio_score is not none else '—' }}</span>
+          <span>GEO {{ item.geo_score if item.geo_score is not none else '—' }}</span>
+        </div>
+      </div>
+      <div class="history-actions">
+        <span class="muted">{{ item.created_at.strftime('%d/%m/%Y %H:%M') if item.created_at else '' }} UTC</span>
+        {% if history_is_runs %}
+        <a href="{{ url_for('download_run_pack', run_id=item.id) }}">HTML</a>
+        {% if item.site_id %}
+        <a href="{{ url_for('dashboard', site=item.site_id) }}">{{ _('Panoramica') }}</a>
+        {% endif %}
+        {% else %}
+        <a href="{{ url_for('dashboard', site=item.id) }}">{{ _('Panoramica') }}</a>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty-state">
+    <strong>{{ _('Nessuna analisi ancora') }}</strong>
+    <p><a class="btn btn-signal" href="{{ url_for('dashboard') }}">{{ _('Vai alla Panoramica') }}</a></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
