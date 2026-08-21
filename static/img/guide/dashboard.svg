@@ -1,67 +1,129 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Dashboard Centropic">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Workspace Centropic — Panoramica">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#061210"/>
-      <stop offset="100%" stop-color="#040808"/>
+    <linearGradient id="gDashC1" x1="8%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#F4D7A8"/>
+      <stop offset="38%" stop-color="#E8A04A"/>
+      <stop offset="72%" stop-color="#C47A2C"/>
+      <stop offset="100%" stop-color="#8A4E16"/>
     </linearGradient>
-    <linearGradient id="teal" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2A7F8A"/>
-      <stop offset="100%" stop-color="#E8A04A"/>
+    <linearGradient id="gDashC2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A85E1C"/>
+      <stop offset="50%" stop-color="#E8A04A"/>
+      <stop offset="100%" stop-color="#F6E0B8"/>
     </linearGradient>
   </defs>
-  <rect width="960" height="540" rx="18" fill="url(#bg)"/>
-  <!-- icon rail -->
-  <rect x="0" y="0" width="56" height="540" fill="#050A09"/>
-  <circle cx="28" cy="36" r="12" fill="none" stroke="#E8D5B5" stroke-width="1.5"/>
-  <path d="M33 30 A7 7 0 1 0 33 42" fill="none" stroke="#E8D5B5" stroke-width="2.4" stroke-linecap="round"/>
-  <rect x="18" y="72" width="20" height="20" rx="5" fill="rgba(232,160,74,0.18)" stroke="#E8A04A" stroke-width="1"/>
-  <rect x="20" y="110" width="16" height="16" rx="3" fill="none" stroke="#5B6B7A" stroke-width="1.2"/>
-  <rect x="20" y="144" width="16" height="16" rx="3" fill="none" stroke="#5B6B7A" stroke-width="1.2"/>
-  <rect x="20" y="178" width="16" height="16" rx="3" fill="none" stroke="#5B6B7A" stroke-width="1.2"/>
-  <!-- strip -->
-  <text x="88" y="48" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700">nike.com</text>
-  <rect x="210" y="30" width="42" height="22" rx="11" fill="none" stroke="#E8A04A" stroke-width="1.2"/>
-  <text x="220" y="45" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11">Plus</text>
-  <line x1="88" y1="68" x2="920" y2="68" stroke="rgba(201,211,221,0.12)" stroke-width="1"/>
-  <!-- CVI ring -->
-  <circle cx="220" cy="200" r="70" fill="none" stroke="rgba(201,211,221,0.15)" stroke-width="3"/>
-  <circle cx="220" cy="200" r="70" fill="none" stroke="url(#teal)" stroke-width="4" stroke-linecap="round"
-    stroke-dasharray="280 440" transform="rotate(-90 220 200)"/>
-  <text x="220" y="212" text-anchor="middle" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="42" font-weight="700">B</text>
-  <text x="320" y="195" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="600">Centropic Visibility Index</text>
-  <!-- SoV ring -->
-  <circle cx="620" cy="200" r="70" fill="none" stroke="rgba(201,211,221,0.15)" stroke-width="3"/>
-  <circle cx="620" cy="200" r="70" fill="none" stroke="#E8A04A" stroke-width="4" stroke-linecap="round"
-    stroke-dasharray="150 440" transform="rotate(-90 620 200)"/>
-  <text x="620" y="212" text-anchor="middle" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="34" font-weight="700">34%</text>
-  <text x="720" y="190" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="600">Share of Voice</text>
-  <text x="720" y="212" fill="rgba(201,211,221,0.55)" font-family="Inter, system-ui, sans-serif" font-size="12">citation share</text>
-  <rect x="720" y="224" width="72" height="20" rx="10" fill="rgba(34,197,94,0.15)" stroke="#22C55E" stroke-width="1"/>
-  <text x="732" y="238" fill="#22C55E" font-family="Inter, system-ui, sans-serif" font-size="11">Misurato</text>
-  <line x1="480" y1="130" x2="480" y2="270" stroke="rgba(201,211,221,0.12)" stroke-width="1"/>
-  <!-- micro metrics -->
-  <line x1="88" y1="300" x2="920" y2="300" stroke="rgba(201,211,221,0.12)" stroke-width="1"/>
-  <text x="88" y="330" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="2">AIO</text>
-  <text x="88" y="358" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">72</text>
-  <text x="180" y="330" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="2">GEO</text>
-  <text x="180" y="358" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">61</text>
-  <text x="280" y="330" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="2">FINDINGS</text>
-  <text x="280" y="358" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">8</text>
-  <rect x="620" y="325" width="110" height="32" rx="8" fill="none" stroke="rgba(232,160,74,0.45)" stroke-width="1.2"/>
-  <text x="640" y="346" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="12">Nuova analisi</text>
-  <rect x="744" y="325" width="70" height="32" rx="8" fill="none" stroke="rgba(201,211,221,0.28)" stroke-width="1.2"/>
-  <text x="764" y="346" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="12">Pack</text>
-  <rect x="828" y="325" width="70" height="32" rx="8" fill="none" stroke="rgba(201,211,221,0.28)" stroke-width="1.2"/>
-  <text x="848" y="346" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="12">Edge</text>
-  <!-- SoV rows -->
-  <rect x="88" y="390" width="832" height="120" rx="12" fill="#0A1A18" stroke="rgba(232,160,74,0.18)" stroke-width="1"/>
-  <text x="110" y="420" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600">Share of Voice</text>
-  <text x="110" y="450" fill="#E8D5B5" font-family="Inter, system-ui, sans-serif" font-size="12">ChatGPT</text>
-  <text x="210" y="450" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">28%</text>
-  <rect x="250" y="442" width="200" height="6" rx="3" fill="rgba(201,211,221,0.1)"/>
-  <rect x="250" y="442" width="120" height="6" rx="3" fill="#E8A04A"/>
-  <text x="110" y="480" fill="#E8D5B5" font-family="Inter, system-ui, sans-serif" font-size="12">Gemini</text>
-  <text x="210" y="480" fill="#E8EEF4" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">17%</text>
-  <rect x="250" y="472" width="200" height="6" rx="3" fill="rgba(201,211,221,0.1)"/>
-  <rect x="250" y="472" width="78" height="6" rx="3" fill="#E8A04A"/>
+  <rect width="960" height="540" fill="#121212"/>
+  <!-- topbar -->
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="#E8A04A"/>
+    <text x="294" y="33" text-anchor="middle" fill="#121212">Panoramica</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="480" y="33" text-anchor="middle" fill="#F3EDE3">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guida</text>
+  </g>
+  <rect x="860" y="18" width="72" height="20" rx="10" fill="none" stroke="#E8A04A"/>
+  <text x="896" y="33" text-anchor="middle" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11">Plus</text>
+
+  <!-- mast: domain + CVI lockup (outer+mid C, AA in bowl, score outside) -->
+  <text x="28" y="92" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">DOMINIO ATTIVO</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="700">example.com</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Audit · 21/08/2026</text>
+
+  <g transform="translate(668,64) scale(0.92)">
+    <path d="M102 30 A50 50 0 1 0 102 98" fill="none" stroke="url(#gDashC1)" stroke-width="9.5" stroke-linecap="round"/>
+    <path d="M92 38 A38 38 0 1 0 92 90" fill="none" stroke="url(#gDashC2)" stroke-width="7.5" stroke-linecap="round"/>
+    <circle cx="108" cy="36" r="3.2" fill="#E8A04A"/>
+    <text x="54" y="76" text-anchor="middle" fill="#22C55E" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="720" letter-spacing="-2">AA</text>
+  </g>
+  <text x="820" y="132" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="42" font-weight="720" letter-spacing="-1.5">78<tspan font-size="15" fill="rgba(243,237,227,0.45)">/100</tspan></text>
+
+  <!-- 7 KPI tiles -->
+  <g font-family="Inter, system-ui, sans-serif">
+    <g transform="translate(28,184)">
+      <rect width="124" height="72" rx="0" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">AIO</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">81</text>
+    </g>
+    <g transform="translate(160,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">GEO</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">74</text>
+    </g>
+    <g transform="translate(292,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Share of Voice</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">34%</text>
+    </g>
+    <g transform="translate(424,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Pagine</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">48</text>
+    </g>
+    <g transform="translate(556,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Findings</text>
+      <text x="12" y="54" fill="#F3EDE3" font-size="24" font-weight="700">9</text>
+    </g>
+    <g transform="translate(688,184)">
+      <rect width="124" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Critici</text>
+      <text x="12" y="54" fill="#EF4444" font-size="24" font-weight="700">2</text>
+    </g>
+    <g transform="translate(820,184)">
+      <rect width="112" height="72" fill="#1A1A1A"/>
+      <text x="12" y="24" fill="rgba(243,237,227,0.45)" font-size="11">Warn</text>
+      <text x="12" y="54" fill="#F59E0B" font-size="24" font-weight="700">3</text>
+    </g>
+  </g>
+
+  <!-- instruments: composizione | motori + crawl stack -->
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="272" width="292" height="240" fill="#1A1A1A"/>
+    <text x="44" y="298" fill="rgba(243,237,227,0.45)" font-size="11">Share of Voice</text>
+    <text x="44" y="322" fill="#F3EDE3" font-size="16" font-weight="650">Composizione</text>
+    <rect x="44" y="348" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="44" y="348" width="88" height="8" fill="#E8A04A"/>
+    <text x="44" y="378" fill="#F3EDE3" font-size="12">Brand 40%</text>
+    <rect x="44" y="396" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="44" y="396" width="66" height="8" fill="#C47A2C"/>
+    <text x="44" y="426" fill="#F3EDE3" font-size="12">Rivali 30%</text>
+    <rect x="44" y="444" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="44" y="444" width="66" height="8" fill="rgba(243,237,227,0.35)"/>
+    <text x="44" y="474" fill="#F3EDE3" font-size="12">Altro 30%</text>
+
+    <rect x="334" y="272" width="292" height="240" fill="#1A1A1A"/>
+    <text x="350" y="298" fill="rgba(243,237,227,0.45)" font-size="11">Engine</text>
+    <text x="350" y="322" fill="#F3EDE3" font-size="16" font-weight="650">Motori</text>
+    <text x="350" y="360" fill="#F3EDE3" font-size="13">ChatGPT</text>
+    <rect x="430" y="350" width="160" height="6" fill="rgba(243,237,227,0.08)"/>
+    <rect x="430" y="350" width="96" height="6" fill="#E8A04A"/>
+    <text x="350" y="396" fill="#F3EDE3" font-size="13">Claude</text>
+    <rect x="430" y="386" width="160" height="6" fill="rgba(243,237,227,0.08)"/>
+    <rect x="430" y="386" width="72" height="6" fill="#E8A04A"/>
+    <text x="350" y="432" fill="#F3EDE3" font-size="13">Perplexity</text>
+    <rect x="430" y="422" width="160" height="6" fill="rgba(243,237,227,0.08)"/>
+    <rect x="430" y="422" width="54" height="6" fill="#E8A04A"/>
+
+    <rect x="640" y="272" width="292" height="118" fill="#1A1A1A"/>
+    <text x="656" y="298" fill="rgba(243,237,227,0.45)" font-size="11">Crawl</text>
+    <text x="656" y="322" fill="#F3EDE3" font-size="16" font-weight="650">Distribuzione AIO</text>
+    <rect x="656" y="344" width="18" height="28" fill="#22C55E"/>
+    <rect x="678" y="352" width="18" height="20" fill="#E8A04A"/>
+    <rect x="700" y="348" width="18" height="24" fill="#F59E0B"/>
+    <rect x="722" y="360" width="18" height="12" fill="#F97316"/>
+    <rect x="744" y="366" width="18" height="6" fill="#EF4444"/>
+
+    <rect x="640" y="394" width="292" height="118" fill="#1A1A1A"/>
+    <text x="656" y="420" fill="rgba(243,237,227,0.45)" font-size="11">Findings</text>
+    <text x="656" y="444" fill="#F3EDE3" font-size="16" font-weight="650">Indice di criticità</text>
+    <text x="656" y="480" fill="#F97316" font-size="28" font-weight="700">47</text>
+    <text x="720" y="480" fill="rgba(243,237,227,0.45)" font-size="12">/100 · mid</text>
+  </g>
 </svg>

@@ -4,7 +4,9 @@
 {% block body_class %}{% if dash_shell %}body-dash{% else %}body-marketing{% endif %}{% endblock %}
 {% block main_class %}{% if dash_shell %}site-main--dash{% endif %}{% endblock %}
 
+{% set guide_asset_v = '20260821g' %}
 {% block content %}
+{% if dash_shell %}<section class="workspace workspace--wide">{% endif %}
 <article class="page guide-page guide-page--full{% if dash_shell %} guide-page--dash{% endif %}">
   <header class="page-intro page-intro--v2 dash-boardhead">
     <p class="eyebrow dash-signal__kicker">{{ _('Guida') }}</p>
@@ -39,7 +41,7 @@
       {{ _('Il workspace ha cinque pagine: Panoramica, Benchmark, Prompt, Trend, Guida.') }}
     </p>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename=guide.services[0].image) }}" width="960" height="540" alt="{{ _('Panoramica dashboard Centropic') }}" loading="eager" />
+      <img src="{{ url_for('static', filename=guide.services[0].image) }}?v={{ guide_asset_v }}" width="960" height="540" alt="{{ _('Panoramica dashboard Centropic') }}" loading="eager" />
       <figcaption>{{ _('Workspace: CVI sul marchio, grafici AIO/GEO e pack in cinque pagine.') }}</figcaption>
     </figure>
   </section>
@@ -64,7 +66,7 @@
       {% for svc in guide.services %}
       <article class="guide-service" id="{{ svc.id }}">
         <figure class="guide-figure guide-figure--card">
-          <img src="{{ url_for('static', filename=svc.image) }}" width="960" height="540" alt="{{ svc.title }}" loading="lazy" />
+          <img src="{{ url_for('static', filename=svc.image) }}?v={{ guide_asset_v }}" width="960" height="540" alt="{{ svc.title }}" loading="lazy" />
         </figure>
         <h3 class="guide-service__title">{{ svc.title }}</h3>
         <p class="guide-service__summary">{{ svc.summary }}</p>
@@ -84,7 +86,7 @@
       {{ _('Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per engine.') }}
     </p>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/geo-suite.svg') }}" width="960" height="540" alt="{{ _('Moduli GEO Suite') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename='img/guide/geo-suite.svg') }}?v={{ guide_asset_v }}" width="960" height="540" alt="{{ _('Moduli GEO Suite') }}" loading="lazy" />
       <figcaption>{{ _('Entity, citability, schema, publish verify, llms lint, locales.') }}</figcaption>
     </figure>
     <div class="guide-analysis-grid">
@@ -113,7 +115,7 @@
   <section class="guide-section" id="pack" aria-labelledby="pack-title">
     <h2 class="guide-section__title" id="pack-title">{{ _('Pack e file') }}</h2>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/pack-artifact.svg') }}" width="960" height="540" alt="{{ _('Pack artifact') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename='img/guide/pack-artifact.svg') }}?v={{ guide_asset_v }}" width="960" height="540" alt="{{ _('Pack artifact') }}" loading="lazy" />
     </figure>
     <div class="guide-page__files">
       <h3 class="dash-block__title">{{ _('Dove vanno i file') }}</h3>
@@ -129,11 +131,11 @@
     <h2 class="guide-section__title" id="edge-title">{{ _('Edge Signals e CMS') }}</h2>
     <div class="guide-duo">
       <figure class="guide-figure">
-        <img src="{{ url_for('static', filename='img/guide/edge-signals.svg') }}" width="960" height="540" alt="Edge Signals" loading="lazy" />
+        <img src="{{ url_for('static', filename='img/guide/edge-signals.svg') }}?v={{ guide_asset_v }}" width="960" height="540" alt="Edge Signals" loading="lazy" />
         <figcaption>{{ _('Proxy dal tuo dominio verso') }} <code>/e/&lt;token&gt;/</code></figcaption>
       </figure>
       <figure class="guide-figure">
-        <img src="{{ url_for('static', filename='img/guide/cms-connector.svg') }}" width="960" height="540" alt="CMS Connector" loading="lazy" />
+        <img src="{{ url_for('static', filename='img/guide/cms-connector.svg') }}?v={{ guide_asset_v }}" width="960" height="540" alt="CMS Connector" loading="lazy" />
         <figcaption>{{ _('WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel, embed.') }}</figcaption>
       </figure>
     </div>
@@ -146,7 +148,7 @@
   <section class="guide-section" id="piani" aria-labelledby="piani-title">
     <h2 class="guide-section__title" id="piani-title">{{ _('Piani: domini, re-scan, API') }}</h2>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/token-crediti.svg') }}" width="960" height="540" alt="{{ _('Piani Centropic') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename='img/guide/token-crediti.svg') }}?v={{ guide_asset_v }}" width="960" height="540" alt="{{ _('Piani Centropic') }}" loading="lazy" />
     </figure>
     <div class="guide-plans">
       {% for plan in guide.plans %}
@@ -198,4 +200,5 @@
     {% endif %}
   </div>
 </article>
+{% if dash_shell %}</section>{% endif %}
 {% endblock %}

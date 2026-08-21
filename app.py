@@ -5087,11 +5087,15 @@ def maybe_send_lifecycle_emails(user: User) -> None:
 @app.route("/guida")
 def site_guide():
     """Guida completa pubblica: servizi, analisi, glossario."""
-    return render_template(
-        "guide.html",
-        guide=site_guide_payload(),
-        dash_shell=False,
+    resp = make_response(
+        render_template(
+            "guide.html",
+            guide=site_guide_payload(),
+            dash_shell=False,
+        )
     )
+    resp.headers["Cache-Control"] = "private, no-store, max-age=0"
+    return resp
 
 
 @app.route("/metodologia")
@@ -7897,11 +7901,15 @@ def dashboard_job_status(job_id: int):
 @app.route("/dashboard/guida")
 @login_required
 def dashboard_guide():
-    return render_template(
-        "guide.html",
-        guide=site_guide_payload(),
-        dash_shell=True,
+    resp = make_response(
+        render_template(
+            "guide.html",
+            guide=site_guide_payload(),
+            dash_shell=True,
+        )
     )
+    resp.headers["Cache-Control"] = "private, no-store, max-age=0"
+    return resp
 
 
 @app.route("/dashboard/impostazioni", methods=["GET", "POST"])

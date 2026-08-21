@@ -5061,6 +5061,16 @@ body.body-dash .guide-page--dash .guide-figure--card {
   background: transparent;
   border-radius: 0;
 }
+body.body-dash .guide-page--dash .guide-figure {
+  border: 0;
+  border-radius: 0;
+  background: #121212;
+}
+body.body-dash .guide-page--dash .guide-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 body.body-dash .dash-iconbtn {
   border: 0;
   background: color-mix(in srgb, var(--brand-clarity) 6%, transparent);

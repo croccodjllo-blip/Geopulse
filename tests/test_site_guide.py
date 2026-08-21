@@ -51,6 +51,32 @@ def test_site_guide_english_workspace_titles():
     assert "yourdomain.com/llms.txt" in guide["workflow"][3]["body"]
 
 
+def test_guide_hero_shows_current_workspace():
+    svg = (ROOT / "static" / "img" / "guide" / "dashboard.svg").read_text(encoding="utf-8")
+    assert "Panoramica" in svg
+    assert "Indice di criticità" in svg
+    assert "AA" in svg
+    assert 'd="M102 30 A50 50 0 1 0 102 98"' in svg
+    assert "icon rail" not in svg
+    assert ">B</text>" not in svg
+    html = (ROOT / "templates" / "guide.html").read_text(encoding="utf-8")
+    assert "guide_asset_v" in html
+    assert "workspace--wide" in html
+
+
+def test_public_guide_is_fresh_and_current():
+    from app import app
+
+    client = app.test_client()
+    resp = client.get("/guida")
+    assert resp.status_code == 200
+    assert "no-store" in (resp.headers.get("Cache-Control") or "")
+    html = resp.get_data(as_text=True)
+    assert "Le cinque pagine" in html or "The five pages" in html
+    assert "v=20260821g" in html
+    assert "icon rail" not in html
+
+
 def test_guide_illustration_files_exist():
     for key, rel in GUIDE_IMAGES.items():
         path = ROOT / "static" / rel
