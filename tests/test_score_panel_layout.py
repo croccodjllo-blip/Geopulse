@@ -1,28 +1,23 @@
-"""Score panel is one vertical composition: intro → mast → full-width table."""
+"""Score panel retired: pulse-core stack removed in favor of priority hero."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
 
-def test_score_panel_markup_is_stacked_not_split():
+def test_score_panel_markup_retired():
     html = Path("templates/dashboard.html").read_text(encoding="utf-8")
-    start = html.find('id="panel-score"')
-    end = html.find('id="panel-sov"')
-    assert start != -1 and end != -1 and start < end
-    chunk = html[start:end]
-    assert 'class="pulse-core__intro"' in chunk
-    assert 'class="pulse-core__mast"' in chunk
-    assert 'class="pulse-core__stats"' in chunk
-    assert 'class="signal-diag"' in chunk
-    assert "pulse-core__intel" not in chunk
-    # Mast appears before the diagnostics table (stacked reading order).
-    assert chunk.find("pulse-core__mast") < chunk.find('class="signal-diag"')
+    detail = Path("templates/partials/dash_sov_detail.html").read_text(encoding="utf-8")
+    assert 'id="panel-score"' not in html
+    assert "pulse-core__mast" not in html
+    assert "signal-diag" not in html
+    assert 'class="dash-hero"' in html
+    # SoV table lives on /dashboard/sov via shared partial.
+    assert 'id="panel-sov"' in detail
 
 
-def test_pulse_core_css_drops_side_by_side_split():
+def test_pulse_core_css_may_remain_unused():
+    """Legacy pulse CSS can linger; redesign must ship dash-hero rules."""
     css = Path("static/css/app.css").read_text(encoding="utf-8")
-    assert ".pulse-core__mast" in css
-    assert ".pulse-core__stats" in css
-    # Legacy two-column Score split removed.
-    assert "minmax(280px, 0.95fr) minmax(0, 1.15fr)" not in css
+    assert ".dash-hero" in css
+    assert "DASH REDESIGN 2026" in css
