@@ -9101,7 +9101,16 @@ def dashboard_history():
         latest=latest,
         user_sites=_workspace_user_sites(user),
         dash_charts=_workspace_charts(user, latest, findings_all, engine_breakdown, run_diff),
-        run_trend=build_history_trend(history),
+        run_trend=build_history_trend(
+            (
+                AnalysisRun.query.filter_by(site_id=latest.id)
+                .order_by(AnalysisRun.created_at.desc())
+                .limit(min(12, hist_limit))
+                .all()
+            )
+            if latest is not None
+            else []
+        ),
         run_diff=run_diff,
         schedule_form=schedule_form,
         **capability_template_vars(user),

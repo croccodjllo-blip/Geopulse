@@ -525,33 +525,66 @@ def build_dash_charts(
     }
 
 
-def build_history_trend(items: list[Any] | None) -> dict[str, Any] | None:
-    """Dual AIO/GEO series from real history. No chart unless ≥2 scored runs."""
-    series: list[dict[str, Any]] = []
-    chronological = list(reversed(list(items or [])))
-    for item in chronological:
+def _audit_axis_labels(dates: list[Any]) -> list[str]:
+    """Short axis ticks; include time when two audits share a calendar day."""
+    live = [d for d in dates if d is not None]
+    days = [d.strftime("%Y-%m-%d") for d in live]
+    same_day = len(days) != len(set(days))
+    multi_year = len({d.year for d in live}) > 1
+    labels: list[str] = []
+    for created in dates:
+        if created is None:
+            labels.append("—")
+        elif same_day:
+            labels.append(created.strftime("%d/%m %H:%M"))
+        elif multi_year:
+            labels.append(created.strftime("%d/%m/%y"))
+        else:
+            labels.append(created.strftime("%d/%m"))
+    return labels
+
+
+def build_history_trend(
+    items: list[Any] | None,
+    *,
+    limit: int = 12,
+) -> dict[str, Any] | None:
+    """Line chart of the latest scored audits (newest first in, chrono out)."""
+    scored: list[Any] = []
+    for item in list(items or []):
         aio = _as_float(getattr(item, "aio_score", None))
         geo = _as_float(getattr(item, "geo_score", None))
         if aio is None and geo is None:
             continue
-        created = getattr(item, "created_at", None)
-        label = created.strftime("%d/%m") if created is not None else ""
+        scored.append(item)
+        if len(scored) >= max(2, int(limit)):
+            break
+    if len(scored) < 2:
+        return None
+
+    chronological = list(reversed(scored))
+    dates = [getattr(item, "created_at", None) for item in chronological]
+    labels = _audit_axis_labels(dates)
+    series: list[dict[str, Any]] = []
+    for item, created, label in zip(chronological, dates, labels):
+        aio = _as_float(getattr(item, "aio_score", None))
+        geo = _as_float(getattr(item, "geo_score", None))
         series.append(
             {
                 "aio": int(round(_clamp(aio))) if aio is not None else None,
                 "geo": int(round(_clamp(geo))) if geo is not None else None,
                 "label": label,
+                "when": created.strftime("%d/%m/%Y %H:%M") if created is not None else "—",
                 "domain": str(getattr(item, "domain", "") or ""),
             }
         )
-    if len(series) < 2:
-        return None
 
-    width, height = 640.0, 228.0
-    left, right, top, bottom = 36.0, 18.0, 18.0, 30.0
+    width, height = 720.0, 268.0
+    left, right, top, bottom = 40.0, 22.0, 20.0, 52.0
     inner_w = width - left - right
     inner_h = height - top - bottom
     span = max(1, len(series) - 1)
+    baseline = top + inner_h
 
     def _xy(index: int, value: float) -> tuple[float, float]:
         x = left + inner_w * index / span
@@ -567,31 +600,51 @@ def build_history_trend(items: list[Any] | None) -> dict[str, Any] | None:
                 continue
             x, y = _xy(i, float(val))
             bits.append(f"{'M' if not bits else 'L'}{x:.1f},{y:.1f}")
-            marks.append({"x": x, "y": y, "v": int(val), "label": row["label"]})
+            marks.append(
+                {
+                    "x": x,
+                    "y": y,
+                    "v": int(val),
+                    "label": row["label"],
+                    "latest": i == len(series) - 1,
+                }
+            )
         return " ".join(bits), marks
 
     aio_line, aio_marks = _path("aio")
     geo_line, geo_marks = _path("geo")
+    show_every = 1 if len(series) <= 8 else 2
     ticks_x = []
     for i, row in enumerate(series):
         x, _y = _xy(i, 0)
-        ticks_x.append({"x": x, "label": row["label"]})
+        show = i == 0 or i == len(series) - 1 or i % show_every == 0
+        ticks_x.append({"x": x, "label": row["label"] if show else ""})
+
+    grid_y = []
+    for v in (100, 75, 50, 25, 0):
+        _x, y = _xy(0, float(v))
+        grid_y.append({"y": y, "v": v, "x1": left, "x2": width - right})
 
     aios = [int(r["aio"]) for r in series if r.get("aio") is not None]
     geos = [int(r["geo"]) for r in series if r.get("geo") is not None]
     return {
         "n": len(series),
-        "width": 640,
-        "height": 228,
+        "width": 720,
+        "height": 268,
+        "left": left,
+        "baseline": baseline,
         "aio_line": aio_line,
         "geo_line": geo_line,
         "aio_marks": aio_marks,
         "geo_marks": geo_marks,
         "ticks_x": ticks_x,
+        "grid_y": grid_y,
+        "rows": series,
         "first_aio": aios[0] if aios else None,
         "last_aio": aios[-1] if aios else None,
         "first_geo": geos[0] if geos else None,
         "last_geo": geos[-1] if geos else None,
         "delta_aio": (aios[-1] - aios[0]) if len(aios) >= 2 else None,
         "delta_geo": (geos[-1] - geos[0]) if len(geos) >= 2 else None,
+        "latest_when": series[-1]["when"],
     }

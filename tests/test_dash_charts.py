@@ -126,19 +126,20 @@ def test_build_charts_counts_real_findings_and_pages():
 
 
 def test_history_trend_needs_two_scored_runs():
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
     from types import SimpleNamespace
 
     from services.dash_charts import build_history_trend
 
     now = datetime(2026, 8, 21, 12, 0, tzinfo=timezone.utc)
+    older = now - timedelta(days=4)
     one = [SimpleNamespace(aio_score=40, geo_score=30, created_at=now, domain="a.example")]
     assert build_history_trend(one) is None
     assert build_history_trend([]) is None
 
     two = [
         SimpleNamespace(aio_score=62, geo_score=48, created_at=now, domain="a.example"),
-        SimpleNamespace(aio_score=50, geo_score=40, created_at=now, domain="a.example"),
+        SimpleNamespace(aio_score=50, geo_score=40, created_at=older, domain="a.example"),
     ]
     # Newest first, as dashboard_history queries.
     chart = build_history_trend(two)
@@ -149,7 +150,25 @@ def test_history_trend_needs_two_scored_runs():
     assert chart["delta_aio"] == 12
     assert chart["aio_line"]
     assert chart["geo_line"]
-    assert len(chart["ticks_x"]) == 2
+    assert [t["label"] for t in chart["ticks_x"]] == ["17/08", "21/08"]
+    assert chart["latest_when"] == "21/08/2026 12:00"
+    assert chart["rows"][-1]["when"] == "21/08/2026 12:00"
+    assert chart["aio_marks"][-1]["latest"] is True
+
+    many = [
+        SimpleNamespace(
+            aio_score=10 + i,
+            geo_score=20 + i,
+            created_at=now - timedelta(days=i),
+            domain="a.example",
+        )
+        for i in range(20)
+    ]
+    capped = build_history_trend(many, limit=12)
+    assert capped is not None
+    assert capped["n"] == 12
+    assert capped["last_aio"] == 10
+    assert capped["first_aio"] == 21
 
 
 def test_spark_and_delta_only_when_real_history():

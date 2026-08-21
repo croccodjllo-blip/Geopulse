@@ -4481,7 +4481,7 @@ body.body-dash .dash-trend__svg {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 16rem;
+  max-height: 20rem;
 }
 body.body-dash .dash-trend__grid {
   stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);
@@ -4489,8 +4489,8 @@ body.body-dash .dash-trend__grid {
 }
 body.body-dash .dash-trend__axis,
 body.body-dash .dash-trend__x {
-  fill: color-mix(in srgb, var(--brand-clarity) 42%, transparent);
-  font-size: 9px;
+  fill: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
+  font-size: 10px;
 }
 body.body-dash .dash-trend__line {
   fill: none;

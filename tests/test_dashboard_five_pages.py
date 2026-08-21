@@ -83,6 +83,7 @@ def test_trend_has_history_and_charts():
     assert "history-list" in TREND
     assert "dash-trend" in TREND
     assert "dash-spark" in TREND
+    assert "Data audit" in TREND or "{{ _('Data audit') }}" in TREND
     assert "diff-strip" in TREND
 
 
@@ -101,7 +102,7 @@ def test_full_width_workspace():
 
 def test_five_pages_render_for_plus_user():
     import json
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
     from uuid import uuid4
 
     from app import AnalysisRun, SiteAnalysis, User, app, db, ensure_schema
@@ -138,16 +139,28 @@ def test_five_pages_render_for_plus_user():
         )
         db.session.add(site)
         db.session.flush()
-        db.session.add(
-            AnalysisRun(
-                site_id=site.id,
-                user_id=user.id,
-                url=site.url,
-                domain=site.domain,
-                aio_score=58,
-                geo_score=44,
-                findings_json=site.findings_json,
-            )
+        db.session.add_all(
+            [
+                AnalysisRun(
+                    site_id=site.id,
+                    user_id=user.id,
+                    url=site.url,
+                    domain=site.domain,
+                    aio_score=50,
+                    geo_score=40,
+                    findings_json=site.findings_json,
+                    created_at=datetime.now(timezone.utc) - timedelta(days=3),
+                ),
+                AnalysisRun(
+                    site_id=site.id,
+                    user_id=user.id,
+                    url=site.url,
+                    domain=site.domain,
+                    aio_score=58,
+                    geo_score=44,
+                    findings_json=site.findings_json,
+                ),
+            ]
         )
         db.session.commit()
         uid, ver, site_id = user.id, int(user.session_version or 0), site.id
@@ -182,6 +195,9 @@ def test_five_pages_render_for_plus_user():
 
     trend = client.get(f"/dashboard/trend?site={site_id}").get_data(as_text=True)
     assert "history-list" in trend
+    assert "dash-trend" in trend
+    assert "Data audit" in trend or "audit" in trend.lower()
+    assert datetime.now(timezone.utc).strftime("%d/%m/%Y") in trend
 
     guide = client.get("/dashboard/guida").get_data(as_text=True)
     assert "guide-page" in guide
