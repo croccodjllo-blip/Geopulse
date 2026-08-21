@@ -30,6 +30,11 @@ def test_topbar_has_pills_and_no_left_dock():
     assert "{{ _('Prompt') }}" in TOPBAR
     assert "{{ _('Trend') }}" in TOPBAR
     assert "{{ _('Guida') }}" in TOPBAR
+    assert "app-topbar__tokens" in TOPBAR
+    assert "sidebar_balance_cents|tok_short" in TOPBAR
+    tokens_at = TOPBAR.find("app-topbar__tokens")
+    plan_at = TOPBAR.find("plan-pill")
+    assert tokens_at != -1 and plan_at != -1 and tokens_at < plan_at
 
 
 def test_base_uses_topbar_not_sidebar_shell():
@@ -58,6 +63,7 @@ def test_no_hidden_folds_on_main_dashboard():
 def test_topbar_css_clears_left_offset():
     assert ".app-topbar" in CSS
     assert ".app-topbar__link.is-active" in CSS
+    assert ".app-topbar__tokens" in CSS
     assert "body.app-shell--topbar .site-main" in CSS
     assert "margin-left: 0 !important" in CSS
 

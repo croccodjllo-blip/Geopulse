@@ -172,6 +172,10 @@ def test_five_pages_render_for_plus_user():
 
     overview = client.get(f"/dashboard?site={site_id}").get_data(as_text=True)
     assert "app-topbar__pills" in overview
+    assert "app-topbar__tokens" in overview
+    tokens_at = overview.find("app-topbar__tokens")
+    plan_at = overview.find("plan-pill")
+    assert 0 <= tokens_at < plan_at
     assert "dash-kpis" in overview
     assert "dash-board" in overview
     assert "dash-split" in overview

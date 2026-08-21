@@ -3661,6 +3661,19 @@ body.app-shell--topbar .site-footer {
   width: var(--credits-bar-pct, 0%);
   background: var(--plan-accent);
 }
+.app-topbar__tokens {
+  display: inline-flex;
+  align-items: baseline;
+  margin-inline: 0.05rem 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--brand-clarity);
+  white-space: nowrap;
+}
+.app-topbar__tokens b {
+  font-weight: 650;
+}
 .app-topbar__avatar {
   width: 1.85rem;
   height: 1.85rem;

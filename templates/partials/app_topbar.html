@@ -52,6 +52,11 @@
       <i class="app-topbar__credits-bar" data-credits-bar aria-hidden="true"></i>
     </div>
     {% endif %}
+    {% if current_user %}
+    <span class="app-topbar__tokens" title="{{ _('Saldo token') }}">
+      <b>{{ sidebar_balance_cents|tok_short }}</b>
+    </span>
+    {% endif %}
     <span class="plan-pill" data-plan="{{ dash_plan|default('free') }}">{{ plan }}</span>
     <div class="lang-switch" data-lang-switch>
       <button
