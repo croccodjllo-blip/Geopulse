@@ -85,6 +85,15 @@ def test_preview_url_error_helper_translates():
             ).lower()
 
 
+HERO_PLACEHOLDER = {
+    "en": "https://yoursite.com",
+    "de": "https://deine-seite.de",
+    "es": "https://tusitio.es",
+    "ko": "https://yoursite.com",
+    "zh": "https://yoursite.com",
+}
+
+
 def test_landing_hero_html_localized():
     client = app.test_client()
     for lang, needle in [
@@ -98,5 +107,7 @@ def test_landing_hero_html_localized():
         assert r.status_code == 200
         html = r.get_data(as_text=True)
         assert needle in html, (lang, needle)
-        assert 'placeholder="https://iltuosito.it"' in html
+        assert f'placeholder="{HERO_PLACEHOLDER[lang]}"' in html, lang
         assert "Scopri quanto il tuo sito è pronto" not in html
+    it = client.get("/?lang=it").get_data(as_text=True)
+    assert 'placeholder="https://iltuosito.it"' in it

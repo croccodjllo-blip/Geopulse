@@ -36,11 +36,25 @@
       {{ _('Centropic misura e migliora la visibilità del tuo sito nei modelli generativi.') }}
       <strong>AIO</strong> {{ _('(AI-Driven Visibility) e') }}
       <strong>GEO</strong> {{ _('(Generative Engine Optimization) non sono GIS né “all-in-one”: sono metriche di citabilità IA.') }}
+      {{ _('Il workspace ha cinque pagine: Panoramica, Benchmark, Prompt, Trend, Guida.') }}
     </p>
     <figure class="guide-figure">
       <img src="{{ url_for('static', filename=guide.services[0].image) }}" width="960" height="540" alt="{{ _('Panoramica dashboard Centropic') }}" loading="eager" />
-      <figcaption>{{ _('Workspace: score, findings e azioni in un’unica dashboard.') }}</figcaption>
+      <figcaption>{{ _('Workspace: CVI sul marchio, grafici AIO/GEO e pack in cinque pagine.') }}</figcaption>
     </figure>
+  </section>
+
+  <section class="guide-section" id="workspace" aria-labelledby="workspace-title">
+    <h2 class="guide-section__title" id="workspace-title">{{ guide.workspace.title }}</h2>
+    <p class="guide-section__lede">{{ guide.workspace.lede }}</p>
+    <div class="guide-analysis-grid">
+      {% for page in guide.workspace.pages %}
+      <article class="guide-analysis">
+        <h3 class="guide-analysis__title">{{ page.title }}</h3>
+        <p>{{ page.body }}</p>
+      </article>
+      {% endfor %}
+    </div>
   </section>
 
   <section class="guide-section" id="servizi" aria-labelledby="servizi-title">

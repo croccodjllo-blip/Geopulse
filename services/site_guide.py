@@ -14,7 +14,8 @@ def _glossary_entries() -> list[dict[str, str]]:
             _("CVI (Centropic Visibility Index)"),
             _(
                 "Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza AIO+GEO "
-                "(con penalità findings). È lo standard da confrontare tra brand — non Domain Authority di terzi."
+                "(con penalità findings). In Panoramica il voto sta nel marchio; il punteggio numerico sta a destra. "
+                "È lo standard da confrontare tra brand — non Domain Authority di terzi."
             ),
         ),
         (
@@ -61,17 +62,34 @@ def _glossary_entries() -> list[dict[str, str]]:
             ),
         ),
         (
+            "indice-criticita",
+            _("Indice di criticità"),
+            _(
+                "Score 0–100 dalla mix dei finding del run: (critici × 100 + warning × 40) / totale. "
+                "In Panoramica sta sotto Distribuzione AIO, stessa colonna Crawl."
+            ),
+        ),
+        (
+            "workspace",
+            _("Workspace"),
+            _(
+                "Le cinque pagine del prodotto: Panoramica, Benchmark, Prompt, Trend, Guida. "
+                "Account e impostazioni restano nel menu avatar."
+            ),
+        ),
+        (
             "finding",
-            "Finding",
+            _("Finding"),
             _(
                 "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
             ),
         ),
         (
             "pack",
-            "Pack",
+            _("Pack"),
             _(
-                "Insieme di artifact generati dall’analisi (llms, schema, meta, robots, checklist)."
+                "Insieme di artifact generati dall’analisi. Il file centropic-fix.html include il logo originale in testa, "
+                "score, finding e snippet (llms, schema, meta, robots, checklist)."
             ),
         ),
         (
@@ -139,21 +157,21 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "entity-graph",
-            "Entity graph",
+            _("Grafo entità"),
             _(
                 "Rete di segnali entity (nome, sameAs, contatti) che disambiguano il brand."
             ),
         ),
         (
             "citability",
-            "Citability",
+            _("Citabilità"),
             _(
                 "Quanto il contenuto è facilmente citabile da un modello (chiarezza, fatti, struttura)."
             ),
         ),
         (
             "schema-quality",
-            "Schema quality",
+            _("Qualità schema"),
             _(
                 "Completezza e correttezza dei dati strutturati sul sito."
             ),
@@ -174,7 +192,7 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "geo-token",
-            "Quota operativa",
+            _("Quota operativa"),
             _(
                 "Credito incluso nel piano (e nei pacchetti extra) che copre analisi e job measured. In dashboard compare come copertura residua in euro — non serve calcolare “token” API."
             ),
@@ -188,7 +206,7 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "re-scan",
-            "Re-scan",
+            _("Re-scan"),
             _("Nuova analisi dello stesso sito, manuale o schedulata (Plus)."),
         ),
         (
@@ -208,7 +226,7 @@ def _glossary_entries() -> list[dict[str, str]]:
         ),
         (
             "engine-breakdown",
-            "Engine breakdown",
+            _("Ripartizione motori"),
             _(
                 "Vista per motore (ChatGPT, Gemini*, Claude, Perplexity, Grok, Azure*) dello Share of Voice."
             ),
@@ -254,12 +272,13 @@ def site_guide_payload() -> dict[str, Any]:
     return {
         "title": _("Guida completa Centropic"),
         "lede": _(
-            "Tutto il prodotto in un’unica pagina: analisi AIO/GEO, moduli diagnostici, "
-            "pack, Edge Signals, CMS, token, API e glossario."
+            "Come leggere il workspace: le cinque pagine, il CVI sul marchio, "
+            "i grafici AIO/GEO, l’indice di criticità, i pack e l’Edge."
         ),
-        "updated": _("4 agosto 2026"),
+        "updated": _("21 agosto 2026"),
         "toc": [
             {"id": "introduzione", "label": _("Introduzione")},
+            {"id": "workspace", "label": _("Workspace")},
             {"id": "servizi", "label": _("Servizi")},
             {"id": "analisi", "label": _("Analisi e moduli")},
             {"id": "dopo-analisi", "label": _("Dopo l’analisi")},
@@ -268,18 +287,62 @@ def site_guide_payload() -> dict[str, Any]:
             {"id": "piani", "label": _("Piani: domini, re-scan, API")},
             {"id": "glossario", "label": _("Glossario")},
         ],
+        "workspace": {
+            "title": _("Le cinque pagine"),
+            "lede": _(
+                "Il workspace ha una sola barra in alto. Cinque destinazioni, stesso dominio attivo. "
+                "Account e impostazioni restano nel menu avatar."
+            ),
+            "pages": [
+                {
+                    "title": _("Panoramica"),
+                    "body": _(
+                        "Dominio e CVI in testa. Sotto: sette KPI, Composizione e Motori alla stessa altezza, "
+                        "poi Suite e Mix, poi Crawl AIO con Distribuzione AIO e Indice di criticità "
+                        "nella stessa colonna, ledger pagine a destra. In coda: storico run e findings."
+                    ),
+                },
+                {
+                    "title": _("Benchmark"),
+                    "body": _(
+                        "Confronta il sito attivo con i rivali su AIO, GEO, SoV e motori. "
+                        "Usa uno snapshot già misurato, non un grafico inventato."
+                    ),
+                },
+                {
+                    "title": _("Prompt"),
+                    "body": _(
+                        "Le query usate per misurare il SoV e i finding aperti. "
+                        "Qui si vede cosa è stato chiesto ai motori e il pack da applicare."
+                    ),
+                },
+                {
+                    "title": _("Trend"),
+                    "body": _(
+                        "Storico delle run sul dominio attivo. Due grafici affiancati: AIO/GEO nel tempo "
+                        "e CVI per run, con le date sotto ogni punto. Serve almeno due analisi."
+                    ),
+                },
+                {
+                    "title": _("Guida"),
+                    "body": _(
+                        "Questo manuale, dentro il workspace. Stesso contenuto della pagina pubblica /guida."
+                    ),
+                },
+            ],
+        },
         "services": [
             {
                 "id": "svc-dashboard",
-                "title": _("Dashboard"),
+                "title": _("Workspace"),
                 "image": GUIDE_IMAGES["dashboard"],
                 "summary": _(
-                    "Workspace unico: ultima analisi, score, findings, SoV e azioni."
+                    "Cinque pagine, un dominio attivo, grafici dallo stesso run."
                 ),
                 "bullets": [
-                    _("Avvia o ripeti l’analisi sull’URL del sito"),
-                    _("Vedi CVI (DD→AA), score AIO/GEO e citation share"),
-                    _("Accedi a pack, Edge Signals, storico e crediti"),
+                    _("Panoramica: CVI sul marchio (voto DD–AA nel C, punteggio a destra), KPI e grafici"),
+                    _("Benchmark, Prompt e Trend sul dominio selezionato dai chip"),
+                    _("Account e impostazioni nel menu avatar — non in una sesta pill"),
                 ],
             },
             {
@@ -306,7 +369,10 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
                 "bullets": [
                     _("Chiudi prima i critical (es. bot IA bloccati in robots)"),
-                    _("Usa fix-this-week.md come checklist operativa"),
+                    _(
+                        "Indice di criticità: (critici × 100 + warning × 40) / totale, "
+                        "sotto Distribuzione AIO nello stack Crawl"
+                    ),
                     _("Le pagine critiche evidenziano URL con gap gravi"),
                 ],
             },
@@ -315,10 +381,10 @@ def site_guide_payload() -> dict[str, Any]:
                 "title": _("Pack ottimizzazione"),
                 "image": GUIDE_IMAGES["pack"],
                 "summary": _(
-                    "Pack HTML con tutti i fix (head, llms.txt, robots, checklist)."
+                    "Pack HTML con logo originale, score, finding e snippet da pubblicare."
                 ),
                 "bullets": [
-                    _("Scarica il pack HTML con tutti i fix"),
+                    _("Scarica centropic-fix.html: si apre offline, logo in testa"),
                     _("Su Plus puoi inviare il pack via email"),
                     _(
                         "La pubblicazione sul sito resta a tuo carico (o via Edge/CMS)"
@@ -327,7 +393,7 @@ def site_guide_payload() -> dict[str, Any]:
             },
             {
                 "id": "svc-edge",
-                "title": "Edge Signals",
+                "title": _("Edge Signals"),
                 "image": GUIDE_IMAGES["edge"],
                 "summary": _(
                     "Hosting dinamico degli artifact su centropic.ai/e/<token>/…"
@@ -350,7 +416,7 @@ def site_guide_payload() -> dict[str, Any]:
                 "bullets": [
                     _("Attiva Edge, poi scarica il connector dalla dashboard"),
                     _("Un solo adapter sul tuo host: proxy verso Edge"),
-                    "API: GET /api/v1/sites/<id>/edge",
+                    _("API: GET /api/v1/sites/<id>/edge"),
                 ],
             },
             {
@@ -370,15 +436,15 @@ def site_guide_payload() -> dict[str, Any]:
             },
             {
                 "id": "svc-geo",
-                "title": "GEO Suite",
+                "title": _("GEO Suite"),
                 "image": GUIDE_IMAGES["geo_suite"],
                 "summary": _(
-                    "Moduli: entity graph, citability, schema, publish verify, llms lint, locales."
+                    "Moduli: grafo entità, citabilità, schema, publish verify, llms lint, mercati."
                 ),
                 "bullets": [
                     _("Entity: Organization, sameAs, contatti"),
                     _("Publish verify: controlla se gli artifact sono live"),
-                    _("Locales: hreflang e coerenza mercati"),
+                    _("Mercati e lingue: hreflang e coerenza"),
                 ],
             },
             {
@@ -395,15 +461,15 @@ def site_guide_payload() -> dict[str, Any]:
             },
             {
                 "id": "svc-storico",
-                "title": _("Storico e re-scan"),
+                "title": _("Trend e re-scan"),
                 "image": GUIDE_IMAGES["storico"],
                 "summary": _(
-                    "Cronologia run, trend e schedulazione automatica (Plus)."
+                    "Serie temporale sul dominio attivo: AIO/GEO e CVI, con le date sotto ogni punto."
                 ),
                 "bullets": [
-                    _("before-after.md confronta due analisi"),
+                    _("Due grafici affiancati: AIO/GEO e CVI per run"),
                     _("Imposta frequenza e orario UTC in Impostazioni"),
-                    _("Storico esteso sul piano Plus"),
+                    _("before-after.md confronta due analisi successive"),
                 ],
             },
             {
@@ -443,7 +509,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
             },
             {
-                "title": "Engine breakdown",
+                "title": _("Ripartizione motori"),
                 "body": _(
                     "Vista per ChatGPT, Gemini (API), Claude, Perplexity, Grok e "
                     "Azure AI. Di default è Stimato; con SoV measured gli engine disponibili "
@@ -451,28 +517,28 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
             },
             {
-                "title": "Entity graph",
+                "title": _("Grafo entità"),
                 "body": _(
                     "Valuta coerenza Organization / brand, sameAs, contatti e segnali entity "
                     "riutilizzabili da crawler e modelli."
                 ),
             },
             {
-                "title": "Citability",
+                "title": _("Citabilità"),
                 "body": _(
                     "Quanto il copy è citabile: claim chiari, definizioni, fatti verificabili, "
                     "meno ambiguità sul “chi siete / cosa fate”."
                 ),
             },
             {
-                "title": "Schema quality",
+                "title": _("Qualità schema"),
                 "body": _(
                     "Qualità e completezza JSON-LD (Organization, WebSite, FAQPage, "
                     "SoftwareApplication, Article dove rilevante)."
                 ),
             },
             {
-                "title": "Publish verify",
+                "title": _("Publish verify"),
                 "body": _(
                     "Verifica se llms.txt, robots e schema pubblicati sul dominio corrispondono "
                     "alle bozze del pack / Edge."
@@ -486,7 +552,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
             },
             {
-                "title": "Locales",
+                "title": _("Mercati e lingue"),
                 "body": _(
                     "Segnali hreflang / mercati: coerenza linguistica e copertura internazionale "
                     "per answer engine multi-lingua."
@@ -505,7 +571,8 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "title": _("CVI (Centropic Visibility Index)"),
                 "body": _(
-                    "Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un grado CVI tra un re-scan e l’altro."
+                    "Leggi lettera e score: DD è critico, AA è top. Il voto sta nel marchio, "
+                    "il numero a destra. Mira a salire di almeno un grado CVI tra un re-scan e l’altro."
                 ),
             },
             {
@@ -515,19 +582,20 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
             },
             {
-                "title": "Findings",
+                "title": _("Findings"),
                 "body": _(
-                    "Chiudi critical e warn; usa fix-this-week.md. Poi ripubblica e verifica."
+                    "Chiudi critical e warn; usa l’indice di criticità e il pack. Poi ripubblica e verifica."
                 ),
             },
             {
                 "title": _("Pubblica llms.txt"),
                 "body": _(
-                    "Root del sito: https://tuodominio/llms.txt — oppure Edge + CMS connector."
-                ),
+                    "Root del sito: %(path)s — oppure Edge + CMS connector."
+                )
+                % {"path": _("https://tuodominio/llms.txt")},
             },
             {
-                "title": "JSON-LD + FAQ + meta",
+                "title": _("JSON-LD + FAQ + meta"),
                 "body": _(
                     "Incolla nel <head> delle pagine chiave (o lascia Edge servire organization.jsonld)."
                 ),
@@ -539,7 +607,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
             },
             {
-                "title": "Re-scan",
+                "title": _("Re-scan"),
                 "body": _(
                     "Su Plus imposta frequenza/orario UTC e confronta before/after.md."
                 ),
@@ -549,7 +617,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "file": "centropic-fix.html",
                 "where": _(
-                    "unico deliverable: apri e copia head / llms.txt / robots sul sito"
+                    "unico deliverable: logo originale in testa; apri e copia head / llms.txt / robots sul sito"
                 ),
             },
             {
@@ -559,7 +627,7 @@ def site_guide_payload() -> dict[str, Any]:
         ],
         "plans": [
             {
-                "name": "Free",
+                "name": _("Free"),
                 "points": [
                     _(
                         "1 dominio monitorato, crawl limitato, analisi iniziali incluse"
@@ -569,7 +637,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Plus · €19,99 Tasse escluse",
+                "name": _("Plus · €19,99 Tasse escluse"),
                 "points": [
                     _(
                         "Fino a 5 domini, crawl fino a 120 pagine (Deep 500), competitor, storico esteso"
@@ -579,7 +647,7 @@ def site_guide_payload() -> dict[str, Any]:
                 ],
             },
             {
-                "name": "Business · €89,99 Tasse escluse",
+                "name": _("Business · €89,99 Tasse escluse"),
                 "points": [
                     _("Tutto Plus + fino a 50 domini / clienti"),
                     _("API /api/v1 e white-label MD/HTML con brand agenzia"),
@@ -602,11 +670,11 @@ def site_guide_payload() -> dict[str, Any]:
                 "href": "/guide/score-vs-sov",
                 "label": _("CVI · score · citation share"),
             },
-            {"href": "/faq", "label": "FAQ"},
+            {"href": "/faq", "label": _("FAQ")},
             {"href": "/prodotto", "label": _("Prodotto")},
             {"href": "/prezzi", "label": _("Piani e prezzi")},
             {"href": "/guida", "label": _("Guida completa")},
             {"href": "/esempio-report", "label": _("Esempio report")},
-            {"href": "/status", "label": "Status"},
+            {"href": "/status", "label": _("Stato")},
         ],
     }

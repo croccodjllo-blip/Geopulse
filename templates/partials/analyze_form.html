@@ -20,7 +20,7 @@
     <div class="field analyze-composer__field">
       <label class="visually-hidden" for="url">{{ _('URL del dominio') }}</label>
       <div class="analyze-row">
-        {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
+        {{ form.url(id="url", placeholder=_('https://tuosito.com'), autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
         {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
       </div>
       {% if can_competitors %}
@@ -33,8 +33,7 @@
             {{ _('Suggerisci automatico') }}
           </button>
         </div>
-        {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
-https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input': '1'}) }}
+        {{ form.competitors(id="competitors", rows="2", placeholder=_('https://rivale1.com') ~ '\n' ~ _('https://rivale2.com'), class_="analyze-input", **{'data-competitor-suggest-input': '1'}) }}
         <p class="analyze-competitors__hint" data-competitor-suggest-status hidden></p>
       </div>
       {% endif %}

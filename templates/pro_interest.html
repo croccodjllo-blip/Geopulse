@@ -47,7 +47,7 @@
       </div>
       <div class="field">
         <label for="website_url">{{ _('Sito web') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
-        {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
+        {{ form.website_url(id="website_url", placeholder=_('https://tuosito.com'), autocomplete="url") }}
         {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
       <div class="field">

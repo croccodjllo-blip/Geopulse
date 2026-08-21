@@ -86,7 +86,7 @@
     <div class="dash-command__search">
       <label class="dash-audit__label" for="url">{{ _('Cerca o incolla URL') }}</label>
       <div class="dash-audit__row">
-        {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input dash-audit__input dash-command__input", disabled=free_exhausted, **{'data-audit-query': '1'}) }}
+        {{ form.url(id="url", placeholder=_('https://tuosito.com'), autocomplete="url", class_="analyze-input dash-audit__input dash-command__input", disabled=free_exhausted, **{'data-audit-query': '1'}) }}
         <button type="submit" name="submit" value="Avvia" class="btn btn-signal analyze-submit dash-audit__go"{% if free_exhausted %} disabled{% endif %}>{{ _('Audit') }}</button>
       </div>
       {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
@@ -131,7 +131,7 @@
             type="url"
             id="rival-add"
             class="dash-rivals__add"
-            placeholder="https://rivale.com"
+            placeholder="{{ _('https://rivale.com') }}"
             autocomplete="off"
             data-rival-add
             maxlength="200"
