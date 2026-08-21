@@ -2,9 +2,17 @@
 
 from __future__ import annotations
 
+import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _png_size(path: Path) -> tuple[int, int]:
+    data = path.read_bytes()
+    assert data[:8] == b"\x89PNG\r\n\x1a\n", path
+    width, height = struct.unpack(">II", data[16:24])
+    return width, height
 
 
 def test_landing_is_hero_only_anteprima():
@@ -53,14 +61,13 @@ def test_landing_uses_hero_bg():
     assert "bg-hero-anteprima.png" in html
     assert "bg-hero-anteprima-mobile.png" in html
     assert "hero-visual__photo" in html
-    assert (ROOT / "static" / "img" / "bg-hero-anteprima.png").exists()
-    assert (ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png").exists()
-    from PIL import Image
-
-    desk = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima.png")
-    mob = Image.open(ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png")
-    assert desk.size[0] >= 1200
-    assert mob.size[1] >= mob.size[0]  # portrait
+    desk = ROOT / "static" / "img" / "bg-hero-anteprima.png"
+    mob = ROOT / "static" / "img" / "bg-hero-anteprima-mobile.png"
+    assert desk.exists() and mob.exists()
+    desk_w, _desk_h = _png_size(desk)
+    mob_w, mob_h = _png_size(mob)
+    assert desk_w >= 1200
+    assert mob_h >= mob_w  # portrait
 
 
 def test_logo_assets_exist():
