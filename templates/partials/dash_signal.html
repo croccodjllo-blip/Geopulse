@@ -256,33 +256,26 @@
     </article>
   </div>
 
-  <div class="dash-pair dash-pair--match">
+  <div class="dash-pair">
     <article class="dash-card dash-hist-card" aria-labelledby="ledger-hist">
       <header class="dash-card__head">
         <p class="dash-card__kicker">{{ _('Crawl') }}</p>
         <h3 class="dash-card__title" id="ledger-hist">{{ _('Distribuzione AIO') }}</h3>
       </header>
       {% if pages.scored %}
-      <dl class="dash-stats">
-        <div><dt>{{ _('n') }}</dt><dd>{{ pages.scored }}</dd></div>
-        <div><dt>{{ _('media') }}</dt><dd>{{ pages.avg_aio if pages.avg_aio is number else '—' }}</dd></div>
-        <div><dt>{{ _('min') }}</dt><dd>{{ pages.min_aio if pages.min_aio is number else '—' }}</dd></div>
-        <div><dt>{{ _('max') }}</dt><dd>{{ pages.max_aio if pages.max_aio is number else '—' }}</dd></div>
-        {% if pages.avg_words is number %}
-        <div><dt>{{ _('parole') }}</dt><dd>{{ pages.avg_words }}</dd></div>
-        {% endif %}
-        {% if pages.avg_ms is number %}
-        <div><dt>ms</dt><dd>{{ pages.avg_ms }}</dd></div>
-        {% endif %}
-      </dl>
+      <p class="dash-hist-card__meta">
+        {{ pages.scored }} {{ _('pag.') }}
+        {% if pages.avg_aio is number %} · {{ _('media') }} {{ pages.avg_aio }}{% endif %}
+        {% if pages.min_aio is number and pages.max_aio is number %} · {{ pages.min_aio }}–{{ pages.max_aio }}{% endif %}
+      </p>
       {% endif %}
       {% if ch.hist %}
       <ol class="dash-hist" aria-label="{{ _('Pagine per fascia AIO') }}">
         {% for bin in ch.hist %}
         <li data-bin="{{ bin.id }}">
-          <strong>{{ bin.n }}</strong>
-          <span class="dash-hist__bar" aria-hidden="true"></span>
           <span class="dash-hist__lab">{{ bin.id }}</span>
+          <span class="dash-hist__bar" aria-hidden="true"><i></i></span>
+          <strong>{{ bin.n }}</strong>
         </li>
         {% endfor %}
       </ol>

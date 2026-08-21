@@ -4623,20 +4623,25 @@ body.body-dash .dash-stats dd {
 body.body-dash .dash-hist-card .dash-hist {
   flex: 0 0 auto;
 }
+body.body-dash .dash-hist-card__meta {
+  margin: 0 0 0.7rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--brand-clarity) 50%, transparent);
+}
 body.body-dash .dash-hist {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.45rem 0.35rem;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.38rem;
+  align-items: stretch;
   width: 100%;
   min-height: 0;
 }
 body.body-dash .dash-hist li {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: stretch;
-  gap: 0.22rem;
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) 1.6rem;
+  align-items: center;
+  gap: 0.5rem;
   min-width: 0;
   min-height: 0;
   height: auto;
@@ -4646,20 +4651,30 @@ body.body-dash .dash-hist strong {
   font-weight: 650;
   letter-spacing: -0.02em;
   color: var(--brand-clarity);
-  text-align: center;
+  text-align: right;
 }
 body.body-dash .dash-hist__bar {
+  display: block;
   width: 100%;
   max-width: none;
-  height: calc(var(--w, 0) * 0.068rem);
-  min-height: 3px;
-  border-radius: 3px 3px 0 0;
+  height: 6px;
+  min-height: 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+  overflow: hidden;
+}
+body.body-dash .dash-hist__bar i {
+  display: block;
+  height: 100%;
+  width: calc(var(--w, 0) * 1%);
+  min-width: 0;
+  border-radius: 99px;
   background: color-mix(in srgb, var(--plan-accent) 82%, transparent);
 }
 body.body-dash .dash-hist__lab {
   font-size: 0.62rem;
   letter-spacing: 0.04em;
-  text-align: center;
+  text-align: left;
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
 }
 body.body-dash .dash-sheet--dense { width: 100%; }
