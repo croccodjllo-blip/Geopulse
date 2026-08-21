@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Prompt') }}{% endblock %}
+{% block body_class %}body-dash{% endblock %}
+{% block main_class %}site-main--dash{% endblock %}
+
+{% block content %}
+<section class="workspace workspace--wide">
+  <header class="dash-boardhead">
+    <div class="dash-boardhead__copy">
+      <p class="dash-signal__kicker">{{ _('Prompt') }}</p>
+      <h1 class="dash-boardhead__title">{{ latest.domain if latest else _('Findings e pack') }}</h1>
+      <p class="dash-signal__domain">{{ _('Findings aperti e deliverable da applicare.') }}</p>
+    </div>
+    {% include "partials/site_switcher.html" %}
+  </header>
+
+  {% if latest %}
+  <div class="dash-prompt">
+  <section class="dash-findings dash-card" id="findings" aria-labelledby="findings-title">
+    <header class="dash-findings__head">
+      <h2 class="dash-findings__title" id="findings-title">{{ _('Findings') }}</h2>
+    </header>
+    {% set findings = findings_critical or [] %}
+    {% if findings %}
+    <ol class="dash-finding-board">
+      {% for f in findings %}
+      <li data-severity="{{ f.severity }}">
+        <i aria-hidden="true"></i>
+        <strong>{{ _(f.title) }}</strong>
+        {% if f.detail %}<span>{{ _(f.detail) }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="finding-list__empty">
+      {{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok.') }}{% endif %}
+    </p>
+    {% endif %}
+  </section>
+
+  <div class="dash-deck">
+    {% include "partials/dash_prompt_ops.html" %}
+  </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <strong>{{ _('Nessuna analisi ancora') }}</strong>
+    <p><a class="btn btn-signal" href="{{ url_for('dashboard') }}">{{ _('Vai alla Panoramica') }}</a></p>
+  </div>
+  {% endif %}
+</section>
+{% if latest %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/pack-mail.js') }}" defer></script>
+{% endif %}
+{% endblock %}
