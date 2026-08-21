@@ -1,0 +1,69 @@
+<form method="post" id="analyze" class="js-analyze-form analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %}>
+  {{ form.hidden_tag() }}
+  <div class="analyze-composer">
+    <div class="analyze-composer__head">
+      <div>
+        <p class="analyze-composer__label">{{ _('Dominio da analizzare') }}</p>
+        <p class="analyze-composer__sub">
+          {% if free_exhausted %}
+          {{ _('Quote Free esaurite · passa a Plus per continuare') }}
+          {% elif free_upsell and not is_pro %}
+          {{ _('Puoi ri-analizzare il sito già registrato · Plus per più brand') }}
+          {% elif crawl_unlimited %}
+          {{ _('Crawl BFS · intero sito') }} ({{ user_plan }})
+          {% else %}
+          {{ _('Crawl stesso dominio · max') }} {{ crawl_pages_limit }} {{ _('pagine') }} ({{ user_plan }})
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    <div class="field analyze-composer__field">
+      <label class="visually-hidden" for="url">{{ _('URL del dominio') }}</label>
+      <div class="analyze-row">
+        {{ form.url(id="url", placeholder="https://tuosito.com", autocomplete="url", class_="analyze-input", disabled=free_exhausted) }}
+        {{ form.submit(class_="btn btn-signal analyze-submit", disabled=free_exhausted) }}
+      </div>
+      {% if can_competitors %}
+      <div class="field analyze-competitors"
+           data-competitor-suggest
+           data-suggest-url="{{ url_for('dashboard_competitors_suggest') }}">
+        <div class="analyze-competitors__head">
+          <label for="competitors">{{ _('Competitor snapshot (max 3)') }}</label>
+          <button type="button" class="linkish analyze-competitors__suggest" data-competitor-suggest-btn>
+            {{ _('Suggerisci automatico') }}
+          </button>
+        </div>
+        {{ form.competitors(id="competitors", rows="2", placeholder="https://rivale1.com
+https://rivale2.com", class_="analyze-input", **{'data-competitor-suggest-input': '1'}) }}
+        <p class="analyze-competitors__hint" data-competitor-suggest-status hidden></p>
+      </div>
+      {% endif %}
+      {% if can_full_crawl %}
+      <div class="analyze-option">
+        <label class="analyze-option__hit" for="deep_crawl">
+          {{ form.deep_crawl(id="deep_crawl", class_="analyze-option__check") }}
+          <span class="analyze-option__copy">
+            <span class="analyze-option__title">{{ _('Deep crawl') }}</span>
+            <span class="analyze-option__meta">
+              {{ _('Fino a') }} {{ deep_crawl_pages }} {{ _('pagine — più lento') }}.
+              {{ _('Standard:') }} {{ crawl_pages_limit }} {{ _('pagine') }}.
+            </span>
+          </span>
+        </label>
+      </div>
+      {% endif %}
+      {% if can_measured_sov %}
+      <p class="analyze-composer__hint">
+        {{ _('CVI/AIO/GEO restano') }} <em>{{ _('Stimati') }}</em>
+        {{ _('(struttura). Citation monitor = probe LLM Misurati; se 0 menzioni, mostriamo Misurato 0% (non riusiamo la share Stimata/proxy).') }}
+      </p>
+      {% else %}
+      <p class="analyze-composer__hint">
+        {{ _('Score AIO/GEO e citation share') }} <em>{{ _('Stimati') }}</em>
+        {{ _('dalla struttura del dominio. Su Plus: probe LLM Misurati.') }}
+      </p>
+      {% endif %}
+      {% for error in form.url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+  </div>
+</form>
