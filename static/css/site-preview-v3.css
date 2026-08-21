@@ -4182,6 +4182,14 @@ body.body-dash .dash-pair {
   align-items: start;
 }
 body.body-dash .dash-pair--solo { grid-template-columns: minmax(0, 1fr); }
+body.body-dash .dash-pair--match {
+  align-items: stretch;
+}
+body.body-dash .dash-pair--match > .dash-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
 body.body-dash .dash-board .dash-card {
   min-width: 0;
   margin: 0;
@@ -4226,110 +4234,86 @@ body.body-dash .dash-card__lede {
   font-size: 0.78rem;
   color: color-mix(in srgb, var(--brand-clarity) 52%, transparent);
 }
-body.body-dash .dash-card.dash-split,
-body.body-dash .dash-split--wide {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
+body.body-dash .dash-card.dash-split {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
   width: 100%;
-  max-width: none;
   margin: 0;
-  padding: 0.15rem 0 1.4rem;
+  padding: 0.15rem 0 0;
   border: 0;
   background: transparent;
   flex-wrap: nowrap;
 }
-body.body-dash .dash-split--wide .dash-split__nums,
 body.body-dash .dash-split__nums {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem 1.5rem;
+  gap: 0.5rem 0.75rem;
   width: 100%;
   margin: 0;
+  flex: 0 0 auto;
 }
 body.body-dash .dash-split__nums dt {
   margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
 }
 body.body-dash .dash-split__nums dd {
-  margin: 0.4rem 0 0;
-  font-size: clamp(2.8rem, 6.4vw, 4.75rem);
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.85rem, 2.8vw, 2.55rem);
   font-weight: 720;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.04em;
   color: var(--brand-clarity);
-  line-height: 0.92;
+  line-height: 1;
 }
 body.body-dash .dash-split__nums dd span {
-  font-size: 0.42em;
+  font-size: 0.48em;
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
 }
-body.body-dash .dash-split--wide .dash-split__track,
 body.body-dash .dash-split__track {
   display: flex;
+  flex: 1 1 auto;
+  align-self: stretch;
   width: 100%;
-  min-height: 6.25rem;
+  min-height: 3.4rem;
   margin: 0;
   padding: 0;
-  list-style: none;
-  border-radius: 0.85rem;
+  border-radius: 0.7rem;
   overflow: hidden;
   background: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
 }
-body.body-dash .dash-split__track li {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.2rem;
-  min-width: 0;
-  padding: 0.85rem 1.05rem;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-body.body-dash .dash-split__track li span {
+body.body-dash .dash-split__track i {
   display: block;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, #121212 55%, var(--brand-clarity));
-  white-space: nowrap;
+  height: 100%;
+  min-width: 0;
+  max-width: none;
 }
-body.body-dash .dash-split__track li strong {
-  font-size: clamp(1.35rem, 2.6vw, 2rem);
-  font-weight: 720;
-  letter-spacing: -0.03em;
-  color: #121212;
-}
-body.body-dash .dash-split__track li[data-part="brand"] {
+body.body-dash .dash-split__track i[data-part="brand"] {
   flex: var(--brand, 0) 1 0;
   width: auto;
   background: var(--plan-accent);
 }
-body.body-dash .dash-split__track li[data-part="rivals"] {
+body.body-dash .dash-split__track i[data-part="rivals"] {
   flex: var(--rivals, 0) 1 0;
   width: auto;
   background: color-mix(in srgb, var(--plan-accent) 42%, #5B6B7A);
 }
-body.body-dash .dash-split__track li[data-part="other"] {
+body.body-dash .dash-split__track i[data-part="other"] {
   flex: var(--other, 0) 1 0;
   width: auto;
   background: color-mix(in srgb, var(--brand-clarity) 28%, #5B6B7A);
 }
-body.body-dash .dash-split__track li[data-part="other"] span,
-body.body-dash .dash-split__track li[data-part="other"] strong {
-  color: var(--brand-clarity);
-}
 body.body-dash .dash-area {
-  margin-top: 0.85rem;
+  margin-top: 0.15rem;
+  flex: 0 1 auto;
 }
-body.body-dash .dash-split--wide .dash-area__svg,
 body.body-dash .dash-area__svg {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 14rem;
+  max-height: 8.5rem;
 }
 body.body-dash .dash-area__grid {
   stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);
@@ -4687,7 +4671,6 @@ body.body-dash .comp-arena {
   body.body-dash .dash-card--table,
   body.body-dash .dash-card--side { grid-column: 1; grid-row: auto; }
   body.body-dash .dash-minis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  body.body-dash .dash-split--wide .dash-split__track,
-  body.body-dash .dash-split__track { min-height: 5.1rem; }
-  body.body-dash .dash-split__nums dd { font-size: clamp(2.2rem, 11vw, 3.4rem); }
+  body.body-dash .dash-split__track { min-height: 2.8rem; }
+  body.body-dash .dash-split__nums dd { font-size: clamp(1.7rem, 7vw, 2.2rem); }
 }
