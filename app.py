@@ -6411,7 +6411,11 @@ def dashboard_sov():
     """Share of Voice detail — table + Findings + Edge/Pack (preview composition)."""
     user = current_user()
     prefer_site_id = request.args.get("site", type=int)
-    if prefer_site_id is None:
+    if prefer_site_id is not None:
+        if get_accessible_site(SiteAnalysis, user, prefer_site_id) is None:
+            flash(_("Sito non accessibile."), "warning")
+            return redirect(url_for("dashboard_sov"))
+    else:
         sticky = session.get("dashboard_site_id")
         try:
             prefer_site_id = int(sticky) if sticky is not None else None
@@ -6456,6 +6460,25 @@ def dashboard_sov():
             engine_breakdown = apply_measured_sov(engine_breakdown, measured)
 
     sov_budget = _current_sov_budget(user)
+    measured_bg_job = None
+    if latest is not None:
+        active_jobs = (
+            AnalysisJob.query.filter(
+                AnalysisJob.user_id == user.id,
+                AnalysisJob.site_id == latest.id,
+                AnalysisJob.status.in_(("pending", "running")),
+            )
+            .order_by(AnalysisJob.created_at.desc())
+            .all()
+        )
+        measured_bg_job = next(
+            (
+                j
+                for j in active_jobs
+                if str(getattr(j, "source", None) or "").lower() == "measured"
+            ),
+            None,
+        )
 
     return render_template(
         "dashboard_sov.html",
@@ -6470,6 +6493,8 @@ def dashboard_sov():
         user_plan=user.plan_label,
         site_count=sites_query_for_user(SiteAnalysis, user).count(),
         max_sites=user.max_sites,
+        token_balance_short=format_tokens_short(get_balance_cents(user)),
+        measured_bg_job=measured_bg_job,
         **capability_template_vars(user),
     )
 

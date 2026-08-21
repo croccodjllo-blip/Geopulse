@@ -67,6 +67,7 @@ def test_rail_overrides_wide_sidebar_margin():
     assert "--sidebar-w: 4.5rem" in CSS
     assert "margin-left: var(--sidebar-w) !important" in CSS
     assert "width: calc(100% - var(--sidebar-w)) !important" in CSS
+    assert "max-width: calc(100% - var(--sidebar-w)) !important" in CSS
     # Must not stack padding-left on top of the wide-sidebar margin.
     shell = CSS.split("Global app shell", 1)[1].split("body.app-shell .app-sidebar--rail", 1)[0]
     assert "padding-left: var(--sidebar-w)" not in shell

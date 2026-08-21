@@ -154,7 +154,7 @@
                 <a class="dash-actions__btn" href="#analyze-panel">{{ _('Nuova analisi') }}</a>
                 <a class="dash-actions__btn" href="#pack">{{ _('Pack') }}</a>
                 <a class="dash-actions__btn" href="#edge-signals">{{ _('Edge') }}</a>
-                <a class="dash-actions__ghost" href="{{ url_for('dashboard_sov', site=latest.id) }}">{{ _('Share of Voice') }}</a>
+                <a class="dash-actions__btn dash-actions__btn--sov" href="{{ url_for('dashboard_sov', site=latest.id) }}">{{ _('Share of Voice') }}</a>
                 <a class="dash-actions__ghost" href="{{ url_for('dashboard_sov', site=latest.id) }}#findings">{{ _('Findings') }}</a>
                 {% if pages_analyzed_n %}<a class="dash-actions__ghost" href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
                 <a class="dash-actions__ghost" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>

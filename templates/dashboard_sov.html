@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Share of Voice') }}{% endblock %}
-{% block body_class %}body-dash body-dash--sov{% endblock %}
+{% block body_class %}body-dash--sov{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--dash site-main--sov{% endblock %}
 
 {% block content %}
 <section class="workspace workspace--sov">
+  {% set sov_tab = 'panoramica' %}
+  {% include "partials/sov_topnav.html" %}
+
   {% if latest and user_sites is defined and user_sites|length > 1 %}
   <div class="sov-page-tools" aria-label="{{ _('Controlli') }}">
     {% include "partials/site_switcher.html" %}
