@@ -4315,12 +4315,21 @@ body.body-dash .dash-pair--match > .dash-card {
   min-height: 100%;
 }
 body.body-dash .dash-pair--crawl {
-  align-items: stretch;
+  align-items: start;
 }
-body.body-dash .dash-pair--crawl > .dash-crit {
-  grid-column: 1 / -1;
+body.body-dash .dash-crawl {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  width: 100%;
+}
+body.body-dash .dash-crawl > .dash-card {
   width: 100%;
   max-width: none;
+  padding-bottom: 0.25rem;
+}
+body.body-dash .dash-crawl > .dash-hist-card {
+  padding-bottom: 0.15rem;
 }
 body.body-dash .dash-board .dash-card {
   min-width: 0;
@@ -4939,6 +4948,12 @@ body.body-dash .dash-tile {
   background: transparent;
   border-radius: 0;
   padding: 0.25rem 0.1rem 0.55rem;
+}
+body.body-dash .dash-board .dash-crawl > .dash-card {
+  padding-bottom: 0.2rem;
+}
+body.body-dash .dash-board .dash-crawl > .dash-hist-card {
+  padding-bottom: 0.08rem;
 }
 body.body-dash .dash-sites__chip {
   border: 0;

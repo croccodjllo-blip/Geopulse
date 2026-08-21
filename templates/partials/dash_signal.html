@@ -260,6 +260,7 @@
   </div>
 
   <div class="dash-pair dash-pair--crawl">
+    <div class="dash-crawl">
     <article class="dash-card dash-hist-card" aria-labelledby="ledger-hist">
       <header class="dash-card__head">
         <p class="dash-card__kicker">{{ _('Crawl') }}</p>
@@ -286,6 +287,36 @@
       <p class="dash-card__lede">{{ _('Nessuna pagina con score AIO.') }}</p>
       {% endif %}
     </article>
+
+    {% set crit = ch.crit or {} %}
+    <article class="dash-card dash-crit" aria-labelledby="ledger-crit" data-band="{{ crit.band or 'ok' }}">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Findings') }}</p>
+        <h3 class="dash-card__title" id="ledger-crit">{{ _('Indice di criticità') }}</h3>
+      </header>
+      <div class="dash-crit__row">
+        <p class="dash-crit__score">{{ crit.score if crit.score is number else 0 }}<span>/100</span></p>
+        <ol class="dash-crit__mix">
+          <li data-sev="critical">
+            <span>{{ _('Critici') }}</span>
+            <strong>{{ crit.crit or 0 }}</strong>
+            <i aria-hidden="true"></i>
+          </li>
+          <li data-sev="warn">
+            <span>{{ _('Warn') }}</span>
+            <strong>{{ crit.warn or 0 }}</strong>
+            <i aria-hidden="true"></i>
+          </li>
+          <li data-sev="ok">
+            <span>{{ _('ok') }}</span>
+            <strong>{{ crit.ok or 0 }}</strong>
+            <i aria-hidden="true"></i>
+          </li>
+        </ol>
+      </div>
+      <p class="dash-card__lede">{{ crit.open or 0 }}/{{ crit.all or 0 }} {{ _('aperti sul run analizzato') }}</p>
+    </article>
+    </div>
 
     <article class="dash-card dash-pages" id="critical-pages" aria-labelledby="ledger-pages">
       <header class="dash-card__head">
@@ -325,35 +356,6 @@
       {% else %}
       <p class="dash-card__lede">{{ _('Nessuna pagina in crawl.') }}</p>
       {% endif %}
-    </article>
-
-    {% set crit = ch.crit or {} %}
-    <article class="dash-card dash-crit" aria-labelledby="ledger-crit" data-band="{{ crit.band or 'ok' }}">
-      <header class="dash-card__head">
-        <p class="dash-card__kicker">{{ _('Findings') }}</p>
-        <h3 class="dash-card__title" id="ledger-crit">{{ _('Indice di criticità') }}</h3>
-      </header>
-      <div class="dash-crit__row">
-        <p class="dash-crit__score">{{ crit.score if crit.score is number else 0 }}<span>/100</span></p>
-        <ol class="dash-crit__mix">
-          <li data-sev="critical">
-            <span>{{ _('Critici') }}</span>
-            <strong>{{ crit.crit or 0 }}</strong>
-            <i aria-hidden="true"></i>
-          </li>
-          <li data-sev="warn">
-            <span>{{ _('Warn') }}</span>
-            <strong>{{ crit.warn or 0 }}</strong>
-            <i aria-hidden="true"></i>
-          </li>
-          <li data-sev="ok">
-            <span>{{ _('ok') }}</span>
-            <strong>{{ crit.ok or 0 }}</strong>
-            <i aria-hidden="true"></i>
-          </li>
-        </ol>
-      </div>
-      <p class="dash-card__lede">{{ crit.open or 0 }}/{{ crit.all or 0 }} {{ _('aperti sul run analizzato') }}</p>
     </article>
   </div>
 

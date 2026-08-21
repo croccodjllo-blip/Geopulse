@@ -49,11 +49,17 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-crit" in SIGNAL
     assert "ledger-crit" in SIGNAL
     assert "dash-pair--crawl" in SIGNAL
-    crawl_at = SIGNAL.find("dash-pair--crawl")
+    assert "dash-crawl" in SIGNAL
+    crawl_at = SIGNAL.find("dash-crawl")
+    hist_at = SIGNAL.find("dash-hist-card")
     crit_at = SIGNAL.find('class="dash-card dash-crit"')
+    pages_at = SIGNAL.find('id="critical-pages"')
     findings_at = SIGNAL.find('id="ledger-findings"')
-    assert crawl_at != -1 and crit_at != -1 and crawl_at < crit_at
+    assert crawl_at != -1 and hist_at != -1 and crit_at != -1
+    assert crawl_at < hist_at < crit_at
+    assert pages_at == -1 or crit_at < pages_at
     assert findings_at == -1 or crit_at < findings_at
+    assert SIGNAL.count('class="dash-card dash-crit"') == 1
     assert "dash-fault" in SIGNAL
     assert "dash-kpis" in SIGNAL
     assert "dash-spine" not in SIGNAL
@@ -71,7 +77,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert ".dash-hist" in CSS
     assert "dash-pair--match" in CSS
     assert "dash-pair--crawl" in CSS
-    assert "grid-column: 1 / -1" in CSS.split("dash-pair--crawl > .dash-crit")[1][:80]
+    assert "dash-crawl" in CSS
+    assert "gap: 0" in CSS.split("dash-crawl")[1][:80]
     assert "dash-split--wide" not in CSS
     assert "dash-split__track" in CSS
     assert "dash-split__table" in CSS
