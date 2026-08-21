@@ -29,20 +29,23 @@ def test_landing_is_hero_only_anteprima():
 
 
 def test_anteprima_scale_measures_in_css():
-    """Shared hero band; Matrix bg capped to site width 72rem; no cite-scrim."""
+    """Compact lockup on full-bleed nebula; form cleared from the fold; no cite-scrim."""
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
-    assert "17.8vw" in css
-    assert "52vw" in css
     assert "--hero-band" in css
-    assert "66vw" in css
-    assert "72rem" in css  # Matrix matches site content width
+    assert "min(36rem" in css
+    assert "72rem" in css  # header inner still tracks site content width
     assert "object-fit: cover !important" in css
     assert "hero-visual--preview::before" in css
     assert "filter: none !important" in css  # no shadow over logo / wordmark
-    assert ("4.5vw" in css or "3.8vw" in css)  # lockup gap keeps logo clear
+    assert "clamp(5.25rem, 12vw, 7.5rem)" in css
+    assert "clamp(4.75rem, 9vh, 6.5rem)" in css  # air between URL bar and footer
+    locked = {line.strip() for line in css.splitlines()}
+    assert "height: 100vh;" not in locked
+    assert "height: 100dvh;" not in locked
     assert "white-space: normal !important" in css
     assert "max-width: 24ch" not in css
     assert "body.body-marketing--hero-only .site-footer" not in css
+    assert "aspect-ratio: 16 / 9" not in css
 
 
 def test_landing_uses_hero_bg():
@@ -88,7 +91,8 @@ def test_landing_uses_void_background():
     css = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
     assert "bg-hero-anteprima.png" in html
     assert "hero-signal-field.jpg" not in html
-    assert "background: #000 !important" in css
+    assert "background: #121212 !important" in css
+    assert "background: #000 !important" not in css
     assert "body-marketing--hero-only" in html
 
 

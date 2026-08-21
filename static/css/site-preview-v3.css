@@ -1104,15 +1104,15 @@ body.body-marketing--hero-only .brand-mark__logo {
   object-fit: contain;
 }
 
-/* Hero — anteprima measures (logo ~18vw, wordmark ~55vw, bg wave top-right smaller) */
+/* Homepage hero — full-bleed nebula, transparent gold lockup, form above the fold */
 html:has(body.body-marketing--hero-only) {
-  background: #000;
+  background: #121212;
 }
 body.body-marketing--hero-only {
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
-  background: #000 !important;
+  background: #121212 !important;
   margin: 0;
 }
 /* Footer visible again — same as other pages (do not hide) */
@@ -1138,57 +1138,64 @@ body.body-marketing--hero-only .nav-links a[href*="esempio"] {
   display: none !important;
 }
 body.body-marketing .hero--preview.hero--signal {
+  --hero-band: min(36rem, calc(100% - 2.5rem));
   position: relative;
   width: 100%;
   max-width: 100%;
-  min-height: 100vh;
   min-height: 100dvh;
-  height: 100vh;
-  height: 100dvh;
-  display: grid !important;
-  place-items: center !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   overflow-x: clip;
   overflow-y: visible;
   margin: 0;
   padding: 0;
-  background: #000 !important;
+  background: #121212 !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  background: #000 !important;
+  background: #121212 !important;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
 }
-/* Remove old cite-scrim that darkened/warped the anteprima wave */
+/* Kill the left-lane cite-scrim; warm veil lives on ::after so the C sits on nebula, not a black plate */
 body.body-marketing .hero--preview .hero-visual--preview::before,
 body.body-marketing .hero-visual--cite.hero-visual--preview::before {
   display: none !important;
   content: none !important;
   background: none !important;
 }
+body.body-marketing .hero--preview .hero-visual--preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 62% 48% at 50% 36%, rgba(18, 18, 18, 0.12) 0%, rgba(18, 18, 18, 0.42) 68%, rgba(18, 18, 18, 0.62) 100%),
+    linear-gradient(180deg, rgba(18, 18, 18, 0.28) 0%, rgba(18, 18, 18, 0.08) 42%, rgba(18, 18, 18, 0.55) 100%);
+}
 body.body-marketing--hero-only {
   background-image: none !important;
-  background-color: #000 !important;
+  background-color: #121212 !important;
 }
-/* Warm nebula field — site content width (72rem), centered */
+/* Full-bleed atmosphere — cover the hero, not a letterboxed 16:9 card on #000 */
 body.body-marketing .hero--preview .hero-visual--preview picture {
   display: block !important;
   position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: min(100% - 2rem, 72rem) !important;
-  max-width: 72rem !important;
-  height: auto !important;
-  aspect-ratio: 16 / 9;
-  max-height: min(70vh, 40.5rem) !important;
-  transform: translate(-50%, -50%) !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  transform: none !important;
 }
 body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
   display: block !important;
@@ -1220,11 +1227,11 @@ body.body-marketing .hero--preview .hero-visual__aurora {
 body.body-marketing .hero--preview .hero-copy--preview {
   position: relative;
   z-index: 2;
-  width: min(calc(100% - 2rem), 94vw) !important;
-  max-width: 94vw !important;
+  width: var(--hero-band) !important;
+  max-width: var(--hero-band) !important;
   margin: 0 auto !important;
   margin-left: auto !important; /* kill app.css asymmetric margin-left on .hero-copy--v2 */
-  padding: clamp(4.5rem, 10vh, 6.5rem) 1rem clamp(1.25rem, 3.5vh, 2.25rem) !important;
+  padding: calc(var(--header-h, 4rem) + 1.75rem) 0 clamp(4.75rem, 9vh, 6.5rem) !important;
   text-align: center !important;
   text-shadow: none !important;
   display: flex;
@@ -1235,8 +1242,6 @@ body.body-marketing .hero--preview .hero-copy--preview {
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #F3EDE3;
   overflow: visible !important;
-  /* Shared width: H1 + lede + URL box */
-  --hero-band: min(66vw, 64rem);
 }
 body.body-marketing .hero-brand-lockup--preview {
   display: flex !important;
@@ -1244,10 +1249,10 @@ body.body-marketing .hero-brand-lockup--preview {
   flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: clamp(3rem, 4.5vw, 4.75rem) !important;
-  row-gap: clamp(3rem, 4.5vw, 4.75rem) !important;
+  gap: 0.7rem !important;
+  row-gap: 0.7rem !important;
   column-gap: 0 !important;
-  margin: 0 0 clamp(2.5rem, 4.2vw, 4.2rem) !important;
+  margin: 0 0 1.65rem !important;
   width: 100%;
   max-width: 100%;
   position: relative;
@@ -1257,8 +1262,8 @@ body.body-marketing .hero-brand-lockup--preview {
 body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   display: block !important;
   flex: 0 0 auto !important;
-  width: clamp(7.5rem, 17.8vw, 17.5rem) !important;
-  height: clamp(7.5rem, 17.8vw, 17.5rem) !important;
+  width: clamp(5.25rem, 12vw, 7.5rem) !important;
+  height: clamp(5.25rem, 12vw, 7.5rem) !important;
   max-width: none !important;
   margin: 0 auto !important;
   border-radius: 0 !important;
@@ -1269,18 +1274,18 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
   object-fit: contain !important;
   object-position: center !important;
   overflow: visible !important;
-  /* No shadow — was covering the chrome mark */
   filter: none !important;
   box-shadow: none !important;
+  background: transparent !important;
 }
 body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark,
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   display: block !important;
   flex: 0 0 auto !important;
-  width: clamp(15rem, 52vw, 48rem) !important;
+  width: auto !important;
   height: auto !important;
   max-width: min(92vw, 100%) !important;
-  margin: 0.5rem auto 0 !important;
+  margin: 0 auto !important;
   padding: 0 !important;
   position: relative !important;
   top: auto !important;
@@ -1295,10 +1300,10 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   display: block !important;
   width: auto !important;
   max-width: min(92vw, 100%) !important;
-  margin: 0.35rem auto 0 !important;
+  margin: 0 auto !important;
   text-align: center;
-  font-size: clamp(1.65rem, 6.2vw, 3.6rem) !important;
-  letter-spacing: 0.12em !important;
+  font-size: clamp(1.35rem, 3.4vw, 1.85rem) !important;
+  letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
   background: linear-gradient(96deg, #8A4E16 0%, #F6E0B8 42%, #E8A04A 68%, #C47A2C 100%);
   -webkit-background-clip: text;
@@ -1308,14 +1313,13 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
   font-family: "Inter", system-ui, sans-serif !important;
-  /* Same width as lede + URL box; type scales to fill the band on one line */
-  width: var(--hero-band) !important;
-  max-width: var(--hero-band) !important;
-  font-size: clamp(1.35rem, calc(66vw / 22.5), 3.6rem) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  font-size: clamp(1.55rem, 3.8vw, 2.45rem) !important;
   font-weight: 600 !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.2 !important;
-  margin: 0 auto 0.95rem !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.22 !important;
+  margin: 0 auto 0.85rem !important;
   color: #F3EDE3 !important;
   text-align: center !important;
   white-space: normal !important;
@@ -1330,12 +1334,12 @@ body.body-marketing .hero--preview .hero-accent {
 }
 body.body-marketing .hero--preview .hero-lede {
   font-family: "Inter", system-ui, sans-serif !important;
-  width: var(--hero-band) !important;
-  max-width: var(--hero-band) !important;
-  font-size: clamp(0.78rem, calc(66vw / 52), 1.28rem) !important;
-  line-height: 1.45 !important;
-  margin: 0 auto clamp(1.5rem, 4.2vw, 2.75rem) !important;
-  color: color-mix(in srgb, #F3EDE3 72%, transparent) !important;
+  width: 100% !important;
+  max-width: 34rem !important;
+  font-size: clamp(0.95rem, 1.7vw, 1.125rem) !important;
+  line-height: 1.55 !important;
+  margin: 0 auto 2.15rem !important;
+  color: color-mix(in srgb, #F3EDE3 74%, transparent) !important;
   text-align: center !important;
   white-space: normal !important;
   text-wrap: pretty;
@@ -1345,8 +1349,8 @@ body.body-marketing .hero--preview .hero-copy--preview::before {
   display: none !important;
 }
 body.body-marketing .hero--preview .hero-url-form--preview {
-  width: var(--hero-band) !important;
-  max-width: var(--hero-band) !important;
+  width: 100% !important;
+  max-width: 100% !important;
   margin: 0 auto;
   animation: none;
   box-sizing: border-box;
@@ -1359,8 +1363,8 @@ body.body-marketing .hero--preview .hero-url-form__row {
   min-height: 3rem;
   padding: 0.35rem 0.35rem 0.35rem 0.9rem;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, #E8A04A 32%, transparent);
-  background: rgba(4, 8, 10, 0.78);
+  border: 1px solid color-mix(in srgb, #E8A04A 38%, transparent);
+  background: color-mix(in srgb, #1A1612 72%, transparent);
   backdrop-filter: blur(12px);
   width: 100%;
   box-sizing: border-box;
@@ -1609,7 +1613,7 @@ body.body-dash .finding-list > li::after {
 @media (max-width: 720px) {
   body.body-marketing--hero-only {
     background-image: none !important;
-    background-color: #000 !important;
+    background-color: #121212 !important;
   }
   body.body-dash.dash-plan--plus,
   body.body-dash.dash-plan--free,
@@ -1882,70 +1886,70 @@ body.body-dash .finding-list > li::after {
 
   body.body-marketing .hero--preview.hero--signal {
     min-height: 100dvh;
-    min-height: 100vh;
-    height: 100dvh;
-    height: 100vh;
+    height: auto;
     max-height: none;
     width: 100%;
   }
   body.body-marketing .hero--preview .hero-copy--preview {
-    padding-top: clamp(4.75rem, 12vh, 6rem) !important;
-    padding-inline: 1.1rem !important;
-    width: min(calc(100% - 1.5rem), 94vw) !important;
-    max-width: 94vw !important;
+    padding-top: calc(var(--header-h, 4rem) + 1.35rem) !important;
+    padding-bottom: 4.75rem !important;
+    padding-inline: 0 !important;
+    width: min(calc(100% - 2rem), 24.5rem) !important;
+    max-width: 24.5rem !important;
   }
   body.body-marketing .hero-brand-lockup--preview {
-    gap: clamp(1.25rem, 4vw, 1.75rem) !important;
-    row-gap: clamp(1.25rem, 4vw, 1.75rem) !important;
-    margin-bottom: clamp(1.6rem, 5vw, 2.2rem) !important;
+    gap: 0.55rem !important;
+    row-gap: 0.55rem !important;
+    margin-bottom: 1.35rem !important;
   }
-  /* Mobile anteprima atmosphere — native portrait feel, site width */
+  /* Mobile: same full-bleed cover, portrait crop */
   body.body-marketing .hero--preview .hero-visual--preview picture {
-    width: min(100% - 1.5rem, 28rem) !important;
-    max-width: 28rem !important;
-    height: auto !important;
-    aspect-ratio: 2 / 3;
-    max-height: min(62vh, 40rem) !important;
-    top: 42% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    aspect-ratio: auto !important;
+    max-height: none !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
   }
   body.body-marketing .hero--preview .hero-visual--preview .hero-visual__photo {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    object-position: center 30% !important;
+    object-position: center 28% !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-mark {
-    /* Mobile anteprima: mark larger relative to width — no glow shadow over mark */
-    width: clamp(8rem, 42vw, 12rem) !important;
-    height: clamp(8rem, 42vw, 12rem) !important;
+    width: clamp(4.75rem, 26vw, 6.25rem) !important;
+    height: clamp(4.75rem, 26vw, 6.25rem) !important;
     filter: none !important;
+    background: transparent !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-wordmark,
 body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
-    width: clamp(14rem, 82vw, 28rem) !important;
+    width: auto !important;
     filter: none !important;
   }
   body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
     display: block !important;
-    font-size: clamp(1.35rem, 8vw, 2.1rem) !important;
+    font-size: clamp(1.2rem, 6.4vw, 1.55rem) !important;
   }
   body.body-marketing .hero--preview .hero-headline--v2 {
-    font-size: clamp(1.25rem, 5.4vw, 1.7rem) !important;
-    width: auto !important;
-    max-width: 20rem !important;
+    font-size: clamp(1.4rem, 6.2vw, 1.75rem) !important;
+    width: 100% !important;
+    max-width: 100% !important;
     white-space: normal !important;
   }
   body.body-marketing .hero--preview .hero-lede {
-    font-size: clamp(0.84rem, 3.5vw, 0.98rem) !important;
-    width: auto !important;
-    max-width: 22rem !important;
+    font-size: clamp(0.9rem, 3.6vw, 1.02rem) !important;
+    width: 100% !important;
+    max-width: 100% !important;
     white-space: normal !important;
-    margin-bottom: 1.35rem !important;
+    margin-bottom: 1.75rem !important;
   }
   body.body-marketing .hero--preview .hero-url-form--preview {
-    width: min(92vw, 24rem) !important;
+    width: 100% !important;
   }
   body.body-marketing .hero--preview .hero-url-form__row {
     flex-direction: column;

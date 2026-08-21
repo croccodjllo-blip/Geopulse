@@ -53,3 +53,22 @@ def test_hero_form_keeps_csrf_and_text_url():
     assert 'type="text"' in LANDING
     assert 'name="url"' in LANDING
     assert "preview_analyze_start" in LANDING
+
+
+def test_hero_logo_has_no_charcoal_plate():
+    logo = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
+    mark = (ROOT / "static" / "img" / "logo-mark.svg").read_text(encoding="utf-8")
+    assert 'fill="#121212"' not in logo
+    assert "<rect" not in logo
+    assert 'fill="#121212"' not in mark
+    fav = (ROOT / "static" / "favicon.svg").read_text(encoding="utf-8")
+    assert 'fill="#121212"' in fav
+
+
+def test_hero_grows_instead_of_locking_viewport():
+    assert "min-height: 100dvh" in PREVIEW
+    locked = {line.strip() for line in PREVIEW.splitlines()}
+    assert "height: 100vh;" not in locked
+    assert "height: 100dvh;" not in locked
+    assert "inset: 0 !important" in PREVIEW
+    assert "aspect-ratio: auto !important" in PREVIEW

@@ -19,9 +19,9 @@ When a user is logged in, `body.dash-plan--free|plus|business` remaps the **enti
 Marketing/admin with no plan class keep the global charcoal void (`--brand-bg: #121212`, `--plan-accent: var(--brand-cyan)`). New surfaces must use `var(--brand-*)` / `var(--plan-accent*)`, never a hardcoded navy/teal/chrome hex.
 
 ## Assets
-- `static/img/logo.svg` — **primary mark, true self-contained vector** (paths/gradients only, no external `<image>` refs). Every header/hero/page-intro/auth `<img>` points here directly (viewBox 128×128).
-- `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility).
-- `static/favicon.svg` — same compact-mark design.
+- `static/img/logo.svg` — **primary mark, true self-contained vector** (paths/gradients only, no external `<image>` refs, **no charcoal plate**). The C sits on whatever surface loads it (hero nebula, charcoal chrome). Every header/hero/page-intro/auth `<img>` points here directly (viewBox 128×128).
+- `static/img/logo-mark.svg` — compact vector mark for the sidebar (viewBox 64×64, simplified geometry for ≤28px legibility, same transparent canvas).
+- `static/favicon.svg` — same mark **with** a `#121212` plate so the tab icon stays readable on light browser chrome.
 - `static/img/logo.png` / `logo-mark.png` / `apple-touch-icon.png` / `favicon-32.png` / `favicon-16.png` — raster renders of the SVGs above (`cairosvg`), used only where raster is required: `<link rel="apple-touch-icon">`, JSON-LD `logo`/`image`, `<link rel="icon" sizes="any">` fallback.
 - `static/img/bg-void-chrome.jpg` / `bg-void-chrome-mobile.jpg` — site-wide void charcoal canvas with teal particle glow (preview 1–3 atmosphere). Used as marketing hero photo and dash body backdrop.
 - `static/img/hero-signal-field.jpg` — legacy hero art (superseded on landing by `bg-void-chrome.jpg`).
