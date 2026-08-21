@@ -1064,7 +1064,7 @@ body.body-marketing {
 }
 
 body.body-marketing .site-header--transparent {
-  background: linear-gradient(180deg, rgba(4, 6, 10, 0.88) 0%, rgba(4, 6, 10, 0.35) 70%, transparent 100%) !important;
+  background: linear-gradient(180deg, rgba(18, 18, 18, 0.88) 0%, rgba(18, 18, 18, 0.35) 70%, transparent 100%) !important;
   border-bottom: 0 !important;
   backdrop-filter: blur(8px);
 }
@@ -1097,7 +1097,9 @@ body.body-marketing .holo-brand__word--nav span {
 body.body-marketing .brand-mark__logo {
   width: 28px !important;
   height: 28px !important;
-  border-radius: 999px;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
   object-fit: contain;
 }
 body.body-marketing--hero-only .brand-mark__logo {
@@ -1474,7 +1476,7 @@ body.body-marketing .section-cta--preview {
   text-align: center;
 }
 body.body-marketing {
-  background-color: #05070A !important;
+  background-color: #121212 !important;
 }
 
 /* Sections — one job, hairlines, less card soup */
@@ -1492,7 +1494,7 @@ body.body-marketing .section-band--v2 h2 {
   max-width: 18ch;
 }
 body.body-marketing .profile-card {
-  background: rgba(10, 16, 18, 0.55) !important;
+  background: color-mix(in srgb, #1A1612 70%, transparent) !important;
   border: 1px solid color-mix(in srgb, var(--brand-cyan) 14%, transparent) !important;
   border-radius: 14px !important;
   box-shadow: none !important;
@@ -1538,7 +1540,9 @@ body.body-marketing .section-cta--v2 {
 /* Auth pages */
 body.body-auth .page-intro__brand-mark,
 body.body-auth .brand-mark__logo {
-  border-radius: 999px;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 body.body-auth .btn-primary,
 body.body-auth .btn-signal {
@@ -1548,10 +1552,12 @@ body.body-auth .btn-signal {
   font-weight: 700 !important;
 }
 
-/* Pricing / product page intros */
+/* Pricing / product page intros — transparent mark, no charcoal plate */
 body.body-marketing .page-intro__brand-mark {
-  border-radius: 999px;
-  filter: drop-shadow(0 0 12px rgba(232, 160, 74, 0.3));
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none;
 }
 
 /* —— PREVIEW 1·2·3 unified void canvas + mobile layout —— */
@@ -2001,4 +2007,86 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   body.body-marketing {
     background-attachment: scroll !important;
   }
+}
+
+/* —— INNER PAGES: same warm-gold system as the homepage hero —— */
+body.body-marketing:not(.body-marketing--hero-only) .site-main,
+body.body-auth .site-main {
+  padding-top: 0.35rem;
+}
+body.body-marketing .page,
+body.body-auth .auth-shell,
+body.body-auth .login-popup__dialog {
+  color: #F3EDE3;
+}
+body.body-marketing .page-intro,
+body.body-auth .auth-brand-lockup {
+  scroll-margin-top: calc(var(--header-h, 4rem) + 0.75rem);
+}
+body.body-marketing .page-intro__title,
+body.body-auth .auth-title {
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.03em !important;
+  color: #F3EDE3 !important;
+}
+body.body-marketing .page-intro__lede,
+body.body-auth .auth-lede,
+body.body-marketing .page-section .lede {
+  color: color-mix(in srgb, #F3EDE3 74%, transparent);
+}
+body.body-marketing .eyebrow,
+body.body-auth .eyebrow {
+  color: #E8A04A !important;
+  letter-spacing: 0.14em !important;
+}
+body.body-marketing .site-footer,
+body.body-auth .site-footer {
+  padding-top: 3.25rem;
+  background: #121212 !important;
+  border-top: 1px solid color-mix(in srgb, #E8A04A 16%, transparent);
+}
+body.body-marketing .site-footer__col a:hover,
+body.body-marketing .site-footer__bottom a:hover,
+body.body-auth .site-footer__col a:hover {
+  color: #E8A04A;
+}
+body.body-marketing .plan--v2,
+body.body-marketing .guide-plan,
+body.body-marketing .faq-item,
+body.body-marketing .page-section {
+  border-color: color-mix(in srgb, #E8A04A 16%, var(--brand-border, #3A2E22));
+}
+body.body-marketing .btn-ghost-light {
+  border-color: color-mix(in srgb, #E8A04A 38%, transparent) !important;
+  color: #F3EDE3 !important;
+}
+body.body-marketing .btn-ghost-light:hover {
+  border-color: #E8A04A !important;
+  background: color-mix(in srgb, #E8A04A 14%, transparent) !important;
+  color: #F6E8D0 !important;
+}
+body.body-marketing .legal-rail a:hover,
+body.body-marketing .guide-toc a:hover,
+body.body-marketing a.site-link:hover {
+  color: #E8A04A;
+}
+body.body-auth .panel--auth,
+body.body-auth .login-popup__dialog {
+  background: color-mix(in srgb, #1A1612 78%, transparent) !important;
+  border-color: color-mix(in srgb, #E8A04A 22%, transparent) !important;
+}
+body.body-auth input,
+body.body-auth select,
+body.body-auth textarea {
+  background: color-mix(in srgb, #121212 70%, transparent);
+  border-color: color-mix(in srgb, #E8A04A 22%, transparent);
+  color: #F3EDE3;
+}
+body.body-auth input:focus,
+body.body-auth select:focus,
+body.body-auth textarea:focus {
+  outline: 2px solid color-mix(in srgb, #E8A04A 55%, transparent);
+  outline-offset: 1px;
+  border-color: #E8A04A;
 }

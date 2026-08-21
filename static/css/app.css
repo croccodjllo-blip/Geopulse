@@ -244,16 +244,16 @@ body.app-body:not(.body-dash) {
 .brand-mark__logo {
   width: 2rem;
   height: 2rem;
-  border-radius: 0.35rem;
+  border-radius: 0;
   object-fit: contain;
   flex-shrink: 0;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent) 22%, transparent);
-  background: var(--brand-bg);
+  box-shadow: none;
+  background: transparent;
   animation: none;
 }
 
 .site-header--invert .brand-mark__logo {
-  box-shadow: inset 0 0 0 1px rgba(201, 211, 221, 0.28);
+  box-shadow: none;
 }
 
 .brand-mark__dot {
@@ -304,7 +304,7 @@ body.app-body:not(.body-dash) {
 }
 
 .nav-cta {
-  border: 1px solid rgba(201, 211, 221, 0.4) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-cyan) 45%, transparent) !important;
   padding: 0.42rem 0.95rem !important;
   border-radius: var(--radius-sm);
   font-weight: 600 !important;
@@ -389,7 +389,7 @@ body.app-body:not(.body-dash) {
   transition: color 150ms var(--ease);
 }
 
-.site-footer__col a:hover { color: rgba(255, 255, 255, 0.88); }
+.site-footer__col a:hover { color: var(--brand-cyan); }
 
 .site-footer__label {
   margin: 0 0 0.35rem;
@@ -418,7 +418,7 @@ body.app-body:not(.body-dash) {
   font-weight: 600;
   transition: color 150ms;
 }
-.site-footer__bottom a:hover { color: #fff; }
+.site-footer__bottom a:hover { color: var(--brand-cyan); }
 
 @media (max-width: 900px) {
   .site-footer__grid { grid-template-columns: 1fr 1fr; }
@@ -1251,15 +1251,18 @@ body.app-body:not(.body-dash) {
 
 .legal-table tr:last-child td { border-bottom: 0; }
 
-.page-intro { margin-bottom: 3rem; }
+.page-intro {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: calc(var(--header-h) + 0.75rem);
+}
 
 .page-intro__title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.5vw, 2.9rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  margin-top: 0.5rem;
-  line-height: 1.1;
+  font-size: clamp(1.65rem, 3.8vw, 2.45rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-top: 0.35rem;
+  line-height: 1.18;
 }
 
 .page-intro__lede {
@@ -1369,7 +1372,7 @@ body.app-body:not(.body-dash) {
 
 .plan--featured {
   border-color: var(--signal);
-  background: linear-gradient(170deg, rgba(201, 211, 221, 0.05) 0%, var(--surface) 55%);
+  background: linear-gradient(170deg, rgba(232, 160, 74, 0.08) 0%, var(--surface) 55%);
   box-shadow: 0 0 0 1px var(--signal), var(--shadow-md);
 }
 
@@ -6709,7 +6712,7 @@ html.analyze-busy {
   color: var(--color-clarity);
 }
 
-.flash-success { border-color: rgba(201, 211, 221, 0.4); }
+.flash-success { border-color: color-mix(in srgb, #22C55E 45%, transparent); }
 .flash-error { border-color: rgba(251, 113, 133, 0.45); }
 .flash-warning { border-color: rgba(251, 191, 36, 0.45); }
 
@@ -6724,7 +6727,7 @@ html.analyze-busy {
 .plain-list code,
 .faq-item code {
   color: var(--color-core);
-  background: rgba(201, 211, 221, 0.1);
+  background: color-mix(in srgb, var(--brand-cyan) 12%, transparent);
 }
 
 .site-footer {
@@ -7547,21 +7550,21 @@ html.analyze-busy {
 }
 
 .site-header--transparent {
-  background: rgba(4, 6, 10, 0.45);
+  background: rgba(18, 18, 18, 0.42);
   border-bottom-color: transparent;
 }
 
 .site-header--transparent.is-scrolled,
 .site-header--transparent:focus-within {
-  background: rgba(4, 6, 10, 0.88);
+  background: rgba(18, 18, 18, 0.88);
   border-bottom-color: var(--brand-border);
 }
 
 body.body-marketing,
 body.body-auth {
   background-image:
-    radial-gradient(ellipse 70% 50% at 85% -10%, rgba(91, 107, 122, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 40% at 5% 15%, rgba(201, 211, 221, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 85% -10%, rgba(232, 160, 74, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 5% 15%, rgba(196, 122, 44, 0.08) 0%, transparent 50%),
     var(--bg-gradient);
   background-attachment: fixed;
 }
@@ -8250,9 +8253,9 @@ body.body-auth {
   height: 2.5rem;
   display: block;
   flex-shrink: 0;
-  border-radius: 0.4rem;
-  background: var(--brand-bg);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent) 25%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .page-intro__brand-row .hero-brand-word,
@@ -8582,8 +8585,8 @@ body.body-login-popup .site-footer {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 55% 45% at 50% 40%, rgba(201, 211, 221, 0.08), transparent 60%),
-    rgba(6, 9, 16, 0.72);
+    radial-gradient(ellipse 55% 45% at 50% 40%, rgba(232, 160, 74, 0.10), transparent 60%),
+    rgba(18, 18, 18, 0.72);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
@@ -8645,8 +8648,8 @@ body.body-login-popup .site-footer {
 
 .login-popup__close:hover,
 .login-popup__close:focus-visible {
-  background: color-mix(in srgb, var(--brand-cyan, #c9d3dd) 14%, transparent);
-  color: var(--ink, #e8eef5);
+  background: color-mix(in srgb, var(--brand-cyan, #E8A04A) 14%, transparent);
+  color: var(--ink, #F3EDE3);
   outline: none;
 }
 
@@ -8657,7 +8660,7 @@ body.body-login-popup .site-footer {
 .login-popup__switch {
   margin-top: 1.1rem;
   padding-top: 0.85rem;
-  border-top: 1px solid color-mix(in srgb, var(--brand-cyan, #c9d3dd) 16%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--brand-cyan, #E8A04A) 16%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -8710,8 +8713,8 @@ body.body-login-popup .site-footer {
 }
 
 .auth-shell--watermark .panel--auth {
-  background: color-mix(in srgb, var(--brand-bg, #0b0f19) 78%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-cyan, #c9d3dd) 22%, transparent);
+  background: color-mix(in srgb, var(--brand-bg, #121212) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-cyan, #E8A04A) 22%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -8812,17 +8815,17 @@ body.body-login-popup .site-footer {
 }
 
 .page-intro--hero {
-  min-height: calc(100svh - var(--header-h) - 2rem);
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 0.35rem;
-  padding: clamp(3rem, 10vh, 6rem) 0 clamp(2.5rem, 8vh, 4rem);
-  margin-bottom: 0.5rem;
+  padding: clamp(1.75rem, 5vh, 3rem) 0 clamp(2rem, 5vh, 2.75rem);
+  margin-bottom: 0.75rem;
   background:
-    radial-gradient(ellipse 50% 40% at 8% 20%, rgba(201, 211, 221, 0.08), transparent 55%),
-    radial-gradient(ellipse 40% 35% at 92% 70%, rgba(91, 107, 122, 0.07), transparent 50%);
+    radial-gradient(ellipse 50% 40% at 8% 20%, rgba(232, 160, 74, 0.10), transparent 55%),
+    radial-gradient(ellipse 40% 35% at 92% 70%, rgba(196, 122, 44, 0.08), transparent 50%);
 }
 
 .page-intro--hero .page-intro__title {
@@ -8876,9 +8879,9 @@ body.body-login-popup .site-footer {
 }
 
 .plan--v2.plan--featured {
-  border-color: rgba(201, 211, 221, 0.35);
+  border-color: color-mix(in srgb, var(--brand-cyan) 42%, transparent);
   box-shadow: none;
-  background: rgba(201, 211, 221, 0.04);
+  background: color-mix(in srgb, var(--brand-cyan) 7%, transparent);
 }
 
 .plan--v2 .plan__name {
@@ -8936,9 +8939,9 @@ body.body-login-popup .site-footer {
 .holo-brand__emblem {
   display: grid;
   place-items: center;
-  border-radius: var(--radius);
-  background: var(--brand-bg);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--plan-accent) 22%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   padding: 0.2rem;
 }
 .holo-brand__emblem img {
@@ -10331,15 +10334,15 @@ body.body-login-popup .site-footer {
 
 .profile-card:hover {
   transform: none;
-  border-color: rgba(201, 211, 221, 0.28);
+  border-color: color-mix(in srgb, var(--brand-cyan) 32%, transparent);
   box-shadow: none;
-  background: rgba(201, 211, 221, 0.03);
+  background: color-mix(in srgb, var(--brand-cyan) 6%, transparent);
 }
 
 .profile-card--featured {
-  border-color: rgba(201, 211, 221, 0.35);
+  border-color: color-mix(in srgb, var(--brand-cyan) 40%, transparent);
   box-shadow: none;
-  background: rgba(201, 211, 221, 0.04);
+  background: color-mix(in srgb, var(--brand-cyan) 7%, transparent);
 }
 
 .profile-card__badge {
