@@ -25,9 +25,11 @@ def test_topbar_has_pills_and_no_left_dock():
     assert "app-sidebar--dock" not in TOPBAR
     assert "data-dock-pin" not in TOPBAR
     assert "Fissa icone" not in TOPBAR
-    assert "{{ _('Dashboard') }}" in TOPBAR
-    assert "{{ _('Share of Voice') }}" in TOPBAR
-    assert "{{ _('Impostazioni') }}" in TOPBAR
+    assert "{{ _('Panoramica') }}" in TOPBAR
+    assert "{{ _('Benchmark') }}" in TOPBAR
+    assert "{{ _('Prompt') }}" in TOPBAR
+    assert "{{ _('Trend') }}" in TOPBAR
+    assert "{{ _('Guida') }}" in TOPBAR
 
 
 def test_base_uses_topbar_not_sidebar_shell():
@@ -46,7 +48,9 @@ def test_no_hidden_folds_on_main_dashboard():
     assert "dash-meridian" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
-    assert "edge-advanced--open" in DASH
+    assert "edge-advanced--open" in (
+        ROOT / "templates" / "partials" / "dash_prompt_ops.html"
+    ).read_text(encoding="utf-8")
 
 
 def test_topbar_css_clears_left_offset():

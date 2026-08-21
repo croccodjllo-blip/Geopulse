@@ -1,4 +1,4 @@
-{# Product-performance canvas — Synthex card grid. Honest series only. No style=. #}
+{# Panoramica — full-width, professional, minimal. Honest series only. #}
 {% set ch = dash_charts or {} %}
 {% set rating = rating if rating is defined and rating else (latest.rating if latest is defined and latest else none) %}
 {% set cvi_score = rating.score if rating and rating.score is number else 0 %}
@@ -12,7 +12,6 @@
 {% set mosaic = ch.mosaic or {} %}
 {% set totals = mosaic.totals or {} %}
 {% set dash_home = url_for('dashboard', site=latest.id) if latest is defined and latest else url_for('dashboard') %}
-{% set insight_findings = findings_critical if findings_critical is defined else [] %}
 
 <style nonce="{{ csp_nonce }}">
 .dash-signal {
@@ -28,82 +27,74 @@
 {% endfor %}
 {% endif %}
 {% for tick in meridian.ticks or [] %}
-.dash-meridian [data-tick="{{ tick.id }}"],
-.dash-sheet [data-page="{{ tick.id }}"] { --x: {{ tick.x }}; --geo: {{ tick.geo }}; --aio: {{ tick.aio }}; }
+.dash-meridian [data-tick="{{ tick.id }}"] { --x: {{ tick.x }}; --geo: {{ tick.geo }}; }
 {% endfor %}
 .dash-meridian [data-tick="brand"] { --x: {{ meridian.brand_x if meridian.brand_x is number else ch.aio|default(0) }}; }
 </style>
 
-<section class="dash-signal dash-signal--synth" aria-labelledby="result-domain">
+<section class="dash-signal dash-signal--wide" aria-labelledby="result-domain">
   <header class="dash-boardhead">
     <div class="dash-boardhead__copy">
-      <p class="dash-signal__kicker">{{ _('Visibilità prodotto') }}</p>
+      <p class="dash-signal__kicker">{{ _('Panoramica') }}</p>
       {% set _title_tag = 'h1' if request.endpoint == 'dashboard' else 'h2' %}
       <{{ _title_tag }} class="dash-boardhead__title" id="result-domain">{{ latest.domain }}</{{ _title_tag }}>
       {% if latest.page_title %}
       <p class="dash-signal__domain">{{ latest.page_title }}</p>
       {% endif %}
     </div>
-    <nav class="dash-boardhead__acts" aria-label="{{ _('Azioni report') }}">
-      <a class="dash-iconbtn" href="{{ dash_home }}#analyze-panel" title="{{ _('Nuova analisi') }}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.2-5.8"/><path d="M21 3v6h-6"/></svg>
-        <span>{{ _('Refresh') }}</span>
-      </a>
-      <a class="dash-iconbtn" href="{{ dash_home }}#pack" title="{{ _('Pack') }}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 19h14"/></svg>
-      </a>
-      <a class="dash-iconbtn" href="{{ url_for('dashboard_sov', site=latest.id) }}" title="{{ _('Share of Voice') }}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="7" r="2.2"/><circle cx="18" cy="17" r="2.2"/><path d="M8 12h6.2M16 8.6 9.8 11.2M16 15.4 9.8 12.8"/></svg>
-      </a>
+    <nav class="dash-boardhead__acts" aria-label="{{ _('Azioni') }}">
+      <a class="dash-iconbtn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
+      <a class="dash-iconbtn" href="{{ url_for('dashboard_prompt', site=latest.id) }}">{{ _('Prompt') }}</a>
+      <a class="dash-iconbtn" href="{{ url_for('dashboard_benchmark', site=latest.id) }}">{{ _('Benchmark') }}</a>
     </nav>
   </header>
 
-  <div class="dash-synth">
-    <article class="dash-card dash-card--insight">
-      <p class="dash-card__kicker">{{ _('Insights') }}</p>
-      <h3 class="dash-card__title">{{ _('Cosa sta succedendo') }}</h3>
-      {% if insight_findings %}
-      <p class="dash-card__lede">
-        {{ insight_findings[0].title }}
-        {% if insight_findings[0].detail %} — {{ insight_findings[0].detail }}{% endif %}
-      </p>
-      {% if insight_findings|length > 1 %}
-      <p class="dash-card__more">{{ insight_findings[1].title }}</p>
-      {% endif %}
-      {% else %}
-      <p class="dash-card__lede">{{ _('Nessuna criticità aperta su questo run.') }}</p>
-      {% endif %}
-      <ul class="dash-chiprow" aria-label="{{ _('Findings') }}">
-        <li data-sev="critical">{{ totals.critical or 0 }} {{ _('critiche') }}</li>
-        <li data-sev="warn">{{ totals.warn or 0 }} {{ _('warn') }}</li>
-        <li data-sev="ok">{{ totals.ok or 0 }} {{ _('ok') }}</li>
-      </ul>
-    </article>
-
-    <article class="dash-card dash-card--hero" aria-labelledby="signal-orbit">
-      <header class="dash-card__head">
-        <div>
-          <p class="dash-card__kicker">{{ _('Share of Voice') }}</p>
-          <h3 class="dash-card__title" id="signal-orbit">{{ _('Citation share brand') }}</h3>
-        </div>
-        {% if engine_breakdown %}
-        <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or ch.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
-        {% endif %}
-      </header>
-      <div class="dash-hero-kpi">
-        <p class="dash-hero-kpi__n">
-          {% if sov_pct is number %}{{ sov_pct }}<span>%</span>{% else %}{{ cvi_score }}<span>/100</span>{% endif %}
-        </p>
-        {% if ch.delta and ch.delta.aio is not none %}
-        <em class="dash-hero-kpi__delta" data-delta="{{ ch.delta.aio }}">AIO {{ '%+d'|format(ch.delta.aio or 0) }}</em>
-        {% endif %}
+  <ul class="dash-kpis" aria-label="{{ _('Metriche primarie') }}">
+    <li class="dash-kpi dash-spine" data-grade="{{ cvi_code }}" data-len="{{ cvi_code|length }}">
+      <p class="dash-kpi__k dash-spine__kicker">{{ _('CVI') }}</p>
+      <div class="dash-spine__mark" aria-hidden="true">
+        <svg class="dash-spine__arc" viewBox="0 0 160 160" role="presentation">
+          <circle class="dash-spine__track" cx="80" cy="80" r="54" fill="none" stroke-width="2"/>
+          {% if sov_pct is number %}
+          <circle class="dash-spine__progress" cx="80" cy="80" r="54" fill="none" stroke-width="3.25"
+            stroke-dasharray="{{ '%.2f'|format(arc_c) }}"
+            stroke-dashoffset="{{ '%.2f'|format(arc_off) }}"
+            transform="rotate(-90 80 80)"/>
+          {% endif %}
+        </svg>
+        <strong class="dash-spine__grade">{{ cvi_code }}</strong>
       </div>
-      <ul class="dash-minis" aria-label="{{ _('Metriche chiave') }}">
-        <li><span>AIO</span><strong>{{ ch.aio if ch.aio is number else '—' }}</strong></li>
-        <li><span>GEO</span><strong>{{ ch.geo if ch.geo is number else '—' }}</strong></li>
-        <li><span>{{ _('Findings') }}</span><strong>{{ (totals.critical or 0) + (totals.warn or 0) }}</strong></li>
-        <li><span>{{ _('Pagine') }}</span><strong>{{ meridian.n or 0 }}</strong></li>
-      </ul>
+      <p class="dash-kpi__n dash-spine__score"><b>{{ cvi_score }}</b><span>/100</span></p>
+    </li>
+    <li class="dash-kpi">
+      <p class="dash-kpi__k">{{ _('Share of Voice') }}</p>
+      <p class="dash-kpi__n">{% if sov_pct is number %}{{ sov_pct }}<span>%</span>{% else %}—{% endif %}</p>
+      {% if engine_breakdown %}
+      <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
+      {% endif %}
+    </li>
+    <li class="dash-kpi" data-metric="aio">
+      <p class="dash-kpi__k">AIO</p>
+      <p class="dash-kpi__n">{{ ch.aio if ch.aio is number else '—' }}</p>
+      <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
+    </li>
+    <li class="dash-kpi" data-metric="geo">
+      <p class="dash-kpi__k">GEO</p>
+      <p class="dash-kpi__n">{{ ch.geo if ch.geo is number else '—' }}</p>
+      <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
+    </li>
+  </ul>
+  <ol class="dash-mercury visually-hidden" aria-label="{{ _('AIO e GEO') }}">
+    <li data-metric="aio"><span class="dash-mercury__k">AIO</span><strong class="dash-mercury__v">{{ ch.aio if ch.aio is number else '—' }}</strong></li>
+    <li data-metric="geo"><span class="dash-mercury__k">GEO</span><strong class="dash-mercury__v">{{ ch.geo if ch.geo is number else '—' }}</strong></li>
+  </ol>
+
+  <div class="dash-wide">
+    <article class="dash-card dash-orbit" aria-labelledby="signal-orbit">
+      <header class="dash-orbit__head">
+        <p class="dash-orbit__kicker">{{ _('Engine') }}</p>
+        <h3 class="dash-orbit__title" id="signal-orbit">{{ _('Orbita') }}</h3>
+      </header>
       {% if ch.spark %}
       <div class="dash-hero-chart" aria-label="{{ _('SoV nel tempo') }}">
         <svg class="dash-spark dash-spark--wide" viewBox="0 0 200 52" role="img">
@@ -113,45 +104,36 @@
         <p class="dash-spark__meta">{{ ch.spark.n }} {{ _('campioni') }} · {{ ch.spark.first }}% → {{ ch.spark.last }}%</p>
       </div>
       {% endif %}
-      <div class="dash-orbit">
-        <svg class="dash-orbit__svg" viewBox="0 0 320 200" role="img" aria-label="{{ _('Share per engine') }}">
-          <ellipse class="dash-orbit__ring" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="{{ orbit.rx or 124 }}" ry="{{ orbit.ry or 72 }}"/>
-          <ellipse class="dash-orbit__ring dash-orbit__ring--inner" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="72" ry="42"/>
-          {% for e in orbit.nodes or [] %}
-          <line class="dash-orbit__filament" data-engine="{{ e.id }}" x1="{{ orbit.cx }}" y1="{{ orbit.cy }}" x2="{{ e.ox }}" y2="{{ e.oy }}"/>
-          {% endfor %}
-          <circle class="dash-orbit__nucleus" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" r="11"/>
-          <text class="dash-orbit__core" x="{{ orbit.cx or 160 }}" y="{{ (orbit.cy or 100) + 3.5 }}" text-anchor="middle">{{ _('tu') }}</text>
-          {% for e in orbit.nodes or [] %}
-          <circle class="dash-orbit__sat" data-engine="{{ e.id }}" cx="{{ e.ox }}" cy="{{ e.oy }}" r="{{ e.or }}">
-            <title>{{ e.label }} · {{ e.share }}%</title>
-          </circle>
-          <text class="dash-orbit__lab" x="{{ e.lx }}" y="{{ e.ly }}" text-anchor="{{ e.anchor }}" dy="{{ e.dy }}">{{ e.label }} {{ e.share }}%</text>
-          {% endfor %}
-        </svg>
-      </div>
+      <svg class="dash-orbit__svg" viewBox="0 0 320 200" role="img" aria-label="{{ _('Share per engine') }}">
+        <ellipse class="dash-orbit__ring" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="{{ orbit.rx or 124 }}" ry="{{ orbit.ry or 72 }}"/>
+        <ellipse class="dash-orbit__ring dash-orbit__ring--inner" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="72" ry="42"/>
+        {% for e in orbit.nodes or [] %}
+        <line class="dash-orbit__filament" data-engine="{{ e.id }}" x1="{{ orbit.cx }}" y1="{{ orbit.cy }}" x2="{{ e.ox }}" y2="{{ e.oy }}"/>
+        {% endfor %}
+        <circle class="dash-orbit__nucleus" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" r="11"/>
+        <text class="dash-orbit__core" x="{{ orbit.cx or 160 }}" y="{{ (orbit.cy or 100) + 3.5 }}" text-anchor="middle">{{ _('tu') }}</text>
+        {% for e in orbit.nodes or [] %}
+        <circle class="dash-orbit__sat" data-engine="{{ e.id }}" cx="{{ e.ox }}" cy="{{ e.oy }}" r="{{ e.or }}">
+          <title>{{ e.label }} · {{ e.share }}%</title>
+        </circle>
+        <text class="dash-orbit__lab" x="{{ e.lx }}" y="{{ e.ly }}" text-anchor="{{ e.anchor }}" dy="{{ e.dy }}">{{ e.label }} {{ e.share }}%</text>
+        {% endfor %}
+      </svg>
     </article>
 
-    <article class="dash-card dash-card--table">
-      <p class="dash-card__kicker">{{ _('Engine') }}</p>
-      <h3 class="dash-card__title">{{ _('Share per motore') }}</h3>
+    <article class="dash-card">
+      <p class="dash-card__kicker">{{ _('Share') }}</p>
+      <h3 class="dash-card__title">{{ _('Motori') }}</h3>
       {% if orbit.nodes %}
       <table class="dash-sheet">
         <thead>
-          <tr>
-            <th>{{ _('Engine') }}</th>
-            <th>{{ _('Share') }}</th>
-            <th>{{ _('Propensity') }}</th>
-          </tr>
+          <tr><th>{{ _('Engine') }}</th><th>{{ _('Share') }}</th><th>{{ _('Propensity') }}</th></tr>
         </thead>
         <tbody>
           {% for e in orbit.nodes %}
           <tr data-engine="{{ e.id }}">
             <td>{{ e.label }}</td>
-            <td>
-              <strong>{{ e.share }}%</strong>
-              <span class="dash-sheet__bar" aria-hidden="true"><i></i></span>
-            </td>
+            <td><strong>{{ e.share }}%</strong><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
             <td>{{ e.propensity }}</td>
           </tr>
           {% endfor %}
@@ -161,67 +143,32 @@
       <p class="dash-card__lede">{{ _('Nessun breakdown disponibile.') }}</p>
       {% endif %}
     </article>
-
-    <article class="dash-card dash-card--side">
-      <article class="dash-spine" data-grade="{{ cvi_code }}" data-len="{{ cvi_code|length }}">
-        <p class="dash-spine__kicker">{{ _('Centropic Visibility Index') }}</p>
-        <div class="dash-spine__mark" aria-hidden="true">
-          <svg class="dash-spine__arc" viewBox="0 0 160 160" role="presentation">
-            <circle class="dash-spine__track" cx="80" cy="80" r="54" fill="none" stroke-width="2"/>
-            {% if sov_pct is number %}
-            <circle class="dash-spine__progress" cx="80" cy="80" r="54" fill="none" stroke-width="3.25"
-              stroke-dasharray="{{ '%.2f'|format(arc_c) }}"
-              stroke-dashoffset="{{ '%.2f'|format(arc_off) }}"
-              transform="rotate(-90 80 80)"/>
-            {% endif %}
-          </svg>
-          <strong class="dash-spine__grade">{{ cvi_code }}</strong>
-        </div>
-        <div class="dash-spine__readout">
-          <p class="dash-spine__score"><b>{{ cvi_score }}</b><span>/100</span></p>
-          <p class="dash-spine__sov">
-            {% if sov_pct is number %}
-              {{ _('SoV') }} <strong>{{ sov_pct }}%</strong>
-            {% else %}
-              {{ _('SoV') }} —
-            {% endif %}
-          </p>
-        </div>
-        <ol class="dash-mercury" aria-label="{{ _('AIO e GEO') }}">
-          <li data-metric="aio">
-            <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
-            <span class="dash-mercury__k">AIO</span>
-            <strong class="dash-mercury__v">{{ ch.aio if ch.aio is number else '—' }}</strong>
-          </li>
-          <li data-metric="geo">
-            <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
-            <span class="dash-mercury__k">GEO</span>
-            <strong class="dash-mercury__v">{{ ch.geo if ch.geo is number else '—' }}</strong>
-          </li>
-        </ol>
-      </article>
-      <article class="dash-fault" aria-labelledby="signal-fault">
-        <header class="dash-fault__head">
-          <p class="dash-fault__kicker">{{ _('Findings') }}</p>
-          <h3 class="dash-fault__title" id="signal-fault">{{ _('Faglia') }}</h3>
-        </header>
-        {% if mosaic.cells %}
-        <ol class="dash-fault__stave" aria-hidden="true">
-          {% for cell in mosaic.cells %}
-          <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
-          {% endfor %}
-        </ol>
-        {% else %}
-        <p class="dash-fault__empty">{{ _('Nessun finding su questo run.') }}</p>
-        {% endif %}
-      </article>
-    </article>
   </div>
 
-  <article class="dash-meridian dash-card" id="critical-pages" aria-labelledby="signal-meridian">
+  <article class="dash-fault" aria-labelledby="signal-fault">
+    <header class="dash-fault__head">
+      <p class="dash-fault__kicker">{{ _('Findings') }}</p>
+      <h3 class="dash-fault__title" id="signal-fault">{{ _('Pressione') }}</h3>
+      <p class="dash-fault__counts">
+        <b data-sev="critical">{{ totals.critical or 0 }}</b>
+        <b data-sev="warn">{{ totals.warn or 0 }}</b>
+        <b data-sev="ok">{{ totals.ok or 0 }}</b>
+      </p>
+      <a class="dash-actions__ghost" href="{{ url_for('dashboard_prompt', site=latest.id) }}#findings">{{ _('Apri Prompt') }}</a>
+    </header>
+    {% if mosaic.cells %}
+    <ol class="dash-fault__stave" aria-hidden="true">
+      {% for cell in mosaic.cells %}
+      <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
+      {% endfor %}
+    </ol>
+    {% endif %}
+  </article>
+
+  <article class="dash-meridian" id="critical-pages" aria-labelledby="signal-meridian">
     <header class="dash-meridian__head">
       <p class="dash-meridian__kicker">{{ _('Crawl') }}</p>
-      <h3 class="dash-meridian__title" id="signal-meridian">{{ _('Meridiano pagine') }}</h3>
+      <h3 class="dash-meridian__title" id="signal-meridian">{{ _('Pagine') }}</h3>
       <span class="dash-meridian__n">{{ meridian.n or 0 }}</span>
     </header>
     <div class="dash-meridian__axis" aria-label="{{ _('Pagine su asse AIO') }}">
@@ -243,17 +190,13 @@
     </div>
   </article>
 
-  <nav class="dash-rail dash-actions" aria-label="{{ _('Azioni report') }}">
+  <nav class="dash-rail dash-actions" aria-label="{{ _('Sezioni') }}">
     <a class="dash-actions__btn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
-    <a class="dash-actions__btn" href="{{ dash_home }}#pack">{{ _('Pack') }}</a>
-    <a class="dash-actions__btn" href="{{ dash_home }}#edge-signals">{{ _('Edge') }}</a>
-    <a class="dash-actions__btn dash-actions__btn--sov" href="{{ url_for('dashboard_sov', site=latest.id) }}">{{ _('Share of Voice') }}</a>
-    <a class="dash-actions__ghost" href="{{ url_for('dashboard_sov', site=latest.id) }}#findings">{{ _('Findings') }}</a>
-    {% if meridian.n %}<a class="dash-actions__ghost" href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
-    {% if latest.url %}<a class="dash-actions__ghost" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>{% endif %}
-    {% if can_extended_history|default(false) %}
-    <a class="dash-actions__ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
-    {% endif %}
+    <a class="dash-actions__btn" href="{{ url_for('dashboard_prompt', site=latest.id) }}#pack">{{ _('Pack') }}</a>
+    <a class="dash-actions__btn" href="{{ url_for('dashboard_prompt', site=latest.id) }}#edge-signals">{{ _('Edge') }}</a>
+    <a class="dash-actions__btn dash-actions__btn--sov" href="{{ url_for('dashboard_benchmark', site=latest.id) }}">{{ _('Benchmark') }}</a>
+    <a class="dash-actions__ghost" href="{{ url_for('dashboard_prompt', site=latest.id) }}#findings">{{ _('Findings') }}</a>
+    <a class="dash-actions__ghost" href="{{ url_for('dashboard_trend', site=latest.id) }}">{{ _('Trend') }}</a>
     <a class="dash-actions__ghost" href="{{ url_for('dashboard_geo_ui', site=latest.id) }}">{{ _('Apri grafici interattivi') }}</a>
   </nav>
 </section>

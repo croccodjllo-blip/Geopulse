@@ -1,12 +1,13 @@
-{# Horizontal workspace nav — Synthex-style top pills, no left dock. #}
-{% set nav = sidebar_active|default('dashboard') %}
+{# Five-page workspace nav — Panoramica, Benchmark, Prompt, Trend, Guida. #}
+{% set nav = sidebar_active|default('panoramica') %}
 {% set plan = sidebar_plan|default(current_user.plan_label if current_user else 'Free') %}
 {% set used = sidebar_credits_used|default(0) %}
 {% set cap = sidebar_credits_cap|default(0) %}
 {% set _dash_site = dash_site_id|default(none) %}
 {% set dash_href = url_for('dashboard', site=_dash_site) if _dash_site else url_for('dashboard') %}
-{% set geo_href = url_for('dashboard_geo_ui', site=_dash_site) if _dash_site else url_for('dashboard_geo_ui') %}
-{% set sov_href = url_for('dashboard_sov', site=_dash_site) if _dash_site else url_for('dashboard_sov') %}
+{% set bench_href = url_for('dashboard_benchmark', site=_dash_site) if _dash_site else url_for('dashboard_benchmark') %}
+{% set prompt_href = url_for('dashboard_prompt', site=_dash_site) if _dash_site else url_for('dashboard_prompt') %}
+{% set trend_href = url_for('dashboard_trend', site=_dash_site) if _dash_site else url_for('dashboard_trend') %}
 {% set _uname = (current_user.name if current_user and current_user.name else (current_user.email if current_user else 'U')) %}
 {% set _initial = _uname[0]|upper %}
 {% if cap and cap > 0 %}
@@ -33,18 +34,12 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
   </button>
 
-  <nav class="app-topbar__pills" id="app-topbar-nav" aria-label="{{ _('Strumenti') }}">
-    <a href="{{ dash_href }}" class="app-topbar__link{% if nav == 'dashboard' %} is-active{% endif %}" {% if nav == 'dashboard' %}aria-current="page"{% endif %}>{{ _('Dashboard') }}</a>
-    <a href="{{ sov_href }}" class="app-topbar__link{% if nav == 'sov' %} is-active{% endif %}" {% if nav == 'sov' %}aria-current="page"{% endif %}>{{ _('Share of Voice') }}</a>
-    <a href="{{ geo_href }}" class="app-topbar__link{% if nav == 'geo-ui' %} is-active{% endif %}" {% if nav == 'geo-ui' %}aria-current="page"{% endif %}>{{ _('Grafici') }}</a>
-    {% if can_extended_history %}
-    <a href="{{ url_for('dashboard_history') }}" class="app-topbar__link{% if nav == 'history' %} is-active{% endif %}" {% if nav == 'history' %}aria-current="page"{% endif %}>{{ _('Storico') }}</a>
-    {% endif %}
+  <nav class="app-topbar__pills" id="app-topbar-nav" aria-label="{{ _('Pagine') }}">
+    <a href="{{ dash_href }}" class="app-topbar__link{% if nav in ('panoramica', 'dashboard', 'sov') %} is-active{% endif %}" {% if nav in ('panoramica', 'dashboard') %}aria-current="page"{% endif %}>{{ _('Panoramica') }}</a>
+    <a href="{{ bench_href }}" class="app-topbar__link{% if nav == 'benchmark' %} is-active{% endif %}" {% if nav == 'benchmark' %}aria-current="page"{% endif %}>{{ _('Benchmark') }}</a>
+    <a href="{{ prompt_href }}" class="app-topbar__link{% if nav == 'prompt' %} is-active{% endif %}" {% if nav == 'prompt' %}aria-current="page"{% endif %}>{{ _('Prompt') }}</a>
+    <a href="{{ trend_href }}" class="app-topbar__link{% if nav in ('trend', 'history') %} is-active{% endif %}" {% if nav in ('trend', 'history') %}aria-current="page"{% endif %}>{{ _('Trend') }}</a>
     <a href="{{ url_for('dashboard_guide') }}" class="app-topbar__link{% if nav == 'guide' %} is-active{% endif %}" {% if nav == 'guide' %}aria-current="page"{% endif %}>{{ _('Guida') }}</a>
-    <a href="{{ url_for('dashboard_settings') }}" class="app-topbar__link{% if nav == 'settings' %} is-active{% endif %}" {% if nav == 'settings' %}aria-current="page"{% endif %}>{{ _('Impostazioni') }}</a>
-    {% if current_user and current_user.is_admin %}
-    <a href="{{ url_for('admin_home') }}" class="app-topbar__link{% if nav == 'admin' %} is-active{% endif %}" {% if nav == 'admin' %}aria-current="page"{% endif %}>Admin</a>
-    {% endif %}
   </nav>
 
   <div class="app-topbar__tools">
@@ -83,8 +78,11 @@
         {% endfor %}
       </ul>
     </div>
+    {% if current_user and current_user.is_admin %}
+    <a class="app-topbar__quiet" href="{{ url_for('admin_home') }}">Admin</a>
+    {% endif %}
     {% if current_user %}
-    <span class="app-topbar__avatar" title="{{ current_user.email }}">{{ _initial }}</span>
+    <a class="app-topbar__avatar" href="{{ url_for('dashboard_settings') }}" title="{{ current_user.email }}" aria-label="{{ _('Impostazioni') }}">{{ _initial }}</a>
     <form method="post" action="{{ url_for('logout') }}" class="app-topbar__logout">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <button type="submit" aria-label="{{ _('Esci') }}" title="{{ _('Esci') }}">

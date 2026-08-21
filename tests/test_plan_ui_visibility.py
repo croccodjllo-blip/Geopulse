@@ -87,20 +87,21 @@ def test_dashboard_plan_theme_classes():
     assert "plan-services" not in free_html
     assert "Toolkit Free" not in free_html
     assert 'href="/dashboard/storico"' not in free_html
+    assert "/dashboard/trend" in free_html
 
     assert "dash-plan--plus" in plus_html
     assert 'data-dash-plan="plus"' in plus_html
     assert "plan-services" not in plus_html
     assert "Toolkit Plus" not in plus_html
     assert "SoV measured" in plus_html
-    assert 'href="/dashboard/storico"' in plus_html
+    assert "/dashboard/trend" in plus_html
 
     assert "dash-plan--business" in biz_html
     assert 'data-dash-plan="business"' in biz_html
     assert "plan-services" not in biz_html
     assert "Toolkit Business" not in biz_html
     assert "white-label" in biz_html.lower()
-    assert 'href="/dashboard/storico"' in biz_html
+    assert "/dashboard/trend" in biz_html
 
 
 def test_settings_hides_unavailable_sections_per_plan():

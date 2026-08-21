@@ -1684,8 +1684,13 @@ def inject_globals() -> dict[str, Any]:
         ep = (request.endpoint or "")
         if ep in {"dashboard_settings"}:
             sidebar_active = "settings"
-        elif ep in {"dashboard_history", "site_history", "export_history_csv"}:
-            sidebar_active = "history"
+        elif ep in {
+            "dashboard_history",
+            "dashboard_trend",
+            "site_history",
+            "export_history_csv",
+        }:
+            sidebar_active = "trend"
         elif ep in {
             "topup_credit_page",
             "pricing",
@@ -1696,10 +1701,12 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "billing"
         elif ep in {"dashboard_guide", "site_guide"}:
             sidebar_active = "guide"
-        elif ep in {"dashboard_geo_ui"}:
-            sidebar_active = "geo-ui"
+        elif ep in {"dashboard_geo_ui", "dashboard_benchmark"}:
+            sidebar_active = "benchmark"
+        elif ep in {"dashboard_prompt"}:
+            sidebar_active = "prompt"
         elif ep in {"dashboard_sov"}:
-            sidebar_active = "sov"
+            sidebar_active = "panoramica"
         elif ep in {"dashboard_verify", "dashboard_verify_rescan"}:
             sidebar_active = "geo"
         elif ep in {"admin_home", "admin_set_plan", "admin_topup_user"} or (
@@ -1709,7 +1716,7 @@ def inject_globals() -> dict[str, Any]:
         elif "history" in ep:
             sidebar_active = "history"
         elif ep in {"dashboard", "confirm_analyze"}:
-            sidebar_active = "dashboard"
+            sidebar_active = "panoramica"
         else:
             sidebar_active = "dashboard"
     caps = capability_template_vars(user)
@@ -6530,6 +6537,162 @@ def dashboard_sov():
     )
 
 
+def _workspace_site(user):
+    """Resolve sticky/requested site for the five-page workspace."""
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is not None:
+        if get_accessible_site(SiteAnalysis, user, prefer_site_id) is None:
+            flash(_("Sito non accessibile."), "warning")
+            return None
+    else:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+    return latest
+
+
+def _workspace_user_sites(user):
+    return (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(SiteAnalysis.updated_at.desc())
+        .limit(40)
+        .all()
+    )
+
+
+def _workspace_findings(latest):
+    findings_all = list(latest.findings or []) if latest is not None else []
+    findings_critical = [
+        f
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() in {"critical", "warn"}
+    ]
+    findings_ok_n = sum(
+        1
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() == "ok"
+    )
+    return findings_all, findings_critical, findings_ok_n
+
+
+def _workspace_edge(latest):
+    if latest is None or not getattr(latest, "signals_hosted", False) or not latest.public_token:
+        return None
+    base = edge_base_url(public_base_url(), latest.public_token)
+    signals_url = f"{base}/signals.json"
+    return {
+        "base": base,
+        "llms_url": f"{base}/llms.txt",
+        "robots_url": f"{base}/robots.txt",
+        "jsonld_url": f"{base}/organization.jsonld",
+        "signals_url": signals_url,
+        "meta_url": f"{base}/meta",
+        "version": int(getattr(latest, "signals_version", 1) or 1),
+        "worker": cloudflare_worker_snippet(
+            origin_edge_base=base,
+            site_origin=latest.url or f"https://{latest.domain}",
+        ),
+        "vercel": vercel_edge_config_snippet(origin_edge_base=base),
+        "embed": html_embed_snippet(signals_url=signals_url),
+        "crawlers": top_crawlers_for_site(EdgeHit, site_id=latest.id, limit=8),
+    }
+
+
+def _workspace_charts(user, latest, findings_all, engine_breakdown, run_diff=None):
+    if latest is None:
+        return None
+    sov_trend: list[Any] = []
+    if user.is_pro:
+        sov_trend = sov_series_for_chart(
+            list_sov_snapshots(
+                SovSnapshot,
+                site_id=latest.id,
+                user_id=user.id,
+                limit=12,
+            )
+        )
+    geo_suite = {
+        "entity_graph": (latest.signals or {}).get("entity_graph") or {},
+        "citability": (latest.signals or {}).get("citability") or {},
+        "schema_quality": (latest.signals or {}).get("schema_quality") or {},
+        "locales": (latest.signals or {}).get("locales") or {},
+        "publish_verify": (latest.signals or {}).get("publish_verify") or {},
+        "llms_lint": (latest.signals or {}).get("llms_lint") or {},
+    }
+    return build_dash_charts(
+        aio_score=latest.aio_score,
+        geo_score=latest.geo_score,
+        findings=findings_all,
+        crawl_pages=list(latest.crawl_pages or []),
+        geo_suite=geo_suite,
+        engine_breakdown=engine_breakdown,
+        run_diff=run_diff,
+        sov_trend=sov_trend,
+    )
+
+
+@app.route("/dashboard/benchmark")
+@app.route("/dashboard/benchmark/")
+@login_required
+def dashboard_benchmark():
+    user = current_user()
+    latest = _workspace_site(user)
+    findings_all, findings_critical, _ok = _workspace_findings(latest)
+    crit_n = sum(
+        1
+        for f in findings_critical
+        if str((f or {}).get("severity") or "").lower() == "critical"
+    )
+    return render_template(
+        "dashboard_benchmark.html",
+        latest=latest,
+        user_sites=_workspace_user_sites(user),
+        findings_critical=findings_critical,
+        crit_n=crit_n,
+        user_plan=user.plan_label,
+        **capability_template_vars(user),
+    )
+
+
+@app.route("/dashboard/prompt")
+@app.route("/dashboard/prompt/")
+@login_required
+def dashboard_prompt():
+    user = current_user()
+    latest = _workspace_site(user)
+    _all, findings_critical, findings_ok_n = _workspace_findings(latest)
+    return render_template(
+        "dashboard_prompt.html",
+        latest=latest,
+        user_sites=_workspace_user_sites(user),
+        findings_critical=findings_critical,
+        findings_ok_n=findings_ok_n,
+        edge=_workspace_edge(latest),
+        pack_fix_filename=(
+            make_pack_fix_filename(latest) if latest is not None else "centropic-fix.html"
+        ),
+        can_write_latest=(
+            user_can_write_site(user, latest) if latest is not None else False
+        ),
+        user_plan=user.plan_label,
+        **capability_template_vars(user),
+    )
+
+
+@app.route("/dashboard/trend")
+@app.route("/dashboard/trend/")
+@login_required
+def dashboard_trend():
+    return dashboard_history()
+
+
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
@@ -8885,11 +9048,48 @@ def dashboard_history():
             .limit(hist_limit)
             .all()
         )
+    latest = _workspace_site(user)
+    findings_all, _crit, _ok = _workspace_findings(latest)
+    engine_breakdown = None
+    run_diff = None
+    if latest is not None:
+        engine_breakdown = compute_engine_breakdown(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            robots_text=latest.robots_probed_text or "",
+            competitors=latest.competitors,
+        )
+        recent_runs = (
+            AnalysisRun.query.filter_by(site_id=latest.id)
+            .order_by(AnalysisRun.created_at.desc())
+            .limit(2)
+            .all()
+        )
+        if len(recent_runs) >= 2:
+            run_diff = compare_with_previous(
+                aio_score=recent_runs[0].aio_score,
+                geo_score=recent_runs[0].geo_score,
+                findings=recent_runs[0].findings,
+                previous=recent_runs[1],
+            )
+    schedule_form = RescanScheduleForm()
+    if latest and not schedule_form.is_submitted():
+        schedule_form.analysis_id.data = str(latest.id)
+        schedule_form.interval.data = latest.rescan_interval or "off"
+        schedule_form.hour.data = str(
+            clamp_hour(getattr(latest, "rescan_hour", DEFAULT_RESCAN_HOUR))
+        )
     return render_template(
-        "history.html",
+        "dashboard_trend.html",
         history=history,
         history_limit=hist_limit,
         history_is_runs=user.is_pro,
+        latest=latest,
+        user_sites=_workspace_user_sites(user),
+        dash_charts=_workspace_charts(user, latest, findings_all, engine_breakdown, run_diff),
+        run_diff=run_diff,
+        schedule_form=schedule_form,
         **capability_template_vars(user),
     )
 

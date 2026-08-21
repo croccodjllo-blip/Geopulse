@@ -1,10 +1,9 @@
-{# Anteprima SoV top chrome — logo + tabs + period + avatar #}
+{# Same five pages as the workspace top bar. #}
 {% set _site = latest.id if latest is defined and latest else dash_site_id|default(none) %}
-{% set sov_href = url_for('dashboard_sov', site=_site) if _site else url_for('dashboard_sov') %}
 {% set dash_href = url_for('dashboard', site=_site) if _site else url_for('dashboard') %}
-{% set geo_href = url_for('dashboard_geo_ui', site=_site) if _site else url_for('dashboard_geo_ui') %}
-{% set hist_href = url_for('dashboard_history') if can_extended_history|default(false) else dash_href %}
-{% set report_href = (dash_href ~ '#pack') if latest is defined and latest else dash_href %}
+{% set bench_href = url_for('dashboard_benchmark', site=_site) if _site else url_for('dashboard_benchmark') %}
+{% set prompt_href = url_for('dashboard_prompt', site=_site) if _site else url_for('dashboard_prompt') %}
+{% set trend_href = url_for('dashboard_trend', site=_site) if _site else url_for('dashboard_trend') %}
 {% set tab = sov_tab|default('panoramica') %}
 {% set uname = (current_user.name or current_user.email or 'U') if current_user else 'U' %}
 {% set parts = uname.replace('.', ' ').replace('@', ' ').split() %}
@@ -21,11 +20,11 @@
   </a>
 
   <nav class="sov-chrome__nav" aria-label="{{ _('Sezioni insight') }}">
-    <a class="sov-chrome__tab{% if tab == 'panoramica' %} is-active{% endif %}" href="{{ sov_href }}" {% if tab == 'panoramica' %}aria-current="page"{% endif %}>{{ _('Panoramica') }}</a>
-    <a class="sov-chrome__tab{% if tab == 'benchmark' %} is-active{% endif %}" href="{{ geo_href }}">{{ _('Benchmark') }}</a>
-    <a class="sov-chrome__tab{% if tab == 'prompt' %} is-active{% endif %}" href="{{ url_for('dashboard_guide') }}">{{ _('Prompt') }}</a>
-    <a class="sov-chrome__tab{% if tab == 'trends' %} is-active{% endif %}" href="{{ hist_href }}">{{ _('Trends') }}</a>
-    <a class="sov-chrome__tab{% if tab == 'report' %} is-active{% endif %}" href="{{ report_href }}">{{ _('Report') }}</a>
+    <a class="sov-chrome__tab{% if tab == 'panoramica' %} is-active{% endif %}" href="{{ dash_href }}" {% if tab == 'panoramica' %}aria-current="page"{% endif %}>{{ _('Panoramica') }}</a>
+    <a class="sov-chrome__tab{% if tab == 'benchmark' %} is-active{% endif %}" href="{{ bench_href }}">{{ _('Benchmark') }}</a>
+    <a class="sov-chrome__tab{% if tab == 'prompt' %} is-active{% endif %}" href="{{ prompt_href }}">{{ _('Prompt') }}</a>
+    <a class="sov-chrome__tab{% if tab == 'trends' %} is-active{% endif %}" href="{{ trend_href }}">{{ _('Trends') }}</a>
+    <a class="sov-chrome__tab{% if tab == 'report' %} is-active{% endif %}" href="{{ url_for('dashboard_guide') }}">{{ _('Guida') }}</a>
   </nav>
 
   <div class="sov-chrome__meta">

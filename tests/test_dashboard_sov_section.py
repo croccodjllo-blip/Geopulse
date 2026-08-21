@@ -22,16 +22,18 @@ def test_sov_route_registered():
     assert '"/dashboard/sov"' in APP
 
 
-def test_sidebar_has_sov_link():
-    assert "dashboard_sov" in SIDEBAR
-    assert 'nav == \'sov\'' in SIDEBAR or 'nav == "sov"' in SIDEBAR
+def test_sidebar_has_five_page_links():
+    assert "dashboard_benchmark" in SIDEBAR
+    assert "dashboard_prompt" in SIDEBAR
+    assert "dashboard_trend" in SIDEBAR
+    assert "{{ _('Panoramica') }}" in SIDEBAR
 
 
 def test_main_dash_fold_without_sov_table():
     assert "dash-sov-list" not in DASH
     assert "dash_sov_detail.html" not in DASH
     assert "dash_signal.html" in DASH
-    assert "dashboard_sov" in DASH or "dashboard_sov" in (
+    assert "dashboard_benchmark" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
 
@@ -62,7 +64,7 @@ def test_sov_page_matches_detail_anteprima():
     assert "Benchmark" in nav
     assert "Prompt" in nav
     assert "Trends" in nav
-    assert "Report" in nav
+    assert "Guida" in nav
 
 
 def test_fold_sov_cta_visible():
