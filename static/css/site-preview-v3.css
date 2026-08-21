@@ -4699,6 +4699,73 @@ body.body-dash .dash-hist__lab {
   text-align: left;
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
 }
+body.body-dash .dash-crit {
+  width: 100%;
+}
+body.body-dash .dash-crit__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem 1.6rem;
+  align-items: center;
+}
+body.body-dash .dash-crit__score {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 2.7rem);
+  font-weight: 720;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+  color: var(--brand-clarity);
+}
+body.body-dash .dash-crit[data-band="high"] .dash-crit__score { color: #EF4444; }
+body.body-dash .dash-crit[data-band="mid"] .dash-crit__score { color: #F59E0B; }
+body.body-dash .dash-crit[data-band="ok"] .dash-crit__score { color: #22C55E; }
+body.body-dash .dash-crit__score span {
+  font-size: 0.38em;
+  color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
+}
+body.body-dash .dash-crit__mix {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.38rem;
+}
+body.body-dash .dash-crit__mix li {
+  display: grid;
+  grid-template-columns: 4.2rem 1.6rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+body.body-dash .dash-crit__mix span {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-clarity) 50%, transparent);
+}
+body.body-dash .dash-crit__mix strong {
+  font-size: 0.82rem;
+  font-weight: 650;
+  text-align: right;
+  color: var(--brand-clarity);
+}
+body.body-dash .dash-crit__mix i {
+  display: block;
+  height: 6px;
+  width: 100%;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+  overflow: hidden;
+}
+body.body-dash .dash-crit__mix i::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: calc(var(--w, 0) * 1%);
+  border-radius: 99px;
+}
+body.body-dash .dash-crit__mix [data-sev="critical"] i::after { background: #EF4444; }
+body.body-dash .dash-crit__mix [data-sev="warn"] i::after { background: #F59E0B; }
+body.body-dash .dash-crit__mix [data-sev="ok"] i::after { background: #22C55E; }
 body.body-dash .dash-sheet--dense { width: 100%; }
 body.body-dash .dash-sheet--dense th,
 body.body-dash .dash-sheet--dense td {

@@ -46,6 +46,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-hist-card" in SIGNAL
     assert "dash-hist__bar" in SIGNAL
     assert "dash-hist-card__meta" in SIGNAL
+    assert "dash-crit" in SIGNAL
+    assert "ledger-crit" in SIGNAL
     assert "dash-fault" in SIGNAL
     assert "dash-kpis" in SIGNAL
     assert "dash-spine" not in SIGNAL
@@ -115,6 +117,9 @@ def test_build_charts_counts_real_findings_and_pages():
     assert charts["mosaic"]["totals"]["critical"] == 1
     assert charts["mosaic"]["totals"]["warn"] == 1
     assert charts["mosaic"]["totals"]["ok"] == 1
+    assert charts["crit"]["score"] == 47
+    assert charts["crit"]["band"] == "mid"
+    assert charts["crit"]["open"] == 2
     assert charts["field"]["n"] == 2
     assert charts["spark"] is None
     assert charts["delta"] is None

@@ -157,6 +157,37 @@ def _findings_mosaic(findings: list[dict[str, Any]]) -> dict[str, Any]:
     return {"rows": rows, "totals": totals, "cells": cells[:48]}
 
 
+def _crit_index(totals: dict[str, int]) -> dict[str, Any]:
+    """Weighted open-issue pressure for the current analysis only."""
+    crit = int(totals.get("critical") or 0)
+    warn = int(totals.get("warn") or 0)
+    ok = int(totals.get("ok") or 0)
+    all_n = int(totals.get("all") or 0)
+    open_n = crit + warn
+    if all_n <= 0:
+        score = 0
+    else:
+        score = min(100, round((crit * 100 + warn * 40) / all_n))
+    if score >= 55:
+        band = "high"
+    elif score >= 25:
+        band = "mid"
+    else:
+        band = "ok"
+    return {
+        "score": score,
+        "band": band,
+        "crit": crit,
+        "warn": warn,
+        "ok": ok,
+        "all": all_n,
+        "open": open_n,
+        "crit_w": int(round(100 * crit / all_n)) if all_n else 0,
+        "warn_w": int(round(100 * warn / all_n)) if all_n else 0,
+        "ok_w": int(round(100 * ok / all_n)) if all_n else 0,
+    }
+
+
 def _suite_score(block: Any, key: str) -> int | None:
     if not isinstance(block, dict) or not block:
         return None
@@ -558,6 +589,7 @@ def build_dash_charts(
         "field": field,
         "spark": spark,
         "delta": delta,
+        "crit": _crit_index(mosaic["totals"]),
     }
 
 

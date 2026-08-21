@@ -39,6 +39,9 @@
 {% for row in mosaic.rows or [] %}
 .dash-mix [data-cat="{{ row.id }}"] { --crit: {{ row.crit_w }}; --warn: {{ row.warn_w }}; --ok: {{ row.ok_w }}; }
 {% endfor %}
+.dash-crit [data-sev="critical"] { --w: {{ (ch.crit.crit_w if ch.crit else 0) }}; }
+.dash-crit [data-sev="warn"] { --w: {{ (ch.crit.warn_w if ch.crit else 0) }}; }
+.dash-crit [data-sev="ok"] { --w: {{ (ch.crit.ok_w if ch.crit else 0) }}; }
 </style>
 
 <section class="dash-signal dash-board" aria-label="{{ _('Metriche') }}">
@@ -324,6 +327,35 @@
       {% endif %}
     </article>
   </div>
+
+  {% set crit = ch.crit or {} %}
+  <article class="dash-card dash-crit" aria-labelledby="ledger-crit" data-band="{{ crit.band or 'ok' }}">
+    <header class="dash-card__head">
+      <p class="dash-card__kicker">{{ _('Findings') }}</p>
+      <h3 class="dash-card__title" id="ledger-crit">{{ _('Indice di criticità') }}</h3>
+    </header>
+    <div class="dash-crit__row">
+      <p class="dash-crit__score">{{ crit.score if crit.score is number else 0 }}<span>/100</span></p>
+      <ol class="dash-crit__mix">
+        <li data-sev="critical">
+          <span>{{ _('Critici') }}</span>
+          <strong>{{ crit.crit or 0 }}</strong>
+          <i aria-hidden="true"></i>
+        </li>
+        <li data-sev="warn">
+          <span>{{ _('Warn') }}</span>
+          <strong>{{ crit.warn or 0 }}</strong>
+          <i aria-hidden="true"></i>
+        </li>
+        <li data-sev="ok">
+          <span>{{ _('ok') }}</span>
+          <strong>{{ crit.ok or 0 }}</strong>
+          <i aria-hidden="true"></i>
+        </li>
+      </ol>
+    </div>
+    <p class="dash-card__lede">{{ crit.open or 0 }}/{{ crit.all or 0 }} {{ _('aperti sul run analizzato') }}</p>
+  </article>
 
   <div class="dash-pair{% if not rivals %} dash-pair--solo{% endif %}">
     <article class="dash-card" aria-labelledby="ledger-findings">
