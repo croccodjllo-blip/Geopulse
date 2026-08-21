@@ -50,7 +50,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "ledger-crit" in SIGNAL
     assert "dash-pair--crawl" in SIGNAL
     crawl_at = SIGNAL.find("dash-pair--crawl")
-    crit_at = SIGNAL.find("dash-crit")
+    crit_at = SIGNAL.find('class="dash-card dash-crit"')
     findings_at = SIGNAL.find('id="ledger-findings"')
     assert crawl_at != -1 and crit_at != -1 and crawl_at < crit_at
     assert findings_at == -1 or crit_at < findings_at
@@ -71,7 +71,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert ".dash-hist" in CSS
     assert "dash-pair--match" in CSS
     assert "dash-pair--crawl" in CSS
-    assert "grid-column: 1 / -1" in CSS.split("dash-pair--crawl")[1][:280]
+    assert "grid-column: 1 / -1" in CSS.split("dash-pair--crawl > .dash-crit")[1][:80]
     assert "dash-split--wide" not in CSS
     assert "dash-split__track" in CSS
     assert "dash-split__table" in CSS
