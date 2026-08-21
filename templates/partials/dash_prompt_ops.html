@@ -1,0 +1,193 @@
+          <section class="dash-block dash-block--panel dash-block--edge" id="edge-signals">
+            <header class="dash-block__head">
+              <div>
+                <p class="dash-block__eyebrow">{{ _('Infrastruttura') }}</p>
+                <h3 class="dash-block__title" id="edge-title">{{ _('Edge Signals') }}</h3>
+              </div>
+              {% if latest.signals_hosted %}
+              <span class="edge-status edge-status--on">{{ _('Attivo') }} · v{{ latest.signals_version or 1 }}</span>
+              {% else %}
+              <span class="edge-status">{{ _('ZIP only') }}</span>
+              {% endif %}
+            </header>
+            <p class="edge-lede">
+              {{ _('Invece di ridistribuire un pack statico, ospita') }} <code>llms.txt</code>,
+              <code>robots.txt</code> {{ _('e') }} <code>signals.json</code> {{ _('su endpoint Centropic aggiornati quando cambiano i crawler IA. Collega il tuo dominio con il connector CMS universale (WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel).') }}
+            </p>
+            {% if not latest.signals_hosted or not edge %}
+            <form method="post" action="{{ url_for('edge_enable', analysis_id=latest.id) }}" class="edge-actions">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <button type="submit" class="btn btn-primary">{{ _('Attiva hosting dinamico') }}</button>
+            </form>
+            <p class="edge-hint">
+              {{ _('Include') }} <code>llms.txt</code> + <code>signals.json</code>
+              {% if can_full_edge %}
+              · {{ _('robots live, JSON-LD e snippet Worker/Vercel.') }}
+              {% endif %}.
+            </p>
+            {% else %}
+            {% include "partials/edge_wizard.html" %}
+            <div class="edge-advanced edge-advanced--open">
+              <p class="dash-inst__kicker">{{ _('Endpoint') }}{% if can_full_edge %} · {{ user_plan }}{% endif %}</p>
+              <div class="edge-advanced__body">
+            <ul class="edge-urls">
+              <li>
+                <span>llms.txt</span>
+                <a href="{{ edge.llms_url }}" target="_blank" rel="noopener noreferrer">{{ edge.llms_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.llms_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
+              </li>
+              <li>
+                <span>signals.json</span>
+                <a href="{{ edge.signals_url }}" target="_blank" rel="noopener noreferrer">{{ edge.signals_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.signals_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
+              </li>
+              {% if can_full_edge %}
+              <li>
+                <span>robots.txt</span>
+                <a href="{{ edge.robots_url }}" target="_blank" rel="noopener noreferrer">{{ edge.robots_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.robots_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
+              </li>
+              <li>
+                <span>organization.jsonld</span>
+                <a href="{{ edge.jsonld_url }}" target="_blank" rel="noopener noreferrer">{{ edge.jsonld_url }}</a>
+                <button type="button" class="linkish" data-copy="{{ edge.jsonld_url }}" onclick="navigator.clipboard.writeText(this.dataset.copy)">{{ _('Copia') }}</button>
+              </li>
+              {% endif %}
+            </ul>
+            <div class="edge-cms">
+              <p class="edge-hint u-mt-1">
+                {{ _('CMS universale: un ZIP con plugin WordPress, modulo Drupal, Liquid Shopify, proxy PHP, rewrite Netlify/Vercel e Worker Cloudflare — tutti puntano allo stesso Edge base.') }}
+              </p>
+              <div class="edge-actions edge-actions--row">
+                <a class="btn btn-primary" href="{{ url_for('edge_cms_bundle', analysis_id=latest.id) }}">{{ _('Scarica connector CMS (.zip)') }}</a>
+              </div>
+              <ul class="plain-list edge-cms__list">
+                <li>WordPress · Drupal · Shopify</li>
+                <li>PHP / Apache / Nginx</li>
+                <li>Netlify · Cloudflare · Vercel · HTML embed</li>
+              </ul>
+            </div>
+            <div class="edge-actions edge-actions--row">
+              <form method="post" action="{{ url_for('edge_rotate', analysis_id=latest.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-ghost">{{ _('Rigenera token') }}</button>
+              </form>
+              <form method="post" action="{{ url_for('edge_disable', analysis_id=latest.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="btn btn-ghost">{{ _('Disattiva') }}</button>
+              </form>
+            </div>
+            {% if edge.crawlers %}
+            <p class="edge-hint u-mt-1">{{ _('Crawler IA recenti su Edge:') }}</p>
+            <ul class="plain-list">
+              {% for row in edge.crawlers %}
+              <li><code>{{ row.crawler }}</code> — {{ row.hits }} {{ _('hit') }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+            {% if can_full_edge %}
+            <div class="pack-grid pack-grid--edge">
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>cloudflare-worker.js</span>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-worker-box', this)">{{ _('Copia') }}</button>
+                </div>
+                <pre id="edge-worker-box">{{ edge.worker }}</pre>
+              </div>
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>vercel.json</span>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-vercel-box', this)">{{ _('Copia') }}</button>
+                </div>
+                <pre id="edge-vercel-box">{{ edge.vercel }}</pre>
+              </div>
+              <div class="code-shell code-shell--compact">
+                <div class="code-shell__bar">
+                  <span>embed.html</span>
+                  <button type="button" class="linkish" onclick="copyFrom('edge-embed-box', this)">{{ _('Copia') }}</button>
+                </div>
+                <pre id="edge-embed-box">{{ edge.embed }}</pre>
+              </div>
+            </div>
+            {% endif %}
+              </div>
+            </div>
+            {% endif %}
+          </section>
+
+          <section class="pack-deliverable dash-block dash-block--panel" id="pack" aria-labelledby="pack-title">
+            <header class="dash-block__head">
+              <div>
+                <p class="dash-block__eyebrow">{{ _('Deliverable') }}</p>
+                <h3 class="dash-block__title" id="pack-title">{{ _('Pack ottimizzazione') }}</h3>
+                <p class="dash-block__more">{{ _('Un unico HTML con head snippet, llms.txt, robots e checklist — pronto da applicare sul sito live.') }}</p>
+              </div>
+              <span class="pack-deliverable__file" title="{{ pack_fix_filename }}">{{ pack_fix_filename }}</span>
+            </header>
+            <div class="pack-deliverable__actions">
+              <a class="btn btn-primary" href="{{ url_for('download_pack', analysis_id=latest.id) }}">
+                {{ _('Scarica pack') }}
+              </a>
+              {% if can_write_latest %}
+              <button
+                type="button"
+                class="btn btn-ghost"
+                data-pack-mail-open
+                {% if not mail_ready %}disabled title="{{ _('Email non configurata sul server') }}"{% endif %}
+              >
+                {{ _('Invia email') }}
+              </button>
+              {% endif %}
+            </div>
+          </section>
+
+          {% if can_write_latest %}
+          <dialog
+            class="pack-mail"
+            id="pack-mail-dialog"
+            data-pack-mail
+            aria-labelledby="pack-mail-title"
+            aria-describedby="pack-mail-desc"
+          >
+            <form
+              method="post"
+              action="{{ url_for('email_pack', analysis_id=latest.id) }}"
+              class="pack-mail__panel"
+            >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <header class="pack-mail__head">
+                <div>
+                  <p class="pack-mail__eyebrow">{{ _('Deliverable') }}</p>
+                  <h3 class="pack-mail__title" id="pack-mail-title">{{ _('Invia pack via email') }}</h3>
+                </div>
+                <button type="button" class="pack-mail__close" data-pack-mail-close aria-label="{{ _('Chiudi') }}">×</button>
+              </header>
+              <p class="pack-mail__lede" id="pack-mail-desc">
+                {{ _('Inserisci l’indirizzo email dove vuoi ricevere il pack HTML per questo dominio.') }}
+              </p>
+              <p class="pack-mail__meta">
+                <code>{{ pack_fix_filename }}</code>
+                <span aria-hidden="true">·</span>
+                <strong>{{ latest.domain }}</strong>
+              </p>
+              <label class="pack-mail__label" for="pack-mail-to">{{ _('Indirizzo email') }}</label>
+              <input
+                class="pack-mail__input"
+                type="email"
+                id="pack-mail-to"
+                name="to_email"
+                value="{{ current_user.email }}"
+                autocomplete="email"
+                inputmode="email"
+                maxlength="255"
+                required
+                {% if not mail_ready %}disabled{% endif %}
+              />
+              <p class="pack-mail__hint">{{ _('Puoi inviarlo a te o a un collega. Limite giornaliero anti-abuso attivo.') }}</p>
+              <footer class="pack-mail__foot">
+                <button type="button" class="btn btn-ghost" data-pack-mail-close>{{ _('Annulla') }}</button>
+                <button type="submit" class="btn btn-primary"{% if not mail_ready %} disabled{% endif %}>{{ _('Invia pack') }}</button>
+              </footer>
+            </form>
+          </dialog>
+          {% endif %}
