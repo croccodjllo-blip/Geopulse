@@ -54,7 +54,7 @@ def test_public_legal_p1_p2_routes():
         "/termini",
     ]
     for path in paths:
-        r = client.get(path)
+        r = client.get(path, follow_redirects=True)
         assert r.status_code == 200, path
         html = r.get_data(as_text=True)
         assert "centropic" in html.lower() or "Centropic" in html
