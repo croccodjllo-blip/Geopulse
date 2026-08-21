@@ -7113,6 +7113,19 @@ def dashboard():
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,
         dash_charts=dash_charts,
+        geo_ui_assets=resolve_geo_ui_assets() if latest is not None else None,
+        geo_ui_data=(
+            build_geo_ui_payload(
+                user=user,
+                SiteAnalysis=SiteAnalysis,
+                SovSnapshot=SovSnapshot,
+                audit_href=url_for("dashboard", site=int(latest.id)) + "#analyze-panel",
+                report_href=url_for("dashboard", site=int(latest.id)),
+                prefer_site_id=int(latest.id),
+            )
+            if latest is not None
+            else None
+        ),
         edge=edge_ctx,
         sov_budget=sov_budget,
         openai_ready=bool(OPENAI_API_KEY),

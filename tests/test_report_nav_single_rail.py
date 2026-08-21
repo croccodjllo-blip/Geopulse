@@ -26,8 +26,8 @@ def test_report_nav_tabs_replaced_by_dash_actions():
     assert 'class="report-nav"' not in DASH
     assert "dash-actions" in SIGNAL
     assert "{{ _('Findings') }}" in SIGNAL
-    assert "{{ _('Edge') }}" in SIGNAL
-    assert "{{ _('Pack') }}" in SIGNAL
+    assert "{{ _('Nuova analisi') }}" in SIGNAL
+    assert "dash-rail" not in SIGNAL
 
 
 def test_shell_keeps_activate_report_view_harmless():

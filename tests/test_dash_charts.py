@@ -36,7 +36,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-orbit" in SIGNAL
     assert "dash-fault" in SIGNAL
     assert "dash-meridian" in SIGNAL
-    assert "dash-rail" in SIGNAL
+    assert "dash-kpis" in SIGNAL
     assert "dash-ring--" not in SIGNAL
     assert "dash-constellation" not in SIGNAL
     assert "dash-petals" not in SIGNAL
@@ -202,7 +202,7 @@ def test_dashboard_renders_signal_instruments():
     assert "dash-orbit" in html
     assert "dash-fault" in html
     assert "dash-meridian" in html
-    assert "Apri grafici interattivi" in html
-    assert "somDelta" not in html
+    assert "dash-live-charts" in html
+    assert "__CENTROPIC_GEO_COMPACT__" in html
     assert "dash-constellation" not in html
     assert "dash-ring--cvi" not in html

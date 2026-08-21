@@ -33,9 +33,7 @@ def test_main_dash_fold_without_sov_table():
     assert "dash-sov-list" not in DASH
     assert "dash_sov_detail.html" not in DASH
     assert "dash_signal.html" in DASH
-    assert "dashboard_benchmark" in (
-        ROOT / "templates" / "partials" / "dash_signal.html"
-    ).read_text(encoding="utf-8")
+    assert "dash_geo_charts.html" in DASH
 
 
 def test_sov_page_matches_detail_anteprima():
@@ -71,5 +69,7 @@ def test_fold_sov_cta_visible():
     signal = (ROOT / "templates" / "partials" / "dash_signal.html").read_text(
         encoding="utf-8"
     )
-    assert "dash-actions__btn--sov" in signal
+    dash = (ROOT / "templates" / "dashboard.html").read_text(encoding="utf-8")
+    assert "dash-actions__btn" in signal
+    assert "dash_geo_charts.html" in dash
     assert "dash-actions__btn--sov" in CSS

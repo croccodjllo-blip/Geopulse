@@ -40,7 +40,7 @@ def test_priority_signal_deck_and_rail():
     assert "dash-ring--sov" not in SIGNAL
     # SoV table + Findings live on /dashboard/sov (sidebar section).
     assert "dash-sov-list" not in DASH
-    assert "dashboard_benchmark" in SIGNAL
+    assert "dash_geo_charts.html" in DASH
 
 
 def test_score_sov_tabs_and_pulse_removed():

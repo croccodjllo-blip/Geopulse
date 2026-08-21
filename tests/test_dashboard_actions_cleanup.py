@@ -33,7 +33,7 @@ def test_single_pack_download_cta_in_deliverable():
 
 
 def test_nuova_analisi_lives_in_analyze_reveal():
-    assert 'class="dash-compose"' in DASH
+    assert "dash-compose" in DASH
     assert "dash-compose__title" in DASH
     assert "analyze-reveal" not in DASH
     assert "{{ _('Nuova analisi') }}" in DASH

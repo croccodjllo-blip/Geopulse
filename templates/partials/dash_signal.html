@@ -42,10 +42,8 @@
       <p class="dash-signal__domain">{{ latest.page_title }}</p>
       {% endif %}
     </div>
-    <nav class="dash-boardhead__acts" aria-label="{{ _('Azioni') }}">
-      <a class="dash-iconbtn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
-      <a class="dash-iconbtn" href="{{ url_for('dashboard_prompt', site=latest.id) }}">{{ _('Prompt') }}</a>
-      <a class="dash-iconbtn" href="{{ url_for('dashboard_benchmark', site=latest.id) }}">{{ _('Benchmark') }}</a>
+    <nav class="dash-boardhead__acts dash-actions" aria-label="{{ _('Azioni') }}">
+      <a class="dash-iconbtn dash-actions__btn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
     </nav>
   </header>
 
@@ -154,7 +152,6 @@
         <b data-sev="warn">{{ totals.warn or 0 }}</b>
         <b data-sev="ok">{{ totals.ok or 0 }}</b>
       </p>
-      <a class="dash-actions__ghost" href="{{ url_for('dashboard_prompt', site=latest.id) }}#findings">{{ _('Apri Prompt') }}</a>
     </header>
     {% if mosaic.cells %}
     <ol class="dash-fault__stave" aria-hidden="true">
@@ -190,13 +187,4 @@
     </div>
   </article>
 
-  <nav class="dash-rail dash-actions" aria-label="{{ _('Sezioni') }}">
-    <a class="dash-actions__btn" href="{{ dash_home }}#analyze-panel">{{ _('Nuova analisi') }}</a>
-    <a class="dash-actions__btn" href="{{ url_for('dashboard_prompt', site=latest.id) }}#pack">{{ _('Pack') }}</a>
-    <a class="dash-actions__btn" href="{{ url_for('dashboard_prompt', site=latest.id) }}#edge-signals">{{ _('Edge') }}</a>
-    <a class="dash-actions__btn dash-actions__btn--sov" href="{{ url_for('dashboard_benchmark', site=latest.id) }}">{{ _('Benchmark') }}</a>
-    <a class="dash-actions__ghost" href="{{ url_for('dashboard_prompt', site=latest.id) }}#findings">{{ _('Findings') }}</a>
-    <a class="dash-actions__ghost" href="{{ url_for('dashboard_trend', site=latest.id) }}">{{ _('Trend') }}</a>
-    <a class="dash-actions__ghost" href="{{ url_for('dashboard_geo_ui', site=latest.id) }}">{{ _('Apri grafici interattivi') }}</a>
-  </nav>
 </section>

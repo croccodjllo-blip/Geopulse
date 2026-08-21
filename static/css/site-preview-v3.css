@@ -2741,6 +2741,29 @@ body.body-dash .dash-compose {
   padding: 1rem 0 0;
   border-top: 1px solid color-mix(in srgb, var(--plan-accent) 16%, transparent);
 }
+body.body-dash .dash-compose--quiet {
+  margin-top: 1.25rem;
+  padding-top: 0.85rem;
+}
+body.body-dash .dash-compose--quiet .analyze-composer__head,
+body.body-dash .dash-compose--quiet .analyze-composer__label,
+body.body-dash .dash-compose--quiet .analyze-composer__sub {
+  display: none;
+}
+body.body-dash .dash-compose--quiet .analyze-composer {
+  padding: 0;
+}
+body.body-dash .dash-live-charts {
+  width: 100%;
+  margin: 0.15rem 0 0;
+}
+body.body-dash .dash-live-charts__root {
+  min-height: 0 !important;
+  background: transparent !important;
+}
+body.body-dash .dash-live-charts .geo-compact {
+  width: 100%;
+}
 body.body-dash .dash-compose__head {
   display: flex;
   flex-wrap: wrap;
@@ -3728,11 +3751,11 @@ body.body-dash .dash-kpis {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.9rem;
+  gap: 0.65rem;
 }
 body.body-dash .dash-kpi {
-  padding: 1rem 1.1rem 1.05rem;
-  border-radius: 1.1rem;
+  padding: 0.7rem 0.85rem 0.75rem;
+  border-radius: 0.9rem;
   border: 1px solid color-mix(in srgb, var(--plan-accent) 16%, transparent);
   background: color-mix(in srgb, #1A1612 86%, transparent);
   min-width: 0;
@@ -3746,8 +3769,8 @@ body.body-dash .dash-kpi__k {
   color: color-mix(in srgb, var(--plan-accent) 80%, var(--brand-clarity));
 }
 body.body-dash .dash-kpi__n {
-  margin: 0.45rem 0 0;
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin: 0.3rem 0 0;
+  font-size: clamp(1.45rem, 2.4vw, 2.05rem);
   font-weight: 720;
   letter-spacing: -0.05em;
   color: var(--brand-clarity);
@@ -3758,9 +3781,9 @@ body.body-dash .dash-kpi__n span {
   color: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
 }
 body.body-dash .dash-kpi .dash-spine__mark {
-  width: 5.6rem;
-  height: 5.6rem;
-  margin: 0.35rem 0;
+  width: 4.2rem;
+  height: 4.2rem;
+  margin: 0.2rem 0;
 }
 body.body-dash .dash-kpi .dash-spine__grade { font-size: 1.55rem; }
 body.body-dash .dash-kpi .dash-mercury__col {
@@ -3779,7 +3802,19 @@ body.body-dash .dash-kpi[data-metric="geo"] .dash-mercury__col i {
 body.body-dash .dash-wide {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 1fr);
-  gap: 0.9rem;
+  gap: 0.65rem;
+}
+body.body-dash .dash-orbit__svg {
+  max-height: 13.5rem;
+  width: 100%;
+}
+body.body-dash .dash-fault,
+body.body-dash .dash-meridian {
+  padding: 0.75rem 0 0;
+}
+body.app-shell--topbar .site-main--dash {
+  width: 100% !important;
+  max-width: none !important;
 }
 body.body-dash .app-topbar__quiet {
   font-size: 0.78rem;

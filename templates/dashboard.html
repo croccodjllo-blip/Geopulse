@@ -64,25 +64,12 @@
 
           {% include "partials/dash_signal.html" %}
 
-          <div class="dash-deck" id="dash-ops">
+          {% include "partials/dash_geo_charts.html" %}
 
-          {% if latest.analysis_notes %}
-            <p class="report-notes">{{ translate_analysis_notes(latest.analysis_notes) }}</p>
-          {% endif %}
+          <div class="dash-deck" id="dash-ops" hidden></div>
 
-          {% if pages_analyzed_n %}
-          <p class="dash-deck__quiet">{{ _('Analizzate') }} {{ pages_analyzed_n }} {{ _('pagine') }}</p>
-          {% endif %}
-
-
-          </div>
-
-          <section class="dash-compose" id="analyze-panel">
-            <header class="dash-compose__head">
-              <p class="dash-compose__kicker">{{ _('Compositore') }}</p>
-              <h3 class="dash-compose__title">{{ _('Nuova analisi') }}</h3>
-              <span class="dash-compose__hint">{{ _('URL · crawl · score') }}</span>
-            </header>
+          <section class="dash-compose dash-compose--quiet" id="analyze-panel">
+            <h3 class="dash-compose__title visually-hidden">{{ _('Nuova analisi') }}</h3>
             {% include "partials/analyze_form.html" %}
           </section>
 
