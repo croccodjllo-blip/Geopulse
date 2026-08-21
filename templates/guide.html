@@ -5,10 +5,10 @@
 {% block main_class %}{% if dash_shell %}site-main--dash{% endif %}{% endblock %}
 
 {% block content %}
-<article class="page guide-page guide-page--full">
-  <header class="page-intro page-intro--v2">
-    <p class="eyebrow">{{ _('Guida') }}</p>
-    <h1 class="h-display page-intro__title">{{ guide.title }}</h1>
+<article class="page guide-page guide-page--full{% if dash_shell %} guide-page--dash{% endif %}">
+  <header class="page-intro page-intro--v2 dash-boardhead">
+    <p class="eyebrow dash-signal__kicker">{{ _('Guida') }}</p>
+    <h1 class="h-display page-intro__title dash-boardhead__title">{{ guide.title }}</h1>
     <p class="lede page-intro__lede">{{ guide.lede }}</p>
     <p class="report-meta">
       {{ _('Aggiornato') }} {{ guide.updated }}

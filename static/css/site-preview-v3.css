@@ -2789,9 +2789,11 @@ body.body-dash .dash-command {
 }
 body.body-dash .dash-command__search {
   min-width: 0;
+  width: max-content;
+  max-width: 100%;
 }
 body.body-dash .dash-command__input {
-  font-size: 1rem;
+  font-size: 0.86rem;
 }
 body.body-dash .dash-sites {
   display: flex;
@@ -2895,22 +2897,37 @@ body.body-dash .dash-audit__label {
 }
 body.body-dash .dash-audit__select,
 body.body-dash .dash-audit__input {
-  width: 100%;
-  min-height: 2.45rem;
-  padding: 0.45rem 0.7rem;
-  border-radius: 0.7rem;
+  width: 16.5rem;
+  max-width: min(16.5rem, calc(100vw - 8rem));
+  min-height: 2.05rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 0.55rem;
   border: 1px solid color-mix(in srgb, var(--brand-clarity) 16%, transparent);
   background: color-mix(in srgb, #1A1612 88%, transparent);
   color: var(--brand-clarity);
+  font-size: 0.86rem;
 }
 body.body-dash .dash-audit__row {
   display: flex;
-  gap: 0.45rem;
-  align-items: stretch;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+  width: max-content;
+  max-width: 100%;
 }
-body.body-dash .dash-audit__go {
+body.body-dash .dash-audit__row .analyze-input,
+body.body-dash .dash-audit__row .dash-command__input {
+  flex: 0 1 16.5rem;
+  width: 16.5rem;
+  min-height: 2.05rem;
+}
+body.body-dash .dash-audit__go,
+body.body-dash .dash-audit__row .analyze-submit {
   flex: 0 0 auto;
-  min-width: 5.6rem;
+  width: auto;
+  min-width: 4.5rem;
+  min-height: 2.05rem;
+  padding: 0.28rem 0.8rem;
 }
 body.body-dash .dash-audit__meta {
   margin: 0.45rem 0 0;
@@ -4496,6 +4513,113 @@ body.body-dash .dash-trend__val {
 body.body-dash .dash-trend__val[data-series="aio"] { fill: var(--plan-accent); }
 body.body-dash .dash-trend__val[data-series="geo"] {
   fill: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
+}
+
+/* Flush workspace: no card frames, one table size, compact URL. */
+body.body-dash .dash-card,
+body.body-dash .dash-board .dash-card,
+body.body-dash .diff-strip.dash-card,
+body.body-dash .monitor-panel.dash-card,
+body.body-dash .dash-findings.dash-card {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  padding: 0.2rem 0 1.15rem;
+}
+body.body-dash .dash-tile {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 0.25rem 0.1rem 0.55rem;
+}
+body.body-dash .dash-sites__chip {
+  border: 0;
+  background: color-mix(in srgb, var(--brand-clarity) 6%, transparent);
+}
+body.body-dash .dash-sites__chip.is-active {
+  border: 0;
+  background: color-mix(in srgb, var(--plan-accent) 16%, #1A1612);
+}
+body.body-dash .dash-rivals__chips li {
+  border: 0;
+}
+body.body-dash .dash-sheet,
+body.body-dash .dash-sheet--dense,
+body.body-dash .dash-board table.dash-sheet {
+  width: 100%;
+  font-size: 1rem;
+}
+body.body-dash .dash-sheet th,
+body.body-dash .dash-sheet--dense th {
+  font-size: 0.7rem;
+  padding: 0.4rem 0.45rem 0.55rem;
+}
+body.body-dash .dash-sheet td,
+body.body-dash .dash-sheet--dense td {
+  font-size: 1rem;
+  padding: 0.62rem 0.45rem;
+}
+body.body-dash .dash-boardhead {
+  align-items: flex-start;
+  gap: 0.75rem 1rem;
+}
+body.body-dash .dash-boardhead .dash-sites {
+  flex: 1 1 100%;
+}
+body.body-dash .dash-finding-board strong { font-size: 1rem; }
+body.body-dash .dash-finding-board span { font-size: 0.88rem; }
+body.body-dash .history-list--page {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+}
+body.body-dash .history-list--page li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.45rem 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+}
+body.body-dash .history-list--page strong {
+  font-size: 1.05rem;
+}
+body.body-dash .history-list--page .history-scores {
+  display: flex;
+  gap: 1rem;
+  font-size: 1rem;
+  font-weight: 650;
+}
+body.body-dash .guide-page--dash {
+  max-width: none;
+  padding-inline: 0;
+}
+body.body-dash .guide-page--dash .page-intro {
+  margin-bottom: 1.1rem;
+}
+body.body-dash .guide-page--dash .page-intro__title {
+  font-size: clamp(1.7rem, 3.4vw, 2.35rem);
+}
+body.body-dash .guide-page--dash .guide-service,
+body.body-dash .guide-page--dash .guide-analysis,
+body.body-dash .guide-page--dash .guide-figure--card {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+}
+body.body-dash .dash-iconbtn {
+  border: 0;
+  background: color-mix(in srgb, var(--brand-clarity) 6%, transparent);
+}
+body.body-dash .comp-card,
+body.body-dash .comp-card.is-you,
+body.body-dash .dash-block--panel,
+body.body-dash .comp-arena {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 @media (max-width: 1100px) {

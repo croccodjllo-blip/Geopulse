@@ -73,6 +73,8 @@ def test_analyze_below_fold_when_latest():
 def test_redesign_css_present():
     assert ".dash-signal" in CSS
     assert ".dash-board" in CSS
+    assert "body.body-dash .dash-card" in CSS
+    assert "box-shadow: none" in CSS
     assert ".dash-sov-list" in CSS
     assert ".dash-cta__primary" in CSS
     assert ".dash-detail" in CSS

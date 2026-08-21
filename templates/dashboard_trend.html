@@ -24,6 +24,7 @@
       <a class="dash-iconbtn" href="{{ url_for('export_history_csv') }}">CSV</a>
       {% endif %}
     </div>
+    {% include "partials/site_switcher.html" %}
   </header>
 
   {% if run_trend %}

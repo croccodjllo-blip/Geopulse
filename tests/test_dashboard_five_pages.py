@@ -93,6 +93,7 @@ def test_full_width_workspace():
     assert "workspace--fill" in CSS
     assert ".dash-kpis" in CSS
     assert ".dash-board" in CSS
+    assert "width: 16.5rem" in CSS
     assert ".dash-wide" in CSS
     assert ".dash-prompt" in CSS
     assert 'class="workspace workspace--fill"' in DASH
