@@ -61,7 +61,7 @@
       </div>
     </dl>
     <div class="dash-trend__frame">
-    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMinYMid meet" role="img">
+    <svg class="dash-trend__svg dash-spark dash-spark--wide" viewBox="0 0 {{ run_trend.width }} {{ run_trend.height }}" preserveAspectRatio="xMidYMid meet" role="img">
       {% for g in run_trend.grid_y or [] %}
       <line class="dash-trend__grid" x1="{{ g.x1 }}" y1="{{ g.y }}" x2="{{ g.x2 }}" y2="{{ g.y }}"/>
       <text class="dash-trend__axis" x="{{ run_trend.left - 8 }}" y="{{ g.y + 4 }}" text-anchor="end">{{ g.v }}</text>
@@ -73,23 +73,23 @@
       <path class="dash-trend__line" data-series="geo" d="{{ run_trend.geo_line }}" fill="none"/>
       {% endif %}
       {% for m in run_trend.aio_marks or [] %}
-      <circle class="dash-trend__dot{% if m.latest %} is-latest{% endif %}" data-series="aio" cx="{{ m.x }}" cy="{{ m.y }}" r="{{ 4.6 if m.latest else 3 }}"/>
       {% if m.latest %}
-      <text class="dash-trend__val" data-series="aio" x="{{ m.x }}" y="{{ m.y - 10 }}" text-anchor="middle">{{ m.v }}</text>
+      <circle class="dash-trend__dot is-latest" data-series="aio" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
       {% endif %}
       {% endfor %}
       {% for m in run_trend.geo_marks or [] %}
-      <circle class="dash-trend__dot{% if m.latest %} is-latest{% endif %}" data-series="geo" cx="{{ m.x }}" cy="{{ m.y }}" r="{{ 4.6 if m.latest else 3 }}"/>
       {% if m.latest %}
-      <text class="dash-trend__val" data-series="geo" x="{{ m.x }}" y="{{ m.y + 16 }}" text-anchor="middle">{{ m.v }}</text>
-      {% endif %}
-      {% endfor %}
-      {% for t in run_trend.ticks_x or [] %}
-      {% if t.label %}
-      <text class="dash-trend__x" x="{{ t.x }}" y="{{ run_trend.baseline + 18 }}" text-anchor="middle">{{ t.label }}</text>
+      <circle class="dash-trend__dot is-latest" data-series="geo" cx="{{ m.x }}" cy="{{ m.y }}" r="2.4"/>
       {% endif %}
       {% endfor %}
     </svg>
+    <ol class="dash-trend__dates">
+      {% for t in run_trend.ticks_x or [] %}
+      {% if t.label %}
+      <li class="dash-trend__x">{{ t.label }}</li>
+      {% endif %}
+      {% endfor %}
+    </ol>
     </div>
     <table class="dash-sheet">
       <thead>

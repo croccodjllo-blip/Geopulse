@@ -4722,17 +4722,30 @@ body.body-dash .dash-trend__svg {
   display: block;
   width: 100%;
   max-width: none;
-  height: auto;
-  max-height: none;
+  height: 13.5rem;
+  max-height: 13.5rem;
 }
 body.body-dash .dash-trend__grid {
-  stroke: color-mix(in srgb, var(--brand-clarity) 12%, transparent);
-  stroke-width: 1;
+  stroke: color-mix(in srgb, var(--brand-clarity) 8%, transparent);
+  stroke-width: 0.6;
 }
-body.body-dash .dash-trend__axis,
+body.body-dash .dash-trend__axis {
+  fill: color-mix(in srgb, var(--brand-clarity) 40%, transparent);
+  font-size: 8px;
+}
+body.body-dash .dash-trend__dates {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0.35rem 0 0;
+  padding: 0 1.6rem 0 2.4rem;
+  list-style: none;
+}
 body.body-dash .dash-trend__x {
-  fill: color-mix(in srgb, var(--brand-clarity) 48%, transparent);
-  font-size: 10px;
+  margin: 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--brand-clarity) 42%, transparent);
 }
 body.body-dash .dash-trend__line {
   fill: none;
@@ -4741,13 +4754,13 @@ body.body-dash .dash-trend__line {
 }
 body.body-dash .dash-trend__line[data-series="aio"],
 body.body-dash .dash-trend__dot[data-series="aio"] { stroke: var(--plan-accent); fill: var(--plan-accent); }
-body.body-dash .dash-trend__line[data-series="aio"] { stroke-width: 2.5; fill: none; }
+body.body-dash .dash-trend__line[data-series="aio"] { stroke-width: 1.35; fill: none; }
 body.body-dash .dash-trend__line[data-series="geo"],
 body.body-dash .dash-trend__dot[data-series="geo"] {
-  stroke: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
-  fill: color-mix(in srgb, var(--brand-clarity) 70%, transparent);
+  stroke: color-mix(in srgb, var(--brand-clarity) 58%, transparent);
+  fill: color-mix(in srgb, var(--brand-clarity) 58%, transparent);
 }
-body.body-dash .dash-trend__line[data-series="geo"] { stroke-width: 2.3; fill: none; }
+body.body-dash .dash-trend__line[data-series="geo"] { stroke-width: 1.2; fill: none; }
 body.body-dash .dash-trend__val {
   font-size: 9px;
   font-weight: 650;

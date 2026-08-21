@@ -647,15 +647,15 @@ def build_history_trend(
 
     aio_line, aio_marks = _path("aio")
     geo_line, geo_marks = _path("geo")
-    show_every = 1 if len(series) <= 8 else 2
     ticks_x = []
+    last_i = len(series) - 1
     for i, row in enumerate(series):
         x, _y = _xy(i, 0)
-        show = i == 0 or i == len(series) - 1 or i % show_every == 0
+        show = i == 0 or i == last_i
         ticks_x.append({"x": x, "label": row["label"] if show else ""})
 
     grid_y = []
-    for v in (100, 75, 50, 25, 0):
+    for v in (100, 50, 0):
         _x, y = _xy(0, float(v))
         grid_y.append({"y": y, "v": v, "x1": left, "x2": width - right})
 

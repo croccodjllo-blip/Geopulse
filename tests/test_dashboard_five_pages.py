@@ -86,7 +86,8 @@ def test_trend_has_history_and_charts():
     assert "history-list" in TREND
     assert "dash-trend" in TREND
     assert "dash-trend__frame" in TREND
-    assert 'preserveAspectRatio="xMinYMid meet"' in TREND
+    assert 'preserveAspectRatio="xMidYMid meet"' in TREND
+    assert "dash-trend__dates" in TREND
     assert "dash-spark" in TREND
     assert "Data audit" in TREND or "{{ _('Data audit') }}" in TREND
     assert "diff-strip" in TREND
@@ -103,7 +104,8 @@ def test_full_width_workspace():
     assert ".dash-wide" in CSS
     assert ".dash-prompt" in CSS
     assert ".dash-trend__frame" in CSS
-    assert "max-height: none" in CSS.split("dash-trend__svg")[1][:180]
+    assert "width: 100%" in CSS.split("dash-trend__svg")[1][:180]
+    assert "13.5rem" in CSS.split("dash-trend__svg")[1][:180]
     assert 'class="workspace workspace--fill"' in DASH
 
 
