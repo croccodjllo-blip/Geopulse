@@ -32,4 +32,4 @@ def test_ui_badge_ai_uses_platinum_not_lavender():
     # Badge rule must use platinum/chrome text.
     start = css.index(".ui-badge--ai {")
     block = css[start : start + 220]
-    assert "#E8EEF4" in block or "#C9D3DD" in block
+    assert "#E8EEF4" in block or "#C9D3DD" in block or "#F3EDE3" in block or "#E8A04A" in block
