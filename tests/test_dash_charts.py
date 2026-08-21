@@ -35,6 +35,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-board" in SIGNAL
     assert "dash-tiles" in SIGNAL
     assert "dash-split" in SIGNAL
+    assert "dash-split--wide" in SIGNAL
+    assert "dash-split__track" in SIGNAL
     assert "dash-rank" in SIGNAL
     assert "dash-hist" in SIGNAL
     assert "dash-fault" in SIGNAL
@@ -52,6 +54,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert ".dash-signal" in CSS
     assert ".dash-board" in CSS
     assert ".dash-hist" in CSS
+    assert "dash-split--wide" in CSS
+    assert "dash-split__track" in CSS
     assert "#8B5CF6" not in CSS.split("Signal deck")[-1]
 
 
@@ -265,6 +269,8 @@ def test_dashboard_renders_signal_instruments():
     assert "dash-board" in html
     assert "dash-tiles" in html
     assert "dash-split" in html
+    assert "dash-split--wide" in html
+    assert "dash-split__track" in html
     assert "dash-rank" in html
     assert "dash-hist" in html
     assert "dash-fault" in html

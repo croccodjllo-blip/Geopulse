@@ -175,6 +175,7 @@ def test_five_pages_render_for_plus_user():
     assert "dash-kpis" in overview
     assert "dash-board" in overview
     assert "dash-split" in overview
+    assert "dash-split--wide" in overview
     assert "dash-rank" in overview
     assert "__CENTROPIC_GEO_COMPACT__" not in overview
     assert "dash-audit" in overview
