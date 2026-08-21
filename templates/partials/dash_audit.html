@@ -3,7 +3,16 @@
 {% if not rival_seed and latest is defined and latest and latest.competitors %}
   {% set rival_seed = latest.competitors|map(attribute='domain')|reject('none')|join('\n') %}
 {% endif %}
+{% set cvi = latest.rating if latest is defined and latest else none %}
+{% set cvi_score = cvi.score if cvi and cvi.score is number else 0 %}
+{% set cvi_code = cvi.code if cvi and cvi.code else '—' %}
 <section class="dash-audit dash-compose" id="analyze-panel" aria-labelledby="audit-title">
+  {% if latest is defined and latest %}
+  <style nonce="{{ csp_nonce }}">
+    .dash-cvi { --cvi: {{ cvi_score }}; }
+  </style>
+  {% endif %}
+  <div class="dash-masthead">
   <div class="dash-mast">
     <p class="dash-mast__kicker dash-compose__title" id="audit-title">{{ _('Dominio attivo') if latest else _('Audit') }}</p>
     {% if latest %}
@@ -32,6 +41,19 @@
       · {{ site_count }}/{{ max_sites }} {{ _('domini') }}
       {% if crawl_unlimited %} · {{ _('Crawl intero') }}{% else %} · {{ crawl_pages_limit }} {{ _('pag.') }}{% endif %}
     </p>
+  </div>
+  {% if latest is defined and latest %}
+  <aside class="dash-cvi" aria-labelledby="dash-cvi-title">
+    <p class="visually-hidden" id="dash-cvi-title">{{ _('Centropic Visibility Index') }}</p>
+    <div class="dash-cvi__dial" aria-hidden="true">
+      <strong class="dash-cvi__grade">{{ cvi_code }}</strong>
+    </div>
+    <div class="dash-cvi__copy">
+      <p class="dash-cvi__kicker">{{ _('CVI') }}</p>
+      <p class="dash-cvi__score">{{ cvi_score }}<span>/100</span></p>
+    </div>
+  </aside>
+  {% endif %}
   </div>
 
   <form method="post" id="analyze" class="js-analyze-form dash-command analyze-form{% if free_exhausted %} is-disabled{% endif %}" novalidate{% if free_exhausted %} aria-disabled="true"{% endif %} data-audit-command>

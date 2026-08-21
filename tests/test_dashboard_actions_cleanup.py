@@ -37,6 +37,11 @@ def test_nuova_analisi_lives_in_analyze_reveal():
     assert "dash-compose" in AUDIT
     assert "dash-compose__title" in AUDIT
     assert "dash-mast" in AUDIT
+    assert "dash-masthead" in AUDIT
+    assert "dash-cvi" in AUDIT
+    assert "dash-cvi__grade" in AUDIT
+    assert "dash-cvi__score" in AUDIT
+    assert "dash-ring--cvi" not in AUDIT
     assert "dash-command" in AUDIT
     assert "dash-sites" in AUDIT
     assert "<select" not in AUDIT

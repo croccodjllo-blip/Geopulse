@@ -64,6 +64,8 @@ def test_topbar_css_clears_left_offset():
     assert ".app-topbar" in CSS
     assert ".app-topbar__link.is-active" in CSS
     assert ".app-topbar__tokens" in CSS
+    assert ".dash-cvi" in CSS
+    assert ".dash-cvi__dial" in CSS
     assert "body.app-shell--topbar .site-main" in CSS
     assert "margin-left: 0 !important" in CSS
 

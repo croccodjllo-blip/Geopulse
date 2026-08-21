@@ -43,11 +43,6 @@
 
 <section class="dash-signal dash-board" aria-label="{{ _('Metriche') }}">
   <ul class="dash-kpis dash-tiles" aria-label="{{ _('Metriche primarie') }}">
-    <li class="dash-tile">
-      <p class="dash-tile__k">{{ _('CVI') }}</p>
-      <p class="dash-tile__n"><b>{{ cvi_score }}</b><span>/100</span></p>
-      <p class="dash-tile__s">{{ cvi_code }}</p>
-    </li>
     <li class="dash-tile" data-metric="aio">
       <p class="dash-tile__k">AIO</p>
       <p class="dash-tile__n">{{ ch.aio if ch.aio is number else '—' }}</p>
