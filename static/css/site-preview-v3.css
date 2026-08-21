@@ -1080,18 +1080,18 @@ body.body-marketing .nav-cta:hover {
   background: color-mix(in srgb, var(--mkt-teal) 18%, transparent) !important;
   color: #F6E8D0 !important;
 }
-/* Marketing nav lockup — anteprima: CENTROPIC uppercase */
+/* Marketing nav lockup — lowercase centropic.ai (hero keeps the uppercase moment) */
 body.body-marketing .brand-mark__word,
 body.body-marketing .holo-brand__word--nav {
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  font-weight: 700 !important;
+  text-transform: lowercase !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 650 !important;
   font-size: 0.82rem !important;
-  color: #E8EEF4 !important;
+  color: #F3EDE3 !important;
 }
 body.body-marketing .brand-mark__word span,
 body.body-marketing .holo-brand__word--nav span {
-  display: none !important; /* anteprima nav: CENTROPIC without .ai */
+  color: #E8A04A !important;
 }
 /* Marketing nav — anteprima lockup */
 body.body-marketing .brand-mark__logo {
@@ -1233,7 +1233,7 @@ body.body-marketing .hero--preview .hero-copy--preview {
   justify-content: center;
   box-sizing: border-box;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
-  color: #E8EEF4;
+  color: #F3EDE3;
   overflow: visible !important;
   /* Shared width: H1 + lede + URL box */
   --hero-band: min(66vw, 64rem);
@@ -1307,7 +1307,7 @@ body.body-marketing .hero-brand-lockup--preview .hero-brand-word {
   -webkit-text-fill-color: transparent;
 }
 body.body-marketing .hero--preview .hero-headline--v2 {
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif !important;
+  font-family: "Inter", system-ui, sans-serif !important;
   /* Same width as lede + URL box; type scales to fill the band on one line */
   width: var(--hero-band) !important;
   max-width: var(--hero-band) !important;
@@ -1316,7 +1316,7 @@ body.body-marketing .hero--preview .hero-headline--v2 {
   letter-spacing: -0.02em !important;
   line-height: 1.2 !important;
   margin: 0 auto 0.95rem !important;
-  color: #E8EEF4 !important;
+  color: #F3EDE3 !important;
   text-align: center !important;
   white-space: nowrap !important;
   position: relative;
@@ -1334,7 +1334,7 @@ body.body-marketing .hero--preview .hero-lede {
   font-size: clamp(0.78rem, calc(66vw / 52), 1.28rem) !important;
   line-height: 1.45 !important;
   margin: 0 auto clamp(1.5rem, 4.2vw, 2.75rem) !important;
-  color: color-mix(in srgb, #E8EEF4 72%, transparent) !important;
+  color: color-mix(in srgb, #F3EDE3 72%, transparent) !important;
   text-align: center !important;
   white-space: nowrap !important;
   box-sizing: border-box;
@@ -1365,7 +1365,7 @@ body.body-marketing .hero--preview .hero-url-form__row {
 }
 body.body-marketing .hero--preview .hero-url-form__icon {
   display: inline-flex;
-  color: color-mix(in srgb, #E8EEF4 45%, transparent);
+  color: color-mix(in srgb, #F3EDE3 45%, transparent);
   flex: 0 0 auto;
 }
 body.body-marketing .hero--preview .hero-url-form__input {
@@ -1373,14 +1373,14 @@ body.body-marketing .hero--preview .hero-url-form__input {
   min-width: 0;
   border: 0 !important;
   background: transparent !important;
-  color: #E8EEF4 !important;
+  color: #F3EDE3 !important;
   font-family: "Inter", system-ui, sans-serif !important;
   font-size: clamp(0.92rem, 1.05vw, 1.05rem) !important;
   padding: 0.65rem 0.55rem !important;
   text-align: left !important;
 }
 body.body-marketing .hero--preview .hero-url-form__input::placeholder {
-  color: color-mix(in srgb, #E8EEF4 42%, transparent) !important;
+  color: color-mix(in srgb, #F3EDE3 42%, transparent) !important;
 }
 body.body-marketing .hero--preview .hero-url-form__submit {
   flex: 0 0 auto;
@@ -1432,7 +1432,7 @@ body.body-marketing .section-band--preview h2 {
 body.body-marketing .section-band--preview .lede {
   max-width: 40rem;
   margin-inline: auto;
-  color: color-mix(in srgb, #E8EEF4 70%, transparent) !important;
+  color: color-mix(in srgb, #F3EDE3 70%, transparent) !important;
 }
 body.body-marketing .section-band--preview .profile-grid {
   text-align: left;

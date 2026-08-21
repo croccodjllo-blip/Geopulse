@@ -49,26 +49,26 @@
 
   /* ——— Core palette (dark formal shell) ——— */
   --ink:         var(--color-clarity);
-  --ink-soft:    rgba(232, 238, 244, 0.78);
-  --ink-mid:     rgba(232, 238, 244, 0.52);
+  --ink-soft:    rgba(243, 237, 227, 0.78);
+  --ink-mid:     rgba(243, 237, 227, 0.52);
   --ink-soft-bg: var(--brand-card);
   --bg-deep:     var(--brand-bg);
 
   --slate:       var(--brand-muted);
-  --slate-light: #B7C2D0;
-  --slate-pale:  #D5DDE6;
+  --slate-light: #D4C4A8;
+  --slate-pale:  #E8D5B5;
 
-  --surface:     rgba(232, 238, 244, 0.035);
-  --surface-2:   rgba(232, 238, 244, 0.06);
-  --surface-3:   rgba(232, 238, 244, 0.09);
-  --surface-4:   rgba(232, 238, 244, 0.12);
+  --surface:     rgba(243, 237, 227, 0.035);
+  --surface-2:   rgba(243, 237, 227, 0.06);
+  --surface-3:   rgba(243, 237, 227, 0.09);
+  --surface-4:   rgba(243, 237, 227, 0.12);
   --surface-solid: var(--brand-card);
 
   --border:      var(--brand-border);
-  --border-mid:  #2A3542;
-  --border-str:  #3D4A58;
+  --border-mid:  #2A2218;
+  --border-str:  #3A2E22;
 
-  /* ——— Accent: chrome/silver ——— */
+  /* ——— Accent: warm gold ——— */
   --signal:      var(--brand-cyan);
   --signal-deep: #8A4E16;
   --signal-glow: rgba(232, 160, 74, 0.22);
@@ -189,7 +189,7 @@ body.app-body:not(.body-dash) {
 .site-header .brand-mark,
 .site-header--invert .nav-links a,
 .site-header--invert .nav-links button,
-.site-header--invert .brand-mark { color: rgba(245, 247, 250, 0.88); }
+.site-header--invert .brand-mark { color: rgba(243, 237, 227, 0.88); }
 
 .site-header .nav-links a:hover,
 .site-header .nav-links button:hover,
@@ -200,7 +200,7 @@ body.app-body:not(.body-dash) {
 
 .site-header .nav-cta,
 .site-header--invert .nav-cta {
-  border-color: rgba(201, 211, 221, 0.45) !important;
+  border-color: color-mix(in srgb, var(--brand-cyan) 45%, transparent) !important;
   color: var(--brand-cyan) !important;
   background: transparent !important;
 }
@@ -4065,7 +4065,7 @@ html.analyze-busy {
 .pack-mail__meta code {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--ink-soft, #c5ccd6);
+  color: var(--ink-soft, #F3EDE3);
   padding: 0.12rem 0.4rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--brand-border);
@@ -4081,7 +4081,7 @@ html.analyze-busy {
   margin: 0.15rem 0 0;
   font-size: 0.78rem;
   font-weight: 650;
-  color: var(--ink-soft, #c5ccd6);
+  color: var(--ink-soft, #F3EDE3);
 }
 
 .pack-mail__input {
@@ -5902,38 +5902,38 @@ html.analyze-busy {
 }
 
 /* ═══════════════════════════════════════════
-   CYBER-ENTERPRISE DARK SHELL (.body-dash)
+   WARM-GOLD DASH SHELL (.body-dash)
 ═══════════════════════════════════════════ */
 .body-dash {
-  --void: #04060A;
+  --void: #121212;
   --ink: var(--color-clarity);
-  --ink-soft: rgba(232, 238, 244, 0.78);
-  --ink-mid: rgba(232, 238, 244, 0.52);
-  --ink-soft-bg: #0A0E14;
-  --slate: #8B97A8;
-  --slate-light: #B7C2D0;
-  --slate-pale: #6B7A8F;
-  --surface: rgba(232, 238, 244, 0.04);
-  --surface-2: rgba(232, 238, 244, 0.07);
-  --surface-3: rgba(232, 238, 244, 0.10);
-  --surface-4: rgba(232, 238, 244, 0.13);
-  --border: rgba(232, 238, 244, 0.09);
-  --border-mid: rgba(232, 238, 244, 0.14);
-  --border-str: rgba(232, 238, 244, 0.22);
+  --ink-soft: rgba(243, 237, 227, 0.78);
+  --ink-mid: rgba(243, 237, 227, 0.52);
+  --ink-soft-bg: var(--brand-card);
+  --slate: var(--brand-muted);
+  --slate-light: #D4C4A8;
+  --slate-pale: #8A7358;
+  --surface: rgba(243, 237, 227, 0.04);
+  --surface-2: rgba(243, 237, 227, 0.07);
+  --surface-3: rgba(243, 237, 227, 0.10);
+  --surface-4: rgba(243, 237, 227, 0.13);
+  --border: rgba(243, 237, 227, 0.09);
+  --border-mid: rgba(243, 237, 227, 0.14);
+  --border-str: rgba(243, 237, 227, 0.22);
   --signal: var(--color-core);
-  --signal-deep: #46525E;
-  --signal-glow: rgba(201, 211, 221, 0.16);
-  --signal-pale: rgba(201, 211, 221, 0.09);
+  --signal-deep: #8A4E16;
+  --signal-glow: rgba(232, 160, 74, 0.22);
+  --signal-pale: rgba(232, 160, 74, 0.12);
   --signal-soft: var(--color-flow);
-  --ok: #C9D3DD;
-  --ok-bg: rgba(201, 211, 221, 0.10);
-  --ok-brd: rgba(201, 211, 221, 0.28);
-  --warn: #D4A574;
-  --warn-bg: rgba(212, 165, 116, 0.10);
-  --warn-brd: rgba(212, 165, 116, 0.28);
-  --danger: #D4848F;
-  --danger-bg: rgba(212, 132, 143, 0.10);
-  --danger-brd: rgba(212, 132, 143, 0.28);
+  --ok: #22C55E;
+  --ok-bg: rgba(34, 197, 94, 0.12);
+  --ok-brd: rgba(34, 197, 94, 0.30);
+  --warn: #F59E0B;
+  --warn-bg: rgba(245, 158, 11, 0.12);
+  --warn-brd: rgba(245, 158, 11, 0.30);
+  --danger: #EF4444;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --danger-brd: rgba(239, 68, 68, 0.30);
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.45);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.42);
@@ -8211,7 +8211,7 @@ body.body-auth {
 }
 
 #hero-brand .hero-brand-word span {
-  background: linear-gradient(96deg, #6E7C8C 0%, #C9D3DD 50%, #F2F5F8 100%);
+  background: linear-gradient(96deg, #8A4E16 0%, #F6E0B8 42%, #E8A04A 68%, #C47A2C 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -8258,7 +8258,10 @@ body.body-auth {
 .page-intro__brand-row .hero-brand-word,
 .page-intro__brand-row .page-intro__brand {
   margin: 0;
-  font-size: clamp(1.65rem, 4vw, 2.35rem);
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
 }
 
 .page-intro--branded .page-intro__title,
@@ -8290,7 +8293,7 @@ body.body-auth {
   letter-spacing: -0.03em;
   line-height: 1.15;
   margin: 0 0 1.1rem;
-  color: var(--ink-soft, #c5ccd6);
+  color: var(--ink-soft, #F3EDE3);
 }
 
 .hero-headline--rise {
@@ -8829,7 +8832,7 @@ body.body-login-popup .site-footer {
   letter-spacing: -0.03em;
   max-width: 22ch;
   margin: 0.35rem 0 0.85rem;
-  color: var(--ink-soft, #c5ccd6);
+  color: var(--ink-soft, #F3EDE3);
 }
 
 .page-intro--hero .page-intro__lede {
@@ -9734,7 +9737,7 @@ body.body-login-popup .site-footer {
 }
 
 .sov-hero__split li[data-tone="brand"] strong { color: var(--plan-accent, var(--brand-cyan)); }
-.sov-hero__split li[data-tone="rivals"] strong { color: #8BA3BD; }
+.sov-hero__split li[data-tone="rivals"] strong { color: var(--brand-muted); }
 .sov-hero__split li[data-tone="other"] strong { color: #94a3b8; }
 
 .sov-compose,

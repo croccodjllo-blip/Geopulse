@@ -22,6 +22,21 @@ def test_root_tokens_are_warm_gold():
     assert "#B8E6EC" not in PREVIEW
 
 
+def test_dash_shell_is_warm_not_chrome():
+    """Dashboard token remap must not paint success as chrome silver."""
+    assert "--ok: #22C55E" in CSS
+    assert "--ok: #C9D3DD" not in CSS
+    assert "WARM-GOLD DASH SHELL" in CSS
+    assert "Space Grotesk" not in PREVIEW
+    landing = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
+    assert "Space Grotesk" not in landing
+    base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
+    assert "img/logo-mark.svg" in base
+    assert "img/logo-mark.png" not in base
+    assert ".page-intro__brand-row .hero-brand-word" in CSS
+    assert "font-size: 0.95rem;" in CSS
+
+
 def test_logo_svg_is_gold_c_arcs():
     logo = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
     assert "#E8A04A" in logo

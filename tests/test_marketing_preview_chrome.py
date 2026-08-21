@@ -16,7 +16,7 @@ def test_landing_is_hero_only_anteprima():
     assert "hero-brand-word" in html
     assert "bg-hero-anteprima.png" in html
     assert "bg-hero-anteprima-mobile.png" in html
-    assert "Space+Grotesk" in html or "Space Grotesk" in html
+    assert "Space+Grotesk" not in html and "Space Grotesk" not in html
     assert "Scopri quanto il tuo sito è pronto" in html
     assert "https://iltuosito.it" in html
     # Footer uses default base block (same as other pages)
