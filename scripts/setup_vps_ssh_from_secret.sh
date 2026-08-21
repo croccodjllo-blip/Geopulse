@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
-# Install VPS deploy SSH key from Cursor Cloud Agent secret VPS_SSH_PRIVATE_KEY.
-# Safe to run from environment install/start; no-ops if secret missing.
+# Install VPS deploy SSH key from Cursor Cloud Agent secret VPS_SSH_PRIVATE_KEY,
+# or reuse ~/.ssh/id_ed25519_centropic_vps when it already exists (snapshot).
+# Safe to run from environment install/start; no-ops if neither is present.
 set -euo pipefail
-
-if [[ -z "${VPS_SSH_PRIVATE_KEY:-}" ]]; then
-  echo "[vps-ssh] VPS_SSH_PRIVATE_KEY not set — skip (git push vps will fail until configured)"
-  exit 0
-fi
 
 mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 
 KEY="$HOME/.ssh/id_ed25519_centropic_vps"
-# Normalize possible escaped newlines from secret UIs.
-printf '%s\n' "$VPS_SSH_PRIVATE_KEY" | sed 's/\r$//' | awk '
-  BEGIN { inkey=0 }
-  /^-----BEGIN/ { inkey=1 }
-  { if (inkey) print }
-  /^-----END/ { inkey=0 }
-' > "$KEY"
-# Fallback if secret was pasted without BEGIN markers (raw key body unlikely for ed25519 OpenSSH).
-if [[ ! -s "$KEY" ]]; then
-  printf '%s\n' "$VPS_SSH_PRIVATE_KEY" > "$KEY"
+
+if [[ -n "${VPS_SSH_PRIVATE_KEY:-}" ]]; then
+  # Normalize possible escaped newlines from secret UIs.
+  printf '%s\n' "$VPS_SSH_PRIVATE_KEY" | sed 's/\r$//' | awk '
+    BEGIN { inkey=0 }
+    /^-----BEGIN/ { inkey=1 }
+    { if (inkey) print }
+    /^-----END/ { inkey=0 }
+  ' > "$KEY"
+  # Fallback if secret was pasted without BEGIN markers (raw key body unlikely for ed25519 OpenSSH).
+  if [[ ! -s "$KEY" ]]; then
+    printf '%s\n' "$VPS_SSH_PRIVATE_KEY" > "$KEY"
+  fi
+  chmod 600 "$KEY"
+elif [[ ! -s "$KEY" ]]; then
+  echo "[vps-ssh] VPS_SSH_PRIVATE_KEY not set and no existing key — skip"
+  exit 0
 fi
-chmod 600 "$KEY"
 
 # Ensure OpenSSH format ends with newline.
 if [[ -n "$(tail -c1 "$KEY" | tr -d '\n' || true)" ]]; then
