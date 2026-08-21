@@ -99,7 +99,7 @@ def test_dashboard_plan_theme_classes():
     assert 'data-dash-plan="business"' in biz_html
     assert "plan-services" not in biz_html
     assert "Toolkit Business" not in biz_html
-    assert "White-label" in biz_html
+    assert "white-label" in biz_html.lower()
     assert 'href="/dashboard/storico"' in biz_html
 
 

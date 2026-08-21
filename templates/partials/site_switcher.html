@@ -1,6 +1,7 @@
 {# Plan-aware multi-site switcher — one composition, native select (no card grid). #}
 {% if user_sites is defined and user_sites|length > 1 %}
-<form class="site-switcher" method="get" action="{{ url_for('dashboard') }}" aria-label="{{ _('Cambia sito') }}">
+{% set switch_ep = request.endpoint if request.endpoint in ('dashboard', 'dashboard_sov', 'dashboard_geo_ui') else 'dashboard' %}
+<form class="site-switcher" method="get" action="{{ url_for(switch_ep) }}" aria-label="{{ _('Cambia sito') }}">
   <label class="site-switcher__label" for="dash-site-select">{{ _('Sito attivo') }}</label>
   <div class="site-switcher__control">
     <select class="site-switcher__select" id="dash-site-select" name="site">
