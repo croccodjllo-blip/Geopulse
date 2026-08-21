@@ -44,7 +44,7 @@ def _guide_metodologia() -> dict[str, Any]:
             """
   <section class="page-section">
     <h2 class="page-section__title">1. Centropic Visibility Index (CVI)</h2>
-    <p class="lede">Il <strong>CVI</strong> è la metrica proprietaria di Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi generativi.</p>
+    <p class="lede">Il <strong>CVI</strong> è la metrica proprietaria di Centropic: un indice 0–100 con lettera <strong>DD→AA</strong> che sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi generativi.</p>
     <p class="lede">Formula operativa: media di <strong>AIO</strong> (leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui findings critical/warn. Non è un ranking pubblicitario né una garanzia di menzione: è lo standard Centropic per confrontare domini e nel tempo.</p>
     <p class="lede">Quando un marketer chiede <em>«qual è il tuo CVI?»</em> sta chiedendo questa predisposizione strutturale — non impression PR tradizionali.</p>
   </section>
@@ -199,7 +199,7 @@ def _guide_score_vs_sov() -> dict[str, Any]:
             """
   <section class="page-section">
     <h2 class="page-section__title">Centropic Visibility Index (CVI)</h2>
-    <p class="lede">Il <strong>CVI</strong> è la metrica di categoria di Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale (AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e nel tempo.</p>
+    <p class="lede">Il <strong>CVI</strong> è la metrica di categoria di Centropic: 0–100 + lettera DD→AA. Riassume predisposizione strutturale (AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e nel tempo.</p>
   </section>
   <section class="page-section">
     <h2 class="page-section__title">Score AIO / GEO (componenti)</h2>
