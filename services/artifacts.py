@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -852,6 +853,19 @@ def _collect_faq_pairs(scraped: dict[str, Any]) -> list[dict[str, str]]:
 
 
 UNIFIED_FIX_FILENAME = "centropic-fix.html"
+_LOGO_SVG_PATH = Path(__file__).resolve().parents[1] / "static" / "img" / "logo.svg"
+
+
+def _pack_logo_svg() -> str:
+    """Inline the original Centropic mark so the downloaded pack stays self-contained."""
+    raw = _LOGO_SVG_PATH.read_text(encoding="utf-8")
+    svg = raw.strip()
+    svg = svg.replace('id="cWarm"', 'id="pack-cWarm"', 1)
+    svg = svg.replace('id="cWarm2"', 'id="pack-cWarm2"', 1)
+    svg = svg.replace("url(#cWarm)", "url(#pack-cWarm)")
+    svg = svg.replace("url(#cWarm2)", "url(#pack-cWarm2)")
+    svg = svg.replace("<svg ", '<svg class="pack-logo" ', 1)
+    return svg
 
 
 def build_unified_fix_html(
@@ -993,12 +1007,17 @@ code{{font-family:IBM Plex Mono,ui-monospace,monospace}}
 ul{{padding-left:1.2rem;margin:.4rem 0}}
 li{{margin:.25rem 0}}
 footer{{margin-top:2rem;font-size:.85rem;color:#B8A894}}
-.brand{{color:#E8A04A}}
+.pack-brand{{display:flex;align-items:center;gap:.75rem;margin:0 0 1.15rem}}
+.pack-logo{{width:2.75rem;height:2.75rem;flex:0 0 2.75rem;display:block}}
+.brand{{color:#E8A04A;margin:0;font-weight:650;letter-spacing:.04em}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="brand">centropic.ai</p>
+  <header class="pack-brand">
+    {_pack_logo_svg()}
+    <p class="brand">centropic.ai</p>
+  </header>
   <h1>{_esc(t("pack_title", loc))}</h1>
   <p class="lede">{_esc(t("pack_lede", loc))}</p>
   <p class="meta">{pack_meta}</p>
