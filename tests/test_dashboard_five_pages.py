@@ -49,6 +49,9 @@ def test_panoramica_is_charts_only():
     assert "dash-board" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
+    assert "dash-hist-card" in (
+        ROOT / "templates" / "partials" / "dash_signal.html"
+    ).read_text(encoding="utf-8")
     assert "dash-hist" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")

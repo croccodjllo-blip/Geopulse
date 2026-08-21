@@ -41,6 +41,7 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "dash-area__x" in SIGNAL
     assert "dash-rank" in SIGNAL
     assert "dash-hist" in SIGNAL
+    assert "dash-hist-card" in SIGNAL
     assert "dash-fault" in SIGNAL
     assert "dash-kpis" in SIGNAL
     assert "dash-spine" not in SIGNAL
