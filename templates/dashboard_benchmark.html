@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Benchmark') }}{% endblock %}
+{% block body_class %}body-dash{% endblock %}
+{% block main_class %}site-main--dash{% endblock %}
+
+{% block content %}
+<section class="workspace workspace--wide">
+  <header class="dash-boardhead">
+    <div class="dash-boardhead__copy">
+      <p class="dash-signal__kicker">{{ _('Benchmark') }}</p>
+      <h1 class="dash-boardhead__title">{{ latest.domain if latest else _('Competitor') }}</h1>
+      <p class="dash-signal__domain">{{ _('Differenze strutturali AIO/GEO rispetto ai rivali.') }}</p>
+    </div>
+    {% include "partials/site_switcher.html" %}
+  </header>
+
+  {% if latest %}
+  {% include "partials/dash_dynamic_styles.html" %}
+  {% if can_competitors and latest.competitors %}
+    {% include "partials/competitor_snapshot.html" %}
+    {% set brand_aio = latest.aio_score if latest.aio_score is number else none %}
+    {% set brand_geo = latest.geo_score if latest.geo_score is number else none %}
+    <article class="dash-card dash-card--table">
+      <p class="dash-card__kicker">{{ _('Delta') }}</p>
+      <h2 class="dash-card__title">{{ _('Vs competitor') }}</h2>
+      <table class="dash-sheet">
+        <thead>
+          <tr>
+            <th>{{ _('Brand') }}</th>
+            <th>AIO</th>
+            <th>GEO</th>
+            <th>{{ _('Δ AIO') }}</th>
+            <th>{{ _('Δ GEO') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-role="brand">
+            <td><strong>{{ latest.domain }}</strong></td>
+            <td>{{ brand_aio if brand_aio is number else '—' }}</td>
+            <td>{{ brand_geo if brand_geo is number else '—' }}</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          {% for c in latest.competitors %}
+          {% set c_aio = c.aio_score if c.aio_score is number else none %}
+          {% set c_geo = c.geo_score if c.geo_score is number else none %}
+          {% set d_aio = (brand_aio - c_aio) if (brand_aio is number and c_aio is number) else none %}
+          {% set d_geo = (brand_geo - c_geo) if (brand_geo is number and c_geo is number) else none %}
+          <tr>
+            <td>{{ c.domain or c.url or _('Rivale') }}</td>
+            <td>{{ c_aio if c_aio is number else '—' }}</td>
+            <td>{{ c_geo if c_geo is number else '—' }}</td>
+            <td>{% if d_aio is number %}{{ '%+d'|format(d_aio) }}{% else %}—{% endif %}</td>
+            <td>{% if d_geo is number %}{{ '%+d'|format(d_geo) }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+  {% elif can_competitors %}
+  <div class="dash-card">
+    <p class="dash-card__kicker">{{ _('Confronto') }}</p>
+    <h2 class="dash-card__title">{{ _('Nessun competitor sul run') }}</h2>
+    <p class="dash-card__lede">{{ _('Aggiungi fino a 3 URL rivali nella nuova analisi in Panoramica.') }}</p>
+    <p><a class="dash-iconbtn" href="{{ url_for('dashboard', site=latest.id) }}#analyze-panel">{{ _('Nuova analisi') }}</a></p>
+  </div>
+  {% else %}
+  <div class="dash-card">
+    <p class="dash-card__lede">{{ _('Il confronto competitor è disponibile da Plus.') }}</p>
+    <p><a class="dash-iconbtn" href="{{ url_for('pricing') }}">{{ _('Vedi piani') }}</a></p>
+  </div>
+  {% endif %}
+  <p class="dash-deck__quiet">
+    <a href="{{ url_for('dashboard_geo_ui', site=latest.id) }}">{{ _('Apri grafici interattivi') }}</a>
+  </p>
+  {% else %}
+  <div class="empty-state">
+    <strong>{{ _('Nessuna analisi ancora') }}</strong>
+    <p><a class="btn btn-signal" href="{{ url_for('dashboard') }}">{{ _('Vai alla Panoramica') }}</a></p>
+  </div>
+  {% endif %}
+</section>
+{% if can_competitors %}
+<script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/competitor-suggest.js') }}" defer></script>
+{% endif %}
+{% endblock %}
