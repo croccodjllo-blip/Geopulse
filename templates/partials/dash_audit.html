@@ -48,7 +48,7 @@
     <p class="visually-hidden" id="dash-cvi-title">{{ _('Centropic Visibility Index') }}</p>
     <div class="dash-cvi__lockup">
       <div class="dash-cvi__dial">
-        <svg class="dash-cvi__mark" viewBox="0 0 128 128" aria-hidden="true">
+        <svg class="dash-cvi__mark" viewBox="0 0 200 128" aria-hidden="true">
           <defs>
             <linearGradient id="cvi-arc-a" x1="8%" y1="0%" x2="92%" y2="100%">
               <stop class="dash-cvi__stop-hi" offset="0%"/>
@@ -62,19 +62,23 @@
               <stop class="dash-cvi__stop-hi" offset="100%"/>
             </linearGradient>
           </defs>
-          <ellipse class="dash-cvi__orbit" cx="64" cy="64" rx="54" ry="22" transform="rotate(-18 64 64)"/>
+          <ellipse class="dash-cvi__orbit" cx="100" cy="64" rx="88" ry="30" transform="rotate(-10 100 64)"/>
           <path class="dash-cvi__arc dash-cvi__arc--outer" d="M102 30 A50 50 0 1 0 102 98"/>
           <path class="dash-cvi__arc dash-cvi__arc--mid" d="M92 38 A38 38 0 1 0 92 90"/>
           <path class="dash-cvi__arc dash-cvi__arc--inner" d="M82 47 A26 26 0 1 0 82 81"/>
-          <circle class="dash-cvi__node" cx="108" cy="36" r="3.2"/>
+          <g class="dash-cvi__echo" transform="translate(200 0) scale(-1 1)">
+            <path class="dash-cvi__arc dash-cvi__arc--outer" d="M102 30 A50 50 0 1 0 102 98"/>
+            <path class="dash-cvi__arc dash-cvi__arc--mid" d="M92 38 A38 38 0 1 0 92 90"/>
+          </g>
+          <circle class="dash-cvi__node" cx="100" cy="20" r="3.2"/>
         </svg>
         <div class="dash-cvi__readout">
           <strong class="dash-cvi__grade">{{ cvi_code }}</strong>
         </div>
-      </div>
-      <div class="dash-cvi__copy">
-        <p class="dash-cvi__kicker">{{ _('CVI') }}</p>
-        <p class="dash-cvi__score">{{ cvi_score }}<span>/100</span></p>
+        <div class="dash-cvi__copy">
+          <p class="dash-cvi__kicker">{{ _('CVI') }}</p>
+          <p class="dash-cvi__score">{{ cvi_score }}<span>/100</span></p>
+        </div>
       </div>
     </div>
   </aside>
