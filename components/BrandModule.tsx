@@ -62,7 +62,7 @@ export function BrandModule({
     <section
       className={
         className ||
-        "relative isolate min-h-[70vh] overflow-hidden border border-[#1A222D] bg-[#04060A]"
+        "relative isolate min-h-[70vh] overflow-hidden border border-[#1A222D] bg-[#121212]"
       }
       aria-label="Centropic brand"
     >
@@ -76,7 +76,7 @@ export function BrandModule({
         </p>
         <a
           href={ctaHref}
-          className="inline-flex items-center justify-center rounded-md bg-[#C9D3DD] px-6 py-3 text-sm font-semibold text-[#04060A] transition hover:brightness-110"
+          className="inline-flex items-center justify-center rounded-md bg-[#E8A04A] px-6 py-3 text-sm font-semibold text-[#121212] transition hover:brightness-110"
         >
           {ctaLabel}
         </a>
