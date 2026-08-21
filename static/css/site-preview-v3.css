@@ -2771,6 +2771,7 @@ body.body-dash .dash-cvi {
   --cvi-tone-deep: color-mix(in srgb, var(--cvi-tone) 42%, #121212);
   display: flex;
   align-items: center;
+  gap: 0.85rem 1.05rem;
   min-width: 0;
   justify-self: end;
 }
@@ -2784,11 +2785,15 @@ body.body-dash .dash-cvi__stop-lo { stop-color: var(--cvi-tone-lo); }
 body.body-dash .dash-cvi__stop-deep { stop-color: var(--cvi-tone-deep); }
 body.body-dash .dash-cvi__dial {
   position: relative;
-  width: 13.25rem;
-  height: 13.25rem;
+  display: grid;
+  place-items: center;
+  width: 9.6rem;
+  height: 9.6rem;
+  flex: 0 0 9.6rem;
   background: transparent;
 }
 body.body-dash .dash-cvi__mark {
+  grid-area: 1 / 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -2819,45 +2824,40 @@ body.body-dash .dash-cvi__arc--inner {
 }
 body.body-dash .dash-cvi__node { fill: var(--cvi-tone); }
 body.body-dash .dash-cvi__readout {
-  position: absolute;
-  left: 52%;
-  right: 1%;
-  top: 26%;
-  bottom: 24%;
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
   display: grid;
-  align-content: center;
-  gap: 0.04rem;
-  min-width: 0;
+  place-items: center;
   pointer-events: none;
 }
 body.body-dash .dash-cvi__grade {
-  font-size: clamp(1.7rem, 3.1vw, 2.25rem);
+  font-size: clamp(1.55rem, 2.6vw, 2rem);
   font-weight: 720;
-  letter-spacing: -0.055em;
-  line-height: 0.9;
-  color: var(--brand-clarity);
-  text-shadow:
-    0 0 10px #121212,
-    0 1px 2px #121212,
-    1px 1px 0 #121212;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--cvi-tone);
+}
+body.body-dash .dash-cvi__copy {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
 }
 body.body-dash .dash-cvi__kicker {
   margin: 0;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 650;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--brand-clarity);
-  text-shadow: 0 0 8px #121212, 0 1px 2px #121212;
+  color: color-mix(in srgb, var(--cvi-tone) 80%, var(--brand-clarity));
 }
 body.body-dash .dash-cvi__score {
   margin: 0;
-  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-size: clamp(2.8rem, 5vw, 4.1rem);
   font-weight: 720;
-  letter-spacing: -0.05em;
-  line-height: 0.95;
+  letter-spacing: -0.055em;
+  line-height: 0.92;
   color: var(--brand-clarity);
-  text-shadow: 0 0 8px #121212, 0 1px 2px #121212;
 }
 body.body-dash .dash-cvi__score span {
   font-size: 0.38em;
@@ -4902,7 +4902,8 @@ body.body-dash .comp-arena {
   body.body-dash .dash-wide { grid-template-columns: 1fr; }
   body.body-dash .dash-prompt { grid-template-columns: 1fr; }
   body.body-dash .dash-audit__bar { grid-template-columns: 1fr; }
-  body.body-dash .dash-cvi__dial { width: 10.25rem; height: 10.25rem; }
+  body.body-dash .dash-cvi__dial { width: 7.6rem; height: 7.6rem; flex-basis: 7.6rem; }
+  body.body-dash .dash-cvi__score { font-size: clamp(2.2rem, 9vw, 3.2rem); }
   body.body-dash .dash-data { grid-template-columns: 1fr; }
   body.body-dash .dash-synth {
     grid-template-columns: 1fr;
