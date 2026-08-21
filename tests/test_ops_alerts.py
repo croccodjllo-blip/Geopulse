@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import time
+
 import centropic.ops_alerts as ops_alerts
 
 
 def test_report_stale_running_jobs_skips_zero(monkeypatch):
     calls: list[tuple] = []
     monkeypatch.setattr(ops_alerts, "_capture", lambda *a, **k: calls.append((a, k)))
-    ops_alerts._STALE_LAST_TS = 0.0
+    ops_alerts._STALE_LAST_TS = time.monotonic() - ops_alerts._STALE_COOLDOWN_S - 1
     ops_alerts.report_stale_running_jobs(0, stale_after_minutes=5)
     assert calls == []
 
@@ -16,7 +18,9 @@ def test_report_stale_running_jobs_skips_zero(monkeypatch):
 def test_report_stale_running_jobs_cooldown(monkeypatch):
     calls: list[tuple] = []
     monkeypatch.setattr(ops_alerts, "_capture", lambda *a, **k: calls.append((a, k)))
-    ops_alerts._STALE_LAST_TS = 0.0
+    # CI runners often have monotonic() < cooldown (fresh VM). Seed last-ts
+    # in the past so the first emit is allowed, the second is deduped.
+    ops_alerts._STALE_LAST_TS = time.monotonic() - ops_alerts._STALE_COOLDOWN_S - 1
     ops_alerts.report_stale_running_jobs(2, stale_after_minutes=5)
     ops_alerts.report_stale_running_jobs(3, stale_after_minutes=5)
     assert len(calls) == 1
