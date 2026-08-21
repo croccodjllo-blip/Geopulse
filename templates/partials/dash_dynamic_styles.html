@@ -1,22 +1,16 @@
-{# Nonced CSS custom properties for SoV/CVI meters (no style= attrs). #}
+{# Nonced CSS custom properties for Signal deck meters (no style= attrs). #}
 <style nonce="{{ csp_nonce }}">
 {% if rating is defined and rating %}
-.dash-ring--cvi { --cvi: {{ rating.score if rating.score is number else 0 }}; }
+.dash-signal { --cvi: {{ rating.score if rating.score is number else 0 }}; }
 {% endif %}
 {% if engine_breakdown %}
-.dash-ring--sov { --sov: {{ engine_breakdown.brand_sov }}; }
+.dash-signal { --sov: {{ engine_breakdown.brand_sov }}; }
 {% for e in engine_breakdown.engines %}
 [data-engine="{{ e.id }}"] {
   --accent: {{ e.accent }};
   --p: {{ e.propensity if e.propensity is not none else 0 }};
   --share: {{ e.share }};
 }
-{% endfor %}
-{% endif %}
-{% if crawl_pages_view is defined %}
-{% for page in crawl_pages_view[:16] %}
-.dash-horizon [data-page="{{ loop.index0 }}"] [data-metric="aio"] { --w: {{ page.aio_score if page.aio_score is number else 0 }}; }
-.dash-horizon [data-page="{{ loop.index0 }}"] [data-metric="geo"] { --w: {{ page.geo_score if page.geo_score is number else 0 }}; }
 {% endfor %}
 {% endif %}
 </style>

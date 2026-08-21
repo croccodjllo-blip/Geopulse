@@ -40,7 +40,9 @@ def test_no_hidden_folds_on_main_dashboard():
     assert "dash-more--ops" not in DASH
     assert "dash-deck" in DASH
     assert "dash-compose" in DASH
-    assert "dash-horizon" in DASH
+    assert "dash-meridian" in (
+        ROOT / "templates" / "partials" / "dash_signal.html"
+    ).read_text(encoding="utf-8")
     assert "edge-advanced--open" in DASH
 
 
@@ -51,7 +53,9 @@ def test_dock_css_has_open_and_rail_widths():
 
 
 def test_dash_canvas_is_flush_and_warm():
-    assert "dash-atelier--flush" in CSS
+    assert "dash-signal" in CSS
     assert "Compact flush canvas" in CSS
+    assert "Signal deck" in CSS
     assert "#3FA8B5" not in CSS.split("Compact flush canvas")[-1]
     assert "#C9D3DD" not in CSS.split("Compact flush canvas")[-1]
+    assert "#8B5CF6" not in CSS.split("Signal deck")[-1]

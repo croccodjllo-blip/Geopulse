@@ -64,108 +64,7 @@
         <section class="report report--priority" aria-labelledby="result-domain">
           {% include "partials/dash_dynamic_styles.html" %}
 
-          {# ——— P0 hero: CVI ring + SoV ring (preview layout) ——— #}
-          {% set cvi_score = rating.score if rating.score is number else 0 %}
-          {% set sov_pct = engine_breakdown.brand_sov if engine_breakdown else 0 %}
-          {% set cvi_c = 301.59 %}
-          {% set cvi_off = cvi_c * (1 - (cvi_score / 100)) %}
-          {% set sov_c = 301.59 %}
-          {% set sov_off = sov_c * (1 - ((sov_pct if sov_pct is number else 0) / 100)) %}
-          <header class="dash-hero">
-            <h2 class="visually-hidden" id="result-domain">{{ latest.domain }}</h2>
-            <p class="dash-hero__domain-label">{{ _('Dominio analizzato') }}</p>
-            {% if latest.page_title %}
-            <p class="dash-hero__page-title">{{ latest.page_title }}</p>
-            {% endif %}
-
-            <div class="dash-hero__metrics" aria-label="{{ _('Metriche primarie') }}">
-              <article class="dash-ring dash-ring--cvi" data-grade="{{ rating.code }}">
-                <div class="dash-ring__viz" aria-hidden="true">
-                  <svg class="dash-ring__svg" viewBox="0 0 120 120">
-                    <circle class="dash-ring__track" cx="60" cy="60" r="48" fill="none" stroke-width="2.5"/>
-                    <circle class="dash-ring__progress dash-ring__progress--glow" cx="60" cy="60" r="48" fill="none" stroke-width="3.5"
-                      stroke-dasharray="{{ '%.2f'|format(cvi_c) }}"
-                      stroke-dashoffset="{{ '%.2f'|format(cvi_off) }}"
-                      transform="rotate(-90 60 60)"/>
-                  </svg>
-                  <strong class="dash-ring__value dash-ring__value--grade">{{ rating.code }}</strong>
-                </div>
-                <div class="dash-ring__copy" data-grade="{{ rating.code }}">
-                  <p class="dash-ring__label">{{ _('Centropic Visibility Index') }}</p>
-                  {# Fold anteprima: CVI label only (no Stimato). Meta kept for a11y/mobile. #}
-                  <p class="dash-ring__meta dash-ring__meta--cvi"><span class="visually-hidden">{{ cvi_score }}/100 · {{ _('Stimato') }}</span></p>
-                  <div class="dash-ring__hbar" aria-hidden="true"><i></i></div>
-                </div>
-              </article>
-
-              {% if engine_breakdown %}
-              <article class="dash-ring dash-ring--sov" aria-label="{{ _('Citation share brand') }}">
-                <div class="dash-ring__viz" aria-hidden="true">
-                  <svg class="dash-ring__svg" viewBox="0 0 120 120">
-                    <circle class="dash-ring__track" cx="60" cy="60" r="48" fill="none" stroke-width="2.5"/>
-                    <circle class="dash-ring__progress" cx="60" cy="60" r="48" fill="none" stroke-width="3.5"
-                      stroke-dasharray="{{ '%.2f'|format(sov_c) }}"
-                      stroke-dashoffset="{{ '%.2f'|format(sov_off) }}"
-                      transform="rotate(-90 60 60)"/>
-                  </svg>
-                  <strong class="dash-ring__value">{{ engine_breakdown.brand_sov }}<span>%</span></strong>
-                </div>
-                <div class="dash-ring__copy">
-                  <p class="dash-ring__label">{{ _('Share of Voice') }}</p>
-                  <p class="dash-ring__meta">{{ _('citation share') }}{% if engine_breakdown.top_engine %} · top {{ engine_breakdown.top_engine }}{% endif %}</p>
-                  <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
-                </div>
-              </article>
-              {% else %}
-              <article class="dash-ring dash-ring--sov dash-ring--empty">
-                <div class="dash-ring__viz" aria-hidden="true">
-                  <svg class="dash-ring__svg" viewBox="0 0 120 120">
-                    <circle class="dash-ring__track" cx="60" cy="60" r="48" fill="none" stroke-width="2.5"/>
-                  </svg>
-                  <strong class="dash-ring__value">—</strong>
-                </div>
-                <div class="dash-ring__copy">
-                  <p class="dash-ring__label">{{ _('Share of Voice') }}</p>
-                  <p class="dash-ring__meta">{{ _('Nessun breakdown disponibile.') }}</p>
-                </div>
-              </article>
-              {% endif %}
-            </div>
-
-            <div class="dash-hero__bar">
-              <ul class="dash-micro" aria-label="{{ _('Metriche chiave') }}">
-                <li>
-                  <span class="dash-micro__k">AIO</span>
-                  <strong class="dash-micro__v">{{ aio if aio is number else '—' }}</strong>
-                  <span class="dash-micro__unit">/100</span>
-                </li>
-                <li>
-                  <span class="dash-micro__k">GEO</span>
-                  <strong class="dash-micro__v">{{ geo if geo is number else '—' }}</strong>
-                  <span class="dash-micro__unit">/100</span>
-                </li>
-                <li>
-                  <span class="dash-micro__k">{{ _('Findings') }}</span>
-                  <strong class="dash-micro__v">{{ findings_n }}</strong>
-                  <span class="dash-micro__unit">{{ _('Attivi') }}</span>
-                </li>
-              </ul>
-              <nav class="dash-actions" aria-label="{{ _('Azioni report') }}">
-                <a class="dash-actions__btn" href="#analyze-panel">{{ _('Nuova analisi') }}</a>
-                <a class="dash-actions__btn" href="#pack">{{ _('Pack') }}</a>
-                <a class="dash-actions__btn" href="#edge-signals">{{ _('Edge') }}</a>
-                <a class="dash-actions__btn dash-actions__btn--sov" href="{{ url_for('dashboard_sov', site=latest.id) }}">{{ _('Share of Voice') }}</a>
-                <a class="dash-actions__ghost" href="{{ url_for('dashboard_sov', site=latest.id) }}#findings">{{ _('Findings') }}</a>
-                {% if pages_analyzed_n %}<a class="dash-actions__ghost" href="#critical-pages">{{ _('Critiche') }}</a>{% endif %}
-                <a class="dash-actions__ghost" href="{{ latest.url }}" target="_blank" rel="noopener noreferrer">{{ _('Apri sito') }}</a>
-                {% if can_extended_history %}
-                <a class="dash-actions__ghost" href="{{ url_for('site_history', analysis_id=latest.id) }}">{{ _('Storico') }}</a>
-                {% endif %}
-              </nav>
-            </div>
-          </header>
-
-          {% include "partials/dash_atelier.html" %}
+          {% include "partials/dash_signal.html" %}
 
           <div class="dash-deck" id="dash-ops">
 
@@ -194,50 +93,9 @@
             <p class="report-notes">{{ translate_analysis_notes(latest.analysis_notes) }}</p>
           {% endif %}
 
-          <div class="report-split">
-            {% if pages_analyzed_n %}
-            <section class="dash-block dash-block--panel" id="critical-pages" aria-labelledby="crawl-title">
-              <header class="dash-block__head">
-                <div>
-                  <p class="dash-block__eyebrow">{{ _('Priorità') }}</p>
-                  <h3 class="dash-block__title" id="crawl-title">{{ _('Pagine critiche') }}</h3>
-                </div>
-                <div class="dash-block__meta">
-                  <span class="dash-block__count">{{ crawl_pages_view|length }}</span>
-                  {% if crawl_crit_n and crawl_warn_n %}
-                  <span class="dash-block__chip" data-severity="critical">{{ crawl_crit_n }} {{ _('critiche') if crawl_crit_n != 1 else _('critica') }}</span>
-                  <span class="dash-block__chip" data-severity="warn">{{ crawl_warn_n }} {{ _('attenzione') }}</span>
-                  {% elif crawl_crit_n %}
-                  <span class="dash-block__chip" data-severity="critical">{{ _('critiche') }}</span>
-                  {% elif crawl_warn_n %}
-                  <span class="dash-block__chip" data-severity="warn">{{ _('attenzione') }}</span>
-                  {% endif %}
-                </div>
-              </header>
-              {% if crawl_pages_view %}
-              <ol class="dash-horizon" aria-label="{{ _('Pagine per pressione') }}">
-                {% for page in crawl_pages_view[:16] %}
-                {% set path = page.url.split('://', 1)[-1].split('/', 1)[-1] if page.url else '' %}
-                <li data-severity="{{ page.severity }}" data-page="{{ loop.index0 }}">
-                  <a href="{{ page.url }}" target="_blank" rel="noopener noreferrer" title="{{ page.title or page.url }}">
-                    {% if page.title %}{{ page.title }}{% elif path %}/{{ path }}{% else %}/{% endif %}
-                  </a>
-                  <span class="dash-horizon__track" aria-hidden="true"><i data-metric="aio"></i><i data-metric="geo"></i></span>
-                  <em>{{ page.aio_score if page.aio_score is number else '—' }}/{{ page.geo_score if page.geo_score is number else '—' }}</em>
-                </li>
-                {% endfor %}
-              </ol>
-              {% if crawl_pages_view|length > 24 %}
-              <p class="dash-block__more">{{ _('Prime 24 criticità · elenco completo nel pack') }}</p>
-              {% endif %}
-              {% else %}
-              <p class="dash-block__empty">{{ _('Nessuna pagina critica su') }} {{ pages_analyzed_n }} {{ _('analizzate.') }}</p>
-              {% endif %}
-              <p class="dash-block__more">{{ _('Analizzate') }} {{ pages_analyzed_n }} {{ _('pagine') }}</p>
-            </section>
-            {% endif %}
-
-          </div>
+          {% if pages_analyzed_n %}
+          <p class="dash-deck__quiet">{{ _('Analizzate') }} {{ pages_analyzed_n }} {{ _('pagine') }}</p>
+          {% endif %}
 
           {% if can_scheduled_rescan %}
           <section class="monitor-panel" aria-labelledby="monitor-title">

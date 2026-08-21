@@ -11,13 +11,13 @@ def test_score_panel_markup_retired():
     assert 'id="panel-score"' not in html
     assert "pulse-core__mast" not in html
     assert "signal-diag" not in html
-    assert 'class="dash-hero"' in html
+    assert "dash_signal.html" in html
     # SoV table lives on /dashboard/sov via shared partial.
     assert 'id="panel-sov"' in detail
 
 
 def test_pulse_core_css_may_remain_unused():
-    """Legacy pulse CSS can linger; redesign must ship dash-hero rules."""
+    """Legacy pulse CSS can linger; redesign must ship signal-deck rules."""
     css = Path("static/css/app.css").read_text(encoding="utf-8")
-    assert ".dash-hero" in css
-    assert "DASH REDESIGN 2026" in css
+    assert ".dash-signal" in css
+    assert "DASH REDESIGN 2026" in css or "Signal deck 2026" in css

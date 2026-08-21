@@ -30,8 +30,10 @@ def test_sidebar_has_sov_link():
 def test_main_dash_fold_without_sov_table():
     assert "dash-sov-list" not in DASH
     assert "dash_sov_detail.html" not in DASH
-    assert 'class="dash-hero"' in DASH
-    assert "dashboard_sov" in DASH  # deep-link from ghosts
+    assert "dash_signal.html" in DASH
+    assert "dashboard_sov" in DASH or "dashboard_sov" in (
+        ROOT / "templates" / "partials" / "dash_signal.html"
+    ).read_text(encoding="utf-8")
 
 
 def test_sov_page_matches_detail_anteprima():
@@ -42,7 +44,7 @@ def test_sov_page_matches_detail_anteprima():
     assert "body-dash--sov" in SOV
     assert "body-dash body-dash--sov" not in SOV  # avoid duplicate body-dash
     assert "dash-sov-list" not in DETAIL
-    assert "dash_atelier.html" in DETAIL
+    assert "dash_signal.html" in DETAIL
     assert "dash-finding-board" in DETAIL
     assert "dash-findings" in DETAIL
     assert "dash-cta__primary" in DETAIL
@@ -64,5 +66,8 @@ def test_sov_page_matches_detail_anteprima():
 
 
 def test_fold_sov_cta_visible():
-    assert "dash-actions__btn--sov" in DASH
+    signal = (ROOT / "templates" / "partials" / "dash_signal.html").read_text(
+        encoding="utf-8"
+    )
+    assert "dash-actions__btn--sov" in signal
     assert "dash-actions__btn--sov" in CSS

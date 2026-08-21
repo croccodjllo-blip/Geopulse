@@ -206,6 +206,7 @@ def _page_field(pages: list[dict[str, Any]] | None, *, aio: float, geo: float) -
                 "geo": int(round(gy)),
                 "sev": _sev(page.get("severity")),
                 "path": _path_of(str(page.get("url") or "")),
+                "url": str(page.get("url") or ""),
             }
         )
     brand = {
@@ -252,6 +253,74 @@ def _stave(score: float | None) -> list[dict[str, Any]]:
     return [{"on": 1 if (i + 1) * 5 <= n else 0, "at": (i + 1) * 5} for i in range(20)]
 
 
+def _orbit(engines: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aerospace ellipse: brand at the nucleus, engines as satellites.
+
+    Inspired by mission-control scopes (NASA/SpaceX telemetry) rather than
+    a spider radar. Node radius tracks share; angle is evenly spaced.
+    """
+    cx, cy = 160.0, 100.0
+    rx, ry = 124.0, 72.0
+    nodes: list[dict[str, Any]] = []
+    live = [e for e in engines if isinstance(e, dict)]
+    n = len(live)
+    for i, eng in enumerate(live):
+        angle = (i / max(n, 1)) * 2.0 * math.pi - math.pi / 2.0
+        ox = round(cx + rx * math.cos(angle), 1)
+        oy = round(cy + ry * math.sin(angle), 1)
+        share = float(eng.get("share") or 0)
+        node_r = round(4.2 + (_clamp(share) / 100.0) * 9.5, 1)
+        outward = 1.2
+        lx = round(cx + rx * outward * math.cos(angle), 1)
+        ly = round(cy + ry * outward * math.sin(angle), 1)
+        cosine = math.cos(angle)
+        if cosine > 0.28:
+            anchor = "start"
+        elif cosine < -0.28:
+            anchor = "end"
+        else:
+            anchor = "middle"
+        nodes.append(
+            {
+                "id": str(eng.get("id") or f"e{i}"),
+                "label": str(eng.get("label") or ""),
+                "share": int(eng.get("share") or 0),
+                "propensity": int(eng.get("propensity") or 0),
+                "accent": str(eng.get("accent") or ""),
+                "ox": ox,
+                "oy": oy,
+                "or": node_r,
+                "lx": lx,
+                "ly": ly,
+                "anchor": anchor,
+                "dy": -3 if math.sin(angle) < -0.15 else 11,
+            }
+        )
+    return {"cx": cx, "cy": cy, "rx": rx, "ry": ry, "nodes": nodes}
+
+
+def _meridian(field: dict[str, Any], *, aio: float) -> dict[str, Any]:
+    """Horizontal AIO axis with page ticks — FT/Bloomberg baseline, not a scatter."""
+    ticks: list[dict[str, Any]] = []
+    for i, dot in enumerate(list(field.get("dots") or [])[:24]):
+        ticks.append(
+            {
+                "id": i,
+                "x": int(dot.get("aio") or 0),
+                "aio": int(dot.get("aio") or 0),
+                "geo": int(dot.get("geo") or 0),
+                "sev": str(dot.get("sev") or "info"),
+                "path": str(dot.get("path") or "/"),
+                "url": str(dot.get("url") or ""),
+            }
+        )
+    return {
+        "ticks": ticks,
+        "brand_x": int(round(_clamp(aio))),
+        "n": int(field.get("n") or len(ticks)),
+    }
+
+
 def build_dash_charts(
     *,
     aio_score: int | float | None,
@@ -276,13 +345,17 @@ def build_dash_charts(
             delta = {"aio": da, "geo": dg}
 
     breakdown = engine_breakdown or {}
+    engines = _radar_nodes(breakdown)
+    field = _page_field(crawl_pages, aio=aio, geo=geo)
     return {
         "aio": int(round(aio)),
         "geo": int(round(geo)),
         "stave_aio": _stave(aio),
         "stave_geo": _stave(geo),
-        "engines": _radar_nodes(breakdown),
+        "engines": engines,
         "radar": breakdown.get("radar") or {},
+        "orbit": _orbit(engines),
+        "meridian": _meridian(field, aio=aio),
         "brand_sov": breakdown.get("brand_sov"),
         "rivals_sov": breakdown.get("rivals_sov"),
         "other_sov": breakdown.get("other_sov"),
@@ -290,7 +363,7 @@ def build_dash_charts(
         "evidence": breakdown.get("evidence") or "proxy",
         "mosaic": mosaic,
         "petals": _geo_petals(geo_suite),
-        "field": _page_field(crawl_pages, aio=aio, geo=geo),
+        "field": field,
         "spark": spark,
         "delta": delta,
     }

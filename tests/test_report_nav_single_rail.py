@@ -6,6 +6,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DASH = (ROOT / "templates" / "dashboard.html").read_text(encoding="utf-8")
+SIGNAL = (ROOT / "templates" / "partials" / "dash_signal.html").read_text(
+    encoding="utf-8"
+)
 SHELL = (ROOT / "static" / "js" / "shell.js").read_text(encoding="utf-8")
 CSS = (ROOT / "static" / "css" / "app.css").read_text(encoding="utf-8")
 
@@ -21,10 +24,10 @@ def test_report_nav_tabs_replaced_by_dash_actions():
     assert 'data-tab="sov"' not in DASH
     assert 'data-tab="score"' not in DASH
     assert 'class="report-nav"' not in DASH
-    assert 'class="dash-actions"' in DASH
-    assert "{{ _('Findings') }}" in DASH
-    assert "{{ _('Edge') }}" in DASH
-    assert "{{ _('Pack') }}" in DASH
+    assert "dash-actions" in SIGNAL
+    assert "{{ _('Findings') }}" in SIGNAL
+    assert "{{ _('Edge') }}" in SIGNAL
+    assert "{{ _('Pack') }}" in SIGNAL
 
 
 def test_shell_keeps_activate_report_view_harmless():

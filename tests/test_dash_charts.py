@@ -1,4 +1,4 @@
-"""Dashboard atelier instruments are honest — no fabricated series."""
+"""Dashboard signal-deck instruments are honest — no fabricated series."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from services.dash_charts import build_dash_charts
 from services.engine_breakdown import compute_engine_breakdown
 
 ROOT = Path(__file__).resolve().parents[1]
-ATELIER = (ROOT / "templates" / "partials" / "dash_atelier.html").read_text(
+SIGNAL = (ROOT / "templates" / "partials" / "dash_signal.html").read_text(
     encoding="utf-8"
 )
 DASH = (ROOT / "templates" / "dashboard.html").read_text(encoding="utf-8")
@@ -29,21 +29,23 @@ def _breakdown():
     )
 
 
-def test_atelier_is_wired_on_main_dashboard():
-    assert 'include "partials/dash_atelier.html"' in DASH
-    assert "dash-atelier" in ATELIER
-    assert "dash-atelier--flush" in ATELIER
-    assert "dash-inst--stave" not in ATELIER
-    assert "dash-constellation" in ATELIER
-    assert "dash-mosaic" in ATELIER
-    assert "dash-petals" in ATELIER
-    assert "dash-field" in ATELIER
-    assert 'style="' not in ATELIER
-    assert "style='" not in ATELIER
-    assert 'nonce="{{ csp_nonce }}"' in ATELIER
-    assert ".dash-atelier" in CSS
-    assert ".dash-constellation__data" in CSS
-    assert "#8B5CF6" not in CSS.split("Dashboard atelier")[-1]
+def test_signal_deck_is_wired_on_main_dashboard():
+    assert 'include "partials/dash_signal.html"' in DASH
+    assert "dash-signal" in SIGNAL
+    assert "dash-spine" in SIGNAL
+    assert "dash-orbit" in SIGNAL
+    assert "dash-fault" in SIGNAL
+    assert "dash-meridian" in SIGNAL
+    assert "dash-rail" in SIGNAL
+    assert "dash-ring--" not in SIGNAL
+    assert "dash-constellation" not in SIGNAL
+    assert "dash-petals" not in SIGNAL
+    assert 'style="' not in SIGNAL
+    assert "style='" not in SIGNAL
+    assert 'nonce="{{ csp_nonce }}"' in SIGNAL
+    assert ".dash-signal" in CSS
+    assert ".dash-orbit__sat" in CSS
+    assert "#8B5CF6" not in CSS.split("Signal deck")[-1]
 
 
 def test_build_charts_counts_real_findings_and_pages():
@@ -97,6 +99,15 @@ def test_build_charts_counts_real_findings_and_pages():
     }
     assert charts["engines"]
     assert charts["radar"].get("points")
+    assert charts["orbit"]["nodes"]
+    assert charts["orbit"]["cx"] == 160.0
+    for node in charts["orbit"]["nodes"]:
+        assert "ox" in node and "oy" in node and "or" in node
+        assert 0 <= node["ox"] <= 320
+        assert 0 <= node["oy"] <= 200
+    assert charts["meridian"]["n"] == 2
+    assert charts["meridian"]["brand_x"] == 62
+    assert {t["path"] for t in charts["meridian"]["ticks"]} >= {"/a", "/b"}
 
 
 def test_spark_and_delta_only_when_real_history():
@@ -112,6 +123,7 @@ def test_spark_and_delta_only_when_real_history():
     )
     assert empty["spark"] is None
     assert empty["delta"] is None
+    assert empty["orbit"]["nodes"] == []
 
     live = build_dash_charts(
         aio_score=40,
@@ -132,7 +144,7 @@ def test_spark_and_delta_only_when_real_history():
     assert live["spark"]["points"]
 
 
-def test_dashboard_renders_atelier_instruments():
+def test_dashboard_renders_signal_instruments():
     import json
     from datetime import datetime, timezone
     from uuid import uuid4
@@ -142,18 +154,18 @@ def test_dashboard_renders_atelier_instruments():
     with app.app_context():
         ensure_schema()
         user = User(
-            email=f"atelier-{uuid4().hex}@example.com",
-            name="Atelier",
+            email=f"signal-{uuid4().hex}@example.com",
+            name="Signal",
             plan="plus",
             email_verified_at=datetime.now(timezone.utc),
         )
-        user.set_password("AtelierDash!23456")
+        user.set_password("SignalDash!23456")
         db.session.add(user)
         db.session.commit()
         site = SiteAnalysis(
             user_id=user.id,
-            url="https://atelier.example/",
-            domain="atelier.example",
+            url="https://signal.example/",
+            domain="signal.example",
             aio_score=61,
             geo_score=47,
             findings_json=json.dumps(
@@ -166,7 +178,7 @@ def test_dashboard_renders_atelier_instruments():
                 {
                     "pages": [
                         {
-                            "url": "https://atelier.example/p",
+                            "url": "https://signal.example/p",
                             "aio_score": 30,
                             "geo_score": 70,
                             "severity": "warn",
@@ -185,9 +197,12 @@ def test_dashboard_renders_atelier_instruments():
         sess["user_id"] = uid
         sess["session_version"] = ver
     html = client.get(f"/dashboard?site={site_id}").get_data(as_text=True)
-    assert "dash-atelier" in html
-    assert "dash-constellation" in html
-    assert "dash-mosaic" in html
-    assert "dash-field" in html
+    assert "dash-signal" in html
+    assert "dash-spine" in html
+    assert "dash-orbit" in html
+    assert "dash-fault" in html
+    assert "dash-meridian" in html
     assert "Apri grafici interattivi" in html
     assert "somDelta" not in html
+    assert "dash-constellation" not in html
+    assert "dash-ring--cvi" not in html
