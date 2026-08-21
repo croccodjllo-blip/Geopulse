@@ -86,18 +86,29 @@ def _radar_nodes(breakdown: dict[str, Any] | None) -> list[dict[str, Any]]:
         prop = _as_float(eng.get("propensity"))
         if prop is None:
             prop = share
-        nodes.append(
-            {
-                "id": str(eng.get("id") or f"e{i}"),
-                "label": str(eng.get("label") or ""),
-                "share": int(round(share)),
-                "propensity": int(round(_clamp(prop))),
-                "evidence": str(eng.get("evidence") or "proxy"),
-                "accent": str(eng.get("accent") or ""),
-                "x": lbl.get("x"),
-                "y": lbl.get("y"),
-            }
-        )
+        node: dict[str, Any] = {
+            "id": str(eng.get("id") or f"e{i}"),
+            "label": str(eng.get("label") or ""),
+            "share": int(round(share)),
+            "propensity": int(round(_clamp(prop))),
+            "evidence": str(eng.get("evidence") or "proxy"),
+            "accent": str(eng.get("accent") or ""),
+            "x": lbl.get("x"),
+            "y": lbl.get("y"),
+        }
+        rate = _as_float(eng.get("mention_rate"))
+        if rate is not None:
+            node["mention_rate"] = int(round(_clamp(rate)))
+        if eng.get("samples") is not None:
+            try:
+                node["samples"] = int(eng.get("samples") or 0)
+            except (TypeError, ValueError):
+                pass
+        if eng.get("access"):
+            node["access"] = str(eng.get("access"))
+        if eng.get("band"):
+            node["band"] = str(eng.get("band"))
+        nodes.append(node)
     return nodes
 
 
@@ -237,6 +248,26 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         coords.append(f"{x:.1f},{y:.1f}")
         pts.append((x, y))
     first, last = values[0], values[-1]
+    # Taller ledger area (distinct from the old 200×52 spark).
+    aw, ah, al, ar, at, ab = 320.0, 128.0, 28.0, 10.0, 12.0, 20.0
+    a_w = aw - al - ar
+    a_h = ah - at - ab
+    marks: list[dict[str, Any]] = []
+    line_bits: list[str] = []
+    for i, val in enumerate(values):
+        x = al + (a_w * i / span)
+        y = at + a_h * (1.0 - val / 100.0)
+        cmd = "M" if i == 0 else "L"
+        line_bits.append(f"{cmd}{x:.1f},{y:.1f}")
+        marks.append({"x": round(x, 1), "y": round(y, 1), "v": val})
+    first_x, first_y = marks[0]["x"], marks[0]["y"]
+    last_x_a, last_y_a = marks[-1]["x"], marks[-1]["y"]
+    baseline = at + a_h
+    area = (
+        f"M{first_x:.1f},{baseline:.1f} "
+        + " ".join(f"L{m['x']:.1f},{m['y']:.1f}" for m in marks)
+        + f" L{last_x_a:.1f},{baseline:.1f} Z"
+    )
     return {
         "points": " ".join(coords),
         "last_x": round(pts[-1][0], 1),
@@ -245,6 +276,11 @@ def _sov_spark(series: list[dict[str, Any]] | None) -> dict[str, Any] | None:
         "last": last,
         "n": len(values),
         "delta": last - first,
+        "area": area,
+        "line": " ".join(line_bits),
+        "marks": marks,
+        "width": 320,
+        "height": 128,
     }
 
 
@@ -321,6 +357,116 @@ def _meridian(field: dict[str, Any], *, aio: float) -> dict[str, Any]:
     }
 
 
+def _sov_split(breakdown: dict[str, Any] | None) -> dict[str, Any]:
+    raw = breakdown or {}
+    brand = int(round(_as_float(raw.get("brand_sov")) or 0))
+    rivals = int(round(_as_float(raw.get("rivals_sov")) or 0))
+    other = int(round(_as_float(raw.get("other_sov")) or 0))
+    total = brand + rivals + other
+    if total <= 0:
+        return {"brand": 0, "rivals": 0, "other": 0, "total": 0}
+    # Keep visual widths summing to 100 without inventing mass.
+    return {"brand": brand, "rivals": rivals, "other": other, "total": total}
+
+
+def _suite_rows(geo_suite: dict[str, Any] | None) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for key, label in _SUITE_KEYS:
+        score = _suite_score((geo_suite or {}).get(key), key)
+        if score is None:
+            continue
+        rows.append({"id": key, "label": label, "score": score})
+    return rows
+
+
+def _page_hist(pages: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    bins = [
+        {"id": "0-19", "lo": 0, "hi": 19, "n": 0},
+        {"id": "20-39", "lo": 20, "hi": 39, "n": 0},
+        {"id": "40-59", "lo": 40, "hi": 59, "n": 0},
+        {"id": "60-79", "lo": 60, "hi": 79, "n": 0},
+        {"id": "80-100", "lo": 80, "hi": 100, "n": 0},
+    ]
+    counted = 0
+    for page in pages or []:
+        if not isinstance(page, dict):
+            continue
+        aio = _as_float(page.get("aio_score"))
+        if aio is None:
+            continue
+        score = int(round(_clamp(aio)))
+        counted += 1
+        for bucket in bins:
+            if bucket["lo"] <= score <= bucket["hi"]:
+                bucket["n"] += 1
+                break
+    peak = max((b["n"] for b in bins), default=0) or 1
+    for bucket in bins:
+        bucket["w"] = int(round(100 * bucket["n"] / peak)) if counted else 0
+    return bins if counted else []
+
+
+def _page_stats(pages: list[dict[str, Any]] | None) -> dict[str, Any]:
+    aios: list[float] = []
+    geos: list[float] = []
+    words: list[float] = []
+    latencies: list[float] = []
+    rows: list[dict[str, Any]] = []
+    for page in pages or []:
+        if not isinstance(page, dict):
+            continue
+        aio = _as_float(page.get("aio_score"))
+        geo = _as_float(page.get("geo_score"))
+        if aio is not None:
+            aios.append(_clamp(aio))
+        if geo is not None:
+            geos.append(_clamp(geo))
+        wc = _as_float(page.get("word_count"))
+        if wc is not None:
+            words.append(wc)
+        ms = _as_float(page.get("response_ms"))
+        if ms is not None:
+            latencies.append(ms)
+        if len(rows) < 12:
+            status = page.get("status_code")
+            try:
+                status_n = int(status) if status is not None else None
+            except (TypeError, ValueError):
+                status_n = None
+            rows.append(
+                {
+                    "path": _path_of(str(page.get("url") or "")),
+                    "url": str(page.get("url") or ""),
+                    "title": str(page.get("title") or "")[:72],
+                    "aio": int(round(_clamp(aio))) if aio is not None else None,
+                    "geo": int(round(_clamp(geo))) if geo is not None else None,
+                    "words": int(wc) if wc is not None else None,
+                    "ms": int(ms) if ms is not None else None,
+                    "status": status_n,
+                    "sev": _sev(page.get("severity")),
+                }
+            )
+
+    def _avg(vals: list[float]) -> int | None:
+        if not vals:
+            return None
+        return int(round(sum(vals) / len(vals)))
+
+    return {
+        "n": len(pages or []),
+        "scored": len(aios),
+        "avg_aio": _avg(aios),
+        "avg_geo": _avg(geos),
+        "min_aio": int(round(min(aios))) if aios else None,
+        "max_aio": int(round(max(aios))) if aios else None,
+        "min_geo": int(round(min(geos))) if geos else None,
+        "max_geo": int(round(max(geos))) if geos else None,
+        "avg_words": _avg(words),
+        "avg_ms": _avg(latencies),
+        "rows": rows,
+    }
+
+
 def build_dash_charts(
     *,
     aio_score: int | float | None,
@@ -347,22 +493,32 @@ def build_dash_charts(
     breakdown = engine_breakdown or {}
     engines = _radar_nodes(breakdown)
     field = _page_field(crawl_pages, aio=aio, geo=geo)
+    pages = _page_stats(crawl_pages)
+    suite = _suite_rows(geo_suite)
+    ranked = sorted(engines, key=lambda e: int(e.get("share") or 0), reverse=True)
     return {
         "aio": int(round(aio)),
         "geo": int(round(geo)),
         "stave_aio": _stave(aio),
         "stave_geo": _stave(geo),
         "engines": engines,
+        "ranked": ranked,
         "radar": breakdown.get("radar") or {},
         "orbit": _orbit(engines),
         "meridian": _meridian(field, aio=aio),
+        "split": _sov_split(breakdown),
         "brand_sov": breakdown.get("brand_sov"),
         "rivals_sov": breakdown.get("rivals_sov"),
         "other_sov": breakdown.get("other_sov"),
         "has_competitors": bool(breakdown.get("has_competitors")),
         "evidence": breakdown.get("evidence") or "proxy",
+        "label": breakdown.get("label") or "",
+        "top_engine": breakdown.get("top_engine"),
         "mosaic": mosaic,
+        "suite": suite,
         "petals": _geo_petals(geo_suite),
+        "hist": _page_hist(crawl_pages),
+        "pages": pages,
         "field": field,
         "spark": spark,
         "delta": delta,

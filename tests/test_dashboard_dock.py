@@ -47,7 +47,7 @@ def test_no_hidden_folds_on_main_dashboard():
     assert "dash-compose" in (
         ROOT / "templates" / "partials" / "dash_audit.html"
     ).read_text(encoding="utf-8")
-    assert "dash-meridian" in (
+    assert "dash-board" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
     assert "edge-advanced--open" in (

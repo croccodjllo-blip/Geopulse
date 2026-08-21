@@ -32,11 +32,17 @@ def _breakdown():
 def test_signal_deck_is_wired_on_main_dashboard():
     assert 'include "partials/dash_signal.html"' in DASH
     assert "dash-signal" in SIGNAL
-    assert "dash-spine" in SIGNAL
-    assert "dash-orbit" in SIGNAL
+    assert "dash-board" in SIGNAL
+    assert "dash-tiles" in SIGNAL
+    assert "dash-split" in SIGNAL
+    assert "dash-rank" in SIGNAL
+    assert "dash-hist" in SIGNAL
     assert "dash-fault" in SIGNAL
-    assert "dash-meridian" in SIGNAL
     assert "dash-kpis" in SIGNAL
+    assert "dash-spine" not in SIGNAL
+    assert "dash-orbit" not in SIGNAL
+    assert "dash-meridian" not in SIGNAL
+    assert "dash_geo_charts.html" not in SIGNAL
     assert "dash-ring--" not in SIGNAL
     assert "dash-constellation" not in SIGNAL
     assert "dash-petals" not in SIGNAL
@@ -44,7 +50,8 @@ def test_signal_deck_is_wired_on_main_dashboard():
     assert "style='" not in SIGNAL
     assert 'nonce="{{ csp_nonce }}"' in SIGNAL
     assert ".dash-signal" in CSS
-    assert ".dash-orbit__sat" in CSS
+    assert ".dash-board" in CSS
+    assert ".dash-hist" in CSS
     assert "#8B5CF6" not in CSS.split("Signal deck")[-1]
 
 
@@ -98,16 +105,24 @@ def test_build_charts_counts_real_findings_and_pages():
         "schema_quality",
     }
     assert charts["engines"]
+    assert charts["ranked"]
     assert charts["radar"].get("points")
+    assert charts["split"]["total"] > 0
+    assert charts["suite"]
+    assert {row["id"] for row in charts["suite"]} >= {
+        "entity_graph",
+        "citability",
+        "schema_quality",
+    }
+    assert charts["hist"]
+    assert sum(b["n"] for b in charts["hist"]) == 2
+    assert charts["pages"]["n"] == 2
+    assert charts["pages"]["avg_aio"] == 45
+    assert charts["pages"]["min_aio"] == 20
+    assert charts["pages"]["max_aio"] == 70
+    assert {row["path"] for row in charts["pages"]["rows"]} >= {"/a", "/b"}
     assert charts["orbit"]["nodes"]
-    assert charts["orbit"]["cx"] == 160.0
-    for node in charts["orbit"]["nodes"]:
-        assert "ox" in node and "oy" in node and "or" in node
-        assert 0 <= node["ox"] <= 320
-        assert 0 <= node["oy"] <= 200
     assert charts["meridian"]["n"] == 2
-    assert charts["meridian"]["brand_x"] == 62
-    assert {t["path"] for t in charts["meridian"]["ticks"]} >= {"/a", "/b"}
 
 
 def test_spark_and_delta_only_when_real_history():
@@ -142,6 +157,9 @@ def test_spark_and_delta_only_when_real_history():
     assert live["spark"]["last"] == 21
     assert live["spark"]["delta"] == 9
     assert live["spark"]["points"]
+    assert live["spark"]["area"]
+    assert live["spark"]["line"]
+    assert len(live["spark"]["marks"]) == 3
 
 
 def test_dashboard_renders_signal_instruments():
@@ -198,11 +216,16 @@ def test_dashboard_renders_signal_instruments():
         sess["session_version"] = ver
     html = client.get(f"/dashboard?site={site_id}").get_data(as_text=True)
     assert "dash-signal" in html
-    assert "dash-spine" in html
-    assert "dash-orbit" in html
+    assert "dash-board" in html
+    assert "dash-tiles" in html
+    assert "dash-split" in html
+    assert "dash-rank" in html
+    assert "dash-hist" in html
     assert "dash-fault" in html
-    assert "dash-meridian" in html
-    assert "dash-live-charts" in html
-    assert "__CENTROPIC_GEO_COMPACT__" in html
+    assert "dash-pages" in html
+    assert "dash-spine" not in html
+    assert "dash-orbit" not in html
+    assert "__CENTROPIC_GEO_COMPACT__" not in html
+    assert "dash-live-charts" not in html
     assert "dash-constellation" not in html
     assert "dash-ring--cvi" not in html

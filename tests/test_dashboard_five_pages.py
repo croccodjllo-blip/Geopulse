@@ -46,7 +46,13 @@ def test_panoramica_is_charts_only():
     assert "dash-compose" in (ROOT / "templates" / "partials" / "dash_audit.html").read_text(
         encoding="utf-8"
     )
-    assert "dash_geo_charts.html" in (
+    assert "dash-board" in (
+        ROOT / "templates" / "partials" / "dash_signal.html"
+    ).read_text(encoding="utf-8")
+    assert "dash-hist" in (
+        ROOT / "templates" / "partials" / "dash_signal.html"
+    ).read_text(encoding="utf-8")
+    assert "dash_geo_charts.html" not in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
     assert "Compositore" not in DASH
@@ -85,6 +91,7 @@ def test_full_width_workspace():
     assert "max-height: 100dvh" in CSS
     assert "workspace--fill" in CSS
     assert ".dash-kpis" in CSS
+    assert ".dash-board" in CSS
     assert ".dash-wide" in CSS
     assert ".dash-prompt" in CSS
     assert 'class="workspace workspace--fill"' in DASH
@@ -151,7 +158,10 @@ def test_five_pages_render_for_plus_user():
     overview = client.get(f"/dashboard?site={site_id}").get_data(as_text=True)
     assert "app-topbar__pills" in overview
     assert "dash-kpis" in overview
-    assert "dash-live-charts" in overview or "__CENTROPIC_GEO_COMPACT__" in overview
+    assert "dash-board" in overview
+    assert "dash-split" in overview
+    assert "dash-rank" in overview
+    assert "__CENTROPIC_GEO_COMPACT__" not in overview
     assert "dash-audit" in overview
     assert ">Audit<" in overview
     assert "Compositore" not in overview

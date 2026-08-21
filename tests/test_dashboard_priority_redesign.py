@@ -28,11 +28,13 @@ def test_preview_css_linked():
 def test_priority_signal_deck_and_rail():
     assert "dash_signal.html" in DASH
     assert "dash-signal" in SIGNAL
-    assert "dash-spine" in SIGNAL
-    assert "dash-orbit" in SIGNAL
+    assert "dash-board" in SIGNAL
+    assert "dash-tiles" in SIGNAL
     assert "dash-fault" in SIGNAL
-    assert "dash-meridian" in SIGNAL
+    assert "dash-hist" in SIGNAL
     assert "dash-kpis" in SIGNAL
+    assert "dash-spine" not in SIGNAL
+    assert "dash-orbit" not in SIGNAL
     assert "dash-deck" in DASH
     assert "dash-more--ops" not in DASH
     assert "<details" not in DASH
@@ -40,7 +42,8 @@ def test_priority_signal_deck_and_rail():
     assert "dash-ring--sov" not in SIGNAL
     # SoV table + Findings live on /dashboard/sov (sidebar section).
     assert "dash-sov-list" not in DASH
-    assert "dash_geo_charts.html" in SIGNAL
+    assert "dash_geo_charts.html" not in SIGNAL
+    assert "dash-split" in SIGNAL
 
 
 def test_score_sov_tabs_and_pulse_removed():
@@ -69,11 +72,11 @@ def test_analyze_below_fold_when_latest():
 
 def test_redesign_css_present():
     assert ".dash-signal" in CSS
-    assert ".dash-spine__grade" in CSS
+    assert ".dash-board" in CSS
     assert ".dash-sov-list" in CSS
     assert ".dash-cta__primary" in CSS
     assert ".dash-detail" in CSS
-    assert ".dash-orbit__sat" in CSS
+    assert ".dash-hist" in CSS
 
 
 def test_topbar_clears_sidebar_offset():

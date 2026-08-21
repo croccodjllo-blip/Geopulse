@@ -33,7 +33,7 @@ def test_main_dash_fold_without_sov_table():
     assert "dash-sov-list" not in DASH
     assert "dash_sov_detail.html" not in DASH
     assert "dash_signal.html" in DASH
-    assert "dash_geo_charts.html" in (
+    assert "dash-board" in (
         ROOT / "templates" / "partials" / "dash_signal.html"
     ).read_text(encoding="utf-8")
 
@@ -73,5 +73,6 @@ def test_fold_sov_cta_visible():
     )
     dash = (ROOT / "templates" / "dashboard.html").read_text(encoding="utf-8")
     assert "dash-kpis" in signal
-    assert "dash_geo_charts.html" in signal
+    assert "dash-board" in signal
+    assert "dash_geo_charts.html" not in signal
     assert "dash-audit" in CSS

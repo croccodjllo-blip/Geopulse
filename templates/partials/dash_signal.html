@@ -1,127 +1,189 @@
-{# Panoramica instruments — KPI, live charts, tables. Honest series only. #}
+{# Panoramica ledger — number-first instruments. Honest series only. #}
 {% set ch = dash_charts or {} %}
 {% set rating = rating if rating is defined and rating else (latest.rating if latest is defined and latest else none) %}
 {% set cvi_score = rating.score if rating and rating.score is number else 0 %}
 {% set cvi_code = rating.code if rating and rating.code else '—' %}
 {% set sov_pct = engine_breakdown.brand_sov if engine_breakdown and engine_breakdown.brand_sov is number else none %}
 {% set sov_n = sov_pct if sov_pct is number else 0 %}
-{% set arc_c = 339.29 %}
-{% set arc_off = arc_c * (1 - (sov_n / 100)) %}
-{% set orbit = ch.orbit or {} %}
-{% set meridian = ch.meridian or {} %}
 {% set mosaic = ch.mosaic or {} %}
 {% set totals = mosaic.totals or {} %}
+{% set split = ch.split or {} %}
+{% set pages = ch.pages or {} %}
+{% set spark = ch.spark %}
+{% set delta = ch.delta %}
 {% set findings_rows = findings_critical or [] %}
-{% set page_rows = crawl_pages_view or [] %}
+{% set rivals = latest.competitors if latest is defined and latest else [] %}
 
 <style nonce="{{ csp_nonce }}">
-.dash-signal {
+.dash-board {
   --aio: {{ ch.aio if ch.aio is number else 0 }};
   --geo: {{ ch.geo if ch.geo is number else 0 }};
   --cvi: {{ cvi_score }};
   --sov: {{ sov_n }};
 }
-{% if orbit.nodes %}
-{% for e in orbit.nodes %}
-.dash-orbit [data-engine="{{ e.id }}"],
+.dash-split {
+  --brand: {{ split.brand or 0 }};
+  --rivals: {{ split.rivals or 0 }};
+  --other: {{ split.other or 0 }};
+}
+{% for e in ch.ranked or [] %}
+.dash-rank [data-engine="{{ e.id }}"],
 .dash-sheet [data-engine="{{ e.id }}"] { --accent: {{ e.accent or 'var(--plan-accent)' }}; --share: {{ e.share }}; --p: {{ e.propensity }}; }
 {% endfor %}
-{% endif %}
-{% for tick in meridian.ticks or [] %}
-.dash-meridian [data-tick="{{ tick.id }}"] { --x: {{ tick.x }}; --geo: {{ tick.geo }}; }
+{% for row in ch.suite or [] %}
+.dash-meter[data-id="{{ row.id }}"] { --score: {{ row.score }}; }
 {% endfor %}
-.dash-meridian [data-tick="brand"] { --x: {{ meridian.brand_x if meridian.brand_x is number else ch.aio|default(0) }}; }
+{% for bin in ch.hist or [] %}
+.dash-hist [data-bin="{{ bin.id }}"] { --n: {{ bin.n }}; --w: {{ bin.w }}; }
+{% endfor %}
+{% for row in mosaic.rows or [] %}
+.dash-mix [data-cat="{{ row.id }}"] { --crit: {{ row.crit_w }}; --warn: {{ row.warn_w }}; --ok: {{ row.ok_w }}; }
+{% endfor %}
 </style>
 
-<section class="dash-signal dash-signal--wide" aria-label="{{ _('Metriche') }}">
-  <ul class="dash-kpis" aria-label="{{ _('Metriche primarie') }}">
-    <li class="dash-kpi dash-spine" data-grade="{{ cvi_code }}" data-len="{{ cvi_code|length }}">
-      <p class="dash-kpi__k dash-spine__kicker">{{ _('CVI') }}</p>
-      <div class="dash-spine__mark" aria-hidden="true">
-        <svg class="dash-spine__arc" viewBox="0 0 160 160" role="presentation">
-          <circle class="dash-spine__track" cx="80" cy="80" r="54" fill="none" stroke-width="2"/>
-          {% if sov_pct is number %}
-          <circle class="dash-spine__progress" cx="80" cy="80" r="54" fill="none" stroke-width="3.25"
-            stroke-dasharray="{{ '%.2f'|format(arc_c) }}"
-            stroke-dashoffset="{{ '%.2f'|format(arc_off) }}"
-            transform="rotate(-90 80 80)"/>
-          {% endif %}
-        </svg>
-        <strong class="dash-spine__grade">{{ cvi_code }}</strong>
-      </div>
-      <p class="dash-kpi__n dash-spine__score"><b>{{ cvi_score }}</b><span>/100</span></p>
+<section class="dash-signal dash-board" aria-label="{{ _('Metriche') }}">
+  <ul class="dash-kpis dash-tiles" aria-label="{{ _('Metriche primarie') }}">
+    <li class="dash-tile">
+      <p class="dash-tile__k">{{ _('CVI') }}</p>
+      <p class="dash-tile__n"><b>{{ cvi_score }}</b><span>/100</span></p>
+      <p class="dash-tile__s">{{ cvi_code }}</p>
     </li>
-    <li class="dash-kpi">
-      <p class="dash-kpi__k">{{ _('Share of Voice') }}</p>
-      <p class="dash-kpi__n">{% if sov_pct is number %}{{ sov_pct }}<span>%</span>{% else %}—{% endif %}</p>
-      {% if engine_breakdown %}
-      <span class="evidence-badge" data-evidence="{{ engine_breakdown.evidence or 'proxy' }}">{{ _(engine_breakdown.label) }}</span>
+    <li class="dash-tile" data-metric="aio">
+      <p class="dash-tile__k">AIO</p>
+      <p class="dash-tile__n">{{ ch.aio if ch.aio is number else '—' }}</p>
+      {% if delta and delta.aio is number %}
+      <p class="dash-delta" data-dir="{{ 'up' if delta.aio > 0 else ('down' if delta.aio < 0 else 'flat') }}">{{ '%+d'|format(delta.aio) }}</p>
+      {% else %}
+      <p class="dash-tile__s">/100</p>
       {% endif %}
     </li>
-    <li class="dash-kpi" data-metric="aio">
-      <p class="dash-kpi__k">AIO</p>
-      <p class="dash-kpi__n">{{ ch.aio if ch.aio is number else '—' }}</p>
-      <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
+    <li class="dash-tile" data-metric="geo">
+      <p class="dash-tile__k">GEO</p>
+      <p class="dash-tile__n">{{ ch.geo if ch.geo is number else '—' }}</p>
+      {% if delta and delta.geo is number %}
+      <p class="dash-delta" data-dir="{{ 'up' if delta.geo > 0 else ('down' if delta.geo < 0 else 'flat') }}">{{ '%+d'|format(delta.geo) }}</p>
+      {% else %}
+      <p class="dash-tile__s">/100</p>
+      {% endif %}
     </li>
-    <li class="dash-kpi" data-metric="geo">
-      <p class="dash-kpi__k">GEO</p>
-      <p class="dash-kpi__n">{{ ch.geo if ch.geo is number else '—' }}</p>
-      <span class="dash-mercury__col" aria-hidden="true"><i></i></span>
+    <li class="dash-tile">
+      <p class="dash-tile__k">{{ _('Share of Voice') }}</p>
+      <p class="dash-tile__n">{% if sov_pct is number %}{{ sov_pct }}<span>%</span>{% else %}—{% endif %}</p>
+      {% if engine_breakdown %}
+      <p class="dash-tile__s">{{ _(engine_breakdown.label) }}</p>
+      {% endif %}
+    </li>
+    <li class="dash-tile">
+      <p class="dash-tile__k">{{ _('Pagine') }}</p>
+      <p class="dash-tile__n">{{ pages.n or pages_analyzed_n or 0 }}</p>
+      <p class="dash-tile__s">
+        {% if pages.avg_aio is number %}AIO {{ pages.avg_aio }}{% endif %}
+        {% if pages.avg_geo is number %} · GEO {{ pages.avg_geo }}{% endif %}
+      </p>
+    </li>
+    <li class="dash-tile">
+      <p class="dash-tile__k">{{ _('Findings') }}</p>
+      <p class="dash-tile__n">{{ totals.all or findings_all_n or 0 }}</p>
+      <p class="dash-tile__s">{{ totals.ok or findings_ok_n or 0 }} {{ _('ok') }}</p>
+    </li>
+    <li class="dash-tile" data-sev="critical">
+      <p class="dash-tile__k">{{ _('Critici') }}</p>
+      <p class="dash-tile__n">{{ totals.critical or 0 }}</p>
+      <p class="dash-tile__s">{{ _('critical') }}</p>
+    </li>
+    <li class="dash-tile" data-sev="warn">
+      <p class="dash-tile__k">{{ _('Warn') }}</p>
+      <p class="dash-tile__n">{{ totals.warn or 0 }}</p>
+      <p class="dash-tile__s">{{ _('aperti') }} {{ (totals.critical or 0) + (totals.warn or 0) }}</p>
     </li>
   </ul>
-  <ol class="dash-mercury visually-hidden" aria-label="{{ _('AIO e GEO') }}">
-    <li data-metric="aio"><span class="dash-mercury__k">AIO</span><strong class="dash-mercury__v">{{ ch.aio if ch.aio is number else '—' }}</strong></li>
-    <li data-metric="geo"><span class="dash-mercury__k">GEO</span><strong class="dash-mercury__v">{{ ch.geo if ch.geo is number else '—' }}</strong></li>
-  </ol>
 
-  {% include "partials/dash_geo_charts.html" %}
-
-  <div class="dash-wide">
-    <article class="dash-card dash-orbit" aria-labelledby="signal-orbit">
-      <header class="dash-orbit__head">
-        <p class="dash-orbit__kicker">{{ _('Engine') }}</p>
-        <h3 class="dash-orbit__title" id="signal-orbit">{{ _('Orbita') }}</h3>
+  <div class="dash-pair">
+    <article class="dash-card dash-split" aria-labelledby="ledger-split">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Share of Voice') }}</p>
+        <h3 class="dash-card__title" id="ledger-split">{{ _('Composizione') }}</h3>
       </header>
-      {% if ch.spark %}
-      <div class="dash-hero-chart" aria-label="{{ _('SoV nel tempo') }}">
-        <svg class="dash-spark dash-spark--wide" viewBox="0 0 200 52" role="img">
-          <polyline class="dash-spark__line" points="{{ ch.spark.points }}" fill="none"/>
-          <circle class="dash-spark__tip" cx="{{ ch.spark.last_x }}" cy="{{ ch.spark.last_y }}" r="3.2"/>
+      <dl class="dash-split__nums">
+        <div>
+          <dt>{{ _('Brand') }}</dt>
+          <dd>{{ split.brand or 0 }}<span>%</span></dd>
+        </div>
+        <div>
+          <dt>{{ _('Rivali') }}</dt>
+          <dd>{{ split.rivals or 0 }}<span>%</span></dd>
+        </div>
+        <div>
+          <dt>{{ _('Altro') }}</dt>
+          <dd>{{ split.other or 0 }}<span>%</span></dd>
+        </div>
+      </dl>
+      <div class="dash-split__track" aria-hidden="true">
+        <i data-part="brand"></i>
+        <i data-part="rivals"></i>
+        <i data-part="other"></i>
+      </div>
+      {% if spark %}
+      <div class="dash-area" aria-label="{{ _('SoV nel tempo') }}">
+        <svg class="dash-area__svg" viewBox="0 0 {{ spark.width or 320 }} {{ spark.height or 128 }}" role="img">
+          <line class="dash-area__grid" x1="28" y1="12" x2="28" y2="108"/>
+          <line class="dash-area__grid" x1="28" y1="108" x2="310" y2="108"/>
+          <line class="dash-area__grid" x1="28" y1="60" x2="310" y2="60"/>
+          <text class="dash-area__axis" x="24" y="16" text-anchor="end">100</text>
+          <text class="dash-area__axis" x="24" y="64" text-anchor="end">50</text>
+          <text class="dash-area__axis" x="24" y="108" text-anchor="end">0</text>
+          {% if spark.area %}
+          <path class="dash-area__fill" d="{{ spark.area }}"/>
+          {% endif %}
+          {% if spark.line %}
+          <path class="dash-area__line" d="{{ spark.line }}" fill="none"/>
+          {% endif %}
+          {% for m in spark.marks or [] %}
+          <circle class="dash-area__dot" cx="{{ m.x }}" cy="{{ m.y }}" r="2.6"/>
+          <text class="dash-area__val" x="{{ m.x }}" y="{{ m.y - 7 }}" text-anchor="middle">{{ m.v }}</text>
+          {% endfor %}
         </svg>
-        <p class="dash-spark__meta">{{ ch.spark.n }} {{ _('campioni') }} · {{ ch.spark.first }}% → {{ ch.spark.last }}%</p>
+        <p class="dash-card__lede">
+          {{ spark.n }} {{ _('campioni') }}
+          · {{ spark.first }}% → {{ spark.last }}%
+          · {{ '%+d'|format(spark.delta) }}
+        </p>
       </div>
       {% endif %}
-      <svg class="dash-orbit__svg" viewBox="0 0 320 200" role="img" aria-label="{{ _('Share per engine') }}">
-        <ellipse class="dash-orbit__ring" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="{{ orbit.rx or 124 }}" ry="{{ orbit.ry or 72 }}"/>
-        <ellipse class="dash-orbit__ring dash-orbit__ring--inner" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" rx="72" ry="42"/>
-        {% for e in orbit.nodes or [] %}
-        <line class="dash-orbit__filament" data-engine="{{ e.id }}" x1="{{ orbit.cx }}" y1="{{ orbit.cy }}" x2="{{ e.ox }}" y2="{{ e.oy }}"/>
-        {% endfor %}
-        <circle class="dash-orbit__nucleus" cx="{{ orbit.cx or 160 }}" cy="{{ orbit.cy or 100 }}" r="11"/>
-        <text class="dash-orbit__core" x="{{ orbit.cx or 160 }}" y="{{ (orbit.cy or 100) + 3.5 }}" text-anchor="middle">{{ _('tu') }}</text>
-        {% for e in orbit.nodes or [] %}
-        <circle class="dash-orbit__sat" data-engine="{{ e.id }}" cx="{{ e.ox }}" cy="{{ e.oy }}" r="{{ e.or }}">
-          <title>{{ e.label }} · {{ e.share }}%</title>
-        </circle>
-        <text class="dash-orbit__lab" x="{{ e.lx }}" y="{{ e.ly }}" text-anchor="{{ e.anchor }}" dy="{{ e.dy }}">{{ e.label }} {{ e.share }}%</text>
-        {% endfor %}
-      </svg>
     </article>
 
-    <article class="dash-card">
-      <p class="dash-card__kicker">{{ _('Share') }}</p>
-      <h3 class="dash-card__title">{{ _('Motori') }}</h3>
-      {% if orbit.nodes %}
-      <table class="dash-sheet">
+    <article class="dash-card dash-rank" aria-labelledby="ledger-rank">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Engine') }}</p>
+        <h3 class="dash-card__title" id="ledger-rank">{{ _('Motori') }}</h3>
+        {% if ch.top_engine %}
+        <p class="dash-card__aside">{{ _('top') }} {{ ch.top_engine }}</p>
+        {% endif %}
+      </header>
+      {% if ch.ranked %}
+      <table class="dash-sheet dash-sheet--dense">
         <thead>
-          <tr><th>{{ _('Engine') }}</th><th>{{ _('Share') }}</th><th>{{ _('Propensity') }}</th></tr>
+          <tr>
+            <th>{{ _('Engine') }}</th>
+            <th>{{ _('Share') }}</th>
+            <th>{{ _('Propensity') }}</th>
+            <th>{{ _('Mention') }}</th>
+            <th>{{ _('n') }}</th>
+            <th>{{ _('Stato') }}</th>
+          </tr>
         </thead>
         <tbody>
-          {% for e in orbit.nodes %}
+          {% for e in ch.ranked %}
           <tr data-engine="{{ e.id }}">
             <td>{{ e.label }}</td>
-            <td><strong>{{ e.share }}%</strong><span class="dash-sheet__bar" aria-hidden="true"><i></i></span></td>
+            <td>
+              <strong>{{ e.share }}%</strong>
+              <span class="dash-sheet__bar" aria-hidden="true"><i></i></span>
+            </td>
             <td>{{ e.propensity }}</td>
+            <td>{% if e.mention_rate is number %}{{ e.mention_rate }}%{% else %}—{% endif %}</td>
+            <td>{% if e.samples is number %}{{ e.samples }}{% else %}—{% endif %}</td>
+            <td>{{ e.evidence or '—' }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -132,86 +194,205 @@
     </article>
   </div>
 
-  <div class="dash-data">
-    <article class="dash-card dash-fault" aria-labelledby="signal-fault">
-      <header class="dash-fault__head">
-        <p class="dash-fault__kicker">{{ _('Findings') }}</p>
-        <h3 class="dash-fault__title" id="signal-fault">{{ _('Aperti') }}</h3>
+  <div class="dash-pair">
+    <article class="dash-card" aria-labelledby="ledger-suite">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">GEO</p>
+        <h3 class="dash-card__title" id="ledger-suite">{{ _('Suite') }}</h3>
+      </header>
+      {% if ch.suite %}
+      <ul class="dash-meters">
+        {% for row in ch.suite %}
+        <li class="dash-meter" data-id="{{ row.id }}">
+          <span class="dash-meter__lab">{{ row.label }}</span>
+          <span class="dash-meter__track" aria-hidden="true"><i></i></span>
+          <strong class="dash-meter__n">{{ row.score }}</strong>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dash-card__lede">{{ _('Nessun segnale suite su questo run.') }}</p>
+      {% endif %}
+    </article>
+
+    <article class="dash-card dash-fault" aria-labelledby="ledger-mix">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Findings') }}</p>
+        <h3 class="dash-card__title" id="ledger-mix">{{ _('Mix') }}</h3>
         <p class="dash-fault__counts">
           <b data-sev="critical">{{ totals.critical or 0 }}</b>
           <b data-sev="warn">{{ totals.warn or 0 }}</b>
           <b data-sev="ok">{{ totals.ok or 0 }}</b>
         </p>
       </header>
-      {% if mosaic.cells %}
-      <ol class="dash-fault__stave" aria-hidden="true">
-        {% for cell in mosaic.cells %}
-        <li data-sev="{{ cell.sev }}" data-cat="{{ cell.cat }}"></li>
+      {% if mosaic.rows %}
+      <ul class="dash-mix">
+        {% for row in mosaic.rows %}
+        <li data-cat="{{ row.id }}">
+          <span class="dash-mix__lab">{{ row.label }}</span>
+          <span class="dash-mix__track" aria-hidden="true">
+            <i data-sev="critical"></i>
+            <i data-sev="warn"></i>
+            <i data-sev="ok"></i>
+          </span>
+          <strong class="dash-mix__n">{{ row.open }}/{{ row.total }}</strong>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dash-card__lede">{{ _('Nessun finding sul run.') }}</p>
+      {% endif %}
+    </article>
+  </div>
+
+  <div class="dash-pair">
+    <article class="dash-card" aria-labelledby="ledger-hist">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Crawl') }}</p>
+        <h3 class="dash-card__title" id="ledger-hist">{{ _('Distribuzione AIO') }}</h3>
+      </header>
+      {% if pages.scored %}
+      <dl class="dash-stats">
+        <div><dt>{{ _('n') }}</dt><dd>{{ pages.scored }}</dd></div>
+        <div><dt>{{ _('media') }}</dt><dd>{{ pages.avg_aio if pages.avg_aio is number else '—' }}</dd></div>
+        <div><dt>{{ _('min') }}</dt><dd>{{ pages.min_aio if pages.min_aio is number else '—' }}</dd></div>
+        <div><dt>{{ _('max') }}</dt><dd>{{ pages.max_aio if pages.max_aio is number else '—' }}</dd></div>
+        {% if pages.avg_words is number %}
+        <div><dt>{{ _('parole') }}</dt><dd>{{ pages.avg_words }}</dd></div>
+        {% endif %}
+        {% if pages.avg_ms is number %}
+        <div><dt>ms</dt><dd>{{ pages.avg_ms }}</dd></div>
+        {% endif %}
+      </dl>
+      {% endif %}
+      {% if ch.hist %}
+      <ol class="dash-hist" aria-label="{{ _('Pagine per fascia AIO') }}">
+        {% for bin in ch.hist %}
+        <li data-bin="{{ bin.id }}">
+          <strong>{{ bin.n }}</strong>
+          <span class="dash-hist__bar" aria-hidden="true"></span>
+          <span class="dash-hist__lab">{{ bin.id }}</span>
+        </li>
         {% endfor %}
       </ol>
+      {% else %}
+      <p class="dash-card__lede">{{ _('Nessuna pagina con score AIO.') }}</p>
       {% endif %}
-      {% if findings_rows %}
-      <table class="dash-sheet">
+    </article>
+
+    <article class="dash-card dash-pages" id="critical-pages" aria-labelledby="ledger-pages">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Pagine') }}</p>
+        <h3 class="dash-card__title" id="ledger-pages">{{ _('Ledger') }}</h3>
+        <span class="dash-card__aside">{{ pages.n or 0 }}</span>
+      </header>
+      {% if pages.rows %}
+      <table class="dash-sheet dash-sheet--dense">
         <thead>
-          <tr><th>{{ _('Severity') }}</th><th>{{ _('Finding') }}</th></tr>
+          <tr>
+            <th>{{ _('Path') }}</th>
+            <th>AIO</th>
+            <th>GEO</th>
+            <th>{{ _('Parole') }}</th>
+            <th>ms</th>
+            <th>{{ _('HTTP') }}</th>
+          </tr>
         </thead>
         <tbody>
-          {% for f in findings_rows[:8] %}
+          {% for p in pages.rows %}
+          <tr data-sev="{{ p.sev }}">
+            <td>
+              {% if p.url %}
+              <a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ p.path }}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ p.aio if p.aio is number else '—' }}</td>
+            <td>{{ p.geo if p.geo is number else '—' }}</td>
+            <td>{{ p.words if p.words is number else '—' }}</td>
+            <td>{{ p.ms if p.ms is number else '—' }}</td>
+            <td>{{ p.status if p.status is number else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="dash-card__lede">{{ _('Nessuna pagina in crawl.') }}</p>
+      {% endif %}
+    </article>
+  </div>
+
+  <div class="dash-pair{% if not rivals %} dash-pair--solo{% endif %}">
+    <article class="dash-card" aria-labelledby="ledger-findings">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Findings') }}</p>
+        <h3 class="dash-card__title" id="ledger-findings">{{ _('Aperti') }}</h3>
+      </header>
+      {% if findings_rows %}
+      <table class="dash-sheet dash-sheet--dense">
+        <thead>
+          <tr>
+            <th>{{ _('Severity') }}</th>
+            <th>{{ _('Categoria') }}</th>
+            <th>{{ _('Finding') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in findings_rows[:12] %}
           <tr data-sev="{{ f.severity }}">
             <td>{{ _(f.severity) }}</td>
+            <td>{{ f.category or '—' }}</td>
             <td>{{ _(f.title) }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <p class="dash-card__lede">{{ _('Nessuna criticità aperta.') }}</p>
       {% endif %}
     </article>
 
-    <article class="dash-card dash-meridian" id="critical-pages" aria-labelledby="signal-meridian">
-      <header class="dash-meridian__head">
-        <p class="dash-meridian__kicker">{{ _('Crawl') }}</p>
-        <h3 class="dash-meridian__title" id="signal-meridian">{{ _('Pagine') }}</h3>
-        <span class="dash-meridian__n">{{ meridian.n or page_rows|length }}</span>
+    {% if rivals %}
+    <article class="dash-card" aria-labelledby="ledger-rivals">
+      <header class="dash-card__head">
+        <p class="dash-card__kicker">{{ _('Campo') }}</p>
+        <h3 class="dash-card__title" id="ledger-rivals">{{ _('Competitor') }}</h3>
       </header>
-      {% if page_rows %}
-      <table class="dash-sheet">
+      <table class="dash-sheet dash-sheet--dense">
         <thead>
-          <tr><th>{{ _('Path') }}</th><th>AIO</th><th>GEO</th><th>{{ _('Stato') }}</th></tr>
+          <tr>
+            <th>{{ _('Dominio') }}</th>
+            <th>AIO</th>
+            <th>GEO</th>
+            <th>Δ AIO</th>
+            <th>Δ GEO</th>
+          </tr>
         </thead>
         <tbody>
-          {% for p in page_rows[:8] %}
-          {% set path = (p.url or '')|replace('https://','')|replace('http://','') %}
-          <tr data-sev="{{ p.severity }}">
+          <tr data-self="1">
+            <td><strong>{{ latest.domain }}</strong></td>
+            <td>{{ ch.aio if ch.aio is number else '—' }}</td>
+            <td>{{ ch.geo if ch.geo is number else '—' }}</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          {% for c in rivals[:6] %}
+          {% set ca = c.aio_score if c.aio_score is number else none %}
+          {% set cg = c.geo_score if c.geo_score is number else none %}
+          <tr>
+            <td>{{ c.domain or c.url or '—' }}</td>
+            <td>{{ ca if ca is number else '—' }}</td>
+            <td>{{ cg if cg is number else '—' }}</td>
             <td>
-              {% if p.url %}
-              <a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ path.split('/', 1)[1] if '/' in path else '/' }}</a>
-              {% else %}—{% endif %}
+              {% if ca is number and ch.aio is number %}{{ '%+d'|format(ch.aio - ca) }}{% else %}—{% endif %}
             </td>
-            <td>{{ p.aio_score if p.aio_score is number else '—' }}</td>
-            <td>{{ p.geo_score if p.geo_score is number else '—' }}</td>
-            <td>{{ p.severity or '—' }}</td>
+            <td>
+              {% if cg is number and ch.geo is number %}{{ '%+d'|format(ch.geo - cg) }}{% else %}—{% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
-      {% endif %}
-      <div class="dash-meridian__axis" aria-label="{{ _('Pagine su asse AIO') }}">
-        <i class="dash-meridian__rail" aria-hidden="true"></i>
-        <span class="dash-meridian__end" data-end="0">0</span>
-        <span class="dash-meridian__end" data-end="100">100</span>
-        <span class="dash-meridian__tick dash-meridian__tick--brand" data-tick="brand" title="{{ _('Brand') }} · AIO {{ meridian.brand_x if meridian.brand_x is number else ch.aio }}">
-          <em>{{ _('tu') }}</em>
-        </span>
-        {% for tick in meridian.ticks or [] %}
-        {% if tick.url %}
-        <a class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" href="{{ tick.url }}" target="_blank" rel="noopener noreferrer" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}">
-          <span class="visually-hidden">{{ tick.path }}</span>
-        </a>
-        {% else %}
-        <span class="dash-meridian__tick" data-tick="{{ tick.id }}" data-sev="{{ tick.sev }}" title="{{ tick.path }} · AIO {{ tick.aio }} · GEO {{ tick.geo }}"></span>
-        {% endif %}
-        {% endfor %}
-      </div>
     </article>
+    {% endif %}
   </div>
 </section>
