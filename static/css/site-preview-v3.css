@@ -2766,9 +2766,11 @@ body.body-dash .dash-mast {
 }
 body.body-dash .dash-cvi {
   --cvi-tone: var(--plan-accent);
+  --cvi-tone-hi: color-mix(in srgb, var(--cvi-tone) 42%, #F3EDE3);
+  --cvi-tone-lo: color-mix(in srgb, var(--cvi-tone) 68%, #121212);
+  --cvi-tone-deep: color-mix(in srgb, var(--cvi-tone) 42%, #121212);
   display: flex;
   align-items: center;
-  gap: 0.35rem 1.15rem;
   min-width: 0;
   justify-self: end;
 }
@@ -2776,12 +2778,14 @@ body.body-dash .dash-cvi[data-band="d"] { --cvi-tone: #EF4444; }
 body.body-dash .dash-cvi[data-band="c"] { --cvi-tone: #F97316; }
 body.body-dash .dash-cvi[data-band="b"] { --cvi-tone: #F59E0B; }
 body.body-dash .dash-cvi[data-band="a"] { --cvi-tone: #22C55E; }
+body.body-dash .dash-cvi__stop-hi { stop-color: var(--cvi-tone-hi); }
+body.body-dash .dash-cvi__stop-mid { stop-color: var(--cvi-tone); }
+body.body-dash .dash-cvi__stop-lo { stop-color: var(--cvi-tone-lo); }
+body.body-dash .dash-cvi__stop-deep { stop-color: var(--cvi-tone-deep); }
 body.body-dash .dash-cvi__dial {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 13.25rem;
-  height: 13.25rem;
+  width: 18.5rem;
+  height: 18.5rem;
   background: transparent;
 }
 body.body-dash .dash-cvi__mark {
@@ -2792,39 +2796,52 @@ body.body-dash .dash-cvi__mark {
 }
 body.body-dash .dash-cvi__orbit {
   fill: none;
-  stroke: color-mix(in srgb, var(--cvi-tone) 42%, transparent);
+  stroke: url(#cvi-arc-b);
   stroke-width: 1.15;
   stroke-dasharray: 3 5;
+  opacity: 0.7;
 }
 body.body-dash .dash-cvi__arc {
   fill: none;
-  stroke: var(--cvi-tone);
   stroke-linecap: round;
 }
-body.body-dash .dash-cvi__arc--outer { stroke-width: 9.5; }
-body.body-dash .dash-cvi__arc--mid {
-  stroke-width: 7.5;
-  stroke: color-mix(in srgb, var(--cvi-tone) 78%, var(--brand-clarity));
+body.body-dash .dash-cvi__arc--outer {
+  stroke: url(#cvi-arc-a);
+  stroke-width: 9.5;
 }
-body.body-dash .dash-cvi__arc--inner { stroke-width: 6.5; }
+body.body-dash .dash-cvi__arc--mid {
+  stroke: url(#cvi-arc-b);
+  stroke-width: 7.5;
+}
+body.body-dash .dash-cvi__arc--inner {
+  stroke: url(#cvi-arc-a);
+  stroke-width: 6.5;
+}
 body.body-dash .dash-cvi__node { fill: var(--cvi-tone); }
-body.body-dash .dash-cvi__grade {
+body.body-dash .dash-cvi__readout {
   position: absolute;
-  inset: 0;
+  left: 52%;
+  right: 1%;
+  top: 26%;
+  bottom: 24%;
   display: grid;
-  place-items: center;
-  margin-left: -0.55rem;
+  align-content: center;
+  gap: 0.06rem;
+  min-width: 0;
+  pointer-events: none;
+}
+body.body-dash .dash-cvi__grade {
   font-size: clamp(2.55rem, 4.4vw, 3.55rem);
   font-weight: 720;
   letter-spacing: -0.055em;
-  line-height: 1;
-  color: var(--cvi-tone);
-}
-body.body-dash .dash-cvi__copy {
-  display: grid;
-  gap: 0.15rem;
-  min-width: 0;
-  padding-top: 0.35rem;
+  line-height: 0.9;
+  color: var(--brand-clarity);
+  text-shadow:
+    0 0 14px #121212,
+    0 0 22px #121212,
+    0 1px 2px #121212,
+    1px 1px 0 #121212,
+    -1px 0 0 #121212;
 }
 body.body-dash .dash-cvi__kicker {
   margin: 0;
@@ -2832,15 +2849,17 @@ body.body-dash .dash-cvi__kicker {
   font-weight: 650;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--cvi-tone) 72%, var(--brand-clarity));
+  color: var(--brand-clarity);
+  text-shadow: 0 0 12px #121212, 0 1px 2px #121212;
 }
 body.body-dash .dash-cvi__score {
   margin: 0;
-  font-size: clamp(3.2rem, 6vw, 4.75rem);
+  font-size: clamp(1.95rem, 3.4vw, 2.7rem);
   font-weight: 720;
-  letter-spacing: -0.055em;
-  line-height: 0.9;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
   color: var(--brand-clarity);
+  text-shadow: 0 0 12px #121212, 0 1px 2px #121212;
 }
 body.body-dash .dash-cvi__score span {
   font-size: 0.38em;
@@ -4813,8 +4832,7 @@ body.body-dash .comp-arena {
   body.body-dash .dash-wide { grid-template-columns: 1fr; }
   body.body-dash .dash-prompt { grid-template-columns: 1fr; }
   body.body-dash .dash-audit__bar { grid-template-columns: 1fr; }
-  body.body-dash .dash-cvi__dial { width: 10.25rem; height: 10.25rem; }
-  body.body-dash .dash-cvi__score { font-size: clamp(2.6rem, 10vw, 3.6rem); }
+  body.body-dash .dash-cvi__dial { width: 14.25rem; height: 14.25rem; }
   body.body-dash .dash-data { grid-template-columns: 1fr; }
   body.body-dash .dash-synth {
     grid-template-columns: 1fr;
