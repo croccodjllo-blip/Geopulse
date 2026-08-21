@@ -1,0 +1,94 @@
+{# Share of Voice detail card — anteprima: SoV table + Findings + Edge/Pack CTA #}
+{% set findings = findings_critical or [] %}
+{% set dash_pack_href = pack_href|default('#pack') %}
+{% set dash_edge_href = edge_href|default('#edge-signals') %}
+<div class="dash-detail dash-detail--anteprima" id="panel-detail">
+  <section class="dash-sov" id="panel-sov" aria-labelledby="sov-title">
+    {% if can_measured_sov %}
+      {% include "partials/sov_ops.html" %}
+    {% endif %}
+    {% if engine_breakdown %}
+    <header class="dash-sov__head">
+      <h2 class="dash-sov__title" id="sov-title">{{ _('Share of Voice') }}</h2>
+      <p class="dash-sov__lede">{{ _('Ultimi 28 giorni') }}</p>
+    </header>
+
+    {% if engine_breakdown.engines %}
+    <div class="dash-sov-list" role="table" aria-label="{{ _('Share of Voice per engine') }}">
+      <div class="dash-sov-list__head" role="row">
+        <span role="columnheader">{{ _('Motore') }}</span>
+        <span role="columnheader">{{ _('Share of Voice') }}</span>
+        <span role="columnheader">{{ _('Evidenza') }}</span>
+      </div>
+      <ul class="dash-sov-list__body" role="rowgroup">
+        {% for e in engine_breakdown.engines if e.evidence != 'pending' %}
+        <li class="dash-sov-list__row" role="row" data-engine="{{ e.id }}">
+          <div class="dash-sov-list__engine" role="cell">
+            <span class="dash-sov-list__mark" data-engine="{{ e.id }}" aria-hidden="true"></span>
+            <strong>{{ e.label }}</strong>
+          </div>
+          <div class="dash-sov-list__share" role="cell">
+            <span class="dash-sov-list__pct">{{ e.share }}%</span>
+            <span class="dash-sov-list__bar" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="dash-sov-list__ev" role="cell">
+            {% if e.measured_zero %}
+            <span class="evidence-badge evidence-badge--dot" data-evidence="measured">{{ _('Misurato · 0') }}</span>
+            {% elif e.evidence == 'measured' %}
+            <span class="evidence-badge evidence-badge--dot" data-evidence="measured">{{ _('Misurato') }}</span>
+            {% elif e.evidence == 'unavailable' %}
+            <span class="evidence-badge evidence-badge--dot" data-evidence="estimated">{{ _('N/D') }}</span>
+            {% else %}
+            <span class="evidence-badge evidence-badge--dot" data-evidence="estimated">{{ _('Stimato') }}</span>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if engine_breakdown.note %}
+    <p class="dash-sov__note">{{ _(engine_breakdown.note) }}</p>
+    {% endif %}
+    {% else %}
+    <p class="dash-block__empty">{{ _('Nessun breakdown disponibile.') }}</p>
+    {% endif %}
+  </section>
+
+  <section class="dash-findings" id="findings" aria-labelledby="findings-title">
+    <header class="dash-findings__head">
+      <h2 class="dash-findings__title" id="findings-title">{{ _('Findings') }}</h2>
+    </header>
+    <ul class="finding-list">
+      {% for f in findings %}
+      <li data-severity="{{ f.severity }}">
+        <em>{% if f.severity == 'critical' %}{{ _('Critico') }}{% elif f.severity == 'warn' %}{{ _('Avviso') }}{% else %}{{ f.severity }}{% endif %}</em>
+        <div class="finding-list__body">
+          <strong>{{ _(f.title) }}{% if f.detail %} {{ _(f.detail) }}{% endif %}</strong>
+        </div>
+      </li>
+      {% else %}
+      <li class="finding-list__empty">
+        <span>{{ _('Nessuna criticità.') }}{% if findings_ok_n %} {{ findings_ok_n }} {{ _('check ok nascosti.') }}{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <div class="dash-cta dash-cta--anteprima" role="region" aria-label="{{ _('Azioni infrastruttura') }}">
+    <div class="dash-cta__lead">
+      <span class="dash-cta__icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 12h3l2-7 3 14 3-9 2 4h5"/><circle cx="20" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <p class="dash-cta__copy">
+        <strong>{{ _('Trasforma i segnali in presenza.') }}</strong>
+        <span>{{ _('Intervieni dove le AI ti ascoltano.') }}</span>
+      </p>
+    </div>
+    <div class="dash-cta__actions">
+      <a class="dash-cta__primary" href="{{ dash_edge_href }}">{{ _('Edge Signals') }} <span aria-hidden="true">›</span></a>
+      <a class="dash-cta__secondary" href="{{ dash_pack_href }}">{{ _('Scarica Pack') }}</a>
+    </div>
+  </div>
+</div>

@@ -1,37 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="chassisGrad" x1="20%" y1="0%" x2="85%" y2="100%">
-      <stop offset="0%" stop-color="#8B98A8"/>
-      <stop offset="45%" stop-color="#C9D3DD"/>
+    <linearGradient id="cChrome" x1="8%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="28%" stop-color="#E8EEF4"/>
+      <stop offset="55%" stop-color="#C9D3DD"/>
       <stop offset="100%" stop-color="#5B6B7A"/>
     </linearGradient>
-    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#5B6B7A"/>
-      <stop offset="50%" stop-color="#C9D3DD"/>
-      <stop offset="100%" stop-color="#5B6B7A"/>
+    <linearGradient id="cChrome2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6E7C8C"/>
+      <stop offset="40%" stop-color="#C9D3DD"/>
+      <stop offset="100%" stop-color="#F2F5F8"/>
     </linearGradient>
-    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
-    </radialGradient>
   </defs>
-
-  <polygon points="64,10 109.2,37 109.2,91 64,118 18.8,91 18.8,37"
-    fill="#0A0E14" stroke="url(#chassisGrad)" stroke-width="4" stroke-linejoin="round"/>
-
-  <polygon points="64,24 97.6,43.5 97.6,84.5 64,104 30.4,84.5 30.4,43.5"
-    fill="none" stroke="#1A222D" stroke-width="1.5"/>
-
-  <circle cx="64" cy="64" r="34" fill="url(#coreGlow)"/>
-
-  <ellipse cx="64" cy="64" rx="40" ry="18" transform="rotate(-24 64 64)"
-    fill="none" stroke="url(#ringGrad)" stroke-width="1.6" stroke-dasharray="3 5" opacity="0.9"/>
-  <ellipse cx="64" cy="64" rx="26" ry="34" transform="rotate(16 64 64)"
-    fill="none" stroke="#5B6B7A" stroke-width="1" opacity="0.4"/>
-
-  <circle cx="99" cy="46" r="3" fill="#C9D3DD"/>
-  <circle cx="99" cy="46" r="5.5" fill="#C9D3DD" opacity="0.25"/>
-  <circle cx="33" cy="87" r="2" fill="#5B6B7A"/>
-
-  <path d="M78 49 A17 17 0 1 0 78 79" fill="none" stroke="url(#chassisGrad)" stroke-width="8" stroke-linecap="round"/>
+  <rect width="128" height="128" fill="#000000"/>
+  <!-- Three concentric chrome C arcs (gap on the right) -->
+  <path d="M102 30 A50 50 0 1 0 102 98" fill="none" stroke="url(#cChrome)" stroke-width="9.5" stroke-linecap="round"/>
+  <path d="M92 38 A38 38 0 1 0 92 90" fill="none" stroke="url(#cChrome2)" stroke-width="7.5" stroke-linecap="round"/>
+  <path d="M82 47 A26 26 0 1 0 82 81" fill="none" stroke="url(#cChrome)" stroke-width="6.5" stroke-linecap="round"/>
 </svg>

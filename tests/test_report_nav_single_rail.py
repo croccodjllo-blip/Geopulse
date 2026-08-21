@@ -1,4 +1,4 @@
-"""Dashboard report chrome: one sticky rail, no duplicate Score/SoV tabs."""
+"""Dashboard report chrome: priority action nav, no Score/SoV tab pair."""
 
 from __future__ import annotations
 
@@ -17,18 +17,17 @@ def test_no_duplicate_report_tabs_segment():
     assert "report-tabs__btn" not in SHELL
 
 
-def test_report_nav_keeps_score_sov_and_sections():
-    assert 'class="report-nav"' in DASH
-    assert 'data-tab="sov"' in DASH
-    assert 'data-tab="score"' in DASH
+def test_report_nav_tabs_replaced_by_dash_actions():
+    assert 'data-tab="sov"' not in DASH
+    assert 'data-tab="score"' not in DASH
+    assert 'class="report-nav"' not in DASH
+    assert 'class="dash-actions"' in DASH
     assert "{{ _('Findings') }}" in DASH
     assert "{{ _('Edge') }}" in DASH
     assert "{{ _('Pack') }}" in DASH
-    assert "report-nav__rule" in DASH
-    assert "report-nav__view" in DASH
 
 
-def test_shell_switches_views_via_report_nav():
-    assert "activateReportView" in SHELL
-    assert ".report-nav__view[data-tab]" in SHELL
+def test_shell_keeps_activate_report_view_harmless():
+    """Legacy shell helpers may remain; tabs are gone from markup."""
     assert "report-tabs__btn" not in SHELL
+    assert 'data-tab="score"' not in DASH
