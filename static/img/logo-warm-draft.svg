@@ -1,19 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Centropic">
   <defs>
-    <linearGradient id="cWarm" x1="8%" y1="0%" x2="92%" y2="100%">
+    <linearGradient id="wGold" x1="8%" y1="0%" x2="92%" y2="100%">
       <stop offset="0%" stop-color="#F4D7A8"/>
-      <stop offset="38%" stop-color="#E8A04A"/>
-      <stop offset="72%" stop-color="#C47A2C"/>
-      <stop offset="100%" stop-color="#8A4E16"/>
-    </linearGradient>
-    <linearGradient id="cWarm2" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#A85E1C"/>
-      <stop offset="50%" stop-color="#E8A04A"/>
-      <stop offset="100%" stop-color="#F6E0B8"/>
+      <stop offset="45%" stop-color="#E8A04A"/>
+      <stop offset="100%" stop-color="#C47A2C"/>
     </linearGradient>
   </defs>
   <rect width="128" height="128" fill="#121212"/>
-  <path d="M102 30 A50 50 0 1 0 102 98" fill="none" stroke="url(#cWarm)" stroke-width="9.5" stroke-linecap="round"/>
-  <path d="M92 38 A38 38 0 1 0 92 90" fill="none" stroke="url(#cWarm2)" stroke-width="7.5" stroke-linecap="round"/>
-  <path d="M82 47 A26 26 0 1 0 82 81" fill="none" stroke="url(#cWarm)" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M64.00 57.00 L50.37 17.98 L77.63 17.98 Z" fill="none" stroke="url(#wGold)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M70.06 60.50 L97.04 29.18 L110.67 52.79 Z" fill="none" stroke="url(#wGold)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M70.06 67.50 L110.67 75.21 L97.04 98.82 Z" fill="none" stroke="url(#wGold)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M64.00 71.00 L77.63 110.02 L50.37 110.02 Z" fill="none" stroke="url(#wGold)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M57.94 67.50 L30.96 98.82 L17.33 75.21 Z" fill="none" stroke="url(#wGold)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M57.94 60.50 L17.33 52.79 L30.96 29.18 Z" fill="none" stroke="url(#wGold)" stroke-width="2.6" stroke-linejoin="round"/>
+  <circle cx="64" cy="64" r="4.2" fill="none" stroke="url(#wGold)" stroke-width="1.6"/>
 </svg>
