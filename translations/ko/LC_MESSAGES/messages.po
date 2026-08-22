@@ -131,8 +131,8 @@ msgid ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria di "
-"Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
-"sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi "
+"Centropic: un indice 0–100 con lettera <strong>DD→AA</strong> che sintetizza "
+"quanto il brand è predisposto a essere letto e citato dai sistemi "
 "generativi.</p>\n"
 "    <p class=\"lede\">Formula operativa: media di <strong>AIO</strong> "
 "(leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui findings "
@@ -214,8 +214,8 @@ msgstr ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\"><strong>CVI</strong>는 Centropic의 고유 지표입니다. "
-"<strong>DDD→AAA</strong> 문자 등급이 포함된 0–100 지수로, 브랜드가 생성형 시스템에 읽히고 인용될 준비가 얼마나 "
-"되어 있는지를 요약합니다.</p>\n"
+"<strong>DD→AA</strong> 문자 등급이 포함된 0–100 지수로, 브랜드가 생성형 시스템에 읽히고 인용될 준비가 얼마나 되어"
+" 있는지를 요약합니다.</p>\n"
 "    <p class=\"lede\">운영 공식: <strong>AIO</strong>(가독성)와 "
 "<strong>GEO</strong>(인용 가능성)의 평균에 critical/warn findings 페널티를 반영합니다. 광고 순위도 "
 "언급 보장도 아니며, 도메인 간 및 시간에 따른 비교를 위한 Centropic 표준입니다.</p>\n"
@@ -515,7 +515,7 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Centropic Visibility Index (CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria di "
-"Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale "
+"Centropic: 0–100 + lettera DD→AA. Riassume predisposizione strutturale "
 "(AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e "
 "nel tempo.</p>\n"
 "  </section>\n"
@@ -1680,12 +1680,12 @@ msgstr "CVI (Centropic Visibility Index)"
 
 #: services/site_guide.py:16
 msgid ""
-"Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che "
-"sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare tra "
-"brand — non Domain Authority di terzi."
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza"
+" AIO+GEO (con penalità findings). È lo standard da confrontare tra brand — "
+"non Domain Authority di terzi."
 msgstr ""
-"Centropic 고유 지표: findings 페널티를 반영해 AIO+GEO를 요약하는 DDD→AAA 문자 등급 포함 0–100 "
-"지수입니다. 브랜드 간 비교 기준이며, 타사 Domain Authority가 아닙니다."
+"Centropic 고유 지표: findings 페널티를 반영해 AIO+GEO를 요약하는 DD→AA 문자 등급 포함 0–100 지수입니다. "
+"브랜드 간 비교 기준이며, 타사 Domain Authority가 아닙니다."
 
 #: services/site_guide.py:24
 msgid ""
@@ -1731,14 +1731,14 @@ msgstr ""
 "UI dell’LLM."
 
 #: services/site_guide.py:58
-msgid "CVI · scala DDD→AAA"
-msgstr "DDD에서 AAA로의 스케일"
+msgid "CVI · scala DD→AA"
+msgstr "DD에서 AA로의 스케일"
 
 #: services/site_guide.py:60
 msgid ""
-"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). "
+"Lettera del Centropic Visibility Index, da critica (DD) a eccellente (AA). "
 "Alias storico: “Indice”."
-msgstr "Centropic Visibility Index의 문자 등급으로, 위험(DDD)부터 우수(AAA)까지 표시합니다. 기존 별칭: “지수”."
+msgstr "Centropic Visibility Index의 문자 등급으로, 위험(DD)부터 우수(AA)까지 표시합니다. 기존 별칭: “지수”."
 
 #: services/site_guide.py:67
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
@@ -1941,8 +1941,8 @@ msgid "Avvia o ripeti l’analisi sull’URL del sito"
 msgstr "사이트 URL에 대한 분석을 시작하거나 반복합니다."
 
 #: services/site_guide.py:281
-msgid "Vedi CVI (DDD→AAA), score AIO/GEO e citation share"
-msgstr "DDD→AAA 지수, AIO/GEO 점수 및 음성 점유율 보기"
+msgid "Vedi CVI (DD→AA), score AIO/GEO e citation share"
+msgstr "DD→AA 지수, AIO/GEO 점수 및 음성 점유율 보기"
 
 #: services/site_guide.py:282
 msgid "Accedi a pack, Edge Signals, storico e crediti"
@@ -1965,8 +1965,8 @@ msgid "GEO = Generative Engine Optimization (citabilità nelle risposte generate
 msgstr "GEO = 생성 엔진 최적화(생성된 응답에서의 인용 가능성)"
 
 #: services/site_guide.py:297
-msgid "CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"
-msgstr "CVI (Centropic Visibility Index): AIO+GEO composite에 대한 DDD→AAA 문자 등급"
+msgid "CVI (Centropic Visibility Index): lettera DD→AA sul compositario AIO+GEO"
+msgstr "CVI (Centropic Visibility Index): AIO+GEO composite에 대한 DD→AA 문자 등급"
 
 #: services/site_guide.py:302
 msgid "Findings e pagine critiche"
@@ -2231,9 +2231,9 @@ msgstr ""
 
 #: services/site_guide.py:508
 msgid ""
-"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un "
+"Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un "
 "grado CVI tra un re-scan e l’altro."
-msgstr "편지를 읽으세요: DDD는 중요하고, AAA는 최고입니다. 재스캔 사이에 최소한 한 단계 상승하는 것을 목표로 하세요."
+msgstr "편지를 읽으세요: DD는 중요하고, AA는 최고입니다. 재스캔 사이에 최소한 한 단계 상승하는 것을 목표로 하세요."
 
 #: services/site_guide.py:512 templates/landing.html:184
 msgid "Score AIO / GEO"
@@ -3533,7 +3533,7 @@ msgstr "Edge"
 #: templates/dashboard.html:166 templates/dashboard.html:1107
 #: templates/partials/analyze_overlay.html:105
 msgid "Pack"
-msgstr "Pack"
+msgstr "팩"
 
 #: templates/dashboard.html:178 templates/dashboard.html:309
 msgid "Signal diagnostics"
@@ -3615,8 +3615,8 @@ msgid "Scala CVI"
 msgstr "CVI 스케일"
 
 #: templates/dashboard.html:431
-msgid "Scala da DDD a AAA"
-msgstr "DDD에서 AAA로의 스케일"
+msgid "Scala da DD a AA"
+msgstr "DD에서 AA로의 스케일"
 
 #: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
@@ -3730,7 +3730,7 @@ msgstr "봇 허용"
 
 #: templates/dashboard.html:651
 msgid "Nessun breakdown disponibile."
-msgstr "사용 가능한 세분화 없음."
+msgstr "세부 내역이 없습니다."
 
 #: templates/dashboard.html:656
 msgid "GEO suite"
@@ -4253,14 +4253,14 @@ msgstr "이"
 
 #: templates/faq.html:22
 msgid ""
-"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che "
+"è la metrica proprietaria di Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È "
 "lo standard da confrontare tra brand — non Domain Authority di terzi, non "
 "Share of Voice pubblicitaria."
 msgstr ""
-"는 Centropic의 고유 지표입니다. findings 페널티를 반영한 구조적 준비 상태(AIO + GEO)를 요약하는 DDD→AAA "
-"문자 등급 포함 0–100 지수입니다. 브랜드 간 비교 표준이며, 타사 Domain Authority도 광고형 Share of Voice도"
-" 아닙니다."
+"는 Centropic의 고유 지표입니다. findings 페널티를 반영한 구조적 준비 상태(AIO + GEO)를 요약하는 DD→AA 문자 "
+"등급 포함 0–100 지수입니다. 브랜드 간 비교 표준이며, 타사 Domain Authority도 광고형 Share of Voice도 "
+"아닙니다."
 
 #: templates/faq.html:28
 msgid "Cos’è AIO e GEO in Centropic?"
@@ -4582,7 +4582,7 @@ msgstr "상세"
 
 #: templates/history.html:58
 msgid "Nessuna analisi ancora"
-msgstr "아직 분석 없음"
+msgstr "아직 분석이 없습니다"
 
 #: templates/history.html:59
 msgid "Lancia la prima analisi dalla"
@@ -4910,11 +4910,11 @@ msgstr "AI 크롤러를 위한 접근 초안"
 #: templates/landing.html:262
 msgid ""
 "Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera "
-"DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
-" da confrontare tra brand — non Domain Authority di terzi, non Share of Voice"
-" pubblicitaria."
+"DD→AA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard "
+"da confrontare tra brand — non Domain Authority di terzi, non Share of Voice "
+"pubblicitaria."
 msgstr ""
-"CVI는 Centropic의 고유 지표입니다. 구조적 준비 상태(AIO + GEO)를 요약하는 DDD→AAA 문자 등급 포함 0–100 "
+"CVI는 Centropic의 고유 지표입니다. 구조적 준비 상태(AIO + GEO)를 요약하는 DD→AA 문자 등급 포함 0–100 "
 "지수입니다. 브랜드 간 비교 표준이며, 타사 Domain Authority도 광고형 Share of Voice도 아닙니다."
 
 #: templates/landing.html:266
@@ -5755,8 +5755,8 @@ msgid "aggiunge probe Misurati (se 0 menzioni, la share resta Stimata)."
 msgstr "측정 probe를 추가합니다(언급이 0이면 share는 추정으로 유지)."
 
 #: templates/product.html:36
-msgid "CVI (0–100 + lettera DDD→AAA) — metrica proprietaria Centropic"
-msgstr "CVI (0–100 + DDD→AAA 문자 등급) — Centropic 고유 지표"
+msgid "CVI (0–100 + lettera DD→AA) — metrica proprietaria Centropic"
+msgstr "CVI (0–100 + DD→AA 문자 등급) — Centropic 고유 지표"
 
 #: templates/product.html:37
 msgid "Score AIO/GEO come componenti di leggibilità e citabilità"
@@ -7335,7 +7335,7 @@ msgstr "자동 제안"
 
 #: templates/partials/dashboard_shell.html:95
 msgid "Deep crawl"
-msgstr "딥 크롤링"
+msgstr "딥 크롤"
 
 #: templates/partials/dashboard_shell.html:97
 msgid "pagine — più lento"
@@ -8245,6 +8245,370 @@ msgstr "도메인별 전체 리포트: score, SoV, findings, Edge 및 pack."
 
 msgid "Upgrade a Plus per monitorare più domini nello stesso workspace."
 msgstr "같은 워크스페이스에서 더 많은 도메인을 모니터링하려면 Plus로 업그레이드하세요."
+
+msgid ""
+"Opzionale. Salvato cifrato a riposo; non viene mai rimostrato in chiaro dopo "
+"il salvataggio."
+msgstr "선택 사항. 저장 시 암호화되며, 저장 후 평문으로 다시 표시되지 않습니다."
+
+msgid ""
+"Secret già impostato (cifrato a riposo). Lascia vuoto per mantenerlo; scrivi "
+"“clear” per rimuoverlo."
+msgstr "시크릿이 이미 설정되어 있습니다(암호화). 유지하려면 비워 두고, 제거하려면 “clear”를 입력하세요."
+
+msgid "Pronto per il collegamento OAuth"
+msgstr "OAuth 연결 준비됨"
+
+msgid "Collega Google Search Console (sola lettura) per questo account."
+msgstr "이 계정에 Google Search Console(읽기 전용)을 연결하세요."
+
+msgid "Collega Google"
+msgstr "Google 연결"
+
+msgid "Disconnetti"
+msgstr "연결 해제"
+
+msgid "Disponibile su Plus e Business."
+msgstr "Plus 및 Business에서 사용 가능."
+
+msgid "Google Search Console"
+msgstr "Google Search Console"
+
+msgid "Connesso"
+msgstr "연결됨"
+
+#, python-format
+msgid "Collegato come %(email)s."
+msgstr "%(email)s(으)로 연결됨."
+
+msgid "Account Google collegato a Search Console (sola lettura)."
+msgstr "Google 계정이 Search Console에 연결됨(읽기 전용)."
+
+#, python-format
+msgid "Proprietà visibili: %(n)s."
+msgstr "표시된 속성: %(n)s개."
+
+msgid "Imposta GOOGLE_OAUTH_CLIENT_ID e GOOGLE_OAUTH_CLIENT_SECRET."
+msgstr "GOOGLE_OAUTH_CLIENT_ID 및 GOOGLE_OAUTH_CLIENT_SECRET을 설정하세요."
+
+msgid "Integrazione GSC non ancora collegabile."
+msgstr "GSC 연동을 아직 연결할 수 없습니다."
+
+msgid ""
+"Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato"
+" dalle intelligenze artificiali."
+msgstr "사이트가 AI에 이해·인용·추천될 준비가 얼마나 되었는지 확인하세요."
+
+msgid "Misura la"
+msgstr "측정하세요"
+
+msgid "del tuo sito"
+msgstr "사이트"
+
+msgid "per le IA"
+msgstr "AI용"
+
+msgid "readiness"
+msgstr "준비도"
+
+msgid "Panoramica"
+msgstr "개요"
+
+msgid "Benchmark"
+msgstr "벤치마크"
+
+msgid "Prompt"
+msgstr "프롬프트"
+
+msgid "Trend"
+msgstr "트렌드"
+
+msgid "Dominio attivo"
+msgstr "활성 도메인"
+
+msgid "Nuovo dominio"
+msgstr "새 도메인"
+
+msgid "Distribuzione AIO"
+msgstr "AIO 분포"
+
+msgid "Indice di criticità"
+msgstr "심각도 지수"
+
+msgid "Composizione"
+msgstr "구성"
+
+msgid "Motori"
+msgstr "엔진"
+
+msgid "Ledger"
+msgstr "원장"
+
+msgid "Aperti"
+msgstr "미해결"
+
+msgid "Pagine"
+msgstr "페이지"
+
+msgid "Findings e pack"
+msgstr "Findings와 팩"
+
+msgid "Cerca o incolla URL"
+msgstr "URL 검색 또는 붙여넣기"
+
+msgid "Seleziona dominio"
+msgstr "도메인 선택"
+
+msgid "Audit"
+msgstr "감사"
+
+msgid "Mix"
+msgstr "믹스"
+
+msgid "Campo"
+msgstr "필드"
+
+msgid "Andamento AIO e GEO"
+msgstr "AIO·GEO 추이"
+
+msgid "AIO / GEO per data"
+msgstr "날짜별 AIO / GEO"
+
+msgid "Vai alla Panoramica"
+msgstr "개요로 이동"
+
+msgid "Findings aperti e deliverable da applicare."
+msgstr "미해결 Findings와 적용할 산출물."
+
+msgid "aperti sul run analizzato"
+msgstr "분석된 런에서 미해결"
+
+msgid "Pagine per fascia AIO"
+msgstr "AIO 구간별 페이지"
+
+msgid "Nessuna pagina con score AIO."
+msgstr "AIO 점수가 있는 페이지가 없습니다."
+
+msgid "Nessuna criticità aperta."
+msgstr "열린 이슈가 없습니다."
+
+msgid "Nessuna pagina in crawl."
+msgstr "크롤에 페이지가 없습니다."
+
+msgid "Competitor (max 3)"
+msgstr "경쟁사 (최대 3)"
+
+msgid "Aggiungi competitor"
+msgstr "경쟁사 추가"
+
+msgid "Saldo token"
+msgstr "토큰 잔액"
+
+msgid "Metriche"
+msgstr "지표"
+
+msgid "Metriche primarie"
+msgstr "주요 지표"
+
+msgid "Critici"
+msgstr "치명"
+
+msgid "Warn"
+msgstr "경고"
+
+msgid "Italia"
+msgstr "이탈리아"
+
+msgid "https://tuosito.com"
+msgstr "https://yoursite.com"
+
+msgid "https://iltuosito.it"
+msgstr "https://yoursite.com"
+
+msgid "https://rivale.com"
+msgstr "https://rival.com"
+
+msgid "https://rivale1.com"
+msgstr "https://rival1.com"
+
+msgid "https://rivale2.com"
+msgstr "https://rival2.com"
+
+msgid "https://tuodominio/llms.txt"
+msgstr "https://yourdomain.com/llms.txt"
+
+msgid "21 agosto 2026"
+msgstr "2026년 8월 21일"
+
+msgid ""
+"Come leggere il workspace: le cinque pagine, il CVI sul marchio, i grafici "
+"AIO/GEO, l’indice di criticità, i pack e l’Edge."
+msgstr "워크스페이스 읽는 법: 다섯 페이지, 마크 위의 CVI, AIO/GEO 차트, 심각도 지수, 팩, Edge."
+
+msgid "Le cinque pagine"
+msgstr "다섯 페이지"
+
+msgid ""
+"Il workspace ha una sola barra in alto. Cinque destinazioni, stesso dominio "
+"attivo. Account e impostazioni restano nel menu avatar."
+msgstr "워크스페이스 상단 바는 하나입니다. 다섯 목적지, 같은 활성 도메인. 계정과 설정은 아바타 메뉴에 있습니다."
+
+msgid ""
+"Dominio e CVI in testa. Sotto: sette KPI, Composizione e Motori alla stessa "
+"altezza, poi Suite e Mix, poi Crawl AIO con Distribuzione AIO e Indice di "
+"criticità nella stessa colonna, ledger pagine a destra. In coda: storico run "
+"e findings."
+msgstr ""
+"상단에 도메인과 CVI. 아래: 일곱 KPI, 같은 높이의 구성과 엔진, 이어서 스위트와 믹스, 같은 열의 AIO 크롤 분포와 심각도 "
+"지수, 오른쪽 페이지 원장. 맨 아래는 런 기록과 Findings."
+
+msgid ""
+"Confronta il sito attivo con i rivali su AIO, GEO, SoV e motori. Usa uno "
+"snapshot già misurato, non un grafico inventato."
+msgstr "활성 사이트를 경쟁사와 AIO, GEO, SoV, 엔진 기준으로 비교합니다. 측정된 스냅샷을 쓰며, 만든 차트는 쓰지 않습니다."
+
+msgid ""
+"Le query usate per misurare il SoV e i finding aperti. Qui si vede cosa è "
+"stato chiesto ai motori e il pack da applicare."
+msgstr "SoV 측정에 쓴 질의와 미해결 Findings. 엔진에 물은 내용과 적용할 팩을 봅니다."
+
+msgid ""
+"Storico delle run sul dominio attivo. Due grafici affiancati: AIO/GEO nel "
+"tempo e CVI per run, con le date sotto ogni punto. Serve almeno due analisi."
+msgstr "활성 도메인의 런 기록. 나란히 두 차트: 시간의 AIO/GEO와 런별 CVI, 각 점 아래 날짜. 분석이 두 번 이상 필요합니다."
+
+msgid ""
+"Questo manuale, dentro il workspace. Stesso contenuto della pagina pubblica "
+"/guida."
+msgstr "워크스페이스 안의 이 매뉴얼. 공개 /guida 페이지와 같은 내용입니다."
+
+msgid "Cinque pagine, un dominio attivo, grafici dallo stesso run."
+msgstr "다섯 페이지, 하나의 활성 도메인, 같은 런의 차트."
+
+msgid ""
+"Panoramica: CVI sul marchio (voto DD–AA nel C, punteggio a destra), KPI e "
+"grafici"
+msgstr "개요: 마크 위의 CVI(C 안 DD–AA 등급, 오른쪽 점수), KPI와 차트"
+
+msgid "Benchmark, Prompt e Trend sul dominio selezionato dai chip"
+msgstr "칩으로 고른 도메인의 벤치마크, 프롬프트, 트렌드"
+
+msgid "Account e impostazioni nel menu avatar — non in una sesta pill"
+msgstr "계정과 설정은 아바타 메뉴 — 여섯 번째 탭이 아닙니다"
+
+msgid ""
+"Indice di criticità: (critici × 100 + warning × 40) / totale, sotto "
+"Distribuzione AIO nello stack Crawl"
+msgstr "심각도 지수: (치명 × 100 + 경고 × 40) / 전체, 크롤 스택의 AIO 분포 아래"
+
+msgid "Pack HTML con logo originale, score, finding e snippet da pubblicare."
+msgstr "원본 로고, 점수, Findings, 게시할 스니펫이 담긴 HTML 팩."
+
+msgid "Scarica centropic-fix.html: si apre offline, logo in testa"
+msgstr "centropic-fix.html 다운로드: 오프라인으로 열리고 상단에 원본 로고"
+
+msgid "Moduli: grafo entità, citabilità, schema, publish verify, llms lint, mercati."
+msgstr "모듈: 엔터티 그래프, 인용 가능성, 스키마, publish verify, llms lint, 시장."
+
+msgid "Mercati e lingue: hreflang e coerenza"
+msgstr "시장과 언어: hreflang과 일관성"
+
+msgid "Trend e re-scan"
+msgstr "트렌드와 재스캔"
+
+msgid ""
+"Serie temporale sul dominio attivo: AIO/GEO e CVI, con le date sotto ogni "
+"punto."
+msgstr "활성 도메인의 시계열: AIO/GEO와 CVI, 각 점 아래 날짜."
+
+msgid "Due grafici affiancati: AIO/GEO e CVI per run"
+msgstr "나란히 두 차트: 런별 AIO/GEO와 CVI"
+
+msgid "Ripartizione motori"
+msgstr "엔진 분해"
+
+msgid "Grafo entità"
+msgstr "엔터티 그래프"
+
+msgid "Citabilità"
+msgstr "인용 가능성"
+
+msgid "Qualità schema"
+msgstr "스키마 품질"
+
+msgid "Mercati e lingue"
+msgstr "시장과 언어"
+
+msgid ""
+"Leggi lettera e score: DD è critico, AA è top. Il voto sta nel marchio, il "
+"numero a destra. Mira a salire di almeno un grado CVI tra un re-scan e "
+"l’altro."
+msgstr "등급과 점수를 읽으세요. DD는 위험, AA는 최상. 등급은 마크 안, 숫자는 오른쪽. 재스캔 사이에 CVI를 한 단계 이상 올리세요."
+
+msgid ""
+"Chiudi critical e warn; usa l’indice di criticità e il pack. Poi ripubblica e"
+" verifica."
+msgstr "치명·경고 항목을 닫고 심각도 지수와 팩을 쓰세요. 그런 다음 다시 게시하고 검증하세요."
+
+#, python-format
+msgid "Root del sito: %(path)s — oppure Edge + CMS connector."
+msgstr "사이트 루트: %(path)s — 또는 Edge + CMS 커넥터."
+
+msgid ""
+"unico deliverable: logo originale in testa; apri e copia head / llms.txt / "
+"robots sul sito"
+msgstr "단일 산출물: 상단에 원본 로고; 열어 head / llms.txt / robots를 사이트에 복사"
+
+msgid "Plus · €19,99 Tasse escluse"
+msgstr "Plus · €19.99 세금 별도"
+
+msgid "Business · €89,99 Tasse escluse"
+msgstr "Business · €89.99 세금 별도"
+
+msgid ""
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza"
+" AIO+GEO (con penalità findings). In Panoramica il voto sta nel marchio; il "
+"punteggio numerico sta a destra. È lo standard da confrontare tra brand — non"
+" Domain Authority di terzi."
+msgstr ""
+"Centropic 고유 지표: AIO+GEO를 종합한 0–100 지수와 DD→AA 문자(Findings 감점 포함). 개요에서 등급은 마크"
+" 안, 숫자는 오른쪽. 브랜드 비교 기준이며 제3자 Domain Authority가 아닙니다."
+
+msgid ""
+"Score 0–100 dalla mix dei finding del run: (critici × 100 + warning × 40) / "
+"totale. In Panoramica sta sotto Distribuzione AIO, stessa colonna Crawl."
+msgstr "런 Findings 혼합의 0–100 점수: (치명 × 100 + 경고 × 40) / 전체. 개요에서 AIO 분포 아래, 같은 크롤 열."
+
+msgid ""
+"Le cinque pagine del prodotto: Panoramica, Benchmark, Prompt, Trend, Guida. "
+"Account e impostazioni restano nel menu avatar."
+msgstr "제품의 다섯 페이지: 개요, 벤치마크, 프롬프트, 트렌드, 가이드. 계정과 설정은 아바타 메뉴에 있습니다."
+
+msgid ""
+"Insieme di artifact generati dall’analisi. Il file centropic-fix.html include"
+" il logo originale in testa, score, finding e snippet (llms, schema, meta, "
+"robots, checklist)."
+msgstr ""
+"분석이 만든 산출물. centropic-fix.html 상단에 원본 로고와 점수, Findings, 스니펫(llms, schema, "
+"meta, robots, 체크리스트)이 있습니다."
+
+msgid "Il workspace ha cinque pagine: Panoramica, Benchmark, Prompt, Trend, Guida."
+msgstr "워크스페이스에는 다섯 페이지가 있습니다: 개요, 벤치마크, 프롬프트, 트렌드, 가이드."
+
+msgid "Workspace: CVI sul marchio, grafici AIO/GEO e pack in cinque pagine."
+msgstr "워크스페이스: 마크 위의 CVI, AIO/GEO 차트, 다섯 페이지의 팩."
+
+msgid "JSON-LD + FAQ + meta"
+msgstr "JSON-LD + FAQ + 메타"
+
+msgid "API: GET /api/v1/sites/<id>/edge"
+msgstr "API: GET /api/v1/sites/<id>/edge"
+
+msgid "Finding"
+msgstr "Finding"
+
+msgid "Quota operativa"
+msgstr "운영 쿼터"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"

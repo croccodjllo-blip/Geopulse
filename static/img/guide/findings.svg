@@ -1,47 +1,56 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">Findings</title>
-  <desc id="d">Critical · Warn · OK</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#04060A"/>
-      <stop offset="55%" stop-color="#0A0E14"/>
-      <stop offset="100%" stop-color="#070A10"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#C9D3DD" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#C9D3DD" opacity=".06"/>
-  <circle cx="120" cy="460" r="140" fill="#5B6B7A" opacity=".05"/>
-  <rect x="36" y="36" width="888" height="468" rx="22" fill="#0A0E14" stroke="#1A222D" stroke-width="1.5"/>
-  <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#C9D3DD" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">FINDINGS</text>
-  <text x="64" y="122" fill="#E8EEF4" font-family="'Inter', system-ui, sans-serif" font-size="28" font-weight="700">Critical · Warn · OK</text>
-  
-  <g font-family="'Inter', system-ui, sans-serif">
-    <rect x="64" y="160" width="832" height="64" rx="12" fill="#0A0E14" stroke="#EF4444" stroke-opacity=".45"/>
-    <circle cx="100" cy="192" r="10" fill="#EF4444"/>
-    <text x="128" y="186" fill="#E8EEF4" font-size="16" font-weight="700">CRITICAL — robots blocca GPTBot</text>
-    <text x="128" y="208" fill="#8B97A8" font-size="13">Priorità massima · impatto crawler IA</text>
-
-    <rect x="64" y="240" width="832" height="64" rx="12" fill="#0A0E14" stroke="#F59E0B" stroke-opacity=".4"/>
-    <circle cx="100" cy="272" r="10" fill="#F59E0B"/>
-    <text x="128" y="266" fill="#E8EEF4" font-size="16" font-weight="700">WARN — JSON-LD Organization incompleto</text>
-    <text x="128" y="288" fill="#8B97A8" font-size="13">Manca sameAs / contatto</text>
-
-    <rect x="64" y="320" width="832" height="64" rx="12" fill="#0A0E14" stroke="#22C55E" stroke-opacity=".35"/>
-    <circle cx="100" cy="352" r="10" fill="#22C55E"/>
-    <text x="128" y="346" fill="#E8EEF4" font-size="16" font-weight="700">OK — sitemap.xml raggiungibile</text>
-    <text x="128" y="368" fill="#8B97A8" font-size="13">Probe misurato</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Findings e indice di criticità">
+  <rect width="960" height="540" fill="#121212"/>
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="294" y="33" text-anchor="middle" fill="#F3EDE3">Panoramica</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="#E8A04A"/>
+    <text x="480" y="33" text-anchor="middle" fill="#121212">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guida</text>
   </g>
 
-  <text x="64" y="480" fill="#8B97A8" font-family="'Inter', system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <text x="28" y="96" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">PROMPT</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">Findings</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Critico · Avviso · Ok — chiudi prima i critici</text>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="176" width="600" height="88" fill="#1A1A1A"/>
+    <rect x="28" y="176" width="6" height="88" fill="#EF4444"/>
+    <text x="56" y="210" fill="#EF4444" font-size="12" font-weight="700">CRITICO</text>
+    <text x="56" y="236" fill="#F3EDE3" font-size="16" font-weight="650">robots blocca GPTBot</text>
+    <text x="56" y="256" fill="rgba(243,237,227,0.45)" font-size="12">Priorità massima · impatto crawler IA</text>
+
+    <rect x="28" y="272" width="600" height="88" fill="#1A1A1A"/>
+    <rect x="28" y="272" width="6" height="88" fill="#F59E0B"/>
+    <text x="56" y="306" fill="#F59E0B" font-size="12" font-weight="700">AVVISO</text>
+    <text x="56" y="332" fill="#F3EDE3" font-size="16" font-weight="650">JSON-LD Organization incompleto</text>
+    <text x="56" y="352" fill="rgba(243,237,227,0.45)" font-size="12">Manca sameAs / contatto</text>
+
+    <rect x="28" y="368" width="600" height="88" fill="#1A1A1A"/>
+    <rect x="28" y="368" width="6" height="88" fill="#22C55E"/>
+    <text x="56" y="402" fill="#22C55E" font-size="12" font-weight="700">OK</text>
+    <text x="56" y="428" fill="#F3EDE3" font-size="16" font-weight="650">sitemap.xml raggiungibile</text>
+    <text x="56" y="448" fill="rgba(243,237,227,0.45)" font-size="12">Probe misurato</text>
+
+    <rect x="640" y="176" width="292" height="140" fill="#1A1A1A"/>
+    <text x="660" y="208" fill="rgba(243,237,227,0.45)" font-size="11">Crawl</text>
+    <text x="660" y="232" fill="#F3EDE3" font-size="16" font-weight="650">Distribuzione AIO</text>
+    <rect x="660" y="256" width="18" height="36" fill="#22C55E"/>
+    <rect x="682" y="268" width="18" height="24" fill="#E8A04A"/>
+    <rect x="704" y="262" width="18" height="30" fill="#F59E0B"/>
+    <rect x="726" y="276" width="18" height="16" fill="#F97316"/>
+    <rect x="748" y="284" width="18" height="8" fill="#EF4444"/>
+
+    <rect x="640" y="324" width="292" height="132" fill="#1A1A1A"/>
+    <text x="660" y="356" fill="rgba(243,237,227,0.45)" font-size="11">Findings</text>
+    <text x="660" y="380" fill="#F3EDE3" font-size="16" font-weight="650">Indice di criticità</text>
+    <text x="660" y="424" fill="#F97316" font-size="36" font-weight="720">47</text>
+    <text x="732" y="424" fill="rgba(243,237,227,0.45)" font-size="13">/100 · mid</text>
+  </g>
 </svg>

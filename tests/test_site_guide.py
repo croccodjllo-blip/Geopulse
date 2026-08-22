@@ -21,6 +21,60 @@ def test_site_guide_has_services_analyses_glossary():
     slugs = [g["slug"] for g in guide["glossary"]]
     assert len(slugs) == len(set(slugs))
     assert "aio" in slugs and "geo" in slugs and "edge-signals" in slugs
+    assert "cvi" in slugs and "indice-criticita" in slugs and "workspace" in slugs
+    assert len(guide["workspace"]["pages"]) == 5
+    assert any(t["id"] == "workspace" for t in guide["toc"])
+    assert "2026" in guide["updated"]
+    pack = next(s for s in guide["services"] if s["id"] == "svc-pack")
+    assert "centropic-fix.html" in " ".join(pack["bullets"])
+    assert any(s["id"] == "svc-storico" for s in guide["services"])
+    cvi = next(g for g in guide["glossary"] if g["slug"] == "cvi")
+    assert "DD" in cvi["definition"] and "AA" in cvi["definition"]
+
+
+def test_site_guide_english_workspace_titles():
+    from flask_babel import force_locale
+
+    from app import app
+
+    with app.app_context():
+        with force_locale("en"):
+            guide = site_guide_payload()
+    assert guide["workspace"]["title"] == "The five pages"
+    assert [p["title"] for p in guide["workspace"]["pages"]] == [
+        "Overview",
+        "Benchmark",
+        "Prompt",
+        "Trend",
+        "Guide",
+    ]
+    assert "yourdomain.com/llms.txt" in guide["workflow"][3]["body"]
+
+
+def test_guide_hero_shows_current_workspace():
+    svg = (ROOT / "static" / "img" / "guide" / "dashboard.svg").read_text(encoding="utf-8")
+    assert "Panoramica" in svg
+    assert "Indice di criticità" in svg
+    assert "AA" in svg
+    assert 'd="M102 30 A50 50 0 1 0 102 98"' in svg
+    assert "icon rail" not in svg
+    assert ">B</text>" not in svg
+    html = (ROOT / "templates" / "guide.html").read_text(encoding="utf-8")
+    assert "workspace--wide" in html
+    assert "img/guide/dashboard.svg" in html or "guide.services[0].image" in html
+
+
+def test_public_guide_is_fresh_and_current():
+    from app import app
+
+    client = app.test_client()
+    resp = client.get("/guida")
+    assert resp.status_code == 200
+    assert "no-store" in (resp.headers.get("Cache-Control") or "")
+    html = resp.get_data(as_text=True)
+    assert "Le cinque pagine" in html or "The five pages" in html
+    assert "img/guide/dashboard.svg" in html
+    assert "icon rail" not in html
 
 
 def test_guide_illustration_files_exist():
@@ -28,3 +82,50 @@ def test_guide_illustration_files_exist():
         path = ROOT / "static" / rel
         assert path.is_file(), f"missing {key}: {path}"
         assert path.stat().st_size > 200
+
+
+def test_guide_svgs_use_current_product_chrome():
+    """Illustrations must not depict retired grades, token economy, or old cards."""
+    banned = (
+        "TOKEN GEO",
+        "GEO token",
+        "1 token = €0,10",
+        "tuodominio.com",
+        "Scala DDD",
+        "DDD → AAA",
+        "BBB",
+        "CCC",
+        "CRITICAL",
+        "Engine breakdown etichettato",
+        "Entity graph",
+        "Schema quality",
+        "Centropic · guida prodotto",
+        "Score AIO · GEO · Indice",
+    )
+    blob = ""
+    for rel in GUIDE_IMAGES.values():
+        blob += (ROOT / "static" / rel).read_text(encoding="utf-8")
+    for needle in banned:
+        assert needle not in blob, f"stale guide art still contains {needle!r}"
+    analisi = (ROOT / "static/img/guide/analisi-aio-geo.svg").read_text(encoding="utf-8")
+    assert "AIO · GEO · CVI" in analisi
+    assert "Scala DD → AA" in analisi
+    assert ">BB</text>" in analisi
+    competitors = (ROOT / "static/img/guide/competitors.svg").read_text(encoding="utf-8")
+    assert "example.com" in competitors
+    assert "Benchmark" in competitors
+    tokens = (ROOT / "static/img/guide/token-crediti.svg").read_text(encoding="utf-8")
+    assert "Quota operativa" in tokens
+    assert "€19,99" in tokens
+    assert "Tasse escluse" in tokens
+    geo = (ROOT / "static/img/guide/geo-suite.svg").read_text(encoding="utf-8")
+    assert "Grafo entità" in geo
+    assert "Mercati e lingue" in geo
+    findings = (ROOT / "static/img/guide/findings.svg").read_text(encoding="utf-8")
+    assert "Indice di criticità" in findings
+    pack = (ROOT / "static/img/guide/pack-artifact.svg").read_text(encoding="utf-8")
+    assert "centropic-fix.html" in pack
+    assert 'd="M102 30 A50 50 0 1 0 102 98"' in pack
+    sov = (ROOT / "static/img/guide/sov-citation.svg").read_text(encoding="utf-8")
+    assert "Motori" in sov
+    assert "Composizione" in sov
