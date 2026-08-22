@@ -323,6 +323,57 @@ body.app-body:not(.body-dash) {
   box-shadow: var(--shadow-glow);
 }
 
+.site-header__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--brand-clarity);
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    height: auto;
+    min-height: var(--header-h);
+  }
+  .site-header__inner {
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-block: 0.55rem;
+  }
+  .site-header__toggle { display: inline-flex; }
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    padding: 0.35rem 0 0.55rem;
+  }
+  body.nav-open .nav-links { display: flex; }
+  .nav-links a,
+  .nav-links button {
+    padding: 0.7rem 0.15rem;
+    font-size: 0.95rem;
+    text-align: left;
+  }
+  .nav-links .nav-cta {
+    margin-top: 0.35rem;
+    text-align: center;
+  }
+  .nav-links .lang-switch { margin-top: 0.35rem; }
+  .page-intro,
+  .page-section,
+  .guide-section {
+    scroll-margin-top: calc(var(--header-h) + 0.75rem);
+  }
+}
+
 /* Main + footer containers */
 .site-main {
   padding: 2.5rem 0 4rem;
@@ -2412,14 +2463,22 @@ html.analyze-busy {
   }
   .analyze-overlay__copy { text-align: center; }
   .analyze-overlay__hint { text-align: center; }
+  .analyze-overlay__panel {
+    width: min(100%, 28rem);
+    margin-inline: 0.75rem;
+    padding: 1.1rem 1rem 1.2rem;
+  }
   .analyze-overlay__steps {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
   }
   .analyze-overlay__steps li {
-    font-size: 0.58rem;
+    font-size: 0.68rem;
     min-height: 1.9rem;
     letter-spacing: 0.02em;
+    padding-inline: 0.45rem;
   }
 }
 

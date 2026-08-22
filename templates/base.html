@@ -122,7 +122,17 @@
           />
           <span class="brand-mark__word holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></span>
         </a>
-        <nav class="nav-links" aria-label="{{ _('Principale') }}">
+        <button
+          type="button"
+          class="site-header__toggle"
+          data-nav-toggle
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="{{ _('Apri menu') }}"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <nav class="nav-links" id="site-nav" aria-label="{{ _('Principale') }}">
           {% if current_user %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">{{ _('Dashboard') }}</a>
             {% if can_extended_history %}

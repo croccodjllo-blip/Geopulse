@@ -118,8 +118,30 @@
       });
     }
 
+    var navToggle = qs("[data-nav-toggle]");
+    var siteNav = qs("#site-nav");
+    function setNavOpen(open) {
+      document.body.classList.toggle("nav-open", open);
+      if (navToggle) navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    if (navToggle) {
+      navToggle.addEventListener("click", function () {
+        setNavOpen(!document.body.classList.contains("nav-open"));
+      });
+    }
+    if (siteNav) {
+      qsa("a, button", siteNav).forEach(function (el) {
+        el.addEventListener("click", function () {
+          if (window.matchMedia("(max-width: 720px)").matches) setNavOpen(false);
+        });
+      });
+    }
+
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setNavOpen(false);
+      }
     });
 
     // Close drawer after navigating on small screens

@@ -5113,3 +5113,104 @@ body.body-dash .comp-arena {
   body.body-dash .dash-split__track { height: 10px; min-height: 10px; }
   body.body-dash .dash-split__table strong { font-size: clamp(1.45rem, 6vw, 1.85rem); }
 }
+
+/* —— PHONE 390–640: readable workspace, no 7-up crush —— */
+@media (max-width: 640px) {
+  html:has(body.app-shell--topbar) {
+    height: auto;
+    overflow: auto;
+  }
+  body.app-shell--topbar {
+    height: auto;
+    max-height: none;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  body.app-shell--topbar .site-main {
+    overflow: visible;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  body.app-shell--topbar .workspace,
+  body.app-shell--topbar .workspace--wide,
+  body.app-shell--topbar .page {
+    padding-inline: 1rem;
+  }
+  .app-topbar {
+    padding: 0.45rem 0.85rem;
+    min-height: 3.6rem;
+  }
+  .app-topbar__word { display: none; }
+  .app-topbar__credits { display: none; }
+  .app-topbar__tools { gap: 0.35rem; }
+  .app-topbar__pills .app-topbar__link {
+    padding: 0.65rem 0.2rem;
+    border-radius: 0;
+  }
+
+  body.body-dash .dash-masthead {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    gap: 0.85rem;
+  }
+  body.body-dash .dash-cvi { justify-self: start; }
+  body.body-dash .dash-cvi__dial {
+    width: 6.8rem;
+    height: 6.8rem;
+    flex-basis: 6.8rem;
+  }
+  body.body-dash .dash-mast__domain {
+    font-size: clamp(1.45rem, 7vw, 1.85rem);
+    overflow-wrap: anywhere;
+  }
+  body.body-dash .dash-command__search,
+  body.body-dash .dash-audit__row {
+    width: 100%;
+    max-width: 100%;
+  }
+  body.body-dash .dash-audit__input,
+  body.body-dash .dash-audit__row .analyze-input,
+  body.body-dash .dash-audit__row .dash-command__input {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+  body.body-dash .dash-sites {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.body-dash .dash-sites__chip { flex: 0 0 auto; }
+
+  body.body-dash .dash-kpis,
+  body.body-dash .dash-kpis.dash-tiles,
+  body.body-dash .dash-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 0.9rem;
+  }
+  body.body-dash .dash-tile__n,
+  body.body-dash .dash-kpi__n {
+    font-size: clamp(1.45rem, 6.5vw, 1.85rem);
+  }
+  body.body-dash .dash-board .dash-sheet,
+  body.body-dash .dash-board table.dash-sheet {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.body-dash .dash-sheet th,
+  body.body-dash .dash-sheet td,
+  body.body-dash .dash-sheet--dense th,
+  body.body-dash .dash-sheet--dense td {
+    font-size: 0.86rem;
+    padding: 0.48rem 0.4rem;
+  }
+  body.body-dash .dash-hist {
+    gap: 0.35rem;
+  }
+  body.body-dash .guide-page--full {
+    width: 100%;
+  }
+}
