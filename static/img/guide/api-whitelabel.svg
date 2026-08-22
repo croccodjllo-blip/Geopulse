@@ -1,46 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">API &amp; Agency</title>
-  <desc id="d">Automazione e white-label</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#121212"/>
-      <stop offset="55%" stop-color="#1A1612"/>
-      <stop offset="100%" stop-color="#070A10"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#E8D5B5" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#E8D5B5" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#E8D5B5" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#E8D5B5" opacity=".06"/>
-  <circle cx="120" cy="460" r="140" fill="#5B6B7A" opacity=".05"/>
-  <rect x="36" y="36" width="888" height="468" rx="22" fill="#1A1612" stroke="#1A222D" stroke-width="1.5"/>
-  <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#E8D5B5" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">API &amp; AGENCY</text>
-  <text x="64" y="122" fill="#E8EEF4" font-family="'Inter', system-ui, sans-serif" font-size="28" font-weight="700">Automazione e white-label</text>
-  
-  <g font-family="'Inter', system-ui, sans-serif">
-    <rect x="64" y="170" width="500" height="250" rx="16" fill="#1A1612" stroke="#1A222D"/>
-    <text x="88" y="215" fill="#E8D5B5" font-size="13" font-weight="700">API v1</text>
-    <text x="88" y="255" fill="#E8EEF4" font-size="15" font-family="monospace">POST /api/v1/analyze</text>
-    <text x="88" y="285" fill="#E8EEF4" font-size="15" font-family="monospace">GET  /api/v1/sites</text>
-    <text x="88" y="315" fill="#E8EEF4" font-size="15" font-family="monospace">GET  /api/v1/sites/:id/edge</text>
-    <text x="88" y="360" fill="#8B97A8" font-size="13">Authorization: Bearer ct_… (gp_ legacy)</text>
-
-    <rect x="596" y="170" width="300" height="250" rx="16" fill="#1A1612" stroke="#1A222D"/>
-    <text x="620" y="220" fill="#E8D5B5" font-size="13" font-weight="700">WHITE-LABEL</text>
-    <text x="620" y="265" fill="#E8EEF4" font-size="16" font-weight="700">Report MD / HTML</text>
-    <text x="620" y="300" fill="#8B97A8" font-size="13">Brand agenzia</text>
-    <text x="620" y="330" fill="#8B97A8" font-size="13">Logo · colori · footer</text>
-    <text x="620" y="370" fill="#8B97A8" font-size="13">Solo Business</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="API e white-label Business">
+  <rect width="960" height="540" fill="#121212"/>
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="#E8A04A"/>
+    <text x="294" y="33" text-anchor="middle" fill="#121212">Panoramica</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="480" y="33" text-anchor="middle" fill="#F3EDE3">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guida</text>
   </g>
+  <rect x="848" y="18" width="84" height="20" rx="10" fill="none" stroke="#D4A574"/>
+  <text x="890" y="33" text-anchor="middle" fill="#D4A574" font-family="Inter, system-ui, sans-serif" font-size="11">Business</text>
 
-  <text x="64" y="480" fill="#8B97A8" font-family="'Inter', system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <text x="28" y="96" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">API · AGENCY</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">Automazione e white-label</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Riservato al piano Business · Bearer ct_…</text>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="184" width="560" height="320" fill="#1A1A1A"/>
+    <text x="48" y="216" fill="#E8A04A" font-size="12" font-weight="700">API v1</text>
+    <text x="48" y="260" fill="#F3EDE3" font-size="16" font-family="ui-monospace, monospace">POST /api/v1/analyze</text>
+    <text x="48" y="296" fill="#F3EDE3" font-size="16" font-family="ui-monospace, monospace">GET  /api/v1/sites</text>
+    <text x="48" y="332" fill="#F3EDE3" font-size="16" font-family="ui-monospace, monospace">GET  /api/v1/sites/:id/edge</text>
+    <text x="48" y="388" fill="rgba(243,237,227,0.5)" font-size="13">Authorization: Bearer ct_…</text>
+    <text x="48" y="416" fill="rgba(243,237,227,0.4)" font-size="12">gp_… legacy accettato</text>
+    <text x="48" y="456" fill="rgba(243,237,227,0.4)" font-size="12">Pre-auth + rate limit per IP</text>
+
+    <rect x="604" y="184" width="328" height="320" fill="#1A1A1A"/>
+    <text x="624" y="216" fill="#E8A04A" font-size="12" font-weight="700">WHITE-LABEL</text>
+    <text x="624" y="260" fill="#F3EDE3" font-size="18" font-weight="650">Report MD / HTML</text>
+    <text x="624" y="300" fill="rgba(243,237,227,0.55)" font-size="14">Brand agenzia</text>
+    <text x="624" y="332" fill="rgba(243,237,227,0.55)" font-size="14">Logo · colori · footer</text>
+    <text x="624" y="380" fill="#D4A574" font-size="14" font-weight="650">Solo Business</text>
+    <text x="624" y="416" fill="rgba(243,237,227,0.4)" font-size="12">€89,99 Tasse escluse</text>
+  </g>
 </svg>

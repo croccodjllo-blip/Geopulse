@@ -1,98 +1,56 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">CMS Connector</title>
-  <desc id="d">Un contratto · tutti i CMS</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#121212"/>
-      <stop offset="55%" stop-color="#1A1612"/>
-      <stop offset="100%" stop-color="#070A10"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#E8D5B5" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#E8D5B5" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#E8D5B5" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#E8D5B5" opacity=".06"/>
-  <circle cx="120" cy="460" r="140" fill="#5B6B7A" opacity=".05"/>
-  <rect x="36" y="36" width="888" height="468" rx="22" fill="#1A1612" stroke="#1A222D" stroke-width="1.5"/>
-  <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#E8D5B5" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">CMS CONNECTOR</text>
-  <text x="64" y="122" fill="#E8EEF4" font-family="'Inter', system-ui, sans-serif" font-size="28" font-weight="700">Un contratto · tutti i CMS</text>
-  
-  <g font-family="'Inter', system-ui, sans-serif">
-  
-    <g transform="translate(64, 170)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">WordPress</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">plugin nativo</text>
-    </g>
-  
-    <g transform="translate(274, 170)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">Drupal</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">modulo 10/11</text>
-    </g>
-  
-    <g transform="translate(484, 170)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">Shopify</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">Liquid + proxy</text>
-    </g>
-  
-    <g transform="translate(694, 170)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">PHP / Nginx</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">proxy generico</text>
-    </g>
-  
-    <g transform="translate(64, 300)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">Netlify</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">redirect 200</text>
-    </g>
-  
-    <g transform="translate(274, 300)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">Cloudflare</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">Worker</text>
-    </g>
-  
-    <g transform="translate(484, 300)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">Vercel</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">vercel.json</text>
-    </g>
-  
-    <g transform="translate(694, 300)">
-      <rect width="190" height="110" rx="14" fill="#1A1612" stroke="#1A222D"/>
-      <circle cx="36" cy="40" r="14" fill="#E8D5B5" opacity=".25"/>
-      <circle cx="36" cy="40" r="6" fill="#E8D5B5"/>
-      <text x="64" y="46" fill="#E8EEF4" font-size="15" font-weight="700">HTML embed</text>
-      <text x="24" y="82" fill="#8B97A8" font-size="12">qualsiasi builder</text>
-    </g>
-  
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="CMS Connector universale">
+  <rect width="960" height="540" fill="#121212"/>
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="#E8A04A"/>
+    <text x="294" y="33" text-anchor="middle" fill="#121212">Panoramica</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="480" y="33" text-anchor="middle" fill="#F3EDE3">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guida</text>
   </g>
 
-  <text x="64" y="480" fill="#8B97A8" font-family="'Inter', system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <text x="28" y="96" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">CMS CONNECTOR</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">Un ZIP · tutti i CMS</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Attiva Edge, poi scarica l’adapter — proxy verso /e/&lt;token&gt;/</text>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="184" width="220" height="140" fill="#1A1A1A"/>
+    <text x="48" y="224" fill="#F3EDE3" font-size="16" font-weight="650">WordPress</text>
+    <text x="48" y="256" fill="rgba(243,237,227,0.5)" font-size="13">plugin nativo</text>
+
+    <rect x="256" y="184" width="220" height="140" fill="#1A1A1A"/>
+    <text x="276" y="224" fill="#F3EDE3" font-size="16" font-weight="650">Drupal</text>
+    <text x="276" y="256" fill="rgba(243,237,227,0.5)" font-size="13">modulo 10/11</text>
+
+    <rect x="484" y="184" width="220" height="140" fill="#1A1A1A"/>
+    <text x="504" y="224" fill="#F3EDE3" font-size="16" font-weight="650">Shopify</text>
+    <text x="504" y="256" fill="rgba(243,237,227,0.5)" font-size="13">Liquid + proxy</text>
+
+    <rect x="712" y="184" width="220" height="140" fill="#1A1A1A"/>
+    <text x="732" y="224" fill="#F3EDE3" font-size="16" font-weight="650">PHP / Nginx</text>
+    <text x="732" y="256" fill="rgba(243,237,227,0.5)" font-size="13">proxy generico</text>
+
+    <rect x="28" y="336" width="220" height="168" fill="#1A1A1A"/>
+    <text x="48" y="376" fill="#F3EDE3" font-size="16" font-weight="650">Netlify</text>
+    <text x="48" y="408" fill="rgba(243,237,227,0.5)" font-size="13">redirect 200</text>
+
+    <rect x="256" y="336" width="220" height="168" fill="#1A1A1A"/>
+    <text x="276" y="376" fill="#F3EDE3" font-size="16" font-weight="650">Cloudflare</text>
+    <text x="276" y="408" fill="rgba(243,237,227,0.5)" font-size="13">Worker</text>
+
+    <rect x="484" y="336" width="220" height="168" fill="#1A1A1A"/>
+    <text x="504" y="376" fill="#F3EDE3" font-size="16" font-weight="650">Vercel</text>
+    <text x="504" y="408" fill="rgba(243,237,227,0.5)" font-size="13">vercel.json</text>
+
+    <rect x="712" y="336" width="220" height="168" fill="#1A1A1A"/>
+    <text x="732" y="376" fill="#F3EDE3" font-size="16" font-weight="650">HTML embed</text>
+    <text x="732" y="408" fill="rgba(243,237,227,0.5)" font-size="13">qualsiasi builder</text>
+    <text x="732" y="436" fill="rgba(243,237,227,0.4)" font-size="12">GET /api/v1/sites/…/edge</text>
+  </g>
 </svg>

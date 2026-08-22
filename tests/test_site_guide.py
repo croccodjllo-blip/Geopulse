@@ -82,3 +82,50 @@ def test_guide_illustration_files_exist():
         path = ROOT / "static" / rel
         assert path.is_file(), f"missing {key}: {path}"
         assert path.stat().st_size > 200
+
+
+def test_guide_svgs_use_current_product_chrome():
+    """Illustrations must not depict retired grades, token economy, or old cards."""
+    banned = (
+        "TOKEN GEO",
+        "GEO token",
+        "1 token = €0,10",
+        "tuodominio.com",
+        "Scala DDD",
+        "DDD → AAA",
+        "BBB",
+        "CCC",
+        "CRITICAL",
+        "Engine breakdown etichettato",
+        "Entity graph",
+        "Schema quality",
+        "Centropic · guida prodotto",
+        "Score AIO · GEO · Indice",
+    )
+    blob = ""
+    for rel in GUIDE_IMAGES.values():
+        blob += (ROOT / "static" / rel).read_text(encoding="utf-8")
+    for needle in banned:
+        assert needle not in blob, f"stale guide art still contains {needle!r}"
+    analisi = (ROOT / "static/img/guide/analisi-aio-geo.svg").read_text(encoding="utf-8")
+    assert "AIO · GEO · CVI" in analisi
+    assert "Scala DD → AA" in analisi
+    assert ">BB</text>" in analisi
+    competitors = (ROOT / "static/img/guide/competitors.svg").read_text(encoding="utf-8")
+    assert "example.com" in competitors
+    assert "Benchmark" in competitors
+    tokens = (ROOT / "static/img/guide/token-crediti.svg").read_text(encoding="utf-8")
+    assert "Quota operativa" in tokens
+    assert "€19,99" in tokens
+    assert "Tasse escluse" in tokens
+    geo = (ROOT / "static/img/guide/geo-suite.svg").read_text(encoding="utf-8")
+    assert "Grafo entità" in geo
+    assert "Mercati e lingue" in geo
+    findings = (ROOT / "static/img/guide/findings.svg").read_text(encoding="utf-8")
+    assert "Indice di criticità" in findings
+    pack = (ROOT / "static/img/guide/pack-artifact.svg").read_text(encoding="utf-8")
+    assert "centropic-fix.html" in pack
+    assert 'd="M102 30 A50 50 0 1 0 102 98"' in pack
+    sov = (ROOT / "static/img/guide/sov-citation.svg").read_text(encoding="utf-8")
+    assert "Motori" in sov
+    assert "Composizione" in sov
