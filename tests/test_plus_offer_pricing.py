@@ -26,8 +26,10 @@ def test_pricing_shows_plus_1999(monkeypatch):
     assert "price-offer__list" not in html
 
 
-def test_landing_shows_plus_1999():
+def test_landing_is_hero_only_without_price_cards():
+    """Homepage is lockup + URL bar; Plus €19.99 lives on /prezzi."""
     html = app.test_client().get("/").get_data(as_text=True)
-    assert "19,99" in html
+    assert "hero-url-form" in html
+    assert "19,99" not in html
     assert "14,99" not in html
-    assert "Tasse escluse" in html
+    assert "Tasse escluse" not in html

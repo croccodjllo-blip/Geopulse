@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{ guide.title }} — Centropic{% endblock %}
 {% block meta_description %}{{ guide.lede }}{% endblock %}
-{% block body_class %}{% if dash_shell %}body-dash{% endif %}{% endblock %}
+{% block body_class %}{% if dash_shell %}body-dash{% else %}body-marketing{% endif %}{% endblock %}
 {% block main_class %}{% if dash_shell %}site-main--dash{% endif %}{% endblock %}
 
 {% block content %}
-<article class="page guide-page guide-page--full">
-  <header class="page-intro page-intro--v2">
-    <p class="eyebrow">{{ _('Guida') }}</p>
-    <h1 class="h-display page-intro__title">{{ guide.title }}</h1>
+{% if dash_shell %}<section class="workspace workspace--wide">{% endif %}
+<article class="page guide-page guide-page--full{% if dash_shell %} guide-page--dash{% endif %}">
+  <header class="page-intro page-intro--v2 dash-boardhead">
+    <p class="eyebrow dash-signal__kicker">{{ _('Guida') }}</p>
+    <h1 class="h-display page-intro__title dash-boardhead__title">{{ guide.title }}</h1>
     <p class="lede page-intro__lede">{{ guide.lede }}</p>
     <p class="report-meta">
       {{ _('Aggiornato') }} {{ guide.updated }}
@@ -36,11 +37,25 @@
       {{ _('Centropic misura e migliora la visibilità del tuo sito nei modelli generativi.') }}
       <strong>AIO</strong> {{ _('(AI-Driven Visibility) e') }}
       <strong>GEO</strong> {{ _('(Generative Engine Optimization) non sono GIS né “all-in-one”: sono metriche di citabilità IA.') }}
+      {{ _('Il workspace ha cinque pagine: Panoramica, Benchmark, Prompt, Trend, Guida.') }}
     </p>
     <figure class="guide-figure">
       <img src="{{ url_for('static', filename=guide.services[0].image) }}" width="960" height="540" alt="{{ _('Panoramica dashboard Centropic') }}" loading="eager" />
-      <figcaption>{{ _('Workspace: score, findings e azioni in un’unica dashboard.') }}</figcaption>
+      <figcaption>{{ _('Workspace: CVI sul marchio, grafici AIO/GEO e pack in cinque pagine.') }}</figcaption>
     </figure>
+  </section>
+
+  <section class="guide-section" id="workspace" aria-labelledby="workspace-title">
+    <h2 class="guide-section__title" id="workspace-title">{{ guide.workspace.title }}</h2>
+    <p class="guide-section__lede">{{ guide.workspace.lede }}</p>
+    <div class="guide-analysis-grid">
+      {% for page in guide.workspace.pages %}
+      <article class="guide-analysis">
+        <h3 class="guide-analysis__title">{{ page.title }}</h3>
+        <p>{{ page.body }}</p>
+      </article>
+      {% endfor %}
+    </div>
   </section>
 
   <section class="guide-section" id="servizi" aria-labelledby="servizi-title">
@@ -184,4 +199,5 @@
     {% endif %}
   </div>
 </article>
+{% if dash_shell %}</section>{% endif %}
 {% endblock %}

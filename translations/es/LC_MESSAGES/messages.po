@@ -135,8 +135,8 @@ msgid ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica proprietaria di "
-"Centropic: un indice 0–100 con lettera <strong>DDD→AAA</strong> che "
-"sintetizza quanto il brand è predisposto a essere letto e citato dai sistemi "
+"Centropic: un indice 0–100 con lettera <strong>DD→AA</strong> che sintetizza "
+"quanto il brand è predisposto a essere letto e citato dai sistemi "
 "generativi.</p>\n"
 "    <p class=\"lede\">Formula operativa: media di <strong>AIO</strong> "
 "(leggibilità) e <strong>GEO</strong> (citabilità), con penalità sui findings "
@@ -218,8 +218,8 @@ msgstr ""
 "    <h2 class=\"page-section__title\">1. Centropic Visibility Index "
 "(CVI)</h2>\n"
 "    <p class=\"lede\">El <strong>CVI</strong> es la métrica propietaria de "
-"Centropic: un índice 0–100 con letra <strong>DDD→AAA</strong> que resume "
-"hasta qué punto la marca está preparada para ser leída y citada por sistemas "
+"Centropic: un índice 0–100 con letra <strong>DD→AA</strong> que resume hasta "
+"qué punto la marca está preparada para ser leída y citada por sistemas "
 "generativos.</p>\n"
 "    <p class=\"lede\">Fórmula operativa: media de <strong>AIO</strong> "
 "(legibilidad) y <strong>GEO</strong> (citabilidad), con penalizaciones por "
@@ -540,7 +540,7 @@ msgid ""
 "  <section class=\"page-section\">\n"
 "    <h2 class=\"page-section__title\">Centropic Visibility Index (CVI)</h2>\n"
 "    <p class=\"lede\">Il <strong>CVI</strong> è la metrica di categoria di "
-"Centropic: 0–100 + lettera DDD→AAA. Riassume predisposizione strutturale "
+"Centropic: 0–100 + lettera DD→AA. Riassume predisposizione strutturale "
 "(AIO+GEO) con penalità findings. È ciò che confronti tra brand, competitor e "
 "nel tempo.</p>\n"
 "  </section>\n"
@@ -1737,11 +1737,11 @@ msgstr "CVI (Centropic Visibility Index)"
 
 #: services/site_guide.py:16
 msgid ""
-"Metrica proprietaria Centropic: indice 0–100 con lettera DDD→AAA che "
-"sintetizza AIO+GEO (con penalità findings). È lo standard da confrontare tra "
-"brand — non Domain Authority di terzi."
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza"
+" AIO+GEO (con penalità findings). È lo standard da confrontare tra brand — "
+"non Domain Authority di terzi."
 msgstr ""
-"Métrica propietaria de Centropic: índice 0–100 con letra DDD→AAA que resume "
+"Métrica propietaria de Centropic: índice 0–100 con letra DD→AA que resume "
 "AIO+GEO (con penalizaciones por findings). Es el estándar para comparar "
 "marcas, no Domain Authority de terceros."
 
@@ -1792,16 +1792,16 @@ msgstr ""
 " UI del LLM."
 
 #: services/site_guide.py:58
-msgid "CVI · scala DDD→AAA"
-msgstr "Escala de DDD a AAA"
+msgid "CVI · scala DD→AA"
+msgstr "Escala de DD a AA"
 
 #: services/site_guide.py:60
 msgid ""
-"Lettera del Centropic Visibility Index, da critica (DDD) a eccellente (AAA). "
+"Lettera del Centropic Visibility Index, da critica (DD) a eccellente (AA). "
 "Alias storico: “Indice”."
 msgstr ""
-"Letra del Centropic Visibility Index, de crítica (DDD) a excelente (AAA). "
-"Alias histórico: “Índice”."
+"Letra del Centropic Visibility Index, de crítica (DD) a excelente (AA). Alias"
+" histórico: “Índice”."
 
 #: services/site_guide.py:67
 msgid "Singolo gap o conferma (critical / warn / ok) con contesto e priorità."
@@ -2029,8 +2029,8 @@ msgid "Avvia o ripeti l’analisi sull’URL del sito"
 msgstr "Inicia o repite el análisis en la URL del sitio"
 
 #: services/site_guide.py:281
-msgid "Vedi CVI (DDD→AAA), score AIO/GEO e citation share"
-msgstr "Ver Índice DDD→AAA, puntuación AIO/GEO y Share of Voice"
+msgid "Vedi CVI (DD→AA), score AIO/GEO e citation share"
+msgstr "Ver Índice DD→AA, puntuación AIO/GEO y Share of Voice"
 
 #: services/site_guide.py:282
 msgid "Accedi a pack, Edge Signals, storico e crediti"
@@ -2055,8 +2055,8 @@ msgstr ""
 "generadas)"
 
 #: services/site_guide.py:297
-msgid "CVI (Centropic Visibility Index): lettera DDD→AAA sul compositario AIO+GEO"
-msgstr "CVI (Centropic Visibility Index): letra DDD→AAA sobre el compuesto AIO+GEO"
+msgid "CVI (Centropic Visibility Index): lettera DD→AA sul compositario AIO+GEO"
+msgstr "CVI (Centropic Visibility Index): letra DD→AA sobre el compuesto AIO+GEO"
 
 #: services/site_guide.py:302
 msgid "Findings e pagine critiche"
@@ -2342,10 +2342,10 @@ msgstr ""
 
 #: services/site_guide.py:508
 msgid ""
-"Leggi lettera e score: DDD è critico, AAA è top. Mira a salire di almeno un "
+"Leggi lettera e score: DD è critico, AA è top. Mira a salire di almeno un "
 "grado CVI tra un re-scan e l’altro."
 msgstr ""
-"Lee la carta: DDD es crítico, AAA es top. Apunta a subir al menos un grado "
+"Lee la carta: DD es crítico, AA es top. Apunta a subir al menos un grado "
 "entre un re-scan y otro."
 
 #: services/site_guide.py:512 templates/landing.html:184
@@ -3811,8 +3811,8 @@ msgid "Scala CVI"
 msgstr "Escala CVI"
 
 #: templates/dashboard.html:431
-msgid "Scala da DDD a AAA"
-msgstr "Escala de DDD a AAA"
+msgid "Scala da DD a AA"
+msgstr "Escala de DD a AA"
 
 #: templates/dashboard.html:447 templates/dashboard.html:578
 msgid "AI Engine Breakdown"
@@ -3930,7 +3930,7 @@ msgstr "bot permitir"
 
 #: templates/dashboard.html:651
 msgid "Nessun breakdown disponibile."
-msgstr "Ningún desglose disponible."
+msgstr "No hay desglose disponible."
 
 #: templates/dashboard.html:656
 msgid "GEO suite"
@@ -4484,12 +4484,12 @@ msgstr "El"
 
 #: templates/faq.html:22
 msgid ""
-"è la metrica proprietaria di Centropic: indice 0–100 con lettera DDD→AAA che "
+"è la metrica proprietaria di Centropic: indice 0–100 con lettera DD→AA che "
 "sintetizza predisposizione strutturale (AIO + GEO, con penalità findings). È "
 "lo standard da confrontare tra brand — non Domain Authority di terzi, non "
 "Share of Voice pubblicitaria."
 msgstr ""
-"es la métrica propietaria de Centropic: índice 0–100 con letra DDD→AAA que "
+"es la métrica propietaria de Centropic: índice 0–100 con letra DD→AA que "
 "resume la predisposición estructural (AIO + GEO, con penalizaciones por "
 "findings). Es el estándar para comparar marcas: no Domain Authority de "
 "terceros, no Share of Voice publicitaria."
@@ -4826,7 +4826,7 @@ msgstr "Detalle"
 
 #: templates/history.html:58
 msgid "Nessuna analisi ancora"
-msgstr "Ningún análisis aún"
+msgstr "Aún no hay análisis"
 
 #: templates/history.html:59
 msgid "Lancia la prima analisi dalla"
@@ -5170,12 +5170,12 @@ msgstr "borrador de acceso para crawlers de IA"
 #: templates/landing.html:262
 msgid ""
 "Il CVI è la metrica proprietaria di Centropic: un indice 0–100 con lettera "
-"DDD→AAA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard"
-" da confrontare tra brand — non Domain Authority di terzi, non Share of Voice"
-" pubblicitaria."
+"DD→AA che sintetizza predisposizione strutturale (AIO + GEO). È lo standard "
+"da confrontare tra brand — non Domain Authority di terzi, non Share of Voice "
+"pubblicitaria."
 msgstr ""
 "El CVI es la métrica propietaria de Centropic: un índice 0–100 con letra "
-"DDD→AAA que resume la predisposición estructural (AIO + GEO). Es el estándar "
+"DD→AA que resume la predisposición estructural (AIO + GEO). Es el estándar "
 "para comparar marcas: no Domain Authority de terceros, no Share of Voice "
 "publicitaria."
 
@@ -6086,8 +6086,8 @@ msgid "aggiunge probe Misurati (se 0 menzioni, la share resta Stimata)."
 msgstr "añade probes Medidos (si hay 0 menciones, la share sigue Estimada)."
 
 #: templates/product.html:36
-msgid "CVI (0–100 + lettera DDD→AAA) — metrica proprietaria Centropic"
-msgstr "CVI (0–100 + letra DDD→AAA) — métrica propietaria de Centropic"
+msgid "CVI (0–100 + lettera DD→AA) — metrica proprietaria Centropic"
+msgstr "CVI (0–100 + letra DD→AA) — métrica propietaria de Centropic"
 
 #: templates/product.html:37
 msgid "Score AIO/GEO come componenti di leggibilità e citabilità"
@@ -7806,7 +7806,7 @@ msgstr "Sugerencia automática"
 
 #: templates/partials/dashboard_shell.html:95
 msgid "Deep crawl"
-msgstr "Rastreo profundo"
+msgstr "Crawl profundo"
 
 #: templates/partials/dashboard_shell.html:97
 msgid "pagine — più lento"
@@ -8783,6 +8783,411 @@ msgstr "Informe completo por dominio: score, SoV, findings, Edge y pack."
 
 msgid "Upgrade a Plus per monitorare più domini nello stesso workspace."
 msgstr "Mejora a Plus para monitorizar más dominios en el mismo workspace."
+
+msgid ""
+"Opzionale. Salvato cifrato a riposo; non viene mai rimostrato in chiaro dopo "
+"il salvataggio."
+msgstr "Opcional. Guardado cifrado en reposo; nunca se muestra en claro tras guardar."
+
+msgid ""
+"Secret già impostato (cifrato a riposo). Lascia vuoto per mantenerlo; scrivi "
+"“clear” per rimuoverlo."
+msgstr ""
+"Secret ya configurado (cifrado). Déjalo vacío para mantenerlo; escribe "
+"“clear” para quitarlo."
+
+msgid "Pronto per il collegamento OAuth"
+msgstr "Listo para la conexión OAuth"
+
+msgid "Collega Google Search Console (sola lettura) per questo account."
+msgstr "Conecta Google Search Console (solo lectura) para esta cuenta."
+
+msgid "Collega Google"
+msgstr "Conectar Google"
+
+msgid "Disconnetti"
+msgstr "Desconectar"
+
+msgid "Disponibile su Plus e Business."
+msgstr "Disponible en Plus y Business."
+
+msgid "Google Search Console"
+msgstr "Google Search Console"
+
+msgid "Connesso"
+msgstr "Conectado"
+
+#, python-format
+msgid "Collegato come %(email)s."
+msgstr "Conectado como %(email)s."
+
+msgid "Account Google collegato a Search Console (sola lettura)."
+msgstr "Cuenta de Google conectada a Search Console (solo lectura)."
+
+#, python-format
+msgid "Proprietà visibili: %(n)s."
+msgstr "Propiedades visibles: %(n)s."
+
+msgid "Imposta GOOGLE_OAUTH_CLIENT_ID e GOOGLE_OAUTH_CLIENT_SECRET."
+msgstr "Configura GOOGLE_OAUTH_CLIENT_ID y GOOGLE_OAUTH_CLIENT_SECRET."
+
+msgid "Integrazione GSC non ancora collegabile."
+msgstr "La integración GSC aún no se puede conectar."
+
+msgid ""
+"Scopri quanto il tuo sito è pronto per essere compreso, citato e raccomandato"
+" dalle intelligenze artificiali."
+msgstr ""
+"Descubre cuán listo está tu sitio para ser comprendido, citado y recomendado "
+"por la IA."
+
+msgid "Misura la"
+msgstr "Mide"
+
+msgid "del tuo sito"
+msgstr "de tu sitio"
+
+msgid "per le IA"
+msgstr "para la IA"
+
+msgid "readiness"
+msgstr "preparación"
+
+msgid "Panoramica"
+msgstr "Panorámica"
+
+msgid "Benchmark"
+msgstr "Benchmark"
+
+msgid "Prompt"
+msgstr "Prompt"
+
+msgid "Trend"
+msgstr "Tendencia"
+
+msgid "Dominio attivo"
+msgstr "Dominio activo"
+
+msgid "Nuovo dominio"
+msgstr "Nuevo dominio"
+
+msgid "Distribuzione AIO"
+msgstr "Distribución AIO"
+
+msgid "Indice di criticità"
+msgstr "Índice de criticidad"
+
+msgid "Composizione"
+msgstr "Composición"
+
+msgid "Motori"
+msgstr "Motores"
+
+msgid "Ledger"
+msgstr "Libro"
+
+msgid "Aperti"
+msgstr "Abiertos"
+
+msgid "Pagine"
+msgstr "Páginas"
+
+msgid "Findings e pack"
+msgstr "Findings y pack"
+
+msgid "Cerca o incolla URL"
+msgstr "Busca o pega la URL"
+
+msgid "Seleziona dominio"
+msgstr "Seleccionar dominio"
+
+msgid "Audit"
+msgstr "Auditoría"
+
+msgid "Mix"
+msgstr "Mix"
+
+msgid "Campo"
+msgstr "Campo"
+
+msgid "Andamento AIO e GEO"
+msgstr "Evolución AIO y GEO"
+
+msgid "AIO / GEO per data"
+msgstr "AIO / GEO por fecha"
+
+msgid "Vai alla Panoramica"
+msgstr "Ir a Panorámica"
+
+msgid "Findings aperti e deliverable da applicare."
+msgstr "Findings abiertos y entregables que aplicar."
+
+msgid "aperti sul run analizzato"
+msgstr "abiertos en el run analizado"
+
+msgid "Pagine per fascia AIO"
+msgstr "Páginas por franja AIO"
+
+msgid "Nessuna pagina con score AIO."
+msgstr "No hay páginas con puntuación AIO."
+
+msgid "Nessuna criticità aperta."
+msgstr "No hay incidencias abiertas."
+
+msgid "Nessuna pagina in crawl."
+msgstr "No hay páginas en el crawl."
+
+msgid "Competitor (max 3)"
+msgstr "Competidores (máx. 3)"
+
+msgid "Aggiungi competitor"
+msgstr "Añadir competidor"
+
+msgid "Saldo token"
+msgstr "Saldo de tokens"
+
+msgid "Metriche"
+msgstr "Métricas"
+
+msgid "Metriche primarie"
+msgstr "Métricas primarias"
+
+msgid "Critici"
+msgstr "Críticos"
+
+msgid "Warn"
+msgstr "Aviso"
+
+msgid "Italia"
+msgstr "Italia"
+
+msgid "https://tuosito.com"
+msgstr "https://tusitio.es"
+
+msgid "https://iltuosito.it"
+msgstr "https://tusitio.es"
+
+msgid "https://rivale.com"
+msgstr "https://rival.es"
+
+msgid "https://rivale1.com"
+msgstr "https://rival1.es"
+
+msgid "https://rivale2.com"
+msgstr "https://rival2.es"
+
+msgid "https://tuodominio/llms.txt"
+msgstr "https://tudominio.es/llms.txt"
+
+msgid "21 agosto 2026"
+msgstr "21 de agosto de 2026"
+
+msgid ""
+"Come leggere il workspace: le cinque pagine, il CVI sul marchio, i grafici "
+"AIO/GEO, l’indice di criticità, i pack e l’Edge."
+msgstr ""
+"Cómo leer el workspace: las cinco páginas, el CVI en la marca, los gráficos "
+"AIO/GEO, el índice de criticidad, los packs y Edge."
+
+msgid "Le cinque pagine"
+msgstr "Las cinco páginas"
+
+msgid ""
+"Il workspace ha una sola barra in alto. Cinque destinazioni, stesso dominio "
+"attivo. Account e impostazioni restano nel menu avatar."
+msgstr ""
+"El workspace tiene una sola barra arriba. Cinco destinos, el mismo dominio "
+"activo. La cuenta y los ajustes quedan en el menú del avatar."
+
+msgid ""
+"Dominio e CVI in testa. Sotto: sette KPI, Composizione e Motori alla stessa "
+"altezza, poi Suite e Mix, poi Crawl AIO con Distribuzione AIO e Indice di "
+"criticità nella stessa colonna, ledger pagine a destra. In coda: storico run "
+"e findings."
+msgstr ""
+"Dominio y CVI arriba. Debajo: siete KPI, Composición y Motores a la misma "
+"altura, luego Suite y Mix, luego Crawl AIO con Distribución AIO e Índice de "
+"criticidad en la misma columna, libro de páginas a la derecha. Al final: "
+"historial de runs y findings."
+
+msgid ""
+"Confronta il sito attivo con i rivali su AIO, GEO, SoV e motori. Usa uno "
+"snapshot già misurato, non un grafico inventato."
+msgstr ""
+"Compara el sitio activo con los rivales en AIO, GEO, SoV y motores. Usa una "
+"instantánea ya medida, no un gráfico inventado."
+
+msgid ""
+"Le query usate per misurare il SoV e i finding aperti. Qui si vede cosa è "
+"stato chiesto ai motori e il pack da applicare."
+msgstr ""
+"Las consultas usadas para medir el SoV y los findings abiertos. Aquí se ve "
+"qué se preguntó a los motores y el pack que aplicar."
+
+msgid ""
+"Storico delle run sul dominio attivo. Due grafici affiancati: AIO/GEO nel "
+"tempo e CVI per run, con le date sotto ogni punto. Serve almeno due analisi."
+msgstr ""
+"Historial de runs del dominio activo. Dos gráficos lado a lado: AIO/GEO en el"
+" tiempo y CVI por run, con fechas bajo cada punto. Hacen falta al menos dos "
+"análisis."
+
+msgid ""
+"Questo manuale, dentro il workspace. Stesso contenuto della pagina pubblica "
+"/guida."
+msgstr ""
+"Este manual, dentro del workspace. El mismo contenido que la página pública "
+"/guida."
+
+msgid "Cinque pagine, un dominio attivo, grafici dallo stesso run."
+msgstr "Cinco páginas, un dominio activo, gráficos del mismo run."
+
+msgid ""
+"Panoramica: CVI sul marchio (voto DD–AA nel C, punteggio a destra), KPI e "
+"grafici"
+msgstr ""
+"Panorámica: CVI en la marca (nota DD–AA dentro de la C, puntuación a la "
+"derecha), KPI y gráficos"
+
+msgid "Benchmark, Prompt e Trend sul dominio selezionato dai chip"
+msgstr "Benchmark, Prompt y Tendencia en el dominio elegido con los chips"
+
+msgid "Account e impostazioni nel menu avatar — non in una sesta pill"
+msgstr "Cuenta y ajustes en el menú del avatar — no una sexta pastilla"
+
+msgid ""
+"Indice di criticità: (critici × 100 + warning × 40) / totale, sotto "
+"Distribuzione AIO nello stack Crawl"
+msgstr ""
+"Índice de criticidad: (críticos × 100 + avisos × 40) / total, bajo "
+"Distribución AIO en la pila Crawl"
+
+msgid "Pack HTML con logo originale, score, finding e snippet da pubblicare."
+msgstr "Pack HTML con el logo original, puntuación, findings y snippets para publicar."
+
+msgid "Scarica centropic-fix.html: si apre offline, logo in testa"
+msgstr "Descarga centropic-fix.html: se abre sin conexión, logo original arriba"
+
+msgid "Moduli: grafo entità, citabilità, schema, publish verify, llms lint, mercati."
+msgstr ""
+"Módulos: grafo de entidades, citabilidad, schema, publish verify, llms lint, "
+"mercados."
+
+msgid "Mercati e lingue: hreflang e coerenza"
+msgstr "Mercados e idiomas: hreflang y coherencia"
+
+msgid "Trend e re-scan"
+msgstr "Tendencia y re-scan"
+
+msgid ""
+"Serie temporale sul dominio attivo: AIO/GEO e CVI, con le date sotto ogni "
+"punto."
+msgstr "Serie temporal del dominio activo: AIO/GEO y CVI, con fechas bajo cada punto."
+
+msgid "Due grafici affiancati: AIO/GEO e CVI per run"
+msgstr "Dos gráficos lado a lado: AIO/GEO y CVI por run"
+
+msgid "Ripartizione motori"
+msgstr "Desglose por motor"
+
+msgid "Grafo entità"
+msgstr "Grafo de entidades"
+
+msgid "Citabilità"
+msgstr "Citabilidad"
+
+msgid "Qualità schema"
+msgstr "Calidad del schema"
+
+msgid "Mercati e lingue"
+msgstr "Mercados e idiomas"
+
+msgid ""
+"Leggi lettera e score: DD è critico, AA è top. Il voto sta nel marchio, il "
+"numero a destra. Mira a salire di almeno un grado CVI tra un re-scan e "
+"l’altro."
+msgstr ""
+"Lee la letra y la puntuación: DD es crítico, AA es top. La nota está en la "
+"marca, el número a la derecha. Intenta subir al menos un grado CVI entre re-"
+"scans."
+
+msgid ""
+"Chiudi critical e warn; usa l’indice di criticità e il pack. Poi ripubblica e"
+" verifica."
+msgstr ""
+"Cierra los críticos y avisos; usa el índice de criticidad y el pack. Luego "
+"republica y verifica."
+
+#, python-format
+msgid "Root del sito: %(path)s — oppure Edge + CMS connector."
+msgstr "Raíz del sitio: %(path)s — o Edge + conector CMS."
+
+msgid ""
+"unico deliverable: logo originale in testa; apri e copia head / llms.txt / "
+"robots sul sito"
+msgstr ""
+"único entregable: logo original arriba; abre y copia head / llms.txt / robots"
+" en el sitio"
+
+msgid "Plus · €19,99 Tasse escluse"
+msgstr "Plus · 19,99 € impuestos excluidos"
+
+msgid "Business · €89,99 Tasse escluse"
+msgstr "Business · 89,99 € impuestos excluidos"
+
+msgid ""
+"Metrica proprietaria Centropic: indice 0–100 con lettera DD→AA che sintetizza"
+" AIO+GEO (con penalità findings). In Panoramica il voto sta nel marchio; il "
+"punteggio numerico sta a destra. È lo standard da confrontare tra brand — non"
+" Domain Authority di terzi."
+msgstr ""
+"Métrica propietaria de Centropic: índice 0–100 con letra DD→AA que sintetiza "
+"AIO+GEO (con penalización por findings). En Panorámica la nota está en la "
+"marca; la puntuación a la derecha. Es el estándar para comparar marcas — no "
+"Domain Authority de terceros."
+
+msgid ""
+"Score 0–100 dalla mix dei finding del run: (critici × 100 + warning × 40) / "
+"totale. In Panoramica sta sotto Distribuzione AIO, stessa colonna Crawl."
+msgstr ""
+"Puntuación 0–100 de la mezcla de findings del run: (críticos × 100 + avisos ×"
+" 40) / total. En Panorámica está bajo Distribución AIO, misma columna Crawl."
+
+msgid ""
+"Le cinque pagine del prodotto: Panoramica, Benchmark, Prompt, Trend, Guida. "
+"Account e impostazioni restano nel menu avatar."
+msgstr ""
+"Las cinco páginas del producto: Panorámica, Benchmark, Prompt, Tendencia, "
+"Guía. La cuenta y los ajustes quedan en el menú del avatar."
+
+msgid ""
+"Insieme di artifact generati dall’analisi. Il file centropic-fix.html include"
+" il logo originale in testa, score, finding e snippet (llms, schema, meta, "
+"robots, checklist)."
+msgstr ""
+"Conjunto de artefactos del análisis. centropic-fix.html incluye el logo "
+"original arriba, puntuación, findings y snippets (llms, schema, meta, robots,"
+" checklist)."
+
+msgid "Il workspace ha cinque pagine: Panoramica, Benchmark, Prompt, Trend, Guida."
+msgstr ""
+"El workspace tiene cinco páginas: Panorámica, Benchmark, Prompt, Tendencia, "
+"Guía."
+
+msgid "Workspace: CVI sul marchio, grafici AIO/GEO e pack in cinque pagine."
+msgstr "Workspace: CVI en la marca, gráficos AIO/GEO y packs en cinco páginas."
+
+msgid "JSON-LD + FAQ + meta"
+msgstr "JSON-LD + FAQ + meta"
+
+msgid "API: GET /api/v1/sites/<id>/edge"
+msgstr "API: GET /api/v1/sites/<id>/edge"
+
+msgid "Finding"
+msgstr "Finding"
+
+msgid "Quota operativa"
+msgstr "Cuota operativa"
 
 #~ msgid ""
 #~ "Usiamo cookie tecnici e, con il tuo"
