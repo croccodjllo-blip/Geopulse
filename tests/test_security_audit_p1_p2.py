@@ -95,6 +95,31 @@ def test_claim_webhook_event_once_redis_nx(monkeypatch):
     assert claim_webhook_event_once("") is True
 
 
+def test_claim_webhook_event_once_persist_is_source_of_truth():
+    seen: set[str] = set()
+
+    def _persist(eid: str) -> bool:
+        if eid in seen:
+            return False
+        seen.add(eid)
+        return True
+
+    assert claim_webhook_event_once("evt_db", persist=_persist) is True
+    assert claim_webhook_event_once("evt_db", persist=_persist) is False
+
+
+def test_persist_paddle_webhook_event_unique():
+    from app import PaddleWebhookEvent, _persist_paddle_webhook_event
+
+    with app.app_context():
+        ensure_schema()
+        eid = f"evt-{uuid4().hex}"
+        assert _persist_paddle_webhook_event(eid) is True
+        db.session.commit()
+        assert _persist_paddle_webhook_event(eid) is False
+        assert PaddleWebhookEvent.query.filter_by(event_id=eid).count() == 1
+
+
 def test_past_due_user_cannot_dispatch_alerts():
     expired = SimpleNamespace(
         id=1,

@@ -619,15 +619,35 @@ def verify_checkout_bind(
 
 
 def claim_webhook_event_once(
-    event_id: str | None, *, ttl_seconds: int = 600
+    event_id: str | None,
+    *,
+    ttl_seconds: int = 600,
+    persist=None,
 ) -> bool:
-    """Best-effort replay claim. True = process; False = already seen.
+    """Replay claim. True = process; False = already seen.
 
-    Redis miss / error returns True so a paid webhook is never dropped.
+    ``persist(eid)`` (optional) is the durable unique insert: return False
+    when the id already exists. Redis SET NX is an extra short-TTL cache.
+    Persist/Redis errors do not drop a paid webhook (return True).
     """
     eid = (event_id or "").strip()
     if not eid:
         return True
+    if persist is not None:
+        try:
+            if persist(eid) is False:
+                return False
+            try:
+                from services.redis_client import get_redis
+
+                client = get_redis(ping=False)
+                if client is not None:
+                    client.set(f"paddle:evt:{eid}", "1", nx=False, ex=int(ttl_seconds))
+            except Exception:
+                pass
+            return True
+        except Exception:
+            logger.warning("paddle event persist failed; continuing with redis/allow")
     try:
         from services.redis_client import get_redis
 
