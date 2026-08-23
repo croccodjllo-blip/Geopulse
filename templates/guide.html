@@ -167,6 +167,23 @@
     </p>
   </section>
 
+  <section class="guide-section" id="perimetro" aria-labelledby="perimetro-title">
+    <h2 class="guide-section__title" id="perimetro-title">{{ guide.perimeter.title }}</h2>
+    <p class="guide-section__lede">{{ guide.perimeter.lede }}</p>
+    <div class="guide-analysis-grid">
+      {% for row in guide.perimeter.entries %}
+      <article class="guide-analysis">
+        <h3 class="guide-analysis__title">{{ row.title }}</h3>
+        <p>{{ row.body }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="guide-section__lede">
+      {{ _('Approfondimento su Misurato vs Stimato nella') }}
+      <a href="{{ url_for('methodology') }}">{{ _('Metodologia') }}</a>.
+    </p>
+  </section>
+
   <section class="guide-section guide-section--glossary" id="glossario" aria-labelledby="gloss-title">
     <h2 class="guide-section__title" id="gloss-title">{{ _('Glossario') }}</h2>
     <p class="guide-section__lede">{{ _('Voci usate in dashboard, report e Edge.') }}</p>

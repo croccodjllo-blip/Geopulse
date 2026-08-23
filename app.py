@@ -248,6 +248,11 @@ from services.sov_budget import (
 )
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
 from services.api_auth import find_user_by_api_key, generate_api_key
+from services.api_metrics import (
+    openapi_document,
+    run_list_item,
+    site_metrics_payload,
+)
 from services.agency import (
     build_whitelabel_html,
     build_whitelabel_markdown,
@@ -8933,6 +8938,72 @@ def api_v1_sites():
                 }
                 for s in sites
             ],
+        }
+    )
+
+
+@app.route("/api/v1/openapi.json", methods=["GET"])
+@csrf.exempt
+def api_v1_openapi():
+    """Public machine-readable catalog — no secrets, no site data."""
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    return jsonify(openapi_document(public_base=public_base_url()))
+
+
+@app.route("/api/v1/sites/<int:site_id>", methods=["GET"])
+@csrf.exempt
+def api_v1_site_metrics(site_id: int):
+    """Latest AIO/GEO/CVI/SoV + finding summaries + pack checksums."""
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    user = api_v1_authenticate_user()
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
+    if not limiter.allow(f"api_metrics:{user.id}", limit=60, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    analysis = get_accessible_site(SiteAnalysis, user, site_id)
+    if analysis is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    return jsonify(site_metrics_payload(analysis))
+
+
+@app.route("/api/v1/sites/<int:site_id>/runs", methods=["GET"])
+@csrf.exempt
+def api_v1_site_runs(site_id: int):
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    user = api_v1_authenticate_user()
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
+    if not limiter.allow(f"api_runs:{user.id}", limit=60, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    analysis = get_accessible_site(SiteAnalysis, user, site_id)
+    if analysis is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    try:
+        limit = min(50, max(1, int(request.args.get("limit") or 20)))
+    except (TypeError, ValueError):
+        limit = 20
+    runs = (
+        AnalysisRun.query.filter_by(site_id=analysis.id)
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return jsonify(
+        {
+            "ok": True,
+            "schema": "centropic.runs/v1",
+            "site_id": analysis.id,
+            "runs": [run_list_item(run) for run in runs],
         }
     )
 

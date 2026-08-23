@@ -24,6 +24,9 @@ def test_site_guide_has_services_analyses_glossary():
     assert "cvi" in slugs and "indice-criticita" in slugs and "workspace" in slugs
     assert len(guide["workspace"]["pages"]) == 5
     assert any(t["id"] == "workspace" for t in guide["toc"])
+    assert any(t["id"] == "perimetro" for t in guide["toc"])
+    assert guide["perimeter"]["entries"]
+    assert len(guide["perimeter"]["entries"]) == 3
     assert "2026" in guide["updated"]
     pack = next(s for s in guide["services"] if s["id"] == "svc-pack")
     assert "centropic-fix.html" in " ".join(pack["bullets"])
@@ -73,6 +76,8 @@ def test_public_guide_is_fresh_and_current():
     assert "no-store" in (resp.headers.get("Cache-Control") or "")
     html = resp.get_data(as_text=True)
     assert "Le cinque pagine" in html or "The five pages" in html
+    assert "Cosa misuriamo" in html or "What we measure" in html
+    assert "pack.ready" in html
     assert "img/guide/dashboard.svg" in html
     assert "icon rail" not in html
 

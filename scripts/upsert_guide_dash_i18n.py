@@ -168,6 +168,31 @@ EN = {
     "Finding": "Finding",
     "Pack": "Pack",
     "Quota operativa": "Operating quota",
+    "Cosa misuriamo — e cosa no": "What we measure — and what we do not",
+    "Tre richieste frequenti in discovery restano fuori dal prodotto. Non per roadmap vuota: perché non le possiamo misurare in modo onesto, o perché brucerebbero la quota operativa senza rendere il sito più citabile.": (
+        "Three frequent discovery requests stay out of the product. Not an empty roadmap: "
+        "we cannot measure them honestly, or they would burn operating quota without making the site more citable."
+    ),
+    "Attribution e ROI dalle citazioni LLM": "Attribution and ROI from LLM citations",
+    "Simulazioni agente (buyer persona / funnel d’acquisto)": (
+        "Agent simulations (buyer persona / purchase funnel)"
+    ),
+    "Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)": (
+        "Audit of pre-training datasets (Common Crawl, Reddit, GPT “weights”)"
+    ),
+    "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file": (
+        "Plus/Business: pack.ready webhook (checksum + Edge URLs) so the CMS applies without copying files"
+    ),
+    "APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version": (
+        "APPLY.md in the ZIP: pack.ready event, idempotent on signals_version"
+    ),
+    "GET /sites/<id> e /runs: AIO, GEO, CVI, SoV, criticità, checksum — OpenAPI in /api/v1/openapi.json": (
+        "GET /sites/<id> and /runs: AIO, GEO, CVI, SoV, criticality, checksums — OpenAPI at /api/v1/openapi.json"
+    ),
+    "Webhook analysis.completed + pack.ready (oltre agli alert di regressione)": (
+        "Webhooks analysis.completed + pack.ready (in addition to regression alerts)"
+    ),
+    "Approfondimento su Misurato vs Stimato nella": "More on Measured vs Estimated in the",
 }
 
 DE = {
@@ -327,6 +352,7 @@ DE = {
     "Finding": "Finding",
     "Pack": "Pack",
     "Quota operativa": "Betriebskontingent",
+    "Cosa misuriamo — e cosa no": "Was wir messen — und was nicht",
 }
 
 ES = {
@@ -486,6 +512,7 @@ ES = {
     "Finding": "Finding",
     "Pack": "Pack",
     "Quota operativa": "Cuota operativa",
+    "Cosa misuriamo — e cosa no": "Qué medimos — y qué no",
 }
 
 ZH = {
@@ -635,6 +662,7 @@ ZH = {
     "Finding": "Finding",
     "Pack": "数据包",
     "Quota operativa": "运营配额",
+    "Cosa misuriamo — e cosa no": "我们衡量什么 — 以及什么不衡量",
 }
 
 KO = {
@@ -786,6 +814,7 @@ KO = {
     "Finding": "Finding",
     "Pack": "팩",
     "Quota operativa": "운영 쿼터",
+    "Cosa misuriamo — e cosa no": "무엇을 측정하고, 무엇을 측정하지 않는가",
 }
 
 TABLES = {

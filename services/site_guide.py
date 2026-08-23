@@ -275,7 +275,7 @@ def site_guide_payload() -> dict[str, Any]:
             "Come leggere il workspace: le cinque pagine, il CVI sul marchio, "
             "i grafici AIO/GEO, l’indice di criticità, i pack e l’Edge."
         ),
-        "updated": _("21 agosto 2026"),
+        "updated": _("23 agosto 2026"),
         "toc": [
             {"id": "introduzione", "label": _("Introduzione")},
             {"id": "workspace", "label": _("Workspace")},
@@ -285,8 +285,50 @@ def site_guide_payload() -> dict[str, Any]:
             {"id": "pack", "label": _("Pack e file")},
             {"id": "edge-cms", "label": _("Edge e CMS")},
             {"id": "piani", "label": _("Piani: domini, re-scan, API")},
+            {"id": "perimetro", "label": _("Cosa misuriamo — e cosa no")},
             {"id": "glossario", "label": _("Glossario")},
         ],
+        "perimeter": {
+            "title": _("Cosa misuriamo — e cosa no"),
+            "lede": _(
+                "Tre richieste frequenti in discovery restano fuori dal prodotto. "
+                "Non per roadmap vuota: perché non le possiamo misurare in modo onesto, "
+                "o perché brucerebbero la quota operativa senza rendere il sito più citabile."
+            ),
+            "entries": [
+                {
+                    "title": _("Attribution e ROI dalle citazioni LLM"),
+                    "body": _(
+                        "ChatGPT, Claude, Perplexity e Copilot non espongono impression, click o CTR. "
+                        "Un “ricavo generato dalla visibilità AI” sarebbe una correlazione inventata. "
+                        "Centropic misura le menzioni sul prompt bank (SoV Misurato) e, su Plus, "
+                        "può collegare Search Console come baseline di Search — non come traffico AI. "
+                        "Quando avremo sessioni con referrer AI dichiarati dal tuo analytics, "
+                        "le metteremo in Trend con l’etichetta Stimato."
+                    ),
+                },
+                {
+                    "title": _("Simulazioni agente (buyer persona / funnel d’acquisto)"),
+                    "body": _(
+                        "Un journey multi-turno (CTO, procurement) moltiplica le probe LLM: "
+                        "un sim pieno può costare quanto 4–10 analisi Misurate e resta stocastico. "
+                        "Oggi il prompt bank su Plus accetta domande in stile buyer; "
+                        "non lanciamo agenti nel POST analyze perché svuoterebbero la quota mensile "
+                        "senza pubblicare un artifact. Se serve un report journey, è uno SKU a parte, non il default."
+                    ),
+                },
+                {
+                    "title": _("Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)"),
+                    "body": _(
+                        "Nessun modello chiuso certifica se il brand è nei suoi pesi. "
+                        "Dirlo in dashboard sarebbe un claim commerciale, non una misura. "
+                        "La GEO Suite già legge il tuo sito (grafo entità, sameAs, schema). "
+                        "Una presenza su Wikipedia/Wikidata è un finding utile; "
+                        "“sei nel training di ChatGPT” no. Restiamo su ciò che è osservabile."
+                    ),
+                },
+            ],
+        },
         "workspace": {
             "title": _("Le cinque pagine"),
             "lede": _(
@@ -387,7 +429,7 @@ def site_guide_payload() -> dict[str, Any]:
                     _("Scarica centropic-fix.html: si apre offline, logo in testa"),
                     _("Su Plus puoi inviare il pack via email"),
                     _(
-                        "La pubblicazione sul sito resta a tuo carico (o via Edge/CMS)"
+                        "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file"
                     ),
                 ],
             },
@@ -416,7 +458,7 @@ def site_guide_payload() -> dict[str, Any]:
                 "bullets": [
                     _("Attiva Edge, poi scarica il connector dalla dashboard"),
                     _("Un solo adapter sul tuo host: proxy verso Edge"),
-                    _("API: GET /api/v1/sites/<id>/edge"),
+                    _("APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version"),
                 ],
             },
             {
@@ -494,8 +536,8 @@ def site_guide_payload() -> dict[str, Any]:
                 ),
                 "bullets": [
                     _("Bearer ct_… su /api/v1/* (gp_… legacy accettato)"),
-                    _("Export report MD/HTML con brand agenzia"),
-                    _("Riservato al piano Business"),
+                    _("GET /sites/<id> e /runs: AIO, GEO, CVI, SoV, criticità, checksum — OpenAPI in /api/v1/openapi.json"),
+                    _("Webhook analysis.completed + pack.ready (oltre agli alert di regressione)"),
                 ],
             },
         ],
