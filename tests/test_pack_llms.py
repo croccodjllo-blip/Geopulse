@@ -72,7 +72,7 @@ def test_fallback_llms_uses_centropic_branding():
     assert "centropic.ai/pricing" not in text
     assert "sempre distinti" not in text
     assert "restano distinti" in text
-    assert "Pagine analizzate da Centropic" in text
+    assert "Pagine analizzate da Centropic" in text or "Pages analyzed by Centropic" in text
 
 
 def test_sanitize_strips_legacy_generator():

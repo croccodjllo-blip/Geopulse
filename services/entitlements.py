@@ -11,8 +11,11 @@ Ladder (sales):
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 CAPABILITIES = (
@@ -81,6 +84,19 @@ class PlanEntitlements:
         }
 
 
+def user_has_capability(user: Any | None, capability: str) -> bool:
+    """Capability check without constructing full limit objects.
+
+    Uses the same ``_plan_key`` (past_due grace → free) as ``entitlements_for``.
+    """
+    key = _plan_key(user)
+    if key in {"admin", "business"}:
+        return capability in BUSINESS_CAPABILITIES
+    if key == "plus":
+        return capability in PLUS_CAPABILITIES
+    return False
+
+
 def _plan_key(user: Any | None) -> str:
     if user is None:
         return "anonymous"
@@ -93,7 +109,8 @@ def _plan_key(user: Any | None) -> str:
         if past_due_grace_elapsed(getattr(user, "paddle_past_due_since", None)):
             return "free"
     except Exception:
-        pass
+        logger.exception("past_due entitlement check failed — treat as free")
+        return "free"
     raw = (getattr(user, "plan", "") or "").lower()
     if raw == "business" or getattr(user, "is_business", False):
         return "business"

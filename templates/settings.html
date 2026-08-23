@@ -78,6 +78,8 @@
         <label for="webhook_secret">{{ _('Webhook secret (HMAC SHA-256)') }}</label>
         {{ alert_form.webhook_secret(id="webhook_secret", type="password", autocomplete="new-password", placeholder=_('Nuovo secret…') if webhook_secret_set else _('Opzionale')) }}
         <p class="field-hint">
+          {{ _('Eventi: analysis.completed, pack.ready (checksum + URL Edge, senza body dei file), analysis.alert (solo regressioni).') }}
+          {{ _('Firma HMAC in X-Centropic-Signature. Applica pack.ready una volta per idempotency_key.') }}
           {% if webhook_secret_set %}
           {{ _('Secret già impostato (cifrato a riposo). Lascia vuoto per mantenerlo; scrivi “clear” per rimuoverlo.') }}
           {% else %}
@@ -120,7 +122,12 @@
   <section class="page-section">
     <h2 class="page-section__title">{{ _('API key') }}</h2>
     <p class="lede">
-      {{ _('Endpoints:') }} <code>POST /api/v1/analyze</code>, <code>GET /api/v1/sites</code>
+      {{ _('Endpoints:') }}
+      <code>POST /api/v1/analyze</code>,
+      <code>GET /api/v1/sites</code>,
+      <code>GET /api/v1/sites/&lt;id&gt;</code>,
+      <code>GET /api/v1/sites/&lt;id&gt;/runs</code>,
+      <a href="{{ url_for('api_v1_openapi') }}"><code>/api/v1/openapi.json</code></a>
       (Bearer / X-Api-Key).
       {% if api_key_prefix %}{{ _('Prefisso attivo:') }} <code>{{ api_key_prefix }}…</code>{% else %}{{ _('Nessuna key.') }}{% endif %}
     </p>

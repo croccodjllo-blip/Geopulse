@@ -144,7 +144,7 @@ def test_paddle_prefers_customer_over_forged_custom_data():
     )
     assert resolved is attacker
 
-    # First-bind hint still works when customer is unbound.
+    # First-bind without a signed checkout token is refused.
     unbound = resolve_webhook_user(
         {
             "customer_id": "ctm_new",
@@ -155,7 +155,22 @@ def test_paddle_prefers_customer_over_forged_custom_data():
         by_user_id=lambda uid: users.get(uid),
         customer_taken_by_other=lambda cid, uid: None,
     )
-    assert unbound is victim
+    assert unbound is None
+
+    from services.paddle_billing import issue_checkout_bind
+
+    bind = issue_checkout_bind(10)
+    bound = resolve_webhook_user(
+        {
+            "customer_id": "ctm_new",
+            "custom_data": {"centropic_user_id": "10", **bind},
+        },
+        by_customer_id=lambda cid: None,
+        by_subscription_id=lambda sid: None,
+        by_user_id=lambda uid: users.get(uid),
+        customer_taken_by_other=lambda cid, uid: None,
+    )
+    assert bound is victim
 
 
 def test_enqueue_dedupe_raises_under_active_check():
@@ -232,7 +247,9 @@ def test_reclaim_recovers_site_id_after_persist_crash_window():
         n = reclaim_stale_jobs(db.session, AnalysisJob, SiteAnalysis=SiteAnalysis)
         assert n >= 1
         row = db.session.get(AnalysisJob, job.id)
-        assert row.status == "done"
+        # Prior Stimato for the same URL is recovered onto the row, but this
+        # job itself never persisted — soft-requeue, do not mark done.
+        assert row.status == "pending"
         assert row.site_id == site.id
 
 

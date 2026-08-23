@@ -1,40 +1,16 @@
-{# Nonced CSS custom properties for dashboard meters / SoV (no style= attrs). #}
+{# Nonced CSS custom properties for Signal deck meters (no style= attrs). #}
 <style nonce="{{ csp_nonce }}">
-.pulse-core[data-pulse-core] {
-  --aio: {{ aio_n }};
-  --geo: {{ geo_n }};
-  --health: {{ health }};
-  --aio-c: {{ '%.2f'|format(aio_c) }};
-  --aio-offset: {{ '%.2f'|format(aio_offset) }};
-  --geo-c: {{ '%.2f'|format(geo_c) }};
-  --geo-offset: {{ '%.2f'|format(geo_offset) }};
-  --geo-angle: {{ '%.1f'|format(geo_angle) }}deg;
-}
-.pulse-core[data-pulse-core] .pc-satellite {
-  --orbit-r: 150px;
-  --orbit-a: {{ '%.1f'|format(geo_angle) }}deg;
-}
-.pulse-core[data-pulse-core] .pc-needle {
-  --needle: {{ aio_n }};
-}
-.signal-diag__meter[data-meter="aio"] { --p: {{ aio_n }}; }
-.signal-diag__meter[data-meter="geo"] { --p: {{ geo_n }}; }
-.signal-diag__meter[data-meter="grade"] { --p: {{ rating.score }}; }
+{% if rating is defined and rating %}
+.dash-signal { --cvi: {{ rating.score if rating.score is number else 0 }}; }
+{% endif %}
 {% if engine_breakdown %}
-.sov-hero__ring[data-sov-ring] { --sov: {{ engine_breakdown.brand_sov }}; }
-.sov-stack[data-sov-stack] { --segments: {{ engine_breakdown.engines|length }}; }
-.sov-field__bar > [data-tone="brand"] { --w: {{ engine_breakdown.brand_sov }}; }
-.sov-field__bar > [data-tone="rivals"] { --w: {{ engine_breakdown.rivals_sov }}; }
-.sov-field__bar > [data-tone="other"] { --w: {{ engine_breakdown.other_sov }}; }
+.dash-signal { --sov: {{ engine_breakdown.brand_sov }}; }
 {% for e in engine_breakdown.engines %}
-[data-engine="{{ e.id }}"].sov-columns__col,
-[data-engine="{{ e.id }}"].engine-bar,
-[data-engine="{{ e.id }}"].sov-stack__seg {
+[data-engine="{{ e.id }}"] {
   --accent: {{ e.accent }};
   --p: {{ e.propensity if e.propensity is not none else 0 }};
   --share: {{ e.share }};
 }
-.sov-stack__legend li[data-engine="{{ e.id }}"] i { --accent: {{ e.accent }}; }
 {% endfor %}
 {% endif %}
 </style>

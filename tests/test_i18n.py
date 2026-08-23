@@ -47,6 +47,21 @@ def test_set_language_persists_cookie_and_session():
             assert sess.get("lang") == "de"
 
 
+def test_default_locale_is_american_english():
+    from services.i18n import DEFAULT_LOCALE, SOURCE_LOCALE
+
+    assert DEFAULT_LOCALE == "en"
+    assert SOURCE_LOCALE == "it"
+
+    from app import app
+
+    with app.test_client() as client:
+        html = client.get("/").get_data(as_text=True)
+        assert 'lang="en"' in html
+        assert "Analyze for free" in html
+        assert "Analizza gratis" not in html
+
+
 def test_english_home_translates_nav():
     from app import app
 

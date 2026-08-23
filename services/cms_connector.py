@@ -196,6 +196,7 @@ def cms_bundle_zip_bytes(
                 full_edge=full_edge,
             ),
         )
+        zf.writestr("APPLY.md", _apply_readme())
         zf.writestr("routes.json", _pretty_json(bundle["routes"]))
         for key, adapter in bundle["adapters"].items():
             for rel, content in (adapter.get("files") or {}).items():
@@ -269,6 +270,46 @@ Proxies these paths on your domain to Centropic (live crawler policy):
 | `html_embed/` | Head snippet for any builder |
 
 Activate Edge Signals in the Centropic dashboard first, then deploy one adapter.
+
+See `APPLY.md` for the signed `pack.ready` webhook (checksums + Edge URLs,
+idempotent apply — no file bodies in the payload).
+"""
+
+
+def _apply_readme() -> str:
+    return """# Apply pack without copy-paste
+
+Centropic does not write into your CMS with stored passwords. After each
+analysis (Plus/Business, webhook configured in Settings) we POST a signed
+event so *your* plugin or CI can fetch and publish.
+
+## Event
+
+```
+POST {your HTTPS webhook}
+X-Centropic-Event: pack.ready
+X-Centropic-Signature: hex(HMAC-SHA256(secret, raw_body))
+```
+
+Body (schema `centropic.event/v1`):
+
+- `event_id` / `idempotency_key` (`{site_id}:{signals_version}`) — apply once
+- `checksums` — SHA-256 of `llms.txt`, `organization.jsonld`, `robots.txt`
+- `endpoints` — live Edge URLs when hosting is enabled (no file bodies)
+
+Also fired: `analysis.completed` (scores, CVI, findings, same checksums).
+Regression-only email/webhook `analysis.alert` is unchanged.
+
+## Recommended apply
+
+1. Verify HMAC and HTTPS.
+2. Skip if `idempotency_key` was already applied.
+3. `GET` each endpoint (or download `centropic-fix.html` from the dashboard).
+4. Confirm `sha256(body)` matches `checksums`.
+5. Publish to the matching path on your domain (`/llms.txt`, …).
+6. Leave publish verify to the next Centropic re-scan.
+
+Do not store the webhook secret in the connector ZIP. Keep it in Settings.
 """
 
 

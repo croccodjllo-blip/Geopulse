@@ -28,6 +28,8 @@ def test_sample_report_payload_shape():
     assert report["aio_score"] >= 0
     assert len(report["critical_findings"]) >= 3
     assert report["pack"] == ["centropic-fix.html"]
+    assert report["rating"] == "CC"
+    assert len(report["rating"]) == 2
 
 
 def test_email_builders_contain_cta():
@@ -37,7 +39,7 @@ def test_email_builders_contain_cta():
         domain="example.com",
         aio_score=61,
         geo_score=55,
-        rating="CCC",
+        rating="CC",
         findings=[{"severity": "critical", "title": "llms.txt", "detail": "manca"}],
         dashboard_url="https://centropic.ai/dashboard",
         pricing_url="https://centropic.ai/prezzi",

@@ -11,14 +11,14 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          bg: "#04060A",
-          card: "#0A0E14",
-          border: "#1A222D",
-          cyan: "#C9D3DD", // Chrome silver (primary accent)
-          blue: "#5B6B7A", // Steel shadow (secondary)
-          violet: "#5B6B7A", // Legacy name → steel (never purple)
-          steel: "#5B6B7A",
-          muted: "#8B97A8",
+          bg: "#121212",
+          card: "#1A1612",
+          border: "#3A2E22",
+          cyan: "#E8A04A", // Warm gold (primary accent)
+          blue: "#C47A2C",
+          violet: "#C47A2C", // Legacy name — never purple
+          steel: "#C47A2C",
+          muted: "#B8A894",
         },
       },
       boxShadow: {

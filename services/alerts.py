@@ -95,15 +95,117 @@ def deliver_webhook(
     }
 
 
-def _user_may_dispatch_alerts(user: Any) -> bool:
-    """Entitlement gate — settings may still hold stale Free-after-downgrade flags."""
+def emit_signed_webhook(
+    *,
+    user: Any,
+    site: Any,
+    payload: dict[str, Any],
+    db_session: Any | None = None,
+    AlertDelivery: Any | None = None,
+) -> dict[str, Any]:
+    """POST one signed product event. Same SSRF/HMAC path as analysis.alert."""
+    if not _user_may_dispatch_alerts(user):
+        return {"ok": False, "skipped": "entitlement"}
+    webhook_url = (getattr(user, "webhook_url", None) or "").strip()
+    if not webhook_url.startswith("http"):
+        return {"ok": False, "skipped": "no_url"}
+    from services.webhook_crypto import (
+        reveal_webhook_secret,
+        upgrade_webhook_secret_if_plaintext,
+        webhook_secret_is_set,
+    )
+
+    upgrade_webhook_secret_if_plaintext(user, db_session)
+    stored_secret = getattr(user, "webhook_secret", None)
+    webhook_secret = reveal_webhook_secret(stored_secret)
+    if webhook_secret_is_set(stored_secret) and not webhook_secret:
+        logger.error(
+            "alert webhook secret configured but reveal failed — skip unsigned POST user=%s",
+            getattr(user, "id", None),
+        )
+        return {"ok": False, "error": "secret_unavailable"}
+    event = str(payload.get("event") or "analysis.completed")
     try:
-        if getattr(user, "is_admin", False):
-            return True
-        if bool(getattr(user, "is_pro", False)):
-            return True
-        plan = (getattr(user, "plan", None) or "").lower()
-        return plan in {"plus", "pro", "business", "admin"}
+        result = deliver_webhook(url=webhook_url, secret=webhook_secret, payload=payload)
+    except Exception as exc:
+        logger.exception("product webhook failed event=%s", event)
+        result = {"ok": False, "error": str(exc)[:160]}
+    if db_session is not None and AlertDelivery is not None:
+        site_url = getattr(site, "url", None) or getattr(site, "domain", None)
+        try:
+            row = AlertDelivery(
+                user_id=getattr(user, "id", None),
+                site_url=(str(site_url)[:500] if site_url else None),
+                channel="webhook",
+                title=event[:300],
+                body=(payload.get("event_id") or event)[:8000],
+                ok=bool(result.get("ok")),
+                detail=str(result.get("error") or result.get("status") or "")[:500] or None,
+            )
+            db_session.add(row)
+            db_session.commit()
+        except Exception:
+            logger.exception("product webhook log failed")
+            try:
+                db_session.rollback()
+            except Exception:
+                pass
+    return result
+
+
+def dispatch_run_events(
+    *,
+    user: Any,
+    site: Any,
+    public_base: str = "https://centropic.ai",
+    edge_full: bool = False,
+    run_id: int | None = None,
+    source: str | None = None,
+    db_session: Any | None = None,
+    AlertDelivery: Any | None = None,
+) -> dict[str, Any]:
+    """analysis.completed always; pack.ready when checksums exist. No email."""
+    from services.api_metrics import analysis_completed_payload, pack_checksums, pack_ready_payload
+
+    out: dict[str, Any] = {"completed": None, "pack": None}
+    if not _user_may_dispatch_alerts(user):
+        out["skipped"] = "entitlement"
+        return out
+    if not (getattr(user, "webhook_url", None) or "").strip():
+        out["skipped"] = "no_url"
+        return out
+
+    completed = analysis_completed_payload(site, run_id=run_id, source=source)
+    out["completed"] = emit_signed_webhook(
+        user=user,
+        site=site,
+        payload=completed,
+        db_session=db_session,
+        AlertDelivery=AlertDelivery,
+    )
+    if pack_checksums(site):
+        pack = pack_ready_payload(
+            site,
+            public_base=public_base,
+            edge_full=edge_full,
+            run_id=run_id,
+        )
+        out["pack"] = emit_signed_webhook(
+            user=user,
+            site=site,
+            payload=pack,
+            db_session=db_session,
+            AlertDelivery=AlertDelivery,
+        )
+    return out
+
+
+def _user_may_dispatch_alerts(user: Any) -> bool:
+    """Entitlement gate — past_due grace elapsed is treated as free."""
+    try:
+        from services.entitlements import user_has_capability
+
+        return user_has_capability(user, "alerts_webhook")
     except Exception:
         logger.exception("alert entitlement check failed — fail closed")
         return False
@@ -133,11 +235,20 @@ def dispatch_alerts(
     from services.webhook_crypto import (
         reveal_webhook_secret,
         upgrade_webhook_secret_if_plaintext,
+        webhook_secret_is_set,
     )
 
     # Lazy-upgrade legacy plaintext secrets when we have a session.
     upgrade_webhook_secret_if_plaintext(user, db_session)
-    webhook_secret = reveal_webhook_secret(getattr(user, "webhook_secret", None))
+    stored_secret = getattr(user, "webhook_secret", None)
+    webhook_secret = reveal_webhook_secret(stored_secret)
+    if webhook_secret_is_set(stored_secret) and not webhook_secret:
+        logger.error(
+            "alert webhook secret configured but reveal failed — skip unsigned POST user=%s",
+            getattr(user, "id", None),
+        )
+        result["webhook"] = {"ok": False, "error": "secret_unavailable"}
+        webhook_url = ""
 
     lines = [
         f"Centropic alert — {getattr(site, 'domain', '') or getattr(site, 'url', '')}",

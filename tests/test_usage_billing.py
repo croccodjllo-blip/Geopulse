@@ -328,6 +328,46 @@ def test_check_page_word_budget_ok(monkeypatch):
     assert out.is_giant is False
 
 
+def test_check_page_word_budget_preflight_error_is_conservative(monkeypatch):
+    import requests
+
+    def _boom(_url):
+        raise requests.RequestException("timeout")
+
+    monkeypatch.setattr("services.usage_billing.preflight_word_count", _boom)
+    blocked = check_page_word_budget(
+        url="https://example.com",
+        base_cost_cents=100,
+        balance_cents=50,
+    )
+    assert blocked.is_giant is True
+    assert blocked.required_cost_cents > 100
+
+    funded = check_page_word_budget(
+        url="https://example.com",
+        base_cost_cents=100,
+        balance_cents=10_000,
+    )
+    assert funded.is_giant is False
+    assert funded.required_cost_cents > 100
+
+
+def test_check_page_word_budget_unsafe_url_stays_blocked(monkeypatch):
+    from services.ssrf import UnsafeURLError
+
+    def _unsafe(_url):
+        raise UnsafeURLError("private host")
+
+    monkeypatch.setattr("services.usage_billing.preflight_word_count", _unsafe)
+    out = check_page_word_budget(
+        url="http://127.0.0.1/",
+        base_cost_cents=100,
+        balance_cents=10_000,
+    )
+    assert out.is_giant is True
+    assert "non consentito" in out.message.lower() or "consentito" in out.message
+
+
 def test_check_page_word_budget_allows_giant_when_funded(monkeypatch):
     monkeypatch.setattr(
         "services.usage_billing.preflight_word_count",

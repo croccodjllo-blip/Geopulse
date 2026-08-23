@@ -46,7 +46,7 @@ export function BrandLockup({
           className={`m-0 font-sans font-bold lowercase text-[#F5F7FA] ${s.text}`}
         >
           centropic
-          <span className="font-semibold text-[#C9D3DD]">.ai</span>
+          <span className="font-semibold text-[#E8A04A]">.ai</span>
         </p>
         {showTagline ? (
           <span className="text-[0.65rem] md:text-xs uppercase tracking-[0.18em] text-[#8B97A8]">

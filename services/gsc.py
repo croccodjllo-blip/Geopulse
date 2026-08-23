@@ -287,12 +287,16 @@ def disconnect_user(user: Any, *, db_session: Any | None = None) -> None:
 
 def gsc_status(user: Any | None = None) -> dict[str, Any]:
     """Template/API status for Settings → Connector."""
+    from flask_babel import gettext as _
+
     if not gsc_configured():
         return {
             "available": False,
             "connected": False,
-            "reason": "Imposta GOOGLE_OAUTH_CLIENT_ID e GOOGLE_OAUTH_CLIENT_SECRET.",
-            "note": "Integrazione GSC non ancora collegabile.",
+            "reason": _(
+                "Imposta GOOGLE_OAUTH_CLIENT_ID e GOOGLE_OAUTH_CLIENT_SECRET."
+            ),
+            "note": _("Integrazione GSC non ancora collegabile."),
             "email": None,
             "sites": [],
             "redirect_uri": None,
@@ -315,17 +319,22 @@ def gsc_status(user: Any | None = None) -> dict[str, Any]:
     except Exception:
         redirect = None
     if connected:
-        note = (
-            f"Collegato come {email}."
-            if email
-            else "Account Google collegato a Search Console (sola lettura)."
-        )
+        if email:
+            note = _("Collegato come %(email)s.") % {"email": email}
+        else:
+            note = _(
+                "Account Google collegato a Search Console (sola lettura)."
+            )
         if sites:
-            note += f" Proprietà visibili: {len(sites)}."
-        reason = "Connesso"
+            note += " " + (
+                _("Proprietà visibili: %(n)s.") % {"n": len(sites)}
+            )
+        reason = _("Connesso")
     else:
-        reason = "Pronto per il collegamento OAuth"
-        note = "Collega Google Search Console (sola lettura) per questo account."
+        reason = _("Pronto per il collegamento OAuth")
+        note = _(
+            "Collega Google Search Console (sola lettura) per questo account."
+        )
     return {
         "available": True,
         "connected": connected,
