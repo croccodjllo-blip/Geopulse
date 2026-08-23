@@ -124,16 +124,16 @@ export function HoloEmblem({
         <defs>
           <linearGradient id={`${uid}-holo`} x1="20" y1="110" x2="108" y2="18" gradientUnits="userSpaceOnUse">
             <stop stopColor="#5B6B7A" />
-            <stop offset="0.45" stopColor="#C9D3DD" />
+            <stop offset="0.45" stopColor="#E8A04A" />
             <stop offset="1" stopColor="#5B6B7A" />
           </linearGradient>
           <linearGradient id={`${uid}-metal`} x1="32" y1="96" x2="96" y2="28" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#C9D3DD" stopOpacity="0.15" />
-            <stop offset="0.5" stopColor="#C9D3DD" stopOpacity="0.55" />
+            <stop stopColor="#E8A04A" stopOpacity="0.15" />
+            <stop offset="0.5" stopColor="#E8A04A" stopOpacity="0.55" />
             <stop offset="1" stopColor="#5B6B7A" stopOpacity="0.35" />
           </linearGradient>
           <radialGradient id={`${uid}-core`} cx="50%" cy="58%" r="42%">
-            <stop stopColor="#C9D3DD" stopOpacity="0.95" />
+            <stop stopColor="#E8A04A" stopOpacity="0.95" />
             <stop offset="0.45" stopColor="#5B6B7A" stopOpacity="0.55" />
             <stop offset="1" stopColor="#5B6B7A" stopOpacity="0" />
           </radialGradient>
@@ -148,7 +148,7 @@ export function HoloEmblem({
 
         <circle cx="64" cy="64" r="58" fill="#080B10" stroke={`url(#${uid}-metal)`} strokeWidth="1.2" />
         <g className="holo-spin-ring origin-center animate-[spin_28s_linear_infinite]">
-          <ellipse cx="64" cy="64" rx="40" ry="16" stroke="#C9D3DD" strokeOpacity="0.28" strokeWidth="0.9" transform="rotate(-28 64 64)" fill="none" />
+          <ellipse cx="64" cy="64" rx="40" ry="16" stroke="#E8A04A" strokeOpacity="0.28" strokeWidth="0.9" transform="rotate(-28 64 64)" fill="none" />
           <ellipse cx="64" cy="64" rx="36" ry="14" stroke="#5B6B7A" strokeOpacity="0.22" strokeWidth="0.8" transform="rotate(38 64 64)" fill="none" />
         </g>
 
@@ -158,14 +158,14 @@ export function HoloEmblem({
           <path d="M64 80c10 0 16-8 14.5-15.5S70 54 64 55.5s-8.5 6.5-7.5 12" stroke="#5B6B7A" strokeWidth="1.1" strokeLinecap="round" fill="none" opacity="0.9" />
         </g>
 
-        <g stroke="#C9D3DD" strokeOpacity="0.35" strokeWidth="0.7" fill="none">
+        <g stroke="#E8A04A" strokeOpacity="0.35" strokeWidth="0.7" fill="none">
           <path d="M22 48h10v6h6" />
           <path d="M106 74h-9v-5h-5" />
           <path d="M28 86h8m0 0v5m0-5h4" />
           <path d="M96 40h-7m0 0v-4m0 4h-4" />
         </g>
 
-        <g fill="#C9D3DD" fillOpacity="0.28" fontFamily="ui-monospace, monospace" fontSize="5.2">
+        <g fill="#E8A04A" fillOpacity="0.28" fontFamily="ui-monospace, monospace" fontSize="5.2">
           <text x="18" y="34">01</text>
           <text x="102" y="30">10</text>
           <text x="16" y="102">11</text>

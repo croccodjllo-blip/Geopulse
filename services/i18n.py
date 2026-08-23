@@ -17,7 +17,10 @@ SUPPORTED_LOCALES: dict[str, dict[str, str]] = {
     "ko": {"label": "한국어", "native": "한국어", "og": "ko_KR", "babel": "ko"},
 }
 
-DEFAULT_LOCALE = "it"
+# Italian remains the gettext msgid / stored-copy source.
+SOURCE_LOCALE = "it"
+# Visitors without a language preference see American English.
+DEFAULT_LOCALE = "en"
 LANG_COOKIE = "centropic_lang"
 LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365  # 1 year
 
@@ -50,7 +53,7 @@ def locale_meta(code: str | None = None) -> dict[str, str]:
 
 
 def select_locale() -> str:
-    """Resolve active UI locale: ?lang= → session/cookie → Accept-Language → it."""
+    """Resolve active UI locale: ?lang= → session/cookie → Accept-Language → en."""
     forced = request.args.get("lang")
     if forced:
         return babel_locale(forced)

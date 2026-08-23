@@ -1,0 +1,27 @@
+{# Compact Recharts mount on Panoramica — Flask owns chrome. #}
+{% if geo_ui_assets and geo_ui_assets.js and geo_ui_assets.css and geo_ui_data %}
+<section class="dash-live-charts" aria-label="{{ _('Grafici') }}">
+  <div id="root" class="dash-live-charts__root geo-ui-embed__root"></div>
+</section>
+<script nonce="{{ csp_nonce }}">
+  window.__CENTROPIC_GEO_EMBED__ = true;
+  window.__CENTROPIC_GEO_COMPACT__ = true;
+  window.__CENTROPIC_GEO_DATA__ = {{ geo_ui_data | tojson }};
+</script>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.css) }}"
+/>
+{% if geo_ui_assets.recharts %}
+<link
+  rel="modulepreload"
+  href="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.recharts) }}"
+/>
+{% endif %}
+<script
+  nonce="{{ csp_nonce }}"
+  type="module"
+  crossorigin
+  src="{{ url_for('static', filename='geo-ui/assets/' + geo_ui_assets.js) }}"
+></script>
+{% endif %}

@@ -143,7 +143,7 @@
       <input type="hidden" name="competitors" value="{{ competitors_raw }}">
       <input type="hidden" name="deep_crawl" value="{{ '1' if deep_crawl else '0' }}">
       <input type="hidden" name="cost_cents" value="{{ cost.service_cost_eur_cents }}">
-      <button class="btn btn-core" type="submit">
+      <button class="btn btn-signal" type="submit">
         {% if current_user.is_admin %}
           {{ _('Avvia analisi (admin — gratuito)') }}
         {% else %}
@@ -152,7 +152,7 @@
       </button>
     </form>
     {% else %}
-    <a class="btn btn-core" href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
+    <a class="btn btn-signal" href="{{ url_for('pricing') }}#plus">{{ _('Passa a Plus') }}</a>
     <a class="btn btn-ghost" href="{{ url_for('topup_credit_page') }}">{{ _('Amplia copertura') }}</a>
     {% endif %}
     <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">{{ _('Annulla') }}</a>

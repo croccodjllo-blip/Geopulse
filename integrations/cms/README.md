@@ -28,14 +28,25 @@ che fanno proxy verso `https://centropic.ai/e/<token>/…`.
 | `vercel/` | `vercel.json` |
 | `html_embed/` | Snippet `<head>` |
 
+## Apply senza copy-paste
+
+Dopo ogni analisi Plus/Business, se in Impostazioni è configurato un webhook HTTPS, Centropic invia:
+
+- `analysis.completed` — score AIO/GEO/CVI, finding, checksum del pack
+- `pack.ready` — `idempotency_key` `{site_id}:{signals_version}`, SHA-256 e URL Edge (nessun body dei file)
+
+Firma: `X-Centropic-Signature` = HMAC-SHA256 del raw body. Applica una volta per chiave, poi `GET` gli endpoint Edge. Contratto nel file `APPLY.md` dello ZIP. Centropic non memorizza password CMS e non scrive sul tuo host.
+
 ## API
 
 ```http
+GET /api/v1/sites/<id>
+GET /api/v1/sites/<id>/runs
 GET /api/v1/sites/<id>/edge
 Authorization: Bearer ct_…
 ```
 
-Restituisce `edge_base`, `routes`, metadata adapter e URL dello ZIP.
+`GET /sites/<id>` restituisce metriche (AIO, GEO, CVI, SoV, criticità, checksum). Edge resta su `/edge`.
 
 ```http
 GET /api/v1/sites/<id>/edge/cms-bundle.zip

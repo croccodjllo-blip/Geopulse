@@ -178,11 +178,18 @@ def test_logged_in_prezzi_has_checkout_button_and_dialog(monkeypatch):
     html = page.get_data(as_text=True)
     assert page.status_code == 200
     assert 'data-paddle-checkout="plus"' in html
-    assert ("Paga Plus" in html) or ("Apri checkout" in html)
+    assert (
+        "Paga Plus" in html
+        or "Apri checkout" in html
+        or "Pay Plus" in html
+        or "Open checkout" in html
+    )
     assert "data-digital-waiver-dialog" in html
-    assert "Conferma obbligatoria prima del pagamento" in html
+    waiver = "Conferma obbligatoria prima del pagamento"
+    waiver_en = "Required confirmation before payment"
+    assert waiver in html or waiver_en in html
     # Title must live in the dialog, not as always-visible card chrome.
-    assert html.count("Conferma obbligatoria prima del pagamento") >= 1
+    assert html.count(waiver) + html.count(waiver_en) >= 1
 
 
 def test_overlay_checkout_allowed_for_existing_plus(monkeypatch):
@@ -215,7 +222,10 @@ def test_overlay_checkout_allowed_for_existing_plus(monkeypatch):
     page = client.get("/prezzi")
     html = page.get_data(as_text=True)
     assert 'data-paddle-checkout="plus"' in html
-    assert "Apri checkout / aggiorna pagamento" in html
+    assert (
+        "Apri checkout / aggiorna pagamento" in html
+        or "Open checkout / update payment" in html
+    )
 
     allowed = client.post(
         "/billing/checkout",
