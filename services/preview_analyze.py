@@ -202,7 +202,11 @@ def claim_guest_preview(
     tok = (token or "").strip()
     if not tok or user is None:
         return None
-    preview = GuestPreview.query.filter_by(token=tok).first()
+    q = GuestPreview.query.filter_by(token=tok)
+    try:
+        preview = q.with_for_update().first()
+    except Exception:
+        preview = q.first()
     if preview is None:
         return None
     if preview.status != "done":
