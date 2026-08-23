@@ -93,7 +93,7 @@ def test_dashboard_plan_theme_classes():
     assert 'data-dash-plan="plus"' in plus_html
     assert "plan-services" not in plus_html
     assert "Toolkit Plus" not in plus_html
-    assert "SoV measured" in plus_html
+    assert "SoV measured" in plus_html or "measured SoV" in plus_html
     assert "/dashboard/trend" in plus_html
 
     assert "dash-plan--business" in biz_html
@@ -125,23 +125,28 @@ def test_settings_hides_unavailable_sections_per_plan():
     )
 
     assert "Alert outbound" not in free_html
+    assert "Outbound alert" not in free_html
     assert "Prompt bank" not in free_html
     assert "Genera nuova API key" not in free_html
+    assert "Generate new API key" not in free_html
     assert "White-label agenzia" not in free_html
+    assert "White-label agency" not in free_html
     assert "Sblocca" not in free_html
-    assert "Sicurezza account" in free_html
+    assert "Sicurezza account" in free_html or "Account security" in free_html
 
-    assert "Alert outbound" in plus_html
+    assert "Alert outbound" in plus_html or "Outbound alert" in plus_html
     assert "Prompt bank" in plus_html
     assert "Genera nuova API key" not in plus_html
+    assert "Generate new API key" not in plus_html
     assert "White-label agenzia" not in plus_html
+    assert "White-label agency" not in plus_html
     assert "Sblocca API" not in plus_html
     assert "Vedi piano" not in plus_html
 
-    assert "Alert outbound" in biz_html
+    assert "Alert outbound" in biz_html or "Outbound alert" in biz_html
     assert "Prompt bank" in biz_html
-    assert "Genera nuova API key" in biz_html
-    assert "White-label agenzia" in biz_html
+    assert "Genera nuova API key" in biz_html or "Generate new API key" in biz_html
+    assert "White-label agenzia" in biz_html or "White-label agency" in biz_html
 
 
 def test_dashboard_hides_upsells_for_free():

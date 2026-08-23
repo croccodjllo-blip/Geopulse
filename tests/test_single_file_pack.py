@@ -40,9 +40,9 @@ def test_unified_fix_html_contains_all_sections():
         aio_score=41,
         geo_score=38,
     )
-    assert "Pack ottimizzazione" in html
+    assert "Pack ottimizzazione" in html or "Optimization pack" in html
     assert "un solo file" not in html.lower()
-    assert "llms.txt assente" in html
+    assert "llms.txt assente" in html or "llms.txt missing" in html
     assert "# Acme" in html
     assert "User-agent: *" in html
     assert "Organization" in html

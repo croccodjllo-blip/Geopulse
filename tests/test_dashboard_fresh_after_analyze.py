@@ -110,7 +110,12 @@ def test_dashboard_does_not_auto_open_overlay_for_measured_followup():
         html = resp.get_data(as_text=True)
         assert "nike.example" in html
         assert 'data-auto-open="1"' not in html
-        assert "SoV Misurato in corso" in html or "SoV Misurato in coda" in html
+        assert (
+            "SoV Misurato in corso" in html
+            or "SoV Misurato in coda" in html
+            or "Measured SoV in progress" in html
+            or "Measured SoV queued" in html
+        )
 
 
 def test_dashboard_report_uses_updated_at_not_created_at():
