@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from app import SiteAnalysis, User, app, db, ensure_schema
+from app import AnalysisRun, SiteAnalysis, User, app, db, ensure_schema
 from centropic.tenancy import Organization, OrganizationMember, ensure_personal_org
 
 
@@ -54,7 +54,20 @@ def test_email_pack_denied_for_org_viewer(monkeypatch):
         )
         db.session.add(site)
         db.session.commit()
+        run = AnalysisRun(
+            site_id=site.id,
+            user_id=owner.id,
+            url=site.url,
+            domain=site.domain,
+            aio_score=50,
+            geo_score=50,
+            findings_json="[]",
+            llms_txt="# pack",
+        )
+        db.session.add(run)
+        db.session.commit()
         site_id = int(site.id)
+        run_id = int(run.id)
         viewer_id = int(viewer.id)
         session_ver = int(getattr(viewer, "session_version", 0) or 0)
 
@@ -85,6 +98,12 @@ def test_email_pack_denied_for_org_viewer(monkeypatch):
             follow_redirects=False,
         )
         assert download.status_code in (302, 303)
+
+        run_download = client.get(
+            f"/dashboard/download/run/{run_id}.html",
+            follow_redirects=False,
+        )
+        assert run_download.status_code in (302, 303)
     finally:
         app.config["WTF_CSRF_ENABLED"] = prev_csrf
 

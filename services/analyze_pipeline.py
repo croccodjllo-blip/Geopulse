@@ -72,14 +72,9 @@ def run_analysis_pipeline(
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     if existing is None:
         # Org member remesure must update the shared site, not fork under actor.
-        try:
-            from centropic.tenancy import sites_query_for_user
+        from centropic.tenancy import sites_query_for_user
 
-            existing = (
-                sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
-            )
-        except Exception:
-            existing = None
+        existing = sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
     # Defense-in-depth: viewers may read shared sites but must not remesure them.
     if existing is not None:
         from centropic.tenancy import user_can_write_site

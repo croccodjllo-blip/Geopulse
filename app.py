@@ -1101,6 +1101,18 @@ class ProInterest(db.Model):
     )
 
 
+class PaddleWebhookEvent(db.Model):
+    """Durable Paddle notification id — unique so replays cannot re-grant."""
+
+    __tablename__ = "paddle_webhook_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(190), unique=True, nullable=False, index=True)
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+
 class CreditLedger(db.Model):
     """Immutable ledger of every credit transaction (top-up or deduct)."""
 
@@ -1546,6 +1558,23 @@ def current_user() -> User | None:
             "past_due plan expiry failed user=%s", getattr(user, "id", None)
         )
     return user
+
+
+def _persist_paddle_webhook_event(event_id: str) -> bool:
+    """Insert a durable Paddle event id. False if already seen.
+
+    Flush-only so a later handler rollback still lets Paddle retry.
+    """
+    eid = (event_id or "").strip()[:190]
+    if not eid:
+        return True
+    db.session.add(PaddleWebhookEvent(event_id=eid))
+    try:
+        db.session.flush()
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        return False
 
 
 def _paddle_client_config_for(user: User | None) -> dict[str, Any]:
@@ -2202,6 +2231,16 @@ def ensure_schema() -> None:
             "CRITICAL: credit_ledger stripe unique index skipped — "
             "webhook double-credit possible"
         )
+    try:
+        with db.engine.begin() as conn:
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_paddle_webhook_event_id "
+                    "ON paddle_webhook_events (event_id)"
+                )
+            )
+    except Exception:
+        app.logger.exception("paddle_webhook_events unique index skipped")
 
 
 def _current_sov_budget(user: User) -> dict[str, int | bool]:
@@ -5540,7 +5579,9 @@ def billing_paddle_webhook():
         return jsonify({"ok": False}), 400
 
     event_id = str(event.get("event_id") or event.get("notification_id") or "").strip()
-    if event_id and not paddle_claim_webhook_event_once(event_id):
+    if event_id and not paddle_claim_webhook_event_once(
+        event_id, persist=_persist_paddle_webhook_event
+    ):
         return jsonify({"ok": True, "duplicate": True})
 
     etype = (event.get("event_type") or event.get("eventType") or "").strip()
@@ -9735,6 +9776,9 @@ def download_run_pack(run_id: int):
     if run is None or site is None:
         flash("Run non trovata.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, site):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
+        return redirect(url_for("dashboard", site=site.id))
 
     buffer = io.BytesIO(pack_fix_html_bytes(run))
     stamp = run.created_at.strftime("%Y%m%d-%H%M") if run.created_at else "run"
