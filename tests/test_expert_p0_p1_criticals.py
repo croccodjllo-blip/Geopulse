@@ -144,7 +144,7 @@ def test_paddle_prefers_customer_over_forged_custom_data():
     )
     assert resolved is attacker
 
-    # First-bind hint still works when customer is unbound.
+    # First-bind without a signed checkout token is refused.
     unbound = resolve_webhook_user(
         {
             "customer_id": "ctm_new",
@@ -155,7 +155,22 @@ def test_paddle_prefers_customer_over_forged_custom_data():
         by_user_id=lambda uid: users.get(uid),
         customer_taken_by_other=lambda cid, uid: None,
     )
-    assert unbound is victim
+    assert unbound is None
+
+    from services.paddle_billing import issue_checkout_bind
+
+    bind = issue_checkout_bind(10)
+    bound = resolve_webhook_user(
+        {
+            "customer_id": "ctm_new",
+            "custom_data": {"centropic_user_id": "10", **bind},
+        },
+        by_customer_id=lambda cid: None,
+        by_subscription_id=lambda sid: None,
+        by_user_id=lambda uid: users.get(uid),
+        customer_taken_by_other=lambda cid, uid: None,
+    )
+    assert bound is victim
 
 
 def test_enqueue_dedupe_raises_under_active_check():

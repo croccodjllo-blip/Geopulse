@@ -112,10 +112,18 @@ def emit_signed_webhook(
     from services.webhook_crypto import (
         reveal_webhook_secret,
         upgrade_webhook_secret_if_plaintext,
+        webhook_secret_is_set,
     )
 
     upgrade_webhook_secret_if_plaintext(user, db_session)
-    webhook_secret = reveal_webhook_secret(getattr(user, "webhook_secret", None))
+    stored_secret = getattr(user, "webhook_secret", None)
+    webhook_secret = reveal_webhook_secret(stored_secret)
+    if webhook_secret_is_set(stored_secret) and not webhook_secret:
+        logger.error(
+            "alert webhook secret configured but reveal failed — skip unsigned POST user=%s",
+            getattr(user, "id", None),
+        )
+        return {"ok": False, "error": "secret_unavailable"}
     event = str(payload.get("event") or "analysis.completed")
     try:
         result = deliver_webhook(url=webhook_url, secret=webhook_secret, payload=payload)
@@ -193,14 +201,11 @@ def dispatch_run_events(
 
 
 def _user_may_dispatch_alerts(user: Any) -> bool:
-    """Entitlement gate — settings may still hold stale Free-after-downgrade flags."""
+    """Entitlement gate — past_due grace elapsed is treated as free."""
     try:
-        if getattr(user, "is_admin", False):
-            return True
-        if bool(getattr(user, "is_pro", False)):
-            return True
-        plan = (getattr(user, "plan", None) or "").lower()
-        return plan in {"plus", "pro", "business", "admin"}
+        from services.entitlements import user_has_capability
+
+        return user_has_capability(user, "alerts_webhook")
     except Exception:
         logger.exception("alert entitlement check failed — fail closed")
         return False
@@ -230,11 +235,20 @@ def dispatch_alerts(
     from services.webhook_crypto import (
         reveal_webhook_secret,
         upgrade_webhook_secret_if_plaintext,
+        webhook_secret_is_set,
     )
 
     # Lazy-upgrade legacy plaintext secrets when we have a session.
     upgrade_webhook_secret_if_plaintext(user, db_session)
-    webhook_secret = reveal_webhook_secret(getattr(user, "webhook_secret", None))
+    stored_secret = getattr(user, "webhook_secret", None)
+    webhook_secret = reveal_webhook_secret(stored_secret)
+    if webhook_secret_is_set(stored_secret) and not webhook_secret:
+        logger.error(
+            "alert webhook secret configured but reveal failed — skip unsigned POST user=%s",
+            getattr(user, "id", None),
+        )
+        result["webhook"] = {"ok": False, "error": "secret_unavailable"}
+        webhook_url = ""
 
     lines = [
         f"Centropic alert — {getattr(site, 'domain', '') or getattr(site, 'url', '')}",

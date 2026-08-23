@@ -167,7 +167,11 @@
     var opts = {
       items: items,
       customData: Object.assign(
-        { centropic_user_id: String(c.userId || "") },
+        {
+          centropic_user_id: String(c.userId || ""),
+          bind_ts: String(c.bindTs || ""),
+          bind_sig: String(c.bindSig || ""),
+        },
         (extra && extra.customData) || {}
       ),
       settings: {
