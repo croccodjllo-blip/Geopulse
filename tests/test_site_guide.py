@@ -54,6 +54,47 @@ def test_site_guide_english_workspace_titles():
     assert "yourdomain.com/llms.txt" in guide["workflow"][3]["body"]
 
 
+def test_perimeter_locales_are_native_not_italian():
+    """EN/DE/ES/zh_Hans/KO perimeter copy must not leak Italian source strings."""
+    from flask_babel import force_locale
+
+    from app import app
+
+    italian_leak = (
+        "restano fuori",
+        "correlazione inventata",
+        "nei suoi pesi",
+        "Cosa misuriamo",
+        "Non per roadmap vuota",
+        "così il CMS applica",
+    )
+    expected_title = {
+        "en": "What we measure — and what we don't",
+        "de": "Was wir messen — und was nicht",
+        "es": "Qué medimos — y qué no",
+        "zh_Hans": "我们测什么，不测什么",
+        "ko": "측정하는 것과 측정하지 않는 것",
+    }
+    native_marker = {
+        "en": "made-up correlation",
+        "de": "erfundene Korrelation",
+        "es": "correlación inventada",
+        "zh_Hans": "编造的相关性",
+        "ko": "지어낸 상관관계",
+    }
+
+    with app.app_context():
+        for loc, title in expected_title.items():
+            with force_locale(loc):
+                guide = site_guide_payload()
+            peri = guide["perimeter"]
+            blob = peri["title"] + peri["lede"] + "".join(e["body"] for e in peri["entries"])
+            assert peri["title"] == title, loc
+            assert native_marker[loc] in blob, loc
+            for leak in italian_leak:
+                assert leak not in blob, f"{loc} still contains {leak!r}"
+
+
 def test_guide_hero_shows_current_workspace():
     svg = (ROOT / "static" / "img" / "guide" / "dashboard.svg").read_text(encoding="utf-8")
     assert "Panoramica" in svg

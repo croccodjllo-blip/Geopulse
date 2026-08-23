@@ -168,20 +168,43 @@ EN = {
     "Finding": "Finding",
     "Pack": "Pack",
     "Quota operativa": "Operating quota",
-    "Cosa misuriamo — e cosa no": "What we measure — and what we do not",
+    "Cosa misuriamo — e cosa no": "What we measure — and what we don't",
     "Tre richieste frequenti in discovery restano fuori dal prodotto. Non per roadmap vuota: perché non le possiamo misurare in modo onesto, o perché brucerebbero la quota operativa senza rendere il sito più citabile.": (
-        "Three frequent discovery requests stay out of the product. Not an empty roadmap: "
-        "we cannot measure them honestly, or they would burn operating quota without making the site more citable."
+        "Three questions that come up often in sales conversations aren't in the product. "
+        "That's not a hole in the roadmap: we can't measure them honestly, "
+        "or they'd burn your monthly quota without making the site more citable."
     ),
     "Attribution e ROI dalle citazioni LLM": "Attribution and ROI from LLM citations",
+    "ChatGPT, Claude, Perplexity e Copilot non espongono impression, click o CTR. Un “ricavo generato dalla visibilità AI” sarebbe una correlazione inventata. Centropic misura le menzioni sul prompt bank (SoV Misurato) e, su Plus, può collegare Search Console come baseline di Search — non come traffico AI. Quando avremo sessioni con referrer AI dichiarati dal tuo analytics, le metteremo in Trend con l’etichetta Stimato.": (
+        "ChatGPT, Claude, Perplexity, and Copilot do not expose impressions, clicks, or CTR. "
+        "A “revenue from AI visibility” number would be a made-up correlation. "
+        "Centropic measures brand mentions against your prompt bank (Measured SoV) and, on Plus, "
+        "can connect Search Console as a Search baseline — not as AI traffic. "
+        "When we have sessions with AI referrers reported by your analytics, "
+        "we'll put them on Trend and label them Estimated."
+    ),
     "Simulazioni agente (buyer persona / funnel d’acquisto)": (
-        "Agent simulations (buyer persona / purchase funnel)"
+        "Agent simulations (buyer personas and purchase funnels)"
+    ),
+    "Un journey multi-turno (CTO, procurement) moltiplica le probe LLM: un sim pieno può costare quanto 4–10 analisi Misurate e resta stocastico. Oggi il prompt bank su Plus accetta domande in stile buyer; non lanciamo agenti nel POST analyze perché svuoterebbero la quota mensile senza pubblicare un artifact. Se serve un report journey, è uno SKU a parte, non il default.": (
+        "A multi-turn journey (CTO, procurement) multiplies LLM probes: a full simulation can cost "
+        "as much as 4–10 Measured analyses and is still stochastic. "
+        "The Plus prompt bank already accepts buyer-style questions. "
+        "We do not launch agents on POST /analyze — that would empty the monthly quota without publishing an artifact. "
+        "If you need a journey report, that is a separate SKU, not the default."
     ),
     "Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)": (
-        "Audit of pre-training datasets (Common Crawl, Reddit, GPT “weights”)"
+        "Pre-training data audits (Common Crawl, Reddit, GPT “weights”)"
+    ),
+    "Nessun modello chiuso certifica se il brand è nei suoi pesi. Dirlo in dashboard sarebbe un claim commerciale, non una misura. La GEO Suite già legge il tuo sito (grafo entità, sameAs, schema). Una presenza su Wikipedia/Wikidata è un finding utile; “sei nel training di ChatGPT” no. Restiamo su ciò che è osservabile.": (
+        "No closed model will certify that your brand is in its weights. "
+        "Putting that on a dashboard would be a marketing claim, not a measurement. "
+        "The GEO Suite already reads your site (entity graph, sameAs, schema). "
+        "A Wikipedia/Wikidata presence is a useful finding; “you are in ChatGPT’s training data” is not. "
+        "We stay with what we can observe."
     ),
     "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file": (
-        "Plus/Business: pack.ready webhook (checksum + Edge URLs) so the CMS applies without copying files"
+        "Plus/Business: pack.ready webhook (checksums + Edge URLs) so your CMS can apply the pack without copy-paste"
     ),
     "APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version": (
         "APPLY.md in the ZIP: pack.ready event, idempotent on signals_version"
@@ -190,9 +213,15 @@ EN = {
         "GET /sites/<id> and /runs: AIO, GEO, CVI, SoV, criticality, checksums — OpenAPI at /api/v1/openapi.json"
     ),
     "Webhook analysis.completed + pack.ready (oltre agli alert di regressione)": (
-        "Webhooks analysis.completed + pack.ready (in addition to regression alerts)"
+        "analysis.completed and pack.ready webhooks (plus regression alerts)"
     ),
-    "Approfondimento su Misurato vs Stimato nella": "More on Measured vs Estimated in the",
+    "Approfondimento su Misurato vs Stimato nella": "Read more about Measured vs Estimated in the",
+    "Eventi: analysis.completed, pack.ready (checksum + URL Edge, senza body dei file), analysis.alert (solo regressioni).": (
+        "Events: analysis.completed, pack.ready (checksums + Edge URLs, no file bodies), analysis.alert (regressions only)."
+    ),
+    "Firma HMAC in X-Centropic-Signature. Applica pack.ready una volta per idempotency_key.": (
+        "HMAC signature in X-Centropic-Signature. Apply pack.ready once per idempotency_key."
+    ),
 }
 
 DE = {
@@ -353,6 +382,59 @@ DE = {
     "Pack": "Pack",
     "Quota operativa": "Betriebskontingent",
     "Cosa misuriamo — e cosa no": "Was wir messen — und was nicht",
+    "Tre richieste frequenti in discovery restano fuori dal prodotto. Non per roadmap vuota: perché non le possiamo misurare in modo onesto, o perché brucerebbero la quota operativa senza rendere il sito più citabile.": (
+        "Drei Fragen, die im Vertrieb oft auftauchen, sind nicht Teil des Produkts. "
+        "Das ist keine Lücke in der Roadmap: Wir können sie nicht ehrlich messen — "
+        "oder sie würden das Monatskontingent verbrauchen, ohne die Website zitierbarer zu machen."
+    ),
+    "Attribution e ROI dalle citazioni LLM": "Attribution und ROI aus LLM-Zitaten",
+    "ChatGPT, Claude, Perplexity e Copilot non espongono impression, click o CTR. Un “ricavo generato dalla visibilità AI” sarebbe una correlazione inventata. Centropic misura le menzioni sul prompt bank (SoV Misurato) e, su Plus, può collegare Search Console come baseline di Search — non come traffico AI. Quando avremo sessioni con referrer AI dichiarati dal tuo analytics, le metteremo in Trend con l’etichetta Stimato.": (
+        "ChatGPT, Claude, Perplexity und Copilot geben keine Impressions, Klicks oder CTR preis. "
+        "Eine Zahl für „Umsatz aus KI-Sichtbarkeit“ wäre eine erfundene Korrelation. "
+        "Centropic misst Markennennungen anhand Ihrer Prompt-Bank (Measured SoV) und kann auf Plus "
+        "die Search Console als Search-Baseline anbinden — nicht als KI-Traffic. "
+        "Sobald wir Sitzungen mit KI-Referrern aus Ihrer Analytics haben, "
+        "tragen wir sie in Trend ein und kennzeichnen sie als Estimated."
+    ),
+    "Simulazioni agente (buyer persona / funnel d’acquisto)": (
+        "Agentensimulationen (Buyer Personas und Kauf-Funnel)"
+    ),
+    "Un journey multi-turno (CTO, procurement) moltiplica le probe LLM: un sim pieno può costare quanto 4–10 analisi Misurate e resta stocastico. Oggi il prompt bank su Plus accetta domande in stile buyer; non lanciamo agenti nel POST analyze perché svuoterebbero la quota mensile senza pubblicare un artifact. Se serve un report journey, è uno SKU a parte, non il default.": (
+        "Eine mehrstufige Journey (CTO, Einkauf) vervielfacht die LLM-Probes: "
+        "eine volle Simulation kann 4–10 Measured-Analysen kosten und bleibt stochastisch. "
+        "Die Plus-Prompt-Bank nimmt bereits Fragen im Buyer-Stil entgegen. "
+        "Wir starten keine Agenten bei POST /analyze — das würde das Monatskontingent leeren, ohne ein Artifact zu veröffentlichen. "
+        "Ein Journey-Report wäre eine eigene SKU, nicht der Standard."
+    ),
+    "Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)": (
+        "Prüfung von Pre-Training-Datensätzen (Common Crawl, Reddit, GPT-„Gewichte“)"
+    ),
+    "Nessun modello chiuso certifica se il brand è nei suoi pesi. Dirlo in dashboard sarebbe un claim commerciale, non una misura. La GEO Suite già legge il tuo sito (grafo entità, sameAs, schema). Una presenza su Wikipedia/Wikidata è un finding utile; “sei nel training di ChatGPT” no. Restiamo su ciò che è osservabile.": (
+        "Kein geschlossenes Modell bestätigt, dass Ihre Marke in seinen Gewichten steckt. "
+        "Das ins Dashboard zu schreiben wäre eine Marketingbehauptung, keine Messung. "
+        "Die GEO Suite liest bereits Ihre Website (Entity-Graph, sameAs, Schema). "
+        "Eine Wikipedia-/Wikidata-Präsenz ist ein nützliches Finding; „Sie sind im ChatGPT-Training“ ist keines. "
+        "Wir bleiben bei dem, was beobachtbar ist."
+    ),
+    "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file": (
+        "Plus/Business: pack.ready-Webhook (Checksummen + Edge-URLs), damit Ihr CMS das Pack anwendet, ohne Dateien zu kopieren"
+    ),
+    "APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version": (
+        "APPLY.md im ZIP: pack.ready-Ereignis, idempotent über signals_version"
+    ),
+    "GET /sites/<id> e /runs: AIO, GEO, CVI, SoV, criticità, checksum — OpenAPI in /api/v1/openapi.json": (
+        "GET /sites/<id> und /runs: AIO, GEO, CVI, SoV, Kritikalität, Checksummen — OpenAPI unter /api/v1/openapi.json"
+    ),
+    "Webhook analysis.completed + pack.ready (oltre agli alert di regressione)": (
+        "Webhooks analysis.completed und pack.ready (zusätzlich zu Regressions-Alerts)"
+    ),
+    "Approfondimento su Misurato vs Stimato nella": "Mehr zu Measured vs. Estimated in der",
+    "Eventi: analysis.completed, pack.ready (checksum + URL Edge, senza body dei file), analysis.alert (solo regressioni).": (
+        "Ereignisse: analysis.completed, pack.ready (Checksummen + Edge-URLs, ohne Datei-Bodies), analysis.alert (nur Regressionen)."
+    ),
+    "Firma HMAC in X-Centropic-Signature. Applica pack.ready una volta per idempotency_key.": (
+        "HMAC-Signatur in X-Centropic-Signature. pack.ready einmal pro idempotency_key anwenden."
+    ),
 }
 
 ES = {
@@ -513,6 +595,59 @@ ES = {
     "Pack": "Pack",
     "Quota operativa": "Cuota operativa",
     "Cosa misuriamo — e cosa no": "Qué medimos — y qué no",
+    "Tre richieste frequenti in discovery restano fuori dal prodotto. Non per roadmap vuota: perché non le possiamo misurare in modo onesto, o perché brucerebbero la quota operativa senza rendere il sito più citabile.": (
+        "Tres preguntas que salen a menudo en las conversaciones de venta no están en el producto. "
+        "No es un hueco en la hoja de ruta: no podemos medirlas con honestidad, "
+        "o consumirían la cuota mensual sin hacer el sitio más citable."
+    ),
+    "Attribution e ROI dalle citazioni LLM": "Atribución y ROI a partir de citas en LLM",
+    "ChatGPT, Claude, Perplexity e Copilot non espongono impression, click o CTR. Un “ricavo generato dalla visibilità AI” sarebbe una correlazione inventata. Centropic misura le menzioni sul prompt bank (SoV Misurato) e, su Plus, può collegare Search Console come baseline di Search — non come traffico AI. Quando avremo sessioni con referrer AI dichiarati dal tuo analytics, le metteremo in Trend con l’etichetta Stimato.": (
+        "ChatGPT, Claude, Perplexity y Copilot no exponen impresiones, clics ni CTR. "
+        "Un “ingreso por visibilidad IA” sería una correlación inventada. "
+        "Centropic mide menciones de marca frente a tu banco de prompts (SoV Medido) y, en Plus, "
+        "puede conectar Search Console como baseline de Search — no como tráfico IA. "
+        "Cuando tengamos sesiones con referrer IA declarados por tu analítica, "
+        "las pondremos en Trend con la etiqueta Estimado."
+    ),
+    "Simulazioni agente (buyer persona / funnel d’acquisto)": (
+        "Simulaciones con agentes (buyer personas y embudo de compra)"
+    ),
+    "Un journey multi-turno (CTO, procurement) moltiplica le probe LLM: un sim pieno può costare quanto 4–10 analisi Misurate e resta stocastico. Oggi il prompt bank su Plus accetta domande in stile buyer; non lanciamo agenti nel POST analyze perché svuoterebbero la quota mensile senza pubblicare un artifact. Se serve un report journey, è uno SKU a parte, non il default.": (
+        "Un recorrido de varios turnos (CTO, compras) multiplica las pruebas LLM: "
+        "una simulación completa puede costar tanto como 4–10 análisis Medidos y sigue siendo estocástica. "
+        "El banco de prompts de Plus ya acepta preguntas al estilo del comprador. "
+        "No lanzamos agentes en el POST /analyze: vaciarían la cuota mensual sin publicar un artefacto. "
+        "Si necesitas un informe de recorrido, es un SKU aparte, no el valor por defecto."
+    ),
+    "Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)": (
+        "Auditoría de datos de preentrenamiento (Common Crawl, Reddit, “pesos” de GPT)"
+    ),
+    "Nessun modello chiuso certifica se il brand è nei suoi pesi. Dirlo in dashboard sarebbe un claim commerciale, non una misura. La GEO Suite già legge il tuo sito (grafo entità, sameAs, schema). Una presenza su Wikipedia/Wikidata è un finding utile; “sei nel training di ChatGPT” no. Restiamo su ciò che è osservabile.": (
+        "Ningún modelo cerrado certifica que tu marca esté en sus pesos. "
+        "Decirlo en el panel sería una afirmación comercial, no una medida. "
+        "La GEO Suite ya lee tu sitio (grafo de entidades, sameAs, schema). "
+        "Una presencia en Wikipedia/Wikidata es un hallazgo útil; “estás en el entrenamiento de ChatGPT” no lo es. "
+        "Nos quedamos con lo observable."
+    ),
+    "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file": (
+        "Plus/Business: webhook pack.ready (checksums + URL Edge) para que tu CMS aplique el pack sin copiar archivos"
+    ),
+    "APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version": (
+        "APPLY.md en el ZIP: evento pack.ready, idempotente sobre signals_version"
+    ),
+    "GET /sites/<id> e /runs: AIO, GEO, CVI, SoV, criticità, checksum — OpenAPI in /api/v1/openapi.json": (
+        "GET /sites/<id> y /runs: AIO, GEO, CVI, SoV, criticidad, checksums — OpenAPI en /api/v1/openapi.json"
+    ),
+    "Webhook analysis.completed + pack.ready (oltre agli alert di regressione)": (
+        "Webhooks analysis.completed y pack.ready (además de las alertas de regresión)"
+    ),
+    "Approfondimento su Misurato vs Stimato nella": "Más sobre Medido vs Estimado en la",
+    "Eventi: analysis.completed, pack.ready (checksum + URL Edge, senza body dei file), analysis.alert (solo regressioni).": (
+        "Eventos: analysis.completed, pack.ready (checksums + URL Edge, sin cuerpos de archivo), analysis.alert (solo regresiones)."
+    ),
+    "Firma HMAC in X-Centropic-Signature. Applica pack.ready una volta per idempotency_key.": (
+        "HMAC en X-Centropic-Signature. Aplica pack.ready una vez por idempotency_key."
+    ),
 }
 
 ZH = {
@@ -662,7 +797,56 @@ ZH = {
     "Finding": "Finding",
     "Pack": "数据包",
     "Quota operativa": "运营配额",
-    "Cosa misuriamo — e cosa no": "我们衡量什么 — 以及什么不衡量",
+    "Cosa misuriamo — e cosa no": "我们测什么，不测什么",
+    "Tre richieste frequenti in discovery restano fuori dal prodotto. Non per roadmap vuota: perché non le possiamo misurare in modo onesto, o perché brucerebbero la quota operativa senza rendere il sito più citabile.": (
+        "销售里常被问到的三件事，产品里没有。不是路线图空着：要么没法老实测，"
+        "要么会把月度配额烧光，却不能让网站更好被引用。"
+    ),
+    "Attribution e ROI dalle citazioni LLM": "来自大模型引用的归因与 ROI",
+    "ChatGPT, Claude, Perplexity e Copilot non espongono impression, click o CTR. Un “ricavo generato dalla visibilità AI” sarebbe una correlazione inventata. Centropic misura le menzioni sul prompt bank (SoV Misurato) e, su Plus, può collegare Search Console come baseline di Search — non come traffico AI. Quando avremo sessioni con referrer AI dichiarati dal tuo analytics, le metteremo in Trend con l’etichetta Stimato.": (
+        "ChatGPT、Claude、Perplexity 和 Copilot 不提供曝光、点击或 CTR。"
+        "所谓“AI 可见度带来的收入”只会是编造的相关性。"
+        "Centropic 对照提示词库测量品牌提及（实测 SoV）；Plus 还可连接 Search Console 作为搜索基线——不是 AI 流量。"
+        "等你的分析工具能提供带 AI 引荐的会话时，我们会放进趋势并标为估算。"
+    ),
+    "Simulazioni agente (buyer persona / funnel d’acquisto)": (
+        "智能体模拟（买家角色与购买漏斗）"
+    ),
+    "Un journey multi-turno (CTO, procurement) moltiplica le probe LLM: un sim pieno può costare quanto 4–10 analisi Misurate e resta stocastico. Oggi il prompt bank su Plus accetta domande in stile buyer; non lanciamo agenti nel POST analyze perché svuoterebbero la quota mensile senza pubblicare un artifact. Se serve un report journey, è uno SKU a parte, non il default.": (
+        "多轮旅程（CTO、采购）会成倍增加大模型探测次数：一次完整模拟的成本相当于 4–10 次实测分析，而且结果仍带随机性。"
+        "Plus 的提示词库已支持采购口吻的问题。"
+        "我们不会在 POST /analyze 里启动智能体：那会掏空月度配额，却发不出任何产物。"
+        "若需要旅程报告，那是单独 SKU，不是默认项。"
+    ),
+    "Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)": (
+        "预训练数据集审计（Common Crawl、Reddit、GPT「权重」）"
+    ),
+    "Nessun modello chiuso certifica se il brand è nei suoi pesi. Dirlo in dashboard sarebbe un claim commerciale, non una misura. La GEO Suite già legge il tuo sito (grafo entità, sameAs, schema). Una presenza su Wikipedia/Wikidata è un finding utile; “sei nel training di ChatGPT” no. Restiamo su ciò che è osservabile.": (
+        "没有任何封闭模型会证明你的品牌在其权重里。"
+        "写在仪表盘上只是营销说法，不是测量。"
+        "GEO Suite 已经读取你的站点（实体图、sameAs、schema）。"
+        "维基百科/维基数据上的存在是有用的发现；“你在 ChatGPT 的训练集里”不是。"
+        "我们只做能观察到的事。"
+    ),
+    "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file": (
+        "Plus/Business：pack.ready webhook（校验和 + Edge 地址），CMS 无需复制文件即可应用 pack"
+    ),
+    "APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version": (
+        "ZIP 内的 APPLY.md：pack.ready 事件，按 signals_version 幂等"
+    ),
+    "GET /sites/<id> e /runs: AIO, GEO, CVI, SoV, criticità, checksum — OpenAPI in /api/v1/openapi.json": (
+        "GET /sites/<id> 与 /runs：AIO、GEO、CVI、SoV、严重度、校验和 — OpenAPI 见 /api/v1/openapi.json"
+    ),
+    "Webhook analysis.completed + pack.ready (oltre agli alert di regressione)": (
+        "analysis.completed 与 pack.ready webhook（另有回归告警）"
+    ),
+    "Approfondimento su Misurato vs Stimato nella": "关于「实测 vs 估算」，详见",
+    "Eventi: analysis.completed, pack.ready (checksum + URL Edge, senza body dei file), analysis.alert (solo regressioni).": (
+        "事件：analysis.completed、pack.ready（校验和 + Edge 地址，不含文件正文）、analysis.alert（仅回归）。"
+    ),
+    "Firma HMAC in X-Centropic-Signature. Applica pack.ready una volta per idempotency_key.": (
+        "HMAC 签名在 X-Centropic-Signature 中。每个 idempotency_key 只应用一次 pack.ready。"
+    ),
 }
 
 KO = {
@@ -814,7 +998,59 @@ KO = {
     "Finding": "Finding",
     "Pack": "팩",
     "Quota operativa": "운영 쿼터",
-    "Cosa misuriamo — e cosa no": "무엇을 측정하고, 무엇을 측정하지 않는가",
+    "Cosa misuriamo — e cosa no": "측정하는 것과 측정하지 않는 것",
+    "Tre richieste frequenti in discovery restano fuori dal prodotto. Non per roadmap vuota: perché non le possiamo misurare in modo onesto, o perché brucerebbero la quota operativa senza rendere il sito più citabile.": (
+        "영업 미팅에서 자주 나오는 세 가지 요청은 제품에 없습니다. "
+        "로드맵이 비어서가 아닙니다. 정직하게 측정할 수 없거나, "
+        "사이트를 더 잘 인용되게 만들지 못한 채 월 할당량만 태우기 때문입니다."
+    ),
+    "Attribution e ROI dalle citazioni LLM": "LLM 인용에 대한 기여도·ROI",
+    "ChatGPT, Claude, Perplexity e Copilot non espongono impression, click o CTR. Un “ricavo generato dalla visibilità AI” sarebbe una correlazione inventata. Centropic misura le menzioni sul prompt bank (SoV Misurato) e, su Plus, può collegare Search Console come baseline di Search — non come traffico AI. Quando avremo sessioni con referrer AI dichiarati dal tuo analytics, le metteremo in Trend con l’etichetta Stimato.": (
+        "ChatGPT, Claude, Perplexity, Copilot은 노출·클릭·CTR을 제공하지 않습니다. "
+        "“AI 가시성으로 발생한 매출”은 지어낸 상관관계입니다. "
+        "Centropic은 프롬프트 뱅크 기준으로 브랜드 언급을 측정하고(측정 SoV), "
+        "Plus에서는 Search Console을 검색 기준선으로 연결할 수 있습니다. AI 트래픽이 아닙니다. "
+        "분석 도구가 AI 리퍼러 세션을 알려 주면 Trend에 추정으로 표시합니다."
+    ),
+    "Simulazioni agente (buyer persona / funnel d’acquisto)": (
+        "에이전트 시뮬레이션(구매 페르소나·구매 퍼널)"
+    ),
+    "Un journey multi-turno (CTO, procurement) moltiplica le probe LLM: un sim pieno può costare quanto 4–10 analisi Misurate e resta stocastico. Oggi il prompt bank su Plus accetta domande in stile buyer; non lanciamo agenti nel POST analyze perché svuoterebbero la quota mensile senza pubblicare un artifact. Se serve un report journey, è uno SKU a parte, non il default.": (
+        "여러 턴의 여정(CTO, 구매)은 LLM 프로브를 몇 배로 늘립니다. "
+        "전체 시뮬레이션 한 번은 측정 분석 4–10회 분량이고, 결과는 여전히 확률적입니다. "
+        "Plus 프롬프트 뱅크는 이미 구매자 톤의 질문을 받습니다. "
+        "POST /analyze에서 에이전트를 켜지 않는 이유는 월 할당량만 비우고 산출물을 내지 않기 때문입니다. "
+        "여정 보고서가 필요하면 별도 SKU이지, 기본값이 아닙니다."
+    ),
+    "Audit nei dataset di pre-training (Common Crawl, Reddit, “pesi” GPT)": (
+        "사전학습 데이터 감사(Common Crawl, Reddit, GPT ‘가중치’)"
+    ),
+    "Nessun modello chiuso certifica se il brand è nei suoi pesi. Dirlo in dashboard sarebbe un claim commerciale, non una misura. La GEO Suite già legge il tuo sito (grafo entità, sameAs, schema). Una presenza su Wikipedia/Wikidata è un finding utile; “sei nel training di ChatGPT” no. Restiamo su ciò che è osservabile.": (
+        "비공개 모델은 브랜드가 가중치에 들어 있는지 증명하지 않습니다. "
+        "대시보드에 쓰면 마케팅 주장이지 측정이 아닙니다. "
+        "GEO Suite는 이미 사이트를 읽습니다(엔티티 그래프, sameAs, 스키마). "
+        "위키피디아/위키데이터 존재는 유용한 파인딩이고, “ChatGPT 학습 데이터에 있다”는 그렇지 않습니다. "
+        "관찰 가능한 것만 다룹니다."
+    ),
+    "Plus/Business: webhook pack.ready (checksum + URL Edge) così il CMS applica senza copiare i file": (
+        "Plus/Business: pack.ready 웹훅(체크섬 + Edge URL). CMS가 파일을 복사하지 않고 pack을 적용합니다"
+    ),
+    "APPLY.md nello ZIP: evento pack.ready, idempotenza su signals_version": (
+        "ZIP의 APPLY.md: pack.ready 이벤트, signals_version 기준 멱등"
+    ),
+    "GET /sites/<id> e /runs: AIO, GEO, CVI, SoV, criticità, checksum — OpenAPI in /api/v1/openapi.json": (
+        "GET /sites/<id> 및 /runs: AIO, GEO, CVI, SoV, 심각도, 체크섬 — OpenAPI는 /api/v1/openapi.json"
+    ),
+    "Webhook analysis.completed + pack.ready (oltre agli alert di regressione)": (
+        "analysis.completed 및 pack.ready 웹훅(회귀 알림 외에)"
+    ),
+    "Approfondimento su Misurato vs Stimato nella": "측정 vs 추정에 대한 자세한 내용은",
+    "Eventi: analysis.completed, pack.ready (checksum + URL Edge, senza body dei file), analysis.alert (solo regressioni).": (
+        "이벤트: analysis.completed, pack.ready(체크섬 + Edge URL, 파일 본문 없음), analysis.alert(회귀만)."
+    ),
+    "Firma HMAC in X-Centropic-Signature. Applica pack.ready una volta per idempotency_key.": (
+        "HMAC은 X-Centropic-Signature에 있습니다. idempotency_key마다 pack.ready를 한 번만 적용하세요."
+    ),
 }
 
 TABLES = {
