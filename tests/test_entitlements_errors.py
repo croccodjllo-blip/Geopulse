@@ -92,6 +92,24 @@ def test_past_due_elapsed_loses_alerts_webhook():
     assert user_has_capability(plus, "alerts_webhook") is True
 
 
+def test_plan_key_past_due_error_is_free(monkeypatch):
+    def _boom(_since, now=None, grace_days=None):
+        raise RuntimeError("past_due check exploded")
+
+    monkeypatch.setattr(
+        "services.paddle_billing.past_due_grace_elapsed", _boom
+    )
+    sticky = SimpleNamespace(
+        plan="plus",
+        is_pro=True,
+        is_admin=False,
+        is_business=False,
+        paddle_past_due_since=None,
+    )
+    assert user_has_capability(sticky, "alerts_webhook") is False
+    assert _ents(sticky).can("alerts_webhook") is False
+
+
 def test_classify_timeout_and_http():
     info = classify_analyze_error(requests.Timeout("timed out"))
     assert info["code"] == "timeout"
