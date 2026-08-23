@@ -119,8 +119,36 @@ def test_public_guide_is_fresh_and_current():
     assert "Le cinque pagine" in html or "The five pages" in html
     assert "Cosa misuriamo" in html or "What we measure" in html
     assert "pack.ready" in html
-    assert "img/guide/dashboard.svg" in html
+    assert "img/guide/dashboard.svg" in html or "img/guide/en/dashboard.svg" in html
     assert "icon rail" not in html
+
+
+def test_guide_art_english_is_native_not_italian():
+    from flask_babel import force_locale
+
+    from app import app
+    from services.i18n import DEFAULT_LOCALE
+
+    assert DEFAULT_LOCALE == "en"
+    en_dash = ROOT / "static/img/guide/en/dashboard.svg"
+    assert en_dash.is_file()
+    svg = en_dash.read_text(encoding="utf-8")
+    assert "Overview" in svg
+    assert "Panoramica" not in svg
+    assert "Criticality index" in svg
+    assert "Indice di criticità" not in svg
+    assert "Active domain" in svg or "ACTIVE DOMAIN" in svg
+    assert "08/21/2026" in svg
+    tokens = (ROOT / "static/img/guide/en/token-crediti.svg").read_text(encoding="utf-8")
+    assert "excl. tax" in tokens
+    assert "€19.99" in tokens
+    assert "Tasse escluse" not in tokens
+
+    with app.app_context():
+        with force_locale("en"):
+            guide = site_guide_payload()
+    assert guide["art"]["dashboard"] == "img/guide/en/dashboard.svg"
+    assert guide["services"][0]["image"] == "img/guide/en/dashboard.svg"
 
 
 def test_guide_illustration_files_exist():

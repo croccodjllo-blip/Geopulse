@@ -85,7 +85,7 @@
       {{ _('Cosa produce una run: probe misurati, moduli GEO Suite e breakdown per engine.') }}
     </p>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/geo-suite.svg') }}" width="960" height="540" alt="{{ _('Moduli GEO Suite') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename=guide.art.geo_suite) }}" width="960" height="540" alt="{{ _('Moduli GEO Suite') }}" loading="lazy" />
       <figcaption>{{ _('Entity, citability, schema, publish verify, llms lint, locales.') }}</figcaption>
     </figure>
     <div class="guide-analysis-grid">
@@ -114,7 +114,7 @@
   <section class="guide-section" id="pack" aria-labelledby="pack-title">
     <h2 class="guide-section__title" id="pack-title">{{ _('Pack e file') }}</h2>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/pack-artifact.svg') }}" width="960" height="540" alt="{{ _('Pack artifact') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename=guide.art.pack) }}" width="960" height="540" alt="{{ _('Pack artifact') }}" loading="lazy" />
     </figure>
     <div class="guide-page__files">
       <h3 class="dash-block__title">{{ _('Dove vanno i file') }}</h3>
@@ -130,11 +130,11 @@
     <h2 class="guide-section__title" id="edge-title">{{ _('Edge Signals e CMS') }}</h2>
     <div class="guide-duo">
       <figure class="guide-figure">
-        <img src="{{ url_for('static', filename='img/guide/edge-signals.svg') }}" width="960" height="540" alt="Edge Signals" loading="lazy" />
+        <img src="{{ url_for('static', filename=guide.art.edge) }}" width="960" height="540" alt="Edge Signals" loading="lazy" />
         <figcaption>{{ _('Proxy dal tuo dominio verso') }} <code>/e/&lt;token&gt;/</code></figcaption>
       </figure>
       <figure class="guide-figure">
-        <img src="{{ url_for('static', filename='img/guide/cms-connector.svg') }}" width="960" height="540" alt="CMS Connector" loading="lazy" />
+        <img src="{{ url_for('static', filename=guide.art.cms) }}" width="960" height="540" alt="CMS Connector" loading="lazy" />
         <figcaption>{{ _('WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel, embed.') }}</figcaption>
       </figure>
     </div>
@@ -147,7 +147,7 @@
   <section class="guide-section" id="piani" aria-labelledby="piani-title">
     <h2 class="guide-section__title" id="piani-title">{{ _('Piani: domini, re-scan, API') }}</h2>
     <figure class="guide-figure">
-      <img src="{{ url_for('static', filename='img/guide/token-crediti.svg') }}" width="960" height="540" alt="{{ _('Piani Centropic') }}" loading="lazy" />
+      <img src="{{ url_for('static', filename=guide.art.tokens) }}" width="960" height="540" alt="{{ _('Piani Centropic') }}" loading="lazy" />
     </figure>
     <div class="guide-plans">
       {% for plan in guide.plans %}

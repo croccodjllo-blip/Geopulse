@@ -6,6 +6,9 @@ from typing import Any
 
 from flask_babel import gettext as _
 
+from services.guide_art_i18n import localized_guide_rel
+from services.i18n import active_ui_locale
+
 
 def _glossary_entries() -> list[dict[str, str]]:
     raw = [
@@ -267,9 +270,15 @@ GUIDE_IMAGES = {
 }
 
 
+def _art(key: str) -> str:
+    return localized_guide_rel(GUIDE_IMAGES[key], active_ui_locale())
+
+
 def site_guide_payload() -> dict[str, Any]:
     """Structured content for /guida and /dashboard/guida (locale-aware)."""
+    art = {key: _art(key) for key in GUIDE_IMAGES}
     return {
+        "art": art,
         "title": _("Guida completa Centropic"),
         "lede": _(
             "Come leggere il workspace: le cinque pagine, il CVI sul marchio, "
@@ -377,7 +386,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-dashboard",
                 "title": _("Workspace"),
-                "image": GUIDE_IMAGES["dashboard"],
+                "image": art["dashboard"],
                 "summary": _(
                     "Cinque pagine, un dominio attivo, grafici dallo stesso run."
                 ),
@@ -390,7 +399,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-analisi",
                 "title": _("Analisi AIO / GEO"),
-                "image": GUIDE_IMAGES["analisi"],
+                "image": art["analisi"],
                 "summary": _(
                     "Probe HTTP + parsing HTML sul dominio: misurato ciò che è osservabile."
                 ),
@@ -405,7 +414,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-findings",
                 "title": _("Findings e pagine critiche"),
-                "image": GUIDE_IMAGES["findings"],
+                "image": art["findings"],
                 "summary": _(
                     "Gap prioritizzati: critical, warn, ok — con azioni concrete."
                 ),
@@ -421,7 +430,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-pack",
                 "title": _("Pack ottimizzazione"),
-                "image": GUIDE_IMAGES["pack"],
+                "image": art["pack"],
                 "summary": _(
                     "Pack HTML con logo originale, score, finding e snippet da pubblicare."
                 ),
@@ -436,7 +445,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-edge",
                 "title": _("Edge Signals"),
-                "image": GUIDE_IMAGES["edge"],
+                "image": art["edge"],
                 "summary": _(
                     "Hosting dinamico degli artifact su centropic.ai/e/<token>/…"
                 ),
@@ -451,7 +460,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-cms",
                 "title": _("CMS Connector universale"),
-                "image": GUIDE_IMAGES["cms"],
+                "image": art["cms"],
                 "summary": _(
                     "Un ZIP per WordPress, Drupal, Shopify, PHP, Netlify, Cloudflare, Vercel."
                 ),
@@ -464,7 +473,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-sov",
                 "title": _("Share of Voice"),
-                "image": GUIDE_IMAGES["sov"],
+                "image": art["sov"],
                 "summary": _(
                     "Proxy (stimato) su tutti i piani; measured su Plus/Business con citation monitor."
                 ),
@@ -479,7 +488,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-geo",
                 "title": _("GEO Suite"),
-                "image": GUIDE_IMAGES["geo_suite"],
+                "image": art["geo_suite"],
                 "summary": _(
                     "Moduli: grafo entità, citabilità, schema, publish verify, llms lint, mercati."
                 ),
@@ -492,7 +501,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-comp",
                 "title": _("Competitor snapshot"),
-                "image": GUIDE_IMAGES["competitors"],
+                "image": art["competitors"],
                 "summary": _(
                     "Confronto rapido AIO/GEO/rating sui competitor (Plus)."
                 ),
@@ -504,7 +513,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-storico",
                 "title": _("Trend e re-scan"),
-                "image": GUIDE_IMAGES["storico"],
+                "image": art["storico"],
                 "summary": _(
                     "Serie temporale sul dominio attivo: AIO/GEO e CVI, con le date sotto ogni punto."
                 ),
@@ -517,7 +526,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-tokens",
                 "title": _("Quota operativa e copertura"),
-                "image": GUIDE_IMAGES["tokens"],
+                "image": art["tokens"],
                 "summary": _(
                     "Ogni piano include una quota operativa mensile. I pacchetti extra ampliano la copertura senza cambiare piano."
                 ),
@@ -530,7 +539,7 @@ def site_guide_payload() -> dict[str, Any]:
             {
                 "id": "svc-api",
                 "title": _("API e white-label"),
-                "image": GUIDE_IMAGES["api"],
+                "image": art["api"],
                 "summary": _(
                     "Automazione agenzia: API key, analyze, sites, edge; report white-label."
                 ),

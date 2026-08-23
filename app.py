@@ -418,7 +418,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 app.config["INSTANCE_RELATIVE_CONFIG"] = False
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
-app.config["BABEL_DEFAULT_LOCALE"] = "it"
+app.config["BABEL_DEFAULT_LOCALE"] = "en"
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(BASE_DIR, "translations")
 
 # Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix solo se TRUST_PROXY=1

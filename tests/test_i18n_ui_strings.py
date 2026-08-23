@@ -16,7 +16,7 @@ EXPECTED = {
     "en": {
         "Accedi": "Sign in",
         "Registrati": "Sign up",
-        "Analizza gratis": "Analyze free",
+        "Analizza gratis": "Analyze for free",
         "Copertura": "Coverage",
         "Prezzi": "Pricing",
         "Passa a Plus": "Upgrade to Plus",

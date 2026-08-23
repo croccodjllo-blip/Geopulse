@@ -57,7 +57,10 @@ EN = {
     "https://rivale1.com": "https://rival1.com",
     "https://rivale2.com": "https://rival2.com",
     "https://tuodominio/llms.txt": "https://yourdomain.com/llms.txt",
-    "21 agosto 2026": "21 August 2026",
+    "21 agosto 2026": "August 21, 2026",
+    "23 agosto 2026": "August 23, 2026",
+    "Tasse escluse": "excl. tax",
+    "Analizza gratis": "Analyze for free",
     "Come leggere il workspace: le cinque pagine, il CVI sul marchio, i grafici AIO/GEO, l’indice di criticità, i pack e l’Edge.": (
         "How to read the workspace: the five pages, CVI on the mark, AIO/GEO charts, "
         "the criticality index, packs, and Edge."

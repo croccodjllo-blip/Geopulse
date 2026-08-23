@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Findings e indice di criticità">
+  <rect width="960" height="540" fill="#121212"/>
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="294" y="33" text-anchor="middle" fill="#F3EDE3">Overview</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="#E8A04A"/>
+    <text x="480" y="33" text-anchor="middle" fill="#121212">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guide</text>
+  </g>
+
+  <text x="28" y="96" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">PROMPT</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">Findings</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Critical · Warning · Ok — fix the criticals first</text>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="176" width="600" height="88" fill="#1A1A1A"/>
+    <rect x="28" y="176" width="6" height="88" fill="#EF4444"/>
+    <text x="56" y="210" fill="#EF4444" font-size="12" font-weight="700">CRITICAL</text>
+    <text x="56" y="236" fill="#F3EDE3" font-size="16" font-weight="650">robots blocks GPTBot</text>
+    <text x="56" y="256" fill="rgba(243,237,227,0.45)" font-size="12">Highest priority · AI crawler impact</text>
+
+    <rect x="28" y="272" width="600" height="88" fill="#1A1A1A"/>
+    <rect x="28" y="272" width="6" height="88" fill="#F59E0B"/>
+    <text x="56" y="306" fill="#F59E0B" font-size="12" font-weight="700">WARNING</text>
+    <text x="56" y="332" fill="#F3EDE3" font-size="16" font-weight="650">JSON-LD Organization incomplete</text>
+    <text x="56" y="352" fill="rgba(243,237,227,0.45)" font-size="12">Missing sameAs / contact</text>
+
+    <rect x="28" y="368" width="600" height="88" fill="#1A1A1A"/>
+    <rect x="28" y="368" width="6" height="88" fill="#22C55E"/>
+    <text x="56" y="402" fill="#22C55E" font-size="12" font-weight="700">OK</text>
+    <text x="56" y="428" fill="#F3EDE3" font-size="16" font-weight="650">sitemap.xml reachable</text>
+    <text x="56" y="448" fill="rgba(243,237,227,0.45)" font-size="12">Measured probe</text>
+
+    <rect x="640" y="176" width="292" height="140" fill="#1A1A1A"/>
+    <text x="660" y="208" fill="rgba(243,237,227,0.45)" font-size="11">Crawl</text>
+    <text x="660" y="232" fill="#F3EDE3" font-size="16" font-weight="650">AIO distribution</text>
+    <rect x="660" y="256" width="18" height="36" fill="#22C55E"/>
+    <rect x="682" y="268" width="18" height="24" fill="#E8A04A"/>
+    <rect x="704" y="262" width="18" height="30" fill="#F59E0B"/>
+    <rect x="726" y="276" width="18" height="16" fill="#F97316"/>
+    <rect x="748" y="284" width="18" height="8" fill="#EF4444"/>
+
+    <rect x="640" y="324" width="292" height="132" fill="#1A1A1A"/>
+    <text x="660" y="356" fill="rgba(243,237,227,0.45)" font-size="11">Findings</text>
+    <text x="660" y="380" fill="#F3EDE3" font-size="16" font-weight="650">Criticality index</text>
+    <text x="660" y="424" fill="#F97316" font-size="36" font-weight="720">47</text>
+    <text x="732" y="424" fill="rgba(243,237,227,0.45)" font-size="13">/100 · mid</text>
+  </g>
+</svg>

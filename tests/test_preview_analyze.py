@@ -209,8 +209,8 @@ def test_landing_has_hero_url_form(client):
     html = resp.get_data(as_text=True)
     assert 'action="/anteprima"' in html
     assert 'name="url"' in html
-    assert "Analizza gratis" in html
-    assert "iltuosito.it" in html
+    assert "Analyze for free" in html or "Analizza gratis" in html
+    assert "yoursite.com" in html or "iltuosito.it" in html
     # Primary hero CTA is the URL form, not a hard jump to /register.
     hero = html.split('id="hero-brand"', 1)[-1].split("</section>", 1)[0]
     assert "hero-url-form" in hero
