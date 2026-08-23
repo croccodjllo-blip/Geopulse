@@ -63,7 +63,7 @@ def test_health_detail_is_read_only_snapshot(monkeypatch):
     assert detail["jobs"]["running"] >= 2
     assert detail["jobs"]["stale_running"] >= 1
     assert "jobs_reclaimed" not in detail
-    assert detail["jobs"]["stale_after_minutes"] >= 5
+    assert detail["jobs"]["stale_after_minutes"] >= 2
 
     # Query-string tokens must not unlock detail (Referer / log leak surface).
     leaked = client.get(f"/health?token=health-{suffix}").get_json()

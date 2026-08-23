@@ -111,13 +111,13 @@
 
       <div class="field span-2">
         <label for="website_url">{{ _('Sito web principale') }} <span class="hint">{{ _('(opzionale — se lo indichi, la prima diagnosi parte subito)') }}</span></label>
-        {{ form.website_url(id="website_url", placeholder="https://tuosito.com", autocomplete="url") }}
+        {{ form.website_url(id="website_url", placeholder=_('https://tuosito.com'), autocomplete="url") }}
         {% for error in form.website_url.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 
       <div class="field span-2">
         <label for="country">{{ _('Paese') }} <span class="hint">{{ _('(opzionale)') }}</span></label>
-        {{ form.country(id="country", placeholder="Italia", autocomplete="country-name") }}
+        {{ form.country(id="country", placeholder=_('Italia'), autocomplete="country-name") }}
         {% for error in form.country.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       </div>
 

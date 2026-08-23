@@ -11,6 +11,9 @@ ROUTE_CATALOG = [
     'api_v1_analyze',
     'api_v1_job_status',
     'api_v1_sites',
+    'api_v1_site_metrics',
+    'api_v1_site_runs',
+    'api_v1_openapi',
     'api_v1_site_edge',
     'api_v1_site_edge_cms_bundle'
 ]

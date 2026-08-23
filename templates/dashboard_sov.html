@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Share of Voice') }}{% endblock %}
+{% block body_class %}body-dash--sov{% endblock %}
+{% block header_class %}site-header--invert{% endblock %}
+{% block main_class %}site-main--dash site-main--sov{% endblock %}
+
+{% block content %}
+<section class="workspace workspace--sov">
+  {% set sov_tab = 'panoramica' %}
+  {% include "partials/sov_topnav.html" %}
+
+  {% if latest and user_sites is defined and user_sites|length > 1 %}
+  <div class="sov-page-tools" aria-label="{{ _('Controlli') }}">
+    {% include "partials/site_switcher.html" %}
+  </div>
+  {% endif %}
+
+  <div class="workspace-body workspace-body--sov">
+    <div class="workspace-grid workspace-grid--solo">
+      <div class="workspace-main">
+        {% if latest %}
+        {% include "partials/dash_dynamic_styles.html" %}
+
+        <header class="sov-page-hero" aria-labelledby="sov-page-title">
+          <div class="sov-page-hero__copy">
+            <h1 class="sov-page-hero__title" id="sov-page-title">
+              {{ _('Scopri cosa dicono davvero le AI') }}
+              <span class="sov-page-hero__accent">{{ _('sul tuo brand.') }}</span>
+            </h1>
+            <p class="sov-page-hero__lede">
+              {{ _('Centropic analizza le risposte delle AI generative per mostrare la tua Share of Voice e le evidenze che contano.') }}
+            </p>
+            {% set report_at = latest.updated_at or latest.created_at %}
+            {% if report_at %}
+            <p class="sov-page-hero__badge">
+              <span class="sov-page-hero__badge-ico" aria-hidden="true">✓</span>
+              {{ _('Analisi completata') }}
+              {{ report_at.strftime('%d/%m/%Y %H:%M') }} UTC
+            </p>
+            {% endif %}
+          </div>
+          <div class="sov-page-hero__visual" aria-hidden="true">
+            <img
+              class="sov-page-hero__glow"
+              src="{{ url_for('static', filename='img/bg-sov-anteprima.png') }}"
+              alt=""
+              width="1600"
+              height="720"
+              decoding="async"
+            />
+          </div>
+        </header>
+
+        {% set pack_href = url_for('dashboard', site=latest.id) + '#pack' %}
+        {% set edge_href = url_for('dashboard', site=latest.id) + '#edge-signals' %}
+        {% include "partials/dash_sov_detail.html" %}
+        {% else %}
+        <div class="dash-block dash-block--panel">
+          <p class="dash-block__empty">{{ _('Nessuna analisi ancora. Avvia la prima dalla Dashboard.') }}</p>
+          <p><a class="btn btn-signal" href="{{ url_for('dashboard') }}">{{ _('Vai alla Dashboard') }}</a></p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

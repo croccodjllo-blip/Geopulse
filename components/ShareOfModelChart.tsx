@@ -122,8 +122,8 @@ export function ShareOfModelChart({
           >
             <defs>
               <linearGradient id="colorCentropic" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#C9D3DD" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#C9D3DD" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#E8A04A" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#E8A04A" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="colorCompA" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#5B6B7A" stopOpacity={0.2} />
@@ -161,7 +161,7 @@ export function ShareOfModelChart({
             <Area
               type="monotone"
               dataKey="centropic"
-              stroke="#C9D3DD"
+              stroke="#E8A04A"
               strokeWidth={2}
               fill="url(#colorCentropic)"
               fillOpacity={1}

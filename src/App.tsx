@@ -10,7 +10,7 @@ import {
   EngineVisibilityChart,
   type EngineBarPoint,
 } from "@/components/EngineVisibilityChart";
-import type { SomPoint } from "@/components/SomTrendChart";
+import { SomTrendChart, type SomPoint } from "@/components/SomTrendChart";
 
 type GeoUiChrome = {
   insightsTitle?: string;
@@ -77,6 +77,12 @@ function isEmbedMode(): boolean {
   return q.get("embed") === "1";
 }
 
+function isCompactMode(): boolean {
+  if (typeof window === "undefined") return false;
+  const w = window as Window & { __CENTROPIC_GEO_COMPACT__?: boolean };
+  return Boolean(w.__CENTROPIC_GEO_COMPACT__);
+}
+
 function readLiveData(): GeoUiData | null {
   if (typeof window === "undefined") return null;
   const w = window as Window & { __CENTROPIC_GEO_DATA__?: GeoUiData };
@@ -130,6 +136,34 @@ export default function App() {
       : { embedded: false };
 
   const bars = live?.engineBars || [];
+  const compact = embed && isCompactMode();
+
+  if (compact) {
+    const trend = live?.somTrend || [];
+    const hasTrend = trend.some((p) => p && p.rate != null);
+    if (!live?.ready || (!hasTrend && bars.length === 0)) {
+      return <div className="geo-compact" hidden />;
+    }
+    return (
+      <div className="geo-compact grid grid-cols-1 gap-3 xl:grid-cols-2">
+        {hasTrend ? (
+          <section className="min-w-0">
+            <p className="mb-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-brand-cyan">
+              {live?.ui?.somTrendTitle || "Share of Model"}
+            </p>
+            <SomTrendChart
+              data={trend}
+              height={168}
+              className="h-[168px] rounded-xl border border-brand-border bg-brand-card p-3"
+            />
+          </section>
+        ) : null}
+        {bars.length > 0 ? (
+          <EngineVisibilityChart data={bars} compact />
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-brand-bg text-white antialiased">

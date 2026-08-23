@@ -21,7 +21,7 @@ def sample_report_payload() -> dict[str, Any]:
         "url": f"https://{SAMPLE_DOMAIN}/",
         "aio_score": 62,
         "geo_score": 58,
-        "rating": "CCC",
+        "rating": "CC",
         "brand_sov": 18,
         "evidence": "proxy",
         "summary": (

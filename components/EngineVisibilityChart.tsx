@@ -21,7 +21,7 @@ export type EngineBarPoint = {
 
 const TONE: Record<NonNullable<EngineBarPoint["tone"]>, string> = {
   emerald: "#10A37F",
-  cyan: "#3FA8B5",
+  cyan: "#E8A04A",
   steel: "#8BA3BD",
   amber: "#D4A574",
 };
@@ -36,11 +36,13 @@ const DEFAULT: EngineBarPoint[] = [
 export type EngineVisibilityChartProps = {
   data?: EngineBarPoint[];
   className?: string;
+  compact?: boolean;
 };
 
 export function EngineVisibilityChart({
   data = DEFAULT,
   className,
+  compact = false,
 }: EngineVisibilityChartProps) {
   const rows = [...data].sort((a, b) => b.share - a.share);
 
@@ -48,16 +50,28 @@ export function EngineVisibilityChart({
     <div
       className={
         className ||
-        "p-6 rounded-xl bg-brand-card border border-brand-border space-y-4"
+        (compact
+          ? "min-w-0 space-y-2 rounded-xl border border-brand-border bg-brand-card p-3"
+          : "p-6 rounded-xl bg-brand-card border border-brand-border space-y-4")
       }
     >
       <div>
-        <h3 className="text-lg font-bold text-white">Engine Share Snapshot</h3>
-        <p className="text-xs text-brand-muted">
-          Relative Share of Voice by generative engine
-        </p>
+        <h3
+          className={
+            compact
+              ? "text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-brand-cyan"
+              : "text-lg font-bold text-white"
+          }
+        >
+          Engine Share
+        </h3>
+        {compact ? null : (
+          <p className="text-xs text-brand-muted">
+            Relative Share of Voice by generative engine
+          </p>
+        )}
       </div>
-      <div className="h-72 w-full">
+      <div className={compact ? "h-40 w-full" : "h-72 w-full"}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             layout="vertical"
@@ -98,7 +112,7 @@ export function EngineVisibilityChart({
               }}
               formatter={(value) => [`${value}%`, "SoV"]}
             />
-            <Bar dataKey="share" radius={[0, 6, 6, 0]} barSize={18}>
+            <Bar dataKey="share" radius={[0, 6, 6, 0]} barSize={compact ? 12 : 18}>
               {rows.map((entry) => (
                 <Cell
                   key={entry.id}

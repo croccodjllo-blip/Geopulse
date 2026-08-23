@@ -1,0 +1,43 @@
+"""Warm gold production tokens — no leftover teal/chrome accent."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+CSS = (ROOT / "static" / "css" / "app.css").read_text(encoding="utf-8")
+PREVIEW = (ROOT / "static" / "css" / "site-preview-v3.css").read_text(encoding="utf-8")
+
+
+def test_root_tokens_are_warm_gold():
+    assert "--brand-cyan: #E8A04A" in CSS
+    assert "--brand-bg: #121212" in CSS
+    assert "--plan-accent: #E8A04A" in CSS
+    assert "#3FA8B5" not in CSS
+    assert "#3FA8B5" not in PREVIEW
+    assert "rgba(63, 168, 181" not in CSS
+    assert "rgba(63, 168, 181" not in PREVIEW
+    assert "--brand-cyan: #C9D3DD" not in PREVIEW
+    assert "#7FD4DD" not in PREVIEW
+    assert "#B8E6EC" not in PREVIEW
+
+
+def test_dash_shell_is_warm_not_chrome():
+    """Dashboard token remap must not paint success as chrome silver."""
+    assert "--ok: #22C55E" in CSS
+    assert "--ok: #C9D3DD" not in CSS
+    assert "WARM-GOLD DASH SHELL" in CSS
+    assert "Space Grotesk" not in PREVIEW
+    landing = (ROOT / "templates" / "landing.html").read_text(encoding="utf-8")
+    assert "Space Grotesk" not in landing
+    base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
+    assert "img/logo-mark.svg" in base
+    assert "img/logo-mark.png" not in base
+    assert ".page-intro__brand-row .hero-brand-word" in CSS
+    assert "font-size: 0.95rem;" in CSS
+
+
+def test_logo_svg_is_gold_c_arcs():
+    logo = (ROOT / "static" / "img" / "logo.svg").read_text(encoding="utf-8")
+    assert "#E8A04A" in logo
+    assert "A50 50" in logo or "A24 24" in logo

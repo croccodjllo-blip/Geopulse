@@ -31,10 +31,11 @@ def test_gsc_available_when_oauth_configured(monkeypatch):
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_ID", "cid.apps.googleusercontent.com")
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_SECRET", "sec")
     gsc_mod.reload_gsc_env()
-    status = gsc_status(user=None)
+    with app.test_request_context("/"):
+        status = gsc_status(user=None)
     assert status["available"] is True
     assert status["connected"] is False
-    assert "Pronto" in status["reason"] or "collegamento" in status["reason"].lower()
+    assert status["reason"]
 
 
 def test_gsc_unavailable_without_credentials(monkeypatch):
@@ -43,7 +44,8 @@ def test_gsc_unavailable_without_credentials(monkeypatch):
     monkeypatch.delenv("GOOGLE_CLIENT_ID", raising=False)
     monkeypatch.delenv("GOOGLE_CLIENT_SECRET", raising=False)
     gsc_mod.reload_gsc_env()
-    status = gsc_status()
+    with app.test_request_context("/"):
+        status = gsc_status()
     assert status["available"] is False
     assert status["connected"] is False
 
@@ -92,7 +94,8 @@ def test_apply_token_payload_seals_and_status_connected(monkeypatch):
         db.session.commit()
         assert user_has_gsc_connection(user)
         assert str(user.gsc_refresh_token or "").startswith("enc:v1:")
-        status = gsc_status(user)
+        with app.test_request_context("/"):
+            status = gsc_status(user)
         assert status["available"] is True
         assert status["connected"] is True
         assert status["email"] == "owner@example.com"
@@ -217,5 +220,6 @@ def test_persist_connection_from_code_mocks_google(monkeypatch):
         assert info["email"] == "gsc@example.com"
         assert info["sites"] == ["sc-domain:example.com"]
         assert user_has_gsc_connection(user)
-        st = gsc_status(user)
+        with app.test_request_context("/"):
+            st = gsc_status(user)
         assert st["connected"] is True

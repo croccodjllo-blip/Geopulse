@@ -112,10 +112,77 @@ def test_translate_analysis_notes_parameterized():
                 assert translate_analysis_notes(NOTES_IT) == want, loc
 
 
+DASH_TITLES = {
+    "en": {
+        "Panoramica": "Overview",
+        "Benchmark": "Benchmark",
+        "Prompt": "Prompt",
+        "Trend": "Trend",
+        "Dominio attivo": "Active domain",
+        "Distribuzione AIO": "AIO distribution",
+        "Indice di criticità": "Criticality index",
+        "Composizione": "Composition",
+        "Motori": "Engines",
+        "https://tuosito.com": "https://yoursite.com",
+        "https://iltuosito.it": "https://yoursite.com",
+        "https://rivale.com": "https://rival.com",
+    },
+    "de": {
+        "Panoramica": "Übersicht",
+        "Dominio attivo": "Aktive Domain",
+        "Indice di criticità": "Kritikalitätsindex",
+        "https://iltuosito.it": "https://deine-seite.de",
+    },
+    "es": {
+        "Panoramica": "Panorámica",
+        "Trend": "Tendencia",
+        "https://iltuosito.it": "https://tusitio.es",
+    },
+    "zh": {
+        "Panoramica": "概览",
+        "https://iltuosito.it": "https://yoursite.com",
+    },
+    "ko": {
+        "Panoramica": "개요",
+        "https://iltuosito.it": "https://yoursite.com",
+    },
+}
+
+
+def test_dashboard_titles_and_placeholders_native():
+    with app.app_context():
+        from flask_babel import gettext as _
+
+        with force_locale("it"):
+            assert _("Panoramica") == "Panoramica"
+            assert _("https://iltuosito.it") == "https://iltuosito.it"
+            assert _("https://tuosito.com") == "https://tuosito.com"
+        for loc, want in DASH_TITLES.items():
+            with force_locale(babel_locale(loc)):
+                for msgid, msgstr in want.items():
+                    assert _(msgid) == msgstr, f"{loc}: {msgid} -> {_(msgid)}"
+
+
+def test_url_placeholders_use_gettext():
+    from pathlib import Path
+
+    landing = Path("templates/landing.html").read_text(encoding="utf-8")
+    audit = Path("templates/partials/dash_audit.html").read_text(encoding="utf-8")
+    analyze = Path("templates/partials/analyze_form.html").read_text(encoding="utf-8")
+    register = Path("templates/register.html").read_text(encoding="utf-8")
+    assert "placeholder=\"{{ _('https://iltuosito.it') }}\"" in landing
+    assert "placeholder=_('https://tuosito.com')" in audit
+    assert "placeholder=\"{{ _('https://rivale.com') }}\"" in audit
+    assert "placeholder=_('https://tuosito.com')" in analyze
+    assert "placeholder=_('https://tuosito.com')" in register
+
+
 def test_shell_uses_form_submit_not_hardcoded_analizza():
     from pathlib import Path
 
+    form = Path("templates/partials/analyze_form.html").read_text(encoding="utf-8")
     shell = Path("templates/partials/dashboard_shell.html").read_text(encoding="utf-8")
-    assert "form.submit(" in shell
+    assert "form.submit(" in form
     assert "Analizza dominio" not in shell
+    assert "Analizza dominio" not in form
     assert 'SubmitField(_l("Avvia"))' in Path("app.py").read_text(encoding="utf-8")

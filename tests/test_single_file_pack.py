@@ -50,6 +50,11 @@ def test_unified_fix_html_contains_all_sections():
     assert 'id="head-fix"' in html
     assert 'id="llms-fix"' in html
     assert 'id="robots-fix"' in html
+    assert 'class="pack-logo"' in html
+    assert 'viewBox="0 0 128 128"' in html
+    assert 'd="M102 30 A50 50 0 1 0 102 98"' in html
+    assert "#E8A04A" in html
+    assert 'id="pack-cWarm"' in html
 
 
 def test_pack_zip_contains_exactly_one_file():

@@ -9,7 +9,7 @@ from typing import Any
 from services.analyzer import analyze_site
 from services.analysis_store import persist_analysis
 from services.artifacts import build_optimization_pack, scrape_fingerprint
-from services.alerts import dispatch_alerts
+from services.alerts import dispatch_alerts, dispatch_run_events
 from services.deep_checks import analyze_monitoring_alerts
 from services.geo_suite import run_geo_suite
 from services.prompt_bank import resolve_prompts
@@ -348,7 +348,21 @@ def run_analysis_pipeline(
             except Exception:
                 pass
 
-    # Outbound alerts (email / webhook) after persist
+    # Product webhooks (completed + pack.ready) then regression alerts
+    try:
+        if (getattr(user, "webhook_url", None) or "").strip():
+            dispatch_run_events(
+                user=user,
+                site=analysis,
+                public_base=public_base,
+                edge_full=bool(getattr(user, "is_pro", False)),
+                run_id=int(run_id) if run_id else None,
+                source=source,
+                db_session=db_session if AlertDelivery is not None else None,
+                AlertDelivery=AlertDelivery,
+            )
+    except Exception:
+        logger.exception("dispatch_run_events failed")
     try:
         if getattr(user, "alert_email_enabled", True) or (
             getattr(user, "webhook_url", None) or ""
