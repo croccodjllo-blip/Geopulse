@@ -35,8 +35,10 @@ AI_CRAWLER_USER_AGENTS: list[dict[str, str]] = [
     {"name": "YouBot", "vendor": "You.com", "ua": "YouBot", "purpose": "search"},
 ]
 
-# Private/short TTL: plan downgrades must not keep serving Plus bodies via CDN.
+# Public llms.txt / signals.json: short private TTL.
 CACHE_CONTROL = "private, max-age=60"
+# Plus-only robots / JSON-LD: never cache so a downgrade cannot keep serving.
+PLUS_CACHE_CONTROL = "private, no-store"
 
 
 def new_public_token() -> str:
