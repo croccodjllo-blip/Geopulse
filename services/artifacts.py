@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -852,6 +853,19 @@ def _collect_faq_pairs(scraped: dict[str, Any]) -> list[dict[str, str]]:
 
 
 UNIFIED_FIX_FILENAME = "centropic-fix.html"
+_LOGO_SVG_PATH = Path(__file__).resolve().parents[1] / "static" / "img" / "logo.svg"
+
+
+def _pack_logo_svg() -> str:
+    """Inline the original Centropic mark so the downloaded pack stays self-contained."""
+    raw = _LOGO_SVG_PATH.read_text(encoding="utf-8")
+    svg = raw.strip()
+    svg = svg.replace('id="cWarm"', 'id="pack-cWarm"', 1)
+    svg = svg.replace('id="cWarm2"', 'id="pack-cWarm2"', 1)
+    svg = svg.replace("url(#cWarm)", "url(#pack-cWarm)")
+    svg = svg.replace("url(#cWarm2)", "url(#pack-cWarm2)")
+    svg = svg.replace("<svg ", '<svg class="pack-logo" ', 1)
+    return svg
 
 
 def build_unified_fix_html(
@@ -980,25 +994,30 @@ def build_unified_fix_html(
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Centropic Fix — {_esc(host)}</title>
 <style>
-body{{font-family:IBM Plex Sans,Segoe UI,sans-serif;margin:0;background:#0A0E14;color:#F5F7FA;line-height:1.55}}
+body{{font-family:Inter,Segoe UI,sans-serif;margin:0;background:#121212;color:#F3EDE3;line-height:1.55}}
 .wrap{{max-width:820px;margin:0 auto;padding:2rem 1.25rem 3rem}}
-h1{{font-family:Space Grotesk,IBM Plex Sans,sans-serif;font-size:1.75rem;letter-spacing:-.03em;margin:0 0 .35rem}}
-h2{{font-family:Space Grotesk,IBM Plex Sans,sans-serif;font-size:1.15rem;margin:2rem 0 .65rem;color:#6EC6C0}}
-.lede{{color:#8B97A8;margin:0 0 1.25rem}}
-.meta{{font-size:.9rem;color:#8B97A8;margin-bottom:1.5rem}}
-.step{{border:1px solid #1A222D;border-radius:8px;padding:1rem 1.1rem;margin:0 0 1rem;background:#04060A}}
-.step p{{margin:.35rem 0 .75rem;color:#C5CCD6;font-size:.92rem}}
-pre{{white-space:pre-wrap;word-break:break-word;background:#11161F;border:1px solid #1A222D;border-radius:6px;padding:.85rem;font-size:.82rem;color:#E8EEF5;overflow:auto}}
+h1{{font-family:Inter,Segoe UI,sans-serif;font-size:1.75rem;letter-spacing:-.03em;margin:0 0 .35rem}}
+h2{{font-family:Inter,Segoe UI,sans-serif;font-size:1.15rem;margin:2rem 0 .65rem;color:#E8A04A}}
+.lede{{color:#B8A894;margin:0 0 1.25rem}}
+.meta{{font-size:.9rem;color:#B8A894;margin-bottom:1.5rem}}
+.step{{border:1px solid #3A2E22;border-radius:8px;padding:1rem 1.1rem;margin:0 0 1rem;background:#1A1612}}
+.step p{{margin:.35rem 0 .75rem;color:#E8D5B5;font-size:.92rem}}
+pre{{white-space:pre-wrap;word-break:break-word;background:#161310;border:1px solid #3A2E22;border-radius:6px;padding:.85rem;font-size:.82rem;color:#F3EDE3;overflow:auto}}
 code{{font-family:IBM Plex Mono,ui-monospace,monospace}}
 ul{{padding-left:1.2rem;margin:.4rem 0}}
 li{{margin:.25rem 0}}
-footer{{margin-top:2rem;font-size:.85rem;color:#8B97A8}}
-.brand{{color:#6EC6C0}}
+footer{{margin-top:2rem;font-size:.85rem;color:#B8A894}}
+.pack-brand{{display:flex;align-items:center;gap:.75rem;margin:0 0 1.15rem}}
+.pack-logo{{width:2.75rem;height:2.75rem;flex:0 0 2.75rem;display:block}}
+.brand{{color:#E8A04A;margin:0;font-weight:650;letter-spacing:.04em}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="brand">centropic.ai</p>
+  <header class="pack-brand">
+    {_pack_logo_svg()}
+    <p class="brand">centropic.ai</p>
+  </header>
   <h1>{_esc(t("pack_title", loc))}</h1>
   <p class="lede">{_esc(t("pack_lede", loc))}</p>
   <p class="meta">{pack_meta}</p>

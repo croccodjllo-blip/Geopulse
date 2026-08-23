@@ -7,13 +7,14 @@ from pathlib import Path
 
 
 def test_pack_section_has_no_code_sheet():
-    dash = Path("templates/dashboard.html").read_text(encoding="utf-8")
-    assert "pack-fix-box" not in dash
-    assert "pack_fix_html" not in dash
-    assert "data-pack-mail-open" in dash
-    assert 'name="to_email"' in dash
-    assert "pack-mail.js" in dash
-    assert "pack-deliverable" in dash
+    prompt = Path("templates/dashboard_prompt.html").read_text(encoding="utf-8")
+    ops = Path("templates/partials/dash_prompt_ops.html").read_text(encoding="utf-8")
+    assert "pack-fix-box" not in prompt and "pack-fix-box" not in ops
+    assert "pack_fix_html" not in prompt and "pack_fix_html" not in ops
+    assert "data-pack-mail-open" in ops
+    assert 'name="to_email"' in ops
+    assert "pack-mail.js" in prompt
+    assert "pack-deliverable" in ops
 
 
 def test_pack_mail_assets_exist():

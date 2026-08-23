@@ -45,3 +45,6 @@ def test_confirm_analyze_script_has_csp_nonce():
     html = Path("templates/confirm_analyze.html").read_text(encoding="utf-8")
     assert 'nonce="{{ csp_nonce }}"' in html
     assert "analyze-overlay.js" in html
+    assert 'class="btn btn-signal"' in html
+    assert "btn-core" not in html
+    assert "{{ _('Conferma e avvia analisi') }}" in html

@@ -1,54 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">Analisi</title>
-  <desc id="d">Score AIO · GEO · Indice</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Analisi AIO GEO e CVI">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#04060A"/>
-      <stop offset="55%" stop-color="#0A0E14"/>
-      <stop offset="100%" stop-color="#070A10"/>
+    <linearGradient id="gAnaC1" x1="8%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#F4D7A8"/>
+      <stop offset="38%" stop-color="#E8A04A"/>
+      <stop offset="72%" stop-color="#C47A2C"/>
+      <stop offset="100%" stop-color="#8A4E16"/>
     </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#C9D3DD" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#C9D3DD" stop-opacity=".35"/>
-      <stop offset="100%" stop-color="#C9D3DD" stop-opacity="0"/>
+    <linearGradient id="gAnaC2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A85E1C"/>
+      <stop offset="50%" stop-color="#E8A04A"/>
+      <stop offset="100%" stop-color="#F6E0B8"/>
     </linearGradient>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
   </defs>
-  <rect width="960" height="540" fill="url(#bg)"/>
-  <circle cx="820" cy="90" r="160" fill="#C9D3DD" opacity=".06"/>
-  <circle cx="120" cy="460" r="140" fill="#5B6B7A" opacity=".05"/>
-  <rect x="36" y="36" width="888" height="468" rx="22" fill="#0A0E14" stroke="#1A222D" stroke-width="1.5"/>
-  <rect x="36" y="36" width="888" height="4" fill="url(#glow)"/>
-  <text x="64" y="88" fill="#C9D3DD" font-family="'Inter', system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="2">ANALISI</text>
-  <text x="64" y="122" fill="#E8EEF4" font-family="'Inter', system-ui, sans-serif" font-size="28" font-weight="700">Score AIO · GEO · Indice</text>
-  
-  <g transform="translate(64,160)">
-    <rect width="250" height="220" rx="16" fill="#0A0E14" stroke="#1A222D"/>
-    <text x="24" y="40" fill="#8B97A8" font-size="12" font-family="'Inter', system-ui, sans-serif">AIO</text>
-    <text x="24" y="95" fill="#C9D3DD" font-size="56" font-weight="700" font-family="'Inter', system-ui, sans-serif">78</text>
-    <text x="24" y="130" fill="#8B97A8" font-size="13" font-family="'Inter', system-ui, sans-serif">AI-Driven Visibility</text>
-    <rect x="24" y="160" width="200" height="8" rx="4" fill="#1A222D"/>
-    <rect x="24" y="160" width="156" height="8" rx="4" fill="#C9D3DD"/>
+  <rect width="960" height="540" fill="#121212"/>
+  <rect width="960" height="56" fill="#161616"/>
+  <text x="28" y="34" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="650">centropic<tspan fill="#E8A04A">.ai</tspan></text>
+  <g font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">
+    <rect x="248" y="16" width="92" height="24" rx="12" fill="#E8A04A"/>
+    <text x="294" y="33" text-anchor="middle" fill="#121212">Panoramica</text>
+    <rect x="348" y="16" width="88" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="392" y="33" text-anchor="middle" fill="#F3EDE3">Benchmark</text>
+    <rect x="444" y="16" width="72" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="480" y="33" text-anchor="middle" fill="#F3EDE3">Prompt</text>
+    <rect x="524" y="16" width="64" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="556" y="33" text-anchor="middle" fill="#F3EDE3">Trend</text>
+    <rect x="596" y="16" width="62" height="24" rx="12" fill="none" stroke="rgba(243,237,227,0.18)"/>
+    <text x="627" y="33" text-anchor="middle" fill="#F3EDE3">Guida</text>
   </g>
-  <g transform="translate(340,160)">
-    <rect width="250" height="220" rx="16" fill="#0A0E14" stroke="#1A222D"/>
-    <text x="24" y="40" fill="#8B97A8" font-size="12" font-family="'Inter', system-ui, sans-serif">GEO</text>
-    <text x="24" y="95" fill="#22C55E" font-size="56" font-weight="700" font-family="'Inter', system-ui, sans-serif">71</text>
-    <text x="24" y="130" fill="#8B97A8" font-size="13" font-family="'Inter', system-ui, sans-serif">Generative Engine Opt.</text>
-    <rect x="24" y="160" width="200" height="8" rx="4" fill="#1A222D"/>
-    <rect x="24" y="160" width="142" height="8" rx="4" fill="#22C55E"/>
-  </g>
-  <g transform="translate(616,160)">
-    <rect width="250" height="220" rx="16" fill="#0A0E14" stroke="#1A222D"/>
-    <text x="24" y="40" fill="#8B97A8" font-size="12" font-family="'Inter', system-ui, sans-serif">INDICE</text>
-    <text x="24" y="100" fill="#F59E0B" font-size="48" font-weight="700" font-family="'Inter', system-ui, sans-serif">BBB</text>
-    <text x="24" y="145" fill="#8B97A8" font-size="13" font-family="'Inter', system-ui, sans-serif">Scala DDD → AAA</text>
-    <text x="24" y="185" fill="#E8EEF4" font-size="12" font-family="'Inter', system-ui, sans-serif">Mira a salire di un grado</text>
-  </g>
+  <rect x="860" y="18" width="72" height="20" rx="10" fill="none" stroke="#E8A04A"/>
+  <text x="896" y="33" text-anchor="middle" fill="#E8A04A" font-family="Inter, system-ui, sans-serif" font-size="11">Plus</text>
 
-  <text x="64" y="480" fill="#8B97A8" font-family="'Inter', system-ui, sans-serif" font-size="12">Centropic · guida prodotto</text>
+  <text x="28" y="96" fill="rgba(243,237,227,0.45)" font-family="Inter, system-ui, sans-serif" font-size="11" letter-spacing="1.4">AUDIT</text>
+  <text x="28" y="128" fill="#F3EDE3" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="700">AIO · GEO · CVI</text>
+  <text x="28" y="154" fill="rgba(243,237,227,0.5)" font-family="Inter, system-ui, sans-serif" font-size="13">Compositario sul dominio attivo · example.com</text>
+
+  <g font-family="Inter, system-ui, sans-serif">
+    <rect x="28" y="184" width="292" height="320" fill="#1A1A1A"/>
+    <text x="48" y="216" fill="rgba(243,237,227,0.45)" font-size="12">AIO</text>
+    <text x="48" y="276" fill="#F3EDE3" font-size="56" font-weight="720">81</text>
+    <text x="48" y="310" fill="rgba(243,237,227,0.5)" font-size="13">AI-Driven Visibility</text>
+    <rect x="48" y="340" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="48" y="340" width="178" height="8" fill="#E8A04A"/>
+    <text x="48" y="380" fill="rgba(243,237,227,0.45)" font-size="12">Quanto i modelli vedono il brand</text>
+
+    <rect x="334" y="184" width="292" height="320" fill="#1A1A1A"/>
+    <text x="354" y="216" fill="rgba(243,237,227,0.45)" font-size="12">GEO</text>
+    <text x="354" y="276" fill="#F3EDE3" font-size="56" font-weight="720">74</text>
+    <text x="354" y="310" fill="rgba(243,237,227,0.5)" font-size="13">Generative Engine Opt.</text>
+    <rect x="354" y="340" width="220" height="8" fill="rgba(243,237,227,0.08)"/>
+    <rect x="354" y="340" width="162" height="8" fill="#C47A2C"/>
+    <text x="354" y="380" fill="rgba(243,237,227,0.45)" font-size="12">Citabilità nelle risposte generate</text>
+
+    <rect x="640" y="184" width="292" height="320" fill="#1A1A1A"/>
+    <text x="660" y="216" fill="rgba(243,237,227,0.45)" font-size="12">CVI</text>
+    <g transform="translate(708,228) scale(0.72)">
+      <path d="M102 30 A50 50 0 1 0 102 98" fill="none" stroke="url(#gAnaC1)" stroke-width="9.5" stroke-linecap="round"/>
+      <path d="M92 38 A38 38 0 1 0 92 90" fill="none" stroke="url(#gAnaC2)" stroke-width="7.5" stroke-linecap="round"/>
+      <circle cx="108" cy="36" r="3.2" fill="#E8A04A"/>
+      <text x="54" y="76" text-anchor="middle" fill="#F59E0B" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="720" letter-spacing="-2">BB</text>
+    </g>
+    <text x="660" y="400" fill="#F3EDE3" font-size="16" font-weight="650">78 / 100</text>
+    <text x="660" y="428" fill="rgba(243,237,227,0.45)" font-size="13">Scala DD → AA</text>
+    <text x="660" y="456" fill="rgba(243,237,227,0.45)" font-size="12">Mira a salire di un grado</text>
+  </g>
 </svg>

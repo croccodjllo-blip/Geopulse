@@ -35,7 +35,8 @@ def test_gsc_available_with_credentials_when_oauth_shipped(monkeypatch):
     import services.gsc as gsc
 
     gsc.reload_gsc_env()
-    status = gsc.gsc_status()
+    with app.test_request_context("/"):
+        status = gsc.gsc_status()
     assert status["available"] is True
     assert status.get("connected") is False
 

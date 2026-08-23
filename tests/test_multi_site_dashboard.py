@@ -61,8 +61,9 @@ def test_dashboard_site_query_loads_full_report_for_that_site():
         html = resp.get_data(as_text=True)
         assert "beta.example" in html
         assert 'id="dash-site-select"' in html
-        assert f'value="{b.id}"' in html
-        assert "selected" in html
+        assert f'data-site-id="{b.id}"' in html
+        assert "is-active" in html
+        assert "<select" not in html.split('id="analyze-panel"')[1][:4000]
         # Full report chrome for the selected site
         assert "AIO" in html and "GEO" in html
 

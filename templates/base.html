@@ -1,8 +1,18 @@
 <!DOCTYPE html>
-<html lang="{{ ui_lang }}">
+<html lang="{{ ui_lang }}" data-dock="open">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script nonce="{{ csp_nonce }}">
+      (function () {
+        try {
+          var d = localStorage.getItem("centropic.dock");
+          if (d === "rail" || d === "open") {
+            document.documentElement.setAttribute("data-dock", d);
+          }
+        } catch (e) {}
+      })();
+    </script>
     {% set _page_title %}{% block title %}Centropic{% endblock %}{% endset %}
     <title>{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}</title>
     <meta
@@ -32,7 +42,7 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="{{ url_for('static', filename='img/og-share.jpg', _external=True) }}" />
-    <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#041210{% elif current_user and dash_plan == 'business' %}#120E0A{% else %}#04060A{% endif %}" />
+    <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#16120C{% elif current_user and dash_plan == 'business' %}#1A1410{% else %}#121212{% endif %}" />
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
@@ -85,36 +95,26 @@
     {% endif %}
     {# AdSense is loaded only after ad_storage consent (see analytics.js) #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site-preview-v3.css') }}" />
+    {% block head_extra %}{% endblock %}
     {% include "partials/jsonld_organization.html" %}
     {% block structured_data %}{% endblock %}
   </head>
-  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
+  <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--topbar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
     {% block shell %}
-    {# Sidebar on every authenticated page except auth flows (login/register/reset). #}
+    {# Top bar on every authenticated page except auth flows (login/register/reset). #}
     {% set _bc = self.body_class()|default('', true)|trim %}
     {% set _dash_shell = current_user and ('body-auth' not in _bc) %}
     {% if _dash_shell %}
-      {% include "partials/app_sidebar.html" %}
+      {% include "partials/app_topbar.html" %}
     {% endif %}
-    <header class="site-header {% block header_class %}{% endblock %}{% if _dash_shell %} site-header--invert{% endif %}">
+    {% if not _dash_shell %}
+    <header class="site-header {% block header_class %}{% endblock %}">
       <div class="site-header__inner">
-        {% if _dash_shell %}
-        <button
-          type="button"
-          class="app-sidebar__toggle"
-          data-sidebar-toggle
-          aria-controls="app-sidebar"
-          aria-expanded="false"
-          aria-label="{{ _('Apri menu') }}"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-        <p class="site-header__dash-title">{{ self.title() }}</p>
-        {% else %}
         <a class="brand-mark brand-mark--holo" href="{{ url_for('index') }}" aria-label="Centropic home">
           <img
             class="brand-mark__logo"
-            src="{{ url_for('static', filename='img/logo.svg') }}"
+            src="{{ url_for('static', filename='img/logo-mark.svg') }}"
             alt="Centropic"
             width="32"
             height="32"
@@ -122,10 +122,18 @@
           />
           <span class="brand-mark__word holo-brand__word holo-brand__word--nav">centropic<span>.ai</span></span>
         </a>
-        {% endif %}
-        <nav class="nav-links" aria-label="{{ _('Principale') }}">
+        <button
+          type="button"
+          class="site-header__toggle"
+          data-nav-toggle
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="{{ _('Apri menu') }}"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <nav class="nav-links" id="site-nav" aria-label="{{ _('Principale') }}">
           {% if current_user %}
-            {% if not _dash_shell %}
             <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}is-active{% endif %}">{{ _('Dashboard') }}</a>
             {% if can_extended_history %}
             <a href="{{ url_for('dashboard_history') }}" class="{% if request.endpoint == 'dashboard_history' %}is-active{% endif %}">{{ _('Storico') }}</a>
@@ -141,9 +149,6 @@
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit">{{ _('Esci') }}</button>
             </form>
-            {% else %}
-            <span class="nav-user" title="{{ current_user.email }}">{{ current_user.name.split(' ')[0] }}</span>
-            {% endif %}
           {% else %}
             <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}is-active{% endif %}">{{ _('Prodotto') }}</a>
             <a href="{{ url_for('site_guide') }}" class="{% if request.endpoint == 'site_guide' %}is-active{% endif %}">{{ _('Guida') }}</a>
@@ -181,6 +186,7 @@
         </nav>
       </div>
     </header>
+    {% endif %}
 
     <main class="site-main {% block main_class %}{% endblock %}">
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -195,6 +201,7 @@
       {% block content %}{% endblock %}
     </main>
 
+    {% block footer %}
     <footer class="site-footer">
       <div class="site-footer__inner site-footer__grid">
         <div class="site-footer__brand">
@@ -285,6 +292,7 @@
       </div>
     </footer>
     {% endblock %}
+    {% endblock %}{# shell #}
 
     <aside id="cookie-consent" class="cookie-consent" role="dialog" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc" hidden>
       <p class="cookie-consent__title" id="cookie-consent-title">{{ _('Cookie e misurazione') }}</p>
@@ -321,7 +329,7 @@
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/auth.js') }}" defer="defer"></script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/i18n.js') }}" defer="defer"></script>
     <script nonce="{{ csp_nonce }}" src="{{ url_for('static', filename='js/shell.js') }}" defer="defer"></script>
-    {% if paddle_overlay and paddle_config and paddle_config.clientToken %}
+    {% if paddle_overlay and paddle_config and paddle_config.clientToken and request.endpoint != 'index' %}
     <script nonce="{{ csp_nonce }}" src="https://cdn.paddle.com/paddle/v2/paddle.js" defer="defer"></script>
     <script nonce="{{ csp_nonce }}" defer="defer">
       window.__CENTROPIC_PADDLE__ = Object.assign(

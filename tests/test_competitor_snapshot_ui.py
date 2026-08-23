@@ -20,9 +20,9 @@ def test_competitor_snapshot_partial_is_graphic_and_csp_safe():
 
 
 def test_dashboard_includes_competitor_snapshot_partial():
-    dash = Path("templates/dashboard.html").read_text(encoding="utf-8")
-    assert 'partials/competitor_snapshot.html' in dash
-    assert "comp-list" not in dash.split('id="edge-signals"')[0]
+    bench = Path("templates/dashboard_benchmark.html").read_text(encoding="utf-8")
+    assert 'partials/competitor_snapshot.html' in bench
+    assert "comp-list" not in bench
 
 
 def test_comp_arena_css_present():
