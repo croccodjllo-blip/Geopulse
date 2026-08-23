@@ -46,6 +46,8 @@ def test_cms_bundle_zip_contains_adapters_and_readme():
     with zipfile.ZipFile(io.BytesIO(raw)) as zf:
         names = set(zf.namelist())
         assert "README.md" in names
+        assert "APPLY.md" in names
+        assert "pack.ready" in zf.read("APPLY.md").decode("utf-8")
         assert "routes.json" in names
         assert any(n.startswith("wordpress/") for n in names)
         assert any(n.startswith("drupal/") for n in names)

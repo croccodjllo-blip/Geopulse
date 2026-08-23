@@ -79,6 +79,12 @@ def test_email_pack_denied_for_org_viewer(monkeypatch):
         )
         assert resp.status_code in (302, 303)
         assert not sent
+
+        download = client.get(
+            f"/dashboard/download/{site_id}.html",
+            follow_redirects=False,
+        )
+        assert download.status_code in (302, 303)
     finally:
         app.config["WTF_CSRF_ENABLED"] = prev_csrf
 

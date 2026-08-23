@@ -6,6 +6,7 @@ Analisi score + findings + generazione pack (singolo HTML con tutti i fix).
 from __future__ import annotations
 
 import hashlib
+import hmac
 import io
 import json
 import logging
@@ -89,8 +90,10 @@ from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
     assert_paddle_env_matches_site,
     assert_transaction_matches_catalog as paddle_assert_transaction_matches_catalog,
+    claim_webhook_event_once as paddle_claim_webhook_event_once,
     client_config as paddle_client_config,
     create_business_checkout as paddle_create_business_checkout,
+    issue_checkout_bind as paddle_issue_checkout_bind,
     create_plus_checkout as paddle_create_plus_checkout,
     create_topup_checkout as paddle_create_topup_checkout,
     extract_user_id as paddle_extract_user_id,
@@ -223,6 +226,7 @@ from services.mailer import (
 from services.rate_limit import limiter
 from services.rating import RATING_ORDER, compute_rating
 from services.engine_breakdown import apply_measured_sov, compute_engine_breakdown
+from services.dash_charts import build_dash_charts, build_history_trend
 from services.geo_ui_payload import build_geo_ui_payload
 from services.token_units import (
     BUSINESS_MONTHLY_CREDIT_CENTS,
@@ -247,6 +251,12 @@ from services.sov_budget import (
 )
 from services.prompt_bank import dump_prompt_bank, parse_prompt_bank, resolve_prompts
 from services.api_auth import find_user_by_api_key, generate_api_key
+from services.api_metrics import (
+    _finding_summaries,
+    openapi_document,
+    run_list_item,
+    site_metrics_payload,
+)
 from services.agency import (
     build_whitelabel_html,
     build_whitelabel_markdown,
@@ -279,6 +289,7 @@ from services.cms_connector import (
 )
 from services.edge_signals import (
     CACHE_CONTROL as EDGE_CACHE_CONTROL,
+    PLUS_CACHE_CONTROL as EDGE_PLUS_CACHE_CONTROL,
     build_live_robots_txt,
     build_signals_payload,
     cloudflare_worker_snippet,
@@ -412,7 +423,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 app.config["INSTANCE_RELATIVE_CONFIG"] = False
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
-app.config["BABEL_DEFAULT_LOCALE"] = "it"
+app.config["BABEL_DEFAULT_LOCALE"] = "en"
 app.config["BABEL_TRANSLATION_DIRECTORIES"] = os.path.join(BASE_DIR, "translations")
 
 # Dietro Nginx: rispetta X-Forwarded-For / Proto / Prefix solo se TRUST_PROXY=1
@@ -1537,12 +1548,30 @@ def current_user() -> User | None:
     return user
 
 
+def _paddle_client_config_for(user: User | None) -> dict[str, Any]:
+    """Public Paddle.js config plus a signed first-bind token when logged in."""
+    cfg = dict(paddle_client_config())
+    if user is None:
+        return cfg
+    try:
+        bind = paddle_issue_checkout_bind(int(user.id))
+    except Exception:
+        app.logger.exception("checkout bind token issue failed user=%s", getattr(user, "id", None))
+        return cfg
+    cfg["bindTs"] = bind.get("bind_ts") or ""
+    cfg["bindSig"] = bind.get("bind_sig") or ""
+    return cfg
+
+
 def _establish_session(user: User, *, permanent: bool = True) -> None:
     """Create a fresh authenticated session bound to the user's session_version."""
+    pending_preview = (session.get("guest_preview_token") or "").strip()
     session.clear()
     session["user_id"] = user.id
     session["session_version"] = int(getattr(user, "session_version", 0) or 0)
     session.permanent = permanent
+    if pending_preview:
+        session["guest_preview_token"] = pending_preview
 
 
 def ensure_admin_user() -> User | None:
@@ -1683,8 +1712,13 @@ def inject_globals() -> dict[str, Any]:
         ep = (request.endpoint or "")
         if ep in {"dashboard_settings"}:
             sidebar_active = "settings"
-        elif ep in {"dashboard_history", "site_history", "export_history_csv"}:
-            sidebar_active = "history"
+        elif ep in {
+            "dashboard_history",
+            "dashboard_trend",
+            "site_history",
+            "export_history_csv",
+        }:
+            sidebar_active = "trend"
         elif ep in {
             "topup_credit_page",
             "pricing",
@@ -1695,8 +1729,12 @@ def inject_globals() -> dict[str, Any]:
             sidebar_active = "billing"
         elif ep in {"dashboard_guide", "site_guide"}:
             sidebar_active = "guide"
-        elif ep in {"dashboard_geo_ui"}:
-            sidebar_active = "geo-ui"
+        elif ep in {"dashboard_geo_ui", "dashboard_benchmark"}:
+            sidebar_active = "benchmark"
+        elif ep in {"dashboard_prompt"}:
+            sidebar_active = "prompt"
+        elif ep in {"dashboard_sov"}:
+            sidebar_active = "panoramica"
         elif ep in {"dashboard_verify", "dashboard_verify_rescan"}:
             sidebar_active = "geo"
         elif ep in {"admin_home", "admin_set_plan", "admin_topup_user"} or (
@@ -1706,7 +1744,7 @@ def inject_globals() -> dict[str, Any]:
         elif "history" in ep:
             sidebar_active = "history"
         elif ep in {"dashboard", "confirm_analyze"}:
-            sidebar_active = "dashboard"
+            sidebar_active = "panoramica"
         else:
             sidebar_active = "dashboard"
     caps = capability_template_vars(user)
@@ -1744,7 +1782,7 @@ def inject_globals() -> dict[str, Any]:
         "payments_ready": payments_enabled(),
         "payments_provider": payments_provider(),
         "paddle_overlay": paddle_overlay_ready(),
-        "paddle_config": paddle_client_config(),
+        "paddle_config": _paddle_client_config_for(user),
         "legal_company_name": LEGAL_COMPANY_NAME,
         "legal_vat": LEGAL_VAT,
         "legal_address": LEGAL_ADDRESS,
@@ -4133,6 +4171,7 @@ def _edge_response(
     analysis: SiteAnalysis,
     path: str = "",
     token: str = "",
+    cache_control: str | None = None,
 ) -> Response:
     version = int(getattr(analysis, "signals_version", 1) or 1)
     if path and token:
@@ -4155,7 +4194,7 @@ def _edge_response(
         return Response(status=304)
     resp = Response(body, mimetype=mimetype)
     resp.headers["ETag"] = etag
-    resp.headers["Cache-Control"] = EDGE_CACHE_CONTROL
+    resp.headers["Cache-Control"] = cache_control or EDGE_CACHE_CONTROL
     resp.headers["X-Centropic-Edge"] = "1"
     resp.headers["X-Centropic-Version"] = str(version)
     # Legacy aliases retained for existing GeoPulse connectors.
@@ -4214,6 +4253,7 @@ def edge_robots_txt(token: str):
         analysis=analysis,
         path="robots.txt",
         token=token,
+        cache_control=EDGE_PLUS_CACHE_CONTROL,
     )
 
 
@@ -4238,6 +4278,7 @@ def edge_organization_jsonld(token: str):
         analysis=analysis,
         path="organization.jsonld",
         token=token,
+        cache_control=EDGE_PLUS_CACHE_CONTROL,
     )
 
 
@@ -4845,7 +4886,19 @@ def preview_analyze_view(token: str):
             return redirect(url_for("index") + "#hero-brand")
 
     user = current_user()
-    if user is not None and preview.status == "done" and not preview.claimed_user_id:
+    session_tok = (session.get("guest_preview_token") or "").strip()
+    preview_tok = (preview.token or "").strip()
+    session_owns = bool(
+        session_tok
+        and preview_tok
+        and hmac.compare_digest(session_tok, preview_tok)
+    )
+    if (
+        user is not None
+        and preview.status == "done"
+        and not preview.claimed_user_id
+        and session_owns
+    ):
         site = claim_guest_preview(
             db_session=db.session,
             GuestPreview=GuestPreview,
@@ -5077,11 +5130,15 @@ def maybe_send_lifecycle_emails(user: User) -> None:
 @app.route("/guida")
 def site_guide():
     """Guida completa pubblica: servizi, analisi, glossario."""
-    return render_template(
-        "guide.html",
-        guide=site_guide_payload(),
-        dash_shell=False,
+    resp = make_response(
+        render_template(
+            "guide.html",
+            guide=site_guide_payload(),
+            dash_shell=False,
+        )
     )
+    resp.headers["Cache-Control"] = "private, no-store, max-age=0"
+    return resp
 
 
 @app.route("/metodologia")
@@ -5482,6 +5539,10 @@ def billing_paddle_webhook():
         app.logger.warning("Paddle webhook parse failed: %s", exc)
         return jsonify({"ok": False}), 400
 
+    event_id = str(event.get("event_id") or event.get("notification_id") or "").strip()
+    if event_id and not paddle_claim_webhook_event_once(event_id):
+        return jsonify({"ok": True, "duplicate": True})
+
     etype = (event.get("event_type") or event.get("eventType") or "").strip()
     data = event.get("data") or {}
 
@@ -5789,9 +5850,10 @@ def billing_paddle_webhook():
                 return jsonify({"ok": False, "error": "amount_mismatch"}), 400
             if catalog_cents is None:
                 app.logger.warning(
-                    "Paddle top-up amount unavailable; skipping mismatch check txn=%s",
+                    "Paddle top-up amount unavailable txn=%s",
                     data.get("id"),
                 )
+                return jsonify({"ok": False, "error": "amount_unavailable"}), 400
 
             txn_id = str(data.get("id") or "").strip()
             if not txn_id:
@@ -6402,6 +6464,287 @@ def dashboard_geo_ui():
     )
 
 
+@app.route("/dashboard/sov")
+@app.route("/dashboard/sov/")
+@login_required
+def dashboard_sov():
+    """Share of Voice detail — table + Findings + Edge/Pack (preview composition)."""
+    user = current_user()
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is not None:
+        if get_accessible_site(SiteAnalysis, user, prefer_site_id) is None:
+            flash(_("Sito non accessibile."), "warning")
+            return redirect(url_for("dashboard_sov"))
+    else:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+
+    user_sites = (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(SiteAnalysis.updated_at.desc())
+        .limit(40)
+        .all()
+    )
+
+    findings_all = list(latest.findings or []) if latest is not None else []
+    findings_critical = [
+        f
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() in {"critical", "warn"}
+    ]
+    findings_ok_n = sum(
+        1
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() == "ok"
+    )
+
+    engine_breakdown = None
+    if latest is not None:
+        engine_breakdown = compute_engine_breakdown(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            robots_text=latest.robots_probed_text or "",
+            competitors=latest.competitors,
+        )
+        measured = (latest.signals or {}).get("sov_measured")
+        if user.is_pro and isinstance(measured, dict):
+            engine_breakdown = apply_measured_sov(engine_breakdown, measured)
+
+    dash_charts = None
+    if latest is not None:
+        sov_trend: list[Any] = []
+        if user.is_pro:
+            sov_trend = sov_series_for_chart(
+                list_sov_snapshots(
+                    SovSnapshot,
+                    site_id=latest.id,
+                    user_id=user.id,
+                    limit=12,
+                )
+            )
+        dash_charts = build_dash_charts(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            crawl_pages=list(latest.crawl_pages or []),
+            geo_suite={
+                "entity_graph": (latest.signals or {}).get("entity_graph") or {},
+                "citability": (latest.signals or {}).get("citability") or {},
+                "schema_quality": (latest.signals or {}).get("schema_quality") or {},
+                "locales": (latest.signals or {}).get("locales") or {},
+                "publish_verify": (latest.signals or {}).get("publish_verify") or {},
+                "llms_lint": (latest.signals or {}).get("llms_lint") or {},
+            },
+            engine_breakdown=engine_breakdown,
+            sov_trend=sov_trend,
+        )
+
+    sov_budget = _current_sov_budget(user)
+    measured_bg_job = None
+    if latest is not None:
+        active_jobs = (
+            AnalysisJob.query.filter(
+                AnalysisJob.user_id == user.id,
+                AnalysisJob.site_id == latest.id,
+                AnalysisJob.status.in_(("pending", "running")),
+            )
+            .order_by(AnalysisJob.created_at.desc())
+            .all()
+        )
+        measured_bg_job = next(
+            (
+                j
+                for j in active_jobs
+                if str(getattr(j, "source", None) or "").lower() == "measured"
+            ),
+            None,
+        )
+
+    return render_template(
+        "dashboard_sov.html",
+        latest=latest,
+        user_sites=user_sites,
+        engine_breakdown=engine_breakdown,
+        dash_charts=dash_charts,
+        findings_critical=findings_critical,
+        findings_ok_n=findings_ok_n,
+        sov_budget=sov_budget,
+        openai_ready=bool(OPENAI_API_KEY),
+        citation_ready=citation_monitor_available(),
+        user_plan=user.plan_label,
+        site_count=sites_query_for_user(SiteAnalysis, user).count(),
+        max_sites=user.max_sites,
+        token_balance_short=format_tokens_short(get_balance_cents(user)),
+        measured_bg_job=measured_bg_job,
+        **capability_template_vars(user),
+    )
+
+
+def _workspace_site(user):
+    """Resolve sticky/requested site for the five-page workspace."""
+    prefer_site_id = request.args.get("site", type=int)
+    if prefer_site_id is not None:
+        if get_accessible_site(SiteAnalysis, user, prefer_site_id) is None:
+            flash(_("Sito non accessibile."), "warning")
+            return None
+    else:
+        sticky = session.get("dashboard_site_id")
+        try:
+            prefer_site_id = int(sticky) if sticky is not None else None
+        except (TypeError, ValueError):
+            prefer_site_id = None
+    latest = latest_site_for_user(
+        SiteAnalysis, user, prefer_site_id=prefer_site_id
+    )
+    if latest is not None:
+        session["dashboard_site_id"] = int(latest.id)
+    return latest
+
+
+def _workspace_user_sites(user):
+    return (
+        sites_query_for_user(SiteAnalysis, user)
+        .order_by(SiteAnalysis.updated_at.desc())
+        .limit(40)
+        .all()
+    )
+
+
+def _workspace_findings(latest):
+    findings_all = list(latest.findings or []) if latest is not None else []
+    findings_critical = [
+        f
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() in {"critical", "warn"}
+    ]
+    findings_ok_n = sum(
+        1
+        for f in findings_all
+        if str((f or {}).get("severity") or "").lower() == "ok"
+    )
+    return findings_all, findings_critical, findings_ok_n
+
+
+def _workspace_edge(latest):
+    if latest is None or not getattr(latest, "signals_hosted", False) or not latest.public_token:
+        return None
+    base = edge_base_url(public_base_url(), latest.public_token)
+    signals_url = f"{base}/signals.json"
+    return {
+        "base": base,
+        "llms_url": f"{base}/llms.txt",
+        "robots_url": f"{base}/robots.txt",
+        "jsonld_url": f"{base}/organization.jsonld",
+        "signals_url": signals_url,
+        "meta_url": f"{base}/meta",
+        "version": int(getattr(latest, "signals_version", 1) or 1),
+        "worker": cloudflare_worker_snippet(
+            origin_edge_base=base,
+            site_origin=latest.url or f"https://{latest.domain}",
+        ),
+        "vercel": vercel_edge_config_snippet(origin_edge_base=base),
+        "embed": html_embed_snippet(signals_url=signals_url),
+        "crawlers": top_crawlers_for_site(EdgeHit, site_id=latest.id, limit=8),
+    }
+
+
+def _workspace_charts(user, latest, findings_all, engine_breakdown, run_diff=None):
+    if latest is None:
+        return None
+    sov_trend: list[Any] = []
+    if user.is_pro:
+        sov_trend = sov_series_for_chart(
+            list_sov_snapshots(
+                SovSnapshot,
+                site_id=latest.id,
+                user_id=user.id,
+                limit=12,
+            )
+        )
+    geo_suite = {
+        "entity_graph": (latest.signals or {}).get("entity_graph") or {},
+        "citability": (latest.signals or {}).get("citability") or {},
+        "schema_quality": (latest.signals or {}).get("schema_quality") or {},
+        "locales": (latest.signals or {}).get("locales") or {},
+        "publish_verify": (latest.signals or {}).get("publish_verify") or {},
+        "llms_lint": (latest.signals or {}).get("llms_lint") or {},
+    }
+    return build_dash_charts(
+        aio_score=latest.aio_score,
+        geo_score=latest.geo_score,
+        findings=findings_all,
+        crawl_pages=list(latest.crawl_pages or []),
+        geo_suite=geo_suite,
+        engine_breakdown=engine_breakdown,
+        run_diff=run_diff,
+        sov_trend=sov_trend,
+    )
+
+
+@app.route("/dashboard/benchmark")
+@app.route("/dashboard/benchmark/")
+@login_required
+def dashboard_benchmark():
+    user = current_user()
+    latest = _workspace_site(user)
+    findings_all, findings_critical, _ok = _workspace_findings(latest)
+    crit_n = sum(
+        1
+        for f in findings_critical
+        if str((f or {}).get("severity") or "").lower() == "critical"
+    )
+    return render_template(
+        "dashboard_benchmark.html",
+        latest=latest,
+        user_sites=_workspace_user_sites(user),
+        findings_critical=findings_critical,
+        crit_n=crit_n,
+        user_plan=user.plan_label,
+        **capability_template_vars(user),
+    )
+
+
+@app.route("/dashboard/prompt")
+@app.route("/dashboard/prompt/")
+@login_required
+def dashboard_prompt():
+    user = current_user()
+    latest = _workspace_site(user)
+    _all, findings_critical, findings_ok_n = _workspace_findings(latest)
+    return render_template(
+        "dashboard_prompt.html",
+        latest=latest,
+        user_sites=_workspace_user_sites(user),
+        findings_critical=findings_critical,
+        findings_ok_n=findings_ok_n,
+        edge=_workspace_edge(latest),
+        pack_fix_filename=(
+            make_pack_fix_filename(latest) if latest is not None else "centropic-fix.html"
+        ),
+        can_write_latest=(
+            user_can_write_site(user, latest) if latest is not None else False
+        ),
+        user_plan=user.plan_label,
+        **capability_template_vars(user),
+    )
+
+
+@app.route("/dashboard/trend")
+@app.route("/dashboard/trend/")
+@login_required
+def dashboard_trend():
+    return dashboard_history()
+
+
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
@@ -6768,6 +7111,29 @@ def dashboard():
             ),
         }
 
+    dash_charts = None
+    if latest is not None:
+        sov_trend: list[Any] = []
+        if user.is_pro:
+            sov_trend = sov_series_for_chart(
+                list_sov_snapshots(
+                    SovSnapshot,
+                    site_id=latest.id,
+                    user_id=user.id,
+                    limit=12,
+                )
+            )
+        dash_charts = build_dash_charts(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            crawl_pages=list(latest.crawl_pages or []),
+            geo_suite=geo_suite,
+            engine_breakdown=engine_breakdown,
+            run_diff=run_diff,
+            sov_trend=sov_trend,
+        )
+
     edge_ctx: dict[str, Any] | None = None
     if latest is not None and getattr(latest, "signals_hosted", False) and latest.public_token:
         base = edge_base_url(public_base_url(), latest.public_token)
@@ -6798,6 +7164,20 @@ def dashboard():
         run_diff=run_diff,
         engine_breakdown=engine_breakdown,
         geo_suite=geo_suite,
+        dash_charts=dash_charts,
+        geo_ui_assets=resolve_geo_ui_assets() if latest is not None else None,
+        geo_ui_data=(
+            build_geo_ui_payload(
+                user=user,
+                SiteAnalysis=SiteAnalysis,
+                SovSnapshot=SovSnapshot,
+                audit_href=url_for("dashboard", site=int(latest.id)) + "#analyze-panel",
+                report_href=url_for("dashboard", site=int(latest.id)),
+                prefer_site_id=int(latest.id),
+            )
+            if latest is not None
+            else None
+        ),
         edge=edge_ctx,
         sov_budget=sov_budget,
         openai_ready=bool(OPENAI_API_KEY),
@@ -7569,11 +7949,15 @@ def dashboard_job_status(job_id: int):
 @app.route("/dashboard/guida")
 @login_required
 def dashboard_guide():
-    return render_template(
-        "guide.html",
-        guide=site_guide_payload(),
-        dash_shell=True,
+    resp = make_response(
+        render_template(
+            "guide.html",
+            guide=site_guide_payload(),
+            dash_shell=True,
+        )
     )
+    resp.headers["Cache-Control"] = "private, no-store, max-age=0"
+    return resp
 
 
 @app.route("/dashboard/impostazioni", methods=["GET", "POST"])
@@ -8555,7 +8939,7 @@ def api_v1_job_status(job_id: int):
             payload["aio_score"] = site.aio_score
             payload["geo_score"] = site.geo_score
             payload["rating"] = site.rating
-            payload["findings"] = (site.findings or [])[:50]
+            payload["findings"] = _finding_summaries(site.findings or [], limit=50)
     return jsonify(payload)
 
 
@@ -8601,6 +8985,72 @@ def api_v1_sites():
     )
 
 
+@app.route("/api/v1/openapi.json", methods=["GET"])
+@csrf.exempt
+def api_v1_openapi():
+    """Public machine-readable catalog — no secrets, no site data."""
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    return jsonify(openapi_document(public_base=public_base_url()))
+
+
+@app.route("/api/v1/sites/<int:site_id>", methods=["GET"])
+@csrf.exempt
+def api_v1_site_metrics(site_id: int):
+    """Latest AIO/GEO/CVI/SoV + finding summaries + pack checksums."""
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    user = api_v1_authenticate_user()
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
+    if not limiter.allow(f"api_metrics:{user.id}", limit=60, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    analysis = get_accessible_site(SiteAnalysis, user, site_id)
+    if analysis is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    return jsonify(site_metrics_payload(analysis))
+
+
+@app.route("/api/v1/sites/<int:site_id>/runs", methods=["GET"])
+@csrf.exempt
+def api_v1_site_runs(site_id: int):
+    blocked = api_v1_preauth_rate_limited()
+    if blocked is not None:
+        return blocked
+    user = api_v1_authenticate_user()
+    if user is None:
+        return jsonify({"ok": False, "error": "invalid_api_key"}), 401
+    if not plan_entitlements(user).can("api_access"):
+        return jsonify({"ok": False, "error": "business_required"}), 403
+    if not limiter.allow(f"api_runs:{user.id}", limit=60, window_seconds=3600):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+    analysis = get_accessible_site(SiteAnalysis, user, site_id)
+    if analysis is None:
+        return jsonify({"ok": False, "error": "not_found"}), 404
+    try:
+        limit = min(50, max(1, int(request.args.get("limit") or 20)))
+    except (TypeError, ValueError):
+        limit = 20
+    runs = (
+        AnalysisRun.query.filter_by(site_id=analysis.id)
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return jsonify(
+        {
+            "ok": True,
+            "schema": "centropic.runs/v1",
+            "site_id": analysis.id,
+            "runs": [run_list_item(run) for run in runs],
+        }
+    )
+
+
 @app.route("/api/v1/sites/<int:site_id>/edge", methods=["GET"])
 @csrf.exempt
 def api_v1_site_edge(site_id: int):
@@ -8618,6 +9068,8 @@ def api_v1_site_edge(site_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    if not user_can_write_site(user, analysis):
+        return jsonify({"ok": False, "error": "forbidden_viewer"}), 403
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
@@ -8686,6 +9138,8 @@ def api_v1_site_edge_cms_bundle(site_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    if not user_can_write_site(user, analysis):
+        return jsonify({"ok": False, "error": "forbidden_viewer"}), 403
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
@@ -8713,15 +9167,12 @@ def api_v1_site_edge_cms_bundle(site_id: int):
 def dashboard_history():
     user = current_user()
     hist_limit = history_limit_for(user)
-    if user.is_pro:
-        site_ids = [
-            row[0]
-            for row in sites_query_for_user(SiteAnalysis, user)
-            .with_entities(SiteAnalysis.id)
-            .all()
-        ]
+    latest = _workspace_site(user)
+    if latest is None:
+        history = []
+    elif user.is_pro:
         history = (
-            AnalysisRun.query.filter(AnalysisRun.site_id.in_(site_ids))
+            AnalysisRun.query.filter_by(site_id=latest.id)
             .order_by(AnalysisRun.created_at.desc())
             .limit(hist_limit)
             .all()
@@ -8729,15 +9180,62 @@ def dashboard_history():
     else:
         history = (
             sites_query_for_user(SiteAnalysis, user)
+            .filter(SiteAnalysis.id == latest.id)
             .order_by(SiteAnalysis.created_at.desc())
             .limit(hist_limit)
             .all()
         )
+    findings_all, _crit, _ok = _workspace_findings(latest)
+    engine_breakdown = None
+    run_diff = None
+    if latest is not None:
+        engine_breakdown = compute_engine_breakdown(
+            aio_score=latest.aio_score,
+            geo_score=latest.geo_score,
+            findings=findings_all,
+            robots_text=latest.robots_probed_text or "",
+            competitors=latest.competitors,
+        )
+        recent_runs = (
+            AnalysisRun.query.filter_by(site_id=latest.id)
+            .order_by(AnalysisRun.created_at.desc())
+            .limit(2)
+            .all()
+        )
+        if len(recent_runs) >= 2:
+            run_diff = compare_with_previous(
+                aio_score=recent_runs[0].aio_score,
+                geo_score=recent_runs[0].geo_score,
+                findings=recent_runs[0].findings,
+                previous=recent_runs[1],
+            )
+    schedule_form = RescanScheduleForm()
+    if latest and not schedule_form.is_submitted():
+        schedule_form.analysis_id.data = str(latest.id)
+        schedule_form.interval.data = latest.rescan_interval or "off"
+        schedule_form.hour.data = str(
+            clamp_hour(getattr(latest, "rescan_hour", DEFAULT_RESCAN_HOUR))
+        )
     return render_template(
-        "history.html",
+        "dashboard_trend.html",
         history=history,
         history_limit=hist_limit,
         history_is_runs=user.is_pro,
+        latest=latest,
+        user_sites=_workspace_user_sites(user),
+        dash_charts=_workspace_charts(user, latest, findings_all, engine_breakdown, run_diff),
+        run_trend=build_history_trend(
+            (
+                AnalysisRun.query.filter_by(site_id=latest.id)
+                .order_by(AnalysisRun.created_at.desc())
+                .limit(min(12, hist_limit))
+                .all()
+            )
+            if latest is not None
+            else []
+        ),
+        run_diff=run_diff,
+        schedule_form=schedule_form,
         **capability_template_vars(user),
     )
 
@@ -9014,6 +9512,9 @@ def download_pack(analysis_id: int):
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
+        return redirect(url_for("dashboard", site=analysis_id))
 
     buffer = io.BytesIO(pack_fix_html_bytes(analysis))
     return send_file(

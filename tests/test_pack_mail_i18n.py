@@ -33,7 +33,7 @@ def test_pack_mail_dialog_msgids_translated():
 
 
 def test_pack_mail_lede_is_single_translatable_string():
-    dash = Path("templates/dashboard.html").read_text(encoding="utf-8")
-    assert "Inserisci l\u2019indirizzo email dove vuoi ricevere il pack HTML" in dash
+    ops = Path("templates/partials/dash_prompt_ops.html").read_text(encoding="utf-8")
+    assert "Inserisci l\u2019indirizzo email dove vuoi ricevere il pack HTML" in ops
     # Avoid brittle split phrases that break word order in other languages.
-    assert "{{ _('per') }}" not in dash
+    assert "{{ _('per') }}" not in ops

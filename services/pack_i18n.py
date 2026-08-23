@@ -13,7 +13,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from services.i18n import DEFAULT_LOCALE, SUPPORTED_LOCALES, babel_locale, normalize_locale
+from services.i18n import (
+    DEFAULT_LOCALE,
+    SOURCE_LOCALE,
+    SUPPORTED_LOCALES,
+    babel_locale,
+    normalize_locale,
+)
 
 # English names for LLM system prompts (models follow these reliably).
 _LLM_LANG_EN: dict[str, str] = {
@@ -686,8 +692,8 @@ def resolve_pack_locales(
 
 def t(key: str, locale: str | None = None, **kwargs: Any) -> str:
     loc = pack_locale(locale)
-    table = _STRINGS.get(loc) or _STRINGS[DEFAULT_LOCALE]
-    template = table.get(key) or _STRINGS[DEFAULT_LOCALE].get(key) or key
+    table = _STRINGS.get(loc) or _STRINGS[SOURCE_LOCALE]
+    template = table.get(key) or _STRINGS[SOURCE_LOCALE].get(key) or key
     if kwargs:
         try:
             return template.format(**kwargs)
@@ -711,7 +717,7 @@ def localize_findings(
     if not findings:
         return []
     loc = pack_locale(locale)
-    if loc == DEFAULT_LOCALE:
+    if loc == SOURCE_LOCALE:
         return [dict(f) for f in findings]
     try:
         from flask import has_app_context

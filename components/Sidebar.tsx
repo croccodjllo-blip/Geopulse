@@ -65,7 +65,7 @@ function LogoMark({ src }: { src?: string }) {
       <defs>
         <linearGradient id="sidebarLogoGrad" x1="10" y1="54" x2="54" y2="10">
           <stop stopColor="#5B6B7A" />
-          <stop offset="0.5" stopColor="#C9D3DD" />
+          <stop offset="0.5" stopColor="#E8A04A" />
           <stop offset="1" stopColor="#8BA3BD" />
         </linearGradient>
       </defs>

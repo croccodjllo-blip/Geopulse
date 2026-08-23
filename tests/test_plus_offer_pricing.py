@@ -19,15 +19,18 @@ def test_pricing_shows_plus_1999(monkeypatch):
     html = client.get("/prezzi").get_data(as_text=True)
     assert "19,99" in html
     assert "14,99" not in html
-    assert "Tasse escluse" in html
+    assert "Tasse escluse" in html or "excl. tax" in html
     free_block = html.split('id="free"', 1)[1].split('id="plus"', 1)[0]
     assert "Tasse escluse" not in free_block
+    assert "excl. tax" not in free_block
     # No strikethrough offer when list == monthly.
     assert "price-offer__list" not in html
 
 
-def test_landing_shows_plus_1999():
+def test_landing_is_hero_only_without_price_cards():
+    """Homepage is lockup + URL bar; Plus €19.99 lives on /prezzi."""
     html = app.test_client().get("/").get_data(as_text=True)
-    assert "19,99" in html
+    assert "hero-url-form" in html
+    assert "19,99" not in html
     assert "14,99" not in html
-    assert "Tasse escluse" in html
+    assert "Tasse escluse" not in html

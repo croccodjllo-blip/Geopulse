@@ -53,7 +53,7 @@ def test_runs_to_csv_sanitizes_title():
         url = "https://example.com"
         aio_score = 10
         geo_score = 20
-        rating = {"code": "CCC", "score": 30}
+        rating = {"code": "CC", "score": 30}
         source = "manual"
         findings = []
         created_at = None

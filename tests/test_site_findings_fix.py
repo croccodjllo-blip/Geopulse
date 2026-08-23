@@ -44,11 +44,10 @@ def test_site_guide_translates_with_locale():
     with app.test_request_context("/guida?lang=en"):
         app.preprocess_request()
         payload = site_guide_payload()
-        # Italian source must not leak as page title when English is active
-        assert payload["title"]
-        # Either translated or still marked for translation; must be a string
-        assert isinstance(payload["lede"], str)
-        assert payload["toc"][0]["label"]
+        assert payload["title"] == "Complete Centropic guide"
+        assert "five pages" in payload["lede"]
+        assert payload["toc"][0]["label"] == "Introduction"
+        assert payload["workspace"]["pages"][0]["title"] == "Overview"
 
 
 

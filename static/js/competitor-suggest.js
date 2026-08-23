@@ -75,6 +75,7 @@
         input.value = list.join("\n");
         lastUrl = url;
         setStatus("Inseriti " + list.length + " competitor (" + (data.source || "auto") + ").");
+        root.dispatchEvent(new CustomEvent("centropic:competitors", { bubbles: true }));
       } catch (e) {
         setStatus("Errore di rete nel suggerimento.", true);
       } finally {

@@ -120,6 +120,12 @@ def run_measured_only_pipeline(
         raise RuntimeError(
             "Measured follow-up richiede un sito già analizzato (Stimato/pack)."
         )
+    from centropic.tenancy import user_can_write_site
+
+    if not user_can_write_site(user, existing):
+        raise PermissionError(
+            "Ruolo viewer: non puoi modificare siti condivisi dell’organizzazione."
+        )
 
     def _hb(
         phase: str | None = None,
