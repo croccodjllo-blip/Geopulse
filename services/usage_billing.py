@@ -405,13 +405,37 @@ def check_page_word_budget(
         )
     try:
         words = preflight_word_count(url)
-    except (requests.RequestException, UnsafeURLError):
-        # If preflight fails due network/SSRF checks, do not hide the main flow.
+    except UnsafeURLError as exc:
         return PageWordCountCheck(
             word_count=0,
-            is_giant=False,
+            is_giant=True,
             required_cost_cents=max(1, int(base_cost_cents)),
-            message="",
+            message=f"URL non consentito: {exc}"[:200],
+        )
+    except requests.RequestException:
+        # Unknown size: assume the hard 4× cap, not a 1-word overage.
+        words = MAX_PREFLIGHT_WORDS * 4
+        required = giant_page_required_cost_cents(base_cost_cents, words)
+        shortage = max(0, required - balance_cents)
+        msg = (
+            f"Preflight pagina non disponibile; "
+            f"token richiesti stimati: {format_token_amount(required)}."
+        )
+        if shortage > 0:
+            msg = (
+                f"{msg} Ti mancano {format_token_amount(shortage)}."
+            )
+            return PageWordCountCheck(
+                word_count=words,
+                is_giant=True,
+                required_cost_cents=required,
+                message=msg,
+            )
+        return PageWordCountCheck(
+            word_count=words,
+            is_giant=False,
+            required_cost_cents=required,
+            message=msg,
         )
     required = giant_page_required_cost_cents(base_cost_cents, words)
     if words > MAX_PREFLIGHT_WORDS:

@@ -6,6 +6,7 @@ Analisi score + findings + generazione pack (singolo HTML con tutti i fix).
 from __future__ import annotations
 
 import hashlib
+import hmac
 import io
 import json
 import logging
@@ -89,8 +90,10 @@ from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
     assert_paddle_env_matches_site,
     assert_transaction_matches_catalog as paddle_assert_transaction_matches_catalog,
+    claim_webhook_event_once as paddle_claim_webhook_event_once,
     client_config as paddle_client_config,
     create_business_checkout as paddle_create_business_checkout,
+    issue_checkout_bind as paddle_issue_checkout_bind,
     create_plus_checkout as paddle_create_plus_checkout,
     create_topup_checkout as paddle_create_topup_checkout,
     extract_user_id as paddle_extract_user_id,
@@ -279,6 +282,7 @@ from services.cms_connector import (
 )
 from services.edge_signals import (
     CACHE_CONTROL as EDGE_CACHE_CONTROL,
+    PLUS_CACHE_CONTROL as EDGE_PLUS_CACHE_CONTROL,
     build_live_robots_txt,
     build_signals_payload,
     cloudflare_worker_snippet,
@@ -1090,6 +1094,18 @@ class ProInterest(db.Model):
     )
 
 
+class PaddleWebhookEvent(db.Model):
+    """Durable Paddle notification id — unique so replays cannot re-grant."""
+
+    __tablename__ = "paddle_webhook_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(190), unique=True, nullable=False, index=True)
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+
 class CreditLedger(db.Model):
     """Immutable ledger of every credit transaction (top-up or deduct)."""
 
@@ -1537,12 +1553,67 @@ def current_user() -> User | None:
     return user
 
 
+def _finding_summaries(
+    findings: list[dict[str, Any]] | None, *, limit: int = 20
+) -> list[dict[str, Any]]:
+    """Job-status payload: severity/title/category only — no fix bodies."""
+    out: list[dict[str, Any]] = []
+    for item in findings or []:
+        if not isinstance(item, dict):
+            continue
+        out.append(
+            {
+                "severity": str(item.get("severity") or "")[:20],
+                "title": str(item.get("title") or "")[:200],
+                "category": str(item.get("category") or "")[:40],
+            }
+        )
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _persist_paddle_webhook_event(event_id: str) -> bool:
+    """Insert a durable Paddle event id. False if already seen.
+
+    Flush-only so a later handler rollback still lets Paddle retry.
+    """
+    eid = (event_id or "").strip()[:190]
+    if not eid:
+        return True
+    db.session.add(PaddleWebhookEvent(event_id=eid))
+    try:
+        db.session.flush()
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        return False
+
+
+def _paddle_client_config_for(user: User | None) -> dict[str, Any]:
+    """Public Paddle.js config plus a signed first-bind token when logged in."""
+    cfg = dict(paddle_client_config())
+    if user is None:
+        return cfg
+    try:
+        bind = paddle_issue_checkout_bind(int(user.id))
+    except Exception:
+        app.logger.exception("checkout bind token issue failed user=%s", getattr(user, "id", None))
+        return cfg
+    cfg["bindTs"] = bind.get("bind_ts") or ""
+    cfg["bindSig"] = bind.get("bind_sig") or ""
+    return cfg
+
+
 def _establish_session(user: User, *, permanent: bool = True) -> None:
     """Create a fresh authenticated session bound to the user's session_version."""
+    pending_preview = (session.get("guest_preview_token") or "").strip()
     session.clear()
     session["user_id"] = user.id
     session["session_version"] = int(getattr(user, "session_version", 0) or 0)
     session.permanent = permanent
+    if pending_preview:
+        session["guest_preview_token"] = pending_preview
 
 
 def ensure_admin_user() -> User | None:
@@ -1744,7 +1815,7 @@ def inject_globals() -> dict[str, Any]:
         "payments_ready": payments_enabled(),
         "payments_provider": payments_provider(),
         "paddle_overlay": paddle_overlay_ready(),
-        "paddle_config": paddle_client_config(),
+        "paddle_config": _paddle_client_config_for(user),
         "legal_company_name": LEGAL_COMPANY_NAME,
         "legal_vat": LEGAL_VAT,
         "legal_address": LEGAL_ADDRESS,
@@ -2164,6 +2235,16 @@ def ensure_schema() -> None:
             "CRITICAL: credit_ledger stripe unique index skipped — "
             "webhook double-credit possible"
         )
+    try:
+        with db.engine.begin() as conn:
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_paddle_webhook_event_id "
+                    "ON paddle_webhook_events (event_id)"
+                )
+            )
+    except Exception:
+        app.logger.exception("paddle_webhook_events unique index skipped")
 
 
 def _current_sov_budget(user: User) -> dict[str, int | bool]:
@@ -4133,6 +4214,7 @@ def _edge_response(
     analysis: SiteAnalysis,
     path: str = "",
     token: str = "",
+    cache_control: str | None = None,
 ) -> Response:
     version = int(getattr(analysis, "signals_version", 1) or 1)
     if path and token:
@@ -4155,7 +4237,7 @@ def _edge_response(
         return Response(status=304)
     resp = Response(body, mimetype=mimetype)
     resp.headers["ETag"] = etag
-    resp.headers["Cache-Control"] = EDGE_CACHE_CONTROL
+    resp.headers["Cache-Control"] = cache_control or EDGE_CACHE_CONTROL
     resp.headers["X-Centropic-Edge"] = "1"
     resp.headers["X-Centropic-Version"] = str(version)
     # Legacy aliases retained for existing GeoPulse connectors.
@@ -4214,6 +4296,7 @@ def edge_robots_txt(token: str):
         analysis=analysis,
         path="robots.txt",
         token=token,
+        cache_control=EDGE_PLUS_CACHE_CONTROL,
     )
 
 
@@ -4238,6 +4321,7 @@ def edge_organization_jsonld(token: str):
         analysis=analysis,
         path="organization.jsonld",
         token=token,
+        cache_control=EDGE_PLUS_CACHE_CONTROL,
     )
 
 
@@ -4845,7 +4929,19 @@ def preview_analyze_view(token: str):
             return redirect(url_for("index") + "#hero-brand")
 
     user = current_user()
-    if user is not None and preview.status == "done" and not preview.claimed_user_id:
+    session_tok = (session.get("guest_preview_token") or "").strip()
+    preview_tok = (preview.token or "").strip()
+    session_owns = bool(
+        session_tok
+        and preview_tok
+        and hmac.compare_digest(session_tok, preview_tok)
+    )
+    if (
+        user is not None
+        and preview.status == "done"
+        and not preview.claimed_user_id
+        and session_owns
+    ):
         site = claim_guest_preview(
             db_session=db.session,
             GuestPreview=GuestPreview,
@@ -5482,6 +5578,12 @@ def billing_paddle_webhook():
         app.logger.warning("Paddle webhook parse failed: %s", exc)
         return jsonify({"ok": False}), 400
 
+    event_id = str(event.get("event_id") or event.get("notification_id") or "").strip()
+    if event_id and not paddle_claim_webhook_event_once(
+        event_id, persist=_persist_paddle_webhook_event
+    ):
+        return jsonify({"ok": True, "duplicate": True})
+
     etype = (event.get("event_type") or event.get("eventType") or "").strip()
     data = event.get("data") or {}
 
@@ -5789,9 +5891,10 @@ def billing_paddle_webhook():
                 return jsonify({"ok": False, "error": "amount_mismatch"}), 400
             if catalog_cents is None:
                 app.logger.warning(
-                    "Paddle top-up amount unavailable; skipping mismatch check txn=%s",
+                    "Paddle top-up amount unavailable txn=%s",
                     data.get("id"),
                 )
+                return jsonify({"ok": False, "error": "amount_unavailable"}), 400
 
             txn_id = str(data.get("id") or "").strip()
             if not txn_id:
@@ -8555,7 +8658,7 @@ def api_v1_job_status(job_id: int):
             payload["aio_score"] = site.aio_score
             payload["geo_score"] = site.geo_score
             payload["rating"] = site.rating
-            payload["findings"] = (site.findings or [])[:50]
+            payload["findings"] = _finding_summaries(site.findings or [], limit=50)
     return jsonify(payload)
 
 
@@ -8618,6 +8721,8 @@ def api_v1_site_edge(site_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    if not user_can_write_site(user, analysis):
+        return jsonify({"ok": False, "error": "forbidden_viewer"}), 403
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
@@ -8686,6 +8791,8 @@ def api_v1_site_edge_cms_bundle(site_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    if not user_can_write_site(user, analysis):
+        return jsonify({"ok": False, "error": "forbidden_viewer"}), 403
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
@@ -9014,6 +9121,9 @@ def download_pack(analysis_id: int):
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
+        return redirect(url_for("dashboard", site=analysis_id))
 
     buffer = io.BytesIO(pack_fix_html_bytes(analysis))
     return send_file(
@@ -9234,6 +9344,9 @@ def download_run_pack(run_id: int):
     if run is None or site is None:
         flash("Run non trovata.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, site):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
+        return redirect(url_for("dashboard", site=site.id))
 
     buffer = io.BytesIO(pack_fix_html_bytes(run))
     stamp = run.created_at.strftime("%Y%m%d-%H%M") if run.created_at else "run"

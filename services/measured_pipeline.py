@@ -110,15 +110,18 @@ def run_measured_only_pipeline(
     """Run citation monitor against an existing site; no crawl/pack rebuild."""
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     if existing is None:
-        try:
-            from centropic.tenancy import sites_query_for_user
+        from centropic.tenancy import sites_query_for_user
 
-            existing = sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
-        except Exception:
-            existing = None
+        existing = sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
     if existing is None:
         raise RuntimeError(
             "Measured follow-up richiede un sito già analizzato (Stimato/pack)."
+        )
+    from centropic.tenancy import user_can_write_site
+
+    if not user_can_write_site(user, existing):
+        raise PermissionError(
+            "Ruolo viewer: non puoi modificare siti condivisi dell’organizzazione."
         )
 
     def _hb(
