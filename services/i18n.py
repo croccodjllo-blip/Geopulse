@@ -46,11 +46,16 @@ def locale_meta(code: str | None = None) -> dict[str, str]:
     loc = normalize_locale(code)
     meta = dict(SUPPORTED_LOCALES[loc])
     meta["code"] = loc
+    meta["schema"] = meta["og"].replace("_", "-")
     return meta
 
 
 def select_locale() -> str:
-    """Resolve active UI locale: ?lang= → session/cookie → Accept-Language → it."""
+    """Resolve active UI locale: ?lang= → session/cookie → Accept-Language → it.
+
+    Search/Ads crawlers skip Accept-Language so the clean URL stays the default
+    locale (Italian). Language variants are ``?lang=`` URLs in hreflang.
+    """
     forced = request.args.get("lang")
     if forced:
         return babel_locale(forced)
@@ -62,6 +67,11 @@ def select_locale() -> str:
     cookie = request.cookies.get(LANG_COOKIE)
     if cookie:
         return babel_locale(cookie)
+
+    from services.seo import request_is_search_crawler
+
+    if request_is_search_crawler(request.user_agent.string if request.user_agent else ""):
+        return babel_locale(DEFAULT_LOCALE)
 
     best = request.accept_languages.best_match(
         [SUPPORTED_LOCALES[c]["babel"] for c in SUPPORTED_LOCALES]

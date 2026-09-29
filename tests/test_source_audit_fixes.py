@@ -132,6 +132,7 @@ def test_paddle_topup_no_user_returns_500(monkeypatch):
         "app.topup_cents_for_transaction", lambda data: 1000
     )
     monkeypatch.setattr("app._topup_credit_cents", lambda payment: 1000)
+    monkeypatch.setattr("app.transaction_catalog_cents", lambda data: 1000)
     monkeypatch.setattr(app, "CREDIT_LEDGER_PI_INDEX_OK", True, raising=False)
     # Module-level flag used inside webhook
     import app as app_mod
@@ -170,6 +171,7 @@ def test_credit_ledger_index_flag_blocks_topup(monkeypatch):
     header = f"ts={ts};h1={h1}"
     monkeypatch.setattr("app.topup_cents_for_transaction", lambda data: 1000)
     monkeypatch.setattr("app._topup_credit_cents", lambda payment: 1000)
+    monkeypatch.setattr("app.transaction_catalog_cents", lambda data: 1000)
 
     with app.app_context():
         ensure_schema()

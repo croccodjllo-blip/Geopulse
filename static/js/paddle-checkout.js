@@ -167,7 +167,11 @@
     var opts = {
       items: items,
       customData: Object.assign(
-        { centropic_user_id: String(c.userId || "") },
+        {
+          centropic_user_id: String(c.userId || ""),
+          bind_ts: String(c.bindTs || ""),
+          bind_sig: String(c.bindSig || ""),
+        },
         (extra && extra.customData) || {}
       ),
       settings: {
@@ -185,6 +189,19 @@
 
     try {
       var opened = window.Paddle.Checkout.open(opts);
+      if (typeof window.centropicTrack === "function") {
+        var ads = window.__CENTROPIC_ANALYTICS__ || {};
+        var params = {
+          event_category: "billing",
+          currency: "EUR",
+          item_category:
+            extra && extra.customData && extra.customData.product
+              ? extra.customData.product
+              : "checkout",
+        };
+        if (ads.adsCheckoutSendTo) params.send_to = ads.adsCheckoutSendTo;
+        window.centropicTrack("begin_checkout", params);
+      }
       if (opened && typeof opened.then === "function") {
         return opened
           .then(function () {

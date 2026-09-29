@@ -1,0 +1,17 @@
+<script type="application/ld+json" nonce="{{ csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": "{{ canonical_url }}#breadcrumb",
+  "itemListElement": [
+    {% for item in breadcrumb_items %}
+    {
+      "@type": "ListItem",
+      "position": {{ loop.index }},
+      "name": {{ item.name|tojson }},
+      "item": {{ item.url|tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>

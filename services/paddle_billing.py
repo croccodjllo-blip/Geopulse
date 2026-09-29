@@ -167,8 +167,9 @@ def create_transaction(
     payload: dict[str, Any] = {
         "items": [{"price_id": price_id, "quantity": 1}],
         "custom_data": {
-            "centropic_user_id": str(user_id),
             **(custom_data or {}),
+            "centropic_user_id": str(user_id),
+            **issue_checkout_bind(int(user_id)),
         },
     }
     if customer_id:
@@ -543,6 +544,123 @@ def extract_user_id(custom_data: Any) -> int | None:
         return None
 
 
+CHECKOUT_BIND_MAX_AGE = 2 * 60 * 60  # overlay can sit open; 2h is plenty
+
+
+def _checkout_bind_secret() -> bytes:
+    """HMAC key for overlay first-bind tokens (never sent as the user id)."""
+    try:
+        from flask import current_app, has_app_context
+
+        if has_app_context():
+            raw = current_app.config.get("SECRET_KEY")
+            if isinstance(raw, bytes) and raw:
+                return raw
+            if isinstance(raw, str) and raw.strip():
+                return raw.strip().encode("utf-8")
+    except Exception:
+        pass
+    env = (
+        (os.getenv("FLASK_SECRET_KEY") or "").strip()
+        or (os.getenv("PADDLE_WEBHOOK_SECRET") or "").strip()
+        or (PADDLE_WEBHOOK_SECRET or "").strip()
+    )
+    return env.encode("utf-8") if env else b""
+
+
+def issue_checkout_bind(
+    user_id: int, *, now: int | None = None
+) -> dict[str, str]:
+    """Signed bind token issued only for the logged-in payer."""
+    uid = int(user_id)
+    ts = str(int(now if now is not None else time.time()))
+    secret = _checkout_bind_secret()
+    if not secret:
+        logger.error("checkout bind secret missing — refusing to issue token")
+        return {"bind_ts": "", "bind_sig": ""}
+    msg = f"{uid}:{ts}".encode("utf-8")
+    sig = hmac.new(secret, msg, hashlib.sha256).hexdigest()
+    return {"bind_ts": ts, "bind_sig": sig}
+
+
+def verify_checkout_bind(
+    user_id: int | None,
+    custom_data: Any,
+    *,
+    now: int | None = None,
+    max_age: int = CHECKOUT_BIND_MAX_AGE,
+) -> bool:
+    """True only when custom_data carries a fresh HMAC for this user_id."""
+    if user_id is None:
+        return False
+    if not isinstance(custom_data, dict):
+        return False
+    ts_raw = custom_data.get("bind_ts")
+    sig = str(custom_data.get("bind_sig") or "").strip()
+    if not ts_raw or not sig:
+        return False
+    try:
+        ts = int(ts_raw)
+        uid = int(user_id)
+    except (TypeError, ValueError):
+        return False
+    clock = int(now if now is not None else time.time())
+    if ts > clock + 60:
+        return False
+    if clock - ts > int(max_age):
+        return False
+    secret = _checkout_bind_secret()
+    if not secret:
+        return False
+    expected = hmac.new(
+        secret, f"{uid}:{ts}".encode("utf-8"), hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, sig)
+
+
+def claim_webhook_event_once(
+    event_id: str | None,
+    *,
+    ttl_seconds: int = 600,
+    persist=None,
+) -> bool:
+    """Replay claim. True = process; False = already seen.
+
+    ``persist(eid)`` (optional) is the durable unique insert: return False
+    when the id already exists. Redis SET NX is an extra short-TTL cache.
+    Persist/Redis errors do not drop a paid webhook (return True).
+    """
+    eid = (event_id or "").strip()
+    if not eid:
+        return True
+    if persist is not None:
+        try:
+            if persist(eid) is False:
+                return False
+            try:
+                from services.redis_client import get_redis
+
+                client = get_redis(ping=False)
+                if client is not None:
+                    client.set(f"paddle:evt:{eid}", "1", nx=False, ex=int(ttl_seconds))
+            except Exception:
+                pass
+            return True
+        except Exception:
+            logger.warning("paddle event persist failed; continuing with redis/allow")
+    try:
+        from services.redis_client import get_redis
+
+        client = get_redis(ping=False)
+        if client is None:
+            return True
+        claimed = client.set(f"paddle:evt:{eid}", "1", nx=True, ex=int(ttl_seconds))
+        return bool(claimed)
+    except Exception:
+        logger.warning("paddle event replay cache unavailable; allowing event")
+        return True
+
+
 def resolve_webhook_user(
     data: dict[str, Any],
     *,
@@ -616,6 +734,12 @@ def resolve_webhook_user(
                 getattr(taken, "id", None),
             )
             return None
+    if not verify_checkout_bind(uid, data.get("custom_data")):
+        logger.warning(
+            "Paddle first-bind refused: missing/invalid bind token user=%s",
+            uid,
+        )
+        return None
     return candidate
 
 
@@ -880,20 +1004,20 @@ def assert_transaction_matches_catalog(
 ) -> str | None:
     """Fail-closed sanity check: settled amount must match the server catalog.
 
-    Returns ``None`` when the amounts match, or when the settled amount /
-    expected catalog price is unavailable (soft-skip, so older webhook
-    payloads that omit totals or env overrides don't get refused — but this
-    logs a warning). Returns a short error string when the settled unit
-    price does not match the expected catalog price for ``product``.
+    Returns ``None`` when the amounts match. Returns a short error string
+    when the settled unit is missing, the catalog price is unknown, or
+    the settled unit does not match the expected catalog price.
     """
     unit_cents = transaction_unit_cents(data)
     if unit_cents is None:
         logger.warning(
-            "Paddle catalog assert skipped: no unit/subtotal amount txn=%s product=%s",
+            "Paddle catalog assert refused: no unit/subtotal amount txn=%s product=%s",
             data.get("id"),
             product,
         )
-        return None
+        return (
+            f"catalog_amount_unavailable txn={data.get('id')} product={product}"
+        )
     product_key = (product or "").strip().lower()
     if product_key == "plus":
         expected = expected_plus_unit_cents(interval)
@@ -903,12 +1027,15 @@ def assert_transaction_matches_catalog(
         return None
     if expected is None:
         logger.warning(
-            "Paddle catalog assert skipped: expected price unknown product=%s interval=%s txn=%s",
+            "Paddle catalog assert refused: expected price unknown product=%s interval=%s txn=%s",
             product_key,
             interval,
             data.get("id"),
         )
-        return None
+        return (
+            f"catalog_price_unknown product={product_key} interval={interval} "
+            f"txn={data.get('id')}"
+        )
     if int(unit_cents) != int(expected):
         return (
             f"catalog_amount_mismatch product={product_key} interval={interval} "
