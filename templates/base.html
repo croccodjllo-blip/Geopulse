@@ -1,7 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ ui_lang }}">
+<html lang="{{ ui_lang }}" data-sidebar="open">
   <head>
     <meta charset="utf-8" />
+    <script nonce="{{ csp_nonce }}">
+      (function () {
+        try {
+          var s = localStorage.getItem("centropic.sidebar");
+          if (s === "hidden" || s === "open") {
+            document.documentElement.setAttribute("data-sidebar", s);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {% set _page_title %}{% block title %}Centropic{% endblock %}{% endset %}
     <title>{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}</title>
@@ -90,7 +100,6 @@
     {% endif %}
     {# AdSense is loaded only after ad_storage consent (see analytics.js) #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/site-preview-v3.css') }}" />
     {% block head_extra %}{% endblock %}
     {% include "partials/jsonld_organization.html" %}
     {% if breadcrumb_items and breadcrumb_items|length > 1 %}
@@ -114,8 +123,10 @@
           class="app-sidebar__toggle"
           data-sidebar-toggle
           aria-controls="app-sidebar"
-          aria-expanded="false"
-          aria-label="{{ _('Apri menu') }}"
+          aria-expanded="true"
+          aria-label="{{ _('Nascondi menu') }}"
+          data-label-open="{{ _('Apri menu') }}"
+          data-label-close="{{ _('Nascondi menu') }}"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
