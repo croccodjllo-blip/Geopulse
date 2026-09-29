@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import requests
 
 from services.analyze_errors import classify_analyze_error, format_job_error
-from services.entitlements import entitlements_for, require_capability
+from services.entitlements import entitlements_for, require_capability, user_has_capability
 
 
 def _ents(user, **overrides):
@@ -67,6 +67,47 @@ def test_business_has_full_capabilities():
     assert ents.can("full_crawl") is True
     assert ents.can("alerts_webhook") is True
     assert require_capability(ents, "api_access") is None
+
+
+def test_past_due_elapsed_loses_alerts_webhook():
+    from datetime import datetime, timedelta, timezone
+
+    expired = SimpleNamespace(
+        plan="plus",
+        is_pro=False,
+        is_admin=False,
+        is_business=False,
+        paddle_past_due_since=datetime.now(timezone.utc) - timedelta(days=10),
+    )
+    assert user_has_capability(expired, "alerts_webhook") is False
+    assert _ents(expired).can("alerts_webhook") is False
+
+    plus = SimpleNamespace(
+        plan="plus",
+        is_pro=True,
+        is_admin=False,
+        is_business=False,
+        paddle_past_due_since=None,
+    )
+    assert user_has_capability(plus, "alerts_webhook") is True
+
+
+def test_plan_key_past_due_error_is_free(monkeypatch):
+    def _boom(_since, now=None, grace_days=None):
+        raise RuntimeError("past_due check exploded")
+
+    monkeypatch.setattr(
+        "services.paddle_billing.past_due_grace_elapsed", _boom
+    )
+    sticky = SimpleNamespace(
+        plan="plus",
+        is_pro=True,
+        is_admin=False,
+        is_business=False,
+        paddle_past_due_since=None,
+    )
+    assert user_has_capability(sticky, "alerts_webhook") is False
+    assert _ents(sticky).can("alerts_webhook") is False
 
 
 def test_classify_timeout_and_http():

@@ -72,27 +72,17 @@ def run_analysis_pipeline(
     existing = SiteAnalysis.query.filter_by(user_id=user.id, url=url).first()
     if existing is None:
         # Org member remesure must update the shared site, not fork under actor.
-        try:
-            from centropic.tenancy import sites_query_for_user
+        from centropic.tenancy import sites_query_for_user
 
-            existing = (
-                sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
-            )
-        except Exception:
-            existing = None
+        existing = sites_query_for_user(SiteAnalysis, user).filter_by(url=url).first()
     # Defense-in-depth: viewers may read shared sites but must not remesure them.
     if existing is not None:
-        try:
-            from centropic.tenancy import user_can_write_site
+        from centropic.tenancy import user_can_write_site
 
-            if not user_can_write_site(user, existing):
-                raise PermissionError(
-                    "Ruolo viewer: non puoi modificare siti condivisi dell’organizzazione."
-                )
-        except PermissionError:
-            raise
-        except Exception:
-            pass
+        if not user_can_write_site(user, existing):
+            raise PermissionError(
+                "Ruolo viewer: non puoi modificare siti condivisi dell’organizzazione."
+            )
     owner_user_id = int(getattr(existing, "user_id", None) or user.id)
     actor_user_id = int(user.id)
     site_org_id = organization_id
