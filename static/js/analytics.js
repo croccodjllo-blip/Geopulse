@@ -37,13 +37,16 @@
       var val = params.get(key);
       if (!val) continue;
       try {
+        var secure =
+          window.location.protocol === "https:" ? ";Secure" : "";
         document.cookie =
           key +
           "=" +
           encodeURIComponent(val) +
           ";path=/;max-age=" +
           CLICK_ID_MAX_AGE +
-          ";SameSite=Lax";
+          ";SameSite=Lax" +
+          secure;
       } catch (_cookie) {
         /* ignore quota / private mode */
       }

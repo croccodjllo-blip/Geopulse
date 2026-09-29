@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from app import User, app, db, ensure_schema
@@ -15,6 +16,7 @@ def _new_user(plan: str) -> User:
         alert_email_enabled=True,
     )
     user.set_password("AlertsTest!23456")
+    user.email_verified_at = datetime.now(timezone.utc)
     db.session.add(user)
     db.session.commit()
     return user

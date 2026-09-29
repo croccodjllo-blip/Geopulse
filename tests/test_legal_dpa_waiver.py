@@ -47,8 +47,10 @@ def test_dpa_routes_public():
     assert r.status_code == 200
     html = r.get_data(as_text=True)
     assert "DPA" in html or "sub-responsabili" in html.lower() or "Art. 28" in html
-    r2 = client.get("/sub-responsabili")
-    assert r2.status_code == 200
+    r2 = client.get("/sub-responsabili", follow_redirects=False)
+    assert r2.status_code in {200, 301, 302}
+    if r2.status_code in {301, 302}:
+        assert "/dpa" in (r2.headers.get("Location") or "")
     r3 = client.get("/dpa.txt")
     assert r3.status_code == 200
     assert "attachment" in (r3.headers.get("Content-Disposition") or "")

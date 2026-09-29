@@ -100,6 +100,7 @@ from services.paddle_billing import (
     resolve_webhook_user as paddle_resolve_webhook_user,
     paddle_business_enabled,
     paddle_enabled,
+    paddle_environment,
     paddle_overlay_ready,
     paddle_plus_enabled,
     sell_plus_only,
@@ -568,6 +569,7 @@ def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> No
     if not isinstance(events, list):
         events = []
     payload = dict(params or {})
+    payload.pop("user_data", None)
     events.append({"name": name, "params": payload})
     # Cap to avoid session bloat
     session["analytics_events"] = events[-20:]
@@ -576,6 +578,49 @@ def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> No
 def pop_analytics_events() -> list[dict[str, Any]]:
     events = session.pop("analytics_events", None) or []
     return events if isinstance(events, list) else []
+
+
+def _queue_plus_subscribe_conversion() -> None:
+    """Browser Ads/GA4 subscribe — only after a signed Plus grant webhook."""
+    plus_params: dict[str, Any] = {
+        "event_category": "billing",
+        "currency": "EUR",
+        "value": PLUS_MONTHLY_EUR,
+        "item_category": "plus",
+    }
+    send_to = _ads_send_to(GOOGLE_ADS_PLUS_LABEL)
+    if send_to:
+        plus_params["send_to"] = send_to
+    queue_analytics_event("subscribe", plus_params)
+
+
+def _queue_topup_purchase_conversion() -> None:
+    topup_params: dict[str, Any] = {
+        "event_category": "billing",
+        "currency": "EUR",
+    }
+    send_to = _ads_send_to(GOOGLE_ADS_TOPUP_LABEL)
+    if send_to:
+        topup_params["send_to"] = send_to
+    queue_analytics_event("purchase", topup_params)
+    queue_analytics_event("topup_success", {"event_category": "billing"})
+
+
+def flush_pending_ads_conversions(user: User | None) -> None:
+    """One-shot: webhook sets the flag, next authenticated HTML consume it."""
+    if user is None:
+        return
+    dirty = False
+    if getattr(user, "ads_plus_conversion_pending", False):
+        _queue_plus_subscribe_conversion()
+        user.ads_plus_conversion_pending = False
+        dirty = True
+    if getattr(user, "ads_topup_conversion_pending", False):
+        _queue_topup_purchase_conversion()
+        user.ads_topup_conversion_pending = False
+        dirty = True
+    if dirty:
+        db.session.commit()
 
 
 
@@ -593,6 +638,7 @@ def set_security_headers(response):
         paddle=paddle_enabled(),
         analytics=bool(GA4_MEASUREMENT_ID or GOOGLE_ADS_ID),
         adsense=bool(ADSENSE_CLIENT_ID or GOOGLE_ADS_ID),
+        paddle_sandbox=paddle_environment() == "sandbox",
     )
     # Dashboard HTML must never be served from bfcache/proxy after analyze —
     # otherwise the UI looks stuck on the previous report.
@@ -602,6 +648,10 @@ def set_security_headers(response):
         response.headers["Pragma"] = "no-cache"
     if (response.mimetype or "").startswith("text/html"):
         response.headers.setdefault("Content-Language", active_ui_locale())
+        from services.seo import is_private_html_path
+
+        if is_private_html_path(ep, request.path if request else "/"):
+            response.headers.setdefault("X-Robots-Tag", "noindex, nofollow")
     # HSTS è impostato da nginx (add_header ... always) davanti a Flask;
     # non duplicarlo qui per evitare due header Strict-Transport-Security.
     return response
@@ -669,6 +719,9 @@ class User(db.Model):
     gsc_account_email = db.Column(db.String(255))
     gsc_connected_at = db.Column(db.DateTime)
     gsc_site_urls_json = db.Column(db.Text, nullable=False, default="")
+    # Ads conversions fire in-browser only after a signed Paddle webhook.
+    ads_plus_conversion_pending = db.Column(db.Boolean, nullable=False, default=False)
+    ads_topup_conversion_pending = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1564,6 +1617,17 @@ def current_user() -> User | None:
     return user
 
 
+@app.before_request
+def _flush_pending_ads_conversions() -> None:
+    if request.endpoint in {None, "static"}:
+        return
+    try:
+        flush_pending_ads_conversions(current_user())
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("pending ads conversion flush failed")
+
+
 def _finding_summaries(
     findings: list[dict[str, Any]] | None, *, limit: int = 20
 ) -> list[dict[str, Any]]:
@@ -1741,6 +1805,7 @@ def inject_globals() -> dict[str, Any]:
         breadcrumb_items as _breadcrumb_items,
         canonical_with_lang,
         hreflang_alternates,
+        hreflang_enabled_for_request,
         og_locale_alternates,
         schema_in_language,
     )
@@ -1861,7 +1926,11 @@ def inject_globals() -> dict[str, Any]:
         "ads_analyze_send_to": _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL),
         "ads_checkout_send_to": _ads_send_to(GOOGLE_ADS_CHECKOUT_LABEL),
         "analytics_events": pop_analytics_events(),
-        "hreflang_alternates": hreflang_alternates(base, path),
+        "hreflang_alternates": (
+            hreflang_alternates(base, path)
+            if hreflang_enabled_for_request(request.endpoint, path)
+            else []
+        ),
         "og_locale_alternates": og_locale_alternates(ui_lang),
         "schema_in_language": schema_in_language(ui_lang),
         "breadcrumb_items": crumbs,
@@ -2121,6 +2190,8 @@ def ensure_schema() -> None:
             "gsc_account_email": "TEXT",
             "gsc_connected_at": "DATETIME",
             "gsc_site_urls_json": "TEXT DEFAULT ''",
+            "ads_plus_conversion_pending": "BOOLEAN DEFAULT 0",
+            "ads_topup_conversion_pending": "BOOLEAN DEFAULT 0",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -5622,17 +5693,7 @@ def billing_portal():
 @app.route("/billing/success")
 @login_required
 def billing_success():
-    plus_params: dict[str, Any] = {
-        "event_category": "billing",
-        "currency": "EUR",
-        "value": PLUS_MONTHLY_EUR,
-        "item_category": "plus",
-    }
-    plus_params.update(_ads_user_data_for(current_user()))
-    send_to = _ads_send_to(GOOGLE_ADS_PLUS_LABEL)
-    if send_to:
-        plus_params["send_to"] = send_to
-    queue_analytics_event("subscribe", plus_params)
+    # Conversion is queued only after the signed Paddle webhook (pending flag).
     flash(
         "Pagamento ricevuto. Il piano si attiva entro pochi secondi via webhook.",
         "success",
@@ -5763,6 +5824,13 @@ def billing_paddle_webhook():
                                 {"ok": False, "error": "digital_service_waiver_required"}
                             ), 409
                         user.plan = paid
+                        if paid == "plus" and prior not in {
+                            "plus",
+                            "pro",
+                            "business",
+                            "admin",
+                        }:
+                            user.ads_plus_conversion_pending = True
                     else:
                         app.logger.warning(
                             "Paddle subscription %s active without known price ids; "
@@ -5923,6 +5991,8 @@ def billing_paddle_webhook():
                             u.plan = "plus"
 
                     _apply_plus(user)
+                    if prior not in {"plus", "pro", "business", "admin"}:
+                        user.ads_plus_conversion_pending = True
                     if txn_id and plus_credit_cents > 0:
                         try:
                             granted = grant_plus_monthly_tokens(
@@ -6004,6 +6074,7 @@ def billing_paddle_webhook():
                 )
                 if data.get("customer_id"):
                     user.paddle_customer_id = str(data.get("customer_id"))
+                user.ads_topup_conversion_pending = True
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
@@ -6247,7 +6318,6 @@ def register():
             "method": "email",
             "event_category": "auth",
         }
-        signup_params.update(_ads_user_data_for(user))
         send_to = _ads_send_to(GOOGLE_ADS_SIGNUP_LABEL)
         if send_to:
             signup_params["send_to"] = send_to
@@ -7573,16 +7643,7 @@ def topup_checkout():
 @app.route("/crediti/successo")
 @login_required
 def topup_success():
-    topup_params: dict[str, Any] = {
-        "event_category": "billing",
-        "currency": "EUR",
-    }
-    topup_params.update(_ads_user_data_for(current_user()))
-    send_to = _ads_send_to(GOOGLE_ADS_TOPUP_LABEL)
-    if send_to:
-        topup_params["send_to"] = send_to
-    queue_analytics_event("purchase", topup_params)
-    queue_analytics_event("topup_success", {"event_category": "billing"})
+    # Purchase conversion is queued only after the signed Paddle top-up webhook.
     flash("Pagamento completato! Il credito sarà disponibile a breve.", "success")
     return redirect(url_for("topup_credit_page"))
 

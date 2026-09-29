@@ -86,6 +86,75 @@ def language_alternate_url(base: str, path: str, code: str) -> str:
     return url
 
 
+_HREFLANG_SKIP_ENDPOINTS = frozenset(
+    {
+        "login",
+        "logout",
+        "forgot_password",
+        "reset_password",
+        "verify_email",
+        "preview_analyze",
+        "preview_analyze_start",
+        "preview_analyze_status",
+        "billing_success",
+        "billing_checkout",
+        "billing_portal",
+        "topup_credit_page",
+        "topup_success",
+    }
+)
+_HREFLANG_SKIP_PREFIXES = (
+    "dashboard",
+    "admin",
+    "api_v1",
+    "edge_",
+    "ops_",
+)
+_PRIVATE_INDEX_PATH_PREFIXES = (
+    "/dashboard",
+    "/admin",
+    "/crediti",
+    "/billing",
+    "/anteprima",
+    "/logout",
+    "/ops",
+    "/api/",
+)
+
+
+def hreflang_enabled_for_request(endpoint: str | None, path: str | None) -> bool:
+    """Hreflang belongs on public marketing HTML, not authed/app chrome."""
+    ep = (endpoint or "").strip()
+    p = path or "/"
+    if ep in _HREFLANG_SKIP_ENDPOINTS:
+        return False
+    if ep.startswith(_HREFLANG_SKIP_PREFIXES):
+        return False
+    if any(p == pref or p.startswith(pref + "/") for pref in _PRIVATE_INDEX_PATH_PREFIXES):
+        return False
+    return True
+
+
+def is_private_html_path(endpoint: str | None, path: str | None) -> bool:
+    """App HTML that must not be indexed (dashboard, billing, preview, auth gates)."""
+    ep = (endpoint or "").strip()
+    if ep in {
+        "login",
+        "logout",
+        "forgot_password",
+        "reset_password",
+        "verify_email",
+    }:
+        return True
+    return not hreflang_enabled_for_request(endpoint, path) and ep not in {
+        "register",
+        "index",
+        "sitemap_xml",
+        "robots_txt",
+        "health",
+    }
+
+
 def hreflang_alternates(base: str, path: str) -> list[dict[str, str]]:
     """``[{code, href}, …]`` including ``x-default`` (clean default-locale URL)."""
     items = [
