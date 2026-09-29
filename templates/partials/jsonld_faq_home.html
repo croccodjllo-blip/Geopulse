@@ -4,40 +4,40 @@
   "@type": "FAQPage",
   "@id": "{{ canonical_base }}/#faq-home",
   "url": "{{ canonical_base }}/",
-  "inLanguage": "it-IT",
+  "inLanguage": "{{ schema_in_language }}",
   "isPartOf": { "@id": "{{ canonical_base }}/#website" },
   "about": { "@id": "{{ canonical_base }}/#organization" },
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Cosa significano AIO e GEO in Centropic?",
+      "name": {{ _('Cosa significano AIO e GEO in Centropic?')|tojson }},
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono interpretare il brand sul dominio. GEO (Generative Engine Optimization) indica quanto il sito è strutturato per essere citato nelle risposte generate. Non corrispondono a GIS né a suite All-in-One."
+        "text": {{ _('AIO (AI-Driven Visibility) indica quanto modelli e crawler IA possono interpretare il brand sul dominio. GEO (Generative Engine Optimization) indica quanto il sito è strutturato per essere citato nelle risposte generate. Non corrispondono a GIS né a suite All-in-One.')|tojson }}
       }
     },
     {
       "@type": "Question",
-      "name": "Quale piano mi serve?",
+      "name": {{ _('Quale piano mi serve?')|tojson }},
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free: 1 dominio. Plus a {{ '%.2f'|format(plus_monthly_eur)|replace('.', ',') }}€/mese Tasse escluse: fino a {{ max_sites_plus }} domini, re-scan e SoV Misurato. Business a {{ '%.2f'|format(business_monthly_eur)|replace('.', ',') }}€/mese Tasse escluse: API, white-label e fino a {{ max_sites_business }} domini clienti."
+        "text": {{ _('Free: 1 dominio. Plus a %(plus)s€/mese Tasse escluse: fino a %(sites_plus)s domini, re-scan e SoV Misurato. Business a %(business)s€/mese Tasse escluse: API, white-label e fino a %(sites_business)s domini clienti.', plus=('%.2f'|format(plus_monthly_eur)|replace('.', ',')), sites_plus=max_sites_plus, business=('%.2f'|format(business_monthly_eur)|replace('.', ',')), sites_business=max_sites_business)|tojson }}
       }
     },
     {
       "@type": "Question",
-      "name": "Gli score rappresentano menzioni live sui modelli?",
+      "name": {{ _('Gli score rappresentano menzioni live sui modelli?')|tojson }},
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Misurano la predisposizione strutturale del sito per i crawler generativi. Di default sono etichettati Stimato; su Plus e Business i probe LLM possono aggiungere menzioni Misurate. Non vendiamo un ranking fisso nelle UI di terzi."
+        "text": {{ _('Misurano la predisposizione strutturale del sito per i crawler generativi. Di default sono etichettati Stimato; su Plus e Business i probe LLM possono aggiungere menzioni Misurate. Non vendiamo un ranking fisso nelle UI di terzi.')|tojson }}
       }
     },
     {
       "@type": "Question",
-      "name": "Come posso contattarvi?",
+      "name": {{ _('Come posso contattarvi?')|tojson }},
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Scrivi a info@centropic.ai oppure usa la pagina Contatti su centropic.ai/contatti."
+        "text": {{ _('Scrivi a info@centropic.ai oppure usa la pagina Contatti su centropic.ai/contatti.')|tojson }}
       }
     }
   ]

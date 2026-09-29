@@ -74,11 +74,23 @@ def test_csp_paddle_allows_overlay_styles_and_checkout_service():
     )
     assert "checkout-service.paddle.com" in header
     assert "cdn.paddle.com" in header
+    assert "sandbox-api.paddle.com" not in header
     attr_part = header.split("style-src-attr ")[1].split(";")[0]
     assert "'unsafe-inline'" in attr_part
     # Still no blanket unsafe-inline on script-src.
     script_part = header.split("script-src ")[1].split(";")[0]
     assert "'unsafe-inline'" not in script_part
+
+
+def test_csp_paddle_sandbox_hosts_only_when_requested():
+    prod = build_csp_header(
+        nonce="n", paddle=True, analytics=False, adsense=False, paddle_sandbox=False
+    )
+    sand = build_csp_header(
+        nonce="n", paddle=True, analytics=False, adsense=False, paddle_sandbox=True
+    )
+    assert "sandbox-checkout.paddle.com" not in prod
+    assert "sandbox-checkout.paddle.com" in sand
 
 
 def test_metrics_counters():

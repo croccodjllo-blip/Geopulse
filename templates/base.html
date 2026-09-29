@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html lang="{{ ui_lang }}">
+<html lang="{{ ui_lang }}" data-sidebar="open">
   <head>
     <meta charset="utf-8" />
+    <script nonce="{{ csp_nonce }}">
+      (function () {
+        try {
+          var s = localStorage.getItem("centropic.sidebar");
+          if (s === "hidden" || s === "open") {
+            document.documentElement.setAttribute("data-sidebar", s);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {% set _page_title %}{% block title %}Centropic{% endblock %}{% endset %}
     <title>{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}</title>
     <meta
       name="description"
-      content="{% block meta_description %}{{ _('Centropic — Signal Intelligence per AI-Driven Visibility (AIO) e Generative Engine Optimization (GEO): diagnosi, artifact e citabilità nelle risposte IA.') }}{% endblock %}"
+      content="{% block meta_description %}{{ _('Centropic — software GEO e AIO: misura la visibilità del tuo sito nelle risposte di ChatGPT, Perplexity e Google AI. Diagnosi, pack llms.txt/JSON-LD e citation monitor.') }}{% endblock %}"
     />
     {% block robots_meta %}{% endblock %}
     {% if google_site_verification %}
     <meta name="google-site-verification" content="{{ google_site_verification }}" />
     {% endif %}
     <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}" />
-    {% for code in supported_locales %}
-    <link rel="alternate" hreflang="{{ code }}" href="{{ canonical_base }}{{ request.path }}?lang={{ code }}" />
+    {% for item in hreflang_alternates %}
+    <link rel="alternate" hreflang="{{ item.code }}" href="{{ item.href }}" />
     {% endfor %}
-    <link rel="alternate" hreflang="x-default" href="{{ self.canonical() }}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Centropic" />
     <meta property="og:locale" content="{{ ui_locale_og }}" />
+    {% for loc in og_locale_alternates %}
+    <meta property="og:locale:alternate" content="{{ loc }}" />
+    {% endfor %}
     <meta property="og:title" content="{% block og_title %}{{ _page_title }}{% if 'Centropic' not in _page_title %} — Centropic{% endif %}{% endblock %}" />
     <meta
       property="og:description"
@@ -32,7 +44,7 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="{{ url_for('static', filename='img/og-share.jpg', _external=True) }}" />
-    <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#041210{% elif current_user and dash_plan == 'business' %}#120E0A{% else %}#04060A{% endif %}" />
+    <meta name="theme-color" content="{% if current_user and dash_plan == 'plus' %}#16120C{% elif current_user and dash_plan == 'business' %}#1A1410{% else %}#121212{% endif %}" />
     <meta name="author" content="{{ site_author_name }}" />
     <link rel="author" href="{{ site_author_url }}" />
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
@@ -79,13 +91,20 @@
       });
       {% endif %}
       {% if google_ads_id %}
-      gtag('config', '{{ google_ads_id }}');
+      gtag('config', '{{ google_ads_id }}', {
+        conversion_linker: true,
+        allow_enhanced_conversions: true
+      });
       {% endif %}
     </script>
     {% endif %}
     {# AdSense is loaded only after ad_storage consent (see analytics.js) #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    {% block head_extra %}{% endblock %}
     {% include "partials/jsonld_organization.html" %}
+    {% if breadcrumb_items and breadcrumb_items|length > 1 %}
+    {% include "partials/jsonld_breadcrumb.html" %}
+    {% endif %}
     {% block structured_data %}{% endblock %}
   </head>
   <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
@@ -104,8 +123,10 @@
           class="app-sidebar__toggle"
           data-sidebar-toggle
           aria-controls="app-sidebar"
-          aria-expanded="false"
-          aria-label="{{ _('Apri menu') }}"
+          aria-expanded="true"
+          aria-label="{{ _('Nascondi menu') }}"
+          data-label-open="{{ _('Apri menu') }}"
+          data-label-close="{{ _('Nascondi menu') }}"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
@@ -314,6 +335,8 @@
         ga4Id: {{ ga4_measurement_id|tojson }},
         adsId: {{ google_ads_id|tojson }},
         adsenseClient: {{ adsense_client_id|tojson }},
+        adsAnalyzeSendTo: {{ ads_analyze_send_to|default(none)|tojson }},
+        adsCheckoutSendTo: {{ ads_checkout_send_to|default(none)|tojson }},
         events: {{ analytics_events|default([])|tojson }}
       };
     </script>

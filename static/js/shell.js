@@ -1,33 +1,72 @@
 /**
- * Dashboard shell: mobile sidebar drawer + report view rail (SoV / Score).
+ * Dashboard shell: collapsible sidebar (desktop) + mobile drawer + report views.
  */
 (function () {
+  var SIDEBAR_KEY = "centropic.sidebar";
+  var MOBILE_MQ = "(max-width: 960px)";
+
   function qs(sel, root) {
     return (root || document).querySelector(sel);
   }
   function qsa(sel, root) {
     return Array.prototype.slice.call((root || document).querySelectorAll(sel));
   }
+  function isMobile() {
+    return window.matchMedia(MOBILE_MQ).matches;
+  }
+  function isHidden() {
+    return document.documentElement.getAttribute("data-sidebar") === "hidden";
+  }
 
-  function setOpen(open) {
+  function persistDesktop(hidden) {
+    document.documentElement.setAttribute("data-sidebar", hidden ? "hidden" : "open");
+    try {
+      localStorage.setItem(SIDEBAR_KEY, hidden ? "hidden" : "open");
+    } catch (e) {}
+  }
+
+  function setMobileOpen(open) {
     var shell = document.body;
     var sidebar = qs("#app-sidebar");
     var backdrop = qs("[data-sidebar-backdrop]");
-    var toggle = qs("[data-sidebar-toggle]");
     if (!sidebar) return;
     shell.classList.toggle("sidebar-open", open);
     if (backdrop) {
       if (open) backdrop.removeAttribute("hidden");
       else backdrop.setAttribute("hidden", "");
     }
-    if (toggle) {
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      toggle.setAttribute(
-        "aria-label",
-        open ? (toggle.getAttribute("data-label-close") || "Close menu") : (toggle.getAttribute("data-label-open") || "Open menu")
-      );
-    }
     document.documentElement.style.overflow = open ? "hidden" : "";
+    syncToggle();
+  }
+
+  function syncToggle() {
+    var toggle = qs("[data-sidebar-toggle]");
+    if (!toggle) return;
+    var expanded = isMobile()
+      ? document.body.classList.contains("sidebar-open")
+      : !isHidden();
+    toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+    var openLabel = toggle.getAttribute("data-label-open") || "Open menu";
+    var closeLabel = toggle.getAttribute("data-label-close") || "Hide menu";
+    toggle.setAttribute("aria-label", expanded ? closeLabel : openLabel);
+  }
+
+  function onToggle() {
+    if (isMobile()) {
+      setMobileOpen(!document.body.classList.contains("sidebar-open"));
+      return;
+    }
+    persistDesktop(!isHidden());
+    syncToggle();
+  }
+
+  function onClose() {
+    if (isMobile()) {
+      setMobileOpen(false);
+      return;
+    }
+    persistDesktop(true);
+    syncToggle();
   }
 
   function animateSovBars() {
@@ -77,31 +116,43 @@
     var backdrop = qs("[data-sidebar-backdrop]");
 
     if (toggle) {
-      toggle.addEventListener("click", function () {
-        setOpen(!document.body.classList.contains("sidebar-open"));
-      });
+      toggle.addEventListener("click", onToggle);
     }
     if (closeBtn) {
-      closeBtn.addEventListener("click", function () {
-        setOpen(false);
-      });
+      closeBtn.addEventListener("click", onClose);
     }
     if (backdrop) {
       backdrop.addEventListener("click", function () {
-        setOpen(false);
+        if (isMobile()) setMobileOpen(false);
       });
     }
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Escape") return;
+      if (isMobile()) setMobileOpen(false);
+      else if (!isHidden()) {
+        persistDesktop(true);
+        syncToggle();
+      }
     });
 
-    // Close drawer after navigating on small screens
     qsa(".app-sidebar__link, .app-sidebar__sublink").forEach(function (link) {
       link.addEventListener("click", function () {
-        if (window.matchMedia("(max-width: 960px)").matches) setOpen(false);
+        if (isMobile()) setMobileOpen(false);
       });
     });
+
+    window.addEventListener("resize", function () {
+      if (!isMobile()) {
+        document.body.classList.remove("sidebar-open");
+        document.documentElement.style.overflow = "";
+        var bd = qs("[data-sidebar-backdrop]");
+        if (bd) bd.setAttribute("hidden", "");
+      }
+      syncToggle();
+    });
+
+    syncToggle();
 
     qsa(".report-nav__view[data-tab]").forEach(function (link) {
       link.addEventListener("click", function (event) {

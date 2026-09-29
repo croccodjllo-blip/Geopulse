@@ -24,6 +24,7 @@ def build_csp_header(
     paddle: bool,
     analytics: bool,
     adsense: bool,
+    paddle_sandbox: bool = False,
 ) -> str:
     """Prefer nonce-based script-src; keep strict-dynamic for modern browsers.
 
@@ -56,28 +57,35 @@ def build_csp_header(
         style_src_elem.append("https://cdn.paddle.com")
         # Overlay chrome uses inline style attributes.
         style_src_attr = "'unsafe-inline'"
-        connect_src.extend(
-            [
-                "https://api.paddle.com",
-                "https://sandbox-api.paddle.com",
-                "https://checkout.paddle.com",
-                "https://sandbox-checkout.paddle.com",
-                "https://checkout-service.paddle.com",
-                "https://sandbox-checkout-service.paddle.com",
-                "https://buy.paddle.com",
-                "https://sandbox-buy.paddle.com",
-                "https://cdn.paddle.com",
-            ]
-        )
-        frame_src.extend(
-            [
-                "https://checkout.paddle.com",
-                "https://sandbox-checkout.paddle.com",
-                "https://buy.paddle.com",
-                "https://sandbox-buy.paddle.com",
-                "https://cdn.paddle.com",
-            ]
-        )
+        paddle_connect = [
+            "https://api.paddle.com",
+            "https://checkout.paddle.com",
+            "https://checkout-service.paddle.com",
+            "https://buy.paddle.com",
+            "https://cdn.paddle.com",
+        ]
+        paddle_frames = [
+            "https://checkout.paddle.com",
+            "https://buy.paddle.com",
+            "https://cdn.paddle.com",
+        ]
+        if paddle_sandbox:
+            paddle_connect.extend(
+                [
+                    "https://sandbox-api.paddle.com",
+                    "https://sandbox-checkout.paddle.com",
+                    "https://sandbox-checkout-service.paddle.com",
+                    "https://sandbox-buy.paddle.com",
+                ]
+            )
+            paddle_frames.extend(
+                [
+                    "https://sandbox-checkout.paddle.com",
+                    "https://sandbox-buy.paddle.com",
+                ]
+            )
+        connect_src.extend(paddle_connect)
+        frame_src.extend(paddle_frames)
     if analytics:
         script_src.extend(
             ["https://www.googletagmanager.com", "https://www.google-analytics.com"]

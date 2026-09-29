@@ -6,6 +6,7 @@ Analisi score + findings + generazione pack (singolo HTML con tutti i fix).
 from __future__ import annotations
 
 import hashlib
+import hmac
 import io
 import json
 import logging
@@ -89,14 +90,17 @@ from services.billing import payments_enabled, payments_provider
 from services.paddle_billing import (
     assert_paddle_env_matches_site,
     assert_transaction_matches_catalog as paddle_assert_transaction_matches_catalog,
+    claim_webhook_event_once as paddle_claim_webhook_event_once,
     client_config as paddle_client_config,
     create_business_checkout as paddle_create_business_checkout,
+    issue_checkout_bind as paddle_issue_checkout_bind,
     create_plus_checkout as paddle_create_plus_checkout,
     create_topup_checkout as paddle_create_topup_checkout,
     extract_user_id as paddle_extract_user_id,
     resolve_webhook_user as paddle_resolve_webhook_user,
     paddle_business_enabled,
     paddle_enabled,
+    paddle_environment,
     paddle_overlay_ready,
     paddle_plus_enabled,
     sell_plus_only,
@@ -279,6 +283,7 @@ from services.cms_connector import (
 )
 from services.edge_signals import (
     CACHE_CONTROL as EDGE_CACHE_CONTROL,
+    PLUS_CACHE_CONTROL as EDGE_PLUS_CACHE_CONTROL,
     build_live_robots_txt,
     build_signals_payload,
     cloudflare_worker_snippet,
@@ -513,6 +518,8 @@ GOOGLE_ADS_ID = (os.getenv("GOOGLE_ADS_ID") or "").strip()
 GOOGLE_ADS_SIGNUP_LABEL = (os.getenv("GOOGLE_ADS_SIGNUP_LABEL") or "").strip()
 GOOGLE_ADS_ANALYZE_LABEL = (os.getenv("GOOGLE_ADS_ANALYZE_LABEL") or "").strip()
 GOOGLE_ADS_TOPUP_LABEL = (os.getenv("GOOGLE_ADS_TOPUP_LABEL") or "").strip()
+GOOGLE_ADS_PLUS_LABEL = (os.getenv("GOOGLE_ADS_PLUS_LABEL") or "").strip()
+GOOGLE_ADS_CHECKOUT_LABEL = (os.getenv("GOOGLE_ADS_CHECKOUT_LABEL") or "").strip()
 # CORS Edge: vuoto = nessun header ACAO (crawler non ne hanno bisogno).
 # Imposta EDGE_CORS_ORIGIN=* o un origin esatto se serve embed browser.
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
@@ -545,6 +552,13 @@ def _ads_send_to(label: str) -> str | None:
     return f"{GOOGLE_ADS_ID}/{label}"
 
 
+def _ads_user_data_for(user: Any) -> dict[str, Any]:
+    from services.seo import ads_user_data
+
+    email = getattr(user, "email", None) if user is not None else None
+    return ads_user_data(email if isinstance(email, str) else None)
+
+
 def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> None:
     """Queue a GA4/Ads event for the next page render (session flash-style)."""
     if not name:
@@ -555,6 +569,7 @@ def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> No
     if not isinstance(events, list):
         events = []
     payload = dict(params or {})
+    payload.pop("user_data", None)
     events.append({"name": name, "params": payload})
     # Cap to avoid session bloat
     session["analytics_events"] = events[-20:]
@@ -563,6 +578,49 @@ def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> No
 def pop_analytics_events() -> list[dict[str, Any]]:
     events = session.pop("analytics_events", None) or []
     return events if isinstance(events, list) else []
+
+
+def _queue_plus_subscribe_conversion() -> None:
+    """Browser Ads/GA4 subscribe — only after a signed Plus grant webhook."""
+    plus_params: dict[str, Any] = {
+        "event_category": "billing",
+        "currency": "EUR",
+        "value": PLUS_MONTHLY_EUR,
+        "item_category": "plus",
+    }
+    send_to = _ads_send_to(GOOGLE_ADS_PLUS_LABEL)
+    if send_to:
+        plus_params["send_to"] = send_to
+    queue_analytics_event("subscribe", plus_params)
+
+
+def _queue_topup_purchase_conversion() -> None:
+    topup_params: dict[str, Any] = {
+        "event_category": "billing",
+        "currency": "EUR",
+    }
+    send_to = _ads_send_to(GOOGLE_ADS_TOPUP_LABEL)
+    if send_to:
+        topup_params["send_to"] = send_to
+    queue_analytics_event("purchase", topup_params)
+    queue_analytics_event("topup_success", {"event_category": "billing"})
+
+
+def flush_pending_ads_conversions(user: User | None) -> None:
+    """One-shot: webhook sets the flag, next authenticated HTML consume it."""
+    if user is None:
+        return
+    dirty = False
+    if getattr(user, "ads_plus_conversion_pending", False):
+        _queue_plus_subscribe_conversion()
+        user.ads_plus_conversion_pending = False
+        dirty = True
+    if getattr(user, "ads_topup_conversion_pending", False):
+        _queue_topup_purchase_conversion()
+        user.ads_topup_conversion_pending = False
+        dirty = True
+    if dirty:
+        db.session.commit()
 
 
 
@@ -580,6 +638,7 @@ def set_security_headers(response):
         paddle=paddle_enabled(),
         analytics=bool(GA4_MEASUREMENT_ID or GOOGLE_ADS_ID),
         adsense=bool(ADSENSE_CLIENT_ID or GOOGLE_ADS_ID),
+        paddle_sandbox=paddle_environment() == "sandbox",
     )
     # Dashboard HTML must never be served from bfcache/proxy after analyze —
     # otherwise the UI looks stuck on the previous report.
@@ -587,6 +646,12 @@ def set_security_headers(response):
     if ep == "dashboard" or ep.startswith("dashboard_"):
         response.headers["Cache-Control"] = "private, no-store, max-age=0"
         response.headers["Pragma"] = "no-cache"
+    if (response.mimetype or "").startswith("text/html"):
+        response.headers.setdefault("Content-Language", active_ui_locale())
+        from services.seo import is_private_html_path
+
+        if is_private_html_path(ep, request.path if request else "/"):
+            response.headers.setdefault("X-Robots-Tag", "noindex, nofollow")
     # HSTS è impostato da nginx (add_header ... always) davanti a Flask;
     # non duplicarlo qui per evitare due header Strict-Transport-Security.
     return response
@@ -654,6 +719,9 @@ class User(db.Model):
     gsc_account_email = db.Column(db.String(255))
     gsc_connected_at = db.Column(db.DateTime)
     gsc_site_urls_json = db.Column(db.Text, nullable=False, default="")
+    # Ads conversions fire in-browser only after a signed Paddle webhook.
+    ads_plus_conversion_pending = db.Column(db.Boolean, nullable=False, default=False)
+    ads_topup_conversion_pending = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1085,6 +1153,18 @@ class ProInterest(db.Model):
     website_url = db.Column(db.String(500))
     note = db.Column(db.String(500))
     source = db.Column(db.String(80), nullable=False, default="pricing")
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+
+class PaddleWebhookEvent(db.Model):
+    """Durable Paddle notification id — unique so replays cannot re-grant."""
+
+    __tablename__ = "paddle_webhook_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(190), unique=True, nullable=False, index=True)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
@@ -1537,12 +1617,78 @@ def current_user() -> User | None:
     return user
 
 
+@app.before_request
+def _flush_pending_ads_conversions() -> None:
+    if request.endpoint in {None, "static"}:
+        return
+    try:
+        flush_pending_ads_conversions(current_user())
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("pending ads conversion flush failed")
+
+
+def _finding_summaries(
+    findings: list[dict[str, Any]] | None, *, limit: int = 20
+) -> list[dict[str, Any]]:
+    """Job-status payload: severity/title/category only — no fix bodies."""
+    out: list[dict[str, Any]] = []
+    for item in findings or []:
+        if not isinstance(item, dict):
+            continue
+        out.append(
+            {
+                "severity": str(item.get("severity") or "")[:20],
+                "title": str(item.get("title") or "")[:200],
+                "category": str(item.get("category") or "")[:40],
+            }
+        )
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _persist_paddle_webhook_event(event_id: str) -> bool:
+    """Insert a durable Paddle event id. False if already seen.
+
+    Flush-only so a later handler rollback still lets Paddle retry.
+    """
+    eid = (event_id or "").strip()[:190]
+    if not eid:
+        return True
+    db.session.add(PaddleWebhookEvent(event_id=eid))
+    try:
+        db.session.flush()
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        return False
+
+
+def _paddle_client_config_for(user: User | None) -> dict[str, Any]:
+    """Public Paddle.js config plus a signed first-bind token when logged in."""
+    cfg = dict(paddle_client_config())
+    if user is None:
+        return cfg
+    try:
+        bind = paddle_issue_checkout_bind(int(user.id))
+    except Exception:
+        app.logger.exception("checkout bind token issue failed user=%s", getattr(user, "id", None))
+        return cfg
+    cfg["bindTs"] = bind.get("bind_ts") or ""
+    cfg["bindSig"] = bind.get("bind_sig") or ""
+    return cfg
+
+
 def _establish_session(user: User, *, permanent: bool = True) -> None:
     """Create a fresh authenticated session bound to the user's session_version."""
+    pending_preview = (session.get("guest_preview_token") or "").strip()
     session.clear()
     session["user_id"] = user.id
     session["session_version"] = int(getattr(user, "session_version", 0) or 0)
     session.permanent = permanent
+    if pending_preview:
+        session["guest_preview_token"] = pending_preview
 
 
 def ensure_admin_user() -> User | None:
@@ -1654,11 +1800,33 @@ def _policy_versions_for_templates() -> dict[str, str]:
 
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
+    from flask_babel import gettext as _crumb
+    from services.seo import (
+        breadcrumb_items as _breadcrumb_items,
+        canonical_with_lang,
+        hreflang_alternates,
+        hreflang_enabled_for_request,
+        og_locale_alternates,
+        schema_in_language,
+    )
+
     base = public_base_url()
     path = request.path or "/"
-    canonical = base if path == "/" else f"{base}{path}"
+    forced_lang = request.args.get("lang")
+    canonical = canonical_with_lang(base, path, forced_lang)
     ui_lang = active_ui_locale()
     meta = locale_meta(ui_lang)
+    crumbs = []
+    for item in _breadcrumb_items(base, path):
+        crumbs.append({"name": _crumb(item["name"]), "url": item["url"]})
+    loc_arg = normalize_locale(forced_lang) if forced_lang else DEFAULT_LOCALE
+    canonical_lang_qs = (
+        f"?lang={loc_arg}"
+        if forced_lang
+        and loc_arg in SUPPORTED_LOCALES
+        and loc_arg != DEFAULT_LOCALE
+        else ""
+    )
     user = current_user()
     sidebar_balance = 0
     sidebar_credits_used = 0
@@ -1736,6 +1904,7 @@ def inject_globals() -> dict[str, Any]:
         "rating_scale": RATING_ORDER,
         "canonical_base": base,
         "canonical_url": canonical,
+        "canonical_lang_qs": canonical_lang_qs,
         "admin_email": ADMIN_EMAIL,
         "paddle_ready": paddle_enabled(),
         "paddle_plus_ready": paddle_plus_enabled(),
@@ -1744,7 +1913,7 @@ def inject_globals() -> dict[str, Any]:
         "payments_ready": payments_enabled(),
         "payments_provider": payments_provider(),
         "paddle_overlay": paddle_overlay_ready(),
-        "paddle_config": paddle_client_config(),
+        "paddle_config": _paddle_client_config_for(user),
         "legal_company_name": LEGAL_COMPANY_NAME,
         "legal_vat": LEGAL_VAT,
         "legal_address": LEGAL_ADDRESS,
@@ -1754,7 +1923,17 @@ def inject_globals() -> dict[str, Any]:
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
         "google_ads_id": GOOGLE_ADS_ID,
+        "ads_analyze_send_to": _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL),
+        "ads_checkout_send_to": _ads_send_to(GOOGLE_ADS_CHECKOUT_LABEL),
         "analytics_events": pop_analytics_events(),
+        "hreflang_alternates": (
+            hreflang_alternates(base, path)
+            if hreflang_enabled_for_request(request.endpoint, path)
+            else []
+        ),
+        "og_locale_alternates": og_locale_alternates(ui_lang),
+        "schema_in_language": schema_in_language(ui_lang),
+        "breadcrumb_items": crumbs,
         "site_author_name": SITE_AUTHOR_NAME,
         "site_author_title": SITE_AUTHOR_TITLE,
         "site_author_url": SITE_AUTHOR_URL,
@@ -2011,6 +2190,8 @@ def ensure_schema() -> None:
             "gsc_account_email": "TEXT",
             "gsc_connected_at": "DATETIME",
             "gsc_site_urls_json": "TEXT DEFAULT ''",
+            "ads_plus_conversion_pending": "BOOLEAN DEFAULT 0",
+            "ads_topup_conversion_pending": "BOOLEAN DEFAULT 0",
         }
         for name, col_type in user_alters.items():
             if name not in user_cols:
@@ -2164,6 +2345,16 @@ def ensure_schema() -> None:
             "CRITICAL: credit_ledger stripe unique index skipped — "
             "webhook double-credit possible"
         )
+    try:
+        with db.engine.begin() as conn:
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_paddle_webhook_event_id "
+                    "ON paddle_webhook_events (event_id)"
+                )
+            )
+    except Exception:
+        app.logger.exception("paddle_webhook_events unique index skipped")
 
 
 def _current_sov_budget(user: User) -> dict[str, int | bool]:
@@ -4133,6 +4324,7 @@ def _edge_response(
     analysis: SiteAnalysis,
     path: str = "",
     token: str = "",
+    cache_control: str | None = None,
 ) -> Response:
     version = int(getattr(analysis, "signals_version", 1) or 1)
     if path and token:
@@ -4155,7 +4347,7 @@ def _edge_response(
         return Response(status=304)
     resp = Response(body, mimetype=mimetype)
     resp.headers["ETag"] = etag
-    resp.headers["Cache-Control"] = EDGE_CACHE_CONTROL
+    resp.headers["Cache-Control"] = cache_control or EDGE_CACHE_CONTROL
     resp.headers["X-Centropic-Edge"] = "1"
     resp.headers["X-Centropic-Version"] = str(version)
     # Legacy aliases retained for existing GeoPulse connectors.
@@ -4214,6 +4406,7 @@ def edge_robots_txt(token: str):
         analysis=analysis,
         path="robots.txt",
         token=token,
+        cache_control=EDGE_PLUS_CACHE_CONTROL,
     )
 
 
@@ -4238,6 +4431,7 @@ def edge_organization_jsonld(token: str):
         analysis=analysis,
         path="organization.jsonld",
         token=token,
+        cache_control=EDGE_PLUS_CACHE_CONTROL,
     )
 
 
@@ -4455,12 +4649,34 @@ def robots_txt():
         "Disallow: /lang/\n"
         "Disallow: /crediti\n"
         "Disallow: /crediti/\n"
-        # Query-string locale mirrors share titles/descriptions with the canonical
-        # path; keep them out of crawl samples (session/cookie sets UI lang).
-        "Disallow: /*?lang=\n"
-        "Disallow: /*?*lang=\n"
         "Disallow: /dpa.txt\n"
         "Disallow: /dpa.md\n"
+        "\n"
+        # AdsBot must fetch landing pages (?lang= variants included) for QS.
+        "User-agent: AdsBot-Google\n"
+        "Allow: /\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /dashboard/\n"
+        "Disallow: /logout\n"
+        "Disallow: /admin\n"
+        "Disallow: /lang\n"
+        "Disallow: /lang/\n"
+        "Disallow: /crediti\n"
+        "Disallow: /crediti/\n"
+        "\n"
+        "User-agent: AdsBot-Google-Mobile\n"
+        "Allow: /\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /dashboard/\n"
+        "Disallow: /logout\n"
+        "Disallow: /admin\n"
+        "Disallow: /lang\n"
+        "Disallow: /lang/\n"
+        "Disallow: /crediti\n"
+        "Disallow: /crediti/\n"
+        "\n"
+        "User-agent: Mediapartners-Google\n"
+        "Allow: /\n"
         "\n"
         "User-agent: GPTBot\n"
         "Allow: /\n"
@@ -4513,13 +4729,16 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
+    from services.seo import sitemap_xhtml_links
+
     base = public_base_url()
     pages = [
         ("/", "1.0", "weekly"),
         ("/prodotto", "0.9", "weekly"),
         ("/guida", "0.95", "weekly"),
         ("/esempio-report", "0.85", "weekly"),
-        ("/prezzi", "0.8", "weekly"),
+        ("/prezzi", "0.9", "weekly"),
+        ("/register", "0.85", "weekly"),
         ("/metodologia", "0.9", "monthly"),
         ("/guide/llms-txt", "0.8", "monthly"),
         ("/guide/schema-ai", "0.8", "monthly"),
@@ -4542,7 +4761,7 @@ def sitemap_xml():
         ("/interesse-plus", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
-        pages.insert(12, ("/ads.txt", "0.5", "monthly"))
+        pages.insert(14, ("/ads.txt", "0.5", "monthly"))
     today = datetime.now(timezone.utc).date().isoformat()
     urls = []
     for path, priority, freq in pages:
@@ -4553,11 +4772,13 @@ def sitemap_xml():
             f"    <lastmod>{today}</lastmod>\n"
             f"    <changefreq>{freq}</changefreq>\n"
             f"    <priority>{priority}</priority>\n"
+            f"{sitemap_xhtml_links(base, path)}\n"
             "  </url>"
         )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'
+        '        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
         + "\n".join(urls)
         + "\n</urlset>\n"
     )
@@ -4845,7 +5066,19 @@ def preview_analyze_view(token: str):
             return redirect(url_for("index") + "#hero-brand")
 
     user = current_user()
-    if user is not None and preview.status == "done" and not preview.claimed_user_id:
+    session_tok = (session.get("guest_preview_token") or "").strip()
+    preview_tok = (preview.token or "").strip()
+    session_owns = bool(
+        session_tok
+        and preview_tok
+        and hmac.compare_digest(session_tok, preview_tok)
+    )
+    if (
+        user is not None
+        and preview.status == "done"
+        and not preview.claimed_user_id
+        and session_owns
+    ):
         site = claim_guest_preview(
             db_session=db.session,
             GuestPreview=GuestPreview,
@@ -5460,6 +5693,7 @@ def billing_portal():
 @app.route("/billing/success")
 @login_required
 def billing_success():
+    # Conversion is queued only after the signed Paddle webhook (pending flag).
     flash(
         "Pagamento ricevuto. Il piano si attiva entro pochi secondi via webhook.",
         "success",
@@ -5481,6 +5715,12 @@ def billing_paddle_webhook():
     except Exception as exc:
         app.logger.warning("Paddle webhook parse failed: %s", exc)
         return jsonify({"ok": False}), 400
+
+    event_id = str(event.get("event_id") or event.get("notification_id") or "").strip()
+    if event_id and not paddle_claim_webhook_event_once(
+        event_id, persist=_persist_paddle_webhook_event
+    ):
+        return jsonify({"ok": True, "duplicate": True})
 
     etype = (event.get("event_type") or event.get("eventType") or "").strip()
     data = event.get("data") or {}
@@ -5584,6 +5824,13 @@ def billing_paddle_webhook():
                                 {"ok": False, "error": "digital_service_waiver_required"}
                             ), 409
                         user.plan = paid
+                        if paid == "plus" and prior not in {
+                            "plus",
+                            "pro",
+                            "business",
+                            "admin",
+                        }:
+                            user.ads_plus_conversion_pending = True
                     else:
                         app.logger.warning(
                             "Paddle subscription %s active without known price ids; "
@@ -5744,6 +5991,8 @@ def billing_paddle_webhook():
                             u.plan = "plus"
 
                     _apply_plus(user)
+                    if prior not in {"plus", "pro", "business", "admin"}:
+                        user.ads_plus_conversion_pending = True
                     if txn_id and plus_credit_cents > 0:
                         try:
                             granted = grant_plus_monthly_tokens(
@@ -5789,9 +6038,10 @@ def billing_paddle_webhook():
                 return jsonify({"ok": False, "error": "amount_mismatch"}), 400
             if catalog_cents is None:
                 app.logger.warning(
-                    "Paddle top-up amount unavailable; skipping mismatch check txn=%s",
+                    "Paddle top-up amount unavailable txn=%s",
                     data.get("id"),
                 )
+                return jsonify({"ok": False, "error": "amount_unavailable"}), 400
 
             txn_id = str(data.get("id") or "").strip()
             if not txn_id:
@@ -5824,6 +6074,7 @@ def billing_paddle_webhook():
                 )
                 if data.get("customer_id"):
                     user.paddle_customer_id = str(data.get("customer_id"))
+                user.ads_topup_conversion_pending = True
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
@@ -7392,15 +7643,7 @@ def topup_checkout():
 @app.route("/crediti/successo")
 @login_required
 def topup_success():
-    topup_params: dict[str, Any] = {
-        "event_category": "billing",
-        "currency": "EUR",
-    }
-    send_to = _ads_send_to(GOOGLE_ADS_TOPUP_LABEL)
-    if send_to:
-        topup_params["send_to"] = send_to
-    queue_analytics_event("purchase", topup_params)
-    queue_analytics_event("topup_success", {"event_category": "billing"})
+    # Purchase conversion is queued only after the signed Paddle top-up webhook.
     flash("Pagamento completato! Il credito sarà disponibile a breve.", "success")
     return redirect(url_for("topup_credit_page"))
 
@@ -8555,7 +8798,7 @@ def api_v1_job_status(job_id: int):
             payload["aio_score"] = site.aio_score
             payload["geo_score"] = site.geo_score
             payload["rating"] = site.rating
-            payload["findings"] = (site.findings or [])[:50]
+            payload["findings"] = _finding_summaries(site.findings or [], limit=50)
     return jsonify(payload)
 
 
@@ -8618,6 +8861,8 @@ def api_v1_site_edge(site_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    if not user_can_write_site(user, analysis):
+        return jsonify({"ok": False, "error": "forbidden_viewer"}), 403
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
@@ -8686,6 +8931,8 @@ def api_v1_site_edge_cms_bundle(site_id: int):
     analysis = get_accessible_site(SiteAnalysis, user, site_id)
     if analysis is None:
         return jsonify({"ok": False, "error": "not_found"}), 404
+    if not user_can_write_site(user, analysis):
+        return jsonify({"ok": False, "error": "forbidden_viewer"}), 403
     if not analysis.public_token or not getattr(analysis, "signals_hosted", False):
         return jsonify({"ok": False, "error": "edge_not_enabled"}), 409
     base = edge_base_url(public_base_url(), analysis.public_token)
@@ -9014,6 +9261,9 @@ def download_pack(analysis_id: int):
     if analysis is None:
         flash("Analisi non trovata.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, analysis):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
+        return redirect(url_for("dashboard", site=analysis_id))
 
     buffer = io.BytesIO(pack_fix_html_bytes(analysis))
     return send_file(
@@ -9234,6 +9484,9 @@ def download_run_pack(run_id: int):
     if run is None or site is None:
         flash("Run non trovata.", "error")
         return redirect(url_for("dashboard"))
+    if not user_can_write_site(user, site):
+        flash(_("Non hai permessi di modifica su questo sito condiviso."), "error")
+        return redirect(url_for("dashboard", site=site.id))
 
     buffer = io.BytesIO(pack_fix_html_bytes(run))
     stamp = run.created_at.strftime("%Y%m%d-%H%M") if run.created_at else "run"

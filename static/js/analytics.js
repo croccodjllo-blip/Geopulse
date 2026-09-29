@@ -11,6 +11,7 @@
   var gaId = cfg.ga4Id || "";
   var adsId = cfg.adsId || "";
   var adsenseClient = cfg.adsenseClient || "";
+  var adsAnalyzeSendTo = cfg.adsAnalyzeSendTo || "";
   var queued = Array.isArray(cfg.events) ? cfg.events.slice() : [];
 
   window.dataLayer = window.dataLayer || [];
@@ -19,6 +20,38 @@
     function () {
       window.dataLayer.push(arguments);
     };
+
+  var CLICK_ID_KEYS = ["gclid", "gbraid", "wbraid", "gad_source"];
+  var CLICK_ID_MAX_AGE = 90 * 24 * 60 * 60;
+
+  function persistClickIds() {
+    var params;
+    try {
+      params = new URLSearchParams(window.location.search || "");
+    } catch (_e) {
+      return;
+    }
+    var i;
+    for (i = 0; i < CLICK_ID_KEYS.length; i += 1) {
+      var key = CLICK_ID_KEYS[i];
+      var val = params.get(key);
+      if (!val) continue;
+      try {
+        var secure =
+          window.location.protocol === "https:" ? ";Secure" : "";
+        document.cookie =
+          key +
+          "=" +
+          encodeURIComponent(val) +
+          ";path=/;max-age=" +
+          CLICK_ID_MAX_AGE +
+          ";SameSite=Lax" +
+          secure;
+      } catch (_cookie) {
+        /* ignore quota / private mode */
+      }
+    }
+  }
 
   function readConsent() {
     try {
@@ -75,15 +108,23 @@
     if (!name) return;
     var payload = Object.assign({}, params || {});
     var sendTo = payload.send_to;
+    var userData = payload.user_data;
     if (sendTo) {
       delete payload.send_to;
     }
+    if (userData) {
+      delete payload.user_data;
+      window.gtag("set", "user_data", userData);
+    }
     window.gtag("event", name, payload);
     if (sendTo) {
-      window.gtag("event", "conversion", {
+      var conv = {
         send_to: sendTo,
         currency: payload.currency || "EUR",
-      });
+      };
+      if (payload.value != null) conv.value = payload.value;
+      if (payload.transaction_id) conv.transaction_id = payload.transaction_id;
+      window.gtag("event", "conversion", conv);
     }
   }
 
@@ -186,17 +227,23 @@
     document.addEventListener("submit", function (ev) {
       var form = ev.target;
       if (!(form instanceof HTMLFormElement)) return;
+      var action = form.getAttribute("action") || "";
       if (
         form.classList.contains("js-analyze-form") ||
-        form.getAttribute("action") === "/dashboard/analyze/confirmed" ||
-        (form.getAttribute("action") || "").indexOf("analyze/confirmed") !== -1
+        form.classList.contains("hero-url-form") ||
+        action === "/dashboard/analyze/confirmed" ||
+        action.indexOf("analyze/confirmed") !== -1 ||
+        action.indexOf("/anteprima") !== -1
       ) {
-        track("analyze_start", { event_category: "analysis" });
+        var params = { event_category: "analysis" };
+        if (adsAnalyzeSendTo) params.send_to = adsAnalyzeSendTo;
+        track("analyze_start", params);
       }
     });
   }
 
   function init() {
+    persistClickIds();
     bindBanner();
     bindAnalyzeForms();
     var existing = readConsent();

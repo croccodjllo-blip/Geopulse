@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Privacy Policy') }} — Centropic{% endblock %}
 {% block meta_description %}{{ _('Informativa privacy Centropic: titolare, finalità, basi giuridiche, retention, trasferimenti, AI/LLM e diritti.') }}{% endblock %}
-{% block canonical %}{{ canonical_base }}/privacy{% endblock %}
+{% block canonical %}{{ canonical_base }}/privacy{{ canonical_lang_qs }}{% endblock %}
 
 {% block content %}
 <article class="page page--legal">
