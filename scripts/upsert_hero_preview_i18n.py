@@ -197,15 +197,14 @@ TABLES: dict[str, dict[str, str]] = {
 # Search/Ads landing copy (Italian source → native).
 SEARCH_ADS: dict[str, dict[str, str]] = {
     "en": {
-        "Misura la visibilità GEO": "Measure GEO visibility",
-        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
-            "GEO and AIO in one score: how well ChatGPT, Perplexity, and Google AI can understand and cite your brand. Free preview, no credit card."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO and AIO in one structural-readiness score. Free preview, no card — measured citation monitor is on Plus."
+        ),
+        "Software GEO e AIO: misura la predisposizione strutturale del tuo sito per i sistemi generativi. Analisi gratis, pack llms.txt e JSON-LD. Plus da 19,99€ tasse escluse.": (
+            "GEO and AIO software: measure your site’s structural readiness for generative systems. Free analysis, llms.txt and JSON-LD pack. Plus from €19.99 excluding tax."
         ),
         "GEO e visibilità IA: analizza il tuo sito con Centropic": (
             "GEO and AI visibility: analyze your site with Centropic"
-        ),
-        "Software GEO e AIO: misura quanto ChatGPT, Perplexity e Google AI possono citare il tuo brand. Analisi gratis, pack llms.txt e JSON-LD. Plus da 19,99€ tasse escluse.": (
-            "GEO and AIO software: measure how well ChatGPT, Perplexity, and Google AI can cite your brand. Free analysis, llms.txt and JSON-LD pack. Plus from €19.99 excluding tax."
         ),
         "Registrati gratis: analisi GEO e AIO del sito": (
             "Sign up free: GEO and AIO site analysis"
@@ -225,9 +224,8 @@ SEARCH_ADS: dict[str, dict[str, str]] = {
         "Contatti: supporto GEO e AIO": "Contact: GEO and AIO support",
     },
     "de": {
-        "Misura la visibilità GEO": "Miss die GEO-Sichtbarkeit",
-        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
-            "GEO und AIO in einem Score: wie gut ChatGPT, Perplexity und Google AI deine Marke verstehen und zitieren können. Kostenlose Vorschau, ohne Karte."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO und AIO in einem Score zur strukturellen Bereitschaft. Kostenlose Vorschau, ohne Karte — gemessener Citation-Monitor ist in Plus."
         ),
         "GEO e visibilità IA: analizza il tuo sito con Centropic": (
             "GEO- und KI-Sichtbarkeit: analysiere deine Website mit Centropic"
@@ -241,9 +239,8 @@ SEARCH_ADS: dict[str, dict[str, str]] = {
         "Contatti: supporto GEO e AIO": "Kontakt: GEO- und AIO-Support",
     },
     "es": {
-        "Misura la visibilità GEO": "Mide la visibilidad GEO",
-        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
-            "GEO y AIO en una sola puntuación: cuánto pueden comprender y citar tu marca ChatGPT, Perplexity y Google AI. Vista previa gratis, sin tarjeta."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO y AIO en una sola puntuación de preparación estructural. Vista previa gratis, sin tarjeta: el citation monitor Medido está en Plus."
         ),
         "GEO e visibilità IA: analizza il tuo sito con Centropic": (
             "GEO y visibilidad IA: analiza tu sitio con Centropic"
@@ -257,9 +254,8 @@ SEARCH_ADS: dict[str, dict[str, str]] = {
         "Contatti: supporto GEO e AIO": "Contacto: soporte GEO y AIO",
     },
     "ko": {
-        "Misura la visibilità GEO": "GEO 가시성을 측정하세요",
-        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
-            "하나의 점수로 보는 GEO와 AIO: ChatGPT, Perplexity, Google AI가 브랜드를 이해하고 인용할 수 있는 정도. 무료 미리보기, 카드 불필요."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO와 AIO를 하나의 구조적 준비도 점수로. 무료 미리보기, 카드 불필요 — 측정 citation 모니터는 Plus."
         ),
         "GEO e visibilità IA: analizza il tuo sito con Centropic": (
             "GEO와 AI 가시성: Centropic으로 사이트를 분석하세요"
@@ -273,9 +269,8 @@ SEARCH_ADS: dict[str, dict[str, str]] = {
         "Contatti: supporto GEO e AIO": "문의: GEO 및 AIO 지원",
     },
     "zh_Hans": {
-        "Misura la visibilità GEO": "衡量 GEO 可见度",
-        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
-            "GEO 与 AIO 合为一个分数：ChatGPT、Perplexity 和 Google AI 能在多大程度上理解并引用你的品牌。免费预览，无需信用卡。"
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO 与 AIO 合为一个结构就绪度分数。免费预览，无需信用卡 — 实测 citation monitor 仅限 Plus。"
         ),
         "GEO e visibilità IA: analizza il tuo sito con Centropic": (
             "GEO 与 AI 可见度：用 Centropic 分析你的网站"
