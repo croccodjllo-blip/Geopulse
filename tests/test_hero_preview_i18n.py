@@ -14,10 +14,10 @@ from app import app, _preview_url_error_message
 
 HERO = {
     "en": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Enter your domain for AIO/GEO structural readiness scores and critical issues."
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO and AIO in one score: how well ChatGPT, Perplexity, and Google AI can understand and cite your brand. Free preview, no credit card."
         ),
-        "Misura la readiness": "Measure readiness",
+        "Misura la visibilità GEO": "Measure GEO visibility",
         "del tuo sito per le IA": "of your site for AI",
         "Anteprima immediata · niente carta": "Instant preview · no credit card",
         "tuodominio.it": "yourdomain.com",
@@ -27,34 +27,34 @@ HERO = {
         "URL non valido": "Invalid URL",
     },
     "de": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Geben Sie Ihre Domain ein — für AIO/GEO-Scores zur strukturellen Bereitschaft und kritische Befunde."
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO und AIO in einem Score: wie gut ChatGPT, Perplexity und Google AI deine Marke verstehen und zitieren können. Kostenlose Vorschau, ohne Karte."
         ),
-        "Misura la readiness": "Miss die Bereitschaft",
+        "Misura la visibilità GEO": "Miss die GEO-Sichtbarkeit",
         "tuodominio.it": "deine-domain.de",
         "URL non valido": "Ungültige URL",
     },
     "es": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Introduce tu dominio para obtener puntuaciones AIO/GEO de preparación estructural y criticidades."
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO y AIO en una sola puntuación: cuánto pueden comprender y citar tu marca ChatGPT, Perplexity y Google AI. Vista previa gratis, sin tarjeta."
         ),
-        "Misura la readiness": "Mide la preparación",
+        "Misura la visibilità GEO": "Mide la visibilidad GEO",
         "tuodominio.it": "tudominio.es",
         "URL non valido": "URL no válida",
     },
     "ko": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "도메인을 입력하면 AIO/GEO 구조적 준비도 점수와 핵심 이슈를 확인할 수 있습니다."
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "하나의 점수로 보는 GEO와 AIO: ChatGPT, Perplexity, Google AI가 브랜드를 이해하고 인용할 수 있는 정도. 무료 미리보기, 카드 불필요."
         ),
-        "Misura la readiness": "준비도를 측정하세요",
+        "Misura la visibilità GEO": "GEO 가시성을 측정하세요",
         "tuodominio.it": "yourdomain.com",
         "URL non valido": "유효하지 않은 URL입니다",
     },
     "zh_Hans": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "输入域名，即可查看 AIO/GEO 结构就绪度评分与关键问题。"
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO 与 AIO 合为一个分数：ChatGPT、Perplexity 和 Google AI 能在多大程度上理解并引用你的品牌。免费预览，无需信用卡。"
         ),
-        "Misura la readiness": "衡量就绪度",
+        "Misura la visibilità GEO": "衡量 GEO 可见度",
         "del tuo sito per le IA": "让你的网站面向 AI",
         "tuodominio.it": "yourdomain.com",
         "URL non valido": "无效的 URL",
@@ -89,15 +89,15 @@ def test_preview_url_error_helper_translates():
 def test_landing_hero_html_localized():
     client = app.test_client()
     for lang, needle, placeholder in [
-        ("en", "Enter your domain for AIO/GEO", "yourdomain.com"),
-        ("de", "Geben Sie Ihre Domain ein", "deine-domain.de"),
-        ("es", "Introduce tu dominio", "tudominio.es"),
-        ("ko", "도메인을 입력하면", "yourdomain.com"),
-        ("zh", "输入域名", "yourdomain.com"),
+        ("en", "GEO and AIO in one score", "yourdomain.com"),
+        ("de", "GEO und AIO in einem Score", "deine-domain.de"),
+        ("es", "GEO y AIO en una sola", "tudominio.es"),
+        ("ko", "하나의 점수로 보는 GEO와 AIO", "yourdomain.com"),
+        ("zh", "GEO 与 AIO 合为一个分数", "yourdomain.com"),
     ]:
         r = client.get(f"/?lang={lang}")
         assert r.status_code == 200
         html = r.get_data(as_text=True)
         assert needle in html, (lang, needle)
         assert f'placeholder="{placeholder}"' in html, (lang, placeholder)
-        assert "Inserisci il dominio per score" not in html
+        assert "Anteprima gratis, niente carta" not in html
