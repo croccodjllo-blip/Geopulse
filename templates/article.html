@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ article_title }}{% endblock %}
 {% block meta_description %}{{ article_description }}{% endblock %}
-{% block canonical %}{{ canonical_base }}{{ article_path }}{% endblock %}
+{% block canonical %}{{ canonical_base }}{{ article_path }}{{ canonical_lang_qs }}{% endblock %}
 {% block structured_data %}
 <script type="application/ld+json" nonce="{{ csp_nonce }}">
 {
@@ -11,7 +11,7 @@
   "description": {{ article_description|tojson }},
   "datePublished": "{{ article_date }}",
   "dateModified": "{{ article_date }}",
-  "inLanguage": "it-IT",
+  "inLanguage": "{{ schema_in_language }}",
   "author": {
     "@type": "Organization",
     "@id": "{{ site_author_url }}#organization",

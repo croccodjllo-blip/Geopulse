@@ -14,8 +14,8 @@ from app import app, _preview_url_error_message
 
 HERO = {
     "en": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Enter your domain for AIO/GEO structural readiness scores and critical issues."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO and AIO in one structural-readiness score. Free preview, no card — measured citation monitor is on Plus."
         ),
         "Misura la readiness": "Measure readiness",
         "del tuo sito per le IA": "of your site for AI",
@@ -27,32 +27,32 @@ HERO = {
         "URL non valido": "Invalid URL",
     },
     "de": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Geben Sie Ihre Domain ein — für AIO/GEO-Scores zur strukturellen Bereitschaft und kritische Befunde."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO und AIO in einem Score zur strukturellen Bereitschaft. Kostenlose Vorschau, ohne Karte — gemessener Citation-Monitor ist in Plus."
         ),
         "Misura la readiness": "Miss die Bereitschaft",
         "tuodominio.it": "deine-domain.de",
         "URL non valido": "Ungültige URL",
     },
     "es": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "Introduce tu dominio para obtener puntuaciones AIO/GEO de preparación estructural y criticidades."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO y AIO en una sola puntuación de preparación estructural. Vista previa gratis, sin tarjeta: el citation monitor Medido está en Plus."
         ),
         "Misura la readiness": "Mide la preparación",
         "tuodominio.it": "tudominio.es",
         "URL non valido": "URL no válida",
     },
     "ko": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "도메인을 입력하면 AIO/GEO 구조적 준비도 점수와 핵심 이슈를 확인할 수 있습니다."
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO와 AIO를 하나의 구조적 준비도 점수로. 무료 미리보기, 카드 불필요 — 측정 citation 모니터는 Plus."
         ),
         "Misura la readiness": "준비도를 측정하세요",
         "tuodominio.it": "yourdomain.com",
         "URL non valido": "유효하지 않은 URL입니다",
     },
     "zh_Hans": {
-        "Inserisci il dominio per score AIO/GEO di predisposizione strutturale e criticità.": (
-            "输入域名，即可查看 AIO/GEO 结构就绪度评分与关键问题。"
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO 与 AIO 合为一个结构就绪度分数。免费预览，无需信用卡 — 实测 citation monitor 仅限 Plus。"
         ),
         "Misura la readiness": "衡量就绪度",
         "del tuo sito per le IA": "让你的网站面向 AI",
@@ -89,15 +89,15 @@ def test_preview_url_error_helper_translates():
 def test_landing_hero_html_localized():
     client = app.test_client()
     for lang, needle, placeholder in [
-        ("en", "Enter your domain for AIO/GEO", "yourdomain.com"),
-        ("de", "Geben Sie Ihre Domain ein", "deine-domain.de"),
-        ("es", "Introduce tu dominio", "tudominio.es"),
-        ("ko", "도메인을 입력하면", "yourdomain.com"),
-        ("zh", "输入域名", "yourdomain.com"),
+        ("en", "structural-readiness score", "yourdomain.com"),
+        ("de", "strukturellen Bereitschaft", "deine-domain.de"),
+        ("es", "preparación estructural", "tudominio.es"),
+        ("ko", "구조적 준비도", "yourdomain.com"),
+        ("zh", "结构就绪度", "yourdomain.com"),
     ]:
         r = client.get(f"/?lang={lang}")
         assert r.status_code == 200
         html = r.get_data(as_text=True)
         assert needle in html, (lang, needle)
         assert f'placeholder="{placeholder}"' in html, (lang, placeholder)
-        assert "Inserisci il dominio per score" not in html
+        assert "Anteprima gratis, niente carta" not in html
