@@ -517,6 +517,8 @@ GOOGLE_ADS_ID = (os.getenv("GOOGLE_ADS_ID") or "").strip()
 GOOGLE_ADS_SIGNUP_LABEL = (os.getenv("GOOGLE_ADS_SIGNUP_LABEL") or "").strip()
 GOOGLE_ADS_ANALYZE_LABEL = (os.getenv("GOOGLE_ADS_ANALYZE_LABEL") or "").strip()
 GOOGLE_ADS_TOPUP_LABEL = (os.getenv("GOOGLE_ADS_TOPUP_LABEL") or "").strip()
+GOOGLE_ADS_PLUS_LABEL = (os.getenv("GOOGLE_ADS_PLUS_LABEL") or "").strip()
+GOOGLE_ADS_CHECKOUT_LABEL = (os.getenv("GOOGLE_ADS_CHECKOUT_LABEL") or "").strip()
 # CORS Edge: vuoto = nessun header ACAO (crawler non ne hanno bisogno).
 # Imposta EDGE_CORS_ORIGIN=* o un origin esatto se serve embed browser.
 EDGE_CORS_ORIGIN = (os.getenv("EDGE_CORS_ORIGIN") or "").strip()
@@ -547,6 +549,13 @@ def _ads_send_to(label: str) -> str | None:
     if "/" in label:
         return label  # already full AW-xxx/yyy
     return f"{GOOGLE_ADS_ID}/{label}"
+
+
+def _ads_user_data_for(user: Any) -> dict[str, Any]:
+    from services.seo import ads_user_data
+
+    email = getattr(user, "email", None) if user is not None else None
+    return ads_user_data(email if isinstance(email, str) else None)
 
 
 def queue_analytics_event(name: str, params: dict[str, Any] | None = None) -> None:
@@ -591,6 +600,8 @@ def set_security_headers(response):
     if ep == "dashboard" or ep.startswith("dashboard_"):
         response.headers["Cache-Control"] = "private, no-store, max-age=0"
         response.headers["Pragma"] = "no-cache"
+    if (response.mimetype or "").startswith("text/html"):
+        response.headers.setdefault("Content-Language", active_ui_locale())
     # HSTS è impostato da nginx (add_header ... always) davanti a Flask;
     # non duplicarlo qui per evitare due header Strict-Transport-Security.
     return response
@@ -1725,11 +1736,32 @@ def _policy_versions_for_templates() -> dict[str, str]:
 
 @app.context_processor
 def inject_globals() -> dict[str, Any]:
+    from flask_babel import gettext as _crumb
+    from services.seo import (
+        breadcrumb_items as _breadcrumb_items,
+        canonical_with_lang,
+        hreflang_alternates,
+        og_locale_alternates,
+        schema_in_language,
+    )
+
     base = public_base_url()
     path = request.path or "/"
-    canonical = base if path == "/" else f"{base}{path}"
+    forced_lang = request.args.get("lang")
+    canonical = canonical_with_lang(base, path, forced_lang)
     ui_lang = active_ui_locale()
     meta = locale_meta(ui_lang)
+    crumbs = []
+    for item in _breadcrumb_items(base, path):
+        crumbs.append({"name": _crumb(item["name"]), "url": item["url"]})
+    loc_arg = normalize_locale(forced_lang) if forced_lang else DEFAULT_LOCALE
+    canonical_lang_qs = (
+        f"?lang={loc_arg}"
+        if forced_lang
+        and loc_arg in SUPPORTED_LOCALES
+        and loc_arg != DEFAULT_LOCALE
+        else ""
+    )
     user = current_user()
     sidebar_balance = 0
     sidebar_credits_used = 0
@@ -1807,6 +1839,7 @@ def inject_globals() -> dict[str, Any]:
         "rating_scale": RATING_ORDER,
         "canonical_base": base,
         "canonical_url": canonical,
+        "canonical_lang_qs": canonical_lang_qs,
         "admin_email": ADMIN_EMAIL,
         "paddle_ready": paddle_enabled(),
         "paddle_plus_ready": paddle_plus_enabled(),
@@ -1825,7 +1858,13 @@ def inject_globals() -> dict[str, Any]:
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
         "google_ads_id": GOOGLE_ADS_ID,
+        "ads_analyze_send_to": _ads_send_to(GOOGLE_ADS_ANALYZE_LABEL),
+        "ads_checkout_send_to": _ads_send_to(GOOGLE_ADS_CHECKOUT_LABEL),
         "analytics_events": pop_analytics_events(),
+        "hreflang_alternates": hreflang_alternates(base, path),
+        "og_locale_alternates": og_locale_alternates(ui_lang),
+        "schema_in_language": schema_in_language(ui_lang),
+        "breadcrumb_items": crumbs,
         "site_author_name": SITE_AUTHOR_NAME,
         "site_author_title": SITE_AUTHOR_TITLE,
         "site_author_url": SITE_AUTHOR_URL,
@@ -4539,12 +4578,34 @@ def robots_txt():
         "Disallow: /lang/\n"
         "Disallow: /crediti\n"
         "Disallow: /crediti/\n"
-        # Query-string locale mirrors share titles/descriptions with the canonical
-        # path; keep them out of crawl samples (session/cookie sets UI lang).
-        "Disallow: /*?lang=\n"
-        "Disallow: /*?*lang=\n"
         "Disallow: /dpa.txt\n"
         "Disallow: /dpa.md\n"
+        "\n"
+        # AdsBot must fetch landing pages (?lang= variants included) for QS.
+        "User-agent: AdsBot-Google\n"
+        "Allow: /\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /dashboard/\n"
+        "Disallow: /logout\n"
+        "Disallow: /admin\n"
+        "Disallow: /lang\n"
+        "Disallow: /lang/\n"
+        "Disallow: /crediti\n"
+        "Disallow: /crediti/\n"
+        "\n"
+        "User-agent: AdsBot-Google-Mobile\n"
+        "Allow: /\n"
+        "Disallow: /dashboard\n"
+        "Disallow: /dashboard/\n"
+        "Disallow: /logout\n"
+        "Disallow: /admin\n"
+        "Disallow: /lang\n"
+        "Disallow: /lang/\n"
+        "Disallow: /crediti\n"
+        "Disallow: /crediti/\n"
+        "\n"
+        "User-agent: Mediapartners-Google\n"
+        "Allow: /\n"
         "\n"
         "User-agent: GPTBot\n"
         "Allow: /\n"
@@ -4597,13 +4658,16 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
+    from services.seo import sitemap_xhtml_links
+
     base = public_base_url()
     pages = [
         ("/", "1.0", "weekly"),
         ("/prodotto", "0.9", "weekly"),
         ("/guida", "0.95", "weekly"),
         ("/esempio-report", "0.85", "weekly"),
-        ("/prezzi", "0.8", "weekly"),
+        ("/prezzi", "0.9", "weekly"),
+        ("/register", "0.85", "weekly"),
         ("/metodologia", "0.9", "monthly"),
         ("/guide/llms-txt", "0.8", "monthly"),
         ("/guide/schema-ai", "0.8", "monthly"),
@@ -4626,7 +4690,7 @@ def sitemap_xml():
         ("/interesse-plus", "0.5", "monthly"),
     ]
     if ADS_TXT_CONTENT:
-        pages.insert(12, ("/ads.txt", "0.5", "monthly"))
+        pages.insert(14, ("/ads.txt", "0.5", "monthly"))
     today = datetime.now(timezone.utc).date().isoformat()
     urls = []
     for path, priority, freq in pages:
@@ -4637,11 +4701,13 @@ def sitemap_xml():
             f"    <lastmod>{today}</lastmod>\n"
             f"    <changefreq>{freq}</changefreq>\n"
             f"    <priority>{priority}</priority>\n"
+            f"{sitemap_xhtml_links(base, path)}\n"
             "  </url>"
         )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'
+        '        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
         + "\n".join(urls)
         + "\n</urlset>\n"
     )
@@ -5556,6 +5622,17 @@ def billing_portal():
 @app.route("/billing/success")
 @login_required
 def billing_success():
+    plus_params: dict[str, Any] = {
+        "event_category": "billing",
+        "currency": "EUR",
+        "value": PLUS_MONTHLY_EUR,
+        "item_category": "plus",
+    }
+    plus_params.update(_ads_user_data_for(current_user()))
+    send_to = _ads_send_to(GOOGLE_ADS_PLUS_LABEL)
+    if send_to:
+        plus_params["send_to"] = send_to
+    queue_analytics_event("subscribe", plus_params)
     flash(
         "Pagamento ricevuto. Il piano si attiva entro pochi secondi via webhook.",
         "success",
@@ -6170,6 +6247,7 @@ def register():
             "method": "email",
             "event_category": "auth",
         }
+        signup_params.update(_ads_user_data_for(user))
         send_to = _ads_send_to(GOOGLE_ADS_SIGNUP_LABEL)
         if send_to:
             signup_params["send_to"] = send_to
@@ -7499,6 +7577,7 @@ def topup_success():
         "event_category": "billing",
         "currency": "EUR",
     }
+    topup_params.update(_ads_user_data_for(current_user()))
     send_to = _ads_send_to(GOOGLE_ADS_TOPUP_LABEL)
     if send_to:
         topup_params["send_to"] = send_to

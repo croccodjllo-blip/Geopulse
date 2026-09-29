@@ -194,6 +194,102 @@ TABLES: dict[str, dict[str, str]] = {
     },
 }
 
+# Search/Ads landing copy (Italian source → native).
+SEARCH_ADS: dict[str, dict[str, str]] = {
+    "en": {
+        "Misura la visibilità GEO": "Measure GEO visibility",
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO and AIO in one score: how well ChatGPT, Perplexity, and Google AI can understand and cite your brand. Free preview, no credit card."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO and AI visibility: analyze your site with Centropic"
+        ),
+        "Software GEO e AIO: misura quanto ChatGPT, Perplexity e Google AI possono citare il tuo brand. Analisi gratis, pack llms.txt e JSON-LD. Plus da 19,99€ tasse escluse.": (
+            "GEO and AIO software: measure how well ChatGPT, Perplexity, and Google AI can cite your brand. Free analysis, llms.txt and JSON-LD pack. Plus from €19.99 excluding tax."
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "Sign up free: GEO and AIO site analysis"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO and AIO pricing: Free, Plus €19.99, Business"
+        ),
+        "Software GEO e AIO: CVI, pack e citation share": (
+            "GEO and AIO software: CVI, pack, and citation share"
+        ),
+        "FAQ GEO e AIO: CVI, piani, citation share": (
+            "GEO and AIO FAQ: CVI, plans, citation share"
+        ),
+        "Chi siamo: software GEO e visibilità IA": (
+            "About us: GEO software and AI visibility"
+        ),
+        "Contatti: supporto GEO e AIO": "Contact: GEO and AIO support",
+    },
+    "de": {
+        "Misura la visibilità GEO": "Miss die GEO-Sichtbarkeit",
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO und AIO in einem Score: wie gut ChatGPT, Perplexity und Google AI deine Marke verstehen und zitieren können. Kostenlose Vorschau, ohne Karte."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO- und KI-Sichtbarkeit: analysiere deine Website mit Centropic"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "Kostenlos registrieren: GEO- und AIO-Websiteanalyse"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO- und AIO-Preise: Free, Plus 19,99€, Business"
+        ),
+        "Contatti: supporto GEO e AIO": "Kontakt: GEO- und AIO-Support",
+    },
+    "es": {
+        "Misura la visibilità GEO": "Mide la visibilidad GEO",
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO y AIO en una sola puntuación: cuánto pueden comprender y citar tu marca ChatGPT, Perplexity y Google AI. Vista previa gratis, sin tarjeta."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO y visibilidad IA: analiza tu sitio con Centropic"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "Regístrate gratis: análisis GEO y AIO del sitio"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "Precios GEO y AIO: Free, Plus 19,99€, Business"
+        ),
+        "Contatti: supporto GEO e AIO": "Contacto: soporte GEO y AIO",
+    },
+    "ko": {
+        "Misura la visibilità GEO": "GEO 가시성을 측정하세요",
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "하나의 점수로 보는 GEO와 AIO: ChatGPT, Perplexity, Google AI가 브랜드를 이해하고 인용할 수 있는 정도. 무료 미리보기, 카드 불필요."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO와 AI 가시성: Centropic으로 사이트를 분석하세요"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "무료 가입: 사이트 GEO 및 AIO 분석"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO/AIO 요금: Free, Plus 19,99€, Business"
+        ),
+        "Contatti: supporto GEO e AIO": "문의: GEO 및 AIO 지원",
+    },
+    "zh_Hans": {
+        "Misura la visibilità GEO": "衡量 GEO 可见度",
+        "GEO e AIO in un unico score: quanto ChatGPT, Perplexity e Google AI possono comprendere e citare il tuo brand. Anteprima gratis, niente carta.": (
+            "GEO 与 AIO 合为一个分数：ChatGPT、Perplexity 和 Google AI 能在多大程度上理解并引用你的品牌。免费预览，无需信用卡。"
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO 与 AI 可见度：用 Centropic 分析你的网站"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "免费注册：网站 GEO 与 AIO 分析"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO 与 AIO 价格：Free、Plus 19,99€、Business"
+        ),
+        "Contatti: supporto GEO e AIO": "联系：GEO 与 AIO 支持",
+    },
+}
+
 
 def upsert(catalog, msgid: str, msgstr: str) -> None:
     msg = catalog.get(msgid)
@@ -210,14 +306,17 @@ def main() -> None:
         po_path = ROOT / "translations" / loc / "LC_MESSAGES" / "messages.po"
         with po_path.open("rb") as fh:
             cat = read_po(fh)
-        for msgid, msgstr in table.items():
+        for msgid, msgstr in {**table, **SEARCH_ADS.get(loc, {})}.items():
             upsert(cat, msgid, msgstr)
         with po_path.open("wb") as fh:
             write_po(fh, cat, ignore_obsolete=False, include_previous=False, width=80)
         mo_path = po_path.with_suffix(".mo")
         with mo_path.open("wb") as fh:
             write_mo(fh, cat)
-        print(f"updated {po_path.relative_to(ROOT)} ({len(table)} strings) → {mo_path.name}")
+        print(
+            f"updated {po_path.relative_to(ROOT)} "
+            f"({len(table) + len(SEARCH_ADS.get(loc, {}))} strings) → {mo_path.name}"
+        )
 
 
 if __name__ == "__main__":

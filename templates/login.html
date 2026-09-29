@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ _('Accedi') }}{% endblock %}
 {% block meta_description %}{{ _('Accedi a Centropic: dashboard per score AIO (AI-Driven Visibility) e GEO (Generative Engine Optimization), findings e pack llms.txt/JSON-LD.') }}{% endblock %}
-{% block canonical %}{{ canonical_base }}/login{% endblock %}
+{% block canonical %}{{ canonical_base }}/login{{ canonical_lang_qs }}{% endblock %}
+{% block robots_meta %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
 {% block body_class %}body-auth body-login-popup{% endblock %}
 {% block header_class %}site-header--invert{% endblock %}
 {% block main_class %}site-main--login-popup{% endblock %}
