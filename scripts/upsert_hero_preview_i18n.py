@@ -194,6 +194,97 @@ TABLES: dict[str, dict[str, str]] = {
     },
 }
 
+# Search/Ads landing copy (Italian source → native).
+SEARCH_ADS: dict[str, dict[str, str]] = {
+    "en": {
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO and AIO in one structural-readiness score. Free preview, no card — measured citation monitor is on Plus."
+        ),
+        "Software GEO e AIO: misura la predisposizione strutturale del tuo sito per i sistemi generativi. Analisi gratis, pack llms.txt e JSON-LD. Plus da 19,99€ tasse escluse.": (
+            "GEO and AIO software: measure your site’s structural readiness for generative systems. Free analysis, llms.txt and JSON-LD pack. Plus from €19.99 excluding tax."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO and AI visibility: analyze your site with Centropic"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "Sign up free: GEO and AIO site analysis"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO and AIO pricing: Free, Plus €19.99, Business"
+        ),
+        "Software GEO e AIO: CVI, pack e citation share": (
+            "GEO and AIO software: CVI, pack, and citation share"
+        ),
+        "FAQ GEO e AIO: CVI, piani, citation share": (
+            "GEO and AIO FAQ: CVI, plans, citation share"
+        ),
+        "Chi siamo: software GEO e visibilità IA": (
+            "About us: GEO software and AI visibility"
+        ),
+        "Contatti: supporto GEO e AIO": "Contact: GEO and AIO support",
+    },
+    "de": {
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO und AIO in einem Score zur strukturellen Bereitschaft. Kostenlose Vorschau, ohne Karte — gemessener Citation-Monitor ist in Plus."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO- und KI-Sichtbarkeit: analysiere deine Website mit Centropic"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "Kostenlos registrieren: GEO- und AIO-Websiteanalyse"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO- und AIO-Preise: Free, Plus 19,99€, Business"
+        ),
+        "Contatti: supporto GEO e AIO": "Kontakt: GEO- und AIO-Support",
+    },
+    "es": {
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO y AIO en una sola puntuación de preparación estructural. Vista previa gratis, sin tarjeta: el citation monitor Medido está en Plus."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO y visibilidad IA: analiza tu sitio con Centropic"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "Regístrate gratis: análisis GEO y AIO del sitio"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "Precios GEO y AIO: Free, Plus 19,99€, Business"
+        ),
+        "Contatti: supporto GEO e AIO": "Contacto: soporte GEO y AIO",
+    },
+    "ko": {
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO와 AIO를 하나의 구조적 준비도 점수로. 무료 미리보기, 카드 불필요 — 측정 citation 모니터는 Plus."
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO와 AI 가시성: Centropic으로 사이트를 분석하세요"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "무료 가입: 사이트 GEO 및 AIO 분석"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO/AIO 요금: Free, Plus 19,99€, Business"
+        ),
+        "Contatti: supporto GEO e AIO": "문의: GEO 및 AIO 지원",
+    },
+    "zh_Hans": {
+        "GEO e AIO in un unico score di predisposizione strutturale. Anteprima gratis, niente carta — citation monitor Misurato è su Plus.": (
+            "GEO 与 AIO 合为一个结构就绪度分数。免费预览，无需信用卡 — 实测 citation monitor 仅限 Plus。"
+        ),
+        "GEO e visibilità IA: analizza il tuo sito con Centropic": (
+            "GEO 与 AI 可见度：用 Centropic 分析你的网站"
+        ),
+        "Registrati gratis: analisi GEO e AIO del sito": (
+            "免费注册：网站 GEO 与 AIO 分析"
+        ),
+        "Prezzi GEO e AIO: Free, Plus 19,99€, Business": (
+            "GEO 与 AIO 价格：Free、Plus 19,99€、Business"
+        ),
+        "Contatti: supporto GEO e AIO": "联系：GEO 与 AIO 支持",
+    },
+}
+
 
 def upsert(catalog, msgid: str, msgstr: str) -> None:
     msg = catalog.get(msgid)
@@ -210,14 +301,17 @@ def main() -> None:
         po_path = ROOT / "translations" / loc / "LC_MESSAGES" / "messages.po"
         with po_path.open("rb") as fh:
             cat = read_po(fh)
-        for msgid, msgstr in table.items():
+        for msgid, msgstr in {**table, **SEARCH_ADS.get(loc, {})}.items():
             upsert(cat, msgid, msgstr)
         with po_path.open("wb") as fh:
             write_po(fh, cat, ignore_obsolete=False, include_previous=False, width=80)
         mo_path = po_path.with_suffix(".mo")
         with mo_path.open("wb") as fh:
             write_mo(fh, cat)
-        print(f"updated {po_path.relative_to(ROOT)} ({len(table)} strings) → {mo_path.name}")
+        print(
+            f"updated {po_path.relative_to(ROOT)} "
+            f"({len(table) + len(SEARCH_ADS.get(loc, {}))} strings) → {mo_path.name}"
+        )
 
 
 if __name__ == "__main__":
