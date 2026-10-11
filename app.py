@@ -107,6 +107,8 @@ from services.paddle_billing import (
     paddle_topup_price_id,
     paddle_topups_enabled,
     parse_webhook_event as paddle_parse_webhook_event,
+    classify_plan_paddle_mismatches,
+    clear_stale_subscription_binding,
     plan_from_paddle_subscription_status,
     subscription_paid_plan,
     topup_cents_for_transaction,
@@ -509,6 +511,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 PUBLIC_SITE_URL = (os.getenv("PUBLIC_SITE_URL") or "https://centropic.ai").rstrip("/")
 GA4_MEASUREMENT_ID = (os.getenv("GA4_MEASUREMENT_ID") or "").strip()
+GA4_API_SECRET = (os.getenv("GA4_API_SECRET") or "").strip()
 GOOGLE_SITE_VERIFICATION = (os.getenv("GOOGLE_SITE_VERIFICATION") or "").strip()
 ADSENSE_CLIENT_ID = (os.getenv("ADSENSE_CLIENT_ID") or "").strip()
 ADS_TXT_CONTENT = (os.getenv("ADS_TXT_CONTENT") or "").strip()
@@ -1607,7 +1610,12 @@ def current_user() -> User | None:
     try:
         from services.paddle_billing import enforce_past_due_plan_expiry
 
+        dirty = False
         if enforce_past_due_plan_expiry(user):
+            dirty = True
+        if clear_stale_subscription_binding(user):
+            dirty = True
+        if dirty:
             db.session.commit()
     except Exception:
         db.session.rollback()
@@ -3340,7 +3348,12 @@ def api_v1_authenticate_user() -> User | None:
     try:
         from services.paddle_billing import enforce_past_due_plan_expiry
 
+        dirty = False
         if enforce_past_due_plan_expiry(user):
+            dirty = True
+        if clear_stale_subscription_binding(user):
+            dirty = True
+        if dirty:
             db.session.commit()
     except Exception:
         db.session.rollback()
@@ -4188,6 +4201,22 @@ def health():
                 "paddle": paddle_enabled(),
                 "payments": payments_enabled(),
                 "payments_provider": payments_provider(),
+                "attribution": {
+                    "ga4": bool(GA4_MEASUREMENT_ID),
+                    "ga4_measurement_protocol": bool(
+                        GA4_MEASUREMENT_ID and GA4_API_SECRET
+                    ),
+                    "google_ads": bool(GOOGLE_ADS_ID),
+                    "google_ads_plus_label": bool(
+                        GOOGLE_ADS_ID and GOOGLE_ADS_PLUS_LABEL
+                    ),
+                    "google_ads_topup_label": bool(
+                        GOOGLE_ADS_ID and GOOGLE_ADS_TOPUP_LABEL
+                    ),
+                    "google_ads_checkout_label": bool(
+                        GOOGLE_ADS_ID and GOOGLE_ADS_CHECKOUT_LABEL
+                    ),
+                },
                 "sentry": bool(
                     (os.getenv("SENTRY_DSN") or "").strip()
                     and app.extensions.get("sentry_active")
@@ -5847,6 +5876,12 @@ def billing_paddle_webhook():
                         paid_plan=paid or fallback,
                     )
                 if (user.plan or "").lower() == "free":
+                    if clear_stale_subscription_binding(user):
+                        app.logger.info(
+                            "Cleared leftover Paddle subscription id after "
+                            "downgrade user=%s",
+                            user.id,
+                        )
                     if clear_paid_alert_settings(user):
                         app.logger.info(
                             "Cleared alert settings after downgrade user=%s",
@@ -9037,6 +9072,9 @@ def admin_home():
         ProInterest.query.order_by(ProInterest.created_at.desc()).limit(100).all()
     )
     users = User.query.order_by(User.created_at.desc()).limit(120).all()
+    mismatch = classify_plan_paddle_mismatches(User.query.all())
+    paddle_paid_without_sub = mismatch["paid_without_subscription"]
+    paddle_free_with_sub = mismatch["free_with_subscription"]
     recent_runs = AnalysisRun.query.order_by(AnalysisRun.created_at.desc()).limit(50).all()
     recent_jobs = AnalysisJob.query.order_by(AnalysisJob.created_at.desc()).limit(50).all()
     recent_ledger = CreditLedger.query.order_by(CreditLedger.created_at.desc()).limit(80).all()
@@ -9067,7 +9105,11 @@ def admin_home():
             "charged_30d_cents": abs(charged_30d),
             "input_tokens_30d": int(input_tokens_30d or 0),
             "output_tokens_30d": int(output_tokens_30d or 0),
+            "paddle_paid_without_sub": len(paddle_paid_without_sub),
+            "paddle_free_with_sub": len(paddle_free_with_sub),
         },
+        paddle_paid_without_sub=paddle_paid_without_sub[:40],
+        paddle_free_with_sub=paddle_free_with_sub[:40],
         grace_margin_pct=round(GRACE_MARGIN * 100, 1),
         now_utc=now_utc,
     )
@@ -9098,6 +9140,7 @@ def admin_set_plan(user_id: int, plan: str):
         clear_privilege_role(target)
     if plan == "free":
         clear_paid_alert_settings(target)
+        clear_stale_subscription_binding(target)
     if plan == "plus":
         try:
             maybe_grant_referral_bonus_for_plus(target)

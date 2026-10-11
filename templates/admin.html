@@ -23,8 +23,40 @@
       <div class="cost-card"><div class="muted">Billing 30gg</div><strong>+{{ stats.topup_30d_cents|tok_short }}</strong><div class="muted">Addebiti: {{ stats.charged_30d_cents|tok_short }}</div></div>
       <div class="cost-card"><div class="muted">Token 30gg</div><strong>{{ "{:,}".format(stats.input_tokens_30d + stats.output_tokens_30d).replace(",", ".") }}</strong><div class="muted">In {{ "{:,}".format(stats.input_tokens_30d).replace(",", ".") }} · Out {{ "{:,}".format(stats.output_tokens_30d).replace(",", ".") }}</div></div>
       <div class="cost-card"><div class="muted">Config credito</div><strong>Grace margin {{ grace_margin_pct }}%</strong><div class="muted">Aggiornato: {{ now_utc.strftime('%Y-%m-%d %H:%M UTC') }}</div></div>
+      <div class="cost-card"><div class="muted">Paddle vs piano</div><strong>{{ stats.paddle_paid_without_sub }} / {{ stats.paddle_free_with_sub }}</strong><div class="muted">Paid senza sub · Free con sub leftover</div></div>
     </div>
   </section>
+
+  {% if paddle_paid_without_sub or paddle_free_with_sub %}
+  <section class="page-section">
+    <h2 class="page-section__title">Disallineamento piano / Paddle</h2>
+    <p class="muted">Nessun downgrade automatico: i paid senza subscription sono grant admin o test. I free con subscription id sono leftover di cancel.</p>
+    <ul class="history-list">
+      {% for u in paddle_free_with_sub %}
+      <li>
+        <div class="history-main">
+          <strong>{{ u.name }} · {{ u.email }}</strong>
+          <div class="history-scores">
+            <span>Free con subscription leftover</span>
+            <span>id {{ u.id }}</span>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+      {% for u in paddle_paid_without_sub %}
+      <li>
+        <div class="history-main">
+          <strong>{{ u.name }} · {{ u.email }}</strong>
+          <div class="history-scores">
+            <span>Piano {{ u.plan_label }} senza Paddle</span>
+            <span>id {{ u.id }}</span>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
   <section class="page-section">
     <h2 class="page-section__title">Utenti e gestione account</h2>

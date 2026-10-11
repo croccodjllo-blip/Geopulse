@@ -489,6 +489,55 @@ def past_due_grace_elapsed(
     return ref > started + timedelta(days=days)
 
 
+def clear_stale_subscription_binding(user: Any) -> bool:
+    """Drop leftover ``paddle_subscription_id`` when the plan is already free.
+
+    Cancel/past_due webhooks used to keep the subscription id after
+    ``plan=free``, so a canceled tenant still looked subscribed in admin
+    and webhook lookup. Customer id stays for returning checkout.
+    Does not change ``plan``. Admin accounts are left untouched.
+    """
+    if user is None:
+        return False
+    if bool(getattr(user, "is_admin", False)):
+        return False
+    plan = (getattr(user, "plan", None) or "").strip().lower()
+    if plan not in {"free", ""}:
+        return False
+    if not (getattr(user, "paddle_subscription_id", None) or "").strip():
+        return False
+    user.paddle_subscription_id = None
+    return True
+
+
+def classify_plan_paddle_mismatches(users: list[Any]) -> dict[str, list[Any]]:
+    """Split rows where ``plan`` and Paddle subscription binding disagree.
+
+    Complimentary / admin-granted paid plans (no subscription id) are
+    listed, not auto-downgraded. Free rows that still hold a subscription
+    id are leftover cancel bindings.
+    """
+    paid_without_sub: list[Any] = []
+    free_with_sub: list[Any] = []
+    for user in users:
+        if user is None:
+            continue
+        if bool(getattr(user, "is_admin", False)):
+            continue
+        plan = (getattr(user, "plan", None) or "free").strip().lower()
+        if plan == "admin":
+            continue
+        has_sub = bool((getattr(user, "paddle_subscription_id", None) or "").strip())
+        if plan in {"plus", "pro", "business"} and not has_sub:
+            paid_without_sub.append(user)
+        elif plan in {"free", ""} and has_sub:
+            free_with_sub.append(user)
+    return {
+        "paid_without_subscription": paid_without_sub,
+        "free_with_subscription": free_with_sub,
+    }
+
+
 def enforce_past_due_plan_expiry(
     user: Any,
     *,
@@ -512,6 +561,8 @@ def enforce_past_due_plan_expiry(
         return False
     user.plan = "free"
     changed = True
+    if clear_stale_subscription_binding(user):
+        changed = True
     try:
         from services.job_billing_recovery import clear_paid_alert_settings
 

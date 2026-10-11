@@ -31,6 +31,7 @@ def test_enforce_downgrades_sticky_plus_after_grace():
         plan = "plus"
         is_admin = False
         paddle_past_due_since = datetime(2026, 8, 1, tzinfo=timezone.utc)
+        paddle_subscription_id = "sub_leftover"
         alert_email_enabled = True
         webhook_url = "https://hooks.example.com/x"
         webhook_secret = "secret"
@@ -39,6 +40,7 @@ def test_enforce_downgrades_sticky_plus_after_grace():
     now = datetime(2026, 8, 18, tzinfo=timezone.utc)
     assert enforce_past_due_plan_expiry(user, now=now) is True
     assert user.plan == "free"
+    assert user.paddle_subscription_id is None
     assert user.alert_email_enabled is False
     assert user.webhook_url is None
     assert user.webhook_secret is None
