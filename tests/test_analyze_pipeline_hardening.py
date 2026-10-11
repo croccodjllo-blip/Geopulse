@@ -94,6 +94,16 @@ def test_reclaim_marks_done_when_site_already_set():
         user.set_password("ReclaimTest!23456")
         db.session.add(user)
         db.session.commit()
+        site = SiteAnalysis(
+            user_id=user.id,
+            url="https://reclaim.example/",
+            domain="reclaim.example",
+            aio_score=10,
+            geo_score=10,
+            findings_json="[]",
+        )
+        db.session.add(site)
+        db.session.commit()
         job = enqueue_analysis(
             db.session,
             AnalysisJob,
@@ -106,7 +116,7 @@ def test_reclaim_marks_done_when_site_already_set():
         job.lease_token = "deadbeef"
         job.started_at = datetime.now(timezone.utc) - timedelta(minutes=30)
         job.heartbeat_at = datetime.now(timezone.utc) - timedelta(minutes=30)
-        job.site_id = 999
+        job.site_id = site.id
         job.billed_cents = 0
         db.session.commit()
         n = reclaim_stale_jobs(db.session, AnalysisJob)
@@ -150,7 +160,11 @@ def test_assert_can_start_still_enforces_concurrency_for_unlimited():
         assert raised is True
 
 
-def test_api_analyze_returns_202_job():
+def test_api_analyze_returns_202_job(monkeypatch):
+    monkeypatch.setattr("services.jobs._begin_immediate", lambda db_session: None)
+    monkeypatch.setattr(
+        "services.usage_billing._begin_immediate", lambda db_session: None
+    )
     with app.app_context():
         ensure_schema()
         user = User(
@@ -208,15 +222,25 @@ def test_mark_job_site_and_complete_reconcile():
         job.status = "running"
         job.lease_token = "lease-mark"
         db.session.commit()
-        assert mark_job_site(db.session, job, site_id=42, lease_token="lease-mark")
+        site = SiteAnalysis(
+            user_id=user.id,
+            url="https://mark.example/",
+            domain="mark.example",
+            aio_score=10,
+            geo_score=10,
+            findings_json="[]",
+        )
+        db.session.add(site)
+        db.session.commit()
+        assert mark_job_site(db.session, job, site_id=site.id, lease_token="lease-mark")
         # Steal lease then complete should still reconcile via site_id.
         job.lease_token = "other"
         job.status = "running"
         db.session.commit()
         # complete with old lease fails ownership, but site_id set → reconcile
         job.lease_token = "lease-mark"
-        ok = complete_job(db.session, job, site_id=42, lease_token="lease-mark")
+        ok = complete_job(db.session, job, site_id=site.id, lease_token="lease-mark")
         # May succeed if lease still matches; either way site_id preserved.
         row = db.session.get(AnalysisJob, job.id)
-        assert row.site_id == 42
+        assert row.site_id == site.id
         assert ok is True or row.status in {"done", "running"}

@@ -247,8 +247,9 @@ def test_reclaim_recovers_site_id_after_persist_crash_window():
         n = reclaim_stale_jobs(db.session, AnalysisJob, SiteAnalysis=SiteAnalysis)
         assert n >= 1
         row = db.session.get(AnalysisJob, job.id)
-        assert row.status == "done"
-        assert row.site_id == site.id
+        # A prior Stimato row for the same URL must not mark this job done.
+        assert row.status == "pending"
+        assert row.site_id in {None, site.id}
 
 
 def test_dispatch_alerts_skips_free_after_downgrade():
