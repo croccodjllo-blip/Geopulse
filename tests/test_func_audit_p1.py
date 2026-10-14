@@ -10,6 +10,7 @@ from app import User, app, db, ensure_schema
 from services.paddle_billing import (
     classify_plan_paddle_mismatches,
     clear_stale_subscription_binding,
+    stamp_unstamped_plan_sources,
 )
 
 
@@ -34,18 +35,74 @@ def test_clear_stale_subscription_binding_only_on_free():
 
 
 def test_classify_plan_paddle_mismatches_splits_grant_and_leftover():
+    grant = SimpleNamespace(
+        is_admin=False,
+        plan="business",
+        paddle_subscription_id=None,
+        plan_source="grant",
+    )
+    unlabeled = SimpleNamespace(
+        is_admin=False,
+        plan="plus",
+        paddle_subscription_id=None,
+        plan_source=None,
+    )
     rows = classify_plan_paddle_mismatches(
         [
-            SimpleNamespace(is_admin=False, plan="business", paddle_subscription_id=None),
-            SimpleNamespace(is_admin=False, plan="plus", paddle_subscription_id="sub_paid"),
-            SimpleNamespace(is_admin=False, plan="free", paddle_subscription_id="sub_old"),
-            SimpleNamespace(is_admin=True, plan="admin", paddle_subscription_id=None),
+            grant,
+            unlabeled,
+            SimpleNamespace(
+                is_admin=False,
+                plan="plus",
+                paddle_subscription_id="sub_paid",
+                plan_source="paddle",
+            ),
+            SimpleNamespace(
+                is_admin=False,
+                plan="free",
+                paddle_subscription_id="sub_old",
+                plan_source=None,
+            ),
+            SimpleNamespace(
+                is_admin=True,
+                plan="admin",
+                paddle_subscription_id=None,
+                plan_source=None,
+            ),
         ]
     )
+    assert len(rows["complimentary_grants"]) == 1
+    assert rows["complimentary_grants"][0] is grant
     assert len(rows["paid_without_subscription"]) == 1
-    assert rows["paid_without_subscription"][0].plan == "business"
+    assert rows["paid_without_subscription"][0] is unlabeled
     assert len(rows["free_with_subscription"]) == 1
     assert rows["free_with_subscription"][0].paddle_subscription_id == "sub_old"
+
+
+def test_stamp_unstamped_plan_sources_never_changes_plan():
+    grant = SimpleNamespace(
+        is_admin=False, plan="business", paddle_subscription_id=None, plan_source=None
+    )
+    paid = SimpleNamespace(
+        is_admin=False,
+        plan="plus",
+        paddle_subscription_id="sub_keep",
+        plan_source=None,
+    )
+    already = SimpleNamespace(
+        is_admin=False,
+        plan="business",
+        paddle_subscription_id=None,
+        plan_source="grant",
+    )
+    n = stamp_unstamped_plan_sources([grant, paid, already])
+    assert n == 2
+    assert grant.plan == "business"
+    assert grant.plan_source == "grant"
+    assert paid.plan == "plus"
+    assert paid.paddle_subscription_id == "sub_keep"
+    assert paid.plan_source == "paddle"
+    assert already.plan_source == "grant"
 
 
 def test_current_user_clears_free_leftover_subscription():
@@ -123,9 +180,17 @@ def test_admin_lists_paddle_mismatches():
             email=f"grant-{suffix}@example.com",
             name="Grant",
             plan="business",
+            plan_source="grant",
             email_verified_at=datetime.now(timezone.utc),
         )
         grant.set_password("Grant!23456")
+        drift = User(
+            email=f"drift-{suffix}@example.com",
+            name="Drift",
+            plan="plus",
+            email_verified_at=datetime.now(timezone.utc),
+        )
+        drift.set_password("Drift!23456")
         leftover = User(
             email=f"free-sub-{suffix}@example.com",
             name="FreeSub",
@@ -134,7 +199,7 @@ def test_admin_lists_paddle_mismatches():
             paddle_subscription_id=f"sub_admin_{suffix}",
         )
         leftover.set_password("FreeSub!23456")
-        db.session.add_all([admin, grant, leftover])
+        db.session.add_all([admin, grant, drift, leftover])
         db.session.commit()
         aid, sv = admin.id, int(admin.session_version or 0)
 
@@ -143,8 +208,56 @@ def test_admin_lists_paddle_mismatches():
         sess["user_id"] = aid
         sess["session_version"] = sv
     html = client.get("/admin").get_data(as_text=True)
-    assert "Disallineamento piano / Paddle" in html
+    assert "Grant piano (tenuti)" in html
     assert f"grant-{suffix}@example.com" in html
+    assert "Disallineamento piano / Paddle" in html
+    assert f"drift-{suffix}@example.com" in html
     assert f"free-sub-{suffix}@example.com" in html
     assert "senza Paddle" in html
     assert "subscription leftover" in html
+
+
+def test_admin_set_plan_stamps_grant_without_downgrade():
+    suffix = uuid4().hex
+    with app.app_context():
+        ensure_schema()
+        admin = User(
+            email=f"adm-set-{suffix}@example.com",
+            name="Adm",
+            plan="admin",
+            role="admin",
+            email_verified_at=datetime.now(timezone.utc),
+        )
+        admin.set_password("Admin!23456")
+        target = User(
+            email=f"keep-{suffix}@example.com",
+            name="Keep",
+            plan="free",
+            email_verified_at=datetime.now(timezone.utc),
+        )
+        target.set_password("Keep!23456")
+        db.session.add_all([admin, target])
+        db.session.commit()
+        aid, tid = admin.id, target.id
+        sv = int(admin.session_version or 0)
+
+    prev_csrf = app.config.get("WTF_CSRF_ENABLED", True)
+    app.config["WTF_CSRF_ENABLED"] = False
+    try:
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["user_id"] = aid
+            sess["session_version"] = sv
+        resp = client.post(
+            f"/admin/set-plan/{tid}/business",
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+    finally:
+        app.config["WTF_CSRF_ENABLED"] = prev_csrf
+    with app.app_context():
+        again = db.session.get(User, tid)
+        assert again is not None
+        assert again.plan == "business"
+        assert again.plan_source == "grant"
+        assert not (again.paddle_subscription_id or "").strip()

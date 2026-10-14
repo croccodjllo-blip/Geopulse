@@ -23,14 +23,34 @@
       <div class="cost-card"><div class="muted">Billing 30gg</div><strong>+{{ stats.topup_30d_cents|tok_short }}</strong><div class="muted">Addebiti: {{ stats.charged_30d_cents|tok_short }}</div></div>
       <div class="cost-card"><div class="muted">Token 30gg</div><strong>{{ "{:,}".format(stats.input_tokens_30d + stats.output_tokens_30d).replace(",", ".") }}</strong><div class="muted">In {{ "{:,}".format(stats.input_tokens_30d).replace(",", ".") }} · Out {{ "{:,}".format(stats.output_tokens_30d).replace(",", ".") }}</div></div>
       <div class="cost-card"><div class="muted">Config credito</div><strong>Grace margin {{ grace_margin_pct }}%</strong><div class="muted">Aggiornato: {{ now_utc.strftime('%Y-%m-%d %H:%M UTC') }}</div></div>
-      <div class="cost-card"><div class="muted">Paddle vs piano</div><strong>{{ stats.paddle_paid_without_sub }} / {{ stats.paddle_free_with_sub }}</strong><div class="muted">Paid senza sub · Free con sub leftover</div></div>
+      <div class="cost-card"><div class="muted">Paddle vs piano</div><strong>{{ stats.paddle_complimentary_grants }} / {{ stats.paddle_paid_without_sub }} / {{ stats.paddle_free_with_sub }}</strong><div class="muted">Grant tenuti · Drift da rivedere · Leftover free</div></div>
     </div>
   </section>
+
+  {% if paddle_complimentary_grants %}
+  <section class="page-section">
+    <h2 class="page-section__title">Grant piano (tenuti)</h2>
+    <p class="muted">Plus/Business senza subscription Paddle, classificati come grant admin/test. Nessun downgrade automatico.</p>
+    <ul class="history-list">
+      {% for u in paddle_complimentary_grants %}
+      <li>
+        <div class="history-main">
+          <strong>{{ u.name }} · {{ u.email }}</strong>
+          <div class="history-scores">
+            <span>Grant {{ u.plan_label }}</span>
+            <span>id {{ u.id }}</span>
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
   {% if paddle_paid_without_sub or paddle_free_with_sub %}
   <section class="page-section">
     <h2 class="page-section__title">Disallineamento piano / Paddle</h2>
-    <p class="muted">Nessun downgrade automatico: i paid senza subscription sono grant admin o test. I free con subscription id sono leftover di cancel.</p>
+    <p class="muted">Solo drift non classificato o leftover di cancel. I grant restano nel blocco sopra. Nessun downgrade automatico.</p>
     <ul class="history-list">
       {% for u in paddle_free_with_sub %}
       <li>
@@ -67,6 +87,7 @@
           <strong>{{ u.name }} · {{ u.email }}</strong>
           <div class="history-scores">
             <span>Piano {{ u.plan_label }}</span>
+            {% if u.plan_source == 'grant' %}<span>Origine grant</span>{% elif u.plan_source == 'paddle' %}<span>Origine Paddle</span>{% endif %}
             <span>Role {{ u.role or 'user' }}</span>
             <span>Token {{ u.credit_balance_cents|tok_short if u.credit_balance_cents < 2000000000 else "∞" }}</span>
             <span>{{ u.company or '—' }}</span>

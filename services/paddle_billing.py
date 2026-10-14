@@ -489,6 +489,72 @@ def past_due_grace_elapsed(
     return ref > started + timedelta(days=days)
 
 
+PLAN_SOURCE_PADDLE = "paddle"
+PLAN_SOURCE_GRANT = "grant"
+PLAN_SOURCE_VALUES = frozenset({PLAN_SOURCE_PADDLE, PLAN_SOURCE_GRANT})
+
+
+def plan_source_of(user: Any) -> str:
+    return (getattr(user, "plan_source", None) or "").strip().lower()
+
+
+def set_plan_source(user: Any, source: str | None) -> bool:
+    """Set ``plan_source`` only. Never changes ``plan`` or Paddle ids."""
+    if user is None:
+        return False
+    wanted: str | None
+    if source is None or str(source).strip() == "":
+        wanted = None
+    else:
+        wanted = str(source).strip().lower()
+        if wanted not in PLAN_SOURCE_VALUES:
+            return False
+    current = (getattr(user, "plan_source", None) or "").strip().lower() or None
+    if current == wanted:
+        return False
+    user.plan_source = wanted
+    return True
+
+
+def mark_paid_plan_from_paddle(user: Any) -> bool:
+    return set_plan_source(user, PLAN_SOURCE_PADDLE)
+
+
+def mark_paid_plan_from_grant(user: Any) -> bool:
+    return set_plan_source(user, PLAN_SOURCE_GRANT)
+
+
+def clear_plan_source(user: Any) -> bool:
+    return set_plan_source(user, None)
+
+
+def stamp_unstamped_plan_sources(users: list[Any]) -> int:
+    """Fill empty ``plan_source`` from current binding. Never changes plan.
+
+    Paid + subscription id → ``paddle``. Paid + no subscription → ``grant``.
+    Already-stamped rows and admin accounts are left untouched.
+    """
+    stamped = 0
+    for user in users:
+        if user is None:
+            continue
+        if bool(getattr(user, "is_admin", False)):
+            continue
+        plan = (getattr(user, "plan", None) or "free").strip().lower()
+        if plan == "admin":
+            continue
+        if plan_source_of(user):
+            continue
+        if plan not in {"plus", "pro", "business"}:
+            continue
+        has_sub = bool((getattr(user, "paddle_subscription_id", None) or "").strip())
+        if set_plan_source(
+            user, PLAN_SOURCE_PADDLE if has_sub else PLAN_SOURCE_GRANT
+        ):
+            stamped += 1
+    return stamped
+
+
 def clear_stale_subscription_binding(user: Any) -> bool:
     """Drop leftover ``paddle_subscription_id`` when the plan is already free.
 
@@ -504,19 +570,25 @@ def clear_stale_subscription_binding(user: Any) -> bool:
     plan = (getattr(user, "plan", None) or "").strip().lower()
     if plan not in {"free", ""}:
         return False
-    if not (getattr(user, "paddle_subscription_id", None) or "").strip():
-        return False
-    user.paddle_subscription_id = None
-    return True
+    changed = False
+    if (getattr(user, "paddle_subscription_id", None) or "").strip():
+        user.paddle_subscription_id = None
+        changed = True
+    if clear_plan_source(user):
+        changed = True
+    return changed
 
 
 def classify_plan_paddle_mismatches(users: list[Any]) -> dict[str, list[Any]]:
-    """Split rows where ``plan`` and Paddle subscription binding disagree.
+    """Split paid grants from true plan/Paddle drift.
 
-    Complimentary / admin-granted paid plans (no subscription id) are
-    listed, not auto-downgraded. Free rows that still hold a subscription
-    id are leftover cancel bindings.
+    Complimentary / admin-granted paid plans (``plan_source=grant``, no
+    subscription id) are listed separately and never auto-downgraded.
+    Unlabeled paid-without-sub rows stay in ``paid_without_subscription``
+    as review-needed drift. Free rows that still hold a subscription id
+    are leftover cancel bindings.
     """
+    complimentary_grants: list[Any] = []
     paid_without_sub: list[Any] = []
     free_with_sub: list[Any] = []
     for user in users:
@@ -529,10 +601,14 @@ def classify_plan_paddle_mismatches(users: list[Any]) -> dict[str, list[Any]]:
             continue
         has_sub = bool((getattr(user, "paddle_subscription_id", None) or "").strip())
         if plan in {"plus", "pro", "business"} and not has_sub:
-            paid_without_sub.append(user)
+            if plan_source_of(user) == PLAN_SOURCE_GRANT:
+                complimentary_grants.append(user)
+            else:
+                paid_without_sub.append(user)
         elif plan in {"free", ""} and has_sub:
             free_with_sub.append(user)
     return {
+        "complimentary_grants": complimentary_grants,
         "paid_without_subscription": paid_without_sub,
         "free_with_subscription": free_with_sub,
     }

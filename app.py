@@ -108,7 +108,10 @@ from services.paddle_billing import (
     paddle_topups_enabled,
     parse_webhook_event as paddle_parse_webhook_event,
     classify_plan_paddle_mismatches,
+    clear_plan_source,
     clear_stale_subscription_binding,
+    mark_paid_plan_from_grant,
+    mark_paid_plan_from_paddle,
     plan_from_paddle_subscription_status,
     subscription_paid_plan,
     topup_cents_for_transaction,
@@ -683,6 +686,8 @@ class User(db.Model):
     stripe_subscription_id = db.Column(db.String(120))
     paddle_customer_id = db.Column(db.String(120))
     paddle_subscription_id = db.Column(db.String(120))
+    # How the current paid plan was obtained: paddle | grant. Never auto-downgrade grants.
+    plan_source = db.Column(db.String(20))
     # First past_due event time — grace must not reset on webhook retries.
     paddle_past_due_since = db.Column(db.DateTime)
     reset_token_hash = db.Column(db.String(64))
@@ -2168,6 +2173,7 @@ def ensure_schema() -> None:
             "stripe_subscription_id": "TEXT",
             "paddle_customer_id": "TEXT",
             "paddle_subscription_id": "TEXT",
+            "plan_source": "TEXT",
             "paddle_past_due_since": "DATETIME",
             "reset_token_hash": "TEXT",
             "reset_token_expires": "DATETIME",
@@ -5853,6 +5859,7 @@ def billing_paddle_webhook():
                                 {"ok": False, "error": "digital_service_waiver_required"}
                             ), 409
                         user.plan = paid
+                        mark_paid_plan_from_paddle(user)
                         if paid == "plus" and prior not in {
                             "plus",
                             "pro",
@@ -5946,6 +5953,7 @@ def billing_paddle_webhook():
                         if sub:
                             u.paddle_subscription_id = str(sub)
                         u.plan = "business"
+                        mark_paid_plan_from_paddle(u)
 
                     _apply_business(user)
                     if txn_id and business_credit_cents > 0:
@@ -6024,6 +6032,7 @@ def billing_paddle_webhook():
                         # Never downgrade Business → Plus on a Plus renewal race.
                         if (u.plan or "").lower() != "business":
                             u.plan = "plus"
+                        mark_paid_plan_from_paddle(u)
 
                     _apply_plus(user)
                     if prior not in {"plus", "pro", "business", "admin"}:
@@ -9073,6 +9082,7 @@ def admin_home():
     )
     users = User.query.order_by(User.created_at.desc()).limit(120).all()
     mismatch = classify_plan_paddle_mismatches(User.query.all())
+    paddle_complimentary_grants = mismatch["complimentary_grants"]
     paddle_paid_without_sub = mismatch["paid_without_subscription"]
     paddle_free_with_sub = mismatch["free_with_subscription"]
     recent_runs = AnalysisRun.query.order_by(AnalysisRun.created_at.desc()).limit(50).all()
@@ -9105,9 +9115,11 @@ def admin_home():
             "charged_30d_cents": abs(charged_30d),
             "input_tokens_30d": int(input_tokens_30d or 0),
             "output_tokens_30d": int(output_tokens_30d or 0),
+            "paddle_complimentary_grants": len(paddle_complimentary_grants),
             "paddle_paid_without_sub": len(paddle_paid_without_sub),
             "paddle_free_with_sub": len(paddle_free_with_sub),
         },
+        paddle_complimentary_grants=paddle_complimentary_grants[:40],
         paddle_paid_without_sub=paddle_paid_without_sub[:40],
         paddle_free_with_sub=paddle_free_with_sub[:40],
         grace_margin_pct=round(GRACE_MARGIN * 100, 1),
@@ -9141,6 +9153,11 @@ def admin_set_plan(user_id: int, plan: str):
     if plan == "free":
         clear_paid_alert_settings(target)
         clear_stale_subscription_binding(target)
+        clear_plan_source(target)
+    elif plan in {"plus", "business"}:
+        mark_paid_plan_from_grant(target)
+    else:
+        clear_plan_source(target)
     if plan == "plus":
         try:
             maybe_grant_referral_bonus_for_plus(target)
