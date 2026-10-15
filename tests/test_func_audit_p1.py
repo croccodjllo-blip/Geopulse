@@ -162,6 +162,25 @@ def test_health_detail_reports_attribution_without_failing_public(monkeypatch):
     }
     assert attr["google_ads"] is False
     assert attr["ga4_measurement_protocol"] is False
+    assert "analyze_activity" in detail
+    assert "analyze_activity" not in body
+
+
+def test_csrf_failure_emits_real_csp_nonce():
+    prev = app.config.get("WTF_CSRF_ENABLED", True)
+    app.config["WTF_CSRF_ENABLED"] = True
+    try:
+        with app.app_context():
+            ensure_schema()
+        client = app.test_client()
+        resp = client.post("/anteprima", data={"url": "https://example.com"})
+        assert resp.status_code == 400
+        csp = resp.headers.get("Content-Security-Policy") or ""
+        assert "script-src" in csp
+        assert "'nonce-'" not in csp
+        assert "nonce-" in csp
+    finally:
+        app.config["WTF_CSRF_ENABLED"] = prev
 
 
 def test_admin_lists_paddle_mismatches():
@@ -208,6 +227,8 @@ def test_admin_lists_paddle_mismatches():
         sess["user_id"] = aid
         sess["session_version"] = sv
     html = client.get("/admin").get_data(as_text=True)
+    assert "Ultima analisi" in html
+    assert "Error fixture" in html
     assert "Grant piano (tenuti)" in html
     assert f"grant-{suffix}@example.com" in html
     assert "Disallineamento piano / Paddle" in html

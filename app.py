@@ -502,7 +502,12 @@ def _sqlite_enable_foreign_keys(dbapi_connection, connection_record) -> None:  #
         cursor.close()
 
 from services.observability import configure_app_logging  # noqa: E402
-from centropic.csp import build_csp_header, configure_csp, inject_csp_context  # noqa: E402
+from centropic.csp import (  # noqa: E402
+    build_csp_header,
+    configure_csp,
+    inject_csp_context,
+    new_csp_nonce,
+)
 from centropic import metrics as app_metrics  # noqa: E402
 from centropic.metrics import configure_metrics  # noqa: E402
 
@@ -639,6 +644,13 @@ def set_security_headers(response):
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["X-XSS-Protection"] = "0"
     nonce = getattr(g, "csp_nonce", "") or ""
+    if not nonce:
+        # CSRF/abort can skip before_request; still emit a real nonce.
+        nonce = new_csp_nonce()
+        try:
+            g.csp_nonce = nonce
+        except RuntimeError:
+            pass
     response.headers["Content-Security-Policy"] = build_csp_header(
         nonce=nonce,
         paddle=paddle_enabled(),
@@ -4170,6 +4182,13 @@ def health():
         }
         if jobs_public is not None:
             jobs_detail.update(jobs_public)
+        analyze_activity: dict[str, Any] | None = None
+        try:
+            from centropic.ops_health import analyze_activity_snapshot
+
+            analyze_activity = analyze_activity_snapshot(AnalysisJob, User)
+        except Exception:
+            app.logger.exception("health analyze activity snapshot failed")
         payload.update(
             {
                 "openai": bool(OPENAI_API_KEY),
@@ -4234,6 +4253,7 @@ def health():
                 "prod_guards": env_guards,
                 "prod_guards_enforced": enforce_env,
                 "jobs": jobs_detail,
+                "analyze_activity": analyze_activity,
                 "metrics": app_metrics.snapshot(),
                 "architecture": {
                     "package": "centropic",
@@ -9054,6 +9074,20 @@ def admin_home():
     jobs_pending = AnalysisJob.query.filter_by(status="pending").count()
     jobs_running = AnalysisJob.query.filter_by(status="running").count()
     jobs_error = AnalysisJob.query.filter_by(status="error").count()
+    from centropic.ops_health import analyze_activity_snapshot
+
+    analyze_activity = analyze_activity_snapshot(AnalysisJob, User, now=now_utc)
+    last_done_label = "—"
+    age_h = analyze_activity.get("last_done_age_hours")
+    if age_h is None and not analyze_activity.get("last_done_at"):
+        last_done_label = "mai"
+    elif isinstance(age_h, int):
+        if age_h >= 48:
+            last_done_label = f"{age_h // 24}g fa"
+        elif age_h >= 1:
+            last_done_label = f"{age_h}h fa"
+        else:
+            last_done_label = "<1h"
 
     topup_30d = int(
         db.session.query(func.coalesce(func.sum(CreditLedger.amount_cents), 0))
@@ -9111,6 +9145,11 @@ def admin_home():
             "jobs_pending": jobs_pending,
             "jobs_running": jobs_running,
             "jobs_error": jobs_error,
+            "jobs_error_fixture": analyze_activity["error_fixture"],
+            "jobs_error_excl_fixture": analyze_activity["error_excl_fixture"],
+            "last_done_at": analyze_activity["last_done_at"],
+            "last_done_label": last_done_label,
+            "done_14d": analyze_activity["done_14d"],
             "topup_30d_cents": topup_30d,
             "charged_30d_cents": abs(charged_30d),
             "input_tokens_30d": int(input_tokens_30d or 0),

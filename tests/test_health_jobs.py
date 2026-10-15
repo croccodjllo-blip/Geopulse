@@ -68,6 +68,11 @@ def test_health_detail_is_read_only_snapshot(monkeypatch):
     # Query-string tokens must not unlock detail (Referer / log leak surface).
     leaked = client.get(f"/health?token=health-{suffix}").get_json()
     assert "jobs" not in leaked
+    assert "analyze_activity" not in public_payload
+    activity = detail.get("analyze_activity") or {}
+    assert "done_14d" in activity
+    assert "error_excl_fixture" in activity
+    assert "last_done_at" in activity
 
 
 def test_ops_reclaim_jobs_releases_stale(monkeypatch):
