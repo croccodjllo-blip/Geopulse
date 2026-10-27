@@ -18,11 +18,13 @@ from services.security import password_policy_error, safe_next_url
 from services.usage_billing import debit_leased_job_usage, hold_credit
 
 
-def _user(email: str, *, balance: int = 500, verified: bool = True) -> User:
+def _user(
+    email: str, *, balance: int = 500, verified: bool = True, plan: str = "free"
+) -> User:
     u = User(
         email=email,
         name="T",
-        plan="free",
+        plan=plan,
         credit_balance_cents=balance,
         credit_held_cents=0,
         password_hash="x",
@@ -63,7 +65,7 @@ def test_password_policy_requires_letter_and_digit():
 def test_debit_leased_job_usage_refuses_stolen_lease():
     with app.app_context():
         ensure_schema()
-        u = _user("lease-debit@example.com", balance=500)
+        u = _user("lease-debit@example.com", balance=500, plan="plus")
         hold_credit(db.session, CreditLedger, u, amount_cents=200, job_id=1)
         db.session.commit()
         job = AnalysisJob(
@@ -101,7 +103,7 @@ def test_debit_leased_job_usage_refuses_stolen_lease():
 def test_debit_leased_job_usage_atomic_success():
     with app.app_context():
         ensure_schema()
-        u = _user("lease-ok@example.com", balance=500)
+        u = _user("lease-ok@example.com", balance=500, plan="plus")
         hold_credit(db.session, CreditLedger, u, amount_cents=200, job_id=1)
         db.session.commit()
         job = AnalysisJob(

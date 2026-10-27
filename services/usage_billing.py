@@ -578,6 +578,20 @@ def is_unlimited_user(user: Any) -> bool:
     return role in {"admin", "internal"}
 
 
+def uses_prepaid_credits(user: Any) -> bool:
+    """Plus/Business spend the token wallet. Free included Stimato does not.
+
+    Test doubles without a ``plan`` attribute stay fail-closed (metered).
+    Site/analysis caps still come from ``enforce_analyze_limits``, not this.
+    """
+    if is_unlimited_user(user):
+        return False
+    if not hasattr(user, "plan"):
+        return True
+    plan = (getattr(user, "plan", None) or "free").strip().lower()
+    return plan in {"plus", "pro", "business"}
+
+
 def debit_cents_from_usage(charged_eur_cents: float) -> int:
     """Convert fractional EUR cents from a single AI call into ledger cents.
 
@@ -652,8 +666,8 @@ def get_balance_cents(user: Any) -> int:
 
 def has_sufficient_credit(user: Any, cost_estimate: CostEstimate) -> bool:
     """True if user has enough credit for this analysis.
-    Admin/unlimited users always pass this check."""
-    if is_unlimited_user(user):
+    Admin/unlimited and Free included-quota users always pass this check."""
+    if not uses_prepaid_credits(user):
         return True
     required = required_credit_with_grace_cents(cost_estimate.service_cost_eur_cents)
     return get_balance_cents(user) >= required
@@ -670,7 +684,7 @@ def has_sufficient_credit_for_job(
     Worker preflight must not treat the job's own ``held_cents`` as unavailable,
     or it falsely fails and releases the hold.
     """
-    if is_unlimited_user(user):
+    if not uses_prepaid_credits(user):
         return True
     required = required_credit_with_grace_cents(cost_estimate.service_cost_eur_cents)
     available = get_balance_cents(user) + max(0, int(reserved_cents or 0))
@@ -762,10 +776,14 @@ def deduct_credit(
     job's remaining ``held_cents``). The update refuses to spend below other
     jobs' holds: ``balance - cost >= max(0, held - reserved)``.
 
-    Admin/unlimited users are never charged — call is silently skipped.
+    Admin/unlimited and Free included-quota users are never charged —
+    call is silently skipped.
     """
-    if is_unlimited_user(user):
-        logger.debug("deduct_credit: admin user %s — skip deduction.", getattr(user, "email", "?"))
+    if not uses_prepaid_credits(user):
+        logger.debug(
+            "deduct_credit: skip prepaid debit user=%s",
+            getattr(user, "email", "?"),
+        )
         return
     if cost_eur_cents <= 0:
         return
@@ -838,7 +856,8 @@ def assert_can_start_analysis(
     """Serialize billing decision: lock user row, re-check credit + job concurrency.
 
     Raises InsufficientCreditError or ConcurrentAnalysisError.
-    Unlimited users skip the credit check but still respect concurrency.
+    Unlimited and Free included-quota users skip the credit check but
+    still respect concurrency.
     """
     UserModel = type(user)
     try:
@@ -880,7 +899,7 @@ def assert_can_start_analysis(
                 f"Hai già {active} analisi in coda/esecuzione. "
                 "Attendi il completamento prima di avviarne un'altra."
             )
-    if is_unlimited_user(user):
+    if not uses_prepaid_credits(user):
         return
     need = max(1, int(required_cents))
     if get_balance_cents(user) < need:
@@ -926,9 +945,9 @@ def hold_credit(
     """Atomically reserve spendable credit (balance − held ≥ amount).
 
     Uses a conditional UPDATE so concurrent holds cannot over-reserve.
-    Returns the held amount (0 for unlimited users).
+    Returns the held amount (0 for unlimited and Free included-quota users).
     """
-    if is_unlimited_user(user) or amount_cents <= 0:
+    if not uses_prepaid_credits(user) or amount_cents <= 0:
         return 0
     amount = int(amount_cents)
     UserModel = type(user)

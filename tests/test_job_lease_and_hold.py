@@ -24,7 +24,7 @@ def _user(email: str, balance: int = 1000) -> User:
     u = User(
         email=email,
         name="T",
-        plan="free",
+        plan="plus",
         credit_balance_cents=balance,
         credit_held_cents=0,
     )

@@ -3909,7 +3909,8 @@ def start_first_analysis_if_needed(user: User, website: str | None) -> int | Non
     if blocked is not None:
         return None
 
-    # Prepaid gate: skip enqueue when balance cannot cover the estimate.
+    # Prepaid gate: Plus/Business need wallet cover. Free included Stimato
+    # passes has_sufficient_credit with a zero balance.
     est = estimate_analysis_cost(
         openai_model=OPENAI_MODEL,
         anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
@@ -6884,6 +6885,7 @@ def dashboard():
                 improvement=improvement,
                 balance_cents=get_balance_cents(user),
                 required_cents=required_credit_with_grace_cents(cost.service_cost_eur_cents),
+                credit_ok=has_sufficient_credit(user, cost),
                 grace_margin_pct=round(GRACE_MARGIN * 100, 1),
                 run_measured=run_meas,
                 competitors_raw=competitors_raw_out,

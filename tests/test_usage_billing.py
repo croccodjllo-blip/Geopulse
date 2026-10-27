@@ -17,6 +17,7 @@ from services.usage_billing import (
     check_page_word_budget,
     required_credit_with_grace_cents,
     is_unlimited_user,
+    uses_prepaid_credits,
     debit_cents_from_usage,
     _model_price,
 )
@@ -269,6 +270,26 @@ def test_has_sufficient_credit_needs_grace_margin():
 def test_admin_is_unlimited():
     admin = _FakeUser(0, role="admin")
     assert is_unlimited_user(admin) is True
+
+
+def test_free_plan_included_quota_does_not_need_prepaid_wallet():
+    est = estimate_analysis_cost(
+        openai_model="gpt-4o-mini",
+        anthropic_model="claude-haiku-4-5-20251001",
+        perplexity_model="sonar",
+        run_measured=False,
+        has_openai=True,
+    )
+    free = _FakeUser(0)
+    free.plan = "free"
+    assert uses_prepaid_credits(free) is False
+    assert has_sufficient_credit(free, est) is True
+    plus = _FakeUser(0)
+    plus.plan = "plus"
+    assert uses_prepaid_credits(plus) is True
+    assert has_sufficient_credit(plus, est) is False
+    # Test doubles without plan stay fail-closed (metered).
+    assert uses_prepaid_credits(_FakeUser(0)) is True
 
 
 # ── Improvement preview ──────────────────────────────────────────────────────

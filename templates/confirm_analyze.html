@@ -108,18 +108,18 @@
       <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Account admin — nessun addebito') }}</span>
     </div>
     {% else %}
-    <div class="credit-status {% if balance_cents >= required_cents %}credit-status--ok{% else %}credit-status--low{% endif %}">
+    <div class="credit-status {% if credit_ok %}credit-status--ok{% else %}credit-status--low{% endif %}">
       <span class="credit-status__balance">
         {{ _('Stato:') }}
         <strong>
-          {% if balance_cents >= required_cents %}
+          {% if credit_ok %}
             {{ _('Pronto ad avviare') }}
           {% else %}
             {{ _('Copertura insufficiente') }}
           {% endif %}
         </strong>
       </span>
-      {% if balance_cents >= required_cents %}
+      {% if credit_ok %}
         <span class="credit-status__badge credit-status__badge--ok">✓ {{ _('Incluso nella quota del piano') }}</span>
       {% else %}
         <span class="credit-status__badge credit-status__badge--low">⚠ {{ _('Serve un piano superiore') }}</span>
@@ -135,7 +135,7 @@
 
   {# ── Azioni ── #}
   <div class="page-cta">
-    {% if current_user.is_admin or balance_cents >= required_cents %}
+    {% if current_user.is_admin or credit_ok %}
     <form method="POST" action="{{ url_for('dashboard_analyze_confirmed') }}" class="js-analyze-confirm">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="url" value="{{ url }}">
