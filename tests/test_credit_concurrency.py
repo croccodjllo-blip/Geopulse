@@ -14,14 +14,14 @@ class _User:
     email = None
     credit_balance_cents = 0
     role = "user"
-    plan = "free"
+    plan = "plus"
 
-    def __init__(self, uid: int, balance: int, role: str = "user"):
+    def __init__(self, uid: int, balance: int, role: str = "user", plan: str = "plus"):
         self.id = uid
         self.email = f"u{uid}@example.com"
         self.credit_balance_cents = balance
         self.role = role
-        self.plan = "free"
+        self.plan = plan
 
 
 class _Ledger:
