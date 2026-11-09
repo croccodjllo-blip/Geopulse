@@ -523,6 +523,10 @@ GA4_API_SECRET = (os.getenv("GA4_API_SECRET") or "").strip()
 GOOGLE_SITE_VERIFICATION = (os.getenv("GOOGLE_SITE_VERIFICATION") or "").strip()
 ADSENSE_CLIENT_ID = (os.getenv("ADSENSE_CLIENT_ID") or "").strip()
 ADS_TXT_CONTENT = (os.getenv("ADS_TXT_CONTENT") or "").strip()
+# Google Tag Manager (optional). Example: GTM-TLWZ4PC2
+# When set, GTM loads instead of a bare gtag/js script — configure GA4 + Ads
+# tags inside GTM. Consent Mode v2 default is still declared before GTM loads.
+GTM_CONTAINER_ID = (os.getenv("GTM_CONTAINER_ID") or "").strip()
 # Google Ads conversions (optional). Example: AW-123456789
 GOOGLE_ADS_ID = (os.getenv("GOOGLE_ADS_ID") or "").strip()
 # Conversion labels only (suffix after /), e.g. AbCdEfGhIjKlMnOp
@@ -1945,6 +1949,7 @@ def inject_globals() -> dict[str, Any]:
         "legal_pec": LEGAL_PEC,
         "legal_rea": LEGAL_REA,
         "ga4_measurement_id": GA4_MEASUREMENT_ID,
+        "gtm_container_id": GTM_CONTAINER_ID,
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
         "google_ads_id": GOOGLE_ADS_ID,

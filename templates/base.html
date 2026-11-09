@@ -63,8 +63,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    {% if ga4_measurement_id or google_ads_id %}
-    {# Consent Mode v2: EU default denied BEFORE any Google tags #}
+    {% if gtm_container_id or ga4_measurement_id or google_ads_id %}
+    {# Consent Mode v2: EU default denied — MUST be declared before GTM/gtag loads #}
     <script nonce="{{ csp_nonce }}">
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -80,6 +80,22 @@
       gtag('set', 'ads_data_redaction', true);
       gtag('set', 'url_passthrough', true);
     </script>
+    {% if gtm_container_id %}
+    {# GTM manages GA4 + Ads tags — configure them in the GTM container UI #}
+    <script nonce="{{ csp_nonce }}" async="async" src="https://www.googletagmanager.com/gtm.js?id={{ gtm_container_id }}"></script>
+    {% if google_ads_id %}
+    {# Ads conversion_linker + enhanced conversions declared here so they apply
+       even if the GTM Ads tag fires slightly later than the first page event #}
+    <script nonce="{{ csp_nonce }}">
+      gtag('js', new Date());
+      gtag('config', '{{ google_ads_id }}', {
+        conversion_linker: true,
+        allow_enhanced_conversions: true
+      });
+    </script>
+    {% endif %}
+    {% else %}
+    {# Fallback: direct gtag/js load (no GTM) #}
     {% if ga4_measurement_id %}
     <script nonce="{{ csp_nonce }}" async="async" src="https://www.googletagmanager.com/gtag/js?id={{ ga4_measurement_id }}"></script>
     {% elif google_ads_id %}
@@ -102,6 +118,7 @@
       {% endif %}
     </script>
     {% endif %}
+    {% endif %}
     {# AdSense is loaded only after ad_storage consent (see analytics.js) #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     {% block head_extra %}{% endblock %}
@@ -112,6 +129,9 @@
     {% block structured_data %}{% endblock %}
   </head>
   <body class="app-body {% block body_class %}{% endblock %}{% if current_user %}{% set _bc = self.body_class()|default('', true)|trim %}{% if 'body-auth' not in _bc %} body-dash app-shell app-shell--sidebar dash-plan--{{ dash_plan|default('free') }}{% endif %}{% endif %}"{% if current_user and dash_plan is defined %} data-dash-plan="{{ dash_plan }}"{% endif %}>
+    {% if gtm_container_id %}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_container_id }}" height="0" width="0" class="gtm-noscript"></iframe></noscript>
+    {% endif %}
     {% block shell %}
     {# Sidebar on every authenticated page except auth flows (login/register/reset). #}
     {% set _bc = self.body_class()|default('', true)|trim %}
