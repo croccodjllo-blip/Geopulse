@@ -6382,6 +6382,7 @@ def register():
         signup_params: dict[str, Any] = {
             "method": "email",
             "event_category": "auth",
+            "ui_language": active_ui_locale(),
         }
         send_to = _ads_send_to(GOOGLE_ADS_SIGNUP_LABEL)
         if send_to:

@@ -198,6 +198,7 @@
             extra && extra.customData && extra.customData.product
               ? extra.customData.product
               : "checkout",
+          ui_language: ads.uiLang || "it",
         };
         if (ads.adsCheckoutSendTo) params.send_to = ads.adsCheckoutSendTo;
         window.centropicTrack("begin_checkout", params);
