@@ -5491,7 +5491,11 @@ def pricing():
 @app.route("/price")
 def pricing_alias():
     """EN/legacy aliases — avoid crawl 404 criticals on /pricing."""
-    return redirect(url_for("pricing"), code=301)
+    target = url_for("pricing")
+    lang = request.args.get("lang", "").strip()
+    if lang:
+        target = f"{target}?lang={lang}"
+    return redirect(target, code=301)
 
 
 def _require_digital_service_waiver(user: "User", *, redirect_to: str):
