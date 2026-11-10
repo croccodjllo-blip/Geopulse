@@ -523,6 +523,10 @@ GA4_API_SECRET = (os.getenv("GA4_API_SECRET") or "").strip()
 GOOGLE_SITE_VERIFICATION = (os.getenv("GOOGLE_SITE_VERIFICATION") or "").strip()
 ADSENSE_CLIENT_ID = (os.getenv("ADSENSE_CLIENT_ID") or "").strip()
 ADS_TXT_CONTENT = (os.getenv("ADS_TXT_CONTENT") or "").strip()
+# Google Tag Manager (optional). Example: GTM-TLWZ4PC2
+# When set, GTM loads instead of a bare gtag/js script — configure GA4 + Ads
+# tags inside GTM. Consent Mode v2 default is still declared before GTM loads.
+GTM_CONTAINER_ID = (os.getenv("GTM_CONTAINER_ID") or "").strip()
 # Google Ads conversions (optional). Example: AW-123456789
 GOOGLE_ADS_ID = (os.getenv("GOOGLE_ADS_ID") or "").strip()
 # Conversion labels only (suffix after /), e.g. AbCdEfGhIjKlMnOp
@@ -1945,6 +1949,7 @@ def inject_globals() -> dict[str, Any]:
         "legal_pec": LEGAL_PEC,
         "legal_rea": LEGAL_REA,
         "ga4_measurement_id": GA4_MEASUREMENT_ID,
+        "gtm_container_id": GTM_CONTAINER_ID,
         "google_site_verification": GOOGLE_SITE_VERIFICATION,
         "adsense_client_id": ADSENSE_CLIENT_ID,
         "google_ads_id": GOOGLE_ADS_ID,
@@ -5486,7 +5491,11 @@ def pricing():
 @app.route("/price")
 def pricing_alias():
     """EN/legacy aliases — avoid crawl 404 criticals on /pricing."""
-    return redirect(url_for("pricing"), code=301)
+    target = url_for("pricing")
+    lang = request.args.get("lang", "").strip()
+    if lang:
+        target = f"{target}?lang={lang}"
+    return redirect(target, code=301)
 
 
 def _require_digital_service_waiver(user: "User", *, redirect_to: str):
@@ -6382,6 +6391,7 @@ def register():
         signup_params: dict[str, Any] = {
             "method": "email",
             "event_category": "auth",
+            "ui_language": active_ui_locale(),
         }
         send_to = _ads_send_to(GOOGLE_ADS_SIGNUP_LABEL)
         if send_to:

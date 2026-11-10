@@ -21,6 +21,7 @@
       window.dataLayer.push(arguments);
     };
 
+  var uiLang = cfg.uiLang || "it";
   var CLICK_ID_KEYS = ["gclid", "gbraid", "wbraid", "gad_source"];
   var CLICK_ID_MAX_AGE = 90 * 24 * 60 * 60;
 
@@ -235,7 +236,7 @@
         action.indexOf("analyze/confirmed") !== -1 ||
         action.indexOf("/anteprima") !== -1
       ) {
-        var params = { event_category: "analysis" };
+        var params = { event_category: "analysis", ui_language: uiLang };
         if (adsAnalyzeSendTo) params.send_to = adsAnalyzeSendTo;
         track("analyze_start", params);
       }

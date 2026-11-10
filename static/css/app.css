@@ -11250,3 +11250,6 @@ body.dash-plan--business .workspace {
 .legal-rail a:hover {
   color: var(--ink);
 }
+
+/* GTM noscript fallback iframe — must be invisible */
+.gtm-noscript { display: none; visibility: hidden; }
