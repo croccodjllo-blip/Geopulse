@@ -10,6 +10,7 @@ from services.seo import (
     canonical_with_lang,
     hreflang_alternates,
     language_alternate_url,
+    locale_prefix_destination,
     request_is_search_crawler,
     schema_in_language,
     sitemap_xhtml_links,
@@ -60,7 +61,31 @@ def test_schema_in_language_maps_og():
 def test_crawler_ua_detected():
     assert request_is_search_crawler("Mozilla/5.0 (compatible; Googlebot/2.1)")
     assert request_is_search_crawler("AdsBot-Google (+http://www.google.com/adsbot.html)")
+    assert request_is_search_crawler(
+        "Mozilla/5.0 (compatible; AdsBot-Google-Mobile; +http://www.google.com/mobile/adsbot.html)"
+    )
     assert not request_is_search_crawler("Mozilla/5.0 Chrome/120.0")
+
+
+def test_request_user_agent_string_does_not_bool_werkzeug_ua():
+    """Werkzeug UserAgent is falsy for AdsBot; we must read the raw header."""
+    from app import app
+    from services.seo import request_user_agent_string
+
+    adsbot = "AdsBot-Google (+http://www.google.com/adsbot.html)"
+    with app.test_request_context("/", headers={"User-Agent": adsbot}):
+        from flask import request
+
+        assert not request.user_agent  # the trap
+        assert request_user_agent_string() == adsbot
+
+
+def test_locale_prefix_destination_maps_ads_aliases():
+    assert locale_prefix_destination("en") == "/?lang=en"
+    assert locale_prefix_destination("de", "prezzi") == "/prezzi?lang=de"
+    assert locale_prefix_destination("it") == "/"
+    assert locale_prefix_destination("en", "", {"gclid": "abc"}) == "/?gclid=abc&lang=en"
+    assert locale_prefix_destination("fr") is None
 
 
 def test_ads_sha256_email_normalizes():
@@ -128,7 +153,13 @@ def test_googlebot_clean_url_stays_italian():
 
     html = (
         app.test_client()
-        .get("/", headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"})
+        .get(
+            "/",
+            headers={
+                "User-Agent": "AdsBot-Google (+http://www.google.com/adsbot.html)",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+        )
         .get_data(as_text=True)
     )
     assert 'lang="it"' in html
@@ -248,3 +279,112 @@ def test_jsonld_partials_use_schema_language_and_nonce():
         if name != "jsonld_breadcrumb.html":
             assert "{{ schema_in_language }}" in text
             assert '"inLanguage": "it-IT"' not in text
+
+
+def test_locale_prefix_aliases_redirect_to_lang_query():
+    from app import app
+
+    client = app.test_client()
+    en = client.get("/en")
+    assert en.status_code == 301
+    assert en.headers.get("Location", "").endswith("/?lang=en")
+
+    en_slash = client.get("/en/")
+    assert en_slash.status_code == 301
+    assert "/?lang=en" in (en_slash.headers.get("Location") or "")
+
+    de_prezzi = client.get("/de/prezzi")
+    assert de_prezzi.status_code == 301
+    assert de_prezzi.headers.get("Location", "").endswith("/prezzi?lang=de")
+
+    with_gclid = client.get("/en?gclid=TesT123")
+    assert with_gclid.status_code == 301
+    loc = with_gclid.headers.get("Location") or ""
+    assert "lang=en" in loc
+    assert "gclid=TesT123" in loc
+
+    followed = client.get("/en", follow_redirects=True)
+    assert followed.status_code == 200
+    html = followed.get_data(as_text=True)
+    assert 'lang="en"' in html
+    assert "Accedi" in html or "Sign in" in html or "Log in" in html or "GEO" in html
+
+
+def test_adsbot_home_is_public_200_not_login():
+    from app import app
+
+    html_resp = app.test_client().get(
+        "/",
+        headers={"User-Agent": "AdsBot-Google (+http://www.google.com/adsbot.html)"},
+    )
+    assert html_resp.status_code == 200
+    html = html_resp.get_data(as_text=True)
+    assert "GEO" in html
+    assert 'name="password"' not in html.lower()
+    csp = html_resp.headers.get("Content-Security-Policy") or ""
+    assert "ads.google.com" in csp or "*.google.com" in csp
+    assert "frame-ancestors 'none'" not in csp
+    assert html_resp.headers.get("X-Frame-Options") != "DENY"
+
+
+def test_private_pages_keep_frame_deny():
+    from app import app
+
+    login = app.test_client().get("/login")
+    assert login.status_code == 200
+    assert login.headers.get("X-Frame-Options") == "DENY"
+    csp = login.headers.get("Content-Security-Policy") or ""
+    assert "frame-ancestors 'none'" in csp
+
+
+def test_ads_click_id_skips_dashboard_redirect_for_logged_in_user():
+    from datetime import datetime, timezone
+    from uuid import uuid4
+
+    from app import User, app, db, ensure_schema
+
+    with app.app_context():
+        ensure_schema()
+        u = User(
+            email=f"ads-{uuid4().hex}@example.com",
+            name="Ads",
+            plan="plus",
+            email_verified_at=datetime.now(timezone.utc),
+        )
+        u.set_password("AdsLanding!23456")
+        db.session.add(u)
+        db.session.commit()
+        uid, sv = u.id, int(u.session_version or 0)
+
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["user_id"] = uid
+        sess["session_version"] = sv
+
+    dash = client.get("/")
+    assert dash.status_code in {302, 303}
+    assert "/dashboard" in (dash.headers.get("Location") or "")
+
+    ads = client.get("/?gclid=abc123")
+    assert ads.status_code == 200
+    assert "GEO" in ads.get_data(as_text=True)
+
+    crawler = client.get(
+        "/",
+        headers={"User-Agent": "AdsBot-Google (+http://www.google.com/adsbot.html)"},
+    )
+    assert crawler.status_code == 200
+    assert "GEO" in crawler.get_data(as_text=True)
+
+
+def test_existing_marketing_paths_not_shadowed_by_locale_prefix():
+    from app import app
+
+    client = app.test_client()
+    assert client.get("/prezzi").status_code == 200
+    assert client.get("/guide/schema-ai").status_code == 200
+    assert client.get("/register").status_code == 200
+    login = client.get("/login")
+    assert login.status_code == 200
+    dash = client.get("/dashboard")
+    assert dash.status_code in {302, 303}

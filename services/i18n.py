@@ -68,9 +68,9 @@ def select_locale() -> str:
     if cookie:
         return babel_locale(cookie)
 
-    from services.seo import request_is_search_crawler
+    from services.seo import request_is_search_crawler, request_user_agent_string
 
-    if request_is_search_crawler(request.user_agent.string if request.user_agent else ""):
+    if request_is_search_crawler(request_user_agent_string()):
         return babel_locale(DEFAULT_LOCALE)
 
     best = request.accept_languages.best_match(

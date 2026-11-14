@@ -93,6 +93,24 @@ def test_csp_paddle_sandbox_hosts_only_when_requested():
     assert "sandbox-checkout.paddle.com" in sand
 
 
+def test_csp_public_ads_frame_ancestors_allow_google_preview():
+    from centropic.csp import GOOGLE_ADS_FRAME_ANCESTORS
+
+    locked = build_csp_header(
+        nonce="n", paddle=False, analytics=False, adsense=False
+    )
+    assert "frame-ancestors 'none'" in locked
+    open_ads = build_csp_header(
+        nonce="n",
+        paddle=False,
+        analytics=False,
+        adsense=False,
+        frame_ancestors=GOOGLE_ADS_FRAME_ANCESTORS,
+    )
+    assert "*.google.com" in open_ads
+    assert "frame-ancestors 'none'" not in open_ads
+
+
 def test_metrics_counters():
     before = snapshot()["counters"].get("arch.test", 0)
     incr("arch.test", 2)

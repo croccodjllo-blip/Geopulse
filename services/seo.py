@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import hashlib
 from typing import Any
+from urllib.parse import urlencode
 
 from services.i18n import DEFAULT_LOCALE, SUPPORTED_LOCALES, locale_meta, normalize_locale
+
+# Click IDs Google Ads appends to the final/starting URL.
+_ADS_CLICK_ID_KEYS: tuple[str, ...] = ("gclid", "gbraid", "wbraid", "gad_source")
 
 # Short UI code → hreflang BCP 47 (Google Search).
 _HREFLANG: dict[str, str] = {
@@ -50,6 +54,8 @@ _SEARCH_CRAWLER_TOKENS: tuple[str, ...] = (
     "adsbot-google",
     "mediapartners-google",
     "apis-google",
+    "google-ads",
+    "adsbot",
     "bingbot",
     "bingpreview",
     "yandexbot",
@@ -215,12 +221,55 @@ def sitemap_xhtml_links(base: str, path: str) -> str:
     return "\n".join(lines)
 
 
+def request_user_agent_string() -> str:
+    """Raw User-Agent header. Do not bool() ``request.user_agent`` — Werkzeug's
+    UserAgent is falsy when it cannot parse a browser family, including AdsBot."""
+    from flask import has_request_context, request
+
+    if not has_request_context():
+        return ""
+    header = (request.headers.get("User-Agent") or "").strip()
+    if header:
+        return header
+    parsed = getattr(request, "user_agent", None)
+    return (getattr(parsed, "string", None) or "").strip()
+
+
 def request_is_search_crawler(user_agent: str | None) -> bool:
     """True for Google/Bing/Ads crawlers — ignore Accept-Language on clean URLs."""
     ua = (user_agent or "").lower()
     if not ua:
         return False
     return any(tok in ua for tok in _SEARCH_CRAWLER_TOKENS)
+
+
+def request_has_ads_click_id() -> bool:
+    """True when the request carries a Google Ads click id (gclid/gbraid/…)."""
+    from flask import request
+
+    args = request.args
+    return any((args.get(key) or "").strip() for key in _ADS_CLICK_ID_KEYS)
+
+
+def locale_prefix_destination(
+    code: str,
+    rest: str = "",
+    query: dict[str, str] | None = None,
+) -> str | None:
+    """Map ``/en`` or ``/de/prezzi`` to the canonical ``?lang=`` URL, or None."""
+    loc = (code or "").strip().lower()
+    if loc not in SUPPORTED_LOCALES:
+        return None
+    rest = (rest or "").lstrip("/")
+    path = f"/{rest}" if rest else "/"
+    q = dict(query or {})
+    q.pop("lang", None)
+    if loc != DEFAULT_LOCALE:
+        q["lang"] = loc
+    qs = urlencode(q)
+    if path == "/":
+        return f"/?{qs}" if qs else "/"
+    return f"{path}?{qs}" if qs else path
 
 
 def ads_sha256_email(email: str | None) -> str | None:

@@ -503,6 +503,7 @@ def _sqlite_enable_foreign_keys(dbapi_connection, connection_record) -> None:  #
 
 from services.observability import configure_app_logging  # noqa: E402
 from centropic.csp import (  # noqa: E402
+    GOOGLE_ADS_FRAME_ANCESTORS,
     build_csp_header,
     configure_csp,
     inject_csp_context,
@@ -643,7 +644,6 @@ def flush_pending_ads_conversions(user: User | None) -> None:
 def set_security_headers(response):
     # Header applicativi (nginx tiene HSTS; evitiamo duplicare X-* lì).
     response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["X-XSS-Protection"] = "0"
@@ -655,24 +655,35 @@ def set_security_headers(response):
             g.csp_nonce = nonce
         except RuntimeError:
             pass
+    ep = (request.endpoint or "") if request else ""
+    from services.seo import is_private_html_path
+
+    html = (response.mimetype or "").startswith("text/html")
+    private_html = html and is_private_html_path(ep, request.path if request else "/")
+    # Public marketing HTML must be frameable by Google Ads preview. DENY +
+    # frame-ancestors 'none' makes Ads report HTTP 403 on the starting URL.
+    if private_html or not html:
+        response.headers["X-Frame-Options"] = "DENY"
+        frame_ancestors = "'none'"
+    else:
+        response.headers.pop("X-Frame-Options", None)
+        frame_ancestors = GOOGLE_ADS_FRAME_ANCESTORS
     response.headers["Content-Security-Policy"] = build_csp_header(
         nonce=nonce,
         paddle=paddle_enabled(),
         analytics=bool(GA4_MEASUREMENT_ID or GOOGLE_ADS_ID),
         adsense=bool(ADSENSE_CLIENT_ID or GOOGLE_ADS_ID),
         paddle_sandbox=paddle_environment() == "sandbox",
+        frame_ancestors=frame_ancestors,
     )
     # Dashboard HTML must never be served from bfcache/proxy after analyze —
     # otherwise the UI looks stuck on the previous report.
-    ep = (request.endpoint or "") if request else ""
     if ep == "dashboard" or ep.startswith("dashboard_"):
         response.headers["Cache-Control"] = "private, no-store, max-age=0"
         response.headers["Pragma"] = "no-cache"
-    if (response.mimetype or "").startswith("text/html"):
+    if html:
         response.headers.setdefault("Content-Language", active_ui_locale())
-        from services.seo import is_private_html_path
-
-        if is_private_html_path(ep, request.path if request else "/"):
+        if private_html:
             response.headers.setdefault("X-Robots-Tag", "noindex, nofollow")
     # HSTS è impostato da nginx (add_header ... always) davanti a Flask;
     # non duplicarlo qui per evitare due header Strict-Transport-Security.
@@ -5400,9 +5411,31 @@ def guide_score_vs_sov():
 
 @app.route("/")
 def index():
-    if current_user() is not None:
+    from services.seo import (
+        request_has_ads_click_id,
+        request_is_search_crawler,
+        request_user_agent_string,
+    )
+
+    # AdsBot / paid clicks must always see the public landing (no login).
+    if current_user() is not None and not (
+        request_is_search_crawler(request_user_agent_string())
+        or request_has_ads_click_id()
+    ):
         return redirect(url_for("dashboard"))
     return render_template("landing.html")
+
+
+@app.route("/<any(en,de,es,zh,ko,it):code>", strict_slashes=False)
+@app.route("/<any(en,de,es,zh,ko,it):code>/<path:rest>")
+def locale_prefix_alias(code: str, rest: str = ""):
+    """``/en`` and ``/de/prezzi`` → canonical ``?lang=`` URLs (Ads final-URL aliases)."""
+    from services.seo import locale_prefix_destination
+
+    dest = locale_prefix_destination(code, rest, request.args.to_dict(flat=True))
+    if dest is None:
+        abort(404)
+    return redirect(dest, code=301)
 
 
 @app.route("/lang/<code>", methods=["GET", "POST"])
