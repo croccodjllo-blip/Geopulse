@@ -18,6 +18,16 @@ def configure_csp(app: Flask) -> None:
         g.csp_nonce = new_csp_nonce()
 
 
+# Google Ads preview/diagnosis loads the starting URL in an iframe on
+# ads.google.com. frame-ancestors 'none' + X-Frame-Options DENY make that
+# fetch fail closed; Ads then reports HTTP 403 on the landing URL.
+GOOGLE_ADS_FRAME_ANCESTORS = (
+    "'self' https://*.google.com https://*.googleadservices.com "
+    "https://*.googlesyndication.com https://*.googleusercontent.com "
+    "https://googleads.g.doubleclick.net"
+)
+
+
 def build_csp_header(
     *,
     nonce: str,
@@ -25,6 +35,7 @@ def build_csp_header(
     analytics: bool,
     adsense: bool,
     paddle_sandbox: bool = False,
+    frame_ancestors: str = "'none'",
 ) -> str:
     """Prefer nonce-based script-src; keep strict-dynamic for modern browsers.
 
@@ -125,6 +136,7 @@ def build_csp_header(
     def uniq(items: list[str]) -> str:
         return " ".join(dict.fromkeys(items))
 
+    ancestors = (frame_ancestors or "").strip() or "'none'"
     return (
         "default-src 'self'; "
         f"script-src {uniq(script_src)}; "
@@ -136,7 +148,7 @@ def build_csp_header(
         f"connect-src {uniq(connect_src)}; "
         f"frame-src {uniq(frame_src)}; "
         "object-src 'none'; "
-        "frame-ancestors 'none'; "
+        f"frame-ancestors {ancestors}; "
         "base-uri 'self'; "
         "form-action 'self'"
     )
